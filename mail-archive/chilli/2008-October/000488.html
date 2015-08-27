@@ -1,0 +1,131 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> tap and vlan
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20tap%20and%20vlan&In-Reply-To=%3C40125.139.179.14.250.1224835953.squirrel%40webmail.bilkent.edu.tr%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000487.html">
+   <LINK REL="Next"  HREF="000489.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>tap and vlan</H1>
+    <B>Oguzhan Kayhan</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20tap%20and%20vlan&In-Reply-To=%3C40125.139.179.14.250.1224835953.squirrel%40webmail.bilkent.edu.tr%3E"
+       TITLE="tap and vlan">oguzhank at bilkent.edu.tr
+       </A><BR>
+    <I>Fri Oct 24 08:12:33 UTC 2008</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000487.html">tap and vlan
+</A></li>
+        <LI>Next message: <A HREF="000489.html">switching up/and down updates
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#488">[ date ]</a>
+              <a href="thread.html#488">[ thread ]</a>
+              <a href="subject.html#488">[ subject ]</a>
+              <a href="author.html#488">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>&gt;<i> The usetap option has always been highly experimental and largely
+</I>&gt;<i> useless. A while back there was a bug with certain features that was
+</I>&gt;<i> worked around using usetap, which has been fixed (the details I would
+</I>&gt;<i> have to lookup). Using a tap doesn't make much sense, at the end of the
+</I>&gt;<i> day. You want to use the tun interface so that the kernel has the
+</I>&gt;<i> ability to route the packet appropriately, out through the default
+</I>&gt;<i> gateway if not a local destination. However, with a tap, chilli would
+</I>&gt;<i> have to figure out if the destination is local or not before deciding on
+</I>&gt;<i> the destination MAC address.
+</I>&gt;<i>
+</I>&gt;<i> I'm interested to know what doesn't work when you use a tun interface
+</I>&gt;<i> (assuming you are using at least chilli 1.0.12, or even better, the svn
+</I>&gt;<i> version) and why the tap is required in your environment.
+</I>&gt;<i>
+</I>&gt;<i> David
+</I>&gt;<i>
+</I>Hi David and thank you for your fast reply.
+Actually, in some parts of our network we were still using chillispot 1.1
+not coova-chilli. And in that areas, we were observing some packets on
+physical interface which chilli runs which suppose to belong to network
+behind tun interface.We can see this packets both on arp table of this
+physical interface and and also with tcpdump command.And this mac-ids that
+we saw on the physical part mostly belongs to the users creating huge
+amounts of packets or connections like torrent or emule users.
+And we thought maybe tun is not able to deal with such high amount of
+packets and , when we figure out we can use tap instead of tun, maybe
+working on layer 2 might help our situation.
+Actually i cant say i tested coova-chilli tun performance in such parts of
+our network yet.And even not sure if it is about chilli or tun driver
+itself on kernel. Just testing..
+
+
+
+
+&gt;<i>
+</I>&gt;<i> On Fri, 2008-10-24 at 10:43 +0300, Oguzhan Kayhan wrote:
+</I>&gt;&gt;<i> Hello,
+</I>&gt;&gt;<i> In our campus, we wanted to test TAP instead of tun.
+</I>&gt;&gt;<i> And we found out something.Maybe a bug, or a thing that should not
+</I>&gt;&gt;<i> suppose to do.
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> Normally,
+</I>&gt;&gt;<i> when we use usetap parameter in normal coova configurations, everything
+</I>&gt;&gt;<i> works fine.
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> But if we try to run chilli on a vlan interface with usetap parameter,
+</I>&gt;&gt;<i> Clients can able to get their ip addresses via coova but, unable to go
+</I>&gt;&gt;<i> anywhere beyond, seems like can not get tagged by vlan. But if we
+</I>&gt;&gt;<i> tcpdump
+</I>&gt;&gt;<i> on vlan interface we see the packets.So it should be ok till kernel
+</I>&gt;&gt;<i> level.
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> I am wondering what can cause this.. A bug in chilli-coova or in kernel
+</I>&gt;&gt;<i> level..
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> ---------------------------------------------------------------------
+</I>&gt;&gt;<i> To unsubscribe, e-mail: <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli-unsubscribe at coova.org</A>
+</I>&gt;&gt;<i> For additional commands, e-mail: <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli-help at coova.org</A>
+</I>&gt;&gt;<i> Wiki: <A HREF="http://coova.org/wiki/index.php/CoovaChilli">http://coova.org/wiki/index.php/CoovaChilli</A>
+</I>&gt;&gt;<i> Forum: <A HREF="http://coova.org/phpBB3/viewforum.php?f=4">http://coova.org/phpBB3/viewforum.php?f=4</A>
+</I>&gt;&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> ---------------------------------------------------------------------
+</I>&gt;<i> To unsubscribe, e-mail: <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli-unsubscribe at coova.org</A>
+</I>&gt;<i> For additional commands, e-mail: <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli-help at coova.org</A>
+</I>&gt;<i> Wiki: <A HREF="http://coova.org/wiki/index.php/CoovaChilli">http://coova.org/wiki/index.php/CoovaChilli</A>
+</I>&gt;<i> Forum: <A HREF="http://coova.org/phpBB3/viewforum.php?f=4">http://coova.org/phpBB3/viewforum.php?f=4</A>
+</I>&gt;<i>
+</I>&gt;<i>
+</I>
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000487.html">tap and vlan
+</A></li>
+	<LI>Next message: <A HREF="000489.html">switching up/and down updates
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#488">[ date ]</a>
+              <a href="thread.html#488">[ thread ]</a>
+              <a href="subject.html#488">[ subject ]</a>
+              <a href="author.html#488">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

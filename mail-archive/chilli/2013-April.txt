@@ -1,0 +1,2263 @@
+From radius.sir at gmail.com  Tue Apr  2 11:33:27 2013
+From: radius.sir at gmail.com (Russell Mike)
+Date: Tue, 2 Apr 2013 11:33:27 +0000
+Subject: [Chilli] CoovaChilli dhcp start" & "dhcp end
+Message-ID: <CADao4Cro9+Zt_cNxUfLrQhNex5Co=JgAxSqYASEd0GzV4qwT1Q@mail.gmail.com>
+
+Dear David. B
+
+i have got difficulty with "dhcp start" & "dhcp end" and cannot understand
+why CoovaChilli is complaining, i need your assistance. Kindly help
+
+*chilli.conf*
+net=41.139.8.32\255.255.255.224
+
+*local.conf*
+dhcpstart=34
+dhcpend=61
+
+It is correct subnet but i get the following error in the log and DHCP do
+not work
+
+Apr  2 11:10:20 captive coova-chilli[3315]: ippool.c: 238: Invalid
+dhcpstart=34 (41.139.8.66) (outside of subnet)!
+Apr  2 11:10:20 captive coova-chilli[3315]: chilli.c: 7178: Failed to
+allocate IP pool!
+
+Thanks / Regards
+RM --
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130402/462c51de/attachment.html>
+
+From steffen.dettmer at nomadrail.com  Tue Apr  2 11:41:29 2013
+From: steffen.dettmer at nomadrail.com (Steffen Dettmer)
+Date: Tue, 2 Apr 2013 11:41:29 +0000
+Subject: [Chilli] CoovaChilli dhcp start" & "dhcp end
+In-Reply-To: <CADao4Cro9+Zt_cNxUfLrQhNex5Co=JgAxSqYASEd0GzV4qwT1Q@mail.gmail.com>
+References: <CADao4Cro9+Zt_cNxUfLrQhNex5Co=JgAxSqYASEd0GzV4qwT1Q@mail.gmail.com>
+Message-ID: <8C2CB2442BFDDB4D95785B991B30D3463117C87B@DBXPRD0510MB372.eurprd05.prod.outlook.com>
+
+Hi,
+
+usually /etc/chilli.conf sources automatically created files, such as main.conf, which contains options like "net=". To alter them, usually editing of /etc/chilli/config is appropriate, here you have HS_NETWORK and HS_NETMASK. The files like main.conf should not be edited, see headers of these .conf files.
+
+I guess, "net=" in .conf needs forward-slash "/" (instead of backslash "\") as separator of network and netmask.
+
+Steffen
+
+From: chilli-bounces at coova.org [mailto:chilli-bounces at coova.org] On Behalf Of Russell Mike
+Sent: Tuesday, April 02, 2013 1:33 PM
+To: chilli list
+Subject: [Chilli] CoovaChilli dhcp start" & "dhcp end
+
+Dear David. B
+
+i have got difficulty with "dhcp start" & "dhcp end" and cannot understand why CoovaChilli is complaining, i need your assistance. Kindly help
+
+chilli.conf
+net=41.139.8.32\255.255.255.224
+
+local.conf
+dhcpstart=34
+dhcpend=61
+
+It is correct subnet but i get the following error in the log and DHCP do not work
+
+Apr  2 11:10:20 captive coova-chilli[3315]: ippool.c: 238: Invalid dhcpstart=34 (41.139.8.66) (outside of subnet)!
+Apr  2 11:10:20 captive coova-chilli[3315]: chilli.c: 7178: Failed to allocate IP pool!
+
+Thanks / Regards
+RM --
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130402/546b4438/attachment.html>
+
+From radius.sir at gmail.com  Tue Apr  2 13:51:39 2013
+From: radius.sir at gmail.com (Russell Mike)
+Date: Tue, 2 Apr 2013 13:51:39 +0000
+Subject: [Chilli] Two Different Subnets on The Same DHCP Interface
+Message-ID: <CADao4CrurDky_5Gf8U6_P_A2Wr4XAHOz+NCf7GC=91a-UM=sCg@mail.gmail.com>
+
+Hi David
+
+Is it possible to have chilli serving two different subnets on the same
+DHCP interface ?
+
+Thanks / Regards
+RM --
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130402/12e83488/attachment.html>
+
+From steffen.dettmer at nomadrail.com  Tue Apr  2 14:39:57 2013
+From: steffen.dettmer at nomadrail.com (Steffen Dettmer)
+Date: Tue, 2 Apr 2013 14:39:57 +0000
+Subject: [Chilli] CoovaChilli dhcp start" & "dhcp end
+In-Reply-To: <CADao4Co6ZbR9BZx3vfEt__S29ajATy3+Tt9+RL4refFXTpFmWQ@mail.gmail.com>
+References: <CADao4Cro9+Zt_cNxUfLrQhNex5Co=JgAxSqYASEd0GzV4qwT1Q@mail.gmail.com>
+ <8C2CB2442BFDDB4D95785B991B30D3463117C87B@DBXPRD0510MB372.eurprd05.prod.outlook.com>
+ <CADao4Co6ZbR9BZx3vfEt__S29ajATy3+Tt9+RL4refFXTpFmWQ@mail.gmail.com>
+Message-ID: <8C2CB2442BFDDB4D95785B991B30D3463117C917@DBXPRD0510MB372.eurprd05.prod.outlook.com>
+
+On Tue, Apr 2, 2013 at 11:41 AM, Steffen Dettmer <steffen.dettmer at nomadrail.com> wrote:
+> Hi, 
+> > usually /etc/chilli.conf sources automatically created files,
+> > such as main.conf, which contains options like ???net=???. To
+> > alter them, usually editing of /etc/chilli/config is
+> > appropriate, here you have HS_NETWORK and HS_NETMASK. The
+> > files like main.conf should not be edited, see headers of
+> > these .conf files.
+> >
+> Thanks Steffen, i do not generally edit those. 
+
+So this probably is wrong?
+
+> > I guess, "net=" in .conf needs forward-slash
+
+> This was typing mistake just in the email message only, it is
+> "/" (this slash) there in the configuration.  i am sending more
+> information from config file. i really need to sort out this.
+ [...] 
+> chilli.conf
+> net=41.139.8.32/255.255.255.224
+> local.conf
+> dhcpstart=34
+> dhcpend=61
+>
+> Apr  2 11:10:20 captive coova-chilli[3315]: ippool.c: 238:
+>    Invalid dhcpstart=34 (41.139.8.66) (outside of subnet)!
+> Apr  2 11:10:20 captive coova-chilli[3315]: chilli.c: 7178:
+>    Failed to allocate IP pool!
+
+Seems dhcpstart is an offset to net (thus resulting in .66).
+Maybe you want dhcpstart=2 and dhcpend=29 or such?
+
+But I'm just guessing.
+
+Steffen
+
+
+
+From steffen.dettmer at nomadrail.com  Tue Apr  2 14:59:04 2013
+From: steffen.dettmer at nomadrail.com (Steffen Dettmer)
+Date: Tue, 2 Apr 2013 14:59:04 +0000
+Subject: [Chilli] CoovaChilli dhcp start" & "dhcp end
+In-Reply-To: <CADao4Cr9vsXyQQMEe9di4jcTTJ1MLF-fi2o=C0aUyMdb2xX+BA@mail.gmail.com>
+References: <CADao4Cro9+Zt_cNxUfLrQhNex5Co=JgAxSqYASEd0GzV4qwT1Q@mail.gmail.com>
+ <8C2CB2442BFDDB4D95785B991B30D3463117C87B@DBXPRD0510MB372.eurprd05.prod.outlook.com>
+ <CADao4Co6ZbR9BZx3vfEt__S29ajATy3+Tt9+RL4refFXTpFmWQ@mail.gmail.com>
+ <8C2CB2442BFDDB4D95785B991B30D3463117C917@DBXPRD0510MB372.eurprd05.prod.outlook.com>
+ <CADao4Cr9vsXyQQMEe9di4jcTTJ1MLF-fi2o=C0aUyMdb2xX+BA@mail.gmail.com>
+Message-ID: <8C2CB2442BFDDB4D95785B991B30D3463117C95A@DBXPRD0510MB372.eurprd05.prod.outlook.com>
+
+> > > net=41.139.8.32/255.255.255.224
+> > > dhcpstart=34
+> > > dhcpend=61
+> > >
+> > >    Invalid dhcpstart=34 (41.139.8.66) (outside of subnet)!
+> > >
+> > Seems dhcpstart is an offset to net (thus resulting in .66).
+> > Maybe you want dhcpstart=2 and dhcpend=29 or such?
+>
+> I misunderstood the directive,  it is correct as you advised.
+> From dhcpstart=2 to dhcpend=29, it worked like charm. very much
+> grateful for your assistance. i will write a post about it. it is
+> so confusing for anyone.
+
+Ahh, nice to hear that it is working now :)
+
+Regards
+Steffen
+
+
+From radius.sir at gmail.com  Tue Apr  2 16:12:28 2013
+From: radius.sir at gmail.com (Russell Mike)
+Date: Tue, 2 Apr 2013 16:12:28 +0000
+Subject: [Chilli] Reduce the DHCP lease Time of CoovaChilli
+Message-ID: <CADao4Cr5=5cUrDYfJxkSfA+UnJgk4-mojrOGrzt9euMbxwJOFQ@mail.gmail.com>
+
+Hi List Friends,
+
+How to reduce the DHCP lease time of CoovaChilli inbuilt DHCP server ? has
+anyone done it before ? i need to fine tune the dhcp lease due to the cause
+below.
+
+*Apr 02 1:45:45 captive coova-chilli[6758]: dhcp.c: 765: reached max
+connections!*
+*
+*
+Thanks / RM --
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130402/1a731751/attachment.html>
+
+From radius.sir at gmail.com  Tue Apr  2 19:37:40 2013
+From: radius.sir at gmail.com (Russell Mike)
+Date: Tue, 2 Apr 2013 19:37:40 +0000
+Subject: [Chilli] [SOLVED !!!]Configuring CoovaChilli For DHCP Pool Range
+ Classless & Class-full Ranges VLMS How To ??SOLVED !!!]
+Message-ID: <CADao4CpQirMmMKZXX=kJ8q=akO3pn+NXh_ABb4Swuu=8r0NNLQ@mail.gmail.com>
+
+Configuring CoovaChilli (I used v1.3.0) For DHCP Pool Range Classless &
+Class-full Ranges VLMS How To ??
+
+Special Thanks To:  *Mr.* *Steffen Dettmer*
+
+Scenario: I have a network of 192.168.8.0 255.255.255.0 (24). i am using
+some static ip address for my server from the range 192.168.8.1 -
+192.168.8.34. I do not want CoovaChilli to issue these ip address. Saying
+other way, i want to specify a dhcp pool range, therefore CoovaChilli can
+use a ip from the pool to issue the ip address for incoming dhcp requests.
+
+How do i do that?
+
+nano "/usr/local/etc/chilli.conf" (These are two different ways of writing
+the directive, use one only)
+
+net=192.168.8.0/255.255.255.0
+
+OR
+
+net=192.168.8.0/24
+
+nano "/usr/local/etc/chilli/local.conf"
+
+dhcpstart=35
+
+dhcpend=254
+
+save the files and it is done. Coova will now issue the ip address from
+this range (192.168.8.35 - 192.168.8.254). make sure your entires are not
+in conflict with previous configuration otherwise it would just work.
+configured so many times.
+
+BUT when it comes to variable length subnet mask (VLMS) - (sub-netting
+braking ip address, hosts & networks in small/big partitions as needed)  i
+found it bit tricky to configure and understand DHCP pool range directive
+when using VLMS, to help new comers and those may attempt in future, i wish
+to share my opinion that may helpful for them to understand easily.
+
+
+My Network: 10.130.8.160
+
+My Subnet Mask: 255.255.255.224
+
+(- IP sub netting example copied from online subnet calculator)
+
+Network:   10.130.8.160/27       00001010.10000010.00001000.101 00000 (*Class
+A*)
+
+Broadcast: 10.130.8.191          00001010.10000010.00001000.101 11111
+
+HostMin:   10.130.8.161          00001010.10000010.00001000.101 00001
+
+HostMax:   10.130.8.190          00001010.10000010.00001000.101 11110
+
+Hosts/Net: 30
+
+Assuming that 10.130.8.161 is CoovaChilli Box. Coova dhcp must issue from
+10.130.8.162 - 10.130.8.190.  What would you expect to write in to
+"local.conf" & "chilli.conf" when reading above example.
+
+dhcpstart=162
+
+dhcpend=190
+
+IT IS WRONG !!!! WOULD NOT WORK. HERE IT IS BIT TICKY
+
+*CORRECT VERSION:*
+
+nano "/usr/local/etc/chilli.conf" (These are two different ways of writing
+the directive, use one only)
+
+net=10.130.8.160/255.255.255.224
+
+OR
+
+net=192.168.8.0/27
+
+nano "/usr/local/etc/chilli/local.conf"
+
+dhcpstart=2
+
+dhcpend=29
+
+The correct dhcpstart should be 2 and dhcpend should be 29
+
+I hope this would helps someone..
+
+*Thanks / Regards *
+
+*RM --*
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130402/17358268/attachment-0001.html>
+
+From radius.sir at gmail.com  Wed Apr  3 08:50:48 2013
+From: radius.sir at gmail.com (Russell Mike)
+Date: Wed, 3 Apr 2013 08:50:48 +0000
+Subject: [Chilli] CoovaChilli (Connection reset by peer) redir_read(0)
+	failed!
+Message-ID: <CADao4Co5n2rX-ypFB=oJEKcTO6ggtdGqChGAzp=Ki4fNVWzDnA@mail.gmail.com>
+
+Hi List Members,
+
+Can someone give the clue what does this message means in "syslog". I
+googled it before discussing on the list, people are discussing how to
+solve but i am unable to understand what CoovaChilli is trying to tell me
+by loggin this. i would grateful for even small help.
+
+Apr  3 08:29:31 captive coova-chilli[3979]: redir.c: 2020: 104 (Connection
+reset by peer) redir_read(0) failed!
+Apr  3 08:29:31 captive coova-chilli[3983]: redir.c: 2020: 104 (Connection
+reset by peer) redir_read(0) failed!
+Apr  3 08:29:31 captive coova-chilli[4019]: redir.c: 2020: 104 (Connection
+reset by peer) redir_read(0) failed!
+Apr  3 08:29:31 captive coova-chilli[4020]: redir.c: 2020: 104 (Connection
+reset by peer) redir_read(0) failed!
+
+Thanks / Regards
+*RM --*
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130403/b8607687/attachment.html>
+
+From steffen.dettmer at nomadrail.com  Wed Apr  3 09:55:42 2013
+From: steffen.dettmer at nomadrail.com (Steffen Dettmer)
+Date: Wed, 3 Apr 2013 09:55:42 +0000
+Subject: [Chilli] CoovaChilli (Connection reset by peer)
+	redir_read(0)	failed!
+In-Reply-To: <CADao4Co5n2rX-ypFB=oJEKcTO6ggtdGqChGAzp=Ki4fNVWzDnA@mail.gmail.com>
+References: <CADao4Co5n2rX-ypFB=oJEKcTO6ggtdGqChGAzp=Ki4fNVWzDnA@mail.gmail.com>
+Message-ID: <8C2CB2442BFDDB4D95785B991B30D3463117CB29@DBXPRD0510MB372.eurprd05.prod.outlook.com>
+
+Hi,
+
+> Apr  3 08:29:31 captive coova-chilli[3979]: redir.c: 2020: 104 (Connection reset by peer) redir_read(0) failed!
+
+"Connection reset by peer" is often seen when a TCP communication partner ("peer") resets an initiated or established TCP connection, for example if a TCP packet was received, but the peer has no matching socket associated (could be caused by change of dynamic IP or closing a socket after an error). As a result, a locally invoked TCP receive (for example, by read(2), which could be "wrapped" by a higher-level reading function) will return -1 and set ERRNO to ECONNRESET, which on Linux might equal to 104.
+
+Sometimes it helps to see the RST packets, for example using:
+
+	tcpdump -n -v 'tcp[tcpflags] & (tcp-rst) != 0'
+
+or for older versions:
+
+	tcpdump -n -v 'tcp[13] & 4 != 0'
+
+(see also http://www.ihtb.org/security/tcpdump-explained.txt)
+
+Regards
+Steffen
+
+
+
+
+From radius.sir at gmail.com  Wed Apr  3 10:33:59 2013
+From: radius.sir at gmail.com (Russell Mike)
+Date: Wed, 3 Apr 2013 10:33:59 +0000
+Subject: [Chilli] CoovaChilli (Connection reset by peer) redir_read(0)
+	failed!
+In-Reply-To: <8C2CB2442BFDDB4D95785B991B30D3463117CB29@DBXPRD0510MB372.eurprd05.prod.outlook.com>
+References: <CADao4Co5n2rX-ypFB=oJEKcTO6ggtdGqChGAzp=Ki4fNVWzDnA@mail.gmail.com>
+ <8C2CB2442BFDDB4D95785B991B30D3463117CB29@DBXPRD0510MB372.eurprd05.prod.outlook.com>
+Message-ID: <CADao4CqgFfAHYBM5MPn0u_7YV_LCsL5SdJtMNkHi10_ZabL3-g@mail.gmail.com>
+
+Dear Mr. Steffen,
+
+Thanks for you help yesterday and today again, i understand it takes time.
+i will study about it and share the our come.
+
+*More: *
+It is actually brand new centralize implementation of CoovaChilli
+1.3.0. CoovaChilli is running in ISP data center (Our) serving hotspots
+across the city running in multi-tenancy mode using VLANs to that we can
+serve different landing pages for each customers, anyways.
+
+We are in process of switching all hotspots to CoovaChilli from a existing
+commercial solution. i have few messages which i do not understand nor i am
+able to find a book of reference so that i can correct, only people those
+have already come across are helping. i am grateful for the assistance for
+community.
+
+
+i have three kinds of logs, any idea about other two ? i am not asking
+solution, if i can only figure out what coovachilli is trying to tell in
+enough for now.
+
+
+Apr  3 08:29:31 captive coova-chilli[3979]: redir.c: 2020: 104 (Connection
+reset by peer) redir_read(0) failed!
+
+Apr  3 08:29:31 captive coova-chilli[3983]: redir.c: 2020: 104 (Connection
+reset by peer) redir_read(0) failed!
+
+Apr  3 08:29:31 captive coova-chilli[4019]: redir.c: 2020: 104 (Connection
+reset by peer) redir_read(0) failed!
+
+
+Apr  3 09:43:02 captive coova-chilli[9221]: redir.c: 54: Client process
+timed out: 1
+
+Apr  3 09:43:03 captive coova-chilli[9222]: redir.c: 54: Client process
+timed out: 1
+
+Apr  3 09:43:04 captive coova-chilli[9223]: redir.c: 54: Client process
+timed out:
+
+
+Apr  3 09:44:32 captive coova-chilli[9366]: redir.c: 1992: Too much data in
+http request! -30
+
+Apr  3 09:44:32 captive coova-chilli[9368]: redir.c: 1992: Too much data in
+http request! -111
+Apr  3 09:44:32 captive coova-chilli[9365]: redir.c: 1992: Too much data in
+http request! -97
+
+Thanks / Regards
+RM --
+
+
+
+
+
+
+
+On Wed, Apr 3, 2013 at 9:55 AM, Steffen Dettmer <
+steffen.dettmer at nomadrail.com> wrote:
+
+> Hi,
+>
+> > Apr  3 08:29:31 captive coova-chilli[3979]: redir.c: 2020: 104
+> (Connection reset by peer) redir_read(0) failed!
+>
+> "Connection reset by peer" is often seen when a TCP communication partner
+> ("peer") resets an initiated or established TCP connection, for example if
+> a TCP packet was received, but the peer has no matching socket associated
+> (could be caused by change of dynamic IP or closing a socket after an
+> error). As a result, a locally invoked TCP receive (for example, by
+> read(2), which could be "wrapped" by a higher-level reading function) will
+> return -1 and set ERRNO to ECONNRESET, which on Linux might equal to 104.
+>
+> Sometimes it helps to see the RST packets, for example using:
+>
+>         tcpdump -n -v 'tcp[tcpflags] & (tcp-rst) != 0'
+>
+> or for older versions:
+>
+>         tcpdump -n -v 'tcp[13] & 4 != 0'
+>
+> (see also http://www.ihtb.org/security/tcpdump-explained.txt)
+>
+> Regards
+> Steffen
+>
+>
+>
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130403/cf13f8a5/attachment.html>
+
+From radius.sir at gmail.com  Wed Apr  3 13:03:09 2013
+From: radius.sir at gmail.com (Russell Mike)
+Date: Wed, 3 Apr 2013 13:03:09 +0000
+Subject: [Chilli] Too much data in http request!
+Message-ID: <CADao4CqTqFXgRzT6oaanxpVDZjCz3Zcs=XRRsgdGKVy_ZcGK_Q@mail.gmail.com>
+
+Dear David B. Greetings
+
+
+Thanks for CoovaChilli Software and your support ever, please advice me
+with the following. in answer to the following error.
+
+Apr  3 09:44:32 captive coova-chilli[9366]: redir.c: 1992: Too much data in
+http request!
+
+
+How much should be the increase in "REDIR_MAXBUFFER" ? i just do not want
+to increase the value to call another fault. i want your recommendation,
+default is REDIR_MAXBUFFER 5125.
+
+Thanks / Regards
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130403/25687e20/attachment.html>
+
+From david at coova.com  Wed Apr  3 15:24:24 2013
+From: david at coova.com (David Bird)
+Date: Wed, 03 Apr 2013 08:24:24 -0700
+Subject: [Chilli] Too much data in http request!
+In-Reply-To: <CADao4CqTqFXgRzT6oaanxpVDZjCz3Zcs=XRRsgdGKVy_ZcGK_Q@mail.gmail.com>
+References: <CADao4CqTqFXgRzT6oaanxpVDZjCz3Zcs=XRRsgdGKVy_ZcGK_Q@mail.gmail.com>
+Message-ID: <1365002664.15295.1.camel@david-laptop>
+
+Are you experiencing problems (with a subscriber) or is it just the
+occasional log entry? Typically, this happens when the browser (or
+headless process) is doing something like a POST or GET with a large
+query string, not your typical first page in a browser. 
+
+
+On Wed, 2013-04-03 at 13:03 +0000, Russell Mike wrote:
+> 
+> 
+> Dear David B. Greetings
+> 
+> 
+> 
+> 
+> Thanks for CoovaChilli Software and your support ever, please advice
+> me with the following. in answer to the following error.
+> 
+> 
+> Apr  3 09:44:32 captive coova-chilli[9366]: redir.c: 1992: Too much
+> data in http request!
+> 
+> 
+> 
+> 
+> 
+> How much should be the increase in "REDIR_MAXBUFFER" ? i just do not
+> want to increase the value to call another fault. i want your
+> recommendation, default is REDIR_MAXBUFFER 5125. 
+> 
+> 
+> Thanks / Regards
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+-- 
+--
+David Bird
+http://www.linkedin.com/in/dwbird
+https://twitter.com/wlanmac
+
+
+From david at coova.com  Wed Apr  3 15:29:30 2013
+From: david at coova.com (David Bird)
+Date: Wed, 03 Apr 2013 08:29:30 -0700
+Subject: [Chilli] CoovaChilli (Connection reset by peer) redir_read(0)
+ failed!
+In-Reply-To: <CADao4CqgFfAHYBM5MPn0u_7YV_LCsL5SdJtMNkHi10_ZabL3-g@mail.gmail.com>
+References: <CADao4Co5n2rX-ypFB=oJEKcTO6ggtdGqChGAzp=Ki4fNVWzDnA@mail.gmail.com>
+ <8C2CB2442BFDDB4D95785B991B30D3463117CB29@DBXPRD0510MB372.eurprd05.prod.outlook.com>
+ <CADao4CqgFfAHYBM5MPn0u_7YV_LCsL5SdJtMNkHi10_ZabL3-g@mail.gmail.com>
+Message-ID: <1365002970.15295.5.camel@david-laptop>
+
+I'd be interested to know more about your deployment (location, scale,
+what solution you replaced, etc). 
+
+The errors could likely be processes (like Windows Update, etc) that are
+getting caught up in the redirection. Unless you are getting user
+experience issues, it may be something to ignore. 
+
+David
+
+
+On Wed, 2013-04-03 at 10:33 +0000, Russell Mike wrote:
+> Dear Mr. Steffen,
+> 
+> 
+> Thanks for you help yesterday and today again, i understand it takes
+> time. i will study about it and share the our come. 
+> 
+> 
+> More: 
+> It is actually brand new centralize implementation of CoovaChilli
+> 1.3.0. CoovaChilli is running in ISP data center (Our) serving
+> hotspots across the city running in multi-tenancy mode using VLANs to
+> that we can serve different landing pages for each customers,
+> anyways. 
+> 
+> 
+> We are in process of switching all hotspots to CoovaChilli from a
+> existing commercial solution. i have few messages which i do not
+> understand nor i am able to find a book of reference so that i can
+> correct, only people those have already come across are helping. i
+> am grateful for the assistance for community. 
+> 
+> 
+> 
+> 
+> i have three kinds of logs, any idea about other two ? i am not asking
+> solution, if i can only figure out what coovachilli is trying to tell
+> in enough for now. 
+> 
+> 
+> 
+> 
+> Apr  3 08:29:31 captive coova-chilli[3979]: redir.c: 2020: 104
+> (Connection reset by peer) redir_read(0) failed!
+> 
+> Apr  3 08:29:31 captive coova-chilli[3983]: redir.c: 2020: 104
+> (Connection reset by peer) redir_read(0) failed!
+> 
+> Apr  3 08:29:31 captive coova-chilli[4019]: redir.c: 2020: 104
+> (Connection reset by peer) redir_read(0) failed!
+> 
+> 
+> Apr  3 09:43:02 captive coova-chilli[9221]: redir.c: 54: Client
+> process timed out: 1
+> 
+> Apr  3 09:43:03 captive coova-chilli[9222]: redir.c: 54: Client
+> process timed out: 1
+> 
+> Apr  3 09:43:04 captive coova-chilli[9223]: redir.c: 54: Client
+> process timed out: 
+> 
+> 
+> Apr  3 09:44:32 captive coova-chilli[9366]: redir.c: 1992: Too much
+> data in http request! -30
+> 
+> Apr  3 09:44:32 captive coova-chilli[9368]: redir.c: 1992: Too much
+> data in http request! -111
+> 
+> Apr  3 09:44:32 captive coova-chilli[9365]: redir.c: 1992: Too much
+> data in http request! -97 
+> 
+> 
+> Thanks / Regards
+> RM --
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> On Wed, Apr 3, 2013 at 9:55 AM, Steffen Dettmer
+> <steffen.dettmer at nomadrail.com> wrote:
+>         Hi,
+>         
+>         > Apr  3 08:29:31 captive coova-chilli[3979]: redir.c: 2020:
+>         104 (Connection reset by peer) redir_read(0) failed!
+>         
+>         
+>         "Connection reset by peer" is often seen when a TCP
+>         communication partner ("peer") resets an initiated or
+>         established TCP connection, for example if a TCP packet was
+>         received, but the peer has no matching socket associated
+>         (could be caused by change of dynamic IP or closing a socket
+>         after an error). As a result, a locally invoked TCP receive
+>         (for example, by read(2), which could be "wrapped" by a
+>         higher-level reading function) will return -1 and set ERRNO to
+>         ECONNRESET, which on Linux might equal to 104.
+>         
+>         Sometimes it helps to see the RST packets, for example using:
+>         
+>                 tcpdump -n -v 'tcp[tcpflags] & (tcp-rst) != 0'
+>         
+>         or for older versions:
+>         
+>                 tcpdump -n -v 'tcp[13] & 4 != 0'
+>         
+>         (see also http://www.ihtb.org/security/tcpdump-explained.txt)
+>         
+>         Regards
+>         Steffen
+>         
+>         
+>         
+>         _______________________________________________
+>         Chilli mailing list
+>         Chilli at coova.org
+>         http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+> 
+> 
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+-- 
+--
+David Bird
+http://www.linkedin.com/in/dwbird
+https://twitter.com/wlanmac
+
+
+From radius.sir at gmail.com  Fri Apr  5 20:16:34 2013
+From: radius.sir at gmail.com (Russell Mike)
+Date: Fri, 5 Apr 2013 20:16:34 +0000
+Subject: [Chilli] CoovaChilli Layer-3 Model
+Message-ID: <CADao4Cp9UnD44iZH-e0O+YL59JRc5hXQq1NB+o3x8Em2YH13cw@mail.gmail.com>
+
+Hi All List Friends,
+
+But my question is to the guys using CoovaChilli in L3. It is Ubuntu
+12.4LTS & CoovaChilli 1.3.0 installation, It is multi-tenancy CoovaChilli
+in ISP data center. Successfully working as L2 model (No Issue At-All, Very
+Stable) with FR & MySQL. i have almost reached end of my knowledge and this
+list is my last hope. After working for 5 days continuously could not make
+CoovaChilli to work as L3 model. i understand this mail does not tell much
+how the designe is, therefore it is not possible to advice much. i am ready
+to come up with network diagram if someone can support me please. But still
+any advice would be very much appreciated here.
+
+Setup:
+
+[Hotspot-User-Laptop]<----->[Indoor-AP]<----->[Router]<-->(Wireless-Link 2
+Data Center)<-->CoovaChilli
+
+Router is acting as relay agent, user can obtain the dhcp ip alright,
+cannot get the Coova Login page. Thanks for attending to my request.
+
+Thanks / Regards
+
+RM --
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130405/4a09d455/attachment.html>
+
+From david at dkxl.co.uk  Mon Apr  8 08:52:14 2013
+From: david at dkxl.co.uk (David Harrold)
+Date: Mon, 8 Apr 2013 10:52:14 +0200
+Subject: [Chilli] CoovaChilli Layer-3 Model
+In-Reply-To: <mailman.1.1365249601.29267.chilli@coova.org>
+References: <mailman.1.1365249601.29267.chilli@coova.org>
+Message-ID: <51C9BEB4-8D7C-42EC-AA64-E39838E3B973@dkxl.co.uk>
+
+
+Hi Mike
+
+We use a similar setup with central site chilli at Layer 3, and local APs managing local DHCP.
+A few things to check:
+- chilli's IP net pool  must be a superset of all of the local AP subnets
+- the UAM IP must be within this same superset net range
+
+Eg if you have three local APs 192.168.1.0/24, 192.168.2.0/24, 192.168.3.0/24, then chilli  should be configured for 192.168.0.0/22, and can use uam IP 192.168.1.1
+
+Let me know if you need more details
+
+Best Regards
+David
+
+
+On 6 Apr 2013, at 14:00, chilli-request at coova.org wrote:
+
+Send Chilli mailing list submissions to
+   chilli at coova.org
+
+To subscribe or unsubscribe via the World Wide Web, visit
+   http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+or, via email, send a message with subject or body 'help' to
+   chilli-request at coova.org
+
+You can reach the person managing the list at
+   chilli-owner at coova.org
+
+When replying, please edit your Subject line so it is more specific
+than "Re: Contents of Chilli digest..."
+
+
+Today's Topics:
+
+  1. CoovaChilli Layer-3 Model (Russell Mike)
+
+
+----------------------------------------------------------------------
+
+Message: 1
+Date: Fri, 5 Apr 2013 20:16:34 +0000
+From: Russell Mike <radius.sir at gmail.com>
+To: chilli list <chilli at coova.org>
+Subject: [Chilli] CoovaChilli Layer-3 Model
+Message-ID:
+   <CADao4Cp9UnD44iZH-e0O+YL59JRc5hXQq1NB+o3x8Em2YH13cw at mail.gmail.com>
+Content-Type: text/plain; charset="iso-8859-1"
+
+Hi All List Friends,
+
+But my question is to the guys using CoovaChilli in L3. It is Ubuntu
+12.4LTS & CoovaChilli 1.3.0 installation, It is multi-tenancy CoovaChilli
+in ISP data center. Successfully working as L2 model (No Issue At-All, Very
+Stable) with FR & MySQL. i have almost reached end of my knowledge and this
+list is my last hope. After working for 5 days continuously could not make
+CoovaChilli to work as L3 model. i understand this mail does not tell much
+how the designe is, therefore it is not possible to advice much. i am ready
+to come up with network diagram if someone can support me please. But still
+any advice would be very much appreciated here.
+
+Setup:
+
+[Hotspot-User-Laptop]<----->[Indoor-AP]<----->[Router]<-->(Wireless-Link 2
+Data Center)<-->CoovaChilli
+
+Router is acting as relay agent, user can obtain the dhcp ip alright,
+cannot get the Coova Login page. Thanks for attending to my request.
+
+Thanks / Regards
+
+RM --
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130405/4a09d455/attachment-0001.html>
+
+------------------------------
+
+_______________________________________________
+Chilli mailing list
+Chilli at coova.org
+http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+
+End of Chilli Digest, Vol 41, Issue 5
+*************************************
+
+From radius.sir at gmail.com  Mon Apr  8 10:45:48 2013
+From: radius.sir at gmail.com (Russell Mike)
+Date: Mon, 8 Apr 2013 10:45:48 +0000
+Subject: [Chilli] CoovaChilli Layer-3 Model
+In-Reply-To: <51C9BEB4-8D7C-42EC-AA64-E39838E3B973@dkxl.co.uk>
+References: <mailman.1.1365249601.29267.chilli@coova.org>
+ <51C9BEB4-8D7C-42EC-AA64-E39838E3B973@dkxl.co.uk>
+Message-ID: <CADao4Cqu=BPgB8bPKV+xuCQXk2Gjv83DfVtG0fLBe3S2rWb6sw@mail.gmail.com>
+
+Dear David
+
+Thank you very much for your time to attend this request. i had actually
+lost the hope because no one responded expect you, whereas there are
+hundreds of guys in community using CoovaChilli as L3 modle, Anyways.
+
+Setup here is bit different where CoovaChilli is running in Multi-Tenancy
+mode (VLANs) due to the reason, every customer need their own login /
+Landing page. i am currently running 10 instances for CoovaChilli. But i
+will just focus on one instance to work and then i would know.
+
+KINDLY, if you tell me, how you setup the connection from a remote router
+(at hotspot) to Chilli. I am trying like this There is VLAN tagging in, i
+think that i creating problem. i would also very much appreciate the other
+methods those can be used for L3, such as VPN etc..
+
+[Router 41.71.81.114/252]-Point-2-Point-[CoovaChilli 41.71.81.115/252]
+router eth1 = 41.71.81.114 <-- Router Interface Connected (Point-2-Point) With
+CoovaChilli  tun0 41.71.81.115
+*tun0* = 41.71.81.115 <-- CoovaChilli With *VLAN interface 406*
+router eth0 = 41.139.8.193 <--Router LAN Interface, Gateway For Hotspot
+User (Remote)
+my dhcp range 41.139.8.194 - 41.139.8.254
+
+*# Options i Activated For L3*
+HS_ANYIP=on
+HS_LAYER3=on
+HS_STATIP=41.139.8.192 <- IP Range My DHCP Would Issue to Hotspot Users
+HS_STATIP_MASK=255.255.255.192
+
+*# Working Options For L2*
+DHCPIF=coova-vlan406
+HS_WANIF=eth0
+HS_LANIF=vlan406
+HS_NETWORK= *?????*
+HS_NETMASK=255.255.255.252
+HS_UAMLISTEN=41.71.81.115
+HS_UAMPORT=3100
+HS_UAMUIPORT=4100
+HS_DNS1=71.209.34.46
+HS_DNS2=91.201.67.42
+HS_NASID=UB124V406
+HS_RADIUS=localhost
+HS_RADSECRET=47KHi27RG909En
+HS_UAMALIASNAME=chilli
+HS_UAMSERVER=41.71.81.115
+HS_UAMFORMAT=http://\$HS_UAMLISTEN:\$HS_UAMUIPORT/www/login.chi
+HS_UAMHOMEPAGE=http://\$HS_UAMLISTEN:\$HS_UAMPORT/www/coova.html
+HS_TCP_PORTS="80 443"
+HS_MODE=hotspot
+HS_TYPE=chillispot
+HS_RADAUTH=1812
+HS_RADACCT=1813
+HS_WWWDIR=/var/www/coova-chilli-1.3.0
+HS_WWWBIN=/usr/local/etc/chilli/wwwsh
+HS_PROVIDER=Coova
+HS_PROVIDER_LINK=http://www.yale.edu/
+HS_LOC_NAME="VLAN 406 Web Login"
+
+Thanks / Regards
+RM --
+
+On Mon, Apr 8, 2013 at 8:52 AM, David Harrold <david at dkxl.co.uk> wrote:
+
+>
+> Hi Mike
+>
+> We use a similar setup with central site chilli at Layer 3, and local APs
+> managing local DHCP.
+> A few things to check:
+> - chilli's IP net pool  must be a superset of all of the local AP subnets
+> - the UAM IP must be within this same superset net range
+>
+> Eg if you have three local APs 192.168.1.0/24, 192.168.2.0/24,
+> 192.168.3.0/24, then chilli  should be configured for 192.168.0.0/22, and
+> can use uam IP 192.168.1.1
+>
+> Let me know if you need more details
+>
+> Best Regards
+> David
+>
+>
+> On 6 Apr 2013, at 14:00, chilli-request at coova.org wrote:
+>
+> Send Chilli mailing list submissions to
+>    chilli at coova.org
+>
+> To subscribe or unsubscribe via the World Wide Web, visit
+>    http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+> or, via email, send a message with subject or body 'help' to
+>    chilli-request at coova.org
+>
+> You can reach the person managing the list at
+>    chilli-owner at coova.org
+>
+> When replying, please edit your Subject line so it is more specific
+> than "Re: Contents of Chilli digest..."
+>
+>
+> Today's Topics:
+>
+>   1. CoovaChilli Layer-3 Model (Russell Mike)
+>
+>
+> ----------------------------------------------------------------------
+>
+> Message: 1
+> Date: Fri, 5 Apr 2013 20:16:34 +0000
+> From: Russell Mike <radius.sir at gmail.com>
+> To: chilli list <chilli at coova.org>
+> Subject: [Chilli] CoovaChilli Layer-3 Model
+> Message-ID:
+>    <CADao4Cp9UnD44iZH-e0O+YL59JRc5hXQq1NB+o3x8Em2YH13cw at mail.gmail.com>
+> Content-Type: text/plain; charset="iso-8859-1"
+>
+> Hi All List Friends,
+>
+> But my question is to the guys using CoovaChilli in L3. It is Ubuntu
+> 12.4LTS & CoovaChilli 1.3.0 installation, It is multi-tenancy CoovaChilli
+> in ISP data center. Successfully working as L2 model (No Issue At-All, Very
+> Stable) with FR & MySQL. i have almost reached end of my knowledge and this
+> list is my last hope. After working for 5 days continuously could not make
+> CoovaChilli to work as L3 model. i understand this mail does not tell much
+> how the designe is, therefore it is not possible to advice much. i am ready
+> to come up with network diagram if someone can support me please. But still
+> any advice would be very much appreciated here.
+>
+> Setup:
+>
+> [Hotspot-User-Laptop]<----->[Indoor-AP]<----->[Router]<-->(Wireless-Link 2
+> Data Center)<-->CoovaChilli
+>
+> Router is acting as relay agent, user can obtain the dhcp ip alright,
+> cannot get the Coova Login page. Thanks for attending to my request.
+>
+> Thanks / Regards
+>
+> RM --
+> -------------- next part --------------
+> An HTML attachment was scrubbed...
+> URL: <
+> http://lists.coova.org/pipermail/chilli/attachments/20130405/4a09d455/attachment-0001.html
+> >
+>
+> ------------------------------
+>
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+>
+> End of Chilli Digest, Vol 41, Issue 5
+> *************************************
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130408/c57f89f2/attachment.html>
+
+From miguel.lopes at cabocom.cv  Mon Apr  8 11:11:12 2013
+From: miguel.lopes at cabocom.cv (Miguel Lopes)
+Date: Mon, 8 Apr 2013 15:11:12 +0400
+Subject: [Chilli] CoovaChilli Layer-3 Model
+In-Reply-To: <CADao4Cqu=BPgB8bPKV+xuCQXk2Gjv83DfVtG0fLBe3S2rWb6sw@mail.gmail.com>
+References: <mailman.1.1365249601.29267.chilli@coova.org>
+ <51C9BEB4-8D7C-42EC-AA64-E39838E3B973@dkxl.co.uk>
+ <CADao4Cqu=BPgB8bPKV+xuCQXk2Gjv83DfVtG0fLBe3S2rWb6sw@mail.gmail.com>
+Message-ID: <014c01ce3449$ca2c4940$5e84dbc0$@cabocom.cv>
+
+Hi Robert,
+
+ 
+
+We have Chilli running in an ISP in Cape Verde as a Layer 3 in a datacenter
+with multiple VLANS (each VLAN represents a neighborhood). We use the same
+page for all but we could use different pages if needed. The DHCP and runs
+on multiple VLANS assigning different ranges to each VLAN. All the AP's are
+connected to the datacenter using a backhaul mesh network. 
+
+ 
+
+We had once the behavior you described, the user getting IP but not the
+login page or other erratic behavior and we found out it was due to mixing
+chilli instances running in a VLAN environment mixed with a chilli instance
+running on a non VLAN environment.
+
+ 
+
+My CTO Luis Ferreira who is also a part of this list can maybe help you out
+once he returns from his vacation next week.
+
+ 
+
+Regards,
+
+ 
+
+Miguel
+
+ 
+
+From: chilli-bounces at coova.org [mailto:chilli-bounces at coova.org] On Behalf
+Of Russell Mike
+Sent: Monday, April 08, 2013 2:46 PM
+To: David Harrold; chilli list
+Subject: Re: [Chilli] CoovaChilli Layer-3 Model
+
+ 
+
+Dear David
+
+ 
+
+Thank you very much for your time to attend this request. i had actually
+lost the hope because no one responded expect you, whereas there are
+hundreds of guys in community using CoovaChilli as L3 modle, Anyways. 
+
+ 
+
+Setup here is bit different where CoovaChilli is running in Multi-Tenancy
+mode (VLANs) due to the reason, every customer need their own login /
+Landing page. i am currently running 10 instances for CoovaChilli. But i
+will just focus on one instance to work and then i would know. 
+
+ 
+
+KINDLY, if you tell me, how you setup the connection from a remote router
+(at hotspot) to Chilli. I am trying like this There is VLAN tagging in, i
+think that i creating problem. i would also very much appreciate the other
+methods those can be used for L3, such as VPN etc.. 
+
+ 
+
+[Router 41.71.81.114/252]-Point-2-Point-[CoovaChilli
+<http://41.71.81.114/252%5d-Point-2-Point-%5bCoovaChilli>  41.71.81.115/252]
+
+router eth1 = 41.71.81.114 <-- Router Interface Connected (Point-2-Point)
+With CoovaChilli  tun0 41.71.81.115
+
+tun0 = 41.71.81.115 <-- CoovaChilli With VLAN interface 406 
+
+router eth0 = 41.139.8.193 <--Router LAN Interface, Gateway For Hotspot User
+(Remote)
+
+my dhcp range 41.139.8.194 - 41.139.8.254
+
+ 
+
+# Options i Activated For L3
+
+HS_ANYIP=on
+
+HS_LAYER3=on
+
+HS_STATIP=41.139.8.192 <- IP Range My DHCP Would Issue to Hotspot Users
+
+HS_STATIP_MASK=255.255.255.192
+
+ 
+
+# Working Options For L2
+
+DHCPIF=coova-vlan406
+
+HS_WANIF=eth0
+
+HS_LANIF=vlan406
+
+HS_NETWORK= ?????
+
+HS_NETMASK=255.255.255.252
+
+HS_UAMLISTEN=41.71.81.115
+
+HS_UAMPORT=3100
+
+HS_UAMUIPORT=4100
+
+HS_DNS1=71.209.34.46
+
+HS_DNS2=91.201.67.42
+
+HS_NASID=UB124V406
+
+HS_RADIUS=localhost
+
+HS_RADSECRET=47KHi27RG909En
+
+HS_UAMALIASNAME=chilli
+
+HS_UAMSERVER=41.71.81.115
+
+HS_UAMFORMAT=http://\$HS_UAMLISTEN:\$HS_UAMUIPORT/www/login.chi
+
+HS_UAMHOMEPAGE=http://\$HS_UAMLISTEN:\$HS_UAMPORT/www/coova.html
+
+HS_TCP_PORTS="80 443"
+
+HS_MODE=hotspot
+
+HS_TYPE=chillispot
+
+HS_RADAUTH=1812
+
+HS_RADACCT=1813
+
+HS_WWWDIR=/var/www/coova-chilli-1.3.0
+
+HS_WWWBIN=/usr/local/etc/chilli/wwwsh
+
+HS_PROVIDER=Coova
+
+HS_PROVIDER_LINK=http://www.yale.edu/
+
+HS_LOC_NAME="VLAN 406 Web Login"
+
+ 
+
+Thanks / Regards
+
+RM --
+
+ 
+
+On Mon, Apr 8, 2013 at 8:52 AM, David Harrold <david at dkxl.co.uk> wrote:
+
+
+Hi Mike
+
+We use a similar setup with central site chilli at Layer 3, and local APs
+managing local DHCP.
+A few things to check:
+- chilli's IP net pool  must be a superset of all of the local AP subnets
+- the UAM IP must be within this same superset net range
+
+Eg if you have three local APs 192.168.1.0/24, 192.168.2.0/24,
+192.168.3.0/24, then chilli  should be configured for 192.168.0.0/22, and
+can use uam IP 192.168.1.1
+
+Let me know if you need more details
+
+Best Regards
+David
+
+
+On 6 Apr 2013, at 14:00, chilli-request at coova.org wrote:
+
+Send Chilli mailing list submissions to
+   chilli at coova.org
+
+To subscribe or unsubscribe via the World Wide Web, visit
+   http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+or, via email, send a message with subject or body 'help' to
+   chilli-request at coova.org
+
+You can reach the person managing the list at
+   chilli-owner at coova.org
+
+When replying, please edit your Subject line so it is more specific
+than "Re: Contents of Chilli digest..."
+
+
+Today's Topics:
+
+  1. CoovaChilli Layer-3 Model (Russell Mike)
+
+
+----------------------------------------------------------------------
+
+Message: 1
+Date: Fri, 5 Apr 2013 20:16:34 +0000
+From: Russell Mike <radius.sir at gmail.com>
+To: chilli list <chilli at coova.org>
+Subject: [Chilli] CoovaChilli Layer-3 Model
+Message-ID:
+   <CADao4Cp9UnD44iZH-e0O+YL59JRc5hXQq1NB+o3x8Em2YH13cw at mail.gmail.com
+<mailto:CADao4Cp9UnD44iZH-e0O%2BYL59JRc5hXQq1NB%2Bo3x8Em2YH13cw at mail.gmail.c
+om> >
+Content-Type: text/plain; charset="iso-8859-1"
+
+Hi All List Friends,
+
+But my question is to the guys using CoovaChilli in L3. It is Ubuntu
+12.4LTS & CoovaChilli 1.3.0 installation, It is multi-tenancy CoovaChilli
+in ISP data center. Successfully working as L2 model (No Issue At-All, Very
+Stable) with FR & MySQL. i have almost reached end of my knowledge and this
+list is my last hope. After working for 5 days continuously could not make
+CoovaChilli to work as L3 model. i understand this mail does not tell much
+how the designe is, therefore it is not possible to advice much. i am ready
+to come up with network diagram if someone can support me please. But still
+any advice would be very much appreciated here.
+
+Setup:
+
+[Hotspot-User-Laptop]<----->[Indoor-AP]<----->[Router]<-->(Wireless-Link 2
+Data Center)<-->CoovaChilli
+
+Router is acting as relay agent, user can obtain the dhcp ip alright,
+cannot get the Coova Login page. Thanks for attending to my request.
+
+Thanks / Regards
+
+RM --
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL:
+<http://lists.coova.org/pipermail/chilli/attachments/20130405/4a09d455/attac
+hment-0001.html>
+
+------------------------------
+
+_______________________________________________
+Chilli mailing list
+Chilli at coova.org
+http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+
+End of Chilli Digest, Vol 41, Issue 5
+*************************************
+_______________________________________________
+Chilli mailing list
+Chilli at coova.org
+http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+ 
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130408/87e93001/attachment-0001.html>
+
+From lferreira at cabocom.cv  Wed Apr 10 10:01:57 2013
+From: lferreira at cabocom.cv (Luis Ferreira)
+Date: Wed, 10 Apr 2013 09:01:57 -0100
+Subject: [Chilli] CoovaChilli Layer-3 Model
+In-Reply-To: <014c01ce3449$ca2c4940$5e84dbc0$@cabocom.cv>
+References: <mailman.1.1365249601.29267.chilli@coova.org>
+ <51C9BEB4-8D7C-42EC-AA64-E39838E3B973@dkxl.co.uk>
+ <CADao4Cqu=BPgB8bPKV+xuCQXk2Gjv83DfVtG0fLBe3S2rWb6sw@mail.gmail.com>
+ <014c01ce3449$ca2c4940$5e84dbc0$@cabocom.cv>
+Message-ID: <004e01ce35d2$70a503f0$51ef0bd0$@cabocom.cv>
+
+Hi Robert,
+
+ 
+
+I'm still on vacations, but I'm still alive J
+
+A couple of thing to check.
+
+First, see if in chilli interface to clients, you don't have any instance of
+chilli running without VLAN tagging. That will 
+
+ 
+
+      Client Side             ROUTER           WAN
+
+ 
+
+      VLAN100 instance   --> +-------+
+
+      VLAN110 instance   --> |       |
+
+      VLAN120 instance   --> | TUN   |   -->  INTERNET & Access controller
+
+      .                      |       |
+
+      UNTAGGED instance  --> +-------+
+
+ 
+
+If you have a single untagged instance, that will cause trouble for you,
+generating what you are experiencing.
+
+ 
+
+Regarding DHCP, in our setup, we are using a dedicated server just for dhcp.
+That way we manage to lower broadcasts by fine tunning isc-dhcp-server.
+Never the less,  the issue will not be there.
+
+ 
+
+Other thing to check,
+
+Check with a laptop with capable card, if you can ping any of the chilli
+instances on the client side. If you can't, that mean that traffic is not
+being sent properly.
+
+ 
+
+ 
+
+Also, I'm a little confuse about you setup. Can you make a schematic  so
+that I can understand the IP ranges and IP's on each of the stage (specially
+on the router)?
+
+ 
+
+ 
+
+Regards,
+
+Luis Ferreira
+
+ 
+
+From: Miguel Lopes [mailto:miguel.lopes at cabocom.cv] 
+
+
+
+ 
+
+Hi Robert,
+
+ 
+
+We have Chilli running in an ISP in Cape Verde as a Layer 3 in a datacenter
+with multiple VLANS (each VLAN represents a neighborhood). We use the same
+page for all but we could use different pages if needed. The DHCP and runs
+on multiple VLANS assigning different ranges to each VLAN. All the AP's are
+connected to the datacenter using a backhaul mesh network. 
+
+ 
+
+We had once the behavior you described, the user getting IP but not the
+login page or other erratic behavior and we found out it was due to mixing
+chilli instances running in a VLAN environment mixed with a chilli instance
+running on a non VLAN environment.
+
+ 
+
+My CTO Luis Ferreira who is also a part of this list can maybe help you out
+once he returns from his vacation next week.
+
+ 
+
+Regards,
+
+ 
+
+Miguel
+
+ 
+
+From: Russell Mike
+
+
+
+ 
+
+Dear David
+
+ 
+
+Thank you very much for your time to attend this request. i had actually
+lost the hope because no one responded expect you, whereas there are
+hundreds of guys in community using CoovaChilli as L3 modle, Anyways. 
+
+ 
+
+Setup here is bit different where CoovaChilli is running in Multi-Tenancy
+mode (VLANs) due to the reason, every customer need their own login /
+Landing page. i am currently running 10 instances for CoovaChilli. But i
+will just focus on one instance to work and then i would know. 
+
+ 
+
+KINDLY, if you tell me, how you setup the connection from a remote router
+(at hotspot) to Chilli. I am trying like this There is VLAN tagging in, i
+think that i creating problem. i would also very much appreciate the other
+methods those can be used for L3, such as VPN etc.. 
+
+ 
+
+[Router 41.71.81.114/252]-Point-2-Point-[CoovaChilli
+<http://41.71.81.114/252%5d-Point-2-Point-%5bCoovaChilli>  41.71.81.115/252]
+
+router eth1 = 41.71.81.114 <-- Router Interface Connected (Point-2-Point)
+With CoovaChilli  tun0 41.71.81.115
+
+tun0 = 41.71.81.115 <-- CoovaChilli With VLAN interface 406 
+
+router eth0 = 41.139.8.193 <--Router LAN Interface, Gateway For Hotspot User
+(Remote)
+
+my dhcp range 41.139.8.194 - 41.139.8.254
+
+ 
+
+# Options i Activated For L3
+
+HS_ANYIP=on
+
+HS_LAYER3=on
+
+HS_STATIP=41.139.8.192 <- IP Range My DHCP Would Issue to Hotspot Users
+
+HS_STATIP_MASK=255.255.255.192
+
+ 
+
+# Working Options For L2
+
+DHCPIF=coova-vlan406
+
+HS_WANIF=eth0
+
+HS_LANIF=vlan406
+
+HS_NETWORK= ?????
+
+HS_NETMASK=255.255.255.252
+
+HS_UAMLISTEN=41.71.81.115
+
+HS_UAMPORT=3100
+
+HS_UAMUIPORT=4100
+
+HS_DNS1=71.209.34.46
+
+HS_DNS2=91.201.67.42
+
+HS_NASID=UB124V406
+
+HS_RADIUS=localhost
+
+HS_RADSECRET=47KHi27RG909En
+
+HS_UAMALIASNAME=chilli
+
+HS_UAMSERVER=41.71.81.115
+
+HS_UAMFORMAT=http://\$HS_UAMLISTEN:\$HS_UAMUIPORT/www/login.chi
+
+HS_UAMHOMEPAGE=http://\$HS_UAMLISTEN:\$HS_UAMPORT/www/coova.html
+
+HS_TCP_PORTS="80 443"
+
+HS_MODE=hotspot
+
+HS_TYPE=chillispot
+
+HS_RADAUTH=1812
+
+HS_RADACCT=1813
+
+HS_WWWDIR=/var/www/coova-chilli-1.3.0
+
+HS_WWWBIN=/usr/local/etc/chilli/wwwsh
+
+HS_PROVIDER=Coova
+
+HS_PROVIDER_LINK=http://www.yale.edu/
+
+HS_LOC_NAME="VLAN 406 Web Login"
+
+ 
+
+Thanks / Regards
+
+RM --
+
+ 
+
+ 
+
+From: David Harrold <david at dkxl.co.uk>
+
+
+Hi Mike
+
+We use a similar setup with central site chilli at Layer 3, and local APs
+managing local DHCP.
+A few things to check:
+- chilli's IP net pool  must be a superset of all of the local AP subnets
+- the UAM IP must be within this same superset net range
+
+Eg if you have three local APs  <http://192.168.1.0/24> 192.168.1.0/24,
+<http://192.168.2.0/24> 192.168.2.0/24,  <http://192.168.3.0/24>
+192.168.3.0/24, then chilli  should be configured for
+<http://192.168.0.0/22> 192.168.0.0/22, and can use uam IP 192.168.1.1
+
+Let me know if you need more details
+
+Best Regards
+David
+
+
+
+ 
+
+
+From: Russell Mike <radius.sir at gmail.com>
+
+Hi All List Friends,
+
+But my question is to the guys using CoovaChilli in L3. It is Ubuntu 12.4LTS
+& CoovaChilli 1.3.0 installation, It is multi-tenancy CoovaChilli in ISP
+data center. Successfully working as L2 model (No Issue At-All, Very Stable)
+with FR & MySQL. i have almost reached end of my knowledge and this list is
+my last hope. After working for 5 days continuously could not make
+CoovaChilli to work as L3 model. i understand this mail does not tell much
+how the designe is, therefore it is not possible to advice much. i am ready
+to come up with network diagram if someone can support me please. But still
+any advice would be very much appreciated here.
+
+Setup:
+
+[Hotspot-User-Laptop]<----->[Indoor-AP]<----->[Router]<-->(Wireless-Link 2
+Data Center)<-->CoovaChilli
+
+Router is acting as relay agent, user can obtain the dhcp ip alright, cannot
+get the Coova Login page. Thanks for attending to my request.
+
+Thanks / Regards
+
+RM --
+
+
+
+ 
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130410/3a5549fa/attachment-0001.html>
+
+From lferreira at cabocom.cv  Wed Apr 10 11:45:06 2013
+From: lferreira at cabocom.cv (Luis Ferreira)
+Date: Wed, 10 Apr 2013 10:45:06 -0100
+Subject: [Chilli] CoovaChilli Layer-3 Model
+In-Reply-To: <CADao4CrmKX2Kky7AYTgMnmmKQdze-BLSrzDuFNKRZQgnRN5=ww@mail.gmail.com>
+References: <mailman.1.1365249601.29267.chilli@coova.org>	<51C9BEB4-8D7C-42EC-AA64-E39838E3B973@dkxl.co.uk>	<CADao4Cqu=BPgB8bPKV+xuCQXk2Gjv83DfVtG0fLBe3S2rWb6sw@mail.gmail.com>	<014c01ce3449$ca2c4940$5e84dbc0$@cabocom.cv>	<004e01ce35d2$70a503f0$51ef0bd0$@cabocom.cv>
+ <CADao4CrmKX2Kky7AYTgMnmmKQdze-BLSrzDuFNKRZQgnRN5=ww@mail.gmail.com>
+Message-ID: <007c01ce35e0$d969d060$8c3d7120$@cabocom.cv>
+
+Hi Robert,
+
+ 
+
+When I said capable card, was one that has VLAN support on it, so that you
+can try to ping chilli.
+
+For instance, for me to check communication issues on the backbone line,
+I've got to enable VLAN support on LAN so that I can ping chilli.
+
+ 
+
+I you are absolutely sure that you don't have a untagged instance of chilli
+running, the problem will most definitely be routing. Send me the network
+topology so that I can check what could be.
+
+ 
+
+I really suspect the router.
+
+ 
+
+ 
+
+PS: reply to chilli at coova.org. that way everyone will get the message
+
+ 
+
+Regards,
+
+Luis
+
+ 
+
+ 
+
+On Wed, Apr 10, 2013 at 10:01 AM, Luis Ferreira <
+<mailto:lferreira at cabocom.cv> lferreira at cabocom.cv> wrote:
+
+Hi Robert,
+
+ 
+
+I'm still on vacations, but I'm still alive J
+
+ 
+
+Never Mind please, thanks for your time again.
+
+ 
+
+ 
+
+A couple of thing to check.
+
+First, see if in chilli interface to clients, you don't have any instance of
+chilli running without VLAN tagging. That will 
+
+ 
+
+      Client Side             ROUTER           WAN
+
+ 
+
+      VLAN100 instance   --> +-------+
+
+      VLAN110 instance   --> |       |
+
+      VLAN120 instance   --> | TUN   |   -->  INTERNET & Access controller
+
+      .                      |       |
+
+      UNTAGGED instance  --> +-------+
+
+ 
+
+If you have a single untagged instance, that will cause trouble for you,
+generating what you are experiencing.
+
+ 
+
+Thanks for the TIP, but i don't have one without VLAN (Tagging)
+
+ 
+
+Regarding DHCP, in our setup, we are using a dedicated server just for dhcp.
+That way we manage to lower broadcasts by fine tunning isc-dhcp-server.
+Never the less,  the issue will not be there.
+
+ 
+
+Fortunately, i have the same setup dedicated "isc-dhcp-server" to handle
+DHCP request.  
+
+ 
+
+Other thing to check,
+
+Check with a laptop with capable card, 
+
+capable card mean MTU issue? that becomes 1504 after tag is inserted?  i am
+reducing the MTU to 1400 from chilli.conf
+
+mtu=1400
+
+ 
+
+if you can ping any of the chilli instances on the client side. If you
+can't, that mean that traffic is not being sent properly.
+
+ 
+
+because there is not strate forward documentation, i have trying too may
+things. earlier i was able to ping chilli instance, but no login page. BUT
+currently cannot ping. that is where my problem is ROUTING !!
+
+ 
+
+There is another gentleman "Mr. David Harrold" is helping also, we are
+trying to make it work and i will wait for you to come back. let me struggle
+for the mean time.  
+
+Also, I'm a little confuse about you setup. Can you make a schematic  so
+that I can understand the IP ranges and IP's on each of the stage (specially
+on the router)?
+
+ 
+
+ 
+
+Surely, i will make net diagram this and send you the proper information to
+understanding. 
+
+ 
+
+very much grateful for your time million of thanks Mr Luis F. & Mr. David H
+
+ 
+
+Regards,
+
+Luis Ferreira
+
+ 
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130410/69479147/attachment.html>
+
+From jedgainer at gmail.com  Wed Apr 10 22:16:10 2013
+From: jedgainer at gmail.com (Jed Gainer)
+Date: Wed, 10 Apr 2013 15:16:10 -0700
+Subject: [Chilli] eth1: Promiscuous mode enabled.
+Message-ID: <CAJc1nurE2iFghMaeZT41iRjy-HfoZVdKKi9wKDbQ4TLbeRQfyQ@mail.gmail.com>
+
+Just checked my dmesg and noticed
+
+[   35.843899] tun: Universal TUN/TAP device driver, 1.6
+[   35.843903] tun: (C) 1999-2004 Max Krasnyansky <maxk at qualcomm.com>
+[   35.919078] device eth1 entered promiscuous mode
+[   35.919083] eth1: Promiscuous mode enabled.
+[   49.840210] eth1: Promiscuous mode enabled.
+[  109.794069] eth1: Promiscuous mode enabled.
+[  168.611490] eth1: Promiscuous mode enabled.
+[  169.806864] eth1: Promiscuous mode enabled.
+[  229.767952] eth1: Promiscuous mode enabled.
+[  289.731207] eth1: Promiscuous mode enabled.
+[  332.795922] eth1: Promiscuous mode enabled.
+[  349.692204] eth1: Promiscuous mode enabled.
+[  409.651297] eth1: Promiscuous mode enabled.
+[  469.613049] eth1: Promiscuous mode enabled.
+[  471.038161] hrtimer: interrupt took 13168571 ns
+[  529.552273] eth1: Promiscuous mode enabled.
+[  589.528795] eth1: Promiscuous mode enabled.
+[  649.477947] eth1: Promiscuous mode enabled.
+[  709.435689] eth1: Promiscuous mode enabled.
+[  769.382389] eth1: Promiscuous mode enabled.
+[  829.353952] eth1: Promiscuous mode enabled.
+[  889.286520] eth1: Promiscuous mode enabled.
+[  949.277028] eth1: Promiscuous mode enabled.
+[ 1009.212664] eth1: Promiscuous mode enabled.
+[ 1069.224907] eth1: Promiscuous mode enabled.
+[ 1129.940582] eth1: Promiscuous mode enabled.
+[ 1168.121313] eth1: Promiscuous mode enabled.
+[ 1190.126625] eth1: Promiscuous mode enabled.
+[ 1250.094344] eth1: Promiscuous mode enabled.
+[ 1310.071603] eth1: Promiscuous mode enabled.
+[ 1370.029632] eth1: Promiscuous mode enabled.
+[ 1429.952453] eth1: Promiscuous mode enabled.
+[ 1489.950768] eth1: Promiscuous mode enabled.
+[ 1549.875434] eth1: Promiscuous mode enabled.
+[ 1609.872372] eth1: Promiscuous mode enabled.
+[ 1669.808162] eth1: Promiscuous mode enabled.
+[ 1729.778908] eth1: Promiscuous mode enabled.
+[ 1789.761253] eth1: Promiscuous mode enabled.
+[ 1849.722734] eth1: Promiscuous mode enabled.
+[ 1909.671825] eth1: Promiscuous mode enabled.
+[ 1969.630227] eth1: Promiscuous mode enabled.
+[ 2029.592184] eth1: Promiscuous mode enabled.
+[ 2089.524220] eth1: Promiscuous mode enabled.
+[ 2149.525627] eth1: Promiscuous mode enabled.
+[ 2167.613612] eth1: Promiscuous mode enabled.
+[ 2209.483481] eth1: Promiscuous mode enabled.
+[ 2269.452491] eth1: Promiscuous mode enabled.
+[ 2329.382674] eth1: Promiscuous mode enabled.
+[ 2389.372090] eth1: Promiscuous mode enabled.
+[ 2449.322159] eth1: Promiscuous mode enabled.
+[ 2509.296745] eth1: Promiscuous mode enabled.
+[ 2569.200126] eth1: Promiscuous mode enabled.
+[ 2629.218436] eth1: Promiscuous mode enabled.
+[ 2689.180252] eth1: Promiscuous mode enabled.
+[ 2749.110203] eth1: Promiscuous mode enabled.
+[ 2809.093732] eth1: Promiscuous mode enabled.
+[ 2869.023959] eth1: Promiscuous mode enabled.
+[ 2929.017330] eth1: Promiscuous mode enabled.
+[ 2988.986456] eth1: Promiscuous mode enabled.
+[ 3048.925013] eth1: Promiscuous mode enabled.
+[ 3108.896188] eth1: Promiscuous mode enabled.
+[ 3167.214301] eth1: Promiscuous mode enabled.
+[ 3168.865018] eth1: Promiscuous mode enabled.
+
+This normal?
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130410/810f5993/attachment.html>
+
+From xoneca at gmail.com  Fri Apr 12 12:56:32 2013
+From: xoneca at gmail.com (Xabier Oneca -- xOneca)
+Date: Fri, 12 Apr 2013 14:56:32 +0200
+Subject: [Chilli] Reduce the DHCP lease Time of CoovaChilli
+In-Reply-To: <CADao4Cr5=5cUrDYfJxkSfA+UnJgk4-mojrOGrzt9euMbxwJOFQ@mail.gmail.com>
+References: <CADao4Cr5=5cUrDYfJxkSfA+UnJgk4-mojrOGrzt9euMbxwJOFQ@mail.gmail.com>
+Message-ID: <CACkgH72ynRbpAjAD2yMNom-vge8uOrqQpF6RxWs7uBDVWcCkCQ@mail.gmail.com>
+
+I don't know if you have figured out yet. In case not:
+
+You have the 'lease' option for chilli. If you want more fine-tuned control
+over DHCP, you can set-up your own server and relay to it with the
+'dhcprelayagent' option.
+
+More info at http://coova.org/CoovaChilli/chilli.conf
+
+--
+Xabier Oneca_,,_
+El 02/04/2013 18:12, "Russell Mike" <radius.sir at gmail.com> escribi?:
+
+> Hi List Friends,
+>
+> How to reduce the DHCP lease time of CoovaChilli inbuilt DHCP server ? has
+> anyone done it before ? i need to fine tune the dhcp lease due to the cause
+> below.
+>
+> *Apr 02 1:45:45 captive coova-chilli[6758]: dhcp.c: 765: reached max
+> connections!*
+> *
+> *
+> Thanks / RM --
+>
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130412/88189e61/attachment.html>
+
+From xoneca at gmail.com  Wed Apr 17 08:03:02 2013
+From: xoneca at gmail.com (Xabier Oneca -- xOneca)
+Date: Wed, 17 Apr 2013 10:03:02 +0200
+Subject: [Chilli] CoovaChilli dhcp start" & "dhcp end
+In-Reply-To: <8C2CB2442BFDDB4D95785B991B30D3463118BA2B@DBXPRD0510MB372.eurprd05.prod.outlook.com>
+References: <CADao4Cro9+Zt_cNxUfLrQhNex5Co=JgAxSqYASEd0GzV4qwT1Q@mail.gmail.com>
+ <8C2CB2442BFDDB4D95785B991B30D3463117C87B@DBXPRD0510MB372.eurprd05.prod.outlook.com>
+ <CADao4Co6ZbR9BZx3vfEt__S29ajATy3+Tt9+RL4refFXTpFmWQ@mail.gmail.com>
+ <8C2CB2442BFDDB4D95785B991B30D3463117C917@DBXPRD0510MB372.eurprd05.prod.outlook.com>
+ <CADao4Cr9vsXyQQMEe9di4jcTTJ1MLF-fi2o=C0aUyMdb2xX+BA@mail.gmail.com>
+ <8C2CB2442BFDDB4D95785B991B30D3463117C95A@DBXPRD0510MB372.eurprd05.prod.outlook.com>
+ <CACkgH71fxDbuaDoagBf8fA74m5r_Cv6tJ5u4XvUGe6QzZ_5jrw@mail.gmail.com>
+ <8C2CB2442BFDDB4D95785B991B30D3463118BA2B@DBXPRD0510MB372.eurprd05.prod.outlook.com>
+Message-ID: <CACkgH70XhBZwMO6j6hOeU-hw3K_Bp8tZncZ4SA8h6EjW-xyKWQ@mail.gmail.com>
+
+Oh, yes, sorry! :P
+
+Just forgot to add the list address...
+
+--
+Xabier Oneca_,,_
+El 17/04/2013 09:58, "Steffen Dettmer" <steffen.dettmer at nomadrail.com>
+escribi?:
+
+> Hi,
+>
+> wouldn't you like to share this on the Coova Chilli mailing list?
+>
+> Regards,
+> Steffen
+>
+> > -----Original Message-----
+> > From: Xabier Oneca -- xOneca [mailto:xoneca at gmail.com]
+> > Sent: Tuesday, April 16, 2013 8:01 PM
+> > To: Steffen Dettmer
+> > Subject: Re: [Chilli] CoovaChilli dhcp start" & "dhcp end
+> >
+> > I use this Python script to calculate both 'dhcpstart' and 'dhcpend'.
+> > I have had to look in the chilli source so I could realize how chilli
+> interprets these
+> > numbers... (I don't know why doesn't use "normal"
+> > IPs...)
+> >
+> > #========
+> > def ip2num(ip, mask):
+> >     "Adjust an IP to an equivalent numeric value used by CoovaChilli."
+> >     ip_parts = map(int, ip.split("."))
+> >     mask_parts = map(int, mask.split("."))
+> >     num = 0
+> >     for n, (ipp, maskp) in enumerate(reversed(zip(ip_parts,
+> mask_parts))):
+> >         num += (ipp & ~maskp) << (n * 8)
+> >     return num
+> > #========
+> >
+> > Feed your start_ip and netmask (in your case 41.139.8.34 and
+> > 255.255.255.224) and it gives dhcpstart (2) Feed your end_ip and netmask
+> > (41.139.8.61 and 255.255.255.224) and it gives dhcpend (29).
+> >
+> > Tested on all types of subnets.
+> >
+> > HTH
+> >
+> > --
+> > xOneca_,,_
+> >
+> >
+> > 2013/4/2 Steffen Dettmer <steffen.dettmer at nomadrail.com>:
+> > >> > > net=41.139.8.32/255.255.255.224
+> > >> > > dhcpstart=34
+> > >> > > dhcpend=61
+> > >> > >
+> > >> > >    Invalid dhcpstart=34 (41.139.8.66) (outside of subnet)!
+> > >> > >
+> > >> > Seems dhcpstart is an offset to net (thus resulting in .66).
+> > >> > Maybe you want dhcpstart=2 and dhcpend=29 or such?
+> > >>
+> > >> I misunderstood the directive,  it is correct as you advised.
+> > >> From dhcpstart=2 to dhcpend=29, it worked like charm. very much
+> > >> grateful for your assistance. i will write a post about it. it is so
+> > >> confusing for anyone.
+> > >
+> > > Ahh, nice to hear that it is working now :)
+> > >
+> > > Regards
+> > > Steffen
+> > >
+> > > _______________________________________________
+> > > Chilli mailing list
+> > > Chilli at coova.org
+> > > http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130417/64b7e1fd/attachment.html>
+
+From bruno.martins at gruporumos.com  Fri Apr 19 09:37:42 2013
+From: bruno.martins at gruporumos.com (Bruno Martins | Grupo Rumos)
+Date: Fri, 19 Apr 2013 09:37:42 +0000
+Subject: [Chilli] GUI to manage vouchers
+Message-ID: <044E5B27D6C7E844B90EC93525278C3471BAC794@grexc01.rumos.com.pt>
+
+Hello list,
+
+I have Coova setup up and running well with MySQL/User authentication.
+
+Which interface do you use to create vouchers?
+
+Best regards,
+
+Bruno Martins
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130419/8e5c3636/attachment.html>
+
+From xoneca at gmail.com  Fri Apr 19 09:45:05 2013
+From: xoneca at gmail.com (Xabier Oneca -- xOneca)
+Date: Fri, 19 Apr 2013 11:45:05 +0200
+Subject: [Chilli] GUI to manage vouchers
+In-Reply-To: <044E5B27D6C7E844B90EC93525278C3471BAC794@grexc01.rumos.com.pt>
+References: <044E5B27D6C7E844B90EC93525278C3471BAC794@grexc01.rumos.com.pt>
+Message-ID: <CACkgH72kZgx6LF5_G2Dpt3FqTNw_EtwXOrisoXGPqBMxnxEJwg@mail.gmail.com>
+
+Try phpMyPrepaid. It's old, but works!
+
+--
+Xabier Oneca_,,_
+El 19/04/2013 11:42, "Bruno Martins | Grupo Rumos" <
+bruno.martins at gruporumos.com> escribi?:
+
+>  Hello list,****
+>
+> ** **
+>
+> I have Coova setup up and running well with MySQL/User authentication.****
+>
+> ** **
+>
+> Which interface do you use to create vouchers?****
+>
+> ** **
+>
+> Best regards,****
+>
+> ** **
+>
+> Bruno Martins****
+>
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130419/4f223d13/attachment.html>
+
+From liran.tal at gmail.com  Fri Apr 19 09:49:26 2013
+From: liran.tal at gmail.com (Liran Tal)
+Date: Fri, 19 Apr 2013 12:49:26 +0300
+Subject: [Chilli] GUI to manage vouchers
+In-Reply-To: <044E5B27D6C7E844B90EC93525278C3471BAC794@grexc01.rumos.com.pt>
+References: <044E5B27D6C7E844B90EC93525278C3471BAC794@grexc01.rumos.com.pt>
+Message-ID: <CAHxDhRQSebf_e2W0kKhtCrZLZ3boEs2XtiDH1A-Vn+r0SjNEYg@mail.gmail.com>
+
+There's the daloRADIUS project: http://www.daloradius.com/
+It provides an all-around management, reporting and accounting capabilities
+to a FreeRADIUS-based deployment.
+
+It's ofcourse open source, there's even a pre-installed VM on the
+SourceForge page as well as an official paperback book that you can get on
+amazon: http://www.amazon.com/daloRADIUS-User-Guide-Volume-1/dp/1463752199
+
+Regards,
+Liran.
+
+
+On Fri, Apr 19, 2013 at 12:37 PM, Bruno Martins | Grupo Rumos <
+bruno.martins at gruporumos.com> wrote:
+
+>  Hello list,****
+>
+> ** **
+>
+> I have Coova setup up and running well with MySQL/User authentication.****
+>
+> ** **
+>
+> Which interface do you use to create vouchers?****
+>
+> ** **
+>
+> Best regards,****
+>
+> ** **
+>
+> Bruno Martins****
+>
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+>
+
+
+-- 
+-- 
+Sincerely, Liran Tal
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130419/ff9345c1/attachment.html>
+
+From radius.sir at gmail.com  Fri Apr 19 10:43:37 2013
+From: radius.sir at gmail.com (Russell Mike)
+Date: Fri, 19 Apr 2013 10:43:37 +0000
+Subject: [Chilli] GUI to manage vouchers
+In-Reply-To: <CAHxDhRQSebf_e2W0kKhtCrZLZ3boEs2XtiDH1A-Vn+r0SjNEYg@mail.gmail.com>
+References: <044E5B27D6C7E844B90EC93525278C3471BAC794@grexc01.rumos.com.pt>
+ <CAHxDhRQSebf_e2W0kKhtCrZLZ3boEs2XtiDH1A-Vn+r0SjNEYg@mail.gmail.com>
+Message-ID: <CADao4Cqjb+py7xPtwhJ9QFihf-yyUTjy+h18ax3260VaqgFtrQ@mail.gmail.com>
+
+Hi, i use Daloradius and i am happy with it.
+Thanks
+
+
+On Fri, Apr 19, 2013 at 9:49 AM, Liran Tal <liran.tal at gmail.com> wrote:
+
+>
+> There's the daloRADIUS project: http://www.daloradius.com/
+> It provides an all-around management, reporting and accounting
+> capabilities to a FreeRADIUS-based deployment.
+>
+> It's ofcourse open source, there's even a pre-installed VM on the
+> SourceForge page as well as an official paperback book that you can get on
+> amazon: http://www.amazon.com/daloRADIUS-User-Guide-Volume-1/dp/1463752199
+>
+> Regards,
+> Liran.
+>
+>
+> On Fri, Apr 19, 2013 at 12:37 PM, Bruno Martins | Grupo Rumos <
+> bruno.martins at gruporumos.com> wrote:
+>
+>>  Hello list,****
+>>
+>> ** **
+>>
+>> I have Coova setup up and running well with MySQL/User authentication.***
+>> *
+>>
+>> ** **
+>>
+>> Which interface do you use to create vouchers?****
+>>
+>> ** **
+>>
+>> Best regards,****
+>>
+>> ** **
+>>
+>> Bruno Martins****
+>>
+>> _______________________________________________
+>> Chilli mailing list
+>> Chilli at coova.org
+>> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>>
+>>
+>
+>
+> --
+> --
+> Sincerely, Liran Tal
+>
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130419/b0b5b577/attachment.html>
+
+From bruno.martins at gruporumos.com  Fri Apr 19 11:29:46 2013
+From: bruno.martins at gruporumos.com (Bruno Martins | Grupo Rumos)
+Date: Fri, 19 Apr 2013 11:29:46 +0000
+Subject: [Chilli] GUI to manage vouchers
+In-Reply-To: <CADao4Cqjb+py7xPtwhJ9QFihf-yyUTjy+h18ax3260VaqgFtrQ@mail.gmail.com>
+References: <044E5B27D6C7E844B90EC93525278C3471BAC794@grexc01.rumos.com.pt>
+ <CAHxDhRQSebf_e2W0kKhtCrZLZ3boEs2XtiDH1A-Vn+r0SjNEYg@mail.gmail.com>
+ <CADao4Cqjb+py7xPtwhJ9QFihf-yyUTjy+h18ax3260VaqgFtrQ@mail.gmail.com>
+Message-ID: <044E5B27D6C7E844B90EC93525278C3471BACB83@grexc01.rumos.com.pt>
+
+Hello guys,
+
+You're fast! :)
+
+I'm gonna try both and give feedback.
+
+Thanks,
+
+Bruno Martins
+
+From: Russell Mike [mailto:radius.sir at gmail.com]
+Sent: 19 de abril de 2013 11:44
+To: Liran Tal
+Cc: Bruno Martins | Grupo Rumos; chilli at coova.org
+Subject: Re: [Chilli] GUI to manage vouchers
+
+Hi, i use Daloradius and i am happy with it.
+Thanks
+
+On Fri, Apr 19, 2013 at 9:49 AM, Liran Tal <liran.tal at gmail.com<mailto:liran.tal at gmail.com>> wrote:
+
+There's the daloRADIUS project: http://www.daloradius.com/
+It provides an all-around management, reporting and accounting capabilities to a FreeRADIUS-based deployment.
+
+It's ofcourse open source, there's even a pre-installed VM on the SourceForge page as well as an official paperback book that you can get on amazon: http://www.amazon.com/daloRADIUS-User-Guide-Volume-1/dp/1463752199
+
+Regards,
+Liran.
+
+On Fri, Apr 19, 2013 at 12:37 PM, Bruno Martins | Grupo Rumos <bruno.martins at gruporumos.com<mailto:bruno.martins at gruporumos.com>> wrote:
+Hello list,
+
+I have Coova setup up and running well with MySQL/User authentication.
+
+Which interface do you use to create vouchers?
+
+Best regards,
+
+Bruno Martins
+
+_______________________________________________
+Chilli mailing list
+Chilli at coova.org<mailto:Chilli at coova.org>
+http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+
+
+--
+--
+Sincerely, Liran Tal
+
+_______________________________________________
+Chilli mailing list
+Chilli at coova.org<mailto:Chilli at coova.org>
+http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130419/b68821dd/attachment-0001.html>
+
+From mohsen.saeedi at gmail.com  Fri Apr 19 12:14:38 2013
+From: mohsen.saeedi at gmail.com (Mohsen Saeedi)
+Date: Fri, 19 Apr 2013 16:44:38 +0430
+Subject: [Chilli] GUI to manage vouchers
+In-Reply-To: <044E5B27D6C7E844B90EC93525278C3471BACB83@grexc01.rumos.com.pt>
+References: <044E5B27D6C7E844B90EC93525278C3471BAC794@grexc01.rumos.com.pt>
+ <CAHxDhRQSebf_e2W0kKhtCrZLZ3boEs2XtiDH1A-Vn+r0SjNEYg@mail.gmail.com>
+ <CADao4Cqjb+py7xPtwhJ9QFihf-yyUTjy+h18ax3260VaqgFtrQ@mail.gmail.com>
+ <044E5B27D6C7E844B90EC93525278C3471BACB83@grexc01.rumos.com.pt>
+Message-ID: <5171352E.6070709@gmail.com>
+
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130419/a3d855b1/attachment.html>
+
+From chuckd at kooked.co.uk  Fri Apr 19 12:39:13 2013
+From: chuckd at kooked.co.uk (Chuck Dand)
+Date: Fri, 19 Apr 2013 20:39:13 +0800
+Subject: [Chilli] GUI to manage vouchers
+In-Reply-To: <044E5B27D6C7E844B90EC93525278C3471BAC794@grexc01.rumos.com.pt>
+References: <044E5B27D6C7E844B90EC93525278C3471BAC794@grexc01.rumos.com.pt>
+Message-ID: <51713AF1.90309@kooked.co.uk>
+
+On 19/04/13 17:37, Bruno Martins | Grupo Rumos wrote:
+> Which interface do you use to create vouchers?
+
+You might also want to look at "YFi Hotspot Manager" and "GRASE Hotspot"
+
+I seem to remember being quite pleased with GRASE when I evaluated it.
+
+-- 
+Chuck Dand
+
+From radius.sir at gmail.com  Sun Apr 28 20:11:44 2013
+From: radius.sir at gmail.com (Russell Mike)
+Date: Sun, 28 Apr 2013 20:11:44 +0000
+Subject: [Chilli] ICMP Fails With Time To Live exceeded CoovaChilli 1.3.0
+Message-ID: <CADao4CqxYmukFo_oznpq458zHq2U5cMGg6VSfJO-uVqWSjvqoQ@mail.gmail.com>
+
+Hi, Can someone please assist me here. CoovaChilli in L3 Mode, such as
+following model.
+
+[*LinuxBox-CoovaChilli*]*<------>*[Router-01]*<----->*[Router-02]*
+<-------->[Client-Box*]
+
+HS_LAYER3=on
+
+HS_ANYIP=on
+
+HS_UMANAYIP=on
+
+statip 10.10.10.0/24
+
+net 10.10.10.0/24
+
+dhcpif eth1
+
+tundev tun0
+
+There is proper communication between Client-Box & Linux-Box. But as soon
+as i start the chilli daemon, Linux-Box cannot even ping directly connected
+cisco router (Route-01). ICMP fails with "*Time To Live exceeded". If i
+stop chilli daemon communication is restored back. Any kind information
+would be very much appreciable. *
+
+Thanks / Regards
+
+RM --
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130428/5f7d5e3e/attachment.html>
+

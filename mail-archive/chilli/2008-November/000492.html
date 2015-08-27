@@ -1,0 +1,129 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> Forwarding problem (DNS)
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20Forwarding%20problem%20%28DNS%29&In-Reply-To=%3C49136792.1060206%40ollisnet.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   
+   <LINK REL="Next"  HREF="000493.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>Forwarding problem (DNS)</H1>
+    <B>Oliver Hinckel</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20Forwarding%20problem%20%28DNS%29&In-Reply-To=%3C49136792.1060206%40ollisnet.de%3E"
+       TITLE="Forwarding problem (DNS)">info at ollisnet.de
+       </A><BR>
+    <I>Thu Nov  6 21:54:26 UTC 2008</I>
+    <P><UL>
+        
+        <LI>Next message: <A HREF="000493.html">Forwarding problem (DNS)
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#492">[ date ]</a>
+              <a href="thread.html#492">[ thread ]</a>
+              <a href="subject.html#492">[ subject ]</a>
+              <a href="author.html#492">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hello,
+
+we have setup multiple accesspoints using Chilli. Our clients gets a 
+nameserver somewhere in the network, everything works fine.
+
+Now we thought about to use dnsmasq on the access points directly to 
+save some network traffic. We changed the chilli.conf dns1 &amp; dns2 
+setting to use the IP address of the access point running chilli itself.
+
+In case a client authenticates successfully, it'll get an IP address 
+assigned from chilli and will also get the IP address for the DNS server 
+which is the access point's IP. When the client now tries to resolve a 
+domain name, then DNS request will never be answered and resolving 
+domain names will fail (no response).
+
+First of all, we thought about a firewall problem, but the firewall 
+doesn't list some packets which are dropped. After this we started 
+chilli in debug mode to see what's going on on the network.
+
+In an older version we saw the following when doing a sime ping to an 
+outside IP address:
+
+chilli.c: 2530: 0 (Success) cb_dhcp_data_ind. Packet received. DHCP 
+authstate: 2
+chilli.c: 1120: 0 (Success) cb_tun_ind. Packet received: Forwarding to 
+link layer
+chilli.c: 2530: 0 (Success) cb_dhcp_data_ind. Packet received. DHCP 
+authstate: 2
+chilli.c: 1120: 0 (Success) cb_tun_ind. Packet received: Forwarding to 
+link layer
+
+As you can see, chilli reports that the packed was forwared to the link 
+layer. When doing a &quot;nslookup somedomain.com&quot; on the client the output 
+was this:
+
+chilli.c: 2530: 0 (Success) cb_dhcp_data_ind. Packet received. DHCP 
+authstate: 2
+chilli.c: 2530: 0 (Success) cb_dhcp_data_ind. Packet received. DHCP 
+authstate: 2
+
+No message &quot;Forwarding to link layer&quot; is logged. So I assumed that 
+chilli get the DNS packet and drops it.
+
+After that we tried to use a newer chilli version. I downloaded coova 
+chilli 1.0.12, compiled it and installed it on the access point. Same 
+scenario as described about and we'll get the following messages when 
+doing a &quot;nslookup somedomain.com&quot; on the client:
+
+dhcp.c: 1835: 0 (Debug) DHCP packet received
+dhcp.c: 1865: 0 (Debug) Address found
+chilli.c: 117: 0 (Debug) Leaky bucket timediff: 420, bucketup: 0, 
+bucketdown: 100, up: 69, down: 0
+
+After a short period, this messages repeats again. No more messages. 
+When doing a simple ping to an outside IP address chilli logs the following:
+
+dhcp.c: 1835: 0 (Debug) DHCP packet received
+dhcp.c: 1865: 0 (Debug) Address found
+chilli.c: 117: 0 (Debug) Leaky bucket timediff: 5, bucketup: 98, 
+bucketdown: 84, up: 98, down: 0
+chilli.c: 117: 0 (Debug) Leaky bucket timediff: 1, bucketup: 98, 
+bucketdown: 0, up: 0, down: 84
+
+So the problem is, that when using the access points IP (we tried the 
+tun0 IP address and we tried the LAN IP address, both with same result), 
+the DNS lookup will fail. When using an other DNS server (e.g. some 
+public one) DNS lookup works fine.
+
+Can anybody shed some light on it, why DNS lookup will fail when using 
+the access point's IP address as DNS server?
+
+Thanks for your help!
+
+Kind regards
+Oliver Hinckel
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	
+	<LI>Next message: <A HREF="000493.html">Forwarding problem (DNS)
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#492">[ date ]</a>
+              <a href="thread.html#492">[ thread ]</a>
+              <a href="subject.html#492">[ subject ]</a>
+              <a href="author.html#492">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

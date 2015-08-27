@@ -1,0 +1,251 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] RADIUS based way to set the per session
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20RADIUS%20based%20way%20to%20set%20the%20per%20session&In-Reply-To=%3C001001cdf895%24e7f633e0%24b7e29ba0%24%40sb-ps.ae%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="002101.html">
+   <LINK REL="Next"  HREF="002086.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] RADIUS based way to set the per session</H1>
+    <B>Danny Magat</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20RADIUS%20based%20way%20to%20set%20the%20per%20session&In-Reply-To=%3C001001cdf895%24e7f633e0%24b7e29ba0%24%40sb-ps.ae%3E"
+       TITLE="[Chilli] RADIUS based way to set the per session">danny at sb-ps.ae
+       </A><BR>
+    <I>Tue Jan 22 11:44:58 UTC 2013</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="002101.html">[Chilli] RADIUS based way to set the per session
+</A></li>
+        <LI>Next message: <A HREF="002086.html">[Chilli] Wifi clients cannot reach Internet?
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2102">[ date ]</a>
+              <a href="thread.html#2102">[ thread ]</a>
+              <a href="subject.html#2102">[ subject ]</a>
+              <a href="author.html#2102">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>
+Hi David,
+
+In freeradius adding the attributes ChilliSpot-Inject-URL =* ANY on attrs.access_reject file response back during the reject authentication.
+
+[<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">root at dannyraddb</A>]# radtest 84-4B-F5-78-87-F6 password localhost:1812 0 testing123
+Sending Access-Request of id 75 to 127.0.0.1 port 1812
+        User-Name = &quot;84-4B-F5-78-87-F6&quot;
+        User-Password = &quot;password&quot;
+        NAS-IP-Address = 127.0.0.1
+        NAS-Port = 0
+        Message-Authenticator = 0x00000000000000000000000000000000
+rad_recv: Access-Reject packet from host 127.0.0.1 port 1812, id=75, length=67
+        ChilliSpot-Inject-URL = &quot;<A HREF="http://URL/inject.js">http://URL/inject.js</A>&quot;
+[<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">root at dannyraddb</A>]#
+
+<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">root at emaar</A>:/etc/chilli# chilli_query inspect mac 84-4B-F5-78-87-F6
+MAC:   84-4B-F5-78-87-F6   IP:  10.1.0.6
+---------------------------------------------------
+              status: not authenticated
+           challenge: 2badfb4a129d6f1d9bbd6c185e8e34f1
+          session id: 50fd2ca400000001
+           user name: 84-4B-F5-78-87-F6
+        session time: 0 sec
+     session timeout: 0 sec
+           idle time: 0 sec
+        idle timeout: 3600 sec
+       octets in/out: in=down, out=up
+           octets in: 0
+          octets out: 0
+          max b/w up: 0
+        max b/w down: 0
+      last sent time: 469 sec ago
+           last seen: 465 sec ago
+            user url: <A HREF="http://www.google.com">http://www.google.com</A>
+           url param: <A HREF="http://URL/inject.js">http://URL/inject.js</A>
+               flags:   			&lt;------------ do I need to put something here via radius. (ChilliSpot-Config) because during my test not from the radius reply, whenever I execute chilli_query update mac (mac) inject <A HREF="http://URL/inject.js">http://URL/inject.js</A> it is having a value of &quot;require-uam-auth inject&quot;
+
+Current I am still not able to browse internet  with this setup although it should give me internet with inject. But nothing... 
+
+
+Thanks  
+
+
+-----Original Message-----
+From: David Bird [mailto:<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">david at coova.com</A>] 
+Sent: Monday, January 21, 2013 10:41 PM
+To: Danny Magat
+Cc: 'Jed Gainer'; <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli at coova.org</A>
+Subject: RE: [Chilli] RADIUS based way to set the per session
+
+Hi Danny,
+
+I can't say I'm an expert on the functionality of FR and it's standard database structure. Are you certain (via wireshark, etc) that FR is putting the attribute out of the radreply table when the response is Reject? 
+
+
+On Sat, 2013-01-19 at 18:27 +0400, Danny Magat wrote:
+&gt;<i> Dear David,
+</I>&gt;<i> 
+</I>&gt;<i> Yes I am using ChilliSpot-Inject-URL attributes, Below is my 
+</I>&gt;<i> configuration:
+</I>&gt;<i> Chilli.conf
+</I>&gt;<i> --redir
+</I>&gt;<i> -- macauth
+</I>&gt;<i> 
+</I>&gt;<i> -Radcheck-
+</I>&gt;<i> Username = mac
+</I>&gt;<i> Attributes = Auth-Type
+</I>&gt;<i> Operator = :=
+</I>&gt;<i> Value=Reject
+</I>&gt;<i> 
+</I>&gt;<i> Radreply
+</I>&gt;<i> Username = 98-03-D8-F4-0D-90
+</I>&gt;<i> Attributes = ChilliSpot-Inject-URL
+</I>&gt;<i> Operator = :=
+</I>&gt;<i> Value =  <A HREF="http://URL/inject.js">http://URL/inject.js</A>
+</I>&gt;<i> 
+</I>&gt;<i> I did compile with --enable-inspect
+</I>&gt;<i> And its showing below:
+</I>&gt;<i> 
+</I>&gt;<i> <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">root at danny</A>:/etc/chilli# chilli_query inspect mac 98-03-D8-F4-0D-90
+</I>&gt;<i> MAC:   98-03-D8-F4-0D-90   IP:  10.1.0.2
+</I>&gt;<i> ---------------------------------------------------
+</I>&gt;<i>               status: not authenticated
+</I>&gt;<i>            challenge: 935faea8add1ab843786da6a87eed4e2
+</I>&gt;<i>           session id: 50faa9e600000001
+</I>&gt;<i>            user name: 98-03-D8-F4-0D-90
+</I>&gt;<i>         session time: 0 sec
+</I>&gt;<i>      session timeout: 0 sec
+</I>&gt;<i>            idle time: 0 sec
+</I>&gt;<i>         idle timeout: 0 sec
+</I>&gt;<i>        octets in/out: in=down, out=up
+</I>&gt;<i>            octets in: 0
+</I>&gt;<i>           octets out: 0
+</I>&gt;<i>           max b/w up: 0
+</I>&gt;<i>         max b/w down: 0
+</I>&gt;<i>       last sent time: 520 sec ago
+</I>&gt;<i>            last seen: 513 sec ago
+</I>&gt;<i>             user url: <A HREF="http://www.apple.com/library/test/success.html">http://www.apple.com/library/test/success.html</A>
+</I>&gt;<i>            url param:
+</I>&gt;<i>                flags:
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> am I missing something in the config? Because I am not able to redirect to injected page. Please advise...
+</I>&gt;<i> -----Original Message-----
+</I>&gt;<i> From: David Bird [mailto:<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">david at coova.com</A>]
+</I>&gt;<i> Sent: Thursday, January 17, 2013 10:35 PM
+</I>&gt;<i> To: Danny Magat
+</I>&gt;<i> Cc: 'Jed Gainer'; <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli at coova.org</A>
+</I>&gt;<i> Subject: Re: [Chilli] RADIUS based way to set the per session
+</I>&gt;<i> 
+</I>&gt;<i> You have tried the ChilliSpot-Inject-URL attribute? 
+</I>&gt;<i> 
+</I>&gt;<i> Also, it is also helpful to --enable-inspect so that chilli_query inspect mac &lt;mac&gt; gives you more information on per session configurations. 
+</I>&gt;<i> 
+</I>&gt;<i> David
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> On Wed, 2013-01-16 at 12:17 +0400, Danny Magat wrote:
+</I>&gt;<i> &gt; Yes inject url per user wherein the URL is coming from the radius reply.
+</I>&gt;<i> &gt; 
+</I>&gt;<i> &gt; 
+</I>&gt;<i> &gt; -----Original Message-----
+</I>&gt;<i> &gt; From: Jed Gainer [mailto:<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">jedgainer at gmail.com</A>]
+</I>&gt;<i> &gt; Sent: Wednesday, January 16, 2013 8:11 AM
+</I>&gt;<i> &gt; To: Danny Magat
+</I>&gt;<i> &gt; Subject: Re: [Chilli] RADIUS based way to set the per session
+</I>&gt;<i> &gt; 
+</I>&gt;<i> &gt; I am not sure what you mean. Inject per user you mean?
+</I>&gt;<i> &gt; 
+</I>&gt;<i> &gt;     $.getJSON(&quot;<A HREF="http://10.1.0.1:3990/json/status?callback=?">http://10.1.0.1:3990/json/status?callback=?</A>&quot;,
+</I>&gt;<i> &gt; function(chilli) {
+</I>&gt;<i> &gt;         console.log(chilli);
+</I>&gt;<i> &gt;         if ($.inArray(chilli.session.userName, ['Cyndy', 'Chris']) != -1)
+</I>&gt;<i> &gt;         {
+</I>&gt;<i> &gt;             var addHeight =
+</I>&gt;<i> &gt; (/Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAge
+</I>&gt;<i> &gt; nt
+</I>&gt;<i> &gt; ))
+</I>&gt;<i> &gt; ? 60 : 40;
+</I>&gt;<i> &gt;             $('body').height($('body').height() + addHeight);
+</I>&gt;<i> &gt;             $('body').append('&lt;div style=&quot;position: fixed; bottom: 
+</I>&gt;<i> &gt; 0;
+</I>&gt;<i> &gt; left: 0; right: 0; height: ' + addHeight + 'px; border-top: 2px 
+</I>&gt;<i> &gt; solid #000; background-color: #fff&quot;&gt;&lt;iframe style=&quot;border: 0; width: 99%&quot;
+</I>&gt;<i> &gt; src=&quot;<A HREF="http://10.1.0.1/toolbar.php">http://10.1.0.1/toolbar.php</A>&quot;&gt;&lt;/iframe&gt;&lt;/div&gt;');
+</I>&gt;<i> &gt;         }
+</I>&gt;<i> &gt;     });
+</I>&gt;<i> &gt; 
+</I>&gt;<i> &gt; On Tue, Jan 15, 2013 at 6:07 AM, Danny Magat &lt;<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">danny at sb-ps.ae</A>&gt; wrote:
+</I>&gt;<i> &gt; &gt; Dear All,
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt; <A HREF="http://coova.org/node/4788#comment-9802">http://coova.org/node/4788#comment-9802</A>
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt; Based on the above links by David there is a way on how to 
+</I>&gt;<i> &gt; &gt; inject-URL per session.
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt; Can somebody guide me on how to achieve this.
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt; Thanks in Advance.
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt; Danny
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt; _______________________________________________
+</I>&gt;<i> &gt; &gt; Chilli mailing list
+</I>&gt;<i> &gt; &gt; <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">Chilli at coova.org</A>
+</I>&gt;<i> &gt; &gt; <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">http://lists.coova.org/cgi-bin/mailman/listinfo/chilli</A>
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; 
+</I>&gt;<i> &gt; _______________________________________________
+</I>&gt;<i> &gt; Chilli mailing list
+</I>&gt;<i> &gt; <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">Chilli at coova.org</A>
+</I>&gt;<i> &gt; <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">http://lists.coova.org/cgi-bin/mailman/listinfo/chilli</A>
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>
+--
+--
+David Bird
+<A HREF="http://www.linkedin.com/in/dwbird">http://www.linkedin.com/in/dwbird</A>
+<A HREF="https://twitter.com/wlanmac">https://twitter.com/wlanmac</A>
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="002101.html">[Chilli] RADIUS based way to set the per session
+</A></li>
+	<LI>Next message: <A HREF="002086.html">[Chilli] Wifi clients cannot reach Internet?
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2102">[ date ]</a>
+              <a href="thread.html#2102">[ thread ]</a>
+              <a href="subject.html#2102">[ subject ]</a>
+              <a href="author.html#2102">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

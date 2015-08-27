@@ -1,0 +1,162 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] CoovaChilli and dhcpgateway
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20CoovaChilli%20and%20dhcpgateway&In-Reply-To=%3C41892.195.19.214.216.1270020003.squirrel%40mail.pnpi.spb.ru%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001227.html">
+   
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] CoovaChilli and dhcpgateway</H1>
+    <B>Anatoly Oreshkin</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20CoovaChilli%20and%20dhcpgateway&In-Reply-To=%3C41892.195.19.214.216.1270020003.squirrel%40mail.pnpi.spb.ru%3E"
+       TITLE="[Chilli] CoovaChilli and dhcpgateway">Anatoly.Oreshkin at pnpi.spb.ru
+       </A><BR>
+    <I>Wed Mar 31 07:20:03 UTC 2010</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001227.html">[Chilli] CoovaChilli and dhcpgateway
+</A></li>
+        
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1228">[ date ]</a>
+              <a href="thread.html#1228">[ thread ]</a>
+              <a href="subject.html#1228">[ subject ]</a>
+              <a href="author.html#1228">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>You misunderstood me.
+
+I would like wireless clients to get addresses from external dhcp server,
+not from chilli. With dhcpgateway specified chilli relays dhcp request
+to our dhcp server which assigns address to client from pool.
+At the same time chilli itself assigns address to client.
+For example, dhcpserver assigns address 10.2.3.7 but chilli assigns
+10.2.3.45 and as I think, wants to work with client having address
+10.2.3.45.
+Really client has address 10.2.3.7 and I guess, because of
+this a client can't authenticate through chilli.
+How to make chilli not assign addresses  itself but get from external
+dhcp server ? Is it possible at all ?
+We need external dhcp server also for wire clients.
+
+My main idea  is the following:
+
+At present we have 3Com APs configured with security WPA2/AES
+EAP-PEAP-MSCHAPv2
+and authentication is performed via radius server. Wireless clients get
+their fixed addresses from dhcp server by their MAC addresses.
+
+Also we need temporary wireless connections (for workshops, conferences
+...) using UAM authentication regardless of MAC addresses, only with
+login and password.
+So we would like to use the same APs for UAM authenticaton too using chilli
+at the same time preserving secure authentication in secure SSID for
+permanent clients.
+For this end we configure on each AP second SSID but without security.
+Temporary clients should connect to this insecure SSID, get
+addresses from pool regardless of MAC addresses and authenticate through
+chilli using UAM.
+
+Any hints, ideas.
+Thanks.
+
+&gt;<i> Are you also using uamanyip? If so, try without.
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> On Tue, 2010-03-30 at 19:50 +0400, Anatoly Oreshkin wrote:
+</I>&gt;&gt;<i> Hello,
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> My coovachili has such configuration:
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> HS_WANIF=eth0  (195.19.214.216)
+</I>&gt;&gt;<i> HS_LANIF=eth1
+</I>&gt;&gt;<i> HS_NETWORK=10.2.3.0
+</I>&gt;&gt;<i> HS_NETMASK=255.255.255.0
+</I>&gt;&gt;<i> HS_UAMLISTEN=10.2.3.1
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> I've configured coovachilli with dhcpgateway in order to get ip
+</I>&gt;&gt;<i> addresses
+</I>&gt;&gt;<i> for clients from external dhcp server. For this goal I've specified in
+</I>&gt;&gt;<i> local.conf
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> dhcpgateway=212.193.96.134   (external dhcp address)
+</I>&gt;&gt;<i> dhcpgatewayport=67
+</I>&gt;&gt;<i> dhcprelayagent=195.19.214.216  (chilli eth0 address)
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> DHCP server is configured as:
+</I>&gt;&gt;<i> subnet 10.2.3.0 netmask 255.255.255.0 {
+</I>&gt;&gt;<i> option routers                  10.2.3.1;
+</I>&gt;&gt;<i> option subnet-mask              255.255.255.0;
+</I>&gt;&gt;<i> range  10.2.3.2  10.2.3.254;
+</I>&gt;&gt;<i> ...
+</I>&gt;&gt;<i> }
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> On chilli server in /var/log/messages I see
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> New DHCP request from MAC=00-16-EA-8A-DE-38
+</I>&gt;&gt;<i> Client MAC=00-16-EA-8A-DE-38 assigned IP 10.2.3.53
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> On dhcp server in /var/log/messages I see
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> DHCPDISCOVER from 00:16:ea:8a:de:38 via 195.19.214.216
+</I>&gt;&gt;<i> DHCPOFFER on 10.2.3.2 to 00:16:ea:8a:de:38 (csd-notebook) via
+</I>&gt;&gt;<i> 195.19.214.216
+</I>&gt;&gt;<i> DHCPREQUEST for 10.2.3.2 (10.2.3.1) from 00:16:ea:8a:de:38 via
+</I>&gt;&gt;<i> 195.19.214.216
+</I>&gt;&gt;<i> DHCPACK on 10.2.3.2 to 00:16:ea:8a:de:38 via 195.19.214.216
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> On client I see configuration
+</I>&gt;&gt;<i> IP-address: 10.2.3.2
+</I>&gt;&gt;<i> network mask: 255.255.255.0
+</I>&gt;&gt;<i> gateway: 10.2.3.1
+</I>&gt;&gt;<i> dhcp server: 10.2.3.1
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> That is the client have got ip address from dhcp server rather than from
+</I>&gt;&gt;<i> chilli. As the consequence of this the client could not authenticate
+</I>&gt;&gt;<i> through
+</I>&gt;&gt;<i> chilli.
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> What is wrong ?  What purpose is dhcpgateway designed for ?
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> Thanks.
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> _______________________________________________
+</I>&gt;&gt;<i> Chilli mailing list
+</I>&gt;&gt;<i> <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">Chilli at coova.org</A>
+</I>&gt;&gt;<i> <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">http://lists.coova.org/cgi-bin/mailman/listinfo/chilli</A>
+</I>&gt;<i>
+</I>&gt;<i>
+</I>
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001227.html">[Chilli] CoovaChilli and dhcpgateway
+</A></li>
+	
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1228">[ date ]</a>
+              <a href="thread.html#1228">[ thread ]</a>
+              <a href="subject.html#1228">[ subject ]</a>
+              <a href="author.html#1228">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

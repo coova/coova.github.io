@@ -1,0 +1,508 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] [RESOLVED !!!] Coova-Chilli Multi Tenanency Mode All daemons do not come up on reboot
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20%5BRESOLVED%20%21%21%21%5D%20Coova-Chilli%20Multi%20Tenanency%20Mode%20All%0A%20daemons%20do%20not%20come%20up%20on%20reboot&In-Reply-To=%3CCADao4CoLdRFjaj3N-r8Zc0fiAttEACFb%2BJUpeFm-S4dHycqt9w%40mail.gmail.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="002142.html">
+   <LINK REL="Next"  HREF="002145.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] [RESOLVED !!!] Coova-Chilli Multi Tenanency Mode All daemons do not come up on reboot</H1>
+    <B>Russell Mike</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20%5BRESOLVED%20%21%21%21%5D%20Coova-Chilli%20Multi%20Tenanency%20Mode%20All%0A%20daemons%20do%20not%20come%20up%20on%20reboot&In-Reply-To=%3CCADao4CoLdRFjaj3N-r8Zc0fiAttEACFb%2BJUpeFm-S4dHycqt9w%40mail.gmail.com%3E"
+       TITLE="[Chilli] [RESOLVED !!!] Coova-Chilli Multi Tenanency Mode All daemons do not come up on reboot">radius.sir at gmail.com
+       </A><BR>
+    <I>Mon Feb 11 14:40:45 UTC 2013</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="002142.html">[Chilli] SOLVED !!!! No process in pidfile '/usr/local/var/run/chilli.pid' found running; none killed.
+</A></li>
+        <LI>Next message: <A HREF="002145.html">[Chilli] uamallowed &amp; uamdomain help
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2143">[ date ]</a>
+              <a href="thread.html#2143">[ thread ]</a>
+              <a href="subject.html#2143">[ subject ]</a>
+              <a href="author.html#2143">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>#!/bin/sh
+
+&gt;<i>
+</I>&gt;<i> TUNTAP=$(basename $DEV)
+</I>&gt;<i> UNDO_FILE=/usr/local/var/run/chilli.$TUNTAP.sh
+</I>&gt;<i>
+</I>&gt;<i> . /usr/local/etc/chilli/functions
+</I>&gt;<i>
+</I>&gt;<i> [ -e &quot;$UNDO_FILE&quot; ] &amp;&amp; sh $UNDO_FILE 2&gt;/dev/null
+</I>&gt;<i> rm -f $UNDO_FILE 2&gt;/dev/null
+</I>&gt;<i>
+</I>&gt;<i> ipt() {
+</I>&gt;<i>     opt=$1; shift
+</I>&gt;<i>     echo &quot;iptables -D $*&quot; &gt;&gt; $UNDO_FILE
+</I>&gt;<i>     iptables $opt $*
+</I>&gt;<i> }
+</I>&gt;<i>
+</I>&gt;<i> ipt_in() {
+</I>&gt;<i>     ipt -I INPUT -i $TUNTAP $*
+</I>&gt;<i> }
+</I>&gt;<i>
+</I>&gt;<i> if [ -n &quot;$TUNTAP&quot; ]
+</I>&gt;<i> then
+</I>&gt;<i>     # ifconfig $TUNTAP mtu $MTU
+</I>&gt;<i>     if [ &quot;$KNAME&quot; != &quot;&quot; ]
+</I>&gt;<i>     then
+</I>&gt;<i>         ipt -I FORWARD -i $DHCPIF -m coova --name $KNAME -j ACCEPT
+</I>&gt;<i>         ipt -I FORWARD -o $DHCPIF -m coova --name $KNAME --dest -j ACCEPT
+</I>&gt;<i>         ipt -I FORWARD -i $TUNTAP -j ACCEPT
+</I>&gt;<i>         ipt -I FORWARD -o $TUNTAP -j ACCEPT
+</I>&gt;<i>         [ -n &quot;$DHCPLISTEN&quot; ] &amp;&amp; ifconfig $DHCPIF $DHCPLISTEN
+</I>&gt;<i>     else
+</I>&gt;<i>         if [ &quot;$LAYER3&quot; != &quot;1&quot; ]
+</I>&gt;<i>         then
+</I>&gt;<i>             [ -n &quot;$UAMPORT&quot; -a &quot;$UAMPORT&quot; != &quot;0&quot; ] &amp;&amp; \
+</I>&gt;<i>                 ipt_in -p tcp -m tcp --dport $UAMPORT --dst $ADDR -j ACCEPT
+</I>&gt;<i>
+</I>&gt;<i>             [ -n &quot;$UAMUIPORT&quot; -a &quot;$UAMUIPORT&quot; != &quot;0&quot; ] &amp;&amp; \
+</I>&gt;<i>                 ipt_in -p tcp -m tcp --dport $UAMUIPORT --dst $ADDR -j
+</I>&gt;<i> ACCEPT
+</I>&gt;<i>
+</I>&gt;<i>             [ -n &quot;$HS_TCP_PORTS&quot; ] &amp;&amp; {
+</I>&gt;<i>                 for port in $HS_TCP_PORTS; do
+</I>&gt;<i>                     ipt_in -p tcp -m tcp --dport $port --dst $ADDR -j
+</I>&gt;<i> ACCEPT
+</I>&gt;<i>                 done
+</I>&gt;<i>             }
+</I>&gt;<i>
+</I>&gt;<i>             ipt_in -p udp -d 255.255.255.255 --destination-port 67:68 -j
+</I>&gt;<i> ACCEPT
+</I>&gt;<i>             ipt_in -p udp -d $ADDR --destination-port 67:68 -j ACCEPT
+</I>&gt;<i>             ipt_in -p udp --dst $ADDR --dport 53 -j ACCEPT
+</I>&gt;<i>             ipt_in -p icmp --dst $ADDR -j ACCEPT
+</I>&gt;<i>
+</I>&gt;<i>             ipt -A INPUT -i $TUNTAP --dst $ADDR -j DROP
+</I>&gt;<i>
+</I>&gt;<i>             if [ &quot;$ONLY8021Q&quot; != &quot;1&quot; ]
+</I>&gt;<i>             then
+</I>&gt;<i>                 ipt -I INPUT -i $DHCPIF -j DROP
+</I>&gt;<i>             fi
+</I>&gt;<i>         fi
+</I>&gt;<i>
+</I>&gt;<i>         if [ &quot;$ONLY8021Q&quot; != &quot;1&quot; ]
+</I>&gt;<i>         then
+</I>&gt;<i>             ipt -I FORWARD -i $DHCPIF -j DROP
+</I>&gt;<i>             ipt -I FORWARD -o $DHCPIF -j DROP
+</I>&gt;<i>         fi
+</I>&gt;<i>
+</I>&gt;<i>         ipt -I FORWARD -i $TUNTAP -j ACCEPT
+</I>&gt;<i>         ipt -I FORWARD -o $TUNTAP -j ACCEPT
+</I>&gt;<i>
+</I>&gt;<i>         # Help out conntrack to not get confused
+</I>&gt;<i>         # (stops masquerading from working)
+</I>&gt;<i>         #ipt -I PREROUTING -t raw -j NOTRACK -i $DHCPIF
+</I>&gt;<i>         #ipt -I OUTPUT -t raw -j NOTRACK -o $DHCPIF
+</I>&gt;<i>
+</I>&gt;<i>         # Help out MTU issues with PPPoE or Mesh
+</I>&gt;<i>         ipt -I FORWARD -p tcp -m tcp --tcp-flags SYN,RST SYN -j TCPMSS
+</I>&gt;<i> --clamp-mss-to-pmtu
+</I>&gt;<i>         ipt -I FORWARD -t mangle -p tcp -m tcp --tcp-flags SYN,RST SYN -j
+</I>&gt;<i> TCPMSS --clamp-mss-to-pmtu
+</I>&gt;<i>
+</I>&gt;<i>         [ &quot;$HS_LAN_ACCESS&quot; != &quot;on&quot; -a &quot;$HS_LAN_ACCESS&quot; != &quot;allow&quot; ] &amp;&amp; \
+</I>&gt;<i>             ipt -I FORWARD -i $TUNTAP \! -o $HS_WANIF -j DROP
+</I>&gt;<i>
+</I>&gt;<i>         ipt -I FORWARD -i $TUNTAP -o $HS_WANIF -j ACCEPT
+</I>&gt;<i>
+</I>&gt;<i>         [ &quot;$HS_LOCAL_DNS&quot; = &quot;on&quot; ] &amp;&amp; \
+</I>&gt;<i>             ipt -I PREROUTING -t nat -i $TUNTAP -p udp --dport 53 -j DNAT
+</I>&gt;<i> --to-destination $ADDR
+</I>&gt;<i>     fi
+</I>&gt;<i> fi
+</I>&gt;<i>
+</I>&gt;<i> # site specific stuff optional
+</I>&gt;<i> [ -e /usr/local/etc/chilli/ipup.sh ] &amp;&amp; . /usr/local/etc/chilli/ipup.sh
+</I>&gt;<i>
+</I>&gt;<i> *
+</I>&gt;<i> *
+</I>&gt;<i> *Mike SAID:*
+</I>&gt;<i>
+</I>&gt;<i> Dear David B.
+</I>&gt;<i>
+</I>&gt;<i> First, Thank you very much for showing us correct procedure. And it should
+</I>&gt;<i> be enough from your side. i am sure this would kill the problem. i am
+</I>&gt;<i> talking about my self only, not very good in bash and i did not understand
+</I>&gt;<i> what exactly should be done and which part of the &quot;up.sh&quot; i am humbly
+</I>&gt;<i> requesting for more help so that i do not make it more worse situation. My
+</I>&gt;<i> five instances starts like this:
+</I>&gt;<i>
+</I>&gt;<i> What should be done with my &quot;up.sh&quot; copied above.
+</I>&gt;<i>
+</I>&gt;<i> <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">root at captive</A>:~# /etc/init.d/chilli start
+</I>&gt;<i> Found configuration /usr/local/etc/chilli/coova-vlan10/chilli.conf
+</I>&gt;<i> Running DHCPIF=coova-vlan10 /etc/init.d/chilli start
+</I>&gt;<i> Starting chilli:
+</I>&gt;<i> Found configuration /usr/local/etc/chilli/coova-vlan20/chilli.conf
+</I>&gt;<i> Running DHCPIF=coova-vlan20 /etc/init.d/chilli start
+</I>&gt;<i> Starting chilli:
+</I>&gt;<i> Found configuration /usr/local/etc/chilli/coova-vlan30/chilli.conf
+</I>&gt;<i> Running DHCPIF=coova-vlan30 /etc/init.d/chilli start
+</I>&gt;<i> Starting chilli:
+</I>&gt;<i> Found configuration /usr/local/etc/chilli/coova-vlan40/chilli.conf
+</I>&gt;<i> Running DHCPIF=coova-vlan40 /etc/init.d/chilli start
+</I>&gt;<i> Starting chilli:
+</I>&gt;<i> Found configuration /usr/local/etc/chilli/coova-vlan50/chilli.conf
+</I>&gt;<i> Running DHCPIF=coova-vlan50 /etc/init.d/chilli start
+</I>&gt;<i> Starting chilli:
+</I>&gt;<i>
+</I>&gt;<i> *Thanks / RM --*
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;&gt;<i> *David Bird SAID: *
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i>  To serialize the iptables, you can edit the up.sh/down.sh scripts to
+</I>&gt;&gt;&gt;<i> wrap all the commands inside something like:
+</I>&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;<i> (
+</I>&gt;&gt;&gt;<i> flock -s 200
+</I>&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;<i> # ... commands executed under lock ...
+</I>&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;<i> ) 200&gt;/tmp/.chilli-flock
+</I>&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;<i> David Bird
+</I>&gt;&gt;&gt;<i>
+</I>&gt;&gt;<i>
+</I>&gt;&gt;&gt;<i>
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i>
+</I>&gt;&gt;&gt;<i> *&gt; Luic SAID*
+</I>&gt;&gt;&gt;<i> &gt;
+</I>&gt;&gt;&gt;<i> &gt;
+</I>&gt;&gt;&gt;<i> &gt; Hello everyone,
+</I>&gt;&gt;&gt;<i> &gt;
+</I>&gt;&gt;&gt;<i> &gt;  1. It could be related to iptable locking, because I've got a bit of
+</I>&gt;&gt;&gt;<i> &gt; success if I add &quot;sleep 5&quot; on /etc/init.d/chilli after starting each
+</I>&gt;&gt;&gt;<i> &gt; vlan. It's not 100% win, but at least the success rate increased.
+</I>&gt;&gt;&gt;<i> &gt;
+</I>&gt;&gt;&gt;<i> &gt;
+</I>&gt;&gt;&gt;<i> &gt;
+</I>&gt;&gt;&gt;<i> * &gt; Mike SAID:*
+</I>&gt;&gt;&gt;<i> &gt; I can agree to your point. But i do not use different script for
+</I>&gt;&gt;&gt;<i> &gt; starting multiple instances (vlans) the same &quot;/etc/init.d/chilli
+</I>&gt;&gt;&gt;<i> &gt; start&quot; does starts everything. But i have been advised to write a
+</I>&gt;&gt;&gt;<i> &gt; different script, then i will add the wait between the &quot;start&quot; of each
+</I>&gt;&gt;&gt;<i> &gt; instance. The following line in start script just check &quot;chilli.conf&quot;
+</I>&gt;&gt;&gt;<i> &gt; files and start everything.  MULTI= $(ls
+</I>&gt;&gt;&gt;<i> /usr/local/etc/chilli/*/chilli.conf 2&gt;/dev/null)
+</I>&gt;&gt;&gt;<i> &gt;
+</I>&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;<i>
+</I>*
+*
+*
+*
+*
+*
+*Mike Updated His Response:*
+
+Hi Luic,
+
+This is the update with respect to your idea, 5 second sleep between
+starting each &quot;chilli&quot; daemon (in multi tenant mode / environment). i here
+by confirm that, i have also get success rate much much higher than before.
+Prior to the solution fixed, when ever i was restarting the chilli server
+(Ubuntu).
+
+Coova-Chilli was hardly coming up by to self. When i say that, it means
+that chilli was bounded to all ports, all stuff
+(pid,cfg.bin,sock,ipc,tun*.sh) were successfully created
+under&quot;/var/run/chilli*&quot;
+process was visiable using &quot;ps -ax&quot;. BUT sometimes there was no login page
+for some VLANs or for any VLAN. unless i do chilli stop/start once or more
+than once.
+
+*Success Rate: *
+
+i also added 5 sec delay between each deamon when starting (3 second delay
+also worked !). i have restated my server more than 7 times before writing
+this post but non of the FIVE daemon failed during any reboot. all were
+successfully loaded. i have the feeling that it is 100% okay. problem has
+been killed. i will update this post after some days, when server has been
+restarted more than 50 times and nothing failed. (it is lab server, are
+free to restart).
+
+I would also update my orignal post, because it would help those who may
+face this problem is future and they can strate away go to the solution.
+
+Thanks David B. &amp; Everyone in the conversation.
+
+*[ubuntu server 12.4 64bit edition] *
+Here is the single working script that starts / stop all five daemons
+(vlan10, vlan20, vlan30, vlan40, vlnan50) and add the 5 second delay
+between daemons during start and stop. Mind the sleep command in bold
+
+
+<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">root at captive</A>:~# cat /etc/init.d/chilli
+
+#!/bin/sh
+
+*# Custom Variable Defined - Please mind the conflict if any. *
+DAEMON=/usr/local/sbin/chilli
+NAME=chilli
+
+[ -f /usr/local/sbin/chilli ] || exit 0
+
+. /usr/local/etc/chilli/functions
+
+MULTI=$(ls /usr/local/etc/chilli/*/chilli.conf 2&gt;/dev/null)
+[ -z &quot;$DHCPIF&quot; ] &amp;&amp; [ -n &quot;$MULTI&quot; ] &amp;&amp; {
+    for c in $MULTI;
+    do
+        echo &quot;Found configuration $c&quot;
+        DHCPIF=$(basename $(echo $c|sed 's#/chilli.conf##'))
+        export DHCPIF
+        echo &quot;Running DHCPIF=$DHCPIF $0 $*&quot;
+        sh $0 $*
+    done
+    exit
+}
+
+if [ -n &quot;$DHCPIF&quot; ]; then
+    CONFIG=/usr/local/etc/chilli/$DHCPIF/chilli.conf
+    pidfile=/usr/local/var/run/chilli.$DHCPIF.pid
+else
+    CONFIG=/usr/local/etc/chilli.conf
+    pidfile=/usr/local/var/run/chilli.pid
+fi
+
+[ -f $CONFIG ] || {
+    echo &quot;$CONFIG Not found&quot;
+    exit 0
+}
+
+check_required
+
+RETVAL=0
+prog=&quot;chilli&quot;
+
+case $1 in
+    start)
+        echo -n &quot;Starting $prog: &quot;
+
+        /sbin/modprobe tun &gt;/dev/null 2&gt;&amp;1
+        echo 1 &gt; /proc/sys/net/ipv4/ip_forward
+
+        [ -e /dev/net/tun ] || {
+            (cd /dev;
+                mkdir net;
+                cd net;
+                mknod tun c 10 200)
+        }
+
+        writeconfig
+        radiusconfig
+
+        test ${HS_ADMINTERVAL:-0} -gt 0 &amp;&amp; {
+            (crontab -l 2&gt;&amp;- | grep -v $0
+                echo &quot;*/$HS_ADMINTERVAL * * * * $0 radconfig&quot;
+                ) | crontab - 2&gt;&amp;-
+        }
+
+        ifconfig $HS_LANIF 0.0.0.0
+        if [ &quot;$(which start-stop-daemon)&quot; = &quot;&quot; ]; then
+            /usr/local/sbin/chilli -c $CONFIG --pidfile=$pidfile &amp;
+        else
+            start-stop-daemon -S --pidfile=$pidfile --user=chilli \
+                --exec /usr/local/sbin/chilli -- -c $CONFIG &amp;
+        *sleep 5*
+        fi
+        echo
+        ;;
+
+    radconfig)
+        [ -e $MAIN_CONF ] || writeconfig
+        radiusconfig
+        ;;
+
+    reload)
+        killall -HUP chilli
+        ;;
+
+    restart)
+        $0 stop
+        sleep 1
+        $0 start
+        RETVAL=$?
+        ;;
+
+    stop)
+        echo -n &quot;Shutting down $prog: &quot;
+
+        crontab -l 2&gt;&amp;- | grep -v $0 | crontab -
+
+
+   crontab -l 2&gt;&amp;- | grep -v /etc/init.d/chilli | crontab -
+
+
+        start-stop-daemon --oknodo --stop --quiet --pidfile
+/var/run/$NAME.$HS_LANIF.pid --exec $DAEMON
+        *sleep 5*
+        echo
+        ;;
+
+
+    *)
+        echo &quot;Usage: $0 {start|stop|restart|reload|radconfig}&quot;
+        exit 1
+esac
+
+exit $?
+
+*#END*
+*
+*
+*Thanks RM --*
+
+
+
+
+&gt;<i>
+</I>&gt;&gt;&gt;<i> &gt;
+</I>&gt;&gt;&gt;<i> &gt;* Luic Asked:*
+</I>&gt;&gt;&gt;<i> &gt;         2. The iptables file located at
+</I>&gt;&gt;&gt;<i> &gt;         v /usr/local/var/run/chilli.tun0.sh is it generated every time
+</I>&gt;&gt;&gt;<i> &gt;         chilli boots? Is it executed on chilli process startup? Could
+</I>&gt;&gt;&gt;<i> &gt;         that be the issue? Not giving enough time for the OS to write
+</I>&gt;&gt;&gt;<i> &gt;         the file, and ask it to run the script? If it&#8217;s that, that
+</I>&gt;&gt;&gt;<i> &gt;         would explain why is a sporadic problem happening on multi
+</I>&gt;&gt;&gt;<i> &gt;         chilli, because is starting several chilli processes as fast
+</I>&gt;&gt;&gt;<i> &gt;         as the machine is capable of.
+</I>&gt;&gt;&gt;<i> &gt;
+</I>&gt;&gt;&gt;<i> &gt;
+</I>&gt;&gt;&gt;<i> * &gt;         Mike SAID:
+</I>&gt;&gt;&gt;<i> &gt;*
+</I>&gt;&gt;&gt;<i> &gt;         Yes Luic, the file, the iptables rule under &quot;/var/run/tun*.sh
+</I>&gt;&gt;&gt;<i> &gt;         is created every time.  Because i have seen that when there is
+</I>&gt;&gt;&gt;<i> &gt;         login page problem from a VLAN, i have verify that iptables
+</I>&gt;&gt;&gt;<i> &gt;         file exists normal for that tunnel
+</I>&gt;&gt;&gt;<i> &gt;         &quot;/var/run/tun_problem_vlan.sh. Well, are you satisfied with
+</I>&gt;&gt;&gt;<i> &gt;         the contents for the iptables file? do you think that i still
+</I>&gt;&gt;&gt;<i> &gt;         need the iptable rule you advised earlier? in the above
+</I>&gt;&gt;&gt;<i> &gt;         section of the communication?
+</I>&gt;&gt;&gt;<i> &gt;
+</I>&gt;&gt;&gt;<i> &gt;
+</I>&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;<i> &gt;        *  Ynezz SAID:*
+</I>&gt;&gt;&gt;<i> &gt;
+</I>&gt;&gt;&gt;<i> &gt;         All rules from up.sh except the following seem to get created:
+</I>&gt;&gt;&gt;<i> &gt;
+</I>&gt;&gt;&gt;<i> &gt;          ipt_in -p tcp -m tcp --dport $UAMPORT --dst $ADDR -j ACCEPT
+</I>&gt;&gt;&gt;<i> &gt;
+</I>&gt;&gt;&gt;<i> &gt;
+</I>&gt;&gt;&gt;<i> &gt;          And sometimes some other rules :)
+</I>&gt;&gt;&gt;<i> &gt;
+</I>&gt;&gt;&gt;<i> &gt;          It seems to only ever happen in multi-instance environments
+</I>&gt;&gt;&gt;<i> &gt;         so maybe
+</I>&gt;&gt;&gt;<i> &gt;
+</I>&gt;&gt;&gt;<i> &gt;         it is something to do with iptables locking and not allowing
+</I>&gt;&gt;&gt;<i> &gt;         the
+</I>&gt;&gt;&gt;<i> &gt;
+</I>&gt;&gt;&gt;<i> &gt;         insertion of the rule while another instance is trying to do
+</I>&gt;&gt;&gt;<i> &gt;         the same?  I'm not sure.
+</I>&gt;&gt;&gt;<i> &gt;
+</I>&gt;&gt;&gt;<i> &gt;
+</I>&gt;&gt;&gt;<i> &gt;         Yes, maybe something like that, I didn't investigated it in
+</I>&gt;&gt;&gt;<i> &gt;         the detail either.
+</I>&gt;&gt;&gt;<i> &gt;
+</I>&gt;&gt;&gt;<i> &gt;         I've added simple locking into the coova-chilli init.d script
+</I>&gt;&gt;&gt;<i> &gt;         and added wildcard system wide iptables rules like &quot;-i tun+&quot;
+</I>&gt;&gt;&gt;<i> &gt;         and it improved a lot.
+</I>&gt;&gt;&gt;<i> &gt;
+</I>&gt;&gt;&gt;<i> &gt;          -- ynezz
+</I>&gt;&gt;&gt;<i> &gt;
+</I>&gt;&gt;&gt;<i> &gt;
+</I>&gt;&gt;&gt;<i> * &gt; Mike Wrote:*
+</I>&gt;&gt;&gt;<i> &gt;
+</I>&gt;&gt;&gt;<i> &gt;
+</I>&gt;&gt;&gt;<i> &gt; HI Yneez,
+</I>&gt;&gt;&gt;<i> &gt;
+</I>&gt;&gt;&gt;<i> &gt;
+</I>&gt;&gt;&gt;<i> &gt; It is Fully functional UB 12.4LTS x86_64, suffering with this disease
+</I>&gt;&gt;&gt;<i> &gt; only. It will help others as well, if your suggestion fixed the
+</I>&gt;&gt;&gt;<i> &gt; problem. Are you willing to provide more information so that i can
+</I>&gt;&gt;&gt;<i> &gt; edit the script &amp; give a try? How the below is done you said
+</I>&gt;&gt;&gt;<i> &gt;
+</I>&gt;&gt;&gt;<i> &gt;
+</I>&gt;&gt;&gt;<i> &gt; I've added simple locking into the coova-chilli init.d script and
+</I>&gt;&gt;&gt;<i> &gt; added wildcard system wide iptables rules like &quot;-i tun+&quot; and it
+</I>&gt;&gt;&gt;<i> &gt; improved a lot.
+</I>&gt;&gt;&gt;<i> &gt;
+</I>&gt;&gt;&gt;<i> &gt;
+</I>&gt;&gt;&gt;<i> &gt;
+</I>&gt;&gt;&gt;<i> &gt;
+</I>&gt;&gt;&gt;<i> &gt;
+</I>&gt;&gt;&gt;<i> &gt; Big Thanks 2 Everyone !!!!
+</I>&gt;&gt;&gt;<i> &gt;
+</I>&gt;&gt;&gt;<i> &gt;
+</I>&gt;&gt;&gt;<i> &gt; Thanks RM --
+</I>&gt;&gt;&gt;<i> &gt;
+</I>&gt;&gt;&gt;<i> &gt;
+</I>&gt;&gt;&gt;<i> &gt;
+</I>&gt;&gt;&gt;<i> &gt;
+</I>&gt;&gt;&gt;<i> &gt; _______________________________________________
+</I>&gt;&gt;&gt;<i> &gt; Chilli mailing list
+</I>&gt;&gt;&gt;<i> &gt; <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">Chilli at coova.org</A>
+</I>&gt;&gt;&gt;<i> &gt; <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">http://lists.coova.org/cgi-bin/mailman/listinfo/chilli</A>
+</I>&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;<i> --
+</I>&gt;&gt;&gt;<i> --
+</I>&gt;&gt;&gt;<i> David Bird
+</I>&gt;&gt;&gt;<i> <A HREF="http://www.linkedin.com/in/dwbird">http://www.linkedin.com/in/dwbird</A>
+</I>&gt;&gt;&gt;<i> <A HREF="https://twitter.com/wlanmac">https://twitter.com/wlanmac</A>
+</I>&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;<i>
+</I>&gt;&gt;<i>
+</I>&gt;<i>
+</I>-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: &lt;<A HREF="http://lists.coova.org/pipermail/chilli/attachments/20130211/5a5693cb/attachment-0001.html">http://lists.coova.org/pipermail/chilli/attachments/20130211/5a5693cb/attachment-0001.html</A>&gt;
+</PRE>
+
+
+
+
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="002142.html">[Chilli] SOLVED !!!! No process in pidfile '/usr/local/var/run/chilli.pid' found running; none killed.
+</A></li>
+	<LI>Next message: <A HREF="002145.html">[Chilli] uamallowed &amp; uamdomain help
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2143">[ date ]</a>
+              <a href="thread.html#2143">[ thread ]</a>
+              <a href="subject.html#2143">[ subject ]</a>
+              <a href="author.html#2143">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

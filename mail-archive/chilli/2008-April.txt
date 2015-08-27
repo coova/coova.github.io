@@ -1,0 +1,3717 @@
+From gunther.mayer at googlemail.com  Tue Apr  1 12:39:24 2008
+From: gunther.mayer at googlemail.com (Gunther Mayer)
+Date: Tue, 01 Apr 2008 14:39:24 +0200
+Subject: dnsparanoia broken in 1.0.11?
+Message-ID: <47F22CFC.6030307@gmail.com>
+
+Hi guys,
+
+I'm having major issues with the dnsparanoia option as I get way too 
+many false positives:
+
+Mar 31 18:30:38  coova-chilli[889]: dns.c: 247: dropping dns for 
+anti-dnstunnel (type 2: length 9)
+Mar 31 18:30:38  coova-chilli[889]: dns.c: 247: dropping dns for 
+anti-dnstunnel (type 2: length 4)
+Mar 31 18:30:38  coova-chilli[889]: dns.c: 247: dropping dns for 
+anti-dnstunnel (type 2: length 25)
+Mar 31 18:32:04  coova-chilli[889]: dns.c: 247: dropping dns for 
+anti-dnstunnel (type 6: length 39)
+Mar 31 18:32:04  coova-chilli[889]: dns.c: 247: dropping dns for 
+anti-dnstunnel (type 12: length 44)
+Mar 31 18:32:04  coova-chilli[889]: dns.c: 247: dropping dns for 
+anti-dnstunnel (type 6: length 52)
+Mar 31 18:32:09  coova-chilli[889]: dns.c: 247: dropping dns for 
+anti-dnstunnel (type 12: length 44)
+Mar 31 18:32:09  coova-chilli[889]: dns.c: 247: dropping dns for 
+anti-dnstunnel (type 6: length 39)
+Mar 31 18:32:09  coova-chilli[889]: dns.c: 247: dropping dns for 
+anti-dnstunnel (type 12: length 44)
+Mar 31 18:32:09  coova-chilli[889]: dns.c: 247: dropping dns for 
+anti-dnstunnel (type 6: length 52)
+Mar 31 18:32:11  coova-chilli[889]: dns.c: 247: dropping dns for 
+anti-dnstunnel (type 6: length 36)
+
+As it turns out some clients sometimes take 30 seconds just to resolve a 
+single name (at least from Firefox).
+
+I don't know what the above types correspond to but I think that there's 
+a bug in the 1.0.11 code that drops the wrong types or misidentifies 
+them. Why it does eventually work is beyond me...
+
+Has anybody encountered this before? Is this a known issue?
+
+Gunther
+
+
+From wlan at mac.com  Tue Apr  1 17:38:12 2008
+From: wlan at mac.com (wlan at mac.com)
+Date: Tue, 1 Apr 2008 19:38:12 +0200
+Subject: dnsparanoia broken in 1.0.11?
+In-Reply-To: <47F22CFC.6030307@gmail.com>
+References: <47F22CFC.6030307@gmail.com>
+Message-ID: <7C78E4E3-5E99-4FD3-AD2C-CF7FB333640F@mac.com>
+
+No, it looks to be doing it's job. It drops packets with type codes  
+other than 1 (A records) and 5 (CNAME records). Perhaps it is being  
+too restrictive... I'll revisit this when I have a chance. In the  
+meantime, simply turn off the feature. Btw, are you _actually_ having  
+a problem with people using DNS tunnels?
+
+Cheers,
+David
+
+On Apr 1, 2008, at 2:39 PM, Gunther Mayer wrote:
+
+> Hi guys,
+>
+> I'm having major issues with the dnsparanoia option as I get way  
+> too many false positives:
+>
+> Mar 31 18:30:38  coova-chilli[889]: dns.c: 247: dropping dns for  
+> anti-dnstunnel (type 2: length 9)
+> Mar 31 18:30:38  coova-chilli[889]: dns.c: 247: dropping dns for  
+> anti-dnstunnel (type 2: length 4)
+> Mar 31 18:30:38  coova-chilli[889]: dns.c: 247: dropping dns for  
+> anti-dnstunnel (type 2: length 25)
+> Mar 31 18:32:04  coova-chilli[889]: dns.c: 247: dropping dns for  
+> anti-dnstunnel (type 6: length 39)
+> Mar 31 18:32:04  coova-chilli[889]: dns.c: 247: dropping dns for  
+> anti-dnstunnel (type 12: length 44)
+> Mar 31 18:32:04  coova-chilli[889]: dns.c: 247: dropping dns for  
+> anti-dnstunnel (type 6: length 52)
+> Mar 31 18:32:09  coova-chilli[889]: dns.c: 247: dropping dns for  
+> anti-dnstunnel (type 12: length 44)
+> Mar 31 18:32:09  coova-chilli[889]: dns.c: 247: dropping dns for  
+> anti-dnstunnel (type 6: length 39)
+> Mar 31 18:32:09  coova-chilli[889]: dns.c: 247: dropping dns for  
+> anti-dnstunnel (type 12: length 44)
+> Mar 31 18:32:09  coova-chilli[889]: dns.c: 247: dropping dns for  
+> anti-dnstunnel (type 6: length 52)
+> Mar 31 18:32:11  coova-chilli[889]: dns.c: 247: dropping dns for  
+> anti-dnstunnel (type 6: length 36)
+>
+> As it turns out some clients sometimes take 30 seconds just to  
+> resolve a single name (at least from Firefox).
+>
+> I don't know what the above types correspond to but I think that  
+> there's a bug in the 1.0.11 code that drops the wrong types or  
+> misidentifies them. Why it does eventually work is beyond me...
+>
+> Has anybody encountered this before? Is this a known issue?
+>
+> Gunther
+>
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>
+
+
+
+From gunther.mayer at googlemail.com  Wed Apr  2 11:04:10 2008
+From: gunther.mayer at googlemail.com (Gunther Mayer)
+Date: Wed, 02 Apr 2008 13:04:10 +0200
+Subject: dnsparanoia broken in 1.0.11?
+In-Reply-To: <7C78E4E3-5E99-4FD3-AD2C-CF7FB333640F@mac.com>
+References: <47F22CFC.6030307@gmail.com> <7C78E4E3-5E99-4FD3-AD2C-CF7FB333640F@mac.com>
+Message-ID: <47F3682A.4000707@gmail.com>
+
+wlan at mac.com wrote:
+> No, it looks to be doing it's job. It drops packets with type codes 
+> other than 1 (A records) and 5 (CNAME records). Perhaps it is being 
+> too restrictive...
+If you are right then it definitely is being too restrictive as my 
+firefox really is taking forever(>20sec) to resolve my uamserver 
+(without dnsparanoia it's lightning fast). Not sure though what types 2, 
+6 and 12 really are and if it really is firefox that's causing them. 
+Else I think the packet type detection might be broken.
+> I'll revisit this when I have a chance. In the meantime, simply turn 
+> off the feature. Btw, are you _actually_ having a problem with people 
+> using DNS tunnels?
+I did turn it off now. I doubt I really have a problem with dns tunnel 
+abuse, though this is really hard to know for sure. I mean it really is 
+infeasible run tcpdump at all my sites the whole day and then sift 
+through the output to detect possible abuse. I guess I'm just that - 
+suffering from dnsparanoia ;-)
+
+Gunther
+
+
+From nextime at nexlab.it  Wed Apr  2 17:03:04 2008
+From: nextime at nexlab.it (nextime at nexlab.it)
+Date: Wed, 2 Apr 2008 19:03:04 +0200
+Subject: dnsparanoia broken in 1.0.11?
+In-Reply-To: <47F3682A.4000707@gmail.com>
+References: <47F22CFC.6030307@gmail.com> <7C78E4E3-5E99-4FD3-AD2C-CF7FB333640F@mac.com> <47F3682A.4000707@gmail.com>
+Message-ID: <20080402170304.GA28764@dedalo.nexlab.it>
+
+On Wed, Apr 02, 2008 at 01:04:10PM +0200, Gunther Mayer wrote:
+> wlan at mac.com wrote:
+>> No, it looks to be doing it's job. It drops packets with type codes other 
+>> than 1 (A records) and 5 (CNAME records). Perhaps it is being too 
+>> restrictive...
+> If you are right then it definitely is being too restrictive as my firefox 
+> really is taking forever(>20sec) to resolve my uamserver (without 
+> dnsparanoia it's lightning fast). Not sure though what types 2, 6 and 12 
+> really are and if it really is firefox that's causing them. Else I think 
+
+I don't think that permitting only A and CNAME is too restrictive,
+opposite, i think that is too permissive, i don't use dnsparanoia option
+as i was fight with dnstunnels before it was developed, but with my
+system i also check the rate of records A and CNAME to permit only few
+request for minute  from a single host.
+
+This cause many nstunnelling software can make tunnels also over A
+records, so, dropping all but A and CNAME isn't a final solution.
+
+The problem i think that is related on how dnsparanoia manage dns
+request different from A and CNAME. If i understand right, it simply
+DROP any request that don't match A or CNAME type. This cause firefox to
+wait for reply, so, it need to wait for a sort of internal timeout or
+resolver timeout. This is why you see ff so slow.
+
+dnsparanoia in my opinion shuld respond also on others query, but with a
+fake response like "no record found". I do this and i have no sloweness
+on ff or other browsers
+
+>> I'll revisit this when I have a chance. In the meantime, simply turn off 
+>> the feature. Btw, are you _actually_ having a problem with people using 
+>> DNS tunnels?
+> I did turn it off now. I doubt I really have a problem with dns tunnel 
+> abuse, though this is really hard to know for sure. I mean it really is 
+> infeasible run tcpdump at all my sites the whole day and then sift through 
+> the output to detect possible abuse. I guess I'm just that - suffering from 
+> dnsparanoia ;-)
+
+To check if you have problems with dnstunnels you can permit to use only
+a specific dns server hosted by you, and analizing the requests you can
+discover dnstunnels.
+
+I was having many problems with dnstunnels some time ago, this is why i
+was implementing my way to save me from dnstunnels before dnsparanoia
+was implemented. When dnsparanoia will do also some others and more
+paranoic checks on request rate over A and CNAME, maybe i will use it,
+but actually it isn't so "paranoia" for me :)
+
+> Gunther
+>
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+
+-- 
+
+Franco (nextime) Lanza
+Busto Arsizio - Italy
+SIP://casa at casa.nexlab.it
+
+NO TCPA: http://www.no1984.org
+you can download my public key at:
+http://danex.nexlab.it/nextime.asc || Key Servers
+Key ID = D6132D50
+Key fingerprint = 66ED 5211 9D59 DA53 1DF7  4189 DFED F580 D613 2D50
+-----------------------------------
+echo 16i[q]sa[ln0=aln100%Pln100/snlbx]sbA0D212153574F444E49572045535520454D20454B414D204F54204847554F4E452059415020544F4E4E4143205345544147204C4C4942snlbxq | dc
+-----------------------------------
+
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: not available
+Type: application/pgp-signature
+Size: 189 bytes
+Desc: not available
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20080402/d3c659cb/attachment.pgp>
+
+From wlan at mac.com  Thu Apr  3 06:07:29 2008
+From: wlan at mac.com (wlan at mac.com)
+Date: Thu, 3 Apr 2008 08:07:29 +0200
+Subject: dnsparanoia broken in 1.0.11?
+In-Reply-To: <20080402170304.GA28764@dedalo.nexlab.it>
+References: <47F22CFC.6030307@gmail.com> <7C78E4E3-5E99-4FD3-AD2C-CF7FB333640F@mac.com> <47F3682A.4000707@gmail.com> <20080402170304.GA28764@dedalo.nexlab.it>
+Message-ID: <0AB783DF-1CD1-4187-B5BE-FF3A716DC221@mac.com>
+
+> dnsparanoia in my opinion shuld respond also on others query, but  
+> with a
+> fake response like "no record found". I do this and i have no  
+> sloweness
+> on ff or other browsers
+
+Good idea... and easy enough. Give svn revision 160 a try! :)
+
+David
+
+
+
+From gsp at leighacademy.org.uk  Thu Apr  3 07:29:46 2008
+From: gsp at leighacademy.org.uk (Gavin Spurgeon)
+Date: Thu, 03 Apr 2008 08:29:46 +0100
+Subject: List still active ?
+Message-ID: <C41A45FA.27C6A%gsp@leighacademy.org.uk>
+
+
+Hi List,
+
+ Just a quick post to find out if this list is still active.
+I have an issue with CoovaChilli and would like a little
+Help...
+
+Best Regards
+
+
+Gavin Spurgeon
+Systems Administrator
+Leigh Academy
+gsp at leighacademy.org.uk
+http://www.leighacademy.org.uk
+Tel: 01322 620501
+Fax: 01322 620599
+IS HelpDesk : Ext 541
+
+
+
+--
+This message was scanned by the Leigh Academy and is believed to be clean.
+
+
+
+From wlan at mac.com  Thu Apr  3 08:17:12 2008
+From: wlan at mac.com (wlan at mac.com)
+Date: Thu, 3 Apr 2008 10:17:12 +0200
+Subject: List still active ?
+In-Reply-To: <C41A45FA.27C6A%gsp@leighacademy.org.uk>
+References: <C41A45FA.27C6A%gsp@leighacademy.org.uk>
+Message-ID: <75B505A6-64FE-4C9F-930E-F6DF5AF9C407@mac.com>
+
+>  Just a quick post to find out if this list is still active.
+
+Yes, it works. 
+
+
+From gsp at leighacademy.org.uk  Thu Apr  3 13:42:45 2008
+From: gsp at leighacademy.org.uk (Gavin Spurgeon)
+Date: Thu, 03 Apr 2008 14:42:45 +0100
+Subject: http://ipaddress:3990/prelogin - HTTP ERROR 404 !?
+Message-ID: <C41A9D65.27CA8%gsp@leighacademy.org.uk>
+
+
+Hi list,
+
+This I hope should be a simple question...
+
+I am a long time user of Chilli and love it..
+It has done what I wanted for quite some time...
+I am now @ a stage that I need to move the chilli services to a new box, so
+during the rebuild I decided to move over to CoovaChilli... The install was
+Quick and simple, BUT now I have a problem with my test client on the
+protected network. I have MAC Auth switched on, so if I add the MAC address
+of the client into the Radius Server it works fine and is as expected (i.e.
+Full www access, no problems...) if I remove the client entry from the
+radius server, the client tries to access www.google.com and can see the
+"Redirecting..." page, but the when the URL changes to
+http://{IP_of_Server}/prelogin all I see is a 404 Error - Page not found...
+
+Any pointers that could help get this running would be welcomed ?
+
+Best Regards
+
+
+Gavin Spurgeon
+Systems Administrator
+Leigh Academy
+gsp at leighacademy.org.uk
+http://www.leighacademy.org.uk
+Tel: 01322 620501
+Fax: 01322 620599
+IS HelpDesk : Ext 541
+
+
+
+--
+This message was scanned by the Leigh Academy and is believed to be clean.
+
+
+
+From mem.corruption at gmail.com  Thu Apr  3 14:00:55 2008
+From: mem.corruption at gmail.com (David Bird)
+Date: Thu, 3 Apr 2008 16:00:55 +0200
+Subject: http://ipaddress:3990/prelogin - HTTP ERROR 404 !?
+In-Reply-To: <C41A9D65.27CA8%gsp@leighacademy.org.uk>
+References: <C41A9D65.27CA8%gsp@leighacademy.org.uk>
+Message-ID: <ef21d1850804030700v66b5be0ra591123222a81daa@mail.gmail.com>
+
+What "redirecting..." page are you seeing? The one the came with
+coova-chilli, or no? This page may be redirecting you to the wrong place...
+can you otherwise access http://uamlisten:uamport/prelogin  from the client
+side?
+
+On Thu, Apr 3, 2008 at 3:42 PM, Gavin Spurgeon <gsp at leighacademy.org.uk>
+wrote:
+
+>
+> Hi list,
+>
+> This I hope should be a simple question...
+>
+> I am a long time user of Chilli and love it..
+> It has done what I wanted for quite some time...
+> I am now @ a stage that I need to move the chilli services to a new box,
+> so
+> during the rebuild I decided to move over to CoovaChilli... The install
+> was
+> Quick and simple, BUT now I have a problem with my test client on the
+> protected network. I have MAC Auth switched on, so if I add the MAC
+> address
+> of the client into the Radius Server it works fine and is as expected
+> (i.e.
+> Full www access, no problems...) if I remove the client entry from the
+> radius server, the client tries to access www.google.com and can see the
+> "Redirecting..." page, but the when the URL changes to
+> http://{IP_of_Server}/prelogin all I see is a 404 Error - Page not
+> found...
+>
+> Any pointers that could help get this running would be welcomed ?
+>
+> Best Regards
+>
+>
+> Gavin Spurgeon
+> Systems Administrator
+> Leigh Academy
+> gsp at leighacademy.org.uk
+> http://www.leighacademy.org.uk
+> Tel: 01322 620501
+> Fax: 01322 620599
+> IS HelpDesk : Ext 541
+>
+>
+>
+> --
+> This message was scanned by the Leigh Academy and is believed to be clean.
+>
+>
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20080403/60ab1d29/attachment.htm>
+
+From gunther.mayer at googlemail.com  Thu Apr  3 21:48:06 2008
+From: gunther.mayer at googlemail.com (Gunther Mayer)
+Date: Thu, 03 Apr 2008 23:48:06 +0200
+Subject: dnsparanoia broken in 1.0.11?
+In-Reply-To: <0AB783DF-1CD1-4187-B5BE-FF3A716DC221@mac.com>
+References: <47F22CFC.6030307@gmail.com> <7C78E4E3-5E99-4FD3-AD2C-CF7FB333640F@mac.com> <47F3682A.4000707@gmail.com> <20080402170304.GA28764@dedalo.nexlab.it> <0AB783DF-1CD1-4187-B5BE-FF3A716DC221@mac.com>
+Message-ID: <47F55096.8020505@gmail.com>
+
+wlan at mac.com wrote:
+>> dnsparanoia in my opinion shuld respond also on others query, but with a
+>> fake response like "no record found". I do this and i have no sloweness
+>> on ff or other browsers
+>
+> Good idea... and easy enough. Give svn revision 160 a try! :)
+Thanks. I'll give it a spin soon once I've ironed out some other problems...
+
+I see you've been busy that changeset of r160 is quite something. Keep 
+it up ;-)
+
+Gunther
+
+
+From gunther.mayer at googlemail.com  Thu Apr  3 22:07:12 2008
+From: gunther.mayer at googlemail.com (Gunther Mayer)
+Date: Fri, 04 Apr 2008 00:07:12 +0200
+Subject: uamanyip patch
+Message-ID: <47F55510.5060806@gmail.com>
+
+Hi David,
+
+I've recently tried out the uamanyip option in coova and was very 
+pleased at how well it works. I want to use it all the time in future 
+across our network to simplify troubleshooting, should save a couple of 
+support calls ;-)
+
+However, I found a very annoying side effect of uamanyip: It spoofs ARP 
+requests for just about anything. While that's the point of uamanyip, it 
+makes it impossible to have other devices such as access points that you 
+have to access for management purposes on the chilli network. Say chilli 
+listens on 192.168.182.1 and there's another access point with static ip 
+192.168.182.2 (of course not part of the dynip range) to increase 
+wireless coverage. As soon as anybody tries to ping or otherwise access 
+192.168.182.2 because chilli will immediately claim it through arp 
+before the real device has a chance to answer - it creates a race 
+condition. Putting such devices on entirely different subnets makes no 
+difference as their ip's will be stolen too. The only though somewhat 
+ugly way I found around that was to clear the arp cache on my client and 
+then force a mapping with arp -s.
+
+So, I thought wouldn't it be cool to let chilli ignore arp requests for 
+anything other than itself but only on its own subnet. Anything else 
+will still be caught and spoofed as usual. Hence I came up with the 
+below patch, I created it against 1.0.11-stable but applying it to svn 
+(r161) proved trivial, as it's a very short patch.
+
+I think this should be done by default as it allows devices on the 
+chilli subnet to talk to each other properly (of course for real 
+isolation one would use something like ebtables or a/p isolation). But 
+of course the patch could be extended to make this optional 
+(uamanyipignorelan?) if people wanted to keep the current behaviour. 
+Thoughts?
+
+Gunther
+
+Index: dhcp.c
+===================================================================
+--- dhcp.c      (revision 161)
++++ dhcp.c      (working copy)
+@@ -2595,6 +2595,14 @@
+       return 0; /* Only reply if he asked for his router address */
+     }
+   }
++  else if ((taraddr.s_addr != options.dhcplisten.s_addr) &&
++        ((conn->hisip.s_addr & conn->hismask.s_addr) ==
++        (reqaddr.s_addr & conn->hismask.s_addr))) {
++    /* when uamanyip is on we should ignore arp requests that ARE 
+within our subnet except of course the ones for ourselves*/
++    if (options.debug)
++      log_dbg("ARP: request for ip other than us within our 
+subnet(uamanyip on), ignoring");
++    return 0;
++  }
+ 
+   conn->lasttime = mainclock;
+
+
+From chilli at silverserver.at  Fri Apr  4 05:10:09 2008
+From: chilli at silverserver.at (lc)
+Date: Fri, 4 Apr 2008 07:10:09 +0200
+Subject: uamanyip patch
+In-Reply-To: <47F55510.5060806@gmail.com>
+References: <47F55510.5060806@gmail.com>
+Message-ID: <D9CD97E1-9EC0-463F-A76D-68558A9E8211@silverserver.at>
+
+Hi,
+
+This is an interesting point. I use a different subnet to have access  
+to access points on the chilli network. So I think the suggested  
+uamanyipignorelan option would be excellent if the network to be  
+ignored could be defined.
+
+Cheers,
+lc
+
+
+Am 04.04.2008 um 00:07 schrieb Gunther Mayer:
+
+> Hi David,
+>
+> I've recently tried out the uamanyip option in coova and was very  
+> pleased at how well it works. I want to use it all the time in  
+> future across our network to simplify troubleshooting, should save a  
+> couple of support calls ;-)
+>
+> However, I found a very annoying side effect of uamanyip: It spoofs  
+> ARP requests for just about anything. While that's the point of  
+> uamanyip, it makes it impossible to have other devices such as  
+> access points that you have to access for management purposes on the  
+> chilli network. Say chilli listens on 192.168.182.1 and there's  
+> another access point with static ip 192.168.182.2 (of course not  
+> part of the dynip range) to increase wireless coverage. As soon as  
+> anybody tries to ping or otherwise access 192.168.182.2 because  
+> chilli will immediately claim it through arp before the real device  
+> has a chance to answer - it creates a race condition. Putting such  
+> devices on entirely different subnets makes no difference as their  
+> ip's will be stolen too. The only though somewhat ugly way I found  
+> around that was to clear the arp cache on my client and then force a  
+> mapping with arp -s.
+>
+> So, I thought wouldn't it be cool to let chilli ignore arp requests  
+> for anything other than itself but only on its own subnet. Anything  
+> else will still be caught and spoofed as usual. Hence I came up with  
+> the below patch, I created it against 1.0.11-stable but applying it  
+> to svn (r161) proved trivial, as it's a very short patch.
+>
+> I think this should be done by default as it allows devices on the  
+> chilli subnet to talk to each other properly (of course for real  
+> isolation one would use something like ebtables or a/p isolation).  
+> But of course the patch could be extended to make this optional  
+> (uamanyipignorelan?) if people wanted to keep the current behaviour.  
+> Thoughts?
+>
+> Gunther
+>
+> Index: dhcp.c
+> ===================================================================
+> --- dhcp.c      (revision 161)
+> +++ dhcp.c      (working copy)
+> @@ -2595,6 +2595,14 @@
+>      return 0; /* Only reply if he asked for his router address */
+>    }
+>  }
+> +  else if ((taraddr.s_addr != options.dhcplisten.s_addr) &&
+> +        ((conn->hisip.s_addr & conn->hismask.s_addr) ==
+> +        (reqaddr.s_addr & conn->hismask.s_addr))) {
+> +    /* when uamanyip is on we should ignore arp requests that ARE  
+> within our subnet except of course the ones for ourselves*/
+> +    if (options.debug)
+> +      log_dbg("ARP: request for ip other than us within our  
+> subnet(uamanyip on), ignoring");
+> +    return 0;
+> +  }
+>  conn->lasttime = mainclock;
+>
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>
+
+
+
+From wlan at mac.com  Fri Apr  4 05:17:51 2008
+From: wlan at mac.com (wlan at mac.com)
+Date: Fri, 4 Apr 2008 07:17:51 +0200
+Subject: dnsparanoia broken in 1.0.11?
+In-Reply-To: <47F55096.8020505@gmail.com>
+References: <47F22CFC.6030307@gmail.com> <7C78E4E3-5E99-4FD3-AD2C-CF7FB333640F@mac.com> <47F3682A.4000707@gmail.com> <20080402170304.GA28764@dedalo.nexlab.it> <0AB783DF-1CD1-4187-B5BE-FF3A716DC221@mac.com> <47F55096.8020505@gmail.com>
+Message-ID: <274BE4E6-F2E3-4B66-8F3D-4E3420BFE89E@mac.com>
+
+Thanks! :) It only took about 20 minutes or so... goes to show just
+how incredibly flexible Jens made the original code.
+
+I have a much larger changeset in the works... stay tuned for that.
+
+It's not ready for prime-time (or even sub-prime-time) yet, but I'm
+restructuring the code a bit, cleaned up several areas, made DHCP far
+more flexible (so chilli can relay to external DHCP), and I'm
+starting to play with having chilli route packets to one of several
+WAN interfaces -- instead of always sending to the tun/tap (for
+kernel processing/routing).
+
+David
+
+
+On Apr 3, 2008, at 11:48 PM, Gunther Mayer wrote:
+
+> wlan at mac.com wrote:
+>>> dnsparanoia in my opinion shuld respond also on others query, but  
+>>> with a
+>>> fake response like "no record found". I do this and i have no  
+>>> sloweness
+>>> on ff or other browsers
+>>
+>> Good idea... and easy enough. Give svn revision 160 a try! :)
+> Thanks. I'll give it a spin soon once I've ironed out some other  
+> problems...
+>
+> I see you've been busy that changeset of r160 is quite something.  
+> Keep it up ;-)
+>
+> Gunther
+>
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>
+
+
+
+From wlan at mac.com  Fri Apr  4 05:22:48 2008
+From: wlan at mac.com (wlan at mac.com)
+Date: Fri, 4 Apr 2008 07:22:48 +0200
+Subject: uamanyip patch
+In-Reply-To: <47F55510.5060806@gmail.com>
+References: <47F55510.5060806@gmail.com>
+Message-ID: <C7265A99-E520-4E80-B4E8-CE4926F4B7B1@mac.com>
+
+Hi Gunther,
+
+I will definitely give it a look, thanks!
+
+Are you already using this code in a live network?
+
+Btw, if you (or anyone) wants to directly help out chilli, send me  
+over a htpasswd (using md5) generated username/password and I'll set  
+you up.
+
+Cheers,
+David
+
+On Apr 4, 2008, at 12:07 AM, Gunther Mayer wrote:
+
+> Hi David,
+>
+> I've recently tried out the uamanyip option in coova and was very  
+> pleased at how well it works. I want to use it all the time in  
+> future across our network to simplify troubleshooting, should save  
+> a couple of support calls ;-)
+>
+> However, I found a very annoying side effect of uamanyip: It spoofs  
+> ARP requests for just about anything. While that's the point of  
+> uamanyip, it makes it impossible to have other devices such as  
+> access points that you have to access for management purposes on  
+> the chilli network. Say chilli listens on 192.168.182.1 and there's  
+> another access point with static ip 192.168.182.2 (of course not  
+> part of the dynip range) to increase wireless coverage. As soon as  
+> anybody tries to ping or otherwise access 192.168.182.2 because  
+> chilli will immediately claim it through arp before the real device  
+> has a chance to answer - it creates a race condition. Putting such  
+> devices on entirely different subnets makes no difference as their  
+> ip's will be stolen too. The only though somewhat ugly way I found  
+> around that was to clear the arp cache on my client and then force  
+> a mapping with arp -s.
+>
+> So, I thought wouldn't it be cool to let chilli ignore arp requests  
+> for anything other than itself but only on its own subnet. Anything  
+> else will still be caught and spoofed as usual. Hence I came up  
+> with the below patch, I created it against 1.0.11-stable but  
+> applying it to svn (r161) proved trivial, as it's a very short patch.
+>
+> I think this should be done by default as it allows devices on the  
+> chilli subnet to talk to each other properly (of course for real  
+> isolation one would use something like ebtables or a/p isolation).  
+> But of course the patch could be extended to make this optional  
+> (uamanyipignorelan?) if people wanted to keep the current  
+> behaviour. Thoughts?
+>
+> Gunther
+>
+> Index: dhcp.c
+> ===================================================================
+> --- dhcp.c      (revision 161)
+> +++ dhcp.c      (working copy)
+> @@ -2595,6 +2595,14 @@
+>       return 0; /* Only reply if he asked for his router address */
+>     }
+>   }
+> +  else if ((taraddr.s_addr != options.dhcplisten.s_addr) &&
+> +        ((conn->hisip.s_addr & conn->hismask.s_addr) ==
+> +        (reqaddr.s_addr & conn->hismask.s_addr))) {
+> +    /* when uamanyip is on we should ignore arp requests that ARE  
+> within our subnet except of course the ones for ourselves*/
+> +    if (options.debug)
+> +      log_dbg("ARP: request for ip other than us within our subnet 
+> (uamanyip on), ignoring");
+> +    return 0;
+> +  }
+>   conn->lasttime = mainclock;
+>
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>
+
+
+
+From gunther.mayer at googlemail.com  Fri Apr  4 11:11:39 2008
+From: gunther.mayer at googlemail.com (Gunther Mayer)
+Date: Fri, 04 Apr 2008 13:11:39 +0200
+Subject: uamanyip patch
+In-Reply-To: <C7265A99-E520-4E80-B4E8-CE4926F4B7B1@mac.com>
+References: <47F55510.5060806@gmail.com> <C7265A99-E520-4E80-B4E8-CE4926F4B7B1@mac.com>
+Message-ID: <47F60CEB.3080709@gmail.com>
+
+wlan at mac.com wrote:
+> Hi Gunther,
+>
+> I will definitely give it a look, thanks!
+>
+> Are you already using this code in a live network?
+Not yet, but I tested it quite a bit in a testing environment and it 
+works as advertised - at least my patch against v1.0.11 but the changes 
+to r161 are trivial enough. I'm confident enough in its stability that I 
+will start live deployments next week sometime.
+
+I'll have to change all my lan a/p's ip addresses in the process as I 
+too currently have a setup like lc, but now want a single subnet for 
+both management devices and clients as they're all on the same network 
+segment anyway and it will greatly simplify administration (no more 
+manual fiddling with static ip's and all that jazz).
+>
+> Btw, if you (or anyone) wants to directly help out chilli, send me 
+> over a htpasswd (using md5) generated username/password and I'll set 
+> you up.
+Cool, thanks, though I'd only make use of that facility if I end up 
+patching regularly.
+
+Gunther
+
+
+From oguzhank at bilkent.edu.tr  Tue Apr  8 05:58:07 2008
+From: oguzhank at bilkent.edu.tr (Oguzhan Kayhan)
+Date: Tue, 8 Apr 2008 08:58:07 +0300 (EEST)
+Subject: WPA
+Message-ID: <57098.139.179.14.250.1207634287.squirrel@webmail.bilkent.edu.tr>
+
+Hello,
+I am trying to test coova with freeradius 2.0 using wpa-enterprise.
+I enabled WPAGuest in coova, but not much sure about freeradius.Anyway, is
+there much to do in coova part? Or just wpaguest enabling should be ok?
+And i would be glad if smbody has an example config about freeradius if
+they have so.
+
+
+
+
+From mem.corruption at gmail.com  Wed Apr  9 04:40:44 2008
+From: mem.corruption at gmail.com (David Bird)
+Date: Wed, 9 Apr 2008 06:40:44 +0200
+Subject: WPA
+In-Reply-To: <57098.139.179.14.250.1207634287.squirrel@webmail.bilkent.edu.tr>
+References: <57098.139.179.14.250.1207634287.squirrel@webmail.bilkent.edu.tr>
+Message-ID: <ef21d1850804082140p1f2b33d3pbb8f4e6e5f8293f0@mail.gmail.com>
+
+Have you seen this?
+http://coova.org/wiki/index.php/CoovaChilli/WithWPACaptivePortal
+
+On Tue, Apr 8, 2008 at 7:58 AM, Oguzhan Kayhan <oguzhank at bilkent.edu.tr>
+wrote:
+
+> Hello,
+> I am trying to test coova with freeradius 2.0 using wpa-enterprise.
+> I enabled WPAGuest in coova, but not much sure about freeradius.Anyway, is
+> there much to do in coova part? Or just wpaguest enabling should be ok?
+> And i would be glad if smbody has an example config about freeradius if
+> they have so.
+>
+>
+>
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20080409/622b710b/attachment.htm>
+
+From gunther.mayer at googlemail.com  Wed Apr  9 16:02:17 2008
+From: gunther.mayer at googlemail.com (Gunther Mayer)
+Date: Wed, 09 Apr 2008 18:02:17 +0200
+Subject: Disabling administrative session
+Message-ID: <47FCE889.1050200@gmail.com>
+
+Hi there,
+
+Does anybody know of a way to completely disable the 
+"Administrative-User" session in coova? Our system doesn't yet cater for 
+such things and until it does I'd prefer not to get constant 
+authentication errors from chilli in my radius logs. The chilli.conf 
+online man page doesn't say anything and I haven't even got any 
+adminuser or adminpasswd in my chilli.conf.
+
+Gunther
+
+
+From wlan at mac.com  Wed Apr  9 16:11:11 2008
+From: wlan at mac.com (wlan at mac.com)
+Date: Wed, 9 Apr 2008 18:11:11 +0200
+Subject: Disabling administrative session
+In-Reply-To: <47FCE889.1050200@gmail.com>
+References: <47FCE889.1050200@gmail.com>
+Message-ID: <D8E6837F-0BF7-4B0C-A26F-8B5D4B9A1B61@mac.com>
+
+Does using "--adminuser="  (setting it to blank) work?
+
+On Apr 9, 2008, at 6:02 PM, Gunther Mayer wrote:
+
+> Hi there,
+>
+> Does anybody know of a way to completely disable the  
+> "Administrative-User" session in coova? Our system doesn't yet  
+> cater for such things and until it does I'd prefer not to get  
+> constant authentication errors from chilli in my radius logs. The  
+> chilli.conf online man page doesn't say anything and I haven't even  
+> got any adminuser or adminpasswd in my chilli.conf.
+>
+> Gunther
+>
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>
+
+
+
+From gunther.mayer at googlemail.com  Wed Apr  9 22:16:39 2008
+From: gunther.mayer at googlemail.com (Gunther Mayer)
+Date: Thu, 10 Apr 2008 00:16:39 +0200
+Subject: Disabling administrative session
+In-Reply-To: <D8E6837F-0BF7-4B0C-A26F-8B5D4B9A1B61@mac.com>
+References: <47FCE889.1050200@gmail.com> <D8E6837F-0BF7-4B0C-A26F-8B5D4B9A1B61@mac.com>
+Message-ID: <47FD4047.70800@gmail.com>
+
+wlan at mac.com wrote:
+> Does using "--adminuser="  (setting it to blank) work?
+Yep, that works from the command line and "adminuser=" works in the 
+config file. Strange though that
+
+adminuser ''
+
+does not work (are only double quotes allowed in the config file?).
+
+If you give me write access to the wiki I'd gladly improve the 
+documentation of the "adminuser" option along these lines (along with 
+doing a few other cleanups I've been meaning to do).
+
+Gunther
+
+
+From wlan at mac.com  Thu Apr 10 04:47:03 2008
+From: wlan at mac.com (wlan at mac.com)
+Date: Thu, 10 Apr 2008 06:47:03 +0200
+Subject: Disabling administrative session
+In-Reply-To: <47FD4047.70800@gmail.com>
+References: <47FCE889.1050200@gmail.com> <D8E6837F-0BF7-4B0C-A26F-8B5D4B9A1B61@mac.com> <47FD4047.70800@gmail.com>
+Message-ID: <18A6C149-3489-456A-AEDF-A767AB55EFFD@mac.com>
+
+> If you give me write access to the wiki I'd gladly improve the  
+> documentation of the "adminuser" option along these lines (along  
+> with doing a few other cleanups I've been meaning to do).
+
+Awesome. Go ahead and signup and let me know your wiki username. Btw,  
+the only reason I lock wiki pages is because of the relentless  
+spamming that ends up there.
+
+David
+
+
+
+From wlan at mac.com  Fri Apr 11 17:04:52 2008
+From: wlan at mac.com (wlan at mac.com)
+Date: Fri, 11 Apr 2008 19:04:52 +0200
+Subject: new in svn...
+Message-ID: <4947EF93-030F-4A9A-99B4-F31156FE836A@mac.com>
+
+
+http://coova.org/wiki/index.php/CoovaChilli/ChangeLog
+
+Recent changes include:
+
+Bug fix in RADIUS timeout, note that option radiustimeout is in seconds!
+Fix for dnsparanoia whereby chilli will reply with a host not found  
+error instead of dropping the packet suggest by nextime
+New option macauthdeny which will result in the black-listing of  
+devices given an Access-Reject during MAC address authentication
+New internal state called splash in which clients are given Internet  
+access, but enforcing the port 80 http redirect
+new option dhcpradius for mapping of some DHCP options into RADIUS  
+attributes and visa versa during MAC authentication
+new options dhcpgateway and dhcpgatewayport to specific a DHCP  
+gateway (relay) host IP Address and port
+New option (in development) routeif to specify which WAN interface to  
+use for the default - this also enables the use of internal routing  
+instead of everything defaulting to the tun/tap
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20080411/e8fe6adc/attachment.htm>
+
+From ml at t-b-o-h.net  Sat Apr 12 05:03:22 2008
+From: ml at t-b-o-h.net (Tuc at T-B-O-H.NET)
+Date: Sat, 12 Apr 2008 01:03:22 -0400 (EDT)
+Subject: Group based WISPr-Bandwidth-Max-Down
+Message-ID: <200804120503.m3C53MGZ065315@himinbjorg.tucs-beachin-obx-house.com>
+
+Hi,
+
+	Is there any sort of concept/implementation for the ability
+to have basically a group based WISPr-Bandwidth-Max-* ? 
+
+	Lets say I have a hotspot based out of someones house. I'd
+like to give the homeowner an id with a Radius 	Simultaneous-Use
+of 4, and a WISPr-Bandwidth-Max-Down of 256K. All 4 ids can be 
+logged on at the same time, but the COMBINED bandwidth of them all
+is 256K. Then when a hotspot user comes along, they'll be a 
+Simultaneous-Use of 1, but WISPr-Bandwidth-Max-Down of 256K and get
+all 256K for themselves (Theoretical max from the unit at that point
+is 512K, not 1.2M)
+
+	Just wondering. :)
+
+		Thanks, Tuc
+
+
+From wlan at mac.com  Sat Apr 12 05:07:01 2008
+From: wlan at mac.com (wlan at mac.com)
+Date: Sat, 12 Apr 2008 07:07:01 +0200
+Subject: Group based WISPr-Bandwidth-Max-Down
+In-Reply-To: <200804120503.m3C53MGZ065315@himinbjorg.tucs-beachin-obx-house.com>
+References: <200804120503.m3C53MGZ065315@himinbjorg.tucs-beachin-obx-house.com>
+Message-ID: <A2E60E28-BF0D-453C-BC78-7AC6F7E50707@mac.com>
+
+Nope... but, you could probably get something like that setup using  
+iptables based QoS and assigning sessions to certain QoS filters  
+based on the Filter-ID returned in RADIUS authentication.
+
+
+On Apr 12, 2008, at 7:03 AM, Tuc at T-B-O-H.NET wrote:
+
+> Hi,
+>
+> 	Is there any sort of concept/implementation for the ability
+> to have basically a group based WISPr-Bandwidth-Max-* ?
+>
+> 	Lets say I have a hotspot based out of someones house. I'd
+> like to give the homeowner an id with a Radius 	Simultaneous-Use
+> of 4, and a WISPr-Bandwidth-Max-Down of 256K. All 4 ids can be
+> logged on at the same time, but the COMBINED bandwidth of them all
+> is 256K. Then when a hotspot user comes along, they'll be a
+> Simultaneous-Use of 1, but WISPr-Bandwidth-Max-Down of 256K and get
+> all 256K for themselves (Theoretical max from the unit at that point
+> is 512K, not 1.2M)
+>
+> 	Just wondering. :)
+>
+> 		Thanks, Tuc
+>
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>
+
+
+
+From ml at t-b-o-h.net  Sat Apr 12 05:35:53 2008
+From: ml at t-b-o-h.net (Tuc at T-B-O-H.NET)
+Date: Sat, 12 Apr 2008 01:35:53 -0400 (EDT)
+Subject: [chilli] Re: Group based WISPr-Bandwidth-Max-Down
+In-Reply-To: <A2E60E28-BF0D-453C-BC78-7AC6F7E50707@mac.com>
+Message-ID: <200804120535.m3C5ZrcE065957@himinbjorg.tucs-beachin-obx-house.com>
+
+Hi,
+
+	You had me at "Nope..." ;)
+
+	May try to tinker with it though, thanks!
+
+		Tuc
+> 
+> Nope... but, you could probably get something like that setup using  
+> iptables based QoS and assigning sessions to certain QoS filters  
+> based on the Filter-ID returned in RADIUS authentication.
+> 
+> 
+> On Apr 12, 2008, at 7:03 AM, Tuc at T-B-O-H.NET wrote:
+> 
+> > Hi,
+> >
+> > 	Is there any sort of concept/implementation for the ability
+> > to have basically a group based WISPr-Bandwidth-Max-* ?
+> >
+> > 	Lets say I have a hotspot based out of someones house. I'd
+> > like to give the homeowner an id with a Radius 	Simultaneous-Use
+> > of 4, and a WISPr-Bandwidth-Max-Down of 256K. All 4 ids can be
+> > logged on at the same time, but the COMBINED bandwidth of them all
+> > is 256K. Then when a hotspot user comes along, they'll be a
+> > Simultaneous-Use of 1, but WISPr-Bandwidth-Max-Down of 256K and get
+> > all 256K for themselves (Theoretical max from the unit at that point
+> > is 512K, not 1.2M)
+> >
+> > 	Just wondering. :)
+> >
+> > 		Thanks, Tuc
+> >
+> > ---------------------------------------------------------------------
+> > To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> > For additional commands, e-mail: chilli-help at coova.org
+> > Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> > Forum: http://coova.org/phpBB3/viewforum.php?f=4
+> >
+> 
+> 
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+> 
+
+
+
+From oguzhank at bilkent.edu.tr  Sat Apr 12 18:25:08 2008
+From: oguzhank at bilkent.edu.tr (Oguzhan Kayhan)
+Date: Sat, 12 Apr 2008 21:25:08 +0300 (EEST)
+Subject: [chilli] Re: Group based WISPr-Bandwidth-Max-Down
+In-Reply-To: 
+     <200804120535.m3C5ZrcE065957@himinbjorg.tucs-beachin-obx-house.com>
+References: 
+    <200804120535.m3C5ZrcE065957@himinbjorg.tucs-beachin-obx-house.com>
+Message-ID: <1198.85.105.98.159.1208024708.squirrel@webmail.bilkent.edu.tr>
+
+Try using radgroupreply at freeradius field.
+In our setup, the default accounts created in a "limited" group with some
+default settings and all the accounts gets their properties like max-down
+simultaneous-use etc from radgroupreply
+And some special users gets their personal settings at radreply field.
+(or radcheck/radgroupcheck)
+
+> Hi,
+>
+> 	You had me at "Nope..." ;)
+>
+> 	May try to tinker with it though, thanks!
+>
+> 		Tuc
+>>
+>> Nope... but, you could probably get something like that setup using
+>> iptables based QoS and assigning sessions to certain QoS filters
+>> based on the Filter-ID returned in RADIUS authentication.
+>>
+>>
+>> On Apr 12, 2008, at 7:03 AM, Tuc at T-B-O-H.NET wrote:
+>>
+>> > Hi,
+>> >
+>> > 	Is there any sort of concept/implementation for the ability
+>> > to have basically a group based WISPr-Bandwidth-Max-* ?
+>> >
+>> > 	Lets say I have a hotspot based out of someones house. I'd
+>> > like to give the homeowner an id with a Radius 	Simultaneous-Use
+>> > of 4, and a WISPr-Bandwidth-Max-Down of 256K. All 4 ids can be
+>> > logged on at the same time, but the COMBINED bandwidth of them all
+>> > is 256K. Then when a hotspot user comes along, they'll be a
+>> > Simultaneous-Use of 1, but WISPr-Bandwidth-Max-Down of 256K and get
+>> > all 256K for themselves (Theoretical max from the unit at that point
+>> > is 512K, not 1.2M)
+>> >
+>> > 	Just wondering. :)
+>> >
+>> > 		Thanks, Tuc
+>> >
+>> > ---------------------------------------------------------------------
+>> > To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+>> > For additional commands, e-mail: chilli-help at coova.org
+>> > Wiki: http://coova.org/wiki/index.php/CoovaChilli
+>> > Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>> >
+>>
+>>
+>> ---------------------------------------------------------------------
+>> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+>> For additional commands, e-mail: chilli-help at coova.org
+>> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+>> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>>
+>
+>
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>
+>
+
+
+
+
+From ml at t-b-o-h.net  Sat Apr 12 18:53:33 2008
+From: ml at t-b-o-h.net (Tuc at T-B-O-H.NET)
+Date: Sat, 12 Apr 2008 14:53:33 -0400 (EDT)
+Subject: [chilli] Re: [chilli] Re: Group based WISPr-Bandwidth-Max-Down
+In-Reply-To: <1198.85.105.98.159.1208024708.squirrel@webmail.bilkent.edu.tr>
+Message-ID: <200804121853.m3CIrXDc075917@himinbjorg.tucs-beachin-obx-house.com>
+
+Hi,
+
+	Thanks, but the issue isn't grouping in RADIUS. I've already
+got a "Homeowner" group where I set everything. The problem is that
+Simultaneous-Use is set to 4, and WISPr-Bandwidth-Max-Down is 256000.
+When I fire all 4 up and download a huge ISO, I can pull 1Mbs. I want
+the COMBINED of all 4 to be 256000. But then if someone else logs
+on, and they have 256000 with Simultaneous-Use of 1, they get a
+256000 slice for themselves too. 
+
+		Thanks, Tuc
+
+> 
+> Try using radgroupreply at freeradius field.
+> In our setup, the default accounts created in a "limited" group with some
+> default settings and all the accounts gets their properties like max-down
+> simultaneous-use etc from radgroupreply
+> And some special users gets their personal settings at radreply field.
+> (or radcheck/radgroupcheck)
+> 
+> > Hi,
+> >
+> > 	You had me at "Nope..." ;)
+> >
+> > 	May try to tinker with it though, thanks!
+> >
+> > 		Tuc
+> >>
+> >> Nope... but, you could probably get something like that setup using
+> >> iptables based QoS and assigning sessions to certain QoS filters
+> >> based on the Filter-ID returned in RADIUS authentication.
+> >>
+> >>
+> >> On Apr 12, 2008, at 7:03 AM, Tuc at T-B-O-H.NET wrote:
+> >>
+> >> > Hi,
+> >> >
+> >> > 	Is there any sort of concept/implementation for the ability
+> >> > to have basically a group based WISPr-Bandwidth-Max-* ?
+> >> >
+> >> > 	Lets say I have a hotspot based out of someones house. I'd
+> >> > like to give the homeowner an id with a Radius 	Simultaneous-Use
+> >> > of 4, and a WISPr-Bandwidth-Max-Down of 256K. All 4 ids can be
+> >> > logged on at the same time, but the COMBINED bandwidth of them all
+> >> > is 256K. Then when a hotspot user comes along, they'll be a
+> >> > Simultaneous-Use of 1, but WISPr-Bandwidth-Max-Down of 256K and get
+> >> > all 256K for themselves (Theoretical max from the unit at that point
+> >> > is 512K, not 1.2M)
+> >> >
+> >> > 	Just wondering. :)
+> >> >
+> >> > 		Thanks, Tuc
+> >> >
+> >> > ---------------------------------------------------------------------
+> >> > To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> >> > For additional commands, e-mail: chilli-help at coova.org
+> >> > Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> >> > Forum: http://coova.org/phpBB3/viewforum.php?f=4
+> >> >
+> >>
+> >>
+> >> ---------------------------------------------------------------------
+> >> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> >> For additional commands, e-mail: chilli-help at coova.org
+> >> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> >> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+> >>
+> >
+> >
+> > ---------------------------------------------------------------------
+> > To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> > For additional commands, e-mail: chilli-help at coova.org
+> > Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> > Forum: http://coova.org/phpBB3/viewforum.php?f=4
+> >
+> >
+> 
+> 
+> 
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+> 
+
+
+
+From cfinnegan at csc.com.au  Sun Apr 13 09:22:53 2008
+From: cfinnegan at csc.com.au (Ciaran Finnegan)
+Date: Sun, 13 Apr 2008 20:22:53 +1100
+Subject: [chilli] Re: [chilli] Re: Group based WISPr-Bandwidth-Max-Down
+Message-ID: <OFCA25742A.003388AC-ONCA25742A.003388AC-CA25742A.003388AC@csc.com>
+
+Return Receipt
+                                                                           
+   Your       Re: [chilli] Re: [chilli] Re: Group based                    
+   document:  WISPr-Bandwidth-Max-Down                                     
+                                                                           
+   was        Ciaran Finnegan/GIS/CSC                                      
+   received                                                                
+   by:                                                                     
+                                                                           
+   at:        04/13/2008 08:22:53 PM ZE10                                  
+                                                                           
+
+
+
+
+
+
+From cfinnegan at csc.com.au  Sun Apr 13 09:23:23 2008
+From: cfinnegan at csc.com.au (Ciaran Finnegan)
+Date: Sun, 13 Apr 2008 20:23:23 +1100
+Subject: [chilli] Re: Group based WISPr-Bandwidth-Max-Down
+Message-ID: <OFCA25742A.00339469-ONCA25742A.00339469-CA25742A.00339469@csc.com>
+
+Return Receipt
+                                                                           
+   Your       Re: [chilli] Re: Group based WISPr-Bandwidth-Max-Down        
+   document:                                                               
+                                                                           
+   was        Ciaran Finnegan/GIS/CSC                                      
+   received                                                                
+   by:                                                                     
+                                                                           
+   at:        04/13/2008 08:23:23 PM ZE10                                  
+                                                                           
+
+
+
+
+
+
+From cfinnegan at csc.com.au  Sun Apr 13 09:24:37 2008
+From: cfinnegan at csc.com.au (Ciaran Finnegan)
+Date: Sun, 13 Apr 2008 20:24:37 +1100
+Subject: Group based WISPr-Bandwidth-Max-Down
+Message-ID: <OFCA25742A.0033B140-ONCA25742A.0033B140-CA25742A.0033B140@csc.com>
+
+Return Receipt
+                                                                           
+   Your       Group based WISPr-Bandwidth-Max-Down                         
+   document:                                                               
+                                                                           
+   was        Ciaran Finnegan/GIS/CSC                                      
+   received                                                                
+   by:                                                                     
+                                                                           
+   at:        04/13/2008 08:24:37 PM ZE10                                  
+                                                                           
+
+
+
+
+
+
+From wlan at mac.com  Sun Apr 13 15:39:14 2008
+From: wlan at mac.com (wlan at mac.com)
+Date: Sun, 13 Apr 2008 17:39:14 +0200
+Subject: Easy login from your phone (or firefox)
+Message-ID: <3094323E-8C71-4E2D-87C9-C3E14A9E4E7B@mac.com>
+
+Hello,
+
+A couple 'extensions' to make it easier to login past your captive  
+portal.
+
+ From your phone: http://coova.org/wiki/index.php/CoovaSX
+ From firefox: http://coova.org/wiki/index.php/CoovaFX
+
+Comments and suggestions welcome!
+http://coova.org/phpBB3/viewforum.php?f=11
+
+Cheers,
+David
+
+
+From chilli at silverserver.at  Mon Apr 14 10:10:19 2008
+From: chilli at silverserver.at (lc)
+Date: Mon, 14 Apr 2008 12:10:19 +0200
+Subject: DNS only works with dnsparanioa 
+In-Reply-To: <4947EF93-030F-4A9A-99B4-F31156FE836A@mac.com>
+References: <4947EF93-030F-4A9A-99B4-F31156FE836A@mac.com>
+Message-ID: <55E682BC-B719-45A1-88D6-B15C9D6F8B32@silverserver.at>
+
+Hi,
+
+great to see so much progress!
+
+just tried SVN 163 and ran into a DNS related issue. I run coova- 
+chilli on OpenWRT which acts as DNS server as well. Therefore the  
+option dns1 is set to the IP address of the tun0 interface  
+(192.168.182.1).
+
+This setup was working with SVN 159; with 163 it is not working  
+anymore. The client simply does not get any replies to dns requests.
+
+I played a little and found a work-around:
+as soon as I start chilli with the dnsparania option everything works  
+as it should. Without it it seems chilli gets so paranoid that it  
+refuses to handle dns requests at all :)
+
+Cheers,
+lc
+
+
+Am 11.04.2008 um 19:04 schrieb wlan at mac.com:
+>
+> http://coova.org/wiki/index.php/CoovaChilli/ChangeLog
+>
+> Recent changes include:
+>
+> 	? Bug fix in RADIUS timeout, note that option radiustimeout is in  
+> seconds!
+> 	? Fix for dnsparanoia whereby chilli will reply with a host not  
+> found error instead of dropping the packet suggest by nextime
+> 	? New option macauthdeny which will result in the black-listing of  
+> devices given an Access-Reject during MAC address authentication
+> 	? New internal state called splash in which clients are given  
+> Internet access, but enforcing the port 80 http redirect
+> 	? new option dhcpradius for mapping of some DHCP options into  
+> RADIUS attributes and visa versa during MAC authentication
+> 	? new options dhcpgateway and dhcpgatewayport to specific a DHCP  
+> gateway (relay) host IP Address and port
+> 	? New option (in development) routeif to specify which WAN  
+> interface to use for the default - this also enables the use of  
+> internal routing instead of everything defaulting to the tun/tap
+>
+
+
+
+From wlan at mac.com  Mon Apr 14 10:49:25 2008
+From: wlan at mac.com (wlan at mac.com)
+Date: Mon, 14 Apr 2008 12:49:25 +0200
+Subject: DNS only works with dnsparanioa
+In-Reply-To: <55E682BC-B719-45A1-88D6-B15C9D6F8B32@silverserver.at>
+References: <4947EF93-030F-4A9A-99B4-F31156FE836A@mac.com> <55E682BC-B719-45A1-88D6-B15C9D6F8B32@silverserver.at>
+Message-ID: <03DFA98C-1619-47E2-8E3A-ABF01E59A18D@mac.com>
+
+try rev 164 .. thx
+
+On Apr 14, 2008, at 12:10 PM, lc wrote:
+
+> Hi,
+>
+> great to see so much progress!
+>
+> just tried SVN 163 and ran into a DNS related issue. I run coova- 
+> chilli on OpenWRT which acts as DNS server as well. Therefore the  
+> option dns1 is set to the IP address of the tun0 interface  
+> (192.168.182.1).
+>
+> This setup was working with SVN 159; with 163 it is not working  
+> anymore. The client simply does not get any replies to dns requests.
+>
+> I played a little and found a work-around:
+> as soon as I start chilli with the dnsparania option everything  
+> works as it should. Without it it seems chilli gets so paranoid  
+> that it refuses to handle dns requests at all :)
+>
+> Cheers,
+> lc
+>
+>
+> Am 11.04.2008 um 19:04 schrieb wlan at mac.com:
+>>
+>> http://coova.org/wiki/index.php/CoovaChilli/ChangeLog
+>>
+>> Recent changes include:
+>>
+>> 	? Bug fix in RADIUS timeout, note that option radiustimeout is in  
+>> seconds!
+>> 	? Fix for dnsparanoia whereby chilli will reply with a host not  
+>> found error instead of dropping the packet suggest by nextime
+>> 	? New option macauthdeny which will result in the black-listing  
+>> of devices given an Access-Reject during MAC address authentication
+>> 	? New internal state called splash in which clients are given  
+>> Internet access, but enforcing the port 80 http redirect
+>> 	? new option dhcpradius for mapping of some DHCP options into  
+>> RADIUS attributes and visa versa during MAC authentication
+>> 	? new options dhcpgateway and dhcpgatewayport to specific a DHCP  
+>> gateway (relay) host IP Address and port
+>> 	? New option (in development) routeif to specify which WAN  
+>> interface to use for the default - this also enables the use of  
+>> internal routing instead of everything defaulting to the tun/tap
+>>
+>
+>
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>
+
+
+
+From ahmet.basmaz at gmail.com  Tue Apr 15 21:54:12 2008
+From: ahmet.basmaz at gmail.com (Ahmet)
+Date: Wed, 16 Apr 2008 00:54:12 +0300
+Subject: PPTP start script
+In-Reply-To: <55E682BC-B719-45A1-88D6-B15C9D6F8B32@silverserver.at>
+References: <4947EF93-030F-4A9A-99B4-F31156FE836A@mac.com> <55E682BC-B719-45A1-88D6-B15C9D6F8B32@silverserver.at>
+Message-ID: <48052404.5020303@gmail.com>
+
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20080416/91187280/attachment.htm>
+
+From nextime at nexlab.it  Tue Apr 15 23:16:00 2008
+From: nextime at nexlab.it (nextime at nexlab.it)
+Date: Wed, 16 Apr 2008 01:16:00 +0200
+Subject: PPTP start script
+In-Reply-To: <48052404.5020303@gmail.com>
+References: <4947EF93-030F-4A9A-99B4-F31156FE836A@mac.com> <55E682BC-B719-45A1-88D6-B15C9D6F8B32@silverserver.at> <48052404.5020303@gmail.com>
+Message-ID: <20080415231600.GA27536@dedalo.nexlab.it>
+
+Please, post only with text email or at least with text + html, not html
+only.
+
+Also, prefer to use utf-8 or ascii encoding
+
+
+-- 
+
+Franco (nextime) Lanza
+Busto Arsizio - Italy
+SIP://casa at casa.nexlab.it
+
+NO TCPA: http://www.no1984.org
+you can download my public key at:
+http://danex.nexlab.it/nextime.asc || Key Servers
+Key ID = D6132D50
+Key fingerprint = 66ED 5211 9D59 DA53 1DF7  4189 DFED F580 D613 2D50
+-----------------------------------
+echo 16i[q]sa[ln0=aln100%Pln100/snlbx]sbA0D212153574F444E49572045535520454D20454B414D204F54204847554F4E452059415020544F4E4E4143205345544147204C4C4942snlbxq | dc
+-----------------------------------
+
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: not available
+Type: application/pgp-signature
+Size: 189 bytes
+Desc: not available
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20080416/740af1da/attachment.pgp>
+
+From gunther.mayer at googlemail.com  Thu Apr 17 21:42:20 2008
+From: gunther.mayer at googlemail.com (Gunther Mayer)
+Date: Thu, 17 Apr 2008 23:42:20 +0200
+Subject: PPTP start script
+In-Reply-To: <48052404.5020303@gmail.com>
+References: <4947EF93-030F-4A9A-99B4-F31156FE836A@mac.com> <55E682BC-B719-45A1-88D6-B15C9D6F8B32@silverserver.at> <48052404.5020303@gmail.com>
+Message-ID: <4807C43C.4090403@gmail.com>
+
+Ahmet wrote:
+> Sometimes I see double pptp process are running simultaneously on my box.
+> Wont be usefull if it is changed from
+> /
+> if [ -n "$2" ]; then
+>             runppp "$2"/
+>
+> to something like
+> /
+> if [ -n "$2" ]; then
+>           pid= $(getpid $2)
+>            if [ -n "$pid" ]; then
+>                 echo "checkpptp: ppp is still alive"
+>            else
+>                 runppp "$2"
+>           fi
+>
+> /in /etc/init.d/S80pptp
+Yes, that does make sense, but I think you're posting this to the wrong 
+list. pptp has got nothing to do with coova chilli, you best post this 
+on the openwrt forum addressed to the devs...
+
+Gunther
+
+
+From gunther.mayer at googlemail.com  Thu Apr 17 21:42:25 2008
+From: gunther.mayer at googlemail.com (Gunther Mayer)
+Date: Thu, 17 Apr 2008 23:42:25 +0200
+Subject: Accounting badly broken in v1.0.11
+Message-ID: <4807C441.2000609@gmail.com>
+
+Hi guys,
+
+I just wanted to share my experiences with v1.0.11 with everyone 
+thinking of upgrading to that "latest" release. At first I noticed our 
+radius/db accounting entries got all messed up for some sessions and 
+when I started investigating in more detail I stumbled across a whack 
+load of spurious radius packets that chilli sends to the radius server 
+halfway through the session or even after it ended:
+
+    * replays of entire previous sessions (from accounting start to all
+      interim updates, sometimes even all the way to accounting stop)
+    * replay of current session (from accounting start to zero or more
+      interim updates)
+    * accounting-on packets
+
+This can get really hairy to try and work around in the radius server 
+code and is giving me grey hair. It seems like quite a serious bug to me 
+but others here may have more robust radius code than mine so perhaps 
+haven't noticed this yet.
+
+David if this is all new to you I'll gladly follow up with a whole bunch 
+of tcpdump's that I've prepared which isolate the problems. Reproducing 
+this is fairly easy too, just fire up a session and watch the radius 
+packets that flow past...
+
+Has anyone been bitten by this too? Has anyone worked around this 
+successfully? Has anyone experienced something similar at least in post 
+svn r147 (1.0.11)?
+
+I'm stuck here trying to release an upgrade to our system which involves 
+JSON (I'm currently based on 1.0.6 just before JSON got introduced) but 
+clearly cannot use latest release, am a bit wary of using bleeding edge 
+trunk in production but also don't want to successively test each 
+earlier release (1.0.10 has known issues, 1.0.7-9 anyone?) in the light 
+of this.
+
+Gunther
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20080417/f524c277/attachment.htm>
+
+From wlan at mac.com  Fri Apr 18 04:51:30 2008
+From: wlan at mac.com (wlan at mac.com)
+Date: Fri, 18 Apr 2008 06:51:30 +0200
+Subject: Accounting badly broken in v1.0.11
+In-Reply-To: <4807C441.2000609@gmail.com>
+References: <4807C441.2000609@gmail.com>
+Message-ID: <357BDC80-E9A2-4ADE-8CE5-1782B42408BC@mac.com>
+
+If you are having issues with the current release, it is probably  
+best to try the svn version.
+
+I can't imagine why chilli would be sending out odd RADIUS half way  
+during a session. Is it perhaps not getting any Accounting-Responses  
+coming back (and hence you see the retries)?
+
+Accounting-On/Off is a new(er) feature and is per RFC - useful for  
+clearing out stale sessions when you know chilli rebooted.
+
+David
+
+On Apr 17, 2008, at 11:42 PM, Gunther Mayer wrote:
+
+> Hi guys,
+>
+> I just wanted to share my experiences with v1.0.11 with everyone  
+> thinking of upgrading to that "latest" release. At first I noticed  
+> our radius/db accounting entries got all messed up for some  
+> sessions and when I started investigating in more detail I stumbled  
+> across a whack load of spurious radius packets that chilli sends to  
+> the radius server halfway through the session or even after it ended:
+> replays of entire previous sessions (from accounting start to all  
+> interim updates, sometimes even all the way to accounting stop)
+> replay of current session (from accounting start to zero or more  
+> interim updates)
+> accounting-on packets
+> This can get really hairy to try and work around in the radius  
+> server code and is giving me grey hair. It seems like quite a  
+> serious bug to me but others here may have more robust radius code  
+> than mine so perhaps haven't noticed this yet.
+>
+> David if this is all new to you I'll gladly follow up with a whole  
+> bunch of tcpdump's that I've prepared which isolate the problems.  
+> Reproducing this is fairly easy too, just fire up a session and  
+> watch the radius packets that flow past...
+>
+> Has anyone been bitten by this too? Has anyone worked around this  
+> successfully? Has anyone experienced something similar at least in  
+> post svn r147 (1.0.11)?
+>
+> I'm stuck here trying to release an upgrade to our system which  
+> involves JSON (I'm currently based on 1.0.6 just before JSON got  
+> introduced) but clearly cannot use latest release, am a bit wary of  
+> using bleeding edge trunk in production but also don't want to  
+> successively test each earlier release (1.0.10 has known issues,  
+> 1.0.7-9 anyone?) in the light of this.
+>
+> Gunther
+
+
+
+From gunther.mayer at googlemail.com  Fri Apr 18 09:36:46 2008
+From: gunther.mayer at googlemail.com (Gunther Mayer)
+Date: Fri, 18 Apr 2008 11:36:46 +0200
+Subject: Accounting badly broken in v1.0.11
+In-Reply-To: <357BDC80-E9A2-4ADE-8CE5-1782B42408BC@mac.com>
+References: <4807C441.2000609@gmail.com> <357BDC80-E9A2-4ADE-8CE5-1782B42408BC@mac.com>
+Message-ID: <48086BAE.5020003@gmail.com>
+
+wlan at mac.com wrote:
+> If you are having issues with the current release, it is probably best 
+> to try the svn version.
+Ok, guess I have no choice but to give that a spin now.
+>
+> I can't imagine why chilli would be sending out odd RADIUS half way 
+> during a session. Is it perhaps not getting any Accounting-Responses 
+> coming back (and hence you see the retries)?
+Nope, there is one and only one accounting response coming back for each 
+and every request, even for all the bogus ones which get sent in very 
+quick succession.
+>
+> Accounting-On/Off is a new(er) feature and is per RFC - useful for 
+> clearing out stale sessions when you know chilli rebooted.
+I know that but Accounting-On has got no place whatsoever halfway 
+through a live session. In fact a well written system would do exactly 
+what you say - honour these packets and clear out all sessions from this 
+nas which are still open. If I did that I'd close sessions that are 
+perfectly fine...
+
+I think to demonstrate to you the seriousness of these corruptions that 
+I recorded I will send you those packet dumps that I created. I'm not 
+sure if this list strips binary attachments so just to be safe I'll send 
+them to you directly but if anyone else would like to see them let me know.
+
+Gunther
+
+
+From wlan at mac.com  Fri Apr 18 11:47:26 2008
+From: wlan at mac.com (wlan at mac.com)
+Date: Fri, 18 Apr 2008 13:47:26 +0200
+Subject: Accounting badly broken in v1.0.11
+In-Reply-To: <48086BAE.5020003@gmail.com>
+References: <4807C441.2000609@gmail.com> <357BDC80-E9A2-4ADE-8CE5-1782B42408BC@mac.com> <48086BAE.5020003@gmail.com>
+Message-ID: <428D6D56-0DCB-445C-93CC-D2ECB6A9CC6D@mac.com>
+
+Thanks for the report! I'm looking into it now...
+
+Please do give the svn version a shot... try in debug mode (-fd) and  
+extra logging (--debugfacility 255) to see it report what's in the  
+RADUS retrans queue. I'm trying to reproduce your problem now with  
+current svn version.
+
+David
+
+On Apr 18, 2008, at 11:36 AM, Gunther Mayer wrote:
+
+> wlan at mac.com wrote:
+>> If you are having issues with the current release, it is probably  
+>> best to try the svn version.
+> Ok, guess I have no choice but to give that a spin now.
+>>
+>> I can't imagine why chilli would be sending out odd RADIUS half  
+>> way during a session. Is it perhaps not getting any Accounting- 
+>> Responses coming back (and hence you see the retries)?
+> Nope, there is one and only one accounting response coming back for  
+> each and every request, even for all the bogus ones which get sent  
+> in very quick succession.
+>>
+>> Accounting-On/Off is a new(er) feature and is per RFC - useful for  
+>> clearing out stale sessions when you know chilli rebooted.
+> I know that but Accounting-On has got no place whatsoever halfway  
+> through a live session. In fact a well written system would do  
+> exactly what you say - honour these packets and clear out all  
+> sessions from this nas which are still open. If I did that I'd  
+> close sessions that are perfectly fine...
+>
+> I think to demonstrate to you the seriousness of these corruptions  
+> that I recorded I will send you those packet dumps that I created.  
+> I'm not sure if this list strips binary attachments so just to be  
+> safe I'll send them to you directly but if anyone else would like  
+> to see them let me know.
+>
+> Gunther
+>
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>
+
+
+
+From gunther.mayer at googlemail.com  Fri Apr 18 12:47:35 2008
+From: gunther.mayer at googlemail.com (Gunther Mayer)
+Date: Fri, 18 Apr 2008 14:47:35 +0200
+Subject: Accounting badly broken in v1.0.11
+In-Reply-To: <428D6D56-0DCB-445C-93CC-D2ECB6A9CC6D@mac.com>
+References: <4807C441.2000609@gmail.com> <357BDC80-E9A2-4ADE-8CE5-1782B42408BC@mac.com> <48086BAE.5020003@gmail.com> <428D6D56-0DCB-445C-93CC-D2ECB6A9CC6D@mac.com>
+Message-ID: <48089867.7070806@gmail.com>
+
+wlan at mac.com wrote:
+> Thanks for the report! I'm looking into it now...
+>
+> Please do give the svn version a shot... try in debug mode (-fd) and 
+> extra logging (--debugfacility 255) to see it report what's in the 
+> RADUS retrans queue. I'm trying to reproduce your problem now with 
+> current svn version.
+I just did reproduce it with r165 with is latest svn. I'm sending you 
+another tcpdump separately; suffice to say that it's even worse in 
+current svn. Chilli cannot even properly handle the very first radius 
+session since a fresh starts up. It replays its own session constantly, 
+throws in accounting-on and accounting-start packets all the time and 
+just causes general nastiness that no radius server should be expected 
+to handle for sustained periods and in great amounts :-(
+
+Apologies, I did not do this in debug mode and with extra logging but if 
+you are unable to reproduce this I'll gladly follow up with this.
+
+Gunther
+
+
+From wlan at mac.com  Fri Apr 18 12:55:42 2008
+From: wlan at mac.com (wlan at mac.com)
+Date: Fri, 18 Apr 2008 14:55:42 +0200
+Subject: Accounting badly broken in v1.0.11
+In-Reply-To: <48089867.7070806@gmail.com>
+References: <4807C441.2000609@gmail.com> <357BDC80-E9A2-4ADE-8CE5-1782B42408BC@mac.com> <48086BAE.5020003@gmail.com> <428D6D56-0DCB-445C-93CC-D2ECB6A9CC6D@mac.com> <48089867.7070806@gmail.com>
+Message-ID: <3FA5370F-2DF4-4ABE-A8E7-2E4D8108140D@mac.com>
+
+Are you also able to verify chilli is getting the RADIUS replies by  
+doing a tcpdump from the same box as chilli?
+
+On Apr 18, 2008, at 2:47 PM, Gunther Mayer wrote:
+
+> wlan at mac.com wrote:
+>> Thanks for the report! I'm looking into it now...
+>>
+>> Please do give the svn version a shot... try in debug mode (-fd)  
+>> and extra logging (--debugfacility 255) to see it report what's in  
+>> the RADUS retrans queue. I'm trying to reproduce your problem now  
+>> with current svn version.
+> I just did reproduce it with r165 with is latest svn. I'm sending  
+> you another tcpdump separately; suffice to say that it's even worse  
+> in current svn. Chilli cannot even properly handle the very first  
+> radius session since a fresh starts up. It replays its own session  
+> constantly, throws in accounting-on and accounting-start packets  
+> all the time and just causes general nastiness that no radius  
+> server should be expected to handle for sustained periods and in  
+> great amounts :-(
+>
+> Apologies, I did not do this in debug mode and with extra logging  
+> but if you are unable to reproduce this I'll gladly follow up with  
+> this.
+>
+> Gunther
+>
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>
+
+
+
+From contact at sriviere.info  Fri Apr 18 16:20:27 2008
+From: contact at sriviere.info (=?ISO-8859-1?Q?SR_Infosyst=E8mes?=)
+Date: Fri, 18 Apr 2008 18:20:27 +0200
+Subject: Accounting badly broken in v1.0.11
+In-Reply-To: <48089867.7070806@gmail.com>
+References: <4807C441.2000609@gmail.com> <357BDC80-E9A2-4ADE-8CE5-1782B42408BC@mac.com> <48086BAE.5020003@gmail.com> <428D6D56-0DCB-445C-93CC-D2ECB6A9CC6D@mac.com> <48089867.7070806@gmail.com>
+Message-ID: <4808CA4B.8040003@sriviere.info>
+
+> Chilli cannot even properly handle the very first radius 
+> session since a fresh starts up.
+
+Setting up a new system... I've dropped my old (c-c 1.0.7) but qualified 
+coova-chilli for the 1.0.11 with a fresh recompiling and I confirm 
+seeing strage behaviour at start... No time to dig it (i'm in a hurry to 
+delivery but a simple radiusd -X and chilli --fg --debug in 2 tty could 
+be a quick start).
+
+By the way...
+
+1) Many thanks for this amazing software, who saved me (my old system 
+used nocat) ! Coova-Chilli is really hot !
+
+2) Which release (more recent than 1.0.7) you may suggest (for the real 
+world) ?
+
+All the best from france :)
+
+-- 
+LA SOLUTION ? vos probl?mes INFORMATIQUES
+
+SR Infosyst?mes
+15, rue du Temple
+17310 St Pierre d'Ol?ron
+Ile d'Ol?ron - France
+
+Mobile : 06 89 29 88 44
+Fixe :   09 54 10 55 60 (appel local)
+Fax :    05 46 36 30 59
+Site :   www.sriviere.info
+Email :  contact at sriviere.info
+Skype :  stephane.riviere
+
+Certificat X509 : disponible sur le site
+
+
+From wlan at mac.com  Fri Apr 18 17:16:11 2008
+From: wlan at mac.com (wlan at mac.com)
+Date: Fri, 18 Apr 2008 19:16:11 +0200
+Subject: Accounting badly broken in v1.0.11
+In-Reply-To: <4808CA4B.8040003@sriviere.info>
+References: <4807C441.2000609@gmail.com> <357BDC80-E9A2-4ADE-8CE5-1782B42408BC@mac.com> <48086BAE.5020003@gmail.com> <428D6D56-0DCB-445C-93CC-D2ECB6A9CC6D@mac.com> <48089867.7070806@gmail.com> <4808CA4B.8040003@sriviere.info>
+Message-ID: <631E99A8-2CF2-4E60-8C0E-CA5FECE217CD@mac.com>
+
+I'm not certain of the problems reported by previously. Gunther, can  
+you confirm that chilli is indeed getting the responses? Otherwise,  
+the behavior he describes is, basically, retransmission doing its  
+job. I have heard reports of v1.0.11 already "in the wild" without  
+major problems.  You are also encouraged to test the svn version.
+
+cheers
+
+On Apr 18, 2008, at 6:20 PM, SR Infosyst?mes wrote:
+
+>> Chilli cannot even properly handle the very first radius session  
+>> since a fresh starts up.
+>
+> Setting up a new system... I've dropped my old (c-c 1.0.7) but  
+> qualified coova-chilli for the 1.0.11 with a fresh recompiling and  
+> I confirm seeing strage behaviour at start... No time to dig it  
+> (i'm in a hurry to delivery but a simple radiusd -X and chilli --fg  
+> --debug in 2 tty could be a quick start).
+>
+> By the way...
+>
+> 1) Many thanks for this amazing software, who saved me (my old  
+> system used nocat) ! Coova-Chilli is really hot !
+>
+> 2) Which release (more recent than 1.0.7) you may suggest (for the  
+> real world) ?
+>
+> All the best from france :)
+>
+> -- 
+> LA SOLUTION ? vos probl?mes INFORMATIQUES
+>
+> SR Infosyst?mes
+> 15, rue du Temple
+> 17310 St Pierre d'Ol?ron
+> Ile d'Ol?ron - France
+>
+> Mobile : 06 89 29 88 44
+> Fixe :   09 54 10 55 60 (appel local)
+> Fax :    05 46 36 30 59
+> Site :   www.sriviere.info
+> Email :  contact at sriviere.info
+> Skype :  stephane.riviere
+>
+> Certificat X509 : disponible sur le site
+>
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>
+
+
+
+From gunther.mayer at googlemail.com  Sun Apr 20 23:05:47 2008
+From: gunther.mayer at googlemail.com (Gunther Mayer)
+Date: Mon, 21 Apr 2008 01:05:47 +0200
+Subject: Accounting NOT broken in v1.0.11 (was: Accounting badly broken in
+ v1.0.11)
+In-Reply-To: <631E99A8-2CF2-4E60-8C0E-CA5FECE217CD@mac.com>
+References: <4807C441.2000609@gmail.com> <357BDC80-E9A2-4ADE-8CE5-1782B42408BC@mac.com> <48086BAE.5020003@gmail.com> <428D6D56-0DCB-445C-93CC-D2ECB6A9CC6D@mac.com> <48089867.7070806@gmail.com> <4808CA4B.8040003@sriviere.info> <631E99A8-2CF2-4E60-8C0E-CA5FECE217CD@mac.com>
+Message-ID: <480BCC4B.8080801@gmail.com>
+
+wlan at mac.com wrote:
+> I'm not certain of the problems reported by previously. Gunther, can 
+> you confirm that chilli is indeed getting the responses? Otherwise, 
+> the behavior he describes is, basically, retransmission doing its job. 
+> I have heard reports of v1.0.11 already "in the wild" without major 
+> problems.  You are also encouraged to test the svn version.
+Hi David,
+
+I carried out the packet dumps again from the box that runs chilli and 
+even though the replies were delivered fine it turns out that it was a 
+firewall rule of mine that dropped them like a hot potato. I had to use 
+the coaport option together with coanoipcheck (because my PoD packets 
+would come through an openvpn tunnel, not from any of the defined 
+radiusservers) so tried to harden my setup by doing the checking in the 
+firewall. Unfortunately in the process I didn't realise that the coaport 
+option also causes all Accounting Requests to be sent from that port 
+which is where my assumptions broke down.
+
+To cut a long story short it was my stupidity rather than your code that 
+caused the mess and the behaviour I saw indeed was just chilli trying to 
+retransmit whatever it never received a reply for. The radauth stuff of 
+course ran flawlessly so that I could log in fine, which is why I never 
+detected the problem when I did my initial firewall testing.
+
+I apologise for jumping to conclusions despite days of debugging...
+
+In the end I can recommend v1.0.11 for all purposes.
+
+Gunther
+
+
+From wlan at mac.com  Mon Apr 21 04:39:36 2008
+From: wlan at mac.com (wlan at mac.com)
+Date: Mon, 21 Apr 2008 06:39:36 +0200
+Subject: Accounting NOT broken in v1.0.11 (was: Accounting badly broken in v1.0.11)
+In-Reply-To: <480BCC4B.8080801@gmail.com>
+References: <4807C441.2000609@gmail.com> <357BDC80-E9A2-4ADE-8CE5-1782B42408BC@mac.com> <48086BAE.5020003@gmail.com> <428D6D56-0DCB-445C-93CC-D2ECB6A9CC6D@mac.com> <48089867.7070806@gmail.com> <4808CA4B.8040003@sriviere.info> <631E99A8-2CF2-4E60-8C0E-CA5FECE217CD@mac.com> <480BCC4B.8080801@gmail.com>
+Message-ID: <F5FE3C0F-B548-4F5B-AC68-17A8537FD9E9@mac.com>
+
+No worries, we all have those days :)
+
+I figured it wasn't too serious considering we would have heard about  
+it already from others. Just like IT professionals, we don't really  
+hear from our customers until there are problems. Not many people  
+come to the list or forum with "it works great, no complaints" :)
+
+David
+
+On Apr 21, 2008, at 1:05 AM, Gunther Mayer wrote:
+
+> wlan at mac.com wrote:
+>> I'm not certain of the problems reported by previously. Gunther,  
+>> can you confirm that chilli is indeed getting the responses?  
+>> Otherwise, the behavior he describes is, basically, retransmission  
+>> doing its job. I have heard reports of v1.0.11 already "in the  
+>> wild" without major problems.  You are also encouraged to test the  
+>> svn version.
+> Hi David,
+>
+> I carried out the packet dumps again from the box that runs chilli  
+> and even though the replies were delivered fine it turns out that  
+> it was a firewall rule of mine that dropped them like a hot potato.  
+> I had to use the coaport option together with coanoipcheck (because  
+> my PoD packets would come through an openvpn tunnel, not from any  
+> of the defined radiusservers) so tried to harden my setup by doing  
+> the checking in the firewall. Unfortunately in the process I didn't  
+> realise that the coaport option also causes all Accounting Requests  
+> to be sent from that port which is where my assumptions broke down.
+>
+> To cut a long story short it was my stupidity rather than your code  
+> that caused the mess and the behaviour I saw indeed was just chilli  
+> trying to retransmit whatever it never received a reply for. The  
+> radauth stuff of course ran flawlessly so that I could log in fine,  
+> which is why I never detected the problem when I did my initial  
+> firewall testing.
+>
+> I apologise for jumping to conclusions despite days of debugging...
+>
+> In the end I can recommend v1.0.11 for all purposes.
+>
+> Gunther
+>
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>
+
+
+
+From wlan at mac.com  Mon Apr 21 04:44:29 2008
+From: wlan at mac.com (wlan at mac.com)
+Date: Mon, 21 Apr 2008 06:44:29 +0200
+Subject: Accounting NOT broken in v1.0.11 (was: Accounting badly broken in v1.0.11)
+In-Reply-To: <480BCC4B.8080801@gmail.com>
+References: <4807C441.2000609@gmail.com> <357BDC80-E9A2-4ADE-8CE5-1782B42408BC@mac.com> <48086BAE.5020003@gmail.com> <428D6D56-0DCB-445C-93CC-D2ECB6A9CC6D@mac.com> <48089867.7070806@gmail.com> <4808CA4B.8040003@sriviere.info> <631E99A8-2CF2-4E60-8C0E-CA5FECE217CD@mac.com> <480BCC4B.8080801@gmail.com>
+Message-ID: <D0F7F205-1789-445E-8927-24AF460F74CB@mac.com>
+
+Oh, and thanks for the wiki contribution... FYI, the "man" pages in  
+the wiki are taken fro the man pages in the coova-chilli source. So,  
+you might also consider those changes there too (doc/chilli.conf. 
+5.in). If you want svn access too, just send me a md5 style htpasswd  
+entry for yourself.
+
+On Apr 21, 2008, at 1:05 AM, Gunther Mayer wrote:
+
+> wlan at mac.com wrote:
+>> I'm not certain of the problems reported by previously. Gunther,  
+>> can you confirm that chilli is indeed getting the responses?  
+>> Otherwise, the behavior he describes is, basically, retransmission  
+>> doing its job. I have heard reports of v1.0.11 already "in the  
+>> wild" without major problems.  You are also encouraged to test the  
+>> svn version.
+> Hi David,
+>
+> I carried out the packet dumps again from the box that runs chilli  
+> and even though the replies were delivered fine it turns out that  
+> it was a firewall rule of mine that dropped them like a hot potato.  
+> I had to use the coaport option together with coanoipcheck (because  
+> my PoD packets would come through an openvpn tunnel, not from any  
+> of the defined radiusservers) so tried to harden my setup by doing  
+> the checking in the firewall. Unfortunately in the process I didn't  
+> realise that the coaport option also causes all Accounting Requests  
+> to be sent from that port which is where my assumptions broke down.
+>
+> To cut a long story short it was my stupidity rather than your code  
+> that caused the mess and the behaviour I saw indeed was just chilli  
+> trying to retransmit whatever it never received a reply for. The  
+> radauth stuff of course ran flawlessly so that I could log in fine,  
+> which is why I never detected the problem when I did my initial  
+> firewall testing.
+>
+> I apologise for jumping to conclusions despite days of debugging...
+>
+> In the end I can recommend v1.0.11 for all purposes.
+>
+> Gunther
+>
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>
+
+
+
+From gunther.mayer at googlemail.com  Mon Apr 21 11:32:13 2008
+From: gunther.mayer at googlemail.com (Gunther Mayer)
+Date: Mon, 21 Apr 2008 13:32:13 +0200
+Subject: Development and coding issues
+In-Reply-To: <D0F7F205-1789-445E-8927-24AF460F74CB@mac.com>
+References: <4807C441.2000609@gmail.com> <357BDC80-E9A2-4ADE-8CE5-1782B42408BC@mac.com> <48086BAE.5020003@gmail.com> <428D6D56-0DCB-445C-93CC-D2ECB6A9CC6D@mac.com> <48089867.7070806@gmail.com> <4808CA4B.8040003@sriviere.info> <631E99A8-2CF2-4E60-8C0E-CA5FECE217CD@mac.com> <480BCC4B.8080801@gmail.com> <D0F7F205-1789-445E-8927-24AF460F74CB@mac.com>
+Message-ID: <480C7B3D.5020703@gmail.com>
+
+wlan at mac.com wrote:
+> Oh, and thanks for the wiki contribution... FYI, the "man" pages in 
+> the wiki are taken fro the man pages in the coova-chilli source. So, 
+> you might also consider those changes there too 
+> (doc/chilli.conf.5.in). If you want svn access too, just send me a md5 
+> style htpasswd entry for yourself.
+No problem. While I was editing it I actually wondered how you linked 
+the two and ensured consistency. Do you have a strategy there? Or is it 
+just: you change one, you change the other?
+
+Here's my htpasswd:
+
+gmayer:Z5QAehk8/En0.  (with md5's weakness these days of course I'll 
+change it immediately upon login and setup keys instead)
+
+I'll start making those documentation changes then in the code. I 
+noticed a few other things (radiustimeout related) and there's my 
+uamanyip arp lan exclude patch from last time, how are code development 
+things resolved in coova? Are there any procedures? Where and how do we 
+discuss code issues before changing and committing (there's no 
+chilli-devel at coova.org)? Is there even a person other than you who has 
+svn write access at the moment?
+
+Gunther
+
+
+From wlan at mac.com  Mon Apr 21 11:59:59 2008
+From: wlan at mac.com (wlan at mac.com)
+Date: Mon, 21 Apr 2008 13:59:59 +0200
+Subject: Development and coding issues
+In-Reply-To: <480C7B3D.5020703@gmail.com>
+References: <4807C441.2000609@gmail.com> <357BDC80-E9A2-4ADE-8CE5-1782B42408BC@mac.com> <48086BAE.5020003@gmail.com> <428D6D56-0DCB-445C-93CC-D2ECB6A9CC6D@mac.com> <48089867.7070806@gmail.com> <4808CA4B.8040003@sriviere.info> <631E99A8-2CF2-4E60-8C0E-CA5FECE217CD@mac.com> <480BCC4B.8080801@gmail.com> <D0F7F205-1789-445E-8927-24AF460F74CB@mac.com> <480C7B3D.5020703@gmail.com>
+Message-ID: <70589ECA-0B42-4A20-825F-E16EE516F6CB@mac.com>
+
+> No problem. While I was editing it I actually wondered how you  
+> linked the two and ensured consistency. Do you have a strategy  
+> there? Or is it just: you change one, you change the other?
+>
+
+actually, i have a super simple "man2wiki" routine in the doc/ 
+fmttxt.pl script... but, you can also edit in both places if that is  
+faster.
+
+> I'll start making those documentation changes then in the code. I  
+> noticed a few other things (radiustimeout related) and there's my  
+> uamanyip arp lan exclude patch from last time, how are code  
+> development things resolved in coova? Are there any procedures?  
+> Where and how do we discuss code issues before changing and  
+> committing (there's no chilli-devel at coova.org)? Is there even a  
+> person other than you who has svn write access at the moment?
+
+hm, yet this list isn't overly active...
+
+everyone who has asked has gotten svn access thus far... it's only a  
+couple of people. people contribute patches to the list too, which is  
+usually integrated directly in.
+
+cheers,
+david
+
+
+
+From gunther.mayer at googlemail.com  Tue Apr 22 08:11:34 2008
+From: gunther.mayer at googlemail.com (Gunther Mayer)
+Date: Tue, 22 Apr 2008 10:11:34 +0200
+Subject: macallowlocal with uamanyip doesn't work
+Message-ID: <480D9DB6.9060508@gmail.com>
+
+Hi again,
+
+I realised today that static ip (misconfigured) clients that are 
+supposed to be given access with uamanyip don't have ANY sort of 
+connection when they are additionally macallowed with the macallowlocal 
+option. I noticed this problem with both 1.0.11 and latest svn and 
+neither a debug nor a debugfacility 255 would give me any clues to why 
+this wouldn't work.
+
+To reproduce:
+
+   1. Pick a hotspot client, configure its static IP with totally random
+      ip settings (static ip, gateway within subnet and any usable dns,
+      preferably with uamanydns)
+   2. Turn on uamanyip on the chilli box with suitable statip subnet and
+      restart chilli
+   3. Back on the client you'll see that it'll get redirected to the
+      portal page as expected and can even ping, ssh or whatever the
+      chilli box when using its dhcplisten ip address
+   4. Now add "macallowed <client mac address>" together with the
+      "macallowlocal" option into chilli.conf and restart chilli
+   5. The client now has no access whatsoever, no Internet access,
+      cannot ping the chilli box, nothing. A tcpdump on the chilli box
+      shows the packets coming in from the client but no response ever
+      coming in
+
+While I'm pretty sure this time there aren't any dodgy firewall rules 
+messing up my setup I'd like somebody to confirm this problem and then 
+perhaps fix it?
+
+Gunther
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20080422/1c67bf5d/attachment.htm>
+
+From contact at sriviere.info  Tue Apr 22 14:53:00 2008
+From: contact at sriviere.info (=?ISO-8859-1?Q?SR_Infosyst=E8mes?=)
+Date: Tue, 22 Apr 2008 16:53:00 +0200
+Subject: Thanks a lot !
+In-Reply-To: <480D9DB6.9060508@gmail.com>
+References: <480D9DB6.9060508@gmail.com>
+Message-ID: <480DFBCC.3090705@sriviere.info>
+
+Hi !
+
+I've picked today the svn release, as you recommend in a previous 
+message. And now, as stated in the ChangeLog, Radius Iddle-Session 
+attribute works !
+
+A question : what's the primary use of radiustimout Coova-Chilli option, 
+as this behaviour is managed by Radius Iddle-Session attribute ? Is it 
+for some people who don't use Radius ?
+
+
+As you said that current svn is already 'in the wild' without problems, 
+I consider to keep it as my standard 'release' before 1.0.12 arrival.
+
+
+Again, MANY THANKS, for all this work !!!
+
+All the best from Oleron Island.
+
+St?phane Rivi?re
+
+-- 
+LA SOLUTION ? vos probl?mes INFORMATIQUES
+
+SR Infosyst?mes
+15, rue du Temple
+17310 St Pierre d'Ol?ron
+Ile d'Ol?ron - France
+
+Mobile : 06 89 29 88 44
+Fixe :   09 54 10 55 60 (appel local)
+Fax :    05 46 36 30 59
+Site :   www.sriviere.info
+Email :  contact at sriviere.info
+Skype :  stephane.riviere
+
+Certificat X509 : disponible sur le site
+
+
+From gunther.mayer at googlemail.com  Tue Apr 22 15:39:59 2008
+From: gunther.mayer at googlemail.com (Gunther Mayer)
+Date: Tue, 22 Apr 2008 17:39:59 +0200
+Subject: Thanks a lot !
+In-Reply-To: <480DFBCC.3090705@sriviere.info>
+References: <480D9DB6.9060508@gmail.com> <480DFBCC.3090705@sriviere.info>
+Message-ID: <480E06CF.1090303@gmail.com>
+
+SR Infosyst?mes wrote:
+> Hi !
+>
+> I've picked today the svn release, as you recommend in a previous 
+> message. And now, as stated in the ChangeLog, Radius Iddle-Session 
+> attribute works !
+>
+> A question : what's the primary use of radiustimout Coova-Chilli 
+> option, as this behaviour is managed by Radius Iddle-Session attribute 
+> ? Is it for some people who don't use Radius ?
+radiustimeout is currently undocumented (at least in the man page), it 
+controls the amount of time that chilli will wait for a response from 
+the radius server until it attempts retransmission. In 1.0.11 this 
+defaults to a reasonable 5000 milliseconds (to allow for possible 
+network delays etc.) but in latest svn this has been changed to 30 
+seconds. Specification has also changed from milliseconds to seconds but 
+this is still in flux (I suggest changing it back to the old default of 
+5 for compatibility reasons, 30s default is too long) so don't rely on 
+this until 1.0.12 is released.
+>
+> As you said that current svn is already 'in the wild' without 
+> problems, I consider to keep it as my standard 'release' before 1.0.12 
+> arrival.
+>
+Actually David said 1.0.11 is "in the wild", I wouldn't use svn for 
+production purposes if I were you. Unless of course you have to rely on 
+a brand new feature (which I doubt).
+>
+> Again, MANY THANKS, for all this work !!!
+>
+> All the best from Oleron Island.
+>
+> St?phane Rivi?re
+>
+
+
+
+From contact at sriviere.info  Tue Apr 22 18:46:25 2008
+From: contact at sriviere.info (=?ISO-8859-1?Q?SR_Infosyst=E8mes?=)
+Date: Tue, 22 Apr 2008 20:46:25 +0200
+Subject: Thanks a lot !
+In-Reply-To: <480E06CF.1090303@gmail.com>
+References: <480D9DB6.9060508@gmail.com> <480DFBCC.3090705@sriviere.info> <480E06CF.1090303@gmail.com>
+Message-ID: <480E3281.9080505@sriviere.info>
+
+Hi Gunther,
+
+> radiustimeout is currently undocumented (at least in the man page), it 
+> controls the amount of time that chilli will wait for a response from 
+> the radius server until it attempts retransmission. In 1.0.11 this 
+> defaults to a reasonable 5000 milliseconds (to allow for possible 
+
+Thanks to help me understanding the radiustimeout usage...
+
+>> As you said that current svn is already 'in the wild' without 
+>> problems, I consider to keep it as my standard 'release' before 1.0.12 
+>> arrival.
+>>
+> Actually David said 1.0.11 is "in the wild", 
+
+Yes, you're right, Thanks to correct this !
+
+> production purposes if I were you. Unless of course you have to rely on 
+> a brand new feature (which I doubt).
+
+Radius Iddle-Session attribute works now (or must I say work again), and 
+it's a must-have for my needs...
+
+Well... I think giving this svn release a try, with the 1.0.11 bahind 
+the wall, ready to go... (I like living near the edge :)
+
+All the best from Oleron Island
+
+St?phane Rivi?re
+
+-- 
+LA SOLUTION ? vos probl?mes INFORMATIQUES
+
+SR Infosyst?mes
+15, rue du Temple
+17310 St Pierre d'Ol?ron
+Ile d'Ol?ron - France
+
+Mobile : 06 89 29 88 44
+Fixe :   09 54 10 55 60 (appel local)
+Fax :    05 46 36 30 59
+Site :   www.sriviere.info
+Email :  contact at sriviere.info
+Skype :  stephane.riviere
+
+Certificat X509 : disponible sur le site
+
+
+From gunther.mayer at googlemail.com  Wed Apr 23 12:39:25 2008
+From: gunther.mayer at googlemail.com (Gunther Mayer)
+Date: Wed, 23 Apr 2008 14:39:25 +0200
+Subject: Thanks a lot !
+In-Reply-To: <480E3281.9080505@sriviere.info>
+References: <480D9DB6.9060508@gmail.com> <480DFBCC.3090705@sriviere.info> <480E06CF.1090303@gmail.com> <480E3281.9080505@sriviere.info>
+Message-ID: <480F2DFD.1020208@gmail.com>
+
+SR Infosyst?mes wrote:
+> Hi Gunther,
+>
+>> radiustimeout is currently undocumented (at least in the man page), 
+>> it controls the amount of time that chilli will wait for a response 
+>> from the radius server until it attempts retransmission. In 1.0.11 
+>> this defaults to a reasonable 5000 milliseconds (to allow for possible 
+>
+> Thanks to help me understanding the radiustimeout usage...
+>
+>>> As you said that current svn is already 'in the wild' without 
+>>> problems, I consider to keep it as my standard 'release' before 
+>>> 1.0.12 arrival.
+>>>
+>> Actually David said 1.0.11 is "in the wild", 
+>
+> Yes, you're right, Thanks to correct this !
+>
+>> production purposes if I were you. Unless of course you have to rely 
+>> on a brand new feature (which I doubt).
+>
+> Radius Iddle-Session attribute works now (or must I say work again), 
+> and it's a must-have for my needs...
+Did the idle-session timeout not work for you in 1.0.11? That's 
+strange... I guess I haven't tested it explicitly myself and have 
+assumed there were no regressions (it works perfectly in 1.0.6). Do you 
+use the defidletimeout option or does your radius supply this? What 
+exactly wasn't working in which version that you tested?
+>
+> Well... I think giving this svn release a try, with the 1.0.11 bahind 
+> the wall, ready to go... (I like living near the edge :)
+Alright, if it works for you...
+
+
+From contact at sriviere.info  Wed Apr 23 14:28:16 2008
+From: contact at sriviere.info (=?ISO-8859-1?Q?SR_Infosyst=E8mes?=)
+Date: Wed, 23 Apr 2008 16:28:16 +0200
+Subject: Thanks a lot !
+In-Reply-To: <480F2DFD.1020208@gmail.com>
+References: <480D9DB6.9060508@gmail.com> <480DFBCC.3090705@sriviere.info> <480E06CF.1090303@gmail.com> <480E3281.9080505@sriviere.info> <480F2DFD.1020208@gmail.com>
+Message-ID: <480F4780.8030109@sriviere.info>
+
+Hi Gunther,
+
+> Did the idle-session timeout not work for you in 1.0.11? That's 
+> strange... I guess I haven't tested it explicitly myself and have 
+> assumed there were no regressions (it works perfectly in 1.0.6). 
+> Do you use the defidletimeout option or does your radius supply this? 
+
+No, as you explain to me the intended purpose (I've not noticed, at 
+first glance, the default parameter at 5000 ms, which implies it was for 
+another use).
+
+> What exactly wasn't working in which version that you tested?
+
+Iddle-Session : when a user goes inactive (i.e. don't access to new web 
+site pages during Radius Iddle-Session value (in sec)), chilli 
+disconnect the user.
+
+1.0.7 : work
+1.0.11 : don't work
+1.0.12-pre (svn) : work
+
+I've notice that using Ajax (*), with a 60 sec refresh status don't 
+disturb this (i.e. the inactive user is really disconnect after 600 sec 
+idling while there is an Ajax access each 60 seconds...
+
+I wonder why... Could you explain, if aware ?
+
+>> Well... I think giving this svn release a try, with the 1.0.11 bahind 
+>> the wall, ready to go... (I like living near the edge :)
+> Alright, if it works for you...
+
+No choice, and I trust the work done :)
+With, at my side, the 1.0.7 in backup.
+
+
+(*) Ajax is used for a status window, via a subpart of hotcakes - we 
+don't use hotcakes as we have created our own management panel, but my 
+Ajax understanding is quite low and I have no time now to make my own 
+implementation (but it's planned, in order to wake the whole part 
+lighter - and understand Ajax too !).
+
+-- 
+LA SOLUTION ? vos probl?mes INFORMATIQUES
+
+SR Infosyst?mes
+15, rue du Temple
+17310 St Pierre d'Ol?ron
+Ile d'Ol?ron - France
+
+Mobile : 06 89 29 88 44
+Fixe :   09 54 10 55 60 (appel local)
+Fax :    05 46 36 30 59
+Site :   www.sriviere.info
+Email :  contact at sriviere.info
+Skype :  stephane.riviere
+
+Certificat X509 : disponible sur le site
+
+
+From wlan at mac.com  Thu Apr 24 12:34:37 2008
+From: wlan at mac.com (wlan at mac.com)
+Date: Thu, 24 Apr 2008 14:34:37 +0200
+Subject: drupal users?
+Message-ID: <9F1B2D25-81C3-4A43-A36A-05CD07C84C02@mac.com>
+
+Anyone?
+
+I'm testing a drupal (v5) module for integration with CoovaChilli  
+(for now using javascript/json but could also be made for legacy  
+redirect only).
+
+Interested?
+
+David
+
+
+From ml at t-b-o-h.net  Thu Apr 24 21:01:28 2008
+From: ml at t-b-o-h.net (Tuc at T-B-O-H.NET)
+Date: Thu, 24 Apr 2008 17:01:28 -0400 (EDT)
+Subject: Single machine testing platform?
+Message-ID: <200804242101.m3OL1Shi078413@himinbjorg.tucs-beachin-obx-house.com>
+
+Hi,
+
+	Short of running VMWARE, is there any way to
+run a testing platform on a single PC with a single
+interface? I basically would like to test my UAM
+project (http://theuamcenter.sourceforge.net) without 
+having to attach to a real device all the time. I
+can test against a production Radius server, so thats
+covered. 
+
+		Thanks, Tuc
+
+
+From cfinnegan at csc.com.au  Fri Apr 25 00:21:51 2008
+From: cfinnegan at csc.com.au (Ciaran Finnegan)
+Date: Fri, 25 Apr 2008 11:21:51 +1100
+Subject: Single machine testing platform?
+Message-ID: <OFCA257436.0002004A-ONCA257436.0002004A-CA257436.0002004A@csc.com>
+
+Return Receipt
+                                                                           
+   Your       Single machine testing platform?                             
+   document:                                                               
+                                                                           
+   was        Ciaran Finnegan/GIS/CSC                                      
+   received                                                                
+   by:                                                                     
+                                                                           
+   at:        04/25/2008 11:21:51 AM ZE10                                  
+                                                                           
+
+
+
+
+
+
+From wlan at mac.com  Fri Apr 25 04:40:45 2008
+From: wlan at mac.com (wlan at mac.com)
+Date: Fri, 25 Apr 2008 06:40:45 +0200
+Subject: Single machine testing platform?
+In-Reply-To: <200804242101.m3OL1Shi078413@himinbjorg.tucs-beachin-obx-house.com>
+References: <200804242101.m3OL1Shi078413@himinbjorg.tucs-beachin-obx-house.com>
+Message-ID: <7E696B2E-A3E7-43C3-B4E9-D6704056DA77@mac.com>
+
+You can test your portal using the same URL chilli redirects to (with  
+query string attached).
+
+Speaking of Vmware, I have been trying to install it, actually. But,  
+it didn't install on Fedora core 5 cleanly -- still need to look into  
+why.
+
+David
+
+On Apr 24, 2008, at 11:01 PM, Tuc at T-B-O-H.NET wrote:
+
+> Hi,
+>
+> 	Short of running VMWARE, is there any way to
+> run a testing platform on a single PC with a single
+> interface? I basically would like to test my UAM
+> project (http://theuamcenter.sourceforge.net) without
+> having to attach to a real device all the time. I
+> can test against a production Radius server, so thats
+> covered.
+>
+> 		Thanks, Tuc
+>
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>
+
+
+
+From ml at t-b-o-h.net  Fri Apr 25 13:29:04 2008
+From: ml at t-b-o-h.net (Tuc at T-B-O-H.NET)
+Date: Fri, 25 Apr 2008 09:29:04 -0400 (EDT)
+Subject: [chilli] Re: Single machine testing platform?
+In-Reply-To: <7E696B2E-A3E7-43C3-B4E9-D6704056DA77@mac.com>
+Message-ID: <200804251329.m3PDT4K3095031@himinbjorg.tucs-beachin-obx-house.com>
+
+Hi,
+
+	True, but when it eventually tries to access IP:3990 it'll hang.
+I have VMWARE3 running on my FreeBSD 5 system. I guess I'll mock something
+up myself using a perl program sitting on 3990 if I need it that bad.
+
+		Thanks, Tuc
+
+> 
+> You can test your portal using the same URL chilli redirects to (with  
+> query string attached).
+> 
+> Speaking of Vmware, I have been trying to install it, actually. But,  
+> it didn't install on Fedora core 5 cleanly -- still need to look into  
+> why.
+> 
+> David
+> 
+> On Apr 24, 2008, at 11:01 PM, Tuc at T-B-O-H.NET wrote:
+> 
+> > Hi,
+> >
+> > 	Short of running VMWARE, is there any way to
+> > run a testing platform on a single PC with a single
+> > interface? I basically would like to test my UAM
+> > project (http://theuamcenter.sourceforge.net) without
+> > having to attach to a real device all the time. I
+> > can test against a production Radius server, so thats
+> > covered.
+> >
+> > 		Thanks, Tuc
+> >
+> > ---------------------------------------------------------------------
+> > To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> > For additional commands, e-mail: chilli-help at coova.org
+> > Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> > Forum: http://coova.org/phpBB3/viewforum.php?f=4
+> >
+> 
+> 
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+> 
+
+
+
+From wlan at mac.com  Fri Apr 25 13:42:33 2008
+From: wlan at mac.com (wlan at mac.com)
+Date: Fri, 25 Apr 2008 15:42:33 +0200
+Subject: Drupal captive portal
+Message-ID: <B424FF23-7EAA-431C-9D7E-F506EEFCE929@mac.com>
+
+Here it is:
+
+	http://drupal.org/project/hotspot
+
+First dev snapshot is pending (nightly builds). For notes, see:
+
+	http://drupal.org/node/251113/release
+
+I'm interested in getting some help with this!!! :)
+
+David
+
+BTW: in case you are wondering, the module has no links to CoovaAAA.  
+It only controls your coova-chilli controller. However, if your  
+chilli is configured with your CoovaAAA shared secret (and  
+registered), it is an easy portal to use with your CoovaAAA community  
+and access codes. 
+
+
+From chilli at silverserver.at  Sat Apr 26 17:37:04 2008
+From: chilli at silverserver.at (lc)
+Date: Sat, 26 Apr 2008 19:37:04 +0200
+Subject: SVN 165 - unwanted UAM redirects
+In-Reply-To: <4CD999A2-1DCE-47FF-9BD2-D807841C5EAD@a1.net>
+References: <274AD25D-409A-4BAF-9C3C-76B74B7F6535@mac.com> <A52D93B1-07F6-4FD8-80B6-6DB58A7114F3@silverserver.at> <9EEF4F10-D8B2-4F5D-BD0F-ECF4CC6FA3A6@mac.com> <27482101-4EEE-415A-AAD0-4537A77019C1@silverserver.at> <3CDB3CB4-A83E-4467-858B-E17D1A4DA365@silverserver.at> <4CD999A2-1DCE-47FF-9BD2-D807841C5EAD@a1.net>
+Message-ID: <DA48E649-57B0-41F1-B58A-06AF3DDFC144@silverserver.at>
+
+
+Some time ago I reported a strange behavior of SVN 155 and later 159.
+
+We found that under unknown and rare circumstances chilli starts to  
+redirect to the UAM server with res=already although the session is  
+active. No matther what is entered in the web browser, the user is  
+redirected. This behaviour does not start right away after a login,  
+but some minutes later.
+
+Today we ran another test at a heavy used location. And we got lucky  
+(if you can call this luck) - the problem occured at one Vista user.
+
+Here are two corresponding lines of our UAM-Server log. There was no  
+other communication with our UAM Server within this timeframe.
+
+[26/Apr/2008:16:50:31 +0200] "GET /?res=success
+[26/Apr/2008:16:59:44 +0200] "GET /?res=already
+After this line many "already" lines followed - a few minutes later,  
+the user gave up. But for 9 minutes chilli worked as it should.
+
+His computer info: Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 6.0;  
+SLCC1; .NET CLR 2.0.50727; .NET CLR 3.0.04506; .NET CLR 1.1.4322)
+
+We do not know for sure but so far we only noticed this problem when  
+Vista was used.
+
+But we know for sure that
+
+- affected users do not go to the login page (=the problem starts  
+suddenly without the user doing anything)
+- no matter which URL they enter they are always redirected to the UAM  
+server with res=already
+- chilli keeps sending acct-interim updates, so this is an indication  
+that chilli knows the session is active
+- chilli closes the session correctly after the affected users give up
+- chilli does not send any radius requests when it keeps redirecting
+- there must be something which triggers this behaviour
+
+A few days ago I was at a location and by chance a user was having  
+this problem. So I sat next to him and tried it myself - no matter  
+what I did, chilli redirected me. After this I stopped chilli and  
+started it in debug mode. And guess what: The problem did not occur.  
+After I left the user stayed for quite a long time. He logged on and  
+was logged off (timeout), but this issue did not happen again.
+
+We have reason to believe what it does not happen with the current  
+1.0.11 release.
+
+Questions: did anybody use chilli SVN 155 or newer out on the field?   
+Are there any ideas what could trigger this behavior? How can we help  
+to gather more information? Is there a special debug mode to watch  
+closer why chilli starts to redirect?
+
+
+
+
+
+
+
+
+
+> Hi David,
+>
+> I just returned to my office and checked the logs of this location.  
+> Funny: the same user is still there and he opened new sessions and  
+> it seems the problem did not occur so far. This leaves me even more  
+> clueless.
+>
+> Could a miscommunication between chilli and the radius server cause  
+> such a behaviour? It is strange because if it occurs for a few  
+> minutes everything looks fine, and then suddenly the effect starts.  
+> The start of the session means chilli got a green light from Radius.  
+> Maybe immediatly if the communication is somehow not successful  
+> immediately after chilli starts to think after a few minutes that  
+> the session is actually not ok? I ask because sometimes it seems  
+> that chilli is not getting radius replies, therefore keeps  
+> retransmitting. This does not happen very often, but it happens.
+>
+> I am kind of desperate because I saw it with my own eyes but after  
+> restarting chilli I could not reproduce it today :(
+>
+> Cheers,
+> lc
+>
+> Am 23.04.2008 um 17:13 schrieb lc:
+>
+>>
+>> Hi David,
+>>
+>> Today I spent a few hours at one of those locations and  
+>> unfortunately the redirection problem popped up again!
+>>
+>> The user logged in and worked for a few minutes (gmail). Suddenly  
+>> chilli started redirecting him to the uam-page which was displayed  
+>> with res=already. I tried it - no matter which URL I entered, I  
+>> ended up there.
+>>
+>> The guy had Windows Vista and IE. After this I killed chilli and  
+>> restared it in debug mode - this time unfortunately I could not  
+>> reproduce it. However it was defenitly the same behaviour as with  
+>> the older SVN (I reported the issue to the mailing list).
+>>
+>> I will revert one location back to 1.0.11. For the other location:  
+>> how can I start chilli in Debug mode without getting the leaky  
+>> bucket messages? What can I do to help finding the issue?
+>>
+>> I keep wondering what could cause chilli to act this way? Why would  
+>> it suddenly think the session is not yet open?
+>>
+>> Cheers,
+>> lc
+>>
+>> Am 22.04.2008 um 14:34 schrieb lc:
+>>
+>>> Hi David,
+>>>
+>>> finally I managed to put SVN 165 out on two heavy-use locations.  
+>>> Will keep you updated on the results!
+>>>
+>>> Cheers,
+>>> lc
+>>>
+>>> Am 18.04.2008 um 15:53 schrieb David Bird:
+>>>
+>>>> Thanks for that... good to hear there are no (or little) problems  
+>>>> in the field with 1.0.11. I believe gmayer isn't getting his  
+>>>> RADIUS responses (if your following the mailing list) and chilli  
+>>>> is retransmitting, as expected.
+>>>>
+>>>> cheers,
+>>>> david
+>>>>
+>>>> On Apr 18, 2008, at 3:46 PM, lc wrote:
+>>>>
+>>>>> Hi David,
+>>>>>
+>>>>> I tested it only for 5 Mins to check whether the DNS bug has  
+>>>>> gone (and it has - thanks a lot!!!!). But I did't do anything  
+>>>>> more with it.
+>>>>>
+>>>>> I read the issues in the Mailing list and I want to test the  
+>>>>> latest SVN against it. Actually I was thinking to put it on at a  
+>>>>> few live systems tonight.
+>>>>> What worries me a bit is the other effect I had with some older  
+>>>>> SVN (the Windows Vista issue - redirection although session was  
+>>>>> active). I tried to get hold of those Vista machines but was  
+>>>>> unlucky: one got stolen and the other one was sold by the owner.  
+>>>>> So I could not reproduce it on my own.
+>>>>>
+>>>>> So far I run the 1.0.11 release out there. I see some error  
+>>>>> messages which are reported by the Radius Server but I have not  
+>>>>> had the time to look further into it.
+>>>>>
+>>>>> Early next week I will give you an update.
+>>>>>
+>>>>> Cheers,
+>>>>> lc
+>>>>>
+>>>>> Am 18.04.2008 um 15:33 schrieb David Bird:
+>>>>>
+>>>>>> Are you having issues with it?
+>>>>>>
+>>>>>> cheers,
+>>>>>> David
+>>>>>
+>>>>
+>>>
+>>
+>
+
+
+
+From wlan at mac.com  Sat Apr 26 19:02:30 2008
+From: wlan at mac.com (wlan at mac.com)
+Date: Sat, 26 Apr 2008 21:02:30 +0200
+Subject: SVN 165 - unwanted UAM redirects
+In-Reply-To: <DA48E649-57B0-41F1-B58A-06AF3DDFC144@silverserver.at>
+References: <274AD25D-409A-4BAF-9C3C-76B74B7F6535@mac.com> <A52D93B1-07F6-4FD8-80B6-6DB58A7114F3@silverserver.at> <9EEF4F10-D8B2-4F5D-BD0F-ECF4CC6FA3A6@mac.com> <27482101-4EEE-415A-AAD0-4537A77019C1@silverserver.at> <3CDB3CB4-A83E-4467-858B-E17D1A4DA365@silverserver.at> <4CD999A2-1DCE-47FF-9BD2-D807841C5EAD@a1.net> <DA48E649-57B0-41F1-B58A-06AF3DDFC144@silverserver.at>
+Message-ID: <1005B6A6-EF6A-4EF0-8AF1-C594FCBE4C65@mac.com>
+
+I found a potential cause, and fixed it in rev 166. If the client  
+requested a new IP via DHCP instead of confirming an existing ip, it  
+would be sent down the 'dnat' state. If you are willing, give it a go.
+
+On Apr 26, 2008, at 7:37 PM, lc wrote:
+
+>
+> Some time ago I reported a strange behavior of SVN 155 and later 159.
+>
+> We found that under unknown and rare circumstances chilli starts to  
+> redirect to the UAM server with res=already although the session is  
+> active. No matther what is entered in the web browser, the user is  
+> redirected. This behaviour does not start right away after a login,  
+> but some minutes later.
+>
+> Today we ran another test at a heavy used location. And we got  
+> lucky (if you can call this luck) - the problem occured at one  
+> Vista user.
+>
+> Here are two corresponding lines of our UAM-Server log. There was  
+> no other communication with our UAM Server within this timeframe.
+>
+> [26/Apr/2008:16:50:31 +0200] "GET /?res=success
+> [26/Apr/2008:16:59:44 +0200] "GET /?res=already
+> After this line many "already" lines followed - a few minutes  
+> later, the user gave up. But for 9 minutes chilli worked as it should.
+>
+> His computer info: Mozilla/4.0 (compatible; MSIE 7.0; Windows NT  
+> 6.0; SLCC1; .NET CLR 2.0.50727; .NET CLR 3.0.04506; .NET CLR 1.1.4322)
+>
+> We do not know for sure but so far we only noticed this problem  
+> when Vista was used.
+>
+> But we know for sure that
+>
+> - affected users do not go to the login page (=the problem starts  
+> suddenly without the user doing anything)
+> - no matter which URL they enter they are always redirected to the  
+> UAM server with res=already
+> - chilli keeps sending acct-interim updates, so this is an  
+> indication that chilli knows the session is active
+> - chilli closes the session correctly after the affected users give up
+> - chilli does not send any radius requests when it keeps redirecting
+> - there must be something which triggers this behaviour
+>
+> A few days ago I was at a location and by chance a user was having  
+> this problem. So I sat next to him and tried it myself - no matter  
+> what I did, chilli redirected me. After this I stopped chilli and  
+> started it in debug mode. And guess what: The problem did not  
+> occur. After I left the user stayed for quite a long time. He  
+> logged on and was logged off (timeout), but this issue did not  
+> happen again.
+>
+> We have reason to believe what it does not happen with the current  
+> 1.0.11 release.
+>
+> Questions: did anybody use chilli SVN 155 or newer out on the  
+> field?  Are there any ideas what could trigger this behavior? How  
+> can we help to gather more information? Is there a special debug  
+> mode to watch closer why chilli starts to redirect?
+>
+>
+>
+>
+>
+>
+>
+>
+>
+>> Hi David,
+>>
+>> I just returned to my office and checked the logs of this  
+>> location. Funny: the same user is still there and he opened new  
+>> sessions and it seems the problem did not occur so far. This  
+>> leaves me even more clueless.
+>>
+>> Could a miscommunication between chilli and the radius server  
+>> cause such a behaviour? It is strange because if it occurs for a  
+>> few minutes everything looks fine, and then suddenly the effect  
+>> starts. The start of the session means chilli got a green light  
+>> from Radius. Maybe immediatly if the communication is somehow not  
+>> successful immediately after chilli starts to think after a few  
+>> minutes that the session is actually not ok? I ask because  
+>> sometimes it seems that chilli is not getting radius replies,  
+>> therefore keeps retransmitting. This does not happen very often,  
+>> but it happens.
+>>
+>> I am kind of desperate because I saw it with my own eyes but after  
+>> restarting chilli I could not reproduce it today :(
+>>
+>> Cheers,
+>> lc
+>>
+>> Am 23.04.2008 um 17:13 schrieb lc:
+>>
+>>>
+>>> Hi David,
+>>>
+>>> Today I spent a few hours at one of those locations and  
+>>> unfortunately the redirection problem popped up again!
+>>>
+>>> The user logged in and worked for a few minutes (gmail). Suddenly  
+>>> chilli started redirecting him to the uam-page which was  
+>>> displayed with res=already. I tried it - no matter which URL I  
+>>> entered, I ended up there.
+>>>
+>>> The guy had Windows Vista and IE. After this I killed chilli and  
+>>> restared it in debug mode - this time unfortunately I could not  
+>>> reproduce it. However it was defenitly the same behaviour as with  
+>>> the older SVN (I reported the issue to the mailing list).
+>>>
+>>> I will revert one location back to 1.0.11. For the other  
+>>> location: how can I start chilli in Debug mode without getting  
+>>> the leaky bucket messages? What can I do to help finding the issue?
+>>>
+>>> I keep wondering what could cause chilli to act this way? Why  
+>>> would it suddenly think the session is not yet open?
+>>>
+>>> Cheers,
+>>> lc
+>>>
+>>> Am 22.04.2008 um 14:34 schrieb lc:
+>>>
+>>>> Hi David,
+>>>>
+>>>> finally I managed to put SVN 165 out on two heavy-use locations.  
+>>>> Will keep you updated on the results!
+>>>>
+>>>> Cheers,
+>>>> lc
+>>>>
+>>>> Am 18.04.2008 um 15:53 schrieb David Bird:
+>>>>
+>>>>> Thanks for that... good to hear there are no (or little)  
+>>>>> problems in the field with 1.0.11. I believe gmayer isn't  
+>>>>> getting his RADIUS responses (if your following the mailing  
+>>>>> list) and chilli is retransmitting, as expected.
+>>>>>
+>>>>> cheers,
+>>>>> david
+>>>>>
+>>>>> On Apr 18, 2008, at 3:46 PM, lc wrote:
+>>>>>
+>>>>>> Hi David,
+>>>>>>
+>>>>>> I tested it only for 5 Mins to check whether the DNS bug has  
+>>>>>> gone (and it has - thanks a lot!!!!). But I did't do anything  
+>>>>>> more with it.
+>>>>>>
+>>>>>> I read the issues in the Mailing list and I want to test the  
+>>>>>> latest SVN against it. Actually I was thinking to put it on at  
+>>>>>> a few live systems tonight.
+>>>>>> What worries me a bit is the other effect I had with some  
+>>>>>> older SVN (the Windows Vista issue - redirection although  
+>>>>>> session was active). I tried to get hold of those Vista  
+>>>>>> machines but was unlucky: one got stolen and the other one was  
+>>>>>> sold by the owner. So I could not reproduce it on my own.
+>>>>>>
+>>>>>> So far I run the 1.0.11 release out there. I see some error  
+>>>>>> messages which are reported by the Radius Server but I have  
+>>>>>> not had the time to look further into it.
+>>>>>>
+>>>>>> Early next week I will give you an update.
+>>>>>>
+>>>>>> Cheers,
+>>>>>> lc
+>>>>>>
+>>>>>> Am 18.04.2008 um 15:33 schrieb David Bird:
+>>>>>>
+>>>>>>> Are you having issues with it?
+>>>>>>>
+>>>>>>> cheers,
+>>>>>>> David
+>>>>>>
+>>>>>
+>>>>
+>>>
+>>
+>
+>
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>
+
+
+
+From chilli at silverserver.at  Sat Apr 26 20:38:53 2008
+From: chilli at silverserver.at (lc)
+Date: Sat, 26 Apr 2008 22:38:53 +0200
+Subject: SVN 165 - unwanted UAM redirects
+In-Reply-To: <1005B6A6-EF6A-4EF0-8AF1-C594FCBE4C65@mac.com>
+References: <274AD25D-409A-4BAF-9C3C-76B74B7F6535@mac.com> <A52D93B1-07F6-4FD8-80B6-6DB58A7114F3@silverserver.at> <9EEF4F10-D8B2-4F5D-BD0F-ECF4CC6FA3A6@mac.com> <27482101-4EEE-415A-AAD0-4537A77019C1@silverserver.at> <3CDB3CB4-A83E-4467-858B-E17D1A4DA365@silverserver.at> <4CD999A2-1DCE-47FF-9BD2-D807841C5EAD@a1.net> <DA48E649-57B0-41F1-B58A-06AF3DDFC144@silverserver.at> <1005B6A6-EF6A-4EF0-8AF1-C594FCBE4C65@mac.com>
+Message-ID: <CD1E6379-3477-4561-B3E9-852064A39346@silverserver.at>
+
+This means that the trigger could be a dis- and reassociation of a  
+WiFi client during an active session - sounds reasonable. Your latest  
+SVN will be in action very soon, will keep you updated - thanks!
+
+Am 26.04.2008 um 21:02 schrieb wlan at mac.com:
+
+> I found a potential cause, and fixed it in rev 166. If the client  
+> requested a new IP via DHCP instead of confirming an existing ip, it  
+> would be sent down the 'dnat' state. If you are willing, give it a go.
+>
+> On Apr 26, 2008, at 7:37 PM, lc wrote:
+>
+>>
+>> Some time ago I reported a strange behavior of SVN 155 and later 159.
+>>
+>> We found that under unknown and rare circumstances chilli starts to  
+>> redirect to the UAM server with res=already although the session is  
+>> active. No matther what is entered in the web browser, the user is  
+>> redirected. This behaviour does not start right away after a login,  
+>> but some minutes later.
+>>
+>> Today we ran another test at a heavy used location. And we got  
+>> lucky (if you can call this luck) - the problem occured at one  
+>> Vista user.
+>>
+>> Here are two corresponding lines of our UAM-Server log. There was  
+>> no other communication with our UAM Server within this timeframe.
+>>
+>> [26/Apr/2008:16:50:31 +0200] "GET /?res=success
+>> [26/Apr/2008:16:59:44 +0200] "GET /?res=already
+>> After this line many "already" lines followed - a few minutes  
+>> later, the user gave up. But for 9 minutes chilli worked as it  
+>> should.
+>>
+>> His computer info: Mozilla/4.0 (compatible; MSIE 7.0; Windows NT  
+>> 6.0; SLCC1; .NET CLR 2.0.50727; .NET CLR 3.0.04506; .NET CLR  
+>> 1.1.4322)
+>>
+>> We do not know for sure but so far we only noticed this problem  
+>> when Vista was used.
+>>
+>> But we know for sure that
+>>
+>> - affected users do not go to the login page (=the problem starts  
+>> suddenly without the user doing anything)
+>> - no matter which URL they enter they are always redirected to the  
+>> UAM server with res=already
+>> - chilli keeps sending acct-interim updates, so this is an  
+>> indication that chilli knows the session is active
+>> - chilli closes the session correctly after the affected users give  
+>> up
+>> - chilli does not send any radius requests when it keeps redirecting
+>> - there must be something which triggers this behaviour
+>>
+>> A few days ago I was at a location and by chance a user was having  
+>> this problem. So I sat next to him and tried it myself - no matter  
+>> what I did, chilli redirected me. After this I stopped chilli and  
+>> started it in debug mode. And guess what: The problem did not  
+>> occur. After I left the user stayed for quite a long time. He  
+>> logged on and was logged off (timeout), but this issue did not  
+>> happen again.
+>>
+>> We have reason to believe what it does not happen with the current  
+>> 1.0.11 release.
+>>
+>> Questions: did anybody use chilli SVN 155 or newer out on the  
+>> field?  Are there any ideas what could trigger this behavior? How  
+>> can we help to gather more information? Is there a special debug  
+>> mode to watch closer why chilli starts to redirect?
+>>
+>>
+>>
+>>
+>>
+>>
+>>
+>>
+>>
+>>> Hi David,
+>>>
+>>> I just returned to my office and checked the logs of this  
+>>> location. Funny: the same user is still there and he opened new  
+>>> sessions and it seems the problem did not occur so far. This  
+>>> leaves me even more clueless.
+>>>
+>>> Could a miscommunication between chilli and the radius server  
+>>> cause such a behaviour? It is strange because if it occurs for a  
+>>> few minutes everything looks fine, and then suddenly the effect  
+>>> starts. The start of the session means chilli got a green light  
+>>> from Radius. Maybe immediatly if the communication is somehow not  
+>>> successful immediately after chilli starts to think after a few  
+>>> minutes that the session is actually not ok? I ask because  
+>>> sometimes it seems that chilli is not getting radius replies,  
+>>> therefore keeps retransmitting. This does not happen very often,  
+>>> but it happens.
+>>>
+>>> I am kind of desperate because I saw it with my own eyes but after  
+>>> restarting chilli I could not reproduce it today :(
+>>>
+>>> Cheers,
+>>> lc
+>>>
+>>> Am 23.04.2008 um 17:13 schrieb lc:
+>>>
+>>>>
+>>>> Hi David,
+>>>>
+>>>> Today I spent a few hours at one of those locations and  
+>>>> unfortunately the redirection problem popped up again!
+>>>>
+>>>> The user logged in and worked for a few minutes (gmail). Suddenly  
+>>>> chilli started redirecting him to the uam-page which was  
+>>>> displayed with res=already. I tried it - no matter which URL I  
+>>>> entered, I ended up there.
+>>>>
+>>>> The guy had Windows Vista and IE. After this I killed chilli and  
+>>>> restared it in debug mode - this time unfortunately I could not  
+>>>> reproduce it. However it was defenitly the same behaviour as with  
+>>>> the older SVN (I reported the issue to the mailing list).
+>>>>
+>>>> I will revert one location back to 1.0.11. For the other  
+>>>> location: how can I start chilli in Debug mode without getting  
+>>>> the leaky bucket messages? What can I do to help finding the issue?
+>>>>
+>>>> I keep wondering what could cause chilli to act this way? Why  
+>>>> would it suddenly think the session is not yet open?
+>>>>
+>>>> Cheers,
+>>>> lc
+>>>>
+>>>> Am 22.04.2008 um 14:34 schrieb lc:
+>>>>
+>>>>> Hi David,
+>>>>>
+>>>>> finally I managed to put SVN 165 out on two heavy-use locations.  
+>>>>> Will keep you updated on the results!
+>>>>>
+>>>>> Cheers,
+>>>>> lc
+>>>>>
+>>>>> Am 18.04.2008 um 15:53 schrieb David Bird:
+>>>>>
+>>>>>> Thanks for that... good to hear there are no (or little)  
+>>>>>> problems in the field with 1.0.11. I believe gmayer isn't  
+>>>>>> getting his RADIUS responses (if your following the mailing  
+>>>>>> list) and chilli is retransmitting, as expected.
+>>>>>>
+>>>>>> cheers,
+>>>>>> david
+>>>>>>
+>>>>>> On Apr 18, 2008, at 3:46 PM, lc wrote:
+>>>>>>
+>>>>>>> Hi David,
+>>>>>>>
+>>>>>>> I tested it only for 5 Mins to check whether the DNS bug has  
+>>>>>>> gone (and it has - thanks a lot!!!!). But I did't do anything  
+>>>>>>> more with it.
+>>>>>>>
+>>>>>>> I read the issues in the Mailing list and I want to test the  
+>>>>>>> latest SVN against it. Actually I was thinking to put it on at  
+>>>>>>> a few live systems tonight.
+>>>>>>> What worries me a bit is the other effect I had with some  
+>>>>>>> older SVN (the Windows Vista issue - redirection although  
+>>>>>>> session was active). I tried to get hold of those Vista  
+>>>>>>> machines but was unlucky: one got stolen and the other one was  
+>>>>>>> sold by the owner. So I could not reproduce it on my own.
+>>>>>>>
+>>>>>>> So far I run the 1.0.11 release out there. I see some error  
+>>>>>>> messages which are reported by the Radius Server but I have  
+>>>>>>> not had the time to look further into it.
+>>>>>>>
+>>>>>>> Early next week I will give you an update.
+>>>>>>>
+>>>>>>> Cheers,
+>>>>>>> lc
+>>>>>>>
+>>>>>>> Am 18.04.2008 um 15:33 schrieb David Bird:
+>>>>>>>
+>>>>>>>> Are you having issues with it?
+>>>>>>>>
+>>>>>>>> cheers,
+>>>>>>>> David
+>>>>>>>
+>>>>>>
+>>>>>
+>>>>
+>>>
+>>
+>>
+>> ---------------------------------------------------------------------
+>> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+>> For additional commands, e-mail: chilli-help at coova.org
+>> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+>> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>>
+>
+>
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>
+
+
+
+From wlan at mac.com  Sun Apr 27 04:45:07 2008
+From: wlan at mac.com (wlan at mac.com)
+Date: Sun, 27 Apr 2008 06:45:07 +0200
+Subject: SVN 165 - unwanted UAM redirects
+In-Reply-To: <CD1E6379-3477-4561-B3E9-852064A39346@silverserver.at>
+References: <274AD25D-409A-4BAF-9C3C-76B74B7F6535@mac.com>
+ <A52D93B1-07F6-4FD8-80B6-6DB58A7114F3@silverserver.at>
+ <9EEF4F10-D8B2-4F5D-BD0F-ECF4CC6FA3A6@mac.com>
+ <27482101-4EEE-415A-AAD0-4537A77019C1@silverserver.at>
+ <3CDB3CB4-A83E-4467-858B-E17D1A4DA365@silverserver.at>
+ <4CD999A2-1DCE-47FF-9BD2-D807841C5EAD@a1.net>
+ <DA48E649-57B0-41F1-B58A-06AF3DDFC144@silverserver.at>
+ <1005B6A6-EF6A-4EF0-8AF1-C594FCBE4C65@mac.com>
+ <CD1E6379-3477-4561-B3E9-852064A39346@silverserver.at>
+Message-ID: <F02A1115-E614-4572-8E8C-7F6A036553DC@mac.com>
+
+ok, cool. the latest is 167 (typo in 166). thx.
+
+On Apr 26, 2008, at 10:38 PM, lc wrote:
+
+> This means that the trigger could be a dis- and reassociation of a  
+> WiFi client during an active session - sounds reasonable. Your  
+> latest SVN will be in action very soon, will keep you updated -  
+> thanks!
+>
+> Am 26.04.2008 um 21:02 schrieb wlan at mac.com:
+>
+>> I found a potential cause, and fixed it in rev 166. If the client  
+>> requested a new IP via DHCP instead of confirming an existing ip,  
+>> it would be sent down the 'dnat' state. If you are willing, give  
+>> it a go.
+>>
+>> On Apr 26, 2008, at 7:37 PM, lc wrote:
+>>
+>>>
+>>> Some time ago I reported a strange behavior of SVN 155 and later  
+>>> 159.
+>>>
+>>> We found that under unknown and rare circumstances chilli starts  
+>>> to redirect to the UAM server with res=already although the  
+>>> session is active. No matther what is entered in the web browser,  
+>>> the user is redirected. This behaviour does not start right away  
+>>> after a login, but some minutes later.
+>>>
+>>> Today we ran another test at a heavy used location. And we got  
+>>> lucky (if you can call this luck) - the problem occured at one  
+>>> Vista user.
+>>>
+>>> Here are two corresponding lines of our UAM-Server log. There was  
+>>> no other communication with our UAM Server within this timeframe.
+>>>
+>>> [26/Apr/2008:16:50:31 +0200] "GET /?res=success
+>>> [26/Apr/2008:16:59:44 +0200] "GET /?res=already
+>>> After this line many "already" lines followed - a few minutes  
+>>> later, the user gave up. But for 9 minutes chilli worked as it  
+>>> should.
+>>>
+>>> His computer info: Mozilla/4.0 (compatible; MSIE 7.0; Windows NT  
+>>> 6.0; SLCC1; .NET CLR 2.0.50727; .NET CLR 3.0.04506; .NET CLR  
+>>> 1.1.4322)
+>>>
+>>> We do not know for sure but so far we only noticed this problem  
+>>> when Vista was used.
+>>>
+>>> But we know for sure that
+>>>
+>>> - affected users do not go to the login page (=the problem starts  
+>>> suddenly without the user doing anything)
+>>> - no matter which URL they enter they are always redirected to  
+>>> the UAM server with res=already
+>>> - chilli keeps sending acct-interim updates, so this is an  
+>>> indication that chilli knows the session is active
+>>> - chilli closes the session correctly after the affected users  
+>>> give up
+>>> - chilli does not send any radius requests when it keeps redirecting
+>>> - there must be something which triggers this behaviour
+>>>
+>>> A few days ago I was at a location and by chance a user was  
+>>> having this problem. So I sat next to him and tried it myself -  
+>>> no matter what I did, chilli redirected me. After this I stopped  
+>>> chilli and started it in debug mode. And guess what: The problem  
+>>> did not occur. After I left the user stayed for quite a long  
+>>> time. He logged on and was logged off (timeout), but this issue  
+>>> did not happen again.
+>>>
+>>> We have reason to believe what it does not happen with the  
+>>> current 1.0.11 release.
+>>>
+>>> Questions: did anybody use chilli SVN 155 or newer out on the  
+>>> field?  Are there any ideas what could trigger this behavior? How  
+>>> can we help to gather more information? Is there a special debug  
+>>> mode to watch closer why chilli starts to redirect?
+>>>
+>>>
+>>>
+>>>
+>>>
+>>>
+>>>
+>>>
+>>>
+>>>> Hi David,
+>>>>
+>>>> I just returned to my office and checked the logs of this  
+>>>> location. Funny: the same user is still there and he opened new  
+>>>> sessions and it seems the problem did not occur so far. This  
+>>>> leaves me even more clueless.
+>>>>
+>>>> Could a miscommunication between chilli and the radius server  
+>>>> cause such a behaviour? It is strange because if it occurs for a  
+>>>> few minutes everything looks fine, and then suddenly the effect  
+>>>> starts. The start of the session means chilli got a green light  
+>>>> from Radius. Maybe immediatly if the communication is somehow  
+>>>> not successful immediately after chilli starts to think after a  
+>>>> few minutes that the session is actually not ok? I ask because  
+>>>> sometimes it seems that chilli is not getting radius replies,  
+>>>> therefore keeps retransmitting. This does not happen very often,  
+>>>> but it happens.
+>>>>
+>>>> I am kind of desperate because I saw it with my own eyes but  
+>>>> after restarting chilli I could not reproduce it today :(
+>>>>
+>>>> Cheers,
+>>>> lc
+>>>>
+>>>> Am 23.04.2008 um 17:13 schrieb lc:
+>>>>
+>>>>>
+>>>>> Hi David,
+>>>>>
+>>>>> Today I spent a few hours at one of those locations and  
+>>>>> unfortunately the redirection problem popped up again!
+>>>>>
+>>>>> The user logged in and worked for a few minutes (gmail).  
+>>>>> Suddenly chilli started redirecting him to the uam-page which  
+>>>>> was displayed with res=already. I tried it - no matter which  
+>>>>> URL I entered, I ended up there.
+>>>>>
+>>>>> The guy had Windows Vista and IE. After this I killed chilli  
+>>>>> and restared it in debug mode - this time unfortunately I could  
+>>>>> not reproduce it. However it was defenitly the same behaviour  
+>>>>> as with the older SVN (I reported the issue to the mailing list).
+>>>>>
+>>>>> I will revert one location back to 1.0.11. For the other  
+>>>>> location: how can I start chilli in Debug mode without getting  
+>>>>> the leaky bucket messages? What can I do to help finding the  
+>>>>> issue?
+>>>>>
+>>>>> I keep wondering what could cause chilli to act this way? Why  
+>>>>> would it suddenly think the session is not yet open?
+>>>>>
+>>>>> Cheers,
+>>>>> lc
+>>>>>
+>>>>> Am 22.04.2008 um 14:34 schrieb lc:
+>>>>>
+>>>>>> Hi David,
+>>>>>>
+>>>>>> finally I managed to put SVN 165 out on two heavy-use  
+>>>>>> locations. Will keep you updated on the results!
+>>>>>>
+>>>>>> Cheers,
+>>>>>> lc
+>>>>>>
+>>>>>> Am 18.04.2008 um 15:53 schrieb David Bird:
+>>>>>>
+>>>>>>> Thanks for that... good to hear there are no (or little)  
+>>>>>>> problems in the field with 1.0.11. I believe gmayer isn't  
+>>>>>>> getting his RADIUS responses (if your following the mailing  
+>>>>>>> list) and chilli is retransmitting, as expected.
+>>>>>>>
+>>>>>>> cheers,
+>>>>>>> david
+>>>>>>>
+>>>>>>> On Apr 18, 2008, at 3:46 PM, lc wrote:
+>>>>>>>
+>>>>>>>> Hi David,
+>>>>>>>>
+>>>>>>>> I tested it only for 5 Mins to check whether the DNS bug has  
+>>>>>>>> gone (and it has - thanks a lot!!!!). But I did't do  
+>>>>>>>> anything more with it.
+>>>>>>>>
+>>>>>>>> I read the issues in the Mailing list and I want to test the  
+>>>>>>>> latest SVN against it. Actually I was thinking to put it on  
+>>>>>>>> at a few live systems tonight.
+>>>>>>>> What worries me a bit is the other effect I had with some  
+>>>>>>>> older SVN (the Windows Vista issue - redirection although  
+>>>>>>>> session was active). I tried to get hold of those Vista  
+>>>>>>>> machines but was unlucky: one got stolen and the other one  
+>>>>>>>> was sold by the owner. So I could not reproduce it on my own.
+>>>>>>>>
+>>>>>>>> So far I run the 1.0.11 release out there. I see some error  
+>>>>>>>> messages which are reported by the Radius Server but I have  
+>>>>>>>> not had the time to look further into it.
+>>>>>>>>
+>>>>>>>> Early next week I will give you an update.
+>>>>>>>>
+>>>>>>>> Cheers,
+>>>>>>>> lc
+>>>>>>>>
+>>>>>>>> Am 18.04.2008 um 15:33 schrieb David Bird:
+>>>>>>>>
+>>>>>>>>> Are you having issues with it?
+>>>>>>>>>
+>>>>>>>>> cheers,
+>>>>>>>>> David
+>>>>>>>>
+>>>>>>>
+>>>>>>
+>>>>>
+>>>>
+>>>
+>>>
+>>> -------------------------------------------------------------------- 
+>>> -
+>>> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+>>> For additional commands, e-mail: chilli-help at coova.org
+>>> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+>>> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>>>
+>>
+>>
+>> ---------------------------------------------------------------------
+>> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+>> For additional commands, e-mail: chilli-help at coova.org
+>> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+>> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>>
+>
+>
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>
+
+
+
+From chilli at silverserver.at  Sun Apr 27 20:36:37 2008
+From: chilli at silverserver.at (lc)
+Date: Sun, 27 Apr 2008 22:36:37 +0200
+Subject: SVN 167
+In-Reply-To: <F02A1115-E614-4572-8E8C-7F6A036553DC@mac.com>
+References: <274AD25D-409A-4BAF-9C3C-76B74B7F6535@mac.com> <A52D93B1-07F6-4FD8-80B6-6DB58A7114F3@silverserver.at> <9EEF4F10-D8B2-4F5D-BD0F-ECF4CC6FA3A6@mac.com> <27482101-4EEE-415A-AAD0-4537A77019C1@silverserver.at> <3CDB3CB4-A83E-4467-858B-E17D1A4DA365@silverserver.at> <4CD999A2-1DCE-47FF-9BD2-D807841C5EAD@a1.net> <DA48E649-57B0-41F1-B58A-06AF3DDFC144@silverserver.at> <1005B6A6-EF6A-4EF0-8AF1-C594FCBE4C65@mac.com> <CD1E6379-3477-4561-B3E9-852064A39346@silverserver.at> <F02A1115-E614-4572-8E8C-7F6A036553DC@mac.com>
+Message-ID: <BB2E3403-7FF7-4F98-BC74-B5C0F73A9ACF@silverserver.at>
+
+
+Things look good: today we ran SVN 167 at a heavy-use location and we  
+haven't found anything suspicious so far. We will continue to run SVN  
+167 at this location, if no problems occur we will try it on more  
+systems Tuesday or Wedneday.
+
+
+Am 27.04.2008 um 06:45 schrieb wlan at mac.com:
+
+> ok, cool. the latest is 167 (typo in 166). thx.
+>
+> On Apr 26, 2008, at 10:38 PM, lc wrote:
+>
+>> This means that the trigger could be a dis- and reassociation of a  
+>> WiFi client during an active session - sounds reasonable. Your  
+>> latest SVN will be in action very soon, will keep you updated -  
+>> thanks!
+>>
+>> Am 26.04.2008 um 21:02 schrieb wlan at mac.com:
+>>
+>>> I found a potential cause, and fixed it in rev 166. If the client  
+>>> requested a new IP via DHCP instead of confirming an existing ip,  
+>>> it would be sent down the 'dnat' state. If you are willing, give  
+>>> it a go.
+>>>
+>>> On Apr 26, 2008, at 7:37 PM, lc wrote:
+>>>
+>>>>
+>>>> Some time ago I reported a strange behavior of SVN 155 and later  
+>>>> 159.
+>>>>
+>>>> We found that under unknown and rare circumstances chilli starts  
+>>>> to redirect to the UAM server with res=already although the  
+>>>> session is active. No matther what is entered in the web browser,  
+>>>> the user is redirected. This behaviour does not start right away  
+>>>> after a login, but some minutes later.
+>>>>
+>>>> Today we ran another test at a heavy used location. And we got  
+>>>> lucky (if you can call this luck) - the problem occured at one  
+>>>> Vista user.
+>>>>
+>>>> Here are two corresponding lines of our UAM-Server log. There was  
+>>>> no other communication with our UAM Server within this timeframe.
+>>>>
+>>>> [26/Apr/2008:16:50:31 +0200] "GET /?res=success
+>>>> [26/Apr/2008:16:59:44 +0200] "GET /?res=already
+>>>> After this line many "already" lines followed - a few minutes  
+>>>> later, the user gave up. But for 9 minutes chilli worked as it  
+>>>> should.
+>>>>
+>>>> His computer info: Mozilla/4.0 (compatible; MSIE 7.0; Windows NT  
+>>>> 6.0; SLCC1; .NET CLR 2.0.50727; .NET CLR 3.0.04506; .NET CLR  
+>>>> 1.1.4322)
+>>>>
+>>>> We do not know for sure but so far we only noticed this problem  
+>>>> when Vista was used.
+>>>>
+>>>> But we know for sure that
+>>>>
+>>>> - affected users do not go to the login page (=the problem starts  
+>>>> suddenly without the user doing anything)
+>>>> - no matter which URL they enter they are always redirected to  
+>>>> the UAM server with res=already
+>>>> - chilli keeps sending acct-interim updates, so this is an  
+>>>> indication that chilli knows the session is active
+>>>> - chilli closes the session correctly after the affected users  
+>>>> give up
+>>>> - chilli does not send any radius requests when it keeps  
+>>>> redirecting
+>>>> - there must be something which triggers this behaviour
+>>>>
+>>>> A few days ago I was at a location and by chance a user was  
+>>>> having this problem. So I sat next to him and tried it myself -  
+>>>> no matter what I did, chilli redirected me. After this I stopped  
+>>>> chilli and started it in debug mode. And guess what: The problem  
+>>>> did not occur. After I left the user stayed for quite a long  
+>>>> time. He logged on and was logged off (timeout), but this issue  
+>>>> did not happen again.
+>>>>
+>>>> We have reason to believe what it does not happen with the  
+>>>> current 1.0.11 release.
+>>>>
+>>>> Questions: did anybody use chilli SVN 155 or newer out on the  
+>>>> field?  Are there any ideas what could trigger this behavior? How  
+>>>> can we help to gather more information? Is there a special debug  
+>>>> mode to watch closer why chilli starts to redirect?
+>>>>
+>>>>
+>>>>
+>>>>
+>>>>
+>>>>
+>>>>
+>>>>
+>>>>
+>>>>> Hi David,
+>>>>>
+>>>>> I just returned to my office and checked the logs of this  
+>>>>> location. Funny: the same user is still there and he opened new  
+>>>>> sessions and it seems the problem did not occur so far. This  
+>>>>> leaves me even more clueless.
+>>>>>
+>>>>> Could a miscommunication between chilli and the radius server  
+>>>>> cause such a behaviour? It is strange because if it occurs for a  
+>>>>> few minutes everything looks fine, and then suddenly the effect  
+>>>>> starts. The start of the session means chilli got a green light  
+>>>>> from Radius. Maybe immediatly if the communication is somehow  
+>>>>> not successful immediately after chilli starts to think after a  
+>>>>> few minutes that the session is actually not ok? I ask because  
+>>>>> sometimes it seems that chilli is not getting radius replies,  
+>>>>> therefore keeps retransmitting. This does not happen very often,  
+>>>>> but it happens.
+>>>>>
+>>>>> I am kind of desperate because I saw it with my own eyes but  
+>>>>> after restarting chilli I could not reproduce it today :(
+>>>>>
+>>>>> Cheers,
+>>>>> lc
+>>>>>
+>>>>> Am 23.04.2008 um 17:13 schrieb lc:
+>>>>>
+>>>>>>
+>>>>>> Hi David,
+>>>>>>
+>>>>>> Today I spent a few hours at one of those locations and  
+>>>>>> unfortunately the redirection problem popped up again!
+>>>>>>
+>>>>>> The user logged in and worked for a few minutes (gmail).  
+>>>>>> Suddenly chilli started redirecting him to the uam-page which  
+>>>>>> was displayed with res=already. I tried it - no matter which  
+>>>>>> URL I entered, I ended up there.
+>>>>>>
+>>>>>> The guy had Windows Vista and IE. After this I killed chilli  
+>>>>>> and restared it in debug mode - this time unfortunately I could  
+>>>>>> not reproduce it. However it was defenitly the same behaviour  
+>>>>>> as with the older SVN (I reported the issue to the mailing list).
+>>>>>>
+>>>>>> I will revert one location back to 1.0.11. For the other  
+>>>>>> location: how can I start chilli in Debug mode without getting  
+>>>>>> the leaky bucket messages? What can I do to help finding the  
+>>>>>> issue?
+>>>>>>
+>>>>>> I keep wondering what could cause chilli to act this way? Why  
+>>>>>> would it suddenly think the session is not yet open?
+>>>>>>
+>>>>>> Cheers,
+>>>>>> lc
+>>>>>>
+>>>>>> Am 22.04.2008 um 14:34 schrieb lc:
+>>>>>>
+>>>>>>> Hi David,
+>>>>>>>
+>>>>>>> finally I managed to put SVN 165 out on two heavy-use  
+>>>>>>> locations. Will keep you updated on the results!
+>>>>>>>
+>>>>>>> Cheers,
+>>>>>>> lc
+>>>>>>>
+>>>>>>> Am 18.04.2008 um 15:53 schrieb David Bird:
+>>>>>>>
+>>>>>>>> Thanks for that... good to hear there are no (or little)  
+>>>>>>>> problems in the field with 1.0.11. I believe gmayer isn't  
+>>>>>>>> getting his RADIUS responses (if your following the mailing  
+>>>>>>>> list) and chilli is retransmitting, as expected.
+>>>>>>>>
+>>>>>>>> cheers,
+>>>>>>>> david
+>>>>>>>>
+>>>>>>>> On Apr 18, 2008, at 3:46 PM, lc wrote:
+>>>>>>>>
+>>>>>>>>> Hi David,
+>>>>>>>>>
+>>>>>>>>> I tested it only for 5 Mins to check whether the DNS bug has  
+>>>>>>>>> gone (and it has - thanks a lot!!!!). But I did't do  
+>>>>>>>>> anything more with it.
+>>>>>>>>>
+>>>>>>>>> I read the issues in the Mailing list and I want to test the  
+>>>>>>>>> latest SVN against it. Actually I was thinking to put it on  
+>>>>>>>>> at a few live systems tonight.
+>>>>>>>>> What worries me a bit is the other effect I had with some  
+>>>>>>>>> older SVN (the Windows Vista issue - redirection although  
+>>>>>>>>> session was active). I tried to get hold of those Vista  
+>>>>>>>>> machines but was unlucky: one got stolen and the other one  
+>>>>>>>>> was sold by the owner. So I could not reproduce it on my own.
+>>>>>>>>>
+>>>>>>>>> So far I run the 1.0.11 release out there. I see some error  
+>>>>>>>>> messages which are reported by the Radius Server but I have  
+>>>>>>>>> not had the time to look further into it.
+>>>>>>>>>
+>>>>>>>>> Early next week I will give you an update.
+>>>>>>>>>
+>>>>>>>>> Cheers,
+>>>>>>>>> lc
+>>>>>>>>>
+>>>>>>>>> Am 18.04.2008 um 15:33 schrieb David Bird:
+>>>>>>>>>
+>>>>>>>>>> Are you having issues with it?
+>>>>>>>>>>
+>>>>>>>>>> cheers,
+>>>>>>>>>> David
+>>>>>>>>>
+>>>>>>>>
+>>>>>>>
+>>>>>>
+>>>>>
+>>>>
+>>>>
+>>>> ---------------------------------------------------------------------
+>>>> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+>>>> For additional commands, e-mail: chilli-help at coova.org
+>>>> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+>>>> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>>>>
+>>>
+>>>
+>>> ---------------------------------------------------------------------
+>>> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+>>> For additional commands, e-mail: chilli-help at coova.org
+>>> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+>>> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>>>
+>>
+>>
+>> ---------------------------------------------------------------------
+>> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+>> For additional commands, e-mail: chilli-help at coova.org
+>> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+>> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>>
+>
+>
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>
+
+
+
+From BrunoRobert.Urech at comfone.com  Wed Apr 30 09:35:38 2008
+From: BrunoRobert.Urech at comfone.com (Urech Bruno)
+Date: Wed, 30 Apr 2008 11:35:38 +0200
+Subject: Messages
+Message-ID: <81B2B4AE03A22D4490CD35A0F20F89E003996F41@thsvml00.togewa.com>
+
+
+Hi all
+
+Yesterday i found out that since last Thursday, April 24, 2008 all 10 minutes the following message is written in the messages log on /var/log of my Ubuntu 7.04:
+
+Apr 27 07:50:01 test2 coova-chilli[16589]: ChilliSpot 1.0.8. Copyright 2002-2005 Mondru AB. Licensed under GPL. Copyright 2006-2007 David Bird <dbird at acm.org>. Licensed under GPL. See http://www.chillispot.org/ & http://coova.org/ for details
+
+In the syslog is additionally mentionned, that there is a problem with the tun device:
+
+Apr 30 06:40:01 test2 coova-chilli[17716]: ChilliSpot 1.0.8. Copyright 2002-2005 Mondru AB. Licensed under GPL. Copyright 2006-2007 David Bird <dbird at acm.org>. Licensed under GPL. See http://www.chillispot.org/ & http://coova.org/ for details.
+Apr 30 06:40:01 test2 coova-chilli[17716]: tun.c: 631: 13 (Permission denied) open() failed
+Apr 30 06:40:01 test2 coova-chilli[17716]: chilli.c: 3238: Failed to create tun 
+Apr 30 06:50:01 test2 coova-chilli[17776]: tun.c: 631: 13 (Permission denied) open() failed
+Apr 30 06:50:01 test2 coova-chilli[17776]: chilli.c: 3238: Failed to create tun
+
+As the chilli service hung, last Friday - the subscribers did receive an IP address, but were no longer redirected to the login page, i tried to restart the chilli service. But as chilli restart did not work, i tried also out the following:  chilli restart; chilli condrestart; chilli reload, as written wen just giving chilli and enter: start|stop|restart|condrestart|status|reload|radconfig . After each of them, the chilli seamed to be running, but the redirection only worked after a restart of the whole server. After restarting, the chilli service was up and the subscribers where redirected again, as usually, but only submentioned messages appear.
+
+Can somebody imagine and describe, what i do wrong, where this messages are from, how and what occures and how can i remove them?
+
+Thank you
+
+Yours
+
+Bruni
+
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: messages.extract
+Type: application/octet-stream
+Size: 103209 bytes
+Desc: messages.extract
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20080430/019cf745/attachment.obj>
+

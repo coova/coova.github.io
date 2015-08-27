@@ -1,0 +1,101 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] Why does CoovaChilli keep getting issue with VPN, How to debug/troubleshoot this issue?
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Why%20does%20CoovaChilli%20keep%20getting%20issue%20with%20VPN%2C%0A%20How%20to%20debug/troubleshoot%20this%20issue%3F&In-Reply-To=%3C3a8d9a4104cb43c2b00e8aa0e19f1b88%40AM3PR05MB323.eurprd05.prod.outlook.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="002514.html">
+   <LINK REL="Next"  HREF="002516.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] Why does CoovaChilli keep getting issue with VPN, How to debug/troubleshoot this issue?</H1>
+    <B>Steffen Dettmer</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Why%20does%20CoovaChilli%20keep%20getting%20issue%20with%20VPN%2C%0A%20How%20to%20debug/troubleshoot%20this%20issue%3F&In-Reply-To=%3C3a8d9a4104cb43c2b00e8aa0e19f1b88%40AM3PR05MB323.eurprd05.prod.outlook.com%3E"
+       TITLE="[Chilli] Why does CoovaChilli keep getting issue with VPN, How to debug/troubleshoot this issue?">steffen.dettmer at nomadrail.com
+       </A><BR>
+    <I>Fri Dec 20 09:15:22 UTC 2013</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="002514.html">[Chilli] Why does CoovaChilli keep getting issue with VPN, How to debug/troubleshoot this issue?
+</A></li>
+        <LI>Next message: <A HREF="002516.html">[Chilli] build error
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2515">[ date ]</a>
+              <a href="thread.html#2515">[ thread ]</a>
+              <a href="subject.html#2515">[ subject ]</a>
+              <a href="author.html#2515">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hi,
+
+&gt;<i> I have been working with CoovaChilli for the past 3 months and I am getting
+</I>&gt;<i> used to it. However, I am always get trouble with VPN connection.
+</I>
+what kind of VPN is it? For PPTP/GRE, did you load the kernel
+modules nf_conntrack_pptp, nf_nat_pptp, nf_conntrack_proto_gre
+and nf_nat_proto_gre? I've read about NOTRACK, but I'm not sure
+why they sometimes seem to be needed (to avoid conntrack getting
+confused about resent packets?).
+
+&gt;<i> I know what I am describing here is so vague since I have no idea why
+</I>&gt;<i> CoovaChilli has this issue. I hope anyone in the list who had managed to solve
+</I>&gt;<i> this problem might give me some hints to debug/troubleshooting this issue.
+</I>
+If you meet a NAT issue it could happen that one VPN connection
+works but no other, this sometimes make testing difficult and may
+lead to misleading observations. I'd also recommend to check the
+VPN traffic before Coova to see if it has IP fragmented packets,
+which are dropped by Coova for a reason I don't know. If you see
+fragments, I think it is most likely causing your problems.
+
+&gt;<i> Currently, what I am doing is just keep changing iptables rules
+</I>&gt;<i> until I can connect to the VPN server. Anyway, I have no idea
+</I>&gt;<i> how to debug it, which log I should look into or what I should
+</I>&gt;<i> do to trace down the issue.
+</I>
+To troubleshoot I think a good start could be using tcpdump at
+each interface one at at time and follow the packets. Start at
+DHCPIF, then the tun dev, output dev, remote side and way back.
+You might use ping -s to generate packets of specified size to
+have at least an idea what packets are about your ping (if you
+ping -s 700 and then suddenly seeing e.g. 730 byte UDP packets,
+it is most likely that they contain the ping). Starting Coova
+with --debug of course. When packets are not forwarded by Coova,
+sometimes even strace -p &lt;coova_pid&gt; may help determining if
+really Coova is an issue or if you have some routing/firewalling
+issue (there are a lot of potential pitfalls).
+
+Steffen
+</PRE>
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="002514.html">[Chilli] Why does CoovaChilli keep getting issue with VPN, How to debug/troubleshoot this issue?
+</A></li>
+	<LI>Next message: <A HREF="002516.html">[Chilli] build error
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2515">[ date ]</a>
+              <a href="thread.html#2515">[ thread ]</a>
+              <a href="subject.html#2515">[ subject ]</a>
+              <a href="author.html#2515">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

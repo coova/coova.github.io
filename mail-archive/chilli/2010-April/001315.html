@@ -1,0 +1,131 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] Squid transparent proxy on same server
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Squid%20transparent%20proxy%20on%20same%20server&In-Reply-To=%3C1271957145.1987.4253.camel%40localhost%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001313.html">
+   <LINK REL="Next"  HREF="001269.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] Squid transparent proxy on same server</H1>
+    <B>Daniel Berteaud</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Squid%20transparent%20proxy%20on%20same%20server&In-Reply-To=%3C1271957145.1987.4253.camel%40localhost%3E"
+       TITLE="[Chilli] Squid transparent proxy on same server">daniel at firewall-services.com
+       </A><BR>
+    <I>Thu Apr 22 17:25:45 UTC 2010</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001313.html">[Chilli] Squid transparent proxy on same server
+</A></li>
+        <LI>Next message: <A HREF="001269.html">[Chilli] R: Chilli Digest, Vol 7, Issue 13
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1315">[ date ]</a>
+              <a href="thread.html#1315">[ thread ]</a>
+              <a href="subject.html#1315">[ subject ]</a>
+              <a href="author.html#1315">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Le mardi 20 avril 2010 &#224; 15:17 +1000, Jason Allen a &#233;crit :
+
+&gt;<i> For the information of other (potential) users, I have not been able
+</I>&gt;<i> to get this successfully work with the Squid proxy on the same server
+</I>&gt;<i> as chilli (ie. HS_POSTAUTH_PROXY = 127.0.0.1). I have confirmed, via
+</I>&gt;<i> lynx, that squid works fine for localhost/127.0.0.1 connections, but
+</I>&gt;<i> it does not work through chilli for chilli authenticated clients.
+</I>&gt;<i> 
+</I>&gt;<i> Debug logs showed redirection to squid, but according to squid logs it
+</I>&gt;<i> (squid) was not receiving the request.
+</I>&gt;<i> 
+</I>&gt;<i> Unfortunately, I'm not development minded enough to know what the
+</I>&gt;<i> problem is or might be. If anyone has it working in this scenario, I
+</I>&gt;<i> would like to hear from you if your willing to provide some advice on
+</I>&gt;<i> your configuration.
+</I>
+Hi.
+
+I had the exact same problem: running squid on the same server than
+chilli. I solved it without the postauthproxy and postauthproxyport
+which I think are only for upstream proxy.
+
+To let squid running on the same server without letting it open for
+unauthenticated client, I used some conup/condown script, which insert
+the correct rules in iptables (the default being to deny squid access
+for everyone). I attache those I use as example (of course, you'll have
+to adapt it to your environnement. In mine, all the traffic to/from
+chilli is sent to some special chain called FORWARD_FROM_CHILLI,
+FORWARD_TO_CHILLI, PREROUTING_FROM_CHILLI etc...).
+
+In my script I also have some special settings for the distribution that
+I use (SME Server), you can skip it of course. (all the db configuration
+getprop etc...)
+
+Oh, and one last thing, you run chilli with reduced privileges, you
+should call these scripts with some other wrapper scripts which uses
+sudo.
+
+Regards, Daniel
+
+&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> Thanks.
+</I>&gt;<i> 
+</I>&gt;<i> -- 
+</I>&gt;<i> Cheers,
+</I>&gt;<i> Jason
+</I>&gt;<i> _______________________________________________
+</I>&gt;<i> Chilli mailing list
+</I>&gt;<i> <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">Chilli at coova.org</A>
+</I>&gt;<i> <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">http://lists.coova.org/cgi-bin/mailman/listinfo/chilli</A>
+</I>
+-- 
+Daniel Berteaud
+FIREWALL-SERVICES SARL.
+Soci&#233;t&#233; de Services en Logiciels Libres
+Technop&#244;le Montesquieu
+33650 MARTILLAC
+Tel : 05 56 64 15 32
+Fax : 05 56 64 15 32
+Mail: <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">daniel at firewall-services.com</A>
+Web : <A HREF="http://www.firewall-services.com">http://www.firewall-services.com</A>
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: condown.sh
+Type: application/x-shellscript
+Size: 523 bytes
+Desc: not available
+URL: &lt;<A HREF="http://lists.coova.org/pipermail/chilli/attachments/20100422/bb15e082/attachment.bin">http://lists.coova.org/pipermail/chilli/attachments/20100422/bb15e082/attachment.bin</A>&gt;
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: conup.sh
+Type: application/x-shellscript
+Size: 549 bytes
+Desc: not available
+URL: &lt;<A HREF="http://lists.coova.org/pipermail/chilli/attachments/20100422/bb15e082/attachment-0001.bin">http://lists.coova.org/pipermail/chilli/attachments/20100422/bb15e082/attachment-0001.bin</A>&gt;
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001313.html">[Chilli] Squid transparent proxy on same server
+</A></li>
+	<LI>Next message: <A HREF="001269.html">[Chilli] R: Chilli Digest, Vol 7, Issue 13
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1315">[ date ]</a>
+              <a href="thread.html#1315">[ thread ]</a>
+              <a href="subject.html#1315">[ subject ]</a>
+              <a href="author.html#1315">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

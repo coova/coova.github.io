@@ -1,0 +1,1143 @@
+From fmacedo at cpd.ufrgs.br  Mon Jan  2 15:00:27 2012
+From: fmacedo at cpd.ufrgs.br (Fernando Macedo)
+Date: Mon, 02 Jan 2012 13:00:27 -0200
+Subject: [Chilli] Coova Chilli with no login
+Message-ID: <4F01C68B.3090005@cpd.ufrgs.br>
+
+Is there any to use Coova Chilli without login to any user? I want to 
+use it just to have the connections shaped and have accounting.
+
+Cheers,
+Fernando Macedo
+
+From ryan.day at cirrusworks.net  Mon Jan  2 15:10:52 2012
+From: ryan.day at cirrusworks.net (Ryan Day)
+Date: Mon, 02 Jan 2012 10:10:52 -0500
+Subject: [Chilli] Coova Chilli with no login
+In-Reply-To: <4F01C68B.3090005@cpd.ufrgs.br>
+References: <4F01C68B.3090005@cpd.ufrgs.br>
+Message-ID: <4F01C8FC.30900@cirrusworks.net>
+
+On 01/02/2012 10:00 AM, Fernando Macedo wrote:
+> Is there any to use Coova Chilli without login to any user? I want to
+> use it just to have the connections shaped and have accounting.
+>
+
+
+You can create a radius user with your desired bandwidth settings, and
+have your login page autoredirect to your hotspotlogin script with that
+radius user's credentials. There will be a slight delay while the
+redirect happens, but users won't be asked for credentials when logging
+in. I use this at one customer site, however I had to implement a hacky
+workaround to handle browser-less devices.
+
+<script type="text/javascript">
+   function subform() {
+    document.logonform.submit();
+   }
+   setTimeout(subform, 500);
+</script>
+
+<form name="logonform" method="POST" action="http://host/hotspotlogin.php">
+  <input type="hidden" name="UserName" size="20" maxlength="255"
+id="UserName" value="raduser">
+  <input type="hidden" name="Password" size="20" maxlength="255"
+value="radpass">
+</form>
+
+From david at coova.com  Mon Jan  2 15:31:04 2012
+From: david at coova.com (David Bird)
+Date: Mon, 02 Jan 2012 16:31:04 +0100
+Subject: [Chilli] Coova Chilli with no login
+In-Reply-To: <4F01C8FC.30900@cirrusworks.net>
+References: <4F01C68B.3090005@cpd.ufrgs.br> <4F01C8FC.30900@cirrusworks.net>
+Message-ID: <1325518264.4357.83.camel@david-laptop>
+
+You can also use Mac authentication and auto-allow everyone from your
+RADIUS server... this happens during their initial DHCP ...
+
+
+On Mon, 2012-01-02 at 10:10 -0500, Ryan Day wrote:
+> On 01/02/2012 10:00 AM, Fernando Macedo wrote:
+> > Is there any to use Coova Chilli without login to any user? I want to
+> > use it just to have the connections shaped and have accounting.
+> >
+> 
+> 
+> You can create a radius user with your desired bandwidth settings, and
+> have your login page autoredirect to your hotspotlogin script with that
+> radius user's credentials. There will be a slight delay while the
+> redirect happens, but users won't be asked for credentials when logging
+> in. I use this at one customer site, however I had to implement a hacky
+> workaround to handle browser-less devices.
+> 
+> <script type="text/javascript">
+>    function subform() {
+>     document.logonform.submit();
+>    }
+>    setTimeout(subform, 500);
+> </script>
+> 
+> <form name="logonform" method="POST" action="http://host/hotspotlogin.php">
+>   <input type="hidden" name="UserName" size="20" maxlength="255"
+> id="UserName" value="raduser">
+>   <input type="hidden" name="Password" size="20" maxlength="255"
+> value="radpass">
+> </form>
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+
+
+From fmacedo at cpd.ufrgs.br  Mon Jan  2 16:46:32 2012
+From: fmacedo at cpd.ufrgs.br (Fernando Macedo)
+Date: Mon, 02 Jan 2012 14:46:32 -0200
+Subject: [Chilli] Coova Chilli with no login
+In-Reply-To: <1325518264.4357.83.camel@david-laptop>
+References: <4F01C68B.3090005@cpd.ufrgs.br> <4F01C8FC.30900@cirrusworks.net>
+	<1325518264.4357.83.camel@david-laptop>
+Message-ID: <4F01DF68.4050500@cpd.ufrgs.br>
+
+Thanks for the responses. I'll create a virtual server in Freeradius 
+that will accept all requests coming from this chilli instance.
+
+Fernando Macedo
+
+Em 02/01/2012 13:31, David Bird escreveu:
+> You can also use Mac authentication and auto-allow everyone from your
+> RADIUS server... this happens during their initial DHCP ...
+>
+>
+> On Mon, 2012-01-02 at 10:10 -0500, Ryan Day wrote:
+>> On 01/02/2012 10:00 AM, Fernando Macedo wrote:
+>>> Is there any to use Coova Chilli without login to any user? I want to
+>>> use it just to have the connections shaped and have accounting.
+>>>
+>>
+>> You can create a radius user with your desired bandwidth settings, and
+>> have your login page autoredirect to your hotspotlogin script with that
+>> radius user's credentials. There will be a slight delay while the
+>> redirect happens, but users won't be asked for credentials when logging
+>> in. I use this at one customer site, however I had to implement a hacky
+>> workaround to handle browser-less devices.
+>>
+>> <script type="text/javascript">
+>>     function subform() {
+>>      document.logonform.submit();
+>>     }
+>>     setTimeout(subform, 500);
+>> </script>
+>>
+>> <form name="logonform" method="POST" action="http://host/hotspotlogin.php">
+>>    <input type="hidden" name="UserName" size="20" maxlength="255"
+>> id="UserName" value="raduser">
+>>    <input type="hidden" name="Password" size="20" maxlength="255"
+>> value="radpass">
+>> </form>
+>> _______________________________________________
+>> Chilli mailing list
+>> Chilli at coova.org
+>> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+
+From mohsen.saeedi at gmail.com  Sat Jan  7 21:14:24 2012
+From: mohsen.saeedi at gmail.com (Mohsen Saeedi)
+Date: Sun, 08 Jan 2012 00:44:24 +0330
+Subject: [Chilli] coova kmod
+In-Reply-To: <4F08B2C9.8050904@gmail.com>
+References: <4F08B2C9.8050904@gmail.com>
+Message-ID: <4F08B5B0.2040204@gmail.com>
+
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20120108/da7a0bb9/attachment.html>
+
+From mohsen.saeedi at gmail.com  Sat Jan  7 21:02:01 2012
+From: mohsen.saeedi at gmail.com (Mohsen Saeedi)
+Date: Sun, 08 Jan 2012 00:32:01 +0330
+Subject: [Chilli] coova kmod
+Message-ID: <4F08B2C9.8050904@gmail.com>
+
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20120108/0a17ef81/attachment.html>
+
+From mohsen.saeedi at gmail.com  Sat Jan  7 21:34:43 2012
+From: mohsen.saeedi at gmail.com (Mohsen Saeedi)
+Date: Sun, 08 Jan 2012 01:04:43 +0330
+Subject: [Chilli] coova kmod
+In-Reply-To: <CAKYr3zzt_0wnE_a69WGY7H6QQvtrjYWuWwp6vS_4T0tGbt9ZMQ@mail.gmail.com>
+References: <4F08B2C9.8050904@gmail.com>
+	<CAKYr3zzt_0wnE_a69WGY7H6QQvtrjYWuWwp6vS_4T0tGbt9ZMQ@mail.gmail.com>
+Message-ID: <4F08BA73.9050900@gmail.com>
+
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20120108/0d6105ec/attachment.html>
+
+From outbackdingo at gmail.com  Sat Jan  7 21:30:03 2012
+From: outbackdingo at gmail.com (Outback Dingo)
+Date: Sat, 7 Jan 2012 16:30:03 -0500
+Subject: [Chilli] coova kmod
+In-Reply-To: <4F08B2C9.8050904@gmail.com>
+References: <4F08B2C9.8050904@gmail.com>
+Message-ID: <CAKYr3zzt_0wnE_a69WGY7H6QQvtrjYWuWwp6vS_4T0tGbt9ZMQ@mail.gmail.com>
+
+On Sat, Jan 7, 2012 at 4:02 PM, Mohsen Saeedi <mohsen.saeedi at gmail.com> wrote:
+> Hi
+>
+> I compiled coova kmod and modprobe it on kernel. I found last month the good
+> link in archive mailing list, but lists.coova.org is down now! can i use
+> another url for access to archive? i need it!
+>
+> I'm waiting for below links contents:
+>
+> http://lists.coova.org/pipermail/chilli/2010-April/001248.html
+> http://lists.coova.org/pipermail/chilli/2010-May/001355.html
+
+are you referring to this ?
+http://dev.coova.org/svn/coova-ap/packages/kamikaze/coova-chilli-kmod/
+
+>
+> Thanks
+>
+>
+>
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+
+From tm at fwt.fr  Sun Jan  8 22:37:47 2012
+From: tm at fwt.fr (Thierry Museux - www.fwt.fr -)
+Date: Sun, 8 Jan 2012 23:37:47 +0100
+Subject: [Chilli] admin-reset option
+Message-ID: <059201ccce56$2582f330$7088d990$@fr>
+
+
+Where can i find how to setup the option :
+Added support for a ChilliSpot-Config = admin-reset option in RADIUS
+responses which will have chilli release the DHCP lease for the session
+?
+
+
+Thierry Museux
+France Wireless Technologies
+www.fwt.fr
+
+
+From david at coova.com  Tue Jan 10 10:28:00 2012
+From: david at coova.com (David Bird)
+Date: Tue, 10 Jan 2012 11:28:00 +0100
+Subject: [Chilli] CoovaChilli 1.2.9
+Message-ID: <1326191280.19155.56.camel@david-laptop>
+
+Hello,
+
+CoovaChilli 1.2.9 is now available at:
+http://coova-chilli.s3.amazonaws.com/coova-chilli-1.2.9.tar.gz
+
+
+ChangeLog:
+
+* New compile time option ''--enable-useragent'' to turn on the
+recording of User-Agent in RADIUS
+* New compile time option ''--enable-sessionstate'' to further extend
+the use of ChilliSpot-Session-State to indicate reasons for disconnect
+* New compile time option ''--enable-sessionid'' to enable the use of a
+ChilliSpot-Session-Id that does not change during location awareness
+stop/start
+* Change to RADIUS proxy to allow RADIUS accounting for determining
+location awareness
+* New runtime option for proxyvsa called
+''--locationupdate=/path/script'' to run a script on location change
+* New runtime flag option for proxyvsa ''--locationstopstart'' to have
+the RADIUS acct session stopped, session-id updates, and started during
+location change
+* New runtime flag option for proxyvsa ''--locationcopycalled'' to copy
+the Called-Station-Id from proxy RADIUS into that sent by chilli
+* New runtime flag option for proxyvsa ''--locationimmediateupdate'' to
+have chilli do RADIUS acct immediately upon location change
+* Fixed double RADIUS Accounting on macallowed/macallowlocal granted
+sessions; also adds MAC username
+* Added runtime option ''--childmax=128'' to define the max number of
+child processes
+* Added compile time option ''--enable-gardenaccounting'' to enable the
+splitting of garden vs. non-garden traffic
+** Added runtime option ''--uamgardendata'' to enable walled garden
+accounting using RADIUS accounting only
+** Added runtime option ''--uamotherdata'' to be used with above to also
+provide accounting for "other" traffic (DHCP, ARP, dropped, etc)
+** Added runtime option ''--nousergardendata'' that will have walled
+garden traffic counted separately from other user traffic
+post-authentication
+* Added option ''--vlanlocation'' to use VLAN as the ChilliSpot-Location
+* Added option ''--locationopt82'' whereby DHCP option 82 is used as
+Location
+* Added option ''--moreif'' to add additional LAN interfaces besides
+just dhcpif
+* Changed to be less aggressive in saving status file, unless you use
+''--statusfilesave''
+* Added option ''--noarpentries'', do not create arp table entries in
+when using TAP.
+* Added option ''--injectext''  to enable redir injection extended
+script
+* Added option ''--injectwispr'' to enable redir injection of WISPr
+* Added option ''--patricia'' to use patricia tries for walled garden
+lookup
+* Added option ''--extadmvsa'' extended administrative-user VSA script
+support
+* Added option ''--dhcpnotidle'' DHCP counted for preventing
+idle-timeout
+* Added option ''--ipv6'' to Enable IPv6 support (experimental)
+* Added option ''--ipv6only'' to enable IPv6-Only (experimental)
+
+
+
+From mohsen.saeedi at gmail.com  Tue Jan 10 10:48:39 2012
+From: mohsen.saeedi at gmail.com (Mohsen Saeedi)
+Date: Tue, 10 Jan 2012 14:18:39 +0330
+Subject: [Chilli] CoovaChilli 1.2.9
+In-Reply-To: <1326191280.19155.56.camel@david-laptop>
+References: <1326191280.19155.56.camel@david-laptop>
+Message-ID: <4F0C1787.8050007@gmail.com>
+
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20120110/df1e0d12/attachment.html>
+
+From francesco.colista at gmail.com  Tue Jan 10 13:08:00 2012
+From: francesco.colista at gmail.com (Francesco Colista)
+Date: Tue, 10 Jan 2012 14:08:00 +0100
+Subject: [Chilli] coova-chilli compilation error 1.2.9
+Message-ID: <353b12ba27824161217e641494e094fb@bsod.eu>
+
+With this configure and make options, i'm not able to compile :
+
+./configure --prefix=/usr \
+                 --sysconfdir=/etc \
+                 --mandir=/usr/share/man \
+                 --infodir=/usr/share/info \
+                 --localstatedir=/var/run/chilli \
+                 --libdir=/usr/lib \
+                 --sysconfdir=/etc \
+                 --with-openssl \
+                 --with-poll \
+                 --with-pcap \
+                 --enable-binstatusfile \
+                 --enable-statusfile \
+                 --enable-chillixml \
+                 --enable-ipwhitelist \
+                 --enable-redirinject \
+                 --enable-redirdnsreq \
+                 --enable-redirinject \
+                 --enable-debug \
+                 --enable-debug2 \
+                 --enable-sessgarden \
+                 --enable-shared \
+                 --enable-chilliredir \
+                 --enable-chilliscript \
+                 --enable-layer3 \
+                 --enable-dhcpopt \
+                 --enable-curl \
+                 --enable-largelimits
+
+
+export CFLAGS="$CFLAGS -Wno-error=unused-but-set-variable"
+
+make -j1
+
+I got this error:
+
+net.c: In function 'net_select_prepare':
+net.c:267:7: warning: variable 'i' set but not used 
+[-Wunused-but-set-variable]
+net.c: In function 'net_pcap_handler':
+net.c:648:5: error: too many arguments to function 'np->func'
+net.c: In function 'net_read_eth':
+net.c:718:5: warning: passing argument 4 of 'pcap_dispatch' from 
+incompatible pointer type [enabled by default]
+/usr/include/pcap/pcap.h:298:5: note: expected 'u_char *' but argument 
+is of type 'struct netpcap *'
+make[3]: *** [net.lo] Error 1
+make[3]: Leaving directory 
+`/home/fcolista/aports-fcolista/main/coova-chilli/src/coova-chilli-1.2.9/src'
+make[2]: *** [all-recursive] Error 1
+make[2]: Leaving directory 
+`/home/fcolista/aports-fcolista/main/coova-chilli/src/coova-chilli-1.2.9/src'
+make[1]: *** [all-recursive] Error 1
+make[1]: Leaving directory 
+`/home/fcolista/aports-fcolista/main/coova-chilli/src/coova-chilli-1.2.9'
+make: *** [all] Error 2
+
+libpcap version: 1.1.1
+
+
+Thanks.
+-- 
+:: Francesco ::
+Blog: http://fc1979.blogspot.com
+Jabber: francesco at jabber.org
+E-Mail: francesco at bsod.eu
+GnuPG: FE9DDD5F
+
+From david at coova.com  Tue Jan 10 13:32:22 2012
+From: david at coova.com (David Bird)
+Date: Tue, 10 Jan 2012 14:32:22 +0100
+Subject: [Chilli] coova-chilli compilation error 1.2.9
+Message-ID: <q9tupqysckfd0ghyd7b1p6sj.1326202342213@email.android.com>
+
+Thanks
+ 
+Unless specifically needed, build without pcap 
+
+Francesco Colista <francesco.colista at gmail.com> wrote:
+
+>With this configure and make options, i'm not able to compile :
+>
+>./configure --prefix=/usr \
+>                 --sysconfdir=/etc \
+>                 --mandir=/usr/share/man \
+>                 --infodir=/usr/share/info \
+>                 --localstatedir=/var/run/chilli \
+>                 --libdir=/usr/lib \
+>                 --sysconfdir=/etc \
+>                 --with-openssl \
+>                 --with-poll \
+>                 --with-pcap \
+>                 --enable-binstatusfile \
+>                 --enable-statusfile \
+>                 --enable-chillixml \
+>                 --enable-ipwhitelist \
+>                 --enable-redirinject \
+>                 --enable-redirdnsreq \
+>                 --enable-redirinject \
+>                 --enable-debug \
+>                 --enable-debug2 \
+>                 --enable-sessgarden \
+>                 --enable-shared \
+>                 --enable-chilliredir \
+>                 --enable-chilliscript \
+>                 --enable-layer3 \
+>                 --enable-dhcpopt \
+>                 --enable-curl \
+>                 --enable-largelimits
+>
+>
+>export CFLAGS="$CFLAGS -Wno-error=unused-but-set-variable"
+>
+>make -j1
+>
+>I got this error:
+>
+>net.c: In function 'net_select_prepare':
+>net.c:267:7: warning: variable 'i' set but not used 
+>[-Wunused-but-set-variable]
+>net.c: In function 'net_pcap_handler':
+>net.c:648:5: error: too many arguments to function 'np->func'
+>net.c: In function 'net_read_eth':
+>net.c:718:5: warning: passing argument 4 of 'pcap_dispatch' from 
+>incompatible pointer type [enabled by default]
+>/usr/include/pcap/pcap.h:298:5: note: expected 'u_char *' but argument 
+>is of type 'struct netpcap *'
+>make[3]: *** [net.lo] Error 1
+>make[3]: Leaving directory 
+>`/home/fcolista/aports-fcolista/main/coova-chilli/src/coova-chilli-1.2.9/src'
+>make[2]: *** [all-recursive] Error 1
+>make[2]: Leaving directory 
+>`/home/fcolista/aports-fcolista/main/coova-chilli/src/coova-chilli-1.2.9/src'
+>make[1]: *** [all-recursive] Error 1
+>make[1]: Leaving directory 
+>`/home/fcolista/aports-fcolista/main/coova-chilli/src/coova-chilli-1.2.9'
+>make: *** [all] Error 2
+>
+>libpcap version: 1.1.1
+>
+>
+>Thanks.
+>-- 
+>:: Francesco ::
+>Blog: http://fc1979.blogspot.com
+>Jabber: francesco at jabber.org
+>E-Mail: francesco at bsod.eu
+>GnuPG: FE9DDD5F
+>_______________________________________________
+>Chilli mailing list
+>Chilli at coova.org
+>http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+From francesco.colista at gmail.com  Tue Jan 10 13:47:33 2012
+From: francesco.colista at gmail.com (Francesco Colista)
+Date: Tue, 10 Jan 2012 14:47:33 +0100
+Subject: [Chilli] coova-chilli compilation error 1.2.9
+In-Reply-To: <q9tupqysckfd0ghyd7b1p6sj.1326202342213@email.android.com>
+References: <q9tupqysckfd0ghyd7b1p6sj.1326202342213@email.android.com>
+Message-ID: <3ce95679de415c90481ff28e0ffa5d19@bsod.eu>
+
+Il 10.01.2012 14:32 David Bird ha scritto:
+> Thanks
+>
+> Unless specifically needed, build without pcap
+>
+
+Without pcap, coova build correctly.
+Thanks.
+
+-- 
+:: Francesco ::
+Blog: http://fc1979.blogspot.com
+Jabber: francesco at jabber.org
+E-Mail: francesco at bsod.eu
+GnuPG: FE9DDD5F
+
+From fmacedo at cpd.ufrgs.br  Tue Jan 10 17:00:20 2012
+From: fmacedo at cpd.ufrgs.br (Fernando Macedo)
+Date: Tue, 10 Jan 2012 15:00:20 -0200
+Subject: [Chilli] coova-chilli compilation error 1.2.9
+In-Reply-To: <3ce95679de415c90481ff28e0ffa5d19@bsod.eu>
+References: <q9tupqysckfd0ghyd7b1p6sj.1326202342213@email.android.com>
+	<3ce95679de415c90481ff28e0ffa5d19@bsod.eu>
+Message-ID: <4F0C6EA4.9000504@cpd.ufrgs.br>
+
+I'm getting these errors:
+
+gcc -DHAVE_CONFIG_H -I. -I..    -D_GNU_SOURCE -Wall -Werror -fno-builtin 
+-fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe 
+-I../bstring -DDEFCHILLICONF='"/usr/local/etc/chilli.conf"' 
+-DDEFPIDFILE='"/usr/local/var/run/chilli.pid"' 
+-DDEFSTATEDIR='"/usr/local/var/run"' -DSBINDIR='"/usr/local/sbin"'    -g 
+-O2 -MT main-opt.o -MD -MP -MF .deps/main-opt.Tpo -c -o main-opt.o 
+main-opt.c
+main-opt.c: In function ?options_print_version?:
+main-opt.c:217: error: ?CMDLINE_PARSER_PACKAGE? undeclared (first use in 
+this function)
+main-opt.c:217: error: (Each undeclared identifier is reported only once
+main-opt.c:217: error: for each function it appears in.)
+main-opt.c:217: error: ?CMDLINE_PARSER_VERSION? undeclared (first use in 
+this function)
+main-opt.c: In function ?main?:
+main-opt.c:240: error: storage size of ?args_info? isn?t known
+cc1: warnings being treated as errors
+main-opt.c:250: error: implicit declaration of function ?cmdline_parser2?
+main-opt.c:265: error: implicit declaration of function 
+?cmdline_parser_configfile?
+main-opt.c:623: error: left-hand operand of comma expression has no effect
+main-opt.c:623: error: value computed is not used
+main-opt.c:623: error: left-hand operand of comma expression has no effect
+main-opt.c:1241: error: implicit declaration of function 
+?cmdline_parser_free?
+main-opt.c:240: error: unused variable ?args_info?
+
+Should CMDLINE_PARSER_PACKAGE be in cmd.c? It's a blank file, created by 
+bootstrap.sh.
+
+Fernando
+
+Em 10/01/2012 11:47, Francesco Colista escreveu:
+> Il 10.01.2012 14:32 David Bird ha scritto:
+>> Thanks
+>>
+>> Unless specifically needed, build without pcap
+>>
+>
+> Without pcap, coova build correctly.
+> Thanks.
+>
+
+
+From bojan at gajba.net  Tue Jan 10 22:21:03 2012
+From: bojan at gajba.net (Bojan Pogacar)
+Date: Tue, 10 Jan 2012 23:21:03 +0100
+Subject: [Chilli] CoovaChilli 1.2.9
+In-Reply-To: <1326191280.19155.56.camel@david-laptop>
+References: <1326191280.19155.56.camel@david-laptop>
+Message-ID: <4F0CB9CF.7060501@gajba.net>
+
+Hello!
+
+I've tested 1.2.9 and it seems that DHCP is faster and is running very well.
+
+I've also tested anyip feature and it still doesn't work for me after 
+1.2.5 . Can anyone confirm that this feature wasn't broken after 1.2.5.
+
+I've also described my problem at http://coova.org/node/4888 . Can 
+please anyone please take a look?
+
+Thanks David, thanks everyone!
+
+Bojan
+
+
+
+From david at coova.com  Wed Jan 11 09:20:26 2012
+From: david at coova.com (David Bird)
+Date: Wed, 11 Jan 2012 10:20:26 +0100
+Subject: [Chilli] CoovaChilli 1.2.9
+In-Reply-To: <4F0CB9CF.7060501@gajba.net>
+References: <1326191280.19155.56.camel@david-laptop>
+	<4F0CB9CF.7060501@gajba.net>
+Message-ID: <1326273626.19155.101.camel@david-laptop>
+
+You can get perhaps a bit more info if you do:
+
+chilli_query listippool
+DHCP lease time 600 sec, grace period 60 sec
+First available dynamic 3 Last 1
+First available static 254 Last 508
+List size 509
+-- Dynamic Pool
+------------------------------------------------------------
+Unit   0 : -inuse- :        10.1.0.2 : mac=XX-XX-XX-XX-XX-XX
+ip=192.0.0.2 age=2
+Unit   1 : 252/ -1 :        10.1.0.3 :
+Unit   2 : -inuse- :        10.1.0.4 : mac=YY-YY-YY-YY-YY-YY ip=10.1.0.4
+age=241
+...
+
+above is a 192.0.0.2 anyip static IP being NATed through as 10.1.0.2. 
+
+
+On Tue, 2012-01-10 at 23:21 +0100, Bojan Pogacar wrote:
+> Hello!
+> 
+> I've tested 1.2.9 and it seems that DHCP is faster and is running very well.
+> 
+> I've also tested anyip feature and it still doesn't work for me after 
+> 1.2.5 . Can anyone confirm that this feature wasn't broken after 1.2.5.
+> 
+> I've also described my problem at http://coova.org/node/4888 . Can 
+> please anyone please take a look?
+> 
+> Thanks David, thanks everyone!
+> 
+> Bojan
+> 
+> 
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+
+
+From bojan at gajba.net  Wed Jan 11 09:29:53 2012
+From: bojan at gajba.net (Bojan Pogacar)
+Date: Wed, 11 Jan 2012 10:29:53 +0100
+Subject: [Chilli] CoovaChilli 1.2.9
+In-Reply-To: <1326273626.19155.101.camel@david-laptop>
+References: <1326191280.19155.56.camel@david-laptop>
+	<4F0CB9CF.7060501@gajba.net>
+	<1326273626.19155.101.camel@david-laptop>
+Message-ID: <4F0D5691.1070606@gajba.net>
+
+On chilli 1.2.9 I get:
+
+Unit   0 : -inuse- :        10.9.0.2 : mac=02-01-01-05-01-01 ip=10.9.0.2 
+age=1
+Unit   1 : -inuse- :        10.9.0.3 : mac=02-01-01-05-01-01 ip=10.9.0.2 
+age=1
+Unit   2 :  -1/  3 :        10.9.0.4 :
+Unit   3 :   2/  4 :        10.9.0.5 :
+Unit   4 :   3/  5 :        10.9.0.6 :
+Unit   5 :   4/  6 :        10.9.0.7 :
+etc, ..
+
+On chilli 1.2.5 I get:
+
+Unit   0 : -inuse- :        10.9.0.2 : mac=02-01-01-05-01-01 ip=10.9.0.2 
+age=4
+Unit   1 :  -1/  2 :        10.9.0.3 :
+Unit   2 :   1/  3 :        10.9.0.4 :
+Unit   3 :   2/  4 :        10.9.0.5 :
+Unit   4 :   3/  5 :        10.9.0.6 :
+Unit   5 :   4/  6 :        10.9.0.7 :
+etc, ...
+
+Is there OK, that on 1.2.9 I get two IPs listed on same MAC. Could this 
+be a problem that web server terminates a connection?
+
+All IPs are fetch through DHCP. Static IPs are working.
+
+Thanks, Bojan
+
+
+
+Dne 11.1.2012 10:20, pi?e David Bird:
+> You can get perhaps a bit more info if you do:
+>
+> chilli_query listippool
+> DHCP lease time 600 sec, grace period 60 sec
+> First available dynamic 3 Last 1
+> First available static 254 Last 508
+> List size 509
+> -- Dynamic Pool
+> ------------------------------------------------------------
+> Unit   0 : -inuse- :        10.1.0.2 : mac=XX-XX-XX-XX-XX-XX
+> ip=192.0.0.2 age=2
+> Unit   1 : 252/ -1 :        10.1.0.3 :
+> Unit   2 : -inuse- :        10.1.0.4 : mac=YY-YY-YY-YY-YY-YY ip=10.1.0.4
+> age=241
+> ...
+>
+> above is a 192.0.0.2 anyip static IP being NATed through as 10.1.0.2.
+>
+>
+> On Tue, 2012-01-10 at 23:21 +0100, Bojan Pogacar wrote:
+>> Hello!
+>>
+>> I've tested 1.2.9 and it seems that DHCP is faster and is running very well.
+>>
+>> I've also tested anyip feature and it still doesn't work for me after
+>> 1.2.5 . Can anyone confirm that this feature wasn't broken after 1.2.5.
+>>
+>> I've also described my problem at http://coova.org/node/4888 . Can
+>> please anyone please take a look?
+>>
+>> Thanks David, thanks everyone!
+>>
+>> Bojan
+>>
+>>
+>> _______________________________________________
+>> Chilli mailing list
+>> Chilli at coova.org
+>> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+>
+
+From francesco.colista at gmail.com  Wed Jan 11 09:36:12 2012
+From: francesco.colista at gmail.com (Francesco Colista)
+Date: Wed, 11 Jan 2012 10:36:12 +0100
+Subject: [Chilli] CoovaChilli 1.2.9 age countdown
+Message-ID: <9a7938b84cbe3dfc33f7698cfa0bf052@bsod.eu>
+
+Hi. Another "issue" i experienced with chilli 1.2.x until 1.2.9.
+
+Sometimes (and i don't know how-to reproduce it), when a client tries 
+to browse on internet, instead of being redirected on login page, he 
+receive RST from chilli.
+tcpdumping the traffic, there's a flwo of SYN (client) <-> RST 
+(chilli).
+
+Client has correctly an IP from coova, and chilli_query listippool | 
+grep inuse shows:
+
+Unit 778 : -inuse- :     XX.XX.XX.XX : mac=00-AA-BB-CC-DD-EE 
+ip=XX.XX.XX.XX age=0
+
+the "age" is incremented every by one unit, but when reach value of 
+2,3, sometimes 10, is resetted to "0".
+Those client experience the behaviour SYN-RST.
+
+This seems happen randomly and with different clients. Other clients 
+are able to browse without any problem.
+
+I have to restart chilli daemon in order to make it works.
+
+Anyone can explain why this happens and how to fix it?
+
+Thanks a lot.
+
+-- 
+:: Francesco ::
+Blog: http://fc1979.blogspot.com
+Jabber: francesco at jabber.org
+E-Mail: francesco at bsod.eu
+GnuPG: FE9DDD5F
+
+From francesco.colista at gmail.com  Wed Jan 11 10:44:01 2012
+From: francesco.colista at gmail.com (Francesco Colista)
+Date: Wed, 11 Jan 2012 11:44:01 +0100
+Subject: [Chilli] CoovaChilli 1.2.9 age countdown
+Message-ID: <95011bb328f4b068adb27da786c7ddf1@bsod.eu>
+
+Il 11.01.2012 11:23 David Bird ha scritto:
+
+> What is your redirect URL (uamserver) in chilli? Are you using any
+> WISPrRedirectionURL values?
+>
+
+Those are the major part:
+
+hs.conf:
+uamserver       "https://login.mydomain.net/hotspotlogin.php"
+
+main.conf:
+uamhomepage uamhomepage http://login.mydomain.net:3990/www/coova.html
+wisprlogin  https://10.44.96.1/hotspotlogin.php
+
+I've lighttpd listening on 10.44.96.1 (login.mydomain.net).
+
+Hope this info helps.
+
+-- 
+:: Francesco ::
+Blog: http://fc1979.blogspot.com
+Jabber: francesco at jabber.org
+E-Mail: francesco at bsod.eu
+GnuPG: FE9DDD5F
+
+From alexander.szlezak at unwired.at  Wed Jan 11 09:51:39 2012
+From: alexander.szlezak at unwired.at (Alexander Szlezak)
+Date: Wed, 11 Jan 2012 10:51:39 +0100
+Subject: [Chilli] CoovaChilli 1.2.9 age countdown
+In-Reply-To: <9a7938b84cbe3dfc33f7698cfa0bf052@bsod.eu>
+References: <9a7938b84cbe3dfc33f7698cfa0bf052@bsod.eu>
+Message-ID: <9022e327-b2f1-45e1-92f8-21902987f6cd@email.android.com>
+
+
+hi francesco
+
+i can confirm a behavior that might be related, namely  that i connect the first time, have an ip but cannot transfer data and i am not pingahle from the chilli host
+
+only aftet disconnecting wlan and reconnecting it works again
+
+i'm interested iv david has some idea.
+
+best alex
+
+
+"Francesco Colista" <francesco.colista at gmail.com> schrieb:
+
+>Hi. Another "issue" i experienced with chilli 1.2.x until 1.2.9.
+>
+>Sometimes (and i don't know how-to reproduce it), when a client tries 
+>to browse on internet, instead of being redirected on login page, he 
+>receive RST from chilli.
+>tcpdumping the traffic, there's a flwo of SYN (client) <-> RST 
+>(chilli).
+>
+>Client has correctly an IP from coova, and chilli_query listippool | 
+>grep inuse shows:
+>
+>Unit 778 : -inuse- :     XX.XX.XX.XX : mac=00-AA-BB-CC-DD-EE 
+>ip=XX.XX.XX.XX age=0
+>
+>the "age" is incremented every by one unit, but when reach value of 
+>2,3, sometimes 10, is resetted to "0".
+>Those client experience the behaviour SYN-RST.
+>
+>This seems happen randomly and with different clients. Other clients 
+>are able to browse without any problem.
+>
+>I have to restart chilli daemon in order to make it works.
+>
+>Anyone can explain why this happens and how to fix it?
+>
+>Thanks a lot.
+>
+>-- 
+>:: Francesco ::
+>Blog: http://fc1979.blogspot.com
+>Jabber: francesco at jabber.org
+>E-Mail: francesco at bsod.eu
+>GnuPG: FE9DDD5F
+>_______________________________________________
+>Chilli mailing list
+>Chilli at coova.org
+>http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+-- 
+Diese Nachricht wurde von meinem Android-Mobiltelefon mit K-9 Mail gesendet. --
+
+From bojan at gajba.net  Fri Jan 13 12:22:37 2012
+From: bojan at gajba.net (Bojan Pogacar)
+Date: Fri, 13 Jan 2012 13:22:37 +0100
+Subject: [Chilli] CoovaChilli 1.2.9  &  AnyIP
+In-Reply-To: <4F0D5691.1070606@gajba.net>
+References: <1326191280.19155.56.camel@david-laptop>
+	<4F0CB9CF.7060501@gajba.net>
+	<1326273626.19155.101.camel@david-laptop>
+	<4F0D5691.1070606@gajba.net>
+Message-ID: <4F10220D.1010006@gajba.net>
+
+David, did you have time to take a look at my results?
+
+Thank you very much for your help.
+
+
+Bye
+
+
+
+Dne 11.1.2012 10:29, pi?e Bojan Pogacar:
+> On chilli 1.2.9 I get:
+>
+> Unit 0 : -inuse- : 10.9.0.2 : mac=02-01-01-05-01-01 ip=10.9.0.2 age=1
+> Unit 1 : -inuse- : 10.9.0.3 : mac=02-01-01-05-01-01 ip=10.9.0.2 age=1
+> Unit 2 : -1/ 3 : 10.9.0.4 :
+> Unit 3 : 2/ 4 : 10.9.0.5 :
+> Unit 4 : 3/ 5 : 10.9.0.6 :
+> Unit 5 : 4/ 6 : 10.9.0.7 :
+> etc, ..
+>
+> On chilli 1.2.5 I get:
+>
+> Unit 0 : -inuse- : 10.9.0.2 : mac=02-01-01-05-01-01 ip=10.9.0.2 age=4
+> Unit 1 : -1/ 2 : 10.9.0.3 :
+> Unit 2 : 1/ 3 : 10.9.0.4 :
+> Unit 3 : 2/ 4 : 10.9.0.5 :
+> Unit 4 : 3/ 5 : 10.9.0.6 :
+> Unit 5 : 4/ 6 : 10.9.0.7 :
+> etc, ...
+>
+> Is there OK, that on 1.2.9 I get two IPs listed on same MAC. Could this
+> be a problem that web server terminates a connection?
+>
+> All IPs are fetch through DHCP. Static IPs are working.
+>
+> Thanks, Bojan
+>
+>
+>
+> Dne 11.1.2012 10:20, pi?e David Bird:
+>> You can get perhaps a bit more info if you do:
+>>
+>> chilli_query listippool
+>> DHCP lease time 600 sec, grace period 60 sec
+>> First available dynamic 3 Last 1
+>> First available static 254 Last 508
+>> List size 509
+>> -- Dynamic Pool
+>> ------------------------------------------------------------
+>> Unit 0 : -inuse- : 10.1.0.2 : mac=XX-XX-XX-XX-XX-XX
+>> ip=192.0.0.2 age=2
+>> Unit 1 : 252/ -1 : 10.1.0.3 :
+>> Unit 2 : -inuse- : 10.1.0.4 : mac=YY-YY-YY-YY-YY-YY ip=10.1.0.4
+>> age=241
+>> ...
+>>
+>> above is a 192.0.0.2 anyip static IP being NATed through as 10.1.0.2.
+>>
+>>
+>> On Tue, 2012-01-10 at 23:21 +0100, Bojan Pogacar wrote:
+>>> Hello!
+>>>
+>>> I've tested 1.2.9 and it seems that DHCP is faster and is running
+>>> very well.
+>>>
+>>> I've also tested anyip feature and it still doesn't work for me after
+>>> 1.2.5 . Can anyone confirm that this feature wasn't broken after 1.2.5.
+>>>
+>>> I've also described my problem at http://coova.org/node/4888 . Can
+>>> please anyone please take a look?
+>>>
+>>> Thanks David, thanks everyone!
+>>>
+>>> Bojan
+>>>
+>>>
+>>> _______________________________________________
+>>> Chilli mailing list
+>>> Chilli at coova.org
+>>> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>>
+>>
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+
+From mohsen.saeedi at gmail.com  Sat Jan 14 13:23:17 2012
+From: mohsen.saeedi at gmail.com (Mohsen Saeedi)
+Date: Sat, 14 Jan 2012 16:53:17 +0330
+Subject: [Chilli] Invalid argument with xt_coova
+Message-ID: <4F1181C5.4060601@gmail.com>
+
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20120114/912c4311/attachment.html>
+
+From mohsen.saeedi at gmail.com  Tue Jan 17 11:24:48 2012
+From: mohsen.saeedi at gmail.com (Mohsen Saeedi)
+Date: Tue, 17 Jan 2012 14:54:48 +0330
+Subject: [Chilli] Invalid argument with xt_coova
+In-Reply-To: <4F1181C5.4060601@gmail.com>
+References: <4F1181C5.4060601@gmail.com>
+Message-ID: <4F155A80.3080108@gmail.com>
+
+
+Hi
+
+I'm compiled coova-1.2.8 with --nf-coova and then i load module xt_coova 
+with modprobe and everything is ok.but i have problem when i'm going to 
+use iptables commands. i got below error:
+
+[root at localhost ~]# iptables -I FORWARD -o eth0 --src 10.0.0.0/8 -m 
+coova --name chilli -j ACCEPT
+iptables: Invalid argument. Run `dmesg' for more information.
+
+and after dmesg|tail i saw this messages:
+
+[root at localhost ~]# dmesg | tail
+xt_coova: match ret=0
+xt_coova: looking for chilli
+xt_coova: found chilli refcnt=2
+xt_coova: match ret=0
+xt_coova: looking for chilli
+xt_coova: found chilli refcnt=3
+xt_coova: match ret=0
+xt_coova: looking for chilli
+xt_coova: found chilli refcnt=4
+xt_coova: match ret=0
+
+anybody knows about this problem? I'm using CentOS 6.2 with kernel 
+2.6.32-200 and kenrel 2.6.32-131.
+
+
+
+
+From felipe.wiel at hpp.org.br  Tue Jan 17 14:25:24 2012
+From: felipe.wiel at hpp.org.br (Felipe Augusto van de Wiel)
+Date: Tue, 17 Jan 2012 12:25:24 -0200
+Subject: [Chilli] Can't ping/connect to Access Points from Coova "server"
+Message-ID: <4F1584D4.3010702@hpp.org.br>
+
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA512
+
+Hi,
+
+I'm using Coova on a Debian server and I just changed the setup to
+use a large network range.  We are using 192.168.200.0/22 as the
+main range.  I'm using 192.168.200.0/23 as the dynamic range (dynip)
+and 192.168.200.2/23 as the static range (statip).
+
+I'm trying to setup a small nagios instance to monitor APs and
+check if everything is fine, but I can't ping or connect from the
+Coova server, it is fine if I use a workstation in the same network.
+
+I tried different setups but I can't find anything on the docs about
+it.  Right now I'm using Coova 1.2.1 and we plan to update, but I
+want to have this working first (if possible). :-)
+
+
+Kind regards,
+- -- 
+Felipe Augusto van de Wiel <felipe.wiel at hpp.org.br>
+Tecnologia da Informa??o (TI) - Complexo Pequeno Pr?ncipe
+http://www.pequenoprincipe.org.br/    T: +55 41 3310 1747
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.11 (GNU/Linux)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
+
+iQIcBAEBCgAGBQJPFYTUAAoJECCPPxLgxLxP1qoP/iQhTFJgqZz3JTyCd+3quHiQ
+AfJTQeniQ/J+VPueceqtwIFlcQw8vaBZV/RR1RaAWfBO/USUNTYlIW77Md9cYfZt
+FIfEMyKlFIdNx6ibYkDKpkd+6aeLqGfr3ZJ16IOx4QsOSwZonBIfrCtqhRw7VTla
+gtWsQ3Unjsv1zQzmUM58rFudoKBXr/aSHNcO1c9hnuwLjDbtJKJBUBI+Qdpyky37
+tj+MsxvG1dTGrCVPtWcYq8IyJJVTZWK2KcoxJgw09QSUBQjmDdm+r6+LS5I6Z4G9
+t/zggvAF2fFlZm+uuXkrcxsH/PEFVDT3lROuYza3IteHuEv+D3qCUAXli7d/kVs8
+JF9OAswHJQYconhpZYlnQ2F95CSvGmzRiCXtvMyxFi3YtVi+/jYWPzzMLDnPPXi0
+D0MfAwBKZcPBHB/Nu3DeSplOaCUHqoXcNmpSoPQhN1hTgE/+W8qIJFvv3i4U9a55
+WTa72TM3rXIeGj0KTI099WOHheXLglZ0lme2bY9S3l8UwMuOsss36wFeEnHX7voJ
+pu0QY6fMV8slWdTzDWURwOgxQG8D1sTzxsue3hhZSDhXhVIEKRZvRjbGGWPaIlxL
+fAWt5p6cAbzEn4LdYlc1NQH79LWe7j1P8Coan2tmOZhvNR0SL+E58M3P2hcYHQZl
+ti0l86R2cOYcTBKofxjh
+=AX+M
+-----END PGP SIGNATURE-----
+
+From lorenzo.milesi at ufficyo.com  Thu Jan 19 15:50:16 2012
+From: lorenzo.milesi at ufficyo.com (Lorenzo Milesi)
+Date: Thu, 19 Jan 2012 16:50:16 +0100 (CET)
+Subject: [Chilli] Created debian package won't include /etc/chilli*
+In-Reply-To: <887348441.17618.1326986375318.JavaMail.root@quaglia>
+Message-ID: <1451346556.17799.1326988215941.JavaMail.root@quaglia>
+
+Hi
+I'm trying to build a .deb package, and works fine, but when I install it the /etc/chilli directory isn't created.
+
+I've noticed from prebuild packages that the debian/conffiles file contains much more data than the one in svn:
+
+/etc/default/chilli
+/etc/init.d/chilli
+/etc/chilli/defaults
+/etc/chilli.conf
+/etc/chilli/down.sh
+/etc/chilli/functions
+/etc/chilli/defaults
+/etc/chilli/gui-config-default.ini
+/etc/chilli/wwwsh
+/etc/chilli/up.sh
+/etc/chilli/www/coova.png
+/etc/chilli/www/ChilliLibrary.js
+/etc/chilli/www/openid.gif
+/etc/chilli/www/config.sh
+/etc/chilli/www/chilliform.chi
+/etc/chilli/www/coova.html
+/etc/chilli/www/wait.gif
+/etc/chilli/www/coova.jpg
+/etc/chilli/www/chillijs.chi.sh
+/etc/chilli/www/chillijs.chi
+/etc/chilli/www/chilliController.js
+/etc/chilli/www/chilliform.chi.sh
+/etc/chilli/www/json_html.tmpl
+
+I'm not familiar with debian packages... How can I make them included into the .deb?
+thanks
+
+From timwhite88 at gmail.com  Thu Jan 26 10:25:12 2012
+From: timwhite88 at gmail.com (Tim White)
+Date: Thu, 26 Jan 2012 20:25:12 +1000
+Subject: [Chilli] Problems with filtering when using ethernet bridge
+Message-ID: <4F212A08.2060302@gmail.com>
+
+I'm wondering if anyone else has had problems trying to do some iptables 
+filtering (in particular redirection for transparent proxy) when using 
+Coova Chilli with a bridge interface?
+I have hostapd on wlan0, and have br0 (containing wlan0 and eth1) that I 
+want to run coova chilli on.
+
+It all works fine until I try to do any iptables rules that perform 
+redirections or modify packets. Both the REDIRECT target, and DNAT end 
+up making the packets reappear on the br0 interface, instead of the tun0 
+interface. (And yes, the rules are working on packets from tun0, I'm 
+using "-i $TUNTAP" in my rules). Because the rules are to drop 
+everything trying to appear on br0, when I try and redirect packets to 
+transparent proxy server, the packets are being dropped.
+
+Other than running 2 instances of chilli, one for each interface, what 
+other ideas to people have for getting this to work?
+
+Thanks
+
+Tim
+
+From mohsen.saeedi at gmail.com  Sun Jan 29 20:18:38 2012
+From: mohsen.saeedi at gmail.com (Mohsen Saeedi)
+Date: Sun, 29 Jan 2012 23:48:38 +0330
+Subject: [Chilli] Invalid argument with xt_coova
+In-Reply-To: <4F118127.40009@gmail.com>
+References: <4F118127.40009@gmail.com>
+Message-ID: <4F25A99E.20405@gmail.com>
+
+Hi again
+
+nobody can help me? iptables rule didn't work for me! what is the 
+problem. please help.
+
+
+Thanks
+
+
+/*Mohsen Saeedi <mohsen.saeedi at gmail.com>*/ wrote on Sat, 14 Jan 2012 
+16:50:39 +0330:
+>
+> Hi
+>
+> I'm compiled coova-1.2.8 with --nf-coova and then i load module 
+> xt_coova with modprobe and everything is ok.but i have problem when 
+> i'm going to use iptables commands. i got below error:
+>
+> [root at localhost ~]# iptables -I FORWARD -o eth0 --src 10.0.0.0/8 -m 
+> coova --name chilli -j ACCEPT
+> iptables: Invalid argument. Run `dmesg' for more information.
+>
+> and after dmesg|tail i saw this messages:
+>
+>
+>
+

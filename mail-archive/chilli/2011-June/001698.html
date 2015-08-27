@@ -1,0 +1,147 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] cast issue with packed structs under arm
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20cast%20issue%20with%20packed%20structs%20under%20arm&In-Reply-To=%3C4DFB8D6A.9070508%40endian.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001697.html">
+   <LINK REL="Next"  HREF="001700.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] cast issue with packed structs under arm</H1>
+    <B>Peter Warasin</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20cast%20issue%20with%20packed%20structs%20under%20arm&In-Reply-To=%3C4DFB8D6A.9070508%40endian.com%3E"
+       TITLE="[Chilli] cast issue with packed structs under arm">peter at endian.com
+       </A><BR>
+    <I>Fri Jun 17 17:22:50 UTC 2011</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001697.html">[Chilli] released 1.2.7
+</A></li>
+        <LI>Next message: <A HREF="001700.html">[Chilli] [PATCH] fix casts which turn out invalid under armv5tel
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1698">[ date ]</a>
+              <a href="thread.html#1698">[ thread ]</a>
+              <a href="subject.html#1698">[ subject ]</a>
+              <a href="author.html#1698">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>hi guys
+
+i currently deal with an issue we notice with coova-chilli 1.2.6 under
+armv5tel (marvell kirkwood). i have a possible solution, but would like
+to ask for your opinion, maybe there's a better solution than mine.
+
+
+===================
+What happened to us
+===================
+
+We have a user with a static ip configured (FRAMED_IP_ADDRESS) to
+192.168.11.66.
+The user logged in without problems and everything worked, but it did
+not have configured 192.168.11.66 but 192.168.11.6
+
+Similar problem (i found out) is with logging out a user with
+chilli_query logout ip 192.168.11.1
+which is not working at all.
+
+Another related problem is mac addresses shown in chilli_query list
+which should be the same actually show up as different.
+
+Within exactly the same environment but x86 works all as expected.
+
+
+=====
+Cause
+=====
+
+The issue is in cb_radius_auth_conf() in line 3647:
+
+    hisip = (struct in_addr*) &amp;(hisipattr-&gt;v.i);
+
+This cast is invalid under arm. In arm everything must be aligned,
+otherwise it is fixed up by the kernel (with cpu cost). The radius
+struct is packed, so the compiler adds no padding to the assembler
+representation.
+
+It looks like that because of type-punning the compiler does not know
+that the struct is packed, reads the first 3 bytes and overjumps then
+the next 2 bytes, where the padding normally, when not packed, should
+be. Result is, instead of 192.168.11.66 i get 192.168.11.6, when 6 is
+the value which resides within memory area 2 bytes after 66
+
+
+=================
+Possible solution
+=================
+
+<A HREF="http://pastebin.com/VgxRxzJn">http://pastebin.com/VgxRxzJn</A>
+
+here you see an isolated code of this problem commented out the line
+which causes the problem and added a workaround i found within tcpdump.
+
+this actually is working
+
+Now I am no expert on alignment of memory and arm at all,. so I asked
+around a bit in #arm channels, for maybe a very easy solution.. well.
+looks like there is no simple compiler flag or something which fixes
+this. I think it is really necessary to change every cast.
+
+However this means it is necessary to check every cast in coova-chilli.
+This probably happens on many places, which maybe nobody did recognized yet.
+And then after all it is necessary to replace these lines adding then
+also a temporary variable which need to be mallocd and freed. (don't
+like that)
+
+I start now to write a patch which fixes the issues mentioned above,.
+But i am unsure if this is a good solution, so probably i will not
+search for every probably invalid cast right now before i got your opinions.
+
+So please be verbose :)
+
+thank you in advance
+
+peter
+
+
+-- 
+::<i> e n d i a n
+</I>::<i> open source - open minds
+</I>
+::<i> peter warasin
+</I>::<i> <A HREF="http://www.endian.com">http://www.endian.com</A>   :: <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">peter at endian.com</A>
+</I></PRE>
+
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001697.html">[Chilli] released 1.2.7
+</A></li>
+	<LI>Next message: <A HREF="001700.html">[Chilli] [PATCH] fix casts which turn out invalid under armv5tel
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1698">[ date ]</a>
+              <a href="thread.html#1698">[ thread ]</a>
+              <a href="subject.html#1698">[ subject ]</a>
+              <a href="author.html#1698">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

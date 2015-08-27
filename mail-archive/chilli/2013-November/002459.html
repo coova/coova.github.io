@@ -1,0 +1,158 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] CoovaChilli Kernel Mode issue
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20CoovaChilli%20Kernel%20Mode%20issue&In-Reply-To=%3C1547615330.282248.1385378564547.JavaMail.root%40frontiir.net%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="002466.html">
+   <LINK REL="Next"  HREF="002465.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] CoovaChilli Kernel Mode issue</H1>
+    <B>Phyo Wai Soe</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20CoovaChilli%20Kernel%20Mode%20issue&In-Reply-To=%3C1547615330.282248.1385378564547.JavaMail.root%40frontiir.net%3E"
+       TITLE="[Chilli] CoovaChilli Kernel Mode issue">phyo.w.soe at frontiir.net
+       </A><BR>
+    <I>Mon Nov 25 11:22:44 UTC 2013</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="002466.html">[Chilli] Layer3: help with connections / dhcp connections
+</A></li>
+        <LI>Next message: <A HREF="002465.html">[Chilli] CoovaChilli Kernel Mode issue
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2459">[ date ]</a>
+              <a href="thread.html#2459">[ thread ]</a>
+              <a href="subject.html#2459">[ subject ]</a>
+              <a href="author.html#2459">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Greetings all,
+
+I am very much new to CoovaChilli and testing it out to use it in an ISP environment. I am using CoovaChilli 1.3 under Ubuntu 12.04. I compiled CoovaChilli from the source and could run it successfully (clients will see the log in page) in user mode. I then recompiled it with kernel mode on and started having a redirection issue. But if I authorize that client IP manually with chilli_query, he can surf the web. 
+
+The issue is that when an authorized client goes to any webpage, he will only see -
+
+          The connection was reset    The connection to the server was reset while the page was loading.
+
+He won't see the redirection or the log in page. This is the address - <A HREF="http://192.168.99.1:3990/www/coova.html?loginurl=http%3a%2f%2f192.168.99.1%3a4990%2fwww%2flogin.chi%3fres%3dnotyet%26uamip%3d192.168.99.1%26uamport%3d3990%26challenge%3db925a8a4434c2ba0653b10ee47c01c96%26called%3d08-00-27-0D-27-23%26mac%3d08-00-27-E3-0F-FF%26ip%3d10.99.0.2%26nasid%3dnas01%26sessionid%3d52777de000000001%26userurl%3dhttp%253a%252f%252fwww.fnb.co.za%252f%26md%3dE1A65E6DF23FB0912CFD754A7E4F9E6C">http://192.168.99.1:3990/www/coova.html?loginurl=http%3a%2f%2f192.168.99.1%3a4990%2fwww%2flogin.chi%3fres%3dnotyet%26uamip%3d192.168.99.1%26uamport%3d3990%26challenge%3db925a8a4434c2ba0653b10ee47c01c96%26called%3d08-00-27-0D-27-23%26mac%3d08-00-27-E3-0F-FF%26ip%3d10.99.0.2%26nasid%3dnas01%26sessionid%3d52777de000000001%26userurl%3dhttp%253a%252f%252fwww.fnb.co.za%252f%26md%3dE1A65E6DF23FB0912CFD754A7E4F9E6C</A>
+
+If I run the server in debug mode, here is what it shows when client goes to www.fnb.co.za:
+
+dhcp.c: 3632: 0 (Debug) Address found
+dns.c: 187: 0 (Debug) It was a dns record type: 1 class: 1
+dns.c: 194: 0 (Debug) DNS: www.fnb.co.za
+dns.c: 187: 0 (Debug) It was a dns record type: 1 class: 1
+dns.c: 194: 0 (Debug) DNS: www.fnb.co.za
+dns.c: 187: 0 (Debug) It was a dns record type: 1 class: 1
+dns.c: 187: 0 (Debug) It was a dns record type: 1 class: 1
+dhcp.c: 3632: 0 (Debug) Address found
+dhcp.c: 3632: 0 (Debug) Address found
+dhcp.c: 3632: 0 (Debug) Address found
+redir.c: 2103: 0 (Debug) The path: 
+redir.c: 2413: 0 (Debug) --&gt;&gt; Setting userurl=[<A HREF="http://www.fnb.co.za/">http://www.fnb.co.za/</A>]
+redir.c: 3962: 0 (Debug) redir_accept: Original request host=www.fnb.co.za
+redir.c: 987: 0 (Debug) redir_wispr2_reply
+========================================================
+On the CoovaChilli server, eth0 is the WAN interface and eth1 is the DHCP interface. I am not using any Radius server yet and most settings are the defaults. Here is the config -
+
+HS_WANIF=eth0            # WAN Interface toward the Internet
+HS_NETWORK=10.99.0.0       # HotSpot Network (must include HS_UAMLISTEN)
+HS_NETMASK=255.255.255.0   # HotSpot Network Netmask
+HS_UAMLISTEN=192.168.99.1  # HotSpot IP Address (on subscriber network)
+HS_UAMPORT=3990            # HotSpot UAM Port (on subscriber network)
+HS_UAMUIPORT=4990   
+#Added for Coova Kernel module config
+HS_DHCPLISTEN=10.99.0.1
+HS_KNAME=chilli
+
+Here are my configs from the /tmp
+
+uamserver       &quot;<A HREF="http://192.168.99.1:4990/www/login.chi">http://192.168.99.1:4990/www/login.chi</A>&quot;
+radiusnasid     &quot;nas01&quot;
+papalwaysok
+uamaliasname &quot;chilli&quot;
+adminupdatefile &quot;/etc/chilli/eth1/local.conf&quot;
+
+net             10.99.0.0/255.255.255.0
+uamlisten       192.168.99.1
+uamport         3990
+dhcpif          eth1
+uamallowed      &quot;www.coova.org&quot;
+uamanydns
+kname &quot;chilli&quot;
+dhcplisten &quot;10.99.0.1&quot;
+domain &quot;lan&quot;
+uamhomepage <A HREF="http://192.168.99.1:3990/www/coova.html">http://192.168.99.1:3990/www/coova.html</A>
+wwwdir /etc/chilli/www
+wwwbin /etc/chilli/wwwsh
+============================
+One strange thing I noted was that when using CoovaChilli in user mode, it would &quot;take over&quot; eth1 which will not have an IP address anymore. But in kernel mode, eth1 gets an address with a wrong subnet mask. It won't make a difference if I assign 10.99.0.1 to eth1 in /etc/network/interfaces or if I change the mask while CoovaChilli is running.
+
+eth0      Link encap:Ethernet  HWaddr 08:00:27:75:e6:48  
+          inet addr:10.0.2.15  Bcast:10.0.2.255  Mask:255.255.255.0
+          inet6 addr: fe80::a00:27ff:fe75:e648/64 Scope:Link
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          RX packets:465 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:476 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000 
+          RX bytes:73656 (73.6 KB)  TX bytes:34508 (34.5 KB)
+
+eth1      Link encap:Ethernet  HWaddr 08:00:27:0d:27:23  
+          inet addr:10.99.0.1  Bcast:10.255.255.255  Mask:255.0.0.0
+          inet6 addr: fe80::a00:27ff:fe0d:2723/64 Scope:Link
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          RX packets:3305 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:2465 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000 
+          RX bytes:364761 (364.7 KB)  TX bytes:452642 (452.6 KB)
+
+tun0      Link encap:UNSPEC  HWaddr 00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00  
+          inet addr:192.168.99.1  P-t-P:192.168.99.1  Mask:255.255.255.0
+          UP POINTOPOINT RUNNING  MTU:1500  Metric:1
+          RX packets:0 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:100 
+          RX bytes:0 (0.0 B)  TX bytes:0 (0.0 B)
+
+I am really sorry about the long email. I wish to include all relevant info so that someone can easily spot where I am doing wrong.
+I would truly appreciate any help or tip.
+
+Many thanks.
+
+Regards,
+Phyo Wai Soe
+</PRE>
+
+
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="002466.html">[Chilli] Layer3: help with connections / dhcp connections
+</A></li>
+	<LI>Next message: <A HREF="002465.html">[Chilli] CoovaChilli Kernel Mode issue
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2459">[ date ]</a>
+              <a href="thread.html#2459">[ thread ]</a>
+              <a href="subject.html#2459">[ subject ]</a>
+              <a href="author.html#2459">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

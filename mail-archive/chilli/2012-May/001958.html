@@ -1,0 +1,155 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] Coovachilli and Squid Transparent on the same host
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Coovachilli%20and%20Squid%20Transparent%20on%20the%20same%20host&In-Reply-To=%3CCAENMwEBM8yrzRwxFFi0%3DSL39qiPFBhp73__uJBBWsfoOx9r%3D9A%40mail.gmail.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001957.html">
+   <LINK REL="Next"  HREF="001959.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] Coovachilli and Squid Transparent on the same host</H1>
+    <B>Germano Paciocco</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Coovachilli%20and%20Squid%20Transparent%20on%20the%20same%20host&In-Reply-To=%3CCAENMwEBM8yrzRwxFFi0%3DSL39qiPFBhp73__uJBBWsfoOx9r%3D9A%40mail.gmail.com%3E"
+       TITLE="[Chilli] Coovachilli and Squid Transparent on the same host">germano.paciocco at gmail.com
+       </A><BR>
+    <I>Wed May 16 19:54:20 UTC 2012</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001957.html">[Chilli] Coovachilli and Squid Transparent on the same host
+</A></li>
+        <LI>Next message: <A HREF="001959.html">[Chilli] Coovachilli and Squid Transparent on the same host
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1958">[ date ]</a>
+              <a href="thread.html#1958">[ thread ]</a>
+              <a href="subject.html#1958">[ subject ]</a>
+              <a href="author.html#1958">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>/*Venkatesh K &lt;<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">kaevee at gmail.com</A>&gt;*/ wrote:
+
+&gt;<i> I suspect your squid is not started?
+</I>
+Squid is started, working and listening on 127.0.0.1:3128. I tried with
+
+terminal1 -&gt; hotspot$ export http_proxy=<A HREF="http://localhost:3128">http://localhost:3128</A> &amp;&amp; lynx
+terminal2 -&gt;hotspot# tail -f /var/log/squid3/access.log
+
+squid is proxing and I can surf the web.
+
+and btw:
+
+hotspot# ps aux | grep squid
+proxy      895  0.0  0.3  13068  6732 ?        Ss   21:30   0:00
+/usr/sbin/squid3 -N -YC -f /etc/squid3/squid.conf
+hotspot# ps aux | grep chilli
+root      2134  0.0  0.0   7712  1104 ?        Ss   21:34   0:00
+/sbin/chilli -c /etc/chilli.conf
+
+here's my config:
+
+[main.conf]
+cmdsocket       /var/run/chilli.eth1.sock
+unixipc         chilli.eth1.ipc
+pidfile         /var/run/chilli.eth1.pid
+net		10.0.0.0/255.255.255.0
+uamlisten	10.0.0.1
+uamport         3990
+dhcpif		eth1
+uamallowed	&quot;www.coova.org,10.0.0.1,www.coova.org&quot;
+uamanydns
+statip 10.0.0.1/255.255.255.0
+domain &quot;lan&quot;
+dns1 &quot;10.0.0.1&quot;
+dns2 &quot;192.168.196.1&quot;
+uamhomepage <A HREF="http://10.0.0.1:3990/www/coova.html">http://10.0.0.1:3990/www/coova.html</A>
+wwwdir /etc/chilli/www
+wwwbin /etc/chilli/wwwsh
+uamuiport 4990
+locationname &quot;GePs Spot&quot;
+radiuslocationname &quot;GePs_Spot&quot;
+radiuslocationid &quot;isocc=,cc=,ac=,network=Coova,&quot;
+
+[hs.conf]
+radiusserver1	&quot;localhost&quot;
+radiusserver2	&quot;localhost&quot;
+radiussecret	&quot;testing123&quot;
+radiusauthport  1812
+radiusacctport  1813
+uamserver	&quot;<A HREF="http://10.0.0.1:4990/www/login.chi">http://10.0.0.1:4990/www/login.chi</A>&quot;
+radiusnasid	&quot;nas01&quot;
+papalwaysok
+uamaliasname &quot;chilli&quot;
+adminupdatefile &quot;/etc/chilli/local.conf&quot;
+uamsecret &quot;uamsecret&quot;
+postauthproxy 127.0.0.1
+postauthproxyport 3128
+
+[squid.conf]
+acl manager proto cache_object
+acl localhost src 127.0.0.1/32 ::1
+acl to_localhost dst 127.0.0.0/8 0.0.0.0/32 ::1
+#acl localnet src 10.0.0.0/8
+acl SSL_ports port 443
+acl Safe_ports port 80
+acl Safe_ports port 21
+acl Safe_ports port 443
+acl Safe_ports port 70
+acl Safe_ports port 210
+acl Safe_ports port 1025-65535
+acl Safe_ports port 280
+acl Safe_ports port 488
+acl Safe_ports port 591
+acl Safe_ports port 777
+acl CONNECT method CONNECT
+http_access allow manager localhost
+http_access deny manager
+http_access deny !Safe_ports
+http_access deny CONNECT !SSL_ports
+#http_access allow localnet
+http_access allow localhost
+http_access deny all
+always_direct allow all
+http_port 3128 transparent
+coredump_dir /var/spool/squid3
+refresh_pattern ^ftp:		1440	20%	10080
+refresh_pattern ^gopher:	1440	0%	1440
+refresh_pattern -i (/cgi-bin/|\?) 0	0%	0
+refresh_pattern (Release|Packages(.gz)*)$      0       20%     2880
+refresh_pattern .		0	20%	4320
+
+--
+GP
+</PRE>
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001957.html">[Chilli] Coovachilli and Squid Transparent on the same host
+</A></li>
+	<LI>Next message: <A HREF="001959.html">[Chilli] Coovachilli and Squid Transparent on the same host
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1958">[ date ]</a>
+              <a href="thread.html#1958">[ thread ]</a>
+              <a href="subject.html#1958">[ subject ]</a>
+              <a href="author.html#1958">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

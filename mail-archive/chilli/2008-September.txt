@@ -1,0 +1,116 @@
+From oguzhank at bilkent.edu.tr  Wed Sep  3 13:29:40 2008
+From: oguzhank at bilkent.edu.tr (Oguzhan Kayhan)
+Date: Wed, 3 Sep 2008 16:29:40 +0300 (EEST)
+Subject: coova-chilli ap
+Message-ID: <35786.139.179.14.250.1220448580.squirrel@webmail.bilkent.edu.tr>
+
+hello,
+I wonder if any plans about updating the CoovaAP version?
+Coovachilli is now at 1.12 but in coovaap it is still in 1.07.
+
+That might be nice to see a updated version on the site :)
+
+
+
+
+
+
+From m.simioni at gmail.com  Wed Sep 10 16:11:02 2008
+From: m.simioni at gmail.com (Marco Simioni)
+Date: Wed, 10 Sep 2008 18:11:02 +0200
+Subject: Compilation error with latest svn 181 on ubuntu 7.10
+Message-ID: <f71cb680809100911r60dbf3cblb4b7bafdfa14fce@mail.gmail.com>
+
+Hi, i'm having issues trying to compile latest svn revision 181 on ubuntu 7.10.
+
+Following these commands:
+
+**************
+svn checkout http://dev.coova.org/svn/coova-chilli/
+cd coova-chilli
+sh bootstrap
+./configure --prefix=/usr
+make
+**************
+
+make returns with the following error:
+
+**************
+root at izc:/usr/src/coova-chilli# make
+make[1]: Entering directory `/usr/src/coova-chilli'
+cd . && autoheader
+configure.in:18: warning: AC_ARG_PROGRAM invoked multiple times
+make[1]: Leaving directory `/usr/src/coova-chilli'
+cd . \
+          && CONFIG_FILES= CONFIG_HEADERS=[config.h] \
+             /bin/bash ./config.status
+config.status: error: cannot find input file: [config.h].in
+make: *** [stamp-h] Error 1
+**************
+
+i have to manually replace "CONFIG_HEADERS=[config.h]" with
+"CONFIG_HEADERS=[config.h]" in Makefile, then it compiles succesfully.
+
+Someone having the same compilation issue? What am i missing?
+
+Thank you,
+
+Marco
+
+
+From gunther.mayer at googlemail.com  Thu Sep 11 18:24:17 2008
+From: gunther.mayer at googlemail.com (Gunther Mayer)
+Date: Thu, 11 Sep 2008 20:24:17 +0200
+Subject: Input/output octets accounting
+Message-ID: <48C96251.3000408@gmail.com>
+
+Hi guys,
+
+Does anyone know exactly how this is counted? On what OSI layer does it 
+count the bytes? Transport layer? Network (IP) layer? Or even lower? I'd 
+like to do some reconciliation with third party tools, right now they 
+don't agree but probably because they're counting payloads at different 
+OSI layers...
+
+Gunther
+
+
+From wlan at mac.com  Fri Sep 12 05:08:53 2008
+From: wlan at mac.com (wlanmac)
+Date: Fri, 12 Sep 2008 07:08:53 +0200
+Subject: Input/output octets accounting
+In-Reply-To: <48C96251.3000408@gmail.com>
+References: <48C96251.3000408@gmail.com>
+Message-ID: <1221196133.7407.9.camel@david-laptop>
+
+Hmm.. good question. The answer, of course, is right there in the source
+code. It depends on if you are using a tun or a tap device, where 99% of
+the time, you are using a tun. The entire packet (as seen by chilli) is
+counted... so, with tun, that would be the IP layer. If using a tap
+interface, it is the entire Ethernet segment. 
+
+The RADIUS RFC doesn't specify what layer to consider when counting
+octets.. maybe it does make sense to only count the IP payload.. hm.
+
+David
+
+On Thu, 2008-09-11 at 20:24 +0200, Gunther Mayer wrote:
+> Hi guys,
+> 
+> Does anyone know exactly how this is counted? On what OSI layer does it 
+> count the bytes? Transport layer? Network (IP) layer? Or even lower? I'd 
+> like to do some reconciliation with third party tools, right now they 
+> don't agree but probably because they're counting payloads at different 
+> OSI layers...
+> 
+> Gunther
+> 
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+> 
+
+
+

@@ -1,0 +1,80 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] chilli speed
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20chilli%20speed&In-Reply-To=%3C1256644193.7649.43.camel%40david-laptop%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000937.html">
+   <LINK REL="Next"  HREF="000936.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] chilli speed</H1>
+    <B>David Bird</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20chilli%20speed&In-Reply-To=%3C1256644193.7649.43.camel%40david-laptop%3E"
+       TITLE="[Chilli] chilli speed">david at coova.com
+       </A><BR>
+    <I>Tue Oct 27 11:49:53 UTC 2009</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000937.html">[Chilli] new mailing list
+</A></li>
+        <LI>Next message: <A HREF="000936.html">[Chilli] chilli speed
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#935">[ date ]</a>
+              <a href="thread.html#935">[ thread ]</a>
+              <a href="subject.html#935">[ subject ]</a>
+              <a href="author.html#935">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hello,
+
+It has been a complaint that chilli is throughput limited on typical
+routers (much less so on a typical PC). Doing some testing with
+valgrind, not surprisingly, the one of the biggest time-sinks is the
+check on the &quot;message queue&quot; that chilli established. This has been
+around in chilli from the beginning, and is the mechanism for the forked
+&quot;redir&quot; processes to communicate back to chilli (like, for instance,
+when someone has logged in successfully). In the main chilli loop, the
+queue is checked for messages on each pass... and for each packet
+in/out! I've been doing some testing using a UNIX socket instead, where
+the socket can be part of the select() (and not require the expensive
+msgrcv() call) and has just about completely removed the overhead
+associated in servicing this IPC mechanism. Anyways, I haven't test it
+yet on a router, but it looks promising! 
+
+David
+
+PS: when sending mail to our mail server, it will be delayed a bit by
+our anti-spam setup... fyi.  
+
+</PRE>
+
+
+
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000937.html">[Chilli] new mailing list
+</A></li>
+	<LI>Next message: <A HREF="000936.html">[Chilli] chilli speed
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#935">[ date ]</a>
+              <a href="thread.html#935">[ thread ]</a>
+              <a href="subject.html#935">[ subject ]</a>
+              <a href="author.html#935">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

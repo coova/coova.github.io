@@ -1,0 +1,114 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] Correct chilli_query usage for resetting client's session, directing them back to portal
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Correct%20chilli_query%20usage%20for%20resetting%20client%27s%0A%20session%2C%20directing%20them%20back%20to%20portal&In-Reply-To=%3CCACkgH72xsNXk7E16mObQ5Tz2Y_WFL7brs_dv8cyQDT3u0hAfNA%40mail.gmail.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="002874.html">
+   <LINK REL="Next"  HREF="002876.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] Correct chilli_query usage for resetting client's session, directing them back to portal</H1>
+    <B>Xabier Oneca -- xOneca</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Correct%20chilli_query%20usage%20for%20resetting%20client%27s%0A%20session%2C%20directing%20them%20back%20to%20portal&In-Reply-To=%3CCACkgH72xsNXk7E16mObQ5Tz2Y_WFL7brs_dv8cyQDT3u0hAfNA%40mail.gmail.com%3E"
+       TITLE="[Chilli] Correct chilli_query usage for resetting client's session, directing them back to portal">xoneca at gmail.com
+       </A><BR>
+    <I>Sat Feb 14 12:36:16 UTC 2015</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="002874.html">[Chilli] Correct chilli_query usage for resetting client's session, directing them back to portal
+</A></li>
+        <LI>Next message: <A HREF="002876.html">[Chilli] Apparent intrusion attempt on AP running coova-chilli	1.2.9, ways to mitigate?
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2875">[ date ]</a>
+              <a href="thread.html#2875">[ thread ]</a>
+              <a href="subject.html#2875">[ subject ]</a>
+              <a href="author.html#2875">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hello Ben,
+
+2015-02-13 23:55 GMT+01:00 Ben West &lt;<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">ben at gowasabi.net</A>&gt;:
+&gt;<i> I am curious what is the correct &quot;chilli_query&quot; invocation to reset a
+</I>&gt;<i> particular client's authorized session and force them back to the portal,
+</I>&gt;<i> without affecting other clients on that same AP.
+</I>&gt;<i>
+</I>&gt;<i> This is the usage info which chilli_query reports:
+</I>&gt;<i>
+</I>&gt;<i> [...]
+</I>&gt;<i>
+</I>&gt;<i> Say this the active session list (anonymized):
+</I>&gt;<i>
+</I>&gt;<i> <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">root at Openwrt</A>:~# chilli_query list
+</I>&gt;<i> 50-55-27-XX-XX-XX 101.2.233.37 dnat 54de762f00000007 0 50-55-27-XX-XX-XX
+</I>&gt;<i> 0/7200 0/3600 0/0 0/0 0 1 0/0 0/0 <A HREF="http://domain.com">http://domain.com</A>
+</I>&gt;<i> 10-68-3F-XX-XX-XX 101.2.233.40 pass 54de742800000006 1 guest 2140/7200
+</I>&gt;<i> 1/3600 1155289/0 5056945/0 524288000 1 0%/384000 0%/1000000
+</I>&gt;<i> <A HREF="http://somewhere.com">http://somewhere.com</A>
+</I>&gt;<i> C8-3A-35-XX-XX-XX 101.2.233.27 pass 54de7e9a00000003 1 guest 113/7200 0/3600
+</I>&gt;<i> 310508/0 3970351/0 524288000 1 2%/384000 32%/1000000
+</I>&gt;<i> <A HREF="http://somewhereelse.com">http://somewhereelse.com</A>
+</I>&gt;<i> CC-D2-9B-XX-XX-XX 101.2.233.25 dnat 54de3ed700000004 0 CC-D2-9B-XX-XX-XX
+</I>&gt;<i> 0/7200 0/3600 0/0 0/0 0 1 0/0 0/0 <A HREF="http://nowhere.com">http://nowhere.com</A>
+</I>&gt;<i> DE-9F-DB-XX-XX-XX 101.2.233.2 dnat 54ddcb2300000002 0 DE-9F-DB-XX-XX-XX
+</I>&gt;<i> 0/7200 0/3600 0/0 0/0 0 1 0/0 0/0 -
+</I>&gt;<i>
+</I>&gt;<i> To reset the session for client at MAC address C8-3A-35-XX-XX-XX, forcing
+</I>&gt;<i> him to log back into the captive portal again as user &quot;guest,&quot; would this be
+</I>&gt;<i> correct usage?
+</I>&gt;<i>
+</I>&gt;<i> # chilli_query logoff C8-3A-35-XX-XX-XX
+</I>&gt;<i>
+</I>&gt;<i> chilli_query has the commands logout, logoff, block, and drop, and I'm
+</I>&gt;<i> having difficulty locating documentation about precisely what those commands
+</I>&gt;<i> do.
+</I>
+The commands 'logout' and 'logoff' are synonyms. The same is for
+'block' and 'drop'.
+
+To reset sessions I used to use 'logoff'. It terminates the user
+session with cause RADIUS_TERMINATE_CAUSE_ADMIN_RESET.
+
+Not sure what 'block' does. I think it denies access indefinitely
+(even to the UAM).
+
+HTH,
+
+Xabier Oneca_,,_
+</PRE>
+
+
+
+
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="002874.html">[Chilli] Correct chilli_query usage for resetting client's session, directing them back to portal
+</A></li>
+	<LI>Next message: <A HREF="002876.html">[Chilli] Apparent intrusion attempt on AP running coova-chilli	1.2.9, ways to mitigate?
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2875">[ date ]</a>
+              <a href="thread.html#2875">[ thread ]</a>
+              <a href="subject.html#2875">[ subject ]</a>
+              <a href="author.html#2875">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

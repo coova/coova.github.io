@@ -1,0 +1,92 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] kmod-coova / xt_coova / nfcoova
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20kmod-coova%20/%20xt_coova%20/%20nfcoova&In-Reply-To=%3C4ced55924bd14bc58e9bfe96c60cdd80%40AM3PR05MB323.eurprd05.prod.outlook.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="002490.html">
+   <LINK REL="Next"  HREF="002493.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] kmod-coova / xt_coova / nfcoova</H1>
+    <B>Steffen Dettmer</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20kmod-coova%20/%20xt_coova%20/%20nfcoova&In-Reply-To=%3C4ced55924bd14bc58e9bfe96c60cdd80%40AM3PR05MB323.eurprd05.prod.outlook.com%3E"
+       TITLE="[Chilli] kmod-coova / xt_coova / nfcoova">steffen.dettmer at nomadrail.com
+       </A><BR>
+    <I>Wed Dec  4 16:13:51 UTC 2013</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="002490.html">[Chilli] Help - Commercial Support
+</A></li>
+        <LI>Next message: <A HREF="002493.html">[Chilli] Layer 2 &amp; Layer 3 Same deploy
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2491">[ date ]</a>
+              <a href="thread.html#2491">[ thread ]</a>
+              <a href="subject.html#2491">[ subject ]</a>
+              <a href="author.html#2491">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hi,
+
+I played a bit with kmod-coova / xt_coova. I found that the CPU usage of the chilli process reduces by approximately 25% when generating almost only authorized traffic. I had hoped it would save almost 50% (assuming, that coping from/to kernel space are the expensive operations and having half saved, because no need to copy back to kernel space) and I think the additional kernel CPU consumption reduces the 25% gain a bit further.
+
+Does this make sense? Is the order of magnitude of 25% expected/reasonable? Did anyone also made some estimations and could share some figures?
+
+Couldn't a very similar result be generated if Coova would create two rules (one for each direction) for each authorized client?
+
+Using xt_coova as Davids initial announcement mail proposed involves using an alternative client network address range (11/8). Couldn't fwmark rule based routing be used instead? I think some people could have bad feelings about SNAT to 11/8.
+
+As far as I know, iptables rules count packets and bytes as needed for accounting. What would be missing when using such rules instead of xt_coova? I could imaging Coova uses some own table like COOVA_AUTHORIZED that contains all allowed IPs and is maintained by the Coova process. Does xt_coova verify that the MAC address IP pair is valid?
+
+I had the idea to create a &quot;input capture&quot; device with the idea to give it only the data not handled by the kernel module, however this got complicated quickly.
+
+Beside kernel routing the traffic not handled by xt_coova (I used fwmark rule base routing), at least broadcasts have to be bridged to the new device to get DHCP working and MAC addresses known to Coova. So I setup bridging, but bridging filter rules are required to avoid Coova sees the routable packets via bridging. Not sure if this could be made working at all. In theory, handling of authorized packets should need almost no CPU from Coova, but I have no figure how much it saves in total, because as trade kernel needs to filter several times.
+
+Maybe instead of a iptables match filter module a bridge switch filter could be used: whitelisted packets would be bridged to one interface (and further routed by kernel), all others bridged to second interface, which is Coova's capturing device, or archive a similar result by dynamically generated ebtables/iptables rules, but I didn't thought whether this could be feasible.
+
+Any hints or comments appreciated.
+
+Regards,
+Steffen
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: &lt;<A HREF="http://lists.coova.org/pipermail/chilli/attachments/20131204/ea70df43/attachment.html">http://lists.coova.org/pipermail/chilli/attachments/20131204/ea70df43/attachment.html</A>&gt;
+</PRE>
+
+
+
+
+
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="002490.html">[Chilli] Help - Commercial Support
+</A></li>
+	<LI>Next message: <A HREF="002493.html">[Chilli] Layer 2 &amp; Layer 3 Same deploy
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2491">[ date ]</a>
+              <a href="thread.html#2491">[ thread ]</a>
+              <a href="subject.html#2491">[ subject ]</a>
+              <a href="author.html#2491">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

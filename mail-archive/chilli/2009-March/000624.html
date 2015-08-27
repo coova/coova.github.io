@@ -1,0 +1,103 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> cc as DHCP relay agent
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20cc%20as%20DHCP%20relay%20agent&In-Reply-To=%3C49BA24EE.4090100%40ibh.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000631.html">
+   <LINK REL="Next"  HREF="000628.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>cc as DHCP relay agent</H1>
+    <B>Thomas Liske</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20cc%20as%20DHCP%20relay%20agent&In-Reply-To=%3C49BA24EE.4090100%40ibh.de%3E"
+       TITLE="cc as DHCP relay agent">liske at ibh.de
+       </A><BR>
+    <I>Fri Mar 13 09:18:38 UTC 2009</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000631.html">Problem with 1.0.12
+</A></li>
+        <LI>Next message: <A HREF="000628.html">cc as DHCP relay agent
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#624">[ date ]</a>
+              <a href="thread.html#624">[ thread ]</a>
+              <a href="subject.html#624">[ subject ]</a>
+              <a href="author.html#624">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hi,
+
+I think there is an issue with DHCP relay in coova-chilli. Cc always 
+listens on port 68 for replies from the DHCP server when acting as a 
+DHCP relay (line 592):
+
+$ cat -n src/dhcp.c | grep -C 5 'htons(68)'
+    587
+    588      if (fd &gt; 0) {
+    589        memset(&amp;addr, 0, sizeof(addr));
+    590        addr.sin_family = AF_INET;
+    591        addr.sin_addr.s_addr = dhcp-&gt;uamlisten.s_addr;
+    592        addr.sin_port = htons(68);
+    593
+    594        if (setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &amp;on, 
+sizeof(on)) &lt; 0) {
+    595          log_err(errno, &quot;Can't set reuse option&quot;);
+    596        }
+    597
+
+This does not work with the (recent) ISC DHCP Daemon v3. The dhcpd 
+always replies to port 67 ignoring the port number seen in the request 
+packet from the DHCP relay agent.
+
+There is a working draft stating about the port usage with relay agents:
+
+====[<A HREF="http://tools.ietf.org/id/draft-ietf-dhc-implementation-02.txt]====">http://tools.ietf.org/id/draft-ietf-dhc-implementation-02.txt]====</A>
+4.7.2 Relay Agent Port Usage
+   Relay agents should use port 67 as the source port number.  Relay
+   agents always listen on port 67, but port 68 has sometimes been used
+   as the source port number probably because it was copied from the
+   source port of the incoming packet.
+
+   Cable modem vendors would like to install filters blocking outgoing
+   packets with source port 67.
+
+   RECOMMENDATIONS:
+     O  Relay agents MUST use 67 as their source port number.
+     O  Relay agents MUST NOT forward packets with non-zero giaddr
+        unless the source port number on the packet is 67.
+====[<A HREF="http://tools.ietf.org/id/draft-ietf-dhc-implementation-02.txt]====">http://tools.ietf.org/id/draft-ietf-dhc-implementation-02.txt]====</A>
+
+IMHO cc should listen on port 67/udp when acting as DHCP relay agent.
+
+
+	Thomas
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000631.html">Problem with 1.0.12
+</A></li>
+	<LI>Next message: <A HREF="000628.html">cc as DHCP relay agent
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#624">[ date ]</a>
+              <a href="thread.html#624">[ thread ]</a>
+              <a href="subject.html#624">[ subject ]</a>
+              <a href="author.html#624">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

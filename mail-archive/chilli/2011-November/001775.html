@@ -1,0 +1,93 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] Infinite redirect loop
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Infinite%20redirect%20loop&In-Reply-To=%3C4ED4F683.1020202%40cirrusworks.net%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001773.html">
+   <LINK REL="Next"  HREF="001774.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] Infinite redirect loop</H1>
+    <B>Ryan Day</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Infinite%20redirect%20loop&In-Reply-To=%3C4ED4F683.1020202%40cirrusworks.net%3E"
+       TITLE="[Chilli] Infinite redirect loop">ryan.day at cirrusworks.net
+       </A><BR>
+    <I>Tue Nov 29 15:13:07 UTC 2011</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001773.html">[Chilli] Segmentation fault in dhcp.c
+</A></li>
+        <LI>Next message: <A HREF="001774.html">[Chilli] Coova with no authentication
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1775">[ date ]</a>
+              <a href="thread.html#1775">[ thread ]</a>
+              <a href="subject.html#1775">[ subject ]</a>
+              <a href="author.html#1775">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>I've seen a problem with some of my Coova installations where I get an
+infinite redirect loop, typically after a RADIUS timeout and the user is
+still making web requests. This happens if there is a WISPr Redirect URL
+set and the user tries to log back in after the timeout. What seems to
+be happening is the initial redirect to the UAM page (which is offsite)
+is being replaced with the previously assigned WISPr Redirect URL. For
+example when printing out my redirect url in the logs, it looks like:
+
+<A HREF="http://my.wispr.redirect.com/?loginurl=http%3a%2f%2my.uam.authentication.com%2fhotspotlogin.php">http://my.wispr.redirect.com/?loginurl=http%3a%2f%2my.uam.authentication.com%2fhotspotlogin.php</A>
+
+Since my.wispr.redirect.com is not allowed yet in this session(radius
+timeout has occured and I'm logged out), I am redirected again, and
+again, and again. I should be redirected to
+<A HREF="http://my.uam.authentication.com,">http://my.uam.authentication.com,</A> but it looks like something is getting
+crossed.
+
+I've had this problem across several versions (1.2.2, 1.2.5 and 1.2.8)
+and I've been working on it with 1.2.8. After some experimentation, I've
+made a change in redir.c on line ~4035(I've added extra debugging):
+
+-    char * base_url = (conn.s_params.flags &amp; REQUIRE_REDIRECT &amp;&amp;
+-                       conn.s_params.url[0]) ? (char
+*)conn.s_params.url : redir-&gt;homepage;
++    char * base_url = redir-&gt;homepage;
+
+
+This doesn't cause any redirection issues, and I can't simulate the
+infinite redirection loop any more. However, I'm not very familiar with
+the code so I'm not sure if this has any undesirable side effects that I
+just haven't seen yet.
+
+Has anyone else seen this problem? What am I losing by change the
+conditional when determining the base url?
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001773.html">[Chilli] Segmentation fault in dhcp.c
+</A></li>
+	<LI>Next message: <A HREF="001774.html">[Chilli] Coova with no authentication
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1775">[ date ]</a>
+              <a href="thread.html#1775">[ thread ]</a>
+              <a href="subject.html#1775">[ subject ]</a>
+              <a href="author.html#1775">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

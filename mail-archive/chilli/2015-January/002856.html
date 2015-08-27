@@ -1,0 +1,92 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] Switching logging mechanism in coova - need	testers/feedback
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Switching%20logging%20mechanism%20in%20coova%20-%20need%0A%09testers/feedback&In-Reply-To=%3CCA%2BU3Mf5uOoh7h1uZRUJ9Vjr1OBxecgQeK094yt1PdVX13pR-zg%40mail.gmail.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="002855.html">
+   <LINK REL="Next"  HREF="002858.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] Switching logging mechanism in coova - need	testers/feedback</H1>
+    <B>Sevan / Venture37</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Switching%20logging%20mechanism%20in%20coova%20-%20need%0A%09testers/feedback&In-Reply-To=%3CCA%2BU3Mf5uOoh7h1uZRUJ9Vjr1OBxecgQeK094yt1PdVX13pR-zg%40mail.gmail.com%3E"
+       TITLE="[Chilli] Switching logging mechanism in coova - need	testers/feedback">venture37 at gmail.com
+       </A><BR>
+    <I>Wed Jan 14 01:21:17 UTC 2015</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="002855.html">[Chilli] Switching logging mechanism in coova - need	testers/feedback
+</A></li>
+        <LI>Next message: <A HREF="002858.html">[Chilli] Switching logging mechanism in coova - need	testers/feedback
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2856">[ date ]</a>
+              <a href="thread.html#2856">[ thread ]</a>
+              <a href="subject.html#2856">[ subject ]</a>
+              <a href="author.html#2856">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>On 13 January 2015 at 18:11, David Bird &lt;<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">dbird at google.com</A>&gt; wrote:
+&gt;<i> But, the existing log mechanism basically wraps syslog with the option of
+</I>&gt;<i> also going to stdio... Also, the wrapping around syslog makes for a more
+</I>&gt;<i> consistent format.
+</I>
+The idea is
+1) to remove the layers of abstraction to improve readability (easier
+to notice call to syslog rather than the variadic macro which calls a
+wrapper function which calls syslog function)
+2) make it easier to find issues in code e.g.
+line 1381 of chilli.c
+
+log_dbg(&quot;RADIUS Request + Class(%d)&quot;, state-&gt;redir.classlen);
+This compiles without issue
+
+change it to
+syslog(LOG_DEBUG, &quot;RADIUS Request + Class(%d)&quot;, state-&gt;redir.classlen);
+
+Turns out format specifies type 'int' but the argument has type 'size_t'
+Perform the test with clang, not GCC
+I have more examples if you require that are fixed in my branch by the switch.
+
+3) bring things up to C99 standard instead of GNU99
+
+4) dealing with stdout can be dealt with by syslog, there is a
+LOG_CONSOLE facility, I'll deal with this as a separate case once the
+codebase has been switched over.
+
+
+Sevan
+</PRE>
+
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="002855.html">[Chilli] Switching logging mechanism in coova - need	testers/feedback
+</A></li>
+	<LI>Next message: <A HREF="002858.html">[Chilli] Switching logging mechanism in coova - need	testers/feedback
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2856">[ date ]</a>
+              <a href="thread.html#2856">[ thread ]</a>
+              <a href="subject.html#2856">[ subject ]</a>
+              <a href="author.html#2856">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

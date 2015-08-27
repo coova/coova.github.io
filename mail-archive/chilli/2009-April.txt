@@ -1,0 +1,4045 @@
+From iamaplayer at gmail.com  Wed Apr  1 07:19:29 2009
+From: iamaplayer at gmail.com (IaMaPlAyEr)
+Date: Wed, 1 Apr 2009 15:19:29 +0800
+Subject: how the iptables affect?
+Message-ID: <2ae8403e0904010019v4b727b7w9f242cf825160fc8@mail.gmail.com>
+
+Hi,
+
+recently, I study the iptables, and was confused by the position of tun in
+coova-chilli.
+
+just like this big picture:
+
+http://iptables-tutorial.frozentux.net/images/tables_traverse.jpg
+
+the normal process of the route is just like this:
+
+wire --->>> eth1 --->>> mangle prerouting -->> nat prerouting --->> route
+decision --->>....------->>>nat prerouting -->>> eth0
+
+but in coova-chilli, there is a net device TUN, it connect the eth1 to eth0?
+where is it in such a normal firewall process?
+
+or just listen the eth1, and copy the date from eth1?
+after authz, it use iptables affect the origion firewall process?
+
+
+thanks for reply!
+
+--
+Sincerly,
+
+HaveF
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20090401/1b12f9ca/attachment.htm>
+
+From liske at ibh.de  Wed Apr  1 15:12:23 2009
+From: liske at ibh.de (Thomas Liske)
+Date: Wed, 01 Apr 2009 17:12:23 +0200
+Subject: how the iptables affect?
+In-Reply-To: <2ae8403e0904010019v4b727b7w9f242cf825160fc8@mail.gmail.com>
+References: <2ae8403e0904010019v4b727b7w9f242cf825160fc8@mail.gmail.com>
+Message-ID: <49D38457.5000009@ibh.de>
+
+Hi,
+
+IaMaPlAyEr schrieb:
+> recently, I study the iptables, and was confused by the position of tun in
+> coova-chilli.
+> 
+> just like this big picture:
+> 
+> http://iptables-tutorial.frozentux.net/images/tables_traverse.jpg
+> 
+> the normal process of the route is just like this:
+> 
+> wire --->>> eth1 --->>> mangle prerouting -->> nat prerouting --->> route
+> decision --->>....------->>>nat prerouting -->>> eth0
+> 
+> but in coova-chilli, there is a net device TUN, it connect the eth1 to eth0?
+> where is it in such a normal firewall process?
+
+chilli bypasses the kernel network stack on eth1 (where the clients
+reside). It check if IP packets of the client is allowed to pass (i.e.
+is it a walled garden destination or is the client authorized etc.) - if
+true, it pushes the packet into the kernel via the tun interface.
+The default iptables rule set loaded by chilli's up.sh drop any incoming
+packets on eth1 silently (so the kernel network stack ignores them).
+This has no effect on chilli which sniffs on eth1. Packets from eth0
+which goes to the clients well be routed into tun0, which will processed
+by chilli and put on the "eth1-wire" (bypassing the kernel network stack
+again).
+
+
+Regards,
+Thomas L.
+-- 
+support at ibh.de                              Tel. +49 351 477 77 30
+www.ibh.de                                  Fax  +49 351 477 77 39
+
+-----------------------------------------------------------------------
+Dipl.-Ing. Thomas Liske
+Netzwerk- und System-Design
+
+
+IBH IT-Service GmbH                         Amtsgericht Dresden
+Gostritzer Str. 61-63                       HRB 13626
+D-01217 Dresden                             GF: Prof. Dr. Thomas Horn
+Germany                                     VAT DE182302907
+-----------------------------------------------------------------------
+Ihr Partner f?r: LAN, WAN IP-Quality, Security, VoIP, SAN, Backup, USV
+-----------------------------------------------------------------------
+       professioneller IT-Service - kompetent und zuverl?ssig
+-----------------------------------------------------------------------
+
+
+From iamaplayer at gmail.com  Thu Apr  2 01:55:15 2009
+From: iamaplayer at gmail.com (IaMaPlAyEr)
+Date: Thu, 2 Apr 2009 09:55:15 +0800
+Subject: how the iptables affect?
+In-Reply-To: <49D38457.5000009@ibh.de>
+References: <2ae8403e0904010019v4b727b7w9f242cf825160fc8@mail.gmail.com> 
+	<49D38457.5000009@ibh.de>
+Message-ID: <2ae8403e0904011855g2af69479ldc4a42efb0789025@mail.gmail.com>
+
+Hi,
+
+==========================
+On Wed, Apr 1, 2009 at 11:12 PM, Thomas Liske <liske at ibh.de> wrote:
+Hi,
+
+IaMaPlAyEr schrieb:
+> recently, I study the iptables, and was confused by the position of tun in
+> coova-chilli.
+>
+> just like this big picture:
+>
+> http://iptables-tutorial.frozentux.net/images/tables_traverse.jpg
+>
+> the normal process of the route is just like this:
+>
+> wire --->>> eth1 --->>> mangle prerouting -->> nat prerouting --->> route
+> decision --->>....------->>>nat prerouting -->>> eth0
+>
+> but in coova-chilli, there is a net device TUN, it connect the eth1 to
+eth0?
+> where is it in such a normal firewall process?
+
+> chilli bypasses the kernel network stack on eth1 (where the clients
+> reside). It check if IP packets of the client is allowed to pass (i.e.
+> is it a walled garden destination or is the client authorized etc.) - if
+> true, it pushes the packet into the kernel via the tun interface.
+> The default iptables rule set loaded by chilli's up.sh drop any incoming
+> packets on eth1 silently (so the kernel network stack ignores them).
+> This has no effect on chilli which sniffs on eth1. Packets from eth0
+> which goes to the clients well be routed into tun0, which will processed
+> by chilli and put on the "eth1-wire" (bypassing the kernel network stack
+> again).
+========================
+
+
+
+
+Thomas Liske
+
+Great thanks for your explaination.
+There is a route table item, Oh, I understand.
+I know the up.sh set some iptables rules and also make a delete backup on
+chilli.iptables.
+I still find in doc directory, there is a file named firewall.iptables, it
+seems to make some default iptables options, it is only the reference for
+users? or some other purpose?
+
+BTW, although I am not fully understand coova-chilli or chilli, the more I
+read the code , the more sophisticate I find--------- It combine the shell,
+iptables, drivers, nettools....so amazing
+
+
+-- 
+--
+Sincerly,
+
+HaveF
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20090402/d413455b/attachment.htm>
+
+From outbackdingo at gmail.com  Thu Apr  2 02:31:29 2009
+From: outbackdingo at gmail.com (Outback Dingo)
+Date: Thu, 2 Apr 2009 09:31:29 +0700
+Subject: High Memoery consumption
+Message-ID: <5635aa0d0904011931n66cd16b8o2eadd9b0d72457cb@mail.gmail.com>
+
+Would one think it to be normal that coova-chilli consumes 36% memory
+capacity on a fresh boot on atheros / mips based devices
+or has something gone completely wrong. seem to work fine and all but this
+is a large hit for APs
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20090402/810957c0/attachment.htm>
+
+From wlan at mac.com  Fri Apr  3 05:00:21 2009
+From: wlan at mac.com (wlanmac)
+Date: Fri, 03 Apr 2009 07:00:21 +0200
+Subject: High Memoery consumption
+In-Reply-To: <5635aa0d0904011931n66cd16b8o2eadd9b0d72457cb@mail.gmail.com>
+References: <5635aa0d0904011931n66cd16b8o2eadd9b0d72457cb@mail.gmail.com>
+Message-ID: <1238734821.7653.2.camel@david-laptop>
+
+Did you build it yourself?
+
+Was thinking... perhaps it is possible to break out the configuration
+file parsing code and put it into a command line program which parses
+and packs the configuration into a binary form the server can use. If
+you checkout the cmdline.o, it's one of the largest. Chilli has always
+used gengetopt for it's configuration parsing... but, it doesn't
+generate necessarily the most compact code...
+
+On Thu, 2009-04-02 at 09:31 +0700, Outback Dingo wrote:
+> Would one think it to be normal that coova-chilli consumes 36% memory
+> capacity on a fresh boot on atheros / mips based devices
+> or has something gone completely wrong. seem to work fine and all but
+> this is a large hit for APs
+
+
+
+From outbackdingo at gmail.com  Fri Apr  3 06:25:35 2009
+From: outbackdingo at gmail.com (Outback Dingo)
+Date: Fri, 3 Apr 2009 13:25:35 +0700
+Subject: High Memoery consumption
+In-Reply-To: <1238734821.7653.2.camel@david-laptop>
+References: <5635aa0d0904011931n66cd16b8o2eadd9b0d72457cb@mail.gmail.com>
+	 <1238734821.7653.2.camel@david-laptop>
+Message-ID: <5635aa0d0904022325u543c718csd2c7ef3cd71d69f@mail.gmail.com>
+
+yeah it was built as part of the openwrt build process, and sure enough
+36-41% mmory consumption. so its stock from the build process. Id like to
+see if it could be built to consume less memory, as chillispot uses maybe
+12% so there is a vast difference
+
+On Fri, Apr 3, 2009 at 12:00 PM, wlanmac <wlan at mac.com> wrote:
+
+> Did you build it yourself?
+>
+> Was thinking... perhaps it is possible to break out the configuration
+> file parsing code and put it into a command line program which parses
+> and packs the configuration into a binary form the server can use. If
+> you checkout the cmdline.o, it's one of the largest. Chilli has always
+> used gengetopt for it's configuration parsing... but, it doesn't
+> generate necessarily the most compact code...
+>
+> On Thu, 2009-04-02 at 09:31 +0700, Outback Dingo wrote:
+> > Would one think it to be normal that coova-chilli consumes 36% memory
+> > capacity on a fresh boot on atheros / mips based devices
+> > or has something gone completely wrong. seem to work fine and all but
+> > this is a large hit for APs
+>
+>
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20090403/df3bc3a9/attachment.htm>
+
+From wlan at mac.com  Tue Apr  7 13:50:53 2009
+From: wlan at mac.com (wlanmac)
+Date: Tue, 07 Apr 2009 15:50:53 +0200
+Subject: 1.0.13 is official
+Message-ID: <1239112253.7743.6.camel@david-laptop>
+
+http://coova.org/wiki/index.php/CoovaChilli/ChangeLog
+
+Cheers,
+David
+
+
+
+From daniel at firewall-services.com  Tue Apr  7 14:15:01 2009
+From: daniel at firewall-services.com (Daniel Berteaud)
+Date: Tue, 7 Apr 2009 16:15:01 +0200
+Subject: 1.0.13 is official
+In-Reply-To: <1239112253.7743.6.camel@david-laptop>
+References: <1239112253.7743.6.camel@david-laptop>
+Message-ID: <20090407161501.622f650e@germaine.lapiole.org>
+
+Le Tue, 07 Apr 2009 15:50:53 +0200,
+wlanmac <wlan at mac.com> a ?crit :
+
+> http://coova.org/wiki/index.php/CoovaChilli/ChangeLog
+
+Great. Many thanks. I can't wait to test the UID/GID option ;)
+Just one thing, will the srpm for fedora/centos will be updated too ?
+
+Cheers
+
+> 
+> Cheers,
+> David
+> 
+> 
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+> 
+
+
+-- 
+Daniel Berteaud
+FIREWALL-SERVICES SARL.
+Soci?t? de Services en Logiciels Libres
+Technop?le Montesquieu
+33650 MARTILLAC
+Tel : 05 56 64 15 32
+Fax : 05 56 64 15 32
+Mail: daniel at firewall-services.com
+Web : http://www.firewall-services.com
+
+
+From wlan at mac.com  Tue Apr  7 14:20:51 2009
+From: wlan at mac.com (wlanmac)
+Date: Tue, 07 Apr 2009 16:20:51 +0200
+Subject: 1.0.13 is official
+In-Reply-To: <20090407161501.622f650e@germaine.lapiole.org>
+References: <1239112253.7743.6.camel@david-laptop>
+ <20090407161501.622f650e@germaine.lapiole.org>
+Message-ID: <1239114051.7743.11.camel@david-laptop>
+
+I'd be happy if others could build up binaries for various OSs too. I
+started a page for it:
+
+http://coova.org/wiki/index.php/CoovaChilli/DistroBuilding
+
+also, I think it is finally getting into some more main-stream package
+channels, so hopefully just by releasing it, soon you'll find it via
+your package manager of choice (or am I just dreaming here?) You'll find
+it for openmoko! 
+
+On Tue, 2009-04-07 at 16:15 +0200, Daniel Berteaud wrote:
+> Le Tue, 07 Apr 2009 15:50:53 +0200,
+> wlanmac <wlan at mac.com> a ?crit :
+> 
+> > http://coova.org/wiki/index.php/CoovaChilli/ChangeLog
+> 
+> Great. Many thanks. I can't wait to test the UID/GID option ;)
+> Just one thing, will the srpm for fedora/centos will be updated too ?
+> 
+> Cheers
+> 
+> > 
+> > Cheers,
+> > David
+> > 
+> > 
+> > ---------------------------------------------------------------------
+> > To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> > For additional commands, e-mail: chilli-help at coova.org
+> > Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> > Forum: http://coova.org/phpBB3/viewforum.php?f=4
+> > 
+> 
+> 
+
+
+
+From nextime at nexlab.it  Tue Apr  7 15:11:46 2009
+From: nextime at nexlab.it (nextime)
+Date: Tue, 7 Apr 2009 17:11:46 +0200
+Subject: 1.0.13 is official
+In-Reply-To: <1239114051.7743.11.camel@david-laptop>
+References: <1239112253.7743.6.camel@david-laptop> <20090407161501.622f650e@germaine.lapiole.org> <1239114051.7743.11.camel@david-laptop>
+Message-ID: <20090407151146.GA31615@dedalo.nexlab.thc>
+
+On Tue, Apr 07, 2009 at 04:20:51PM +0200, wlanmac wrote:
+> I'd be happy if others could build up binaries for various OSs too. I
+> started a page for it:
+> 
+> http://coova.org/wiki/index.php/CoovaChilli/DistroBuilding
+> 
+> also, I think it is finally getting into some more main-stream package
+> channels, so hopefully just by releasing it, soon you'll find it via
+> your package manager of choice (or am I just dreaming here?) You'll find
+> it for openmoko! 
+
+
+Tomorrow i will check/test the debian package build, and fix it if
+needed. Also tomorrow i will fill an official packaging request in
+debian.
+
+For the next version: What do you think about add an option to make a
+rate limit for unauthenticated DNS request to be used in conjunction
+with dns paranoia option? This can stop also dns tunnels using A/CNAME
+records making it unusefull... so it is a quasi-definitive way to solve
+this problem for anyone is sensible to those things...
+
+Also, another good things can be an option to set something like
+uamproxylisten
+uamproxyport
+uamproxyusessl 
+
+So we can setup an https reverse proxy in front of the 
+"normal" uam web server and not have any connection outside ssl
+(of course this can't work with every client ) 
+
+-- 
+
+Franco (nextime) Lanza
+Busto Arsizio - Italy
+SIP://casa at casa.nexlab.it
+
+NO TCPA: http://www.no1984.org
+you can download my public key at:
+http://danex.nexlab.it/nextime.asc || Key Servers
+Key ID = D6132D50
+Key fingerprint = 66ED 5211 9D59 DA53 1DF7  4189 DFED F580 D613 2D50
+-----------------------------------
+echo 16i[q]sa[ln0=aln100%Pln100/snlbx]sbA0D212153574F444E49572045535520454D20454B414D204F54204847554F4E452059415020544F4E4E4143205345544147204C4C4942snlbxq | dc
+-----------------------------------
+
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: not available
+Type: application/pgp-signature
+Size: 197 bytes
+Desc: not available
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20090407/e7fb5316/attachment.pgp>
+
+From liske at ibh.de  Tue Apr  7 15:16:52 2009
+From: liske at ibh.de (Thomas Liske)
+Date: Tue, 07 Apr 2009 17:16:52 +0200
+Subject: 1.0.13 is official
+In-Reply-To: <20090407151146.GA31615@dedalo.nexlab.thc>
+References: <1239112253.7743.6.camel@david-laptop> <20090407161501.622f650e@germaine.lapiole.org> <1239114051.7743.11.camel@david-laptop> <20090407151146.GA31615@dedalo.nexlab.thc>
+Message-ID: <49DB6E64.6000106@ibh.de>
+
+Hi,
+
+nextime schrieb:
+> On Tue, Apr 07, 2009 at 04:20:51PM +0200, wlanmac wrote:
+>> I'd be happy if others could build up binaries for various OSs too. I
+>> started a page for it:
+>>
+>> http://coova.org/wiki/index.php/CoovaChilli/DistroBuilding
+>>
+>> also, I think it is finally getting into some more main-stream package
+>> channels, so hopefully just by releasing it, soon you'll find it via
+>> your package manager of choice (or am I just dreaming here?) You'll find
+>> it for openmoko! 
+> 
+> 
+> Tomorrow i will check/test the debian package build, and fix it if
+> needed. Also tomorrow i will fill an official packaging request in
+> debian.
+
+is this an ITP? I'd already opened an RFP some time ago:
+
+http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=517847
+
+But no answers, yet :(
+
+
+Regards,
+Thomas
+
+-- 
+support at ibh.de                              Tel. +49 351 477 77 30
+www.ibh.de                                  Fax  +49 351 477 77 39
+
+-----------------------------------------------------------------------
+Dipl.-Ing. Thomas Liske
+Netzwerk- und System-Design
+
+
+IBH IT-Service GmbH                         Amtsgericht Dresden
+Gostritzer Str. 61-63                       HRB 13626
+D-01217 Dresden                             GF: Prof. Dr. Thomas Horn
+Germany                                     VAT DE182302907
+-----------------------------------------------------------------------
+Ihr Partner f?r: LAN, WAN IP-Quality, Security, VoIP, SAN, Backup, USV
+-----------------------------------------------------------------------
+       professioneller IT-Service - kompetent und zuverl?ssig
+-----------------------------------------------------------------------
+
+
+From nextime at nexlab.it  Tue Apr  7 15:42:00 2009
+From: nextime at nexlab.it (nextime)
+Date: Tue, 7 Apr 2009 17:42:00 +0200
+Subject: 1.0.13 is official
+In-Reply-To: <49DB6E64.6000106@ibh.de>
+References: <1239112253.7743.6.camel@david-laptop> <20090407161501.622f650e@germaine.lapiole.org> <1239114051.7743.11.camel@david-laptop> <20090407151146.GA31615@dedalo.nexlab.thc> <49DB6E64.6000106@ibh.de>
+Message-ID: <20090407154200.GA3169@dedalo.nexlab.thc>
+
+On Tue, Apr 07, 2009 at 05:16:52PM +0200, Thomas Liske wrote:
+> is this an ITP? I'd already opened an RFP some time ago:
+> 
+> http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=517847
+> 
+> But no answers, yet :(
+> 
+
+Yes, it is an ITP. But if you fill an ITP and not an RFP you shuld take
+care of package it and make it ready to be included in sid, and if you
+aren't a DD try to find a DD that will be your sponsor without waiting
+for any answer, ITP is "Intent To Package", so YOU want to provide the
+package.
+
+My intention is to fill an ITP and to become the mantainer of the new
+package
+
+-- 
+
+Franco (nextime) Lanza
+Busto Arsizio - Italy
+SIP://casa at casa.nexlab.it
+
+NO TCPA: http://www.no1984.org
+you can download my public key at:
+http://danex.nexlab.it/nextime.asc || Key Servers
+Key ID = D6132D50
+Key fingerprint = 66ED 5211 9D59 DA53 1DF7  4189 DFED F580 D613 2D50
+-----------------------------------
+echo 16i[q]sa[ln0=aln100%Pln100/snlbx]sbA0D212153574F444E49572045535520454D20454B414D204F54204847554F4E452059415020544F4E4E4143205345544147204C4C4942snlbxq | dc
+-----------------------------------
+
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: not available
+Type: application/pgp-signature
+Size: 197 bytes
+Desc: not available
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20090407/49308971/attachment.pgp>
+
+From daniel at firewall-services.com  Tue Apr  7 17:41:28 2009
+From: daniel at firewall-services.com (Daniel Berteaud)
+Date: Tue, 7 Apr 2009 19:41:28 +0200
+Subject: New uid/gid options
+Message-ID: <20090407194128.32007bdb@germaine.lapiole.org>
+
+Hi.
+
+I've just upgraded to 1.0.13 and I'm trying to use the new uid/gid
+options. There's some issue with it (I know it's still experimental):
+
+- First, we have to enter numeric value in the config file. If we enter
+the name of the user/group (I've created a user called coovachilli on my
+system, and set uid and gid to coovachilli), we have this error message
+on chilli startup:
+
+Starting chilli: coova-chilli: invalid numeric value: chilli
+
+- Second, if we enter numeric uid/gid, there's a error message
+in /var/log/message like this:
+chilli.c: 3766: 1 (Operation not permitted) setgid(5016) failed while
+running with gid = 0
+
+Not sure if it's just a warning, as chilli daemon seems to have droped
+the privileges:
+
+ps aux | grep chilli
+coovachilli   14056  1.9  0.1  7428 2124 ?        Ss   19:28
+0:00 /usr/sbin/chilli
+
+
+Cheers, Daniel
+
+-- 
+Daniel Berteaud
+FIREWALL-SERVICES SARL.
+Soci?t? de Services en Logiciels Libres
+Technop?le Montesquieu
+33650 MARTILLAC
+Tel : 05 56 64 15 32
+Fax : 05 56 64 15 32
+Mail: daniel at firewall-services.com
+Web : http://www.firewall-services.com
+
+
+From liske at ibh.de  Tue Apr  7 19:51:13 2009
+From: liske at ibh.de (Thomas Liske)
+Date: Tue, 07 Apr 2009 21:51:13 +0200
+Subject: 1.0.13 is official
+In-Reply-To: <20090407154200.GA3169@dedalo.nexlab.thc>
+References: <1239112253.7743.6.camel@david-laptop> <20090407161501.622f650e@germaine.lapiole.org> <1239114051.7743.11.camel@david-laptop> <20090407151146.GA31615@dedalo.nexlab.thc> <49DB6E64.6000106@ibh.de> <20090407154200.GA3169@dedalo.nexlab.thc>
+Message-ID: <49DBAEB1.6050708@ibh.de>
+
+Re,
+
+nextime wrote:
+
+> Yes, it is an ITP. But if you fill an ITP and not an RFP you shuld take
+> care of package it and make it ready to be included in sid, and if you
+> aren't a DD try to find a DD that will be your sponsor without waiting
+> for any answer, ITP is "Intent To Package", so YOU want to provide the
+> package.
+
+I know the difference between ITP/RFP/..., but I'm not a DD myself and 
+only contributing to coova-chilli. I wonder there is only the outdated 
+chilli-spot package and no alternative captive portal software in 
+Debian, yet.
+
+> My intention is to fill an ITP and to become the mantainer of the new
+> package
+
+So you are a DD? Nice to know that coova is getting on the way to become 
+an official Debian packaged.
+
+
+Regards,
+Thomas
+
+
+
+From nextime at nexlab.it  Wed Apr  8 06:51:50 2009
+From: nextime at nexlab.it (nextime)
+Date: Wed, 8 Apr 2009 08:51:50 +0200
+Subject: 1.0.13 is official
+In-Reply-To: <49DBAEB1.6050708@ibh.de>
+References: <1239112253.7743.6.camel@david-laptop> <20090407161501.622f650e@germaine.lapiole.org> <1239114051.7743.11.camel@david-laptop> <20090407151146.GA31615@dedalo.nexlab.thc> <49DB6E64.6000106@ibh.de> <20090407154200.GA3169@dedalo.nexlab.thc> <49DBAEB1.6050708@ibh.de>
+Message-ID: <20090408065149.GA6561@dedalo.nexlab.thc>
+
+On Tue, Apr 07, 2009 at 09:51:13PM +0200, Thomas Liske wrote:
+>> My intention is to fill an ITP and to become the mantainer of the new
+>> package
+>
+> So you are a DD? Nice to know that coova is getting on the way to become  
+> an official Debian packaged.
+
+Not yet cause of free time issues, but i'm on the road to be a dd and i
+have many close friends to me that are actually long time dd so i have
+many way to follow to be a dd in short time or to find a dd that can
+adopt the package and/or to sponsor the package for me
+
+-- 
+
+Franco (nextime) Lanza
+Busto Arsizio - Italy
+SIP://casa at casa.nexlab.it
+
+NO TCPA: http://www.no1984.org
+you can download my public key at:
+http://danex.nexlab.it/nextime.asc || Key Servers
+Key ID = D6132D50
+Key fingerprint = 66ED 5211 9D59 DA53 1DF7  4189 DFED F580 D613 2D50
+-----------------------------------
+echo 16i[q]sa[ln0=aln100%Pln100/snlbx]sbA0D212153574F444E49572045535520454D20454B414D204F54204847554F4E452059415020544F4E4E4143205345544147204C4C4942snlbxq | dc
+-----------------------------------
+
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: not available
+Type: application/pgp-signature
+Size: 197 bytes
+Desc: not available
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20090408/efa454c0/attachment.pgp>
+
+From oguzhank at bilkent.edu.tr  Wed Apr  8 08:03:16 2009
+From: oguzhank at bilkent.edu.tr (Oguzhan Kayhan)
+Date: Wed, 8 Apr 2009 11:03:16 +0300 (EEST)
+Subject: 1.0.13 with coovaap
+Message-ID: <45451.139.179.14.250.1239177796.squirrel@webmail.bilkent.edu.tr>
+
+Glad to hear new release,
+by the way ..
+Any future plan to update the Coovaap distro too??
+There were no update since 2007...
+
+
+
+
+
+From cyrill.karczewski at sls.aphp.fr  Thu Apr  9 10:09:00 2009
+From: cyrill.karczewski at sls.aphp.fr (cyrill karczewski)
+Date: Thu, 09 Apr 2009 12:09:00 +0200
+Subject: problem with coovachilli and proxy
+Message-ID: <49DDC93C.1080903@sls.aphp.fr>
+
+good morning
+
+i'm sorry to disturb you but i have a problem with coova chilli and i
+can not resolv it.
+So i really need your help.
+
+i configure the HS_postauthproxy and proxy port on the file defaut.conf.
+I also configure a squid proxy transparent on the port 3128.
+
+i succeed in navigate with http request but when i try to use https
+sites, it failed.
+
+if I configure the proxy on the browser, it's OK i can use https sites.
+
+i am really convinced that one day before, it had been worked very well,
+and now it goes down.
+
+thank you very much if you have an idea.
+
+PS: sorry for my english, i am a french guy.
+
+
+-- 
+Cyrill KARCZEWSKI
+Technicien Bureautique
+Service Informatique
+H?pital Saint-Louis
+1 Avenue Claude Vellefaux
+75010 PARIS
+0142499208
+
+
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: cyrill_karczewski.vcf
+Type: text/x-vcard
+Size: 290 bytes
+Desc: not available
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20090409/3686b6fb/attachment.vcf>
+
+From graham-ml at apolix.co.za  Thu Apr  9 10:43:54 2009
+From: graham-ml at apolix.co.za (Graham Beneke)
+Date: Thu, 09 Apr 2009 12:43:54 +0200
+Subject: 1.0.13 with coovaap
+In-Reply-To: <45451.139.179.14.250.1239177796.squirrel@webmail.bilkent.edu.tr>
+References: <45451.139.179.14.250.1239177796.squirrel@webmail.bilkent.edu.tr>
+Message-ID: <49DDD16A.6060106@apolix.co.za>
+
+Oguzhan Kayhan wrote:
+> Glad to hear new release,
+> by the way ..
+> Any future plan to update the Coovaap distro too??
+> There were no update since 2007...
+
+I second that.
+
+I don't really know how to package a OpenWRT distro - would really
+appreciate a package with the latest coova.
+
+-- 
+Graham Beneke
+Apolix Internet Services
+E-Mail/MSN/Jabber: graham at apolix.co.za   Skype: grbeneke
+VoIP: 087-750-5696                       Cell: 082-432-1873
+http://www.apolix.co.za/
+
+
+From wlan at mac.com  Thu Apr  9 10:59:55 2009
+From: wlan at mac.com (wlanmac)
+Date: Thu, 09 Apr 2009 12:59:55 +0200
+Subject: 1.0.13 with coovaap
+In-Reply-To: <49DDD16A.6060106@apolix.co.za>
+References: <45451.139.179.14.250.1239177796.squirrel@webmail.bilkent.edu.tr>
+ <49DDD16A.6060106@apolix.co.za>
+Message-ID: <1239274795.7686.86.camel@david-laptop>
+
+Hello,
+
+Yes, I've been hearing from many that they would like to see CoovaAP
+come out with a new release. The question has always been, maintain the
+Whiterussian version or finally move on to Kamikaze? If kamikaze, what
+'flavor' as several projects already "maintain" configuration syntax for
+chilli - x-wrt, Open-mesh, etc. Indeed, the open-mesh/ROBIN project
+might prove to be a good foundation to take advantage of all OpenWrt and
+Mesh have to offer. In the absence of the nvram variables, the ROBIN
+project is establishing a protocol for maintaining router firmware and
+configuration. It seems natural to do something similar for CAP. 
+
+David
+
+
+On Thu, 2009-04-09 at 12:43 +0200, Graham Beneke wrote:
+> Oguzhan Kayhan wrote:
+> > Glad to hear new release,
+> > by the way ..
+> > Any future plan to update the Coovaap distro too??
+> > There were no update since 2007...
+> 
+> I second that.
+> 
+> I don't really know how to package a OpenWRT distro - would really
+> appreciate a package with the latest coova.
+> 
+
+
+
+From wlan at mac.com  Thu Apr  9 11:36:12 2009
+From: wlan at mac.com (wlanmac)
+Date: Thu, 09 Apr 2009 13:36:12 +0200
+Subject: problem with coovachilli and proxy
+In-Reply-To: <49DDC93C.1080903@sls.aphp.fr>
+References: <49DDC93C.1080903@sls.aphp.fr>
+Message-ID: <1239276972.7686.97.camel@david-laptop>
+
+You can't transparently proxy SSL without a security violation... 
+
+
+
+On Thu, 2009-04-09 at 12:09 +0200, cyrill karczewski wrote:
+> good morning
+> 
+> i'm sorry to disturb you but i have a problem with coova chilli and i
+> can not resolv it.
+> So i really need your help.
+> 
+> i configure the HS_postauthproxy and proxy port on the file defaut.conf.
+> I also configure a squid proxy transparent on the port 3128.
+> 
+> i succeed in navigate with http request but when i try to use https
+> sites, it failed.
+> 
+> if I configure the proxy on the browser, it's OK i can use https sites.
+> 
+> i am really convinced that one day before, it had been worked very well,
+> and now it goes down.
+> 
+> thank you very much if you have an idea.
+> 
+> PS: sorry for my english, i am a french guy.
+> 
+> 
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+
+
+
+From cyrill.karczewski at sls.aphp.fr  Thu Apr  9 12:27:03 2009
+From: cyrill.karczewski at sls.aphp.fr (cyrill karczewski)
+Date: Thu, 09 Apr 2009 14:27:03 +0200
+Subject: problem with coovachilli and proxy
+In-Reply-To: <1239276972.7686.97.camel@david-laptop>
+References: <49DDC93C.1080903@sls.aphp.fr>
+ <1239276972.7686.97.camel@david-laptop>
+Message-ID: <49DDE997.8050705@sls.aphp.fr>
+
+of course. you are right.
+But, with the HS_postauthproxy parameter, it would be logical to 
+transmit http and https requests to the proxy.
+
+When I start chilli in debug mode, you can see that the process dhcp.c 
+redirect the http request to the proxy, but impossible to see https...
+
+I don't know, maybe it is really impossible to do. but i hope that the 
+future release version of chilli will permit that...
+
+Cyrill KARCZEWSKI
+Technicien Bureautique
+Service Informatique
+H?pital Saint-Louis
+1 Avenue Claude Vellefaux
+75010 PARIS
+0142499208
+
+
+
+wlanmac a ?crit :
+> You can't transparently proxy SSL without a security violation... 
+>
+>
+>
+> On Thu, 2009-04-09 at 12:09 +0200, cyrill karczewski wrote:
+>   
+>> good morning
+>>
+>> i'm sorry to disturb you but i have a problem with coova chilli and i
+>> can not resolv it.
+>> So i really need your help.
+>>
+>> i configure the HS_postauthproxy and proxy port on the file defaut.conf.
+>> I also configure a squid proxy transparent on the port 3128.
+>>
+>> i succeed in navigate with http request but when i try to use https
+>> sites, it failed.
+>>
+>> if I configure the proxy on the browser, it's OK i can use https sites.
+>>
+>> i am really convinced that one day before, it had been worked very well,
+>> and now it goes down.
+>>
+>> thank you very much if you have an idea.
+>>
+>> PS: sorry for my english, i am a french guy.
+>>
+>>
+>> ---------------------------------------------------------------------
+>> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+>> For additional commands, e-mail: chilli-help at coova.org
+>> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+>> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>>     
+>
+>
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>
+>
+>
+>   
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20090409/5dfadaea/attachment.htm>
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: cyrill_karczewski.vcf
+Type: text/x-vcard
+Size: 290 bytes
+Desc: not available
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20090409/5dfadaea/attachment.vcf>
+
+From oguzhank at bilkent.edu.tr  Thu Apr  9 13:08:09 2009
+From: oguzhank at bilkent.edu.tr (Oguzhan Kayhan)
+Date: Thu, 9 Apr 2009 16:08:09 +0300 (EEST)
+Subject: 1.0.13 with coovaap
+In-Reply-To: <1239274795.7686.86.camel@david-laptop>
+References: <45451.139.179.14.250.1239177796.squirrel@webmail.bilkent.edu.tr>
+    <49DDD16A.6060106@apolix.co.za>
+    <1239274795.7686.86.camel@david-laptop>
+Message-ID: <55526.139.179.14.250.1239282489.squirrel@webmail.bilkent.edu.tr>
+
+> Hello,
+>
+> Yes, I've been hearing from many that they would like to see CoovaAP
+> come out with a new release. The question has always been, maintain the
+> Whiterussian version or finally move on to Kamikaze? If kamikaze, what
+> 'flavor' as several projects already "maintain" configuration syntax for
+> chilli - x-wrt, Open-mesh, etc. Indeed, the open-mesh/ROBIN project
+> might prove to be a good foundation to take advantage of all OpenWrt and
+> Mesh have to offer. In the absence of the nvram variables, the ROBIN
+> project is establishing a protocol for maintaining router firmware and
+> configuration. It seems natural to do something similar for CAP.
+>
+> David
+>
+
+ So we better start hoping to get some good news about that project..
+:)))
+
+
+
+
+
+
+>
+> On Thu, 2009-04-09 at 12:43 +0200, Graham Beneke wrote:
+>> Oguzhan Kayhan wrote:
+>> > Glad to hear new release,
+>> > by the way ..
+>> > Any future plan to update the Coovaap distro too??
+>> > There were no update since 2007...
+>>
+>> I second that.
+>>
+>> I don't really know how to package a OpenWRT distro - would really
+>> appreciate a package with the latest coova.
+>>
+>
+>
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>
+>
+
+
+
+
+From adamanov at gmail.com  Tue Apr 14 12:53:30 2009
+From: adamanov at gmail.com (=?KOI8-R?B?99HexdPMwdcg4cTBzcHOz9c=?=)
+Date: Tue, 14 Apr 2009 15:53:30 +0300
+Subject: EAP Reconnect
+Message-ID: <7a50ad140904140553y5101df6bsc04f4c436103f3af@mail.gmail.com>
+
+Hello, sorry for my english curve. )
+
+Freeradius configured with PEAP and  multiple logins (max 1)
+
+I'm have problem with diassociate wireless user from AP and reconnect him
+after 'n' seconds.
+After reconnection the previous session was not reset.  Radius adds yet
+another record to RADACCT with the same AcctSessionId and send
+access-reject.
+As well as all the counters, the user is reset.
+
+Coova-chilli don't support Eap fast reconnect?
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20090414/964c7f00/attachment.htm>
+
+From gdamjan at mail.net.mk  Sat Apr 18 09:39:59 2009
+From: gdamjan at mail.net.mk (Damjan)
+Date: Sat, 18 Apr 2009 11:39:59 +0200
+Subject: 1.0.13 is official
+In-Reply-To: <1239114051.7743.11.camel@david-laptop>
+References: <1239112253.7743.6.camel@david-laptop> <20090407161501.622f650e@germaine.lapiole.org> <1239114051.7743.11.camel@david-laptop>
+Message-ID: <20090418093959.GA8182@legolas.on.net.mk>
+
+> I'd be happy if others could build up binaries for various OSs too. I
+> started a page for it:
+> 
+> http://coova.org/wiki/index.php/CoovaChilli/DistroBuilding
+
+I can't edit that wiki it seems, but here's the link to the package for
+ArchLinux:
+
+http://aur.archlinux.org/packages.php?ID=25667
+
+-- 
+damjan | ??????
+This is my jabber ID -->         damjan at bagra.net.mk 
+ -- not my mail address, it's a Jabber ID --^ :)
+
+
+From derekchilli at hssl.ie  Tue Apr 21 08:26:46 2009
+From: derekchilli at hssl.ie (Derek C)
+Date: Tue, 21 Apr 2009 09:26:46 +0100 (IST)
+Subject: Chilli sometimes incorrectly NOT authorising a user by MAC
+Message-ID: <53644.149.5.32.200.1240302406.squirrel@www.rivertowermail.com>
+
+Hi all,
+
+I'm using Coova Chilli to authorise users by Mac address against a
+freeradius server.
+
+Generally it works fine but sometimes I find that Coova Chilli glitches
+and doesn't authenticate a user, by mac, against the freeradius server
+even though their mac IS in the radcheck table - but 99% of the time it
+does check perfectly against the freeradius server is no problems.
+
+I'm wondering if its a time-out problem between Coova Chilli and the
+freeradius server?
+
+Are there some settings for the chilli.conf file to increase the time-out
+times or retry times for accessing the freeradius server?
+
+thanks,
+
+Derek
+
+
+-- 
+Derek C
+In Ireland
+
+
+
+From wlan at mac.com  Tue Apr 21 14:23:41 2009
+From: wlan at mac.com (wlanmac)
+Date: Tue, 21 Apr 2009 16:23:41 +0200
+Subject: Chilli sometimes incorrectly NOT authorising a user by MAC
+In-Reply-To: <53644.149.5.32.200.1240302406.squirrel@www.rivertowermail.com>
+References: <53644.149.5.32.200.1240302406.squirrel@www.rivertowermail.com>
+Message-ID: <1240323821.7729.34.camel@david-laptop>
+
+Chilli (with the 'macauth') option only does MAC authentication when
+asked for a DHCP lease. It does this only the *first* time the lease is
+requested. The second time (or anytime thereafter) the device asks for a
+lease (that is still active), chilli is simply respond. 
+
+There is a new option in 1.0.13 callled 'macreauth' which will have
+chilli attempt a MAC authentication every time a user is redirected (in
+addition to the above use of 'macauth'). 
+
+On Tue, 2009-04-21 at 09:26 +0100, Derek C wrote:
+> Hi all,
+> 
+> I'm using Coova Chilli to authorise users by Mac address against a
+> freeradius server.
+> 
+> Generally it works fine but sometimes I find that Coova Chilli glitches
+> and doesn't authenticate a user, by mac, against the freeradius server
+> even though their mac IS in the radcheck table - but 99% of the time it
+> does check perfectly against the freeradius server is no problems.
+> 
+> I'm wondering if its a time-out problem between Coova Chilli and the
+> freeradius server?
+> 
+> Are there some settings for the chilli.conf file to increase the time-out
+> times or retry times for accessing the freeradius server?
+> 
+> thanks,
+> 
+> Derek
+> 
+> 
+
+
+
+From derekchilli at hssl.ie  Tue Apr 21 21:45:06 2009
+From: derekchilli at hssl.ie (Derek C)
+Date: Tue, 21 Apr 2009 22:45:06 +0100 (IST)
+Subject: Chilli sometimes incorrectly NOT authorising a user by MAC
+In-Reply-To: <1240323821.7729.34.camel@david-laptop>
+References: <53644.149.5.32.200.1240302406.squirrel@www.rivertowermail.com>
+    <1240323821.7729.34.camel@david-laptop>
+Message-ID: <32845.149.5.32.200.1240350306.squirrel@www.rivertowermail.com>
+
+Hi Wlanmac,
+
+> Chilli (with the 'macauth') option only does MAC authentication when
+> asked for a DHCP lease. It does this only the *first* time the lease is
+> requested. The second time (or anytime thereafter) the device asks for a
+> lease (that is still active), chilli is simply respond.
+
+Is increasing the DHCP lease time in chilli.conf a fix for this?
+
+> There is a new option in 1.0.13 callled 'macreauth' which will have
+> chilli attempt a MAC authentication every time a user is redirected (in
+> addition to the above use of 'macauth').
+
+Or perhaps I need to move to 1.0.13
+
+I'm using coova chilli via the kamikaze_8.09.  I see that the version
+there is 1.0.12.  Does anyone know any good instructions for building the
+newest coova chilli for openwrt?  (cross-compiling or including it into
+the openwrt build?)
+
+thanks very much!
+
+Derek
+
+
+>
+
+
+
+From info at easyhorpak.com  Tue Apr 21 22:46:44 2009
+From: info at easyhorpak.com (EasyHorpak.com)
+Date: Wed, 22 Apr 2009 05:46:44 +0700
+Subject: Chilli sometimes incorrectly NOT authorising a user by MAC
+References: <53644.149.5.32.200.1240302406.squirrel@www.rivertowermail.com>    <1240323821.7729.34.camel@david-laptop> <32845.149.5.32.200.1240350306.squirrel@www.rivertowermail.com>
+Message-ID: <003301c9c2d3$0b84a460$02b6a8c0@nznf80c39ca487>
+
+you may ask coova.org
+
+----- Original Message ----- 
+From: "Derek C" <derekchilli at hssl.ie>
+To: <chilli at coova.org>
+Cc: <chilli at coova.org>
+Sent: Wednesday, April 22, 2009 4:45 AM
+Subject: Re: Chilli sometimes incorrectly NOT authorising a user by MAC
+
+
+> Hi Wlanmac,
+> 
+>> Chilli (with the 'macauth') option only does MAC authentication when
+>> asked for a DHCP lease. It does this only the *first* time the lease is
+>> requested. The second time (or anytime thereafter) the device asks for a
+>> lease (that is still active), chilli is simply respond.
+> 
+> Is increasing the DHCP lease time in chilli.conf a fix for this?
+> 
+>> There is a new option in 1.0.13 callled 'macreauth' which will have
+>> chilli attempt a MAC authentication every time a user is redirected (in
+>> addition to the above use of 'macauth').
+> 
+> Or perhaps I need to move to 1.0.13
+> 
+> I'm using coova chilli via the kamikaze_8.09.  I see that the version
+> there is 1.0.12.  Does anyone know any good instructions for building the
+> newest coova chilli for openwrt?  (cross-compiling or including it into
+> the openwrt build?)
+> 
+> thanks very much!
+> 
+> Derek
+> 
+> 
+>>
+> 
+> 
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+> 
+>
+
+
+From derekchilli at hssl.ie  Wed Apr 22 09:05:14 2009
+From: derekchilli at hssl.ie (Derek C)
+Date: Wed, 22 Apr 2009 10:05:14 +0100 (IST)
+Subject: Chilli sometimes incorrectly NOT authorising a user by MAC
+In-Reply-To: <003301c9c2d3$0b84a460$02b6a8c0@nznf80c39ca487>
+References: <53644.149.5.32.200.1240302406.squirrel@www.rivertowermail.com>  
+     <1240323821.7729.34.camel@david-laptop>
+    <32845.149.5.32.200.1240350306.squirrel@www.rivertowermail.com>
+    <003301c9c2d3$0b84a460$02b6a8c0@nznf80c39ca487>
+Message-ID: <44236.149.5.32.200.1240391114.squirrel@www.rivertowermail.com>
+
+
+>> Or perhaps I need to move to 1.0.13
+
+The Coova Chilli instructions look OK for building 1.0.13 for
+kamikaze_8.09 - I'll give this a go today and see if this version, with
+the macreauth option fixes the issue (it takes time to see the problem
+coming up but I'd hate to deploy in a live hotspot and have paying people
+complain that they paid but are not getting access).
+
+thanks,
+
+Derek
+
+
+
+
+From jmeiring at amobia.com  Wed Apr 22 15:00:30 2009
+From: jmeiring at amobia.com (Johan Meiring)
+Date: Wed, 22 Apr 2009 17:00:30 +0200
+Subject: Chilli sometimes incorrectly NOT authorising a user by MAC
+In-Reply-To: <32845.149.5.32.200.1240350306.squirrel@www.rivertowermail.com>
+References: <53644.149.5.32.200.1240302406.squirrel@www.rivertowermail.com>    <1240323821.7729.34.camel@david-laptop> <32845.149.5.32.200.1240350306.squirrel@www.rivertowermail.com>
+Message-ID: <49EF310E.2090403@amobia.com>
+
+Derek C wrote:
+> 
+> I'm using coova chilli via the kamikaze_8.09.  I see that the version
+> there is 1.0.12.  Does anyone know any good instructions for building the
+> newest coova chilli for openwrt?  (cross-compiling or including it into
+> the openwrt build?)
+> 
+
+See my VERY basic instructions here on the mailing list.
+
+http://coova.org/lists/?0::632
+
+
+-- 
+
+
+Johan Meiring
+Amobia Communications
+Tel: (0861) AMOBIA / (0861) 266242
+Fax: (0861) AMOFAX / (0861) 266329
+
+
+
+From derekchilli at hssl.ie  Wed Apr 22 20:11:37 2009
+From: derekchilli at hssl.ie (Derek C)
+Date: Wed, 22 Apr 2009 21:11:37 +0100 (IST)
+Subject: Chilli sometimes incorrectly NOT authorising a user by MAC
+In-Reply-To: <49EF310E.2090403@amobia.com>
+References: <53644.149.5.32.200.1240302406.squirrel@www.rivertowermail.com>  
+     <1240323821.7729.34.camel@david-laptop>
+    <32845.149.5.32.200.1240350306.squirrel@www.rivertowermail.com>
+    <49EF310E.2090403@amobia.com>
+Message-ID: <59088.149.5.32.200.1240431097.squirrel@www.rivertowermail.com>
+
+
+On Wed, April 22, 2009 4:00 pm, Johan Meiring wrote:
+> See my VERY basic instructions here on the mailing list.
+> http://coova.org/lists/?0::632
+
+Hi Johan,
+
+Your instructions are great!
+
+I couldn't actually get the SVN checkout version to compile (error:
+libtool: compile: cannot determine name of library object from).
+
+But I was able to get the 1.0.13 release version to compile by following
+your instructions (after the SVN checkout bit and using the release
+download).
+
+I'm probably better off using the release version anyway I guess.
+
+I haven't actually tried my newly built image yet - that'll be tomorrow.
+
+thanks very much!
+
+Derek
+
+
+
+From iamaplayer at gmail.com  Fri Apr 24 02:42:22 2009
+From: iamaplayer at gmail.com (IaMaPlAyEr)
+Date: Fri, 24 Apr 2009 10:42:22 +0800
+Subject: maybe some one tell me how to starting contribute the code to 
+	coova-chilli
+Message-ID: <2ae8403e0904231942k5fb23a36u76e8daaacf328428@mail.gmail.com>
+
+Hi all,
+
+
+After a long study of coova-chilli, i am very enjoy this great software. And
+I really want to contributed some code to it.
+though I am a new to software develop.
+
+Coova-chilli, organize the shell script and c together, also include
+bstring, tun interface to ifconfig, gengetopt, autotools, iptables.
+maybe u are all familiar with GNU software, but I study such tools in
+Coova-chilli first time.
+
+also the coova-chilli has many form in different platform, openwrt
+,openmoko(sorry for its news).
+and python support also appeared in it.
+
+
+of course, I am not strong to support coova-chilli, but maybe you all can
+figure me a right way to contribute.
+what I know first is to get more familiar with the source code.
+
+thanks.
+
+
+btw, sorry  for my english
+=P
+
+-- 
+--
+Sincerly,
+
+HaveF
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20090424/a79a5e07/attachment.htm>
+
+From wlan at mac.com  Fri Apr 24 05:06:27 2009
+From: wlan at mac.com (wlanmac)
+Date: Fri, 24 Apr 2009 07:06:27 +0200
+Subject: maybe some one tell me how to starting contribute the code to
+	coova-chilli
+In-Reply-To: <2ae8403e0904231942k5fb23a36u76e8daaacf328428@mail.gmail.com>
+References: <2ae8403e0904231942k5fb23a36u76e8daaacf328428@mail.gmail.com>
+Message-ID: <1240549587.7753.3.camel@david-laptop>
+
+Ouch, I missed the news about openmoko. Damn, I just bought a neorunner
+and now it's end-of-life. Figures....
+
+So much for Open phones... The Openmoko port is a nice little package
+which uses the python script for configuration. I'm planning on making
+that python GUI more general, for all platforms.
+
+Thanks for offering your support. Though, Chilli isn't the best place,
+perhaps, to learn programming. 
+
+One way you can help is to spread truthfully and good things about
+Coova, to counter balance a small group of people who like to go around
+telling negative lies about Coova.
+
+Thanks,
+David
+
+
+Fri, 2009-04-24 at 10:42 +0800, IaMaPlAyEr wrote:
+> Hi all,
+> 
+> 
+> After a long study of coova-chilli, i am very enjoy this great
+> software. And I really want to contributed some code to it.
+> though I am a new to software develop.
+> 
+> Coova-chilli, organize the shell script and c together, also include
+> bstring, tun interface to ifconfig, gengetopt, autotools, iptables.
+> maybe u are all familiar with GNU software, but I study such tools in
+> Coova-chilli first time.
+> 
+> also the coova-chilli has many form in different platform,
+> openwrt ,openmoko(sorry for its news).
+> and python support also appeared in it.
+> 
+> 
+> of course, I am not strong to support coova-chilli, but maybe you all
+> can figure me a right way to contribute.
+> what I know first is to get more familiar with the source code.
+> 
+> thanks.
+> 
+> 
+> btw, sorry  for my english
+> =P
+> 
+> -- 
+> --
+> Sincerly,
+> 
+> HaveF
+
+
+
+From outbackdingo at gmail.com  Fri Apr 24 05:11:17 2009
+From: outbackdingo at gmail.com (Outback Dingo)
+Date: Fri, 24 Apr 2009 12:11:17 +0700
+Subject: maybe some one tell me how to starting contribute the code to 
+	coova-chilli
+In-Reply-To: <1240549587.7753.3.camel@david-laptop>
+References: <2ae8403e0904231942k5fb23a36u76e8daaacf328428@mail.gmail.com>
+	 <1240549587.7753.3.camel@david-laptop>
+Message-ID: <5635aa0d0904232211x2e6aa32fh5e5fa4888255e07f@mail.gmail.com>
+
+I definatley second that, the best thing for Coova-chilli is championing the
+cause for the better of us all and
+users maybe not aware of it, and to dispell the "myths" and unsupported
+claims made by many others
+
+On Fri, Apr 24, 2009 at 12:06 PM, wlanmac <wlan at mac.com> wrote:
+
+> Ouch, I missed the news about openmoko. Damn, I just bought a neorunner
+> and now it's end-of-life. Figures....
+>
+> So much for Open phones... The Openmoko port is a nice little package
+> which uses the python script for configuration. I'm planning on making
+> that python GUI more general, for all platforms.
+>
+> Thanks for offering your support. Though, Chilli isn't the best place,
+> perhaps, to learn programming.
+>
+> One way you can help is to spread truthfully and good things about
+> Coova, to counter balance a small group of people who like to go around
+> telling negative lies about Coova.
+>
+> Thanks,
+> David
+>
+>
+> Fri, 2009-04-24 at 10:42 +0800, IaMaPlAyEr wrote:
+> > Hi all,
+> >
+> >
+> > After a long study of coova-chilli, i am very enjoy this great
+> > software. And I really want to contributed some code to it.
+> > though I am a new to software develop.
+> >
+> > Coova-chilli, organize the shell script and c together, also include
+> > bstring, tun interface to ifconfig, gengetopt, autotools, iptables.
+> > maybe u are all familiar with GNU software, but I study such tools in
+> > Coova-chilli first time.
+> >
+> > also the coova-chilli has many form in different platform,
+> > openwrt ,openmoko(sorry for its news).
+> > and python support also appeared in it.
+> >
+> >
+> > of course, I am not strong to support coova-chilli, but maybe you all
+> > can figure me a right way to contribute.
+> > what I know first is to get more familiar with the source code.
+> >
+> > thanks.
+> >
+> >
+> > btw, sorry  for my english
+> > =P
+> >
+> > --
+> > --
+> > Sincerly,
+> >
+> > HaveF
+>
+>
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20090424/8400f358/attachment.htm>
+
+From derekchilli at hssl.ie  Tue Apr 28 16:24:11 2009
+From: derekchilli at hssl.ie (Derek C)
+Date: Tue, 28 Apr 2009 17:24:11 +0100 (IST)
+Subject: UAMALLOWED and HTTPS (to select.worldpay.com)
+Message-ID: <41198.149.5.32.200.1240935851.squirrel@www.rivertowermail.com>
+
+Hi all,
+
+I'm trying to get a Hotspot working with OpenWRT + Coova Chilli (1.0.13).
+
+I'm having a problem:
+
+I try to allow HTTPS traffic to select.worldpay.com by adding
+"select.worldpay.com" and, while testing, also the IP address for same
+(155.136.66.34) into the "uamallowed" chilli.conf directive.
+
+Normally the uamallowed directive works fine for me but for this HTTPS
+connections it does not work: a telnet to select.worldpay.com 443 gives me
+"connection reset by peer" and I guess it's coova chilli thats stopping
+the connection.
+
+Does anyone know how to fix, or work around, this?
+
+thanks very much,
+
+Derek
+
+
+-- 
+Derek C
+In Ireland
+
+
+
+From derekchilli at hssl.ie  Tue Apr 28 23:47:00 2009
+From: derekchilli at hssl.ie (Derek C)
+Date: Wed, 29 Apr 2009 00:47:00 +0100 (IST)
+Subject: UAMALLOWED and HTTPS (to select.worldpay.com)
+In-Reply-To: <41198.149.5.32.200.1240935851.squirrel@www.rivertowermail.com>
+References: <41198.149.5.32.200.1240935851.squirrel@www.rivertowermail.com>
+Message-ID: <59077.149.5.32.200.1240962420.squirrel@www.rivertowermail.com>
+
+Hi again,
+
+Weird - this [uamallowed SSL payment site] problem is only happening with
+a Ubuntu (Hardy Heron) client computer (with either Firefox 3.0 or
+IEs4linux) ***but*** there is NO problem with a Macbook with OSX and
+working with BOTH Safari and Firefox.
+
+That's very strange isn't it?
+
+The SSL Site (https://select.worldpay.com) does access via the Ubuntu
+computer fine with not accessing via Coova Chilli
+
+any ideas that are helpful would be great!
+
+thanks,
+
+Derek
+
+
+On Tue, April 28, 2009 5:24 pm, Derek C wrote:
+> Hi all,
+>
+>
+> I'm trying to get a Hotspot working with OpenWRT + Coova Chilli (1.0.13).
+>
+>
+> I'm having a problem:
+>
+>
+> I try to allow HTTPS traffic to select.worldpay.com by adding
+> "select.worldpay.com" and, while testing, also the IP address for same
+> (155.136.66.34) into the "uamallowed" chilli.conf directive.
+>
+>
+> Normally the uamallowed directive works fine for me but for this HTTPS
+> connections it does not work: a telnet to select.worldpay.com 443 gives me
+>  "connection reset by peer" and I guess it's coova chilli thats stopping
+> the connection.
+>
+> Does anyone know how to fix, or work around, this?
+>
+>
+> thanks very much,
+>
+> Derek
+>
+>
+>
+> --
+> Derek C
+> In Ireland
+>
+>
+>
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>
+>
+>
+
+
+-- 
+Derek C
+In Ireland
+
+
+
+From wlan at mac.com  Wed Apr 29 04:35:54 2009
+From: wlan at mac.com (wlanmac)
+Date: Wed, 29 Apr 2009 06:35:54 +0200
+Subject: UAMALLOWED and HTTPS (to select.worldpay.com)
+In-Reply-To: <59077.149.5.32.200.1240962420.squirrel@www.rivertowermail.com>
+References: <41198.149.5.32.200.1240935851.squirrel@www.rivertowermail.com>
+ <59077.149.5.32.200.1240962420.squirrel@www.rivertowermail.com>
+Message-ID: <1240979754.7893.0.camel@david-laptop>
+
+Try a network trace to see what your browser is doing. Perhaps it's
+trying to verify the SSL certificate and can't. 
+
+
+On Wed, 2009-04-29 at 00:47 +0100, Derek C wrote:
+> Hi again,
+> 
+> Weird - this [uamallowed SSL payment site] problem is only happening with
+> a Ubuntu (Hardy Heron) client computer (with either Firefox 3.0 or
+> IEs4linux) ***but*** there is NO problem with a Macbook with OSX and
+> working with BOTH Safari and Firefox.
+> 
+> That's very strange isn't it?
+> 
+> The SSL Site (https://select.worldpay.com) does access via the Ubuntu
+> computer fine with not accessing via Coova Chilli
+> 
+> any ideas that are helpful would be great!
+> 
+> thanks,
+> 
+> Derek
+> 
+> 
+> On Tue, April 28, 2009 5:24 pm, Derek C wrote:
+> > Hi all,
+> >
+> >
+> > I'm trying to get a Hotspot working with OpenWRT + Coova Chilli (1.0.13).
+> >
+> >
+> > I'm having a problem:
+> >
+> >
+> > I try to allow HTTPS traffic to select.worldpay.com by adding
+> > "select.worldpay.com" and, while testing, also the IP address for same
+> > (155.136.66.34) into the "uamallowed" chilli.conf directive.
+> >
+> >
+> > Normally the uamallowed directive works fine for me but for this HTTPS
+> > connections it does not work: a telnet to select.worldpay.com 443 gives me
+> >  "connection reset by peer" and I guess it's coova chilli thats stopping
+> > the connection.
+> >
+> > Does anyone know how to fix, or work around, this?
+> >
+> >
+> > thanks very much,
+> >
+> > Derek
+> >
+> >
+> >
+> > --
+> > Derek C
+> > In Ireland
+> >
+> >
+> >
+> > ---------------------------------------------------------------------
+> > To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> > For additional commands, e-mail: chilli-help at coova.org
+> > Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> > Forum: http://coova.org/phpBB3/viewforum.php?f=4
+> >
+> >
+> >
+> 
+> 
+
+
+
+From jmeiring at amobia.com  Wed Apr 29 07:00:59 2009
+From: jmeiring at amobia.com (Johan Meiring)
+Date: Wed, 29 Apr 2009 09:00:59 +0200
+Subject: UAMALLOWED and HTTPS (to select.worldpay.com)
+In-Reply-To: <59077.149.5.32.200.1240962420.squirrel@www.rivertowermail.com>
+References: <41198.149.5.32.200.1240935851.squirrel@www.rivertowermail.com> <59077.149.5.32.200.1240962420.squirrel@www.rivertowermail.com>
+Message-ID: <49F7FB2B.50201@amobia.com>
+
+Derek C wrote:
+> Hi again,
+> 
+> Weird - this [uamallowed SSL payment site] problem is only happening with
+> a Ubuntu (Hardy Heron) client computer (with either Firefox 3.0 or
+> IEs4linux) ***but*** there is NO problem with a Macbook with OSX and
+> working with BOTH Safari and Firefox.
+> 
+> That's very strange isn't it?
+> 
+> The SSL Site (https://select.worldpay.com) does access via the Ubuntu
+> computer fine with not accessing via Coova Chilli
+> 
+> any ideas that are helpful would be great!
+> 
+
+
+Suggest running tcpdump on either the chilli device, or your ubuntu 
+laptop to see what it is trying to access.
+
+Could be that it's trying to do something like check the SSL provider's 
+revocation list....
+
+Anyway tcpdump will show you what it is trying to do....
+
+Cheers,
+
+-- 
+
+
+Johan Meiring
+Amobia Communications
+Tel: (0861) AMOBIA / (0861) 266242
+Fax: (0861) AMOFAX / (0861) 266329
+
+
+
+From derekchilli at hssl.ie  Wed Apr 29 07:53:06 2009
+From: derekchilli at hssl.ie (Derek C)
+Date: Wed, 29 Apr 2009 08:53:06 +0100 (IST)
+Subject: UAMALLOWED and HTTPS (to select.worldpay.com)
+In-Reply-To: <1240979754.7893.0.camel@david-laptop>
+References: <41198.149.5.32.200.1240935851.squirrel@www.rivertowermail.com>
+    <59077.149.5.32.200.1240962420.squirrel@www.rivertowermail.com>
+    <1240979754.7893.0.camel@david-laptop>
+Message-ID: <52057.149.5.32.200.1240991586.squirrel@www.rivertowermail.com>
+
+Hi,
+
+On Wed, April 29, 2009 5:35 am, wlanmac wrote:
+> Try a network trace to see what your browser is doing. Perhaps it's
+> trying to verify the SSL certificate and can't.
+
+What surprised me was that I also wasn't able to "telnet
+select.worldpay.com 443" on my notebook when connected to the choova
+chilli Hotspot AP where, normally, I can.
+
+I did run tcpdump on my notebook just now.  The last few entries before
+the browser fails are listed below.  I've also pasted the entries where I
+try to telnet too.
+
+tcpdump for browser connection/failure to https://select.worldpay.com: -
+
+08:46:04.956305 IP dconn-note.local.51952 > select.worldpay.com.https: .
+ack 1 win 5840
+08:46:04.956387 IP select.worldpay.com.https > dconn-note.local.51952: S
+648149975:648149975(0) ack 2976147220 win 16384 <mss 1460>
+08:46:04.956414 IP dconn-note.local.51952 > select.worldpay.com.https: R
+2976147220:2976147220(0) win 0
+
+
+tcpdump for attempted telnet connection & failure to select.worldpay.com
+port 443:
+
+08:50:18.635365 IP dconn-note.local.33232 > select.worldpay.com.https: .
+ack 1 win 5840
+08:50:18.636952 IP select.worldpay.com.https > dconn-note.local.33232: S
+655972565:655972565(0) ack 2667401140 win 16384 <mss 1460>
+08:50:18.636991 IP dconn-note.local.33232 > select.worldpay.com.https: R
+2667401140:2667401140(0) win 0
+
+
+
+Derek
+
+
+-- 
+Derek C
+In Ireland
+
+
+
+From famigliagovi at libero.it  Wed Apr 29 08:58:58 2009
+From: famigliagovi at libero.it (famigliagovi at libero.it)
+Date: Wed, 29 Apr 2009 10:58:58 +0200 (CEST)
+Subject: 2 questions:right redircet after login and radius slow reject
+Message-ID: <30321228.218241240995538295.JavaMail.defaultUser@defaultHost>
+
+hi guys,i have two questions:
+
+1-when a client connects to my login page then 
+he hasn't been redirect correctly to the internet page written before.what i 
+have to do?i want that a client who write www.abc.it goes automatically on this 
+page after login
+
+2- when a client put wrong credentials radius server takes a 
+long time to display login failed page
+
+thanks 
+marco
+
+
+From jmeiring at amobia.com  Wed Apr 29 09:12:06 2009
+From: jmeiring at amobia.com (Johan Meiring)
+Date: Wed, 29 Apr 2009 11:12:06 +0200
+Subject: UAMALLOWED and HTTPS (to select.worldpay.com)
+In-Reply-To: <52057.149.5.32.200.1240991586.squirrel@www.rivertowermail.com>
+References: <41198.149.5.32.200.1240935851.squirrel@www.rivertowermail.com>    <59077.149.5.32.200.1240962420.squirrel@www.rivertowermail.com>    <1240979754.7893.0.camel@david-laptop> <52057.149.5.32.200.1240991586.squirrel@www.rivertowermail.com>
+Message-ID: <49F819E6.2010201@amobia.com>
+
+Derek C wrote:
+> Hi,
+> 
+> On Wed, April 29, 2009 5:35 am, wlanmac wrote:
+>> Try a network trace to see what your browser is doing. Perhaps it's
+>> trying to verify the SSL certificate and can't.
+> 
+> What surprised me was that I also wasn't able to "telnet
+> select.worldpay.com 443" on my notebook when connected to the choova
+> chilli Hotspot AP where, normally, I can.
+> 
+> I did run tcpdump on my notebook just now.  The last few entries before
+> the browser fails are listed below.  I've also pasted the entries where I
+> try to telnet too.
+> 
+> tcpdump for browser connection/failure to https://select.worldpay.com: -
+> 
+> 08:46:04.956305 IP dconn-note.local.51952 > select.worldpay.com.https: .
+> ack 1 win 5840
+> 08:46:04.956387 IP select.worldpay.com.https > dconn-note.local.51952: S
+> 648149975:648149975(0) ack 2976147220 win 16384 <mss 1460>
+> 08:46:04.956414 IP dconn-note.local.51952 > select.worldpay.com.https: R
+> 2976147220:2976147220(0) win 0
+> 
+> 
+> tcpdump for attempted telnet connection & failure to select.worldpay.com
+> port 443:
+> 
+> 08:50:18.635365 IP dconn-note.local.33232 > select.worldpay.com.https: .
+> ack 1 win 5840
+> 08:50:18.636952 IP select.worldpay.com.https > dconn-note.local.33232: S
+> 655972565:655972565(0) ack 2667401140 win 16384 <mss 1460>
+> 08:50:18.636991 IP dconn-note.local.33232 > select.worldpay.com.https: R
+> 2667401140:2667401140(0) win 0
+> 
+> 
+> 
+> Derek
+> 
+> 
+
+Please also post your tcpdump command line.
+
+-- 
+
+
+Johan Meiring
+Amobia Communications
+Tel: (0861) AMOBIA / (0861) 266242
+Fax: (0861) AMOFAX / (0861) 266329
+
+
+
+From mathieu at alengrin.fr  Wed Apr 29 11:15:45 2009
+From: mathieu at alengrin.fr (Mathieu Alengrin)
+Date: Wed, 29 Apr 2009 13:15:45 +0200
+Subject: 2 questions:right redircet after login and radius slow reject
+In-Reply-To: <30321228.218241240995538295.JavaMail.defaultUser@defaultHost>
+References: <30321228.218241240995538295.JavaMail.defaultUser@defaultHost>
+Message-ID: <cf60aca70904290415p59ff27dcja1ad1b52ec50ac26@mail.gmail.com>
+
+Hi,
+
+1. On a successful login, your login page (uamserver) receives a
+parameter "original_url" that contains the first URL that the client
+tried to access. You could use it to redirect your users
+
+2. Your RADIUS server probably delay the reject and/or chilli retry
+several times before displaying the login failed page
+
+Mathieu
+
+On Wed, Apr 29, 2009 at 10:58 AM, famigliagovi at libero.it
+<famigliagovi at libero.it> wrote:
+> hi guys,i have two questions:
+>
+> 1-when a client connects to my login page then
+> he hasn't been redirect correctly to the internet page written before.what i
+> have to do?i want that a client who write www.abc.it goes automatically on this
+> page after login
+>
+> 2- when a client put wrong credentials radius server takes a
+> long time to display login failed page
+>
+> thanks
+> marco
+>
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>
+>
+
+
+From famigliagovi at libero.it  Wed Apr 29 11:34:42 2009
+From: famigliagovi at libero.it (famigliagovi at libero.it)
+Date: Wed, 29 Apr 2009 13:34:42 +0200 (CEST)
+Subject: 2 questions:right redircet after login and radius slow reject
+Message-ID: <26809361.235711241004882746.JavaMail.defaultUser@defaultHost>
+
+thank's a lot!
+how can i use original_url parameter to open a new tab with 
+requested url?
+sorry but i'm a little newbye :(
+thanks
+dario
+
+
+> Hi,
+>
+> 1. On 
+a successful login, your login page (uamserver) receives a
+> parameter 
+"original_url" that contains the first URL that the client
+> tried to access. 
+You could use it to redirect your users
+>
+> 2. Your RADIUS server probably 
+delay the reject and/or chilli retry
+> several times before displaying the 
+login failed page
+>
+> Mathieu
+>
+> On Wed, Apr 29, 2009 at 10:58 AM, 
+famigliagovi at libero.it
+> <famigliagovi at libero.it> wrote:
+>> hi guys,i have two 
+questions:
+>>
+>> 1-when a client connects to my login page then
+>> he hasn't 
+been redirect correctly to the internet page written 
+>> before.what i
+>> have 
+to do?i want that a client who write www.abc.it goes automatically 
+>> on this
+
+>> page after login
+>>
+>> 2- when a client put wrong credentials radius server 
+takes a
+>> long time to display login failed page
+>>
+>> thanks
+>> marco
+>>
+>> 
+---------------------------------------------------------------------
+>> To 
+unsubscribe, e-mail: chilli-unsubscribe at coova.org
+>> For additional commands, e-
+mail: chilli-help at coova.org
+>> Wiki: http://coova.org/wiki/index.
+php/CoovaChilli
+>> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>>
+>>
+>
+> 
+---------------------------------------------------------------------
+> To 
+unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-
+mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>
+
+
+From derekchilli at hssl.ie  Wed Apr 29 11:59:54 2009
+From: derekchilli at hssl.ie (Derek C)
+Date: Wed, 29 Apr 2009 12:59:54 +0100 (IST)
+Subject: UAMALLOWED and HTTPS (to select.worldpay.com)
+In-Reply-To: <49F819E6.2010201@amobia.com>
+References: <41198.149.5.32.200.1240935851.squirrel@www.rivertowermail.com>  
+     <59077.149.5.32.200.1240962420.squirrel@www.rivertowermail.com>   
+    <1240979754.7893.0.camel@david-laptop>
+    <52057.149.5.32.200.1240991586.squirrel@www.rivertowermail.com>
+    <49F819E6.2010201@amobia.com>
+Message-ID: <42031.149.5.32.200.1241006394.squirrel@www.rivertowermail.com>
+
+Hi Johan,
+
+
+On Wed, April 29, 2009 10:12 am, Johan Meiring wrote:
+> Please also post your tcpdump command line.
+
+I just used "tcpdump -i ath0" on my Ubuntu notebook do product that output.
+
+I've just built openwrt with tcpdump so that I can also get tcpdumps on
+the coova chilli AP too and I'll see if its any different
+
+Derek
+
+
+-- 
+Derek C
+In Ireland
+
+
+
+From derekchilli at hssl.ie  Wed Apr 29 12:03:38 2009
+From: derekchilli at hssl.ie (Derek C)
+Date: Wed, 29 Apr 2009 13:03:38 +0100 (IST)
+Subject: UAMALLOWED and HTTPS (to select.worldpay.com)
+In-Reply-To: <49F819E6.2010201@amobia.com>
+References: <41198.149.5.32.200.1240935851.squirrel@www.rivertowermail.com>  
+     <59077.149.5.32.200.1240962420.squirrel@www.rivertowermail.com>   
+    <1240979754.7893.0.camel@david-laptop>
+    <52057.149.5.32.200.1240991586.squirrel@www.rivertowermail.com>
+    <49F819E6.2010201@amobia.com>
+Message-ID: <42057.149.5.32.200.1241006618.squirrel@www.rivertowermail.com>
+
+Hi Johan,
+
+I just tried again but this time used "tcpdump -vv -i ath0" (on my
+notebook) to see if there would be any output differences (not much I
+think?) - the error when connecting to https://select.worldpay.com
+happened again and the tcp dump shows the output below.
+
+Now I'll get tcpdump running in the router and see what it says and I'll
+email it on here too
+
+thanks,
+
+Derek
+
+The final bit of the results of "tcpdump -vv -i ath0": -
+
+13:00:56.397831 IP (tos 0x0, ttl 64, id 0, offset 0, flags [DF], proto TCP
+(6), length 40) dconn-note.local.36646 > select.worldpay.com.https: R,
+cksum 0x61cc (correct), 2240340815:2240340815(0) win 0
+13:00:56.398332 IP (tos 0x0, ttl 238, id 2, offset 0, flags [none], proto
+TCP (6), length 44) select.worldpay.com.https > dconn-note.local.36647: S,
+cksum 0xb4ce (correct), 1305838734:1305838734(0) ack 2232649363 win 8192
+<mss 1460>
+13:00:56.398364 IP (tos 0x0, ttl 64, id 8194, offset 0, flags [DF], proto
+TCP (6), length 40) dconn-note.local.36647 > select.worldpay.com.https: .,
+cksum 0xd5bb (correct), 1:1(0) ack 1 win 5840
+13:00:56.398650 IP (tos 0x0, ttl 64, id 8195, offset 0, flags [DF], proto
+TCP (6), length 121) dconn-note.local.36647 > select.worldpay.com.https: P
+1:82(81) ack 1 win 5840
+13:00:56.398858 IP (tos 0x0, ttl 238, id 4, offset 0, flags [none], proto
+TCP (6), length 44) select.worldpay.com.https > dconn-note.local.36647: S,
+cksum 0x94cd (correct), 1305838735:1305838735(0) ack 2232649363 win 16384
+<mss 1460>
+13:00:56.398877 IP (tos 0x0, ttl 64, id 0, offset 0, flags [DF], proto TCP
+(6), length 40) dconn-note.local.36647 > select.worldpay.com.https: R,
+cksum 0xbefc (correct), 2232649363:2232649363(0) win 0
+
+
+
+On Wed, April 29, 2009 10:12 am, Johan Meiring wrote:
+> Derek C wrote:
+>
+>> Hi,
+>>
+>>
+>> On Wed, April 29, 2009 5:35 am, wlanmac wrote:
+>>
+>>> Try a network trace to see what your browser is doing. Perhaps it's
+>>> trying to verify the SSL certificate and can't.
+>>
+>> What surprised me was that I also wasn't able to "telnet
+>> select.worldpay.com 443" on my notebook when connected to the choova
+>> chilli Hotspot AP where, normally, I can.
+>>
+>> I did run tcpdump on my notebook just now.  The last few entries before
+>>  the browser fails are listed below.  I've also pasted the entries
+>> where I try to telnet too.
+>>
+>> tcpdump for browser connection/failure to https://select.worldpay.com:
+>> -
+>>
+>>
+>> 08:46:04.956305 IP dconn-note.local.51952 > select.worldpay.com.https:
+>> .
+>> ack 1 win 5840 08:46:04.956387 IP select.worldpay.com.https >
+>> dconn-note.local.51952: S
+>> 648149975:648149975(0) ack 2976147220 win 16384 <mss 1460>
+>> 08:46:04.956414 IP dconn-note.local.51952 > select.worldpay.com.https: R
+>>  2976147220:2976147220(0) win 0
+>>
+>>
+>>
+>> tcpdump for attempted telnet connection & failure to
+>> select.worldpay.com port 443:
+>>
+>> 08:50:18.635365 IP dconn-note.local.33232 > select.worldpay.com.https:
+>> .
+>> ack 1 win 5840 08:50:18.636952 IP select.worldpay.com.https >
+>> dconn-note.local.33232: S
+>> 655972565:655972565(0) ack 2667401140 win 16384 <mss 1460>
+>> 08:50:18.636991 IP dconn-note.local.33232 > select.worldpay.com.https: R
+>>  2667401140:2667401140(0) win 0
+>>
+>>
+>>
+>>
+>> Derek
+>>
+>>
+>>
+>
+> Please also post your tcpdump command line.
+>
+>
+> --
+>
+>
+>
+> Johan Meiring
+> Amobia Communications
+> Tel: (0861) AMOBIA / (0861) 266242
+> Fax: (0861) AMOFAX / (0861) 266329
+>
+>
+>
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>
+>
+>
+
+
+-- 
+Derek C
+In Ireland
+
+
+
+From jmeiring at amobia.com  Wed Apr 29 12:12:32 2009
+From: jmeiring at amobia.com (Johan Meiring)
+Date: Wed, 29 Apr 2009 14:12:32 +0200
+Subject: UAMALLOWED and HTTPS (to select.worldpay.com)
+In-Reply-To: <42031.149.5.32.200.1241006394.squirrel@www.rivertowermail.com>
+References: <41198.149.5.32.200.1240935851.squirrel@www.rivertowermail.com>       <59077.149.5.32.200.1240962420.squirrel@www.rivertowermail.com>       <1240979754.7893.0.camel@david-laptop>    <52057.149.5.32.200.1240991586.squirrel@www.rivertowermail.com>    <49F819E6.2010201@amobia.com> <42031.149.5.32.200.1241006394.squirrel@www.rivertowermail.com>
+Message-ID: <49F84430.1060300@amobia.com>
+
+Derek C wrote:
+> Hi Johan,
+> 
+> 
+> On Wed, April 29, 2009 10:12 am, Johan Meiring wrote:
+>> Please also post your tcpdump command line.
+> 
+> I just used "tcpdump -i ath0" on my Ubuntu notebook do product that output.
+> 
+
+No filters?
+
+Just "tcpdump -i ath0"
+
+-- 
+
+
+Johan Meiring
+Amobia Communications
+Tel: (0861) AMOBIA / (0861) 266242
+Fax: (0861) AMOFAX / (0861) 266329
+
+
+
+From jmeiring at amobia.com  Wed Apr 29 12:14:56 2009
+From: jmeiring at amobia.com (Johan Meiring)
+Date: Wed, 29 Apr 2009 14:14:56 +0200
+Subject: UAMALLOWED and HTTPS (to select.worldpay.com)
+In-Reply-To: <42057.149.5.32.200.1241006618.squirrel@www.rivertowermail.com>
+References: <41198.149.5.32.200.1240935851.squirrel@www.rivertowermail.com>       <59077.149.5.32.200.1240962420.squirrel@www.rivertowermail.com>       <1240979754.7893.0.camel@david-laptop>    <52057.149.5.32.200.1240991586.squirrel@www.rivertowermail.com>    <49F819E6.2010201@amobia.com> <42057.149.5.32.200.1241006618.squirrel@www.rivertowermail.com>
+Message-ID: <49F844C0.8090907@amobia.com>
+
+Derek C wrote:
+> Hi Johan,
+> 
+> I just tried again but this time used "tcpdump -vv -i ath0" (on my
+> notebook) to see if there would be any output differences (not much I
+> think?) - the error when connecting to https://select.worldpay.com
+> happened again and the tcp dump shows the output below.
+> 
+> Now I'll get tcpdump running in the router and see what it says and I'll
+> email it on here too
+> 
+> thanks,
+> 
+> Derek
+> 
+> The final bit of the results of "tcpdump -vv -i ath0": -
+> 
+
+
+I'm not seeing the original SYN packets.....
+Are you posting the FULL tcpdump output?
+
+-- 
+
+
+Johan Meiring
+Amobia Communications
+Tel: (0861) AMOBIA / (0861) 266242
+Fax: (0861) AMOFAX / (0861) 266329
+
+
+
+From derekchilli at hssl.ie  Wed Apr 29 13:56:35 2009
+From: derekchilli at hssl.ie (Derek C)
+Date: Wed, 29 Apr 2009 14:56:35 +0100 (IST)
+Subject: UAMALLOWED and HTTPS (to select.worldpay.com)
+In-Reply-To: <49F844C0.8090907@amobia.com>
+References: <41198.149.5.32.200.1240935851.squirrel@www.rivertowermail.com>  
+        <59077.149.5.32.200.1240962420.squirrel@www.rivertowermail.com>    
+      <1240979754.7893.0.camel@david-laptop>   
+    <52057.149.5.32.200.1240991586.squirrel@www.rivertowermail.com>   
+    <49F819E6.2010201@amobia.com>
+    <42057.149.5.32.200.1241006618.squirrel@www.rivertowermail.com>
+    <49F844C0.8090907@amobia.com>
+Message-ID: <59577.149.5.32.200.1241013395.squirrel@www.rivertowermail.com>
+
+Hi Johan,
+
+Below is the output of "tcpdump -vvntttt -i ath0 dst 155.136.66.34" (where
+that IP is select.worldpay.com).
+
+I also tried do "telnet 155.136.66.34 443" but, strangely, this only give
+me three lines of tcpdump output (and, because it's only three lines, I'll
+put this dump first).
+
+The "telnet 155.136.66.34 443" tcpdump output: -
+
+reading from file worldpay.dump3.bin, link-type EN10MB (Ethernet)
+2009-04-29 14:49:53.244750 IP (tos 0x10, ttl 64, id 37750, offset 0, flags
+[DF], proto TCP (6), length 60) 192.168.182.8.57861 > 155.136.66.34.443:
+S, cksum 0xf99c (correct), 1669727335:1669727335(0) win 5840 <mss
+1460,sackOK,timestamp 7968529 0,nop,wscale 6>
+2009-04-29 14:49:53.281986 IP (tos 0x10, ttl 64, id 37751, offset 0, flags
+[DF], proto TCP (6), length 40) 192.168.182.8.57861 > 155.136.66.34.443:
+., cksum 0x6767 (correct), 1669727336:1669727336(0) ack 1604530671 win
+5840
+2009-04-29 14:49:53.283181 IP (tos 0x0, ttl 64, id 0, offset 0, flags
+[DF], proto TCP (6), length 40) 192.168.182.8.57861 > 155.136.66.34.443:
+R, cksum 0x0fd6 (correct), 1669727336:1669727336(0) win 0
+
+
+
+The Firefox https://select.worldpay.com tcpdump output: -
+reading from file worldpay.dump3.bin, link-type EN10MB (Ethernet)
+2009-04-29 14:49:53.244750 IP (tos 0x10, ttl 64, id 37750, offset 0, flags
+[DF], proto TCP (6), length 60) 192.168.182.8.57861 > 155.136.66.34.443:
+S, cksum 0xf99c (correct), 1669727335:1669727335(0) win 5840 <mss
+1460,sackOK,timestamp 7968529 0,nop,wscale 6>
+2009-04-29 14:49:53.281986 IP (tos 0x10, ttl 64, id 37751, offset 0, flags
+[DF], proto TCP (6), length 40) 192.168.182.8.57861 > 155.136.66.34.443:
+., cksum 0x6767 (correct), 1669727336:1669727336(0) ack 1604530671 win
+5840
+2009-04-29 14:49:53.283181 IP (tos 0x0, ttl 64, id 0, offset 0, flags
+[DF], proto TCP (6), length 40) 192.168.182.8.57861 > 155.136.66.34.443:
+R, cksum 0x0fd6 (correct), 1669727336:1669727336(0) win 0
+root at dconn-note:/home/derek# tcpdump -vvvnttttr worldpay.dump.bin
+reading from file worldpay.dump.bin, link-type EN10MB (Ethernet)
+2009-04-29 14:42:23.073974 IP (tos 0x0, ttl 64, id 21757, offset 0, flags
+[DF], proto TCP (6), length 60) 192.168.182.8.39625 > 155.136.66.34.443:
+S, cksum 0x170a (correct), 3184364431:3184364431(0) win 5840 <mss
+1460,sackOK,timestamp 7855986 0,nop,wscale 6>
+2009-04-29 14:42:23.110206 IP (tos 0x0, ttl 64, id 21758, offset 0, flags
+[DF], proto TCP (6), length 40) 192.168.182.8.39625 > 155.136.66.34.443:
+., cksum 0x534f (correct), 3184364432:3184364432(0) ack 1583459605 win
+5840
+2009-04-29 14:42:23.110601 IP (tos 0x0, ttl 64, id 0, offset 0, flags
+[DF], proto TCP (6), length 40) 192.168.182.8.39625 > 155.136.66.34.443:
+R, cksum 0x75a2 (correct), 3184364432:3184364432(0) win 0
+2009-04-29 14:42:23.111542 IP (tos 0x0, ttl 64, id 1650, offset 0, flags
+[DF], proto TCP (6), length 60) 192.168.182.8.39626 > 155.136.66.34.443:
+S, cksum 0xc943 (correct), 3188709641:3188709641(0) win 5840 <mss
+1460,sackOK,timestamp 7855995 0,nop,wscale 6>
+2009-04-29 14:42:23.149688 IP (tos 0x0, ttl 64, id 1651, offset 0, flags
+[DF], proto TCP (6), length 40) 192.168.182.8.39626 > 155.136.66.34.443:
+., cksum 0xfe3b (correct), 3188709642:3188709642(0) ack 1583461483 win
+5840
+2009-04-29 14:42:23.149975 IP (tos 0x0, ttl 64, id 1652, offset 0, flags
+[DF], proto TCP (6), length 121) 192.168.182.8.39626 > 155.136.66.34.443:
+P 0:81(81) ack 1 win 5840
+2009-04-29 14:42:23.150579 IP (tos 0x0, ttl 64, id 0, offset 0, flags
+[DF], proto TCP (6), length 40) 192.168.182.8.39626 > 155.136.66.34.443:
+R, cksum 0x27e5 (correct), 3188709642:3188709642(0) win 0
+2009-04-29 14:42:23.151023 IP (tos 0x0, ttl 64, id 26685, offset 0, flags
+[DF], proto TCP (6), length 60) 192.168.182.8.39627 > 155.136.66.34.443:
+S, cksum 0xea26 (correct), 3195189176:3195189176(0) win 5840 <mss
+1460,sackOK,timestamp 7856005 0,nop,wscale 6>
+2009-04-29 14:42:23.190122 IP (tos 0x0, ttl 64, id 26686, offset 0, flags
+[DF], proto TCP (6), length 40) 192.168.182.8.39627 > 155.136.66.34.443:
+., cksum 0x16f7 (correct), 3195189177:3195189177(0) ack 1583463581 win
+5840
+2009-04-29 14:42:23.190277 IP (tos 0x0, ttl 64, id 26687, offset 0, flags
+[DF], proto TCP (6), length 121) 192.168.182.8.39627 > 155.136.66.34.443:
+P 0:81(81) ack 1 win 5840
+2009-04-29 14:42:23.193421 IP (tos 0x0, ttl 64, id 0, offset 0, flags
+[DF], proto TCP (6), length 40) 192.168.182.8.39627 > 155.136.66.34.443:
+R, cksum 0x48d2 (correct), 3195189177:3195189177(0) win 0
+2009-04-29 14:42:23.193856 IP (tos 0x0, ttl 64, id 49910, offset 0, flags
+[DF], proto TCP (6), length 60) 192.168.182.8.39628 > 155.136.66.34.443:
+S, cksum 0x8487 (correct), 3193445734:3193445734(0) win 5840 <mss
+1460,sackOK,timestamp 7856016 0,nop,wscale 6>
+2009-04-29 14:42:23.226143 IP (tos 0x0, ttl 64, id 49911, offset 0, flags
+[DF], proto TCP (6), length 40) 192.168.182.8.39628 > 155.136.66.34.443:
+., cksum 0xa7cc (correct), 3193445735:3193445735(0) ack 1583466035 win
+5840
+2009-04-29 14:42:23.226579 IP (tos 0x0, ttl 64, id 49912, offset 0, flags
+[DF], proto TCP (6), length 121) 192.168.182.8.39628 > 155.136.66.34.443:
+P 0:81(81) ack 1 win 5840
+2009-04-29 14:42:23.226809 IP (tos 0x0, ttl 64, id 0, offset 0, flags
+[DF], proto TCP (6), length 40) 192.168.182.8.39628 > 155.136.66.34.443:
+R, cksum 0xe33d (correct), 3193445735:3193445735(0) win 0
+2009-04-29 14:42:23.227570 IP (tos 0x0, ttl 64, id 62360, offset 0, flags
+[DF], proto TCP (6), length 60) 192.168.182.8.39629 > 155.136.66.34.443:
+S, cksum 0x7619 (correct), 3189976064:3189976064(0) win 5840 <mss
+1460,sackOK,timestamp 7856024 0,nop,wscale 6>
+2009-04-29 14:42:23.259262 IP (tos 0x0, ttl 64, id 62361, offset 0, flags
+[DF], proto TCP (6), length 40) 192.168.182.8.39629 > 155.136.66.34.443:
+., cksum 0x9450 (correct), 3189976065:3189976065(0) ack 1583467337 win
+5840
+2009-04-29 14:42:23.259686 IP (tos 0x0, ttl 64, id 62362, offset 0, flags
+[DF], proto TCP (6), length 121) 192.168.182.8.39629 > 155.136.66.34.443:
+P 0:81(81) ack 1 win 5840
+2009-04-29 14:42:23.261113 IP (tos 0x0, ttl 64, id 0, offset 0, flags
+[DF], proto TCP (6), length 40) 192.168.182.8.39629 > 155.136.66.34.443:
+R, cksum 0xd4d7 (correct), 3189976065:3189976065(0) win 0
+2009-04-29 14:42:23.261764 IP (tos 0x0, ttl 64, id 47542, offset 0, flags
+[DF], proto TCP (6), length 60) 192.168.182.8.39630 > 155.136.66.34.443:
+S, cksum 0x3bad (correct), 3194906135:3194906135(0) win 5840 <mss
+1460,sackOK,timestamp 7856033 0,nop,wscale 6>
+2009-04-29 14:42:23.300490 IP (tos 0x0, ttl 64, id 0, offset 0, flags
+[DF], proto TCP (6), length 40) 192.168.182.8.39629 > 155.136.66.34.443:
+R, cksum 0xd486 (correct), 3189976146:3189976146(0) win 0
+2009-04-29 14:42:23.303093 IP (tos 0x0, ttl 64, id 0, offset 0, flags
+[DF], proto TCP (6), length 40) 192.168.182.8.39629 > 155.136.66.34.443:
+R, cksum 0xd486 (correct), 3189976146:3189976146(0) win 0
+2009-04-29 14:42:23.303529 IP (tos 0x0, ttl 64, id 47543, offset 0, flags
+[DF], proto TCP (6), length 40) 192.168.182.8.39630 > 155.136.66.34.443:
+., cksum 0x5377 (correct), 3194906136:3194906136(0) ack 1583468991 win
+5840
+2009-04-29 14:42:23.303905 IP (tos 0x0, ttl 64, id 47544, offset 0, flags
+[DF], proto TCP (6), length 121) 192.168.182.8.39630 > 155.136.66.34.443:
+P 0:81(81) ack 1 win 5840
+2009-04-29 14:42:23.304377 IP (tos 0x0, ttl 64, id 0, offset 0, flags
+[DF], proto TCP (6), length 40) 192.168.182.8.39630 > 155.136.66.34.443:
+R, cksum 0x9a74 (correct), 3194906136:3194906136(0) win 0
+2009-04-29 14:42:23.305069 IP (tos 0x0, ttl 64, id 62165, offset 0, flags
+[DF], proto TCP (6), length 60) 192.168.182.8.39631 > 155.136.66.34.443:
+S, cksum 0x7443 (correct), 3194629497:3194629497(0) win 5840 <mss
+1460,sackOK,timestamp 7856044 0,nop,wscale 6>
+2009-04-29 14:42:23.335767 IP (tos 0x0, ttl 64, id 62166, offset 0, flags
+[DF], proto TCP (6), length 40) 192.168.182.8.39631 > 155.136.66.34.443:
+., cksum 0x855a (correct), 3194629498:3194629498(0) ack 1583470717 win
+5840
+2009-04-29 14:42:23.336183 IP (tos 0x0, ttl 64, id 62167, offset 0, flags
+[DF], proto TCP (6), length 121) 192.168.182.8.39631 > 155.136.66.34.443:
+P 0:81(81) ack 1 win 5840
+2009-04-29 14:42:23.338969 IP (tos 0x0, ttl 64, id 0, offset 0, flags
+[DF], proto TCP (6), length 40) 192.168.182.8.39631 > 155.136.66.34.443:
+R, cksum 0xd315 (correct), 3194629498:3194629498(0) win 0
+2009-04-29 14:42:23.339781 IP (tos 0x0, ttl 64, id 31015, offset 0, flags
+[DF], proto TCP (6), length 60) 192.168.182.8.39632 > 155.136.66.34.443:
+S, cksum 0xfab4 (correct), 3201672851:3201672851(0) win 5840 <mss
+1460,sackOK,timestamp 7856052 0,nop,wscale 6>
+2009-04-29 14:42:23.373579 IP (tos 0x0, ttl 64, id 31016, offset 0, flags
+[DF], proto TCP (6), length 40) 192.168.182.8.39632 > 155.136.66.34.443:
+., cksum 0x071c (correct), 3201672852:3201672852(0) ack 1583471925 win
+5840
+2009-04-29 14:42:23.374013 IP (tos 0x0, ttl 64, id 31017, offset 0, flags
+[DF], proto TCP (6), length 121) 192.168.182.8.39632 > 155.136.66.34.443:
+P 0:81(81) ack 1 win 5840
+2009-04-29 14:42:23.374197 IP (tos 0x0, ttl 64, id 0, offset 0, flags
+[DF], proto TCP (6), length 40) 192.168.182.8.39632 > 155.136.66.34.443:
+R, cksum 0x598f (correct), 3201672852:3201672852(0) win 0
+2009-04-29 14:42:23.374938 IP (tos 0x0, ttl 64, id 14730, offset 0, flags
+[DF], proto TCP (6), length 60) 192.168.182.8.39633 > 155.136.66.34.443:
+S, cksum 0xbafe (correct), 3202213431:3202213431(0) win 5840 <mss
+1460,sackOK,timestamp 7856061 0,nop,wscale 6>
+2009-04-29 14:42:23.406160 IP (tos 0x0, ttl 64, id 14731, offset 0, flags
+[DF], proto TCP (6), length 40) 192.168.182.8.39633 > 155.136.66.34.443:
+., cksum 0xbecc (correct), 3202213432:3202213432(0) ack 1583474135 win
+5840
+2009-04-29 14:42:23.406568 IP (tos 0x0, ttl 64, id 14732, offset 0, flags
+[DF], proto TCP (6), length 121) 192.168.182.8.39633 > 155.136.66.34.443:
+P 0:81(81) ack 1 win 5840
+2009-04-29 14:42:23.407633 IP (tos 0x0, ttl 64, id 0, offset 0, flags
+[DF], proto TCP (6), length 40) 192.168.182.8.39633 > 155.136.66.34.443:
+R, cksum 0x19e2 (correct), 3202213432:3202213432(0) win 0
+2009-04-29 14:42:23.408198 IP (tos 0x0, ttl 64, id 51868, offset 0, flags
+[DF], proto TCP (6), length 60) 192.168.182.8.39634 > 155.136.66.34.443:
+S, cksum 0x8c8c (correct), 3189970266:3189970266(0) win 5840 <mss
+1460,sackOK,timestamp 7856070 0,nop,wscale 6>
+2009-04-29 14:42:23.446764 IP (tos 0x0, ttl 64, id 0, offset 0, flags
+[DF], proto TCP (6), length 40) 192.168.182.8.39633 > 155.136.66.34.443:
+R, cksum 0x1991 (correct), 3202213513:3202213513(0) win 0
+2009-04-29 14:42:23.449090 IP (tos 0x0, ttl 64, id 0, offset 0, flags
+[DF], proto TCP (6), length 40) 192.168.182.8.39633 > 155.136.66.34.443:
+R, cksum 0x1991 (correct), 3202213513:3202213513(0) win 0
+2009-04-29 14:42:23.449755 IP (tos 0x0, ttl 64, id 51869, offset 0, flags
+[DF], proto TCP (6), length 40) 192.168.182.8.39634 > 155.136.66.34.443:
+., cksum 0x85af (correct), 3189970267:3189970267(0) ack 1583476875 win
+5840
+2009-04-29 14:42:23.450092 IP (tos 0x0, ttl 64, id 51870, offset 0, flags
+[DF], proto TCP (6), length 121) 192.168.182.8.39634 > 155.136.66.34.443:
+P 0:81(81) ack 1 win 5840
+2009-04-29 14:42:23.450385 IP (tos 0x0, ttl 64, id 0, offset 0, flags
+[DF], proto TCP (6), length 40) 192.168.182.8.39634 > 155.136.66.34.443:
+R, cksum 0xeb78 (correct), 3189970267:3189970267(0) win 0
+2009-04-29 14:42:23.495457 IP (tos 0x0, ttl 64, id 53756, offset 0, flags
+[DF], proto TCP (6), length 60) 192.168.182.8.39635 > 155.136.66.34.443:
+S, cksum 0x936d (correct), 3193900583:3193900583(0) win 5840 <mss
+1460,sackOK,timestamp 7856091 0,nop,wscale 6>
+2009-04-29 14:42:23.524586 IP (tos 0x0, ttl 64, id 53757, offset 0, flags
+[DF], proto TCP (6), length 40) 192.168.182.8.39635 > 155.136.66.34.443:
+., cksum 0x7ce3 (correct), 3193900584:3193900584(0) ack 1583480909 win
+5840
+2009-04-29 14:42:23.524979 IP (tos 0x0, ttl 64, id 53758, offset 0, flags
+[DF], proto TCP (6), length 121) 192.168.182.8.39635 > 155.136.66.34.443:
+P 0:81(81) ack 1 win 5840
+2009-04-29 14:42:23.526313 IP (tos 0x0, ttl 64, id 0, offset 0, flags
+[DF], proto TCP (6), length 40) 192.168.182.8.39635 > 155.136.66.34.443:
+R, cksum 0xf26e (correct), 3193900584:3193900584(0) win 0
+2009-04-29 14:42:23.527009 IP (tos 0x0, ttl 64, id 10052, offset 0, flags
+[DF], proto TCP (6), length 60) 192.168.182.8.39636 > 155.136.66.34.443:
+S, cksum 0xa912 (correct), 3190880423:3190880423(0) win 5840 <mss
+1460,sackOK,timestamp 7856099 0,nop,wscale 6>
+2009-04-29 14:42:23.559286 IP (tos 0x0, ttl 64, id 10053, offset 0, flags
+[DF], proto TCP (6), length 40) 192.168.182.8.39636 > 155.136.66.34.443:
+., cksum 0x8eb0 (correct), 3190880424:3190880424(0) ack 1583481901 win
+5840
+2009-04-29 14:42:23.559556 IP (tos 0x0, ttl 64, id 10054, offset 0, flags
+[DF], proto TCP (6), length 121) 192.168.182.8.39636 > 155.136.66.34.443:
+P 0:81(81) ack 1 win 5840
+2009-04-29 14:42:23.559834 IP (tos 0x0, ttl 64, id 0, offset 0, flags
+[DF], proto TCP (6), length 40) 192.168.182.8.39636 > 155.136.66.34.443:
+R, cksum 0x081c (correct), 3190880424:3190880424(0) win 0
+2009-04-29 14:42:23.560268 IP (tos 0x0, ttl 64, id 50655, offset 0, flags
+[DF], proto TCP (6), length 60) 192.168.182.8.39637 > 155.136.66.34.443:
+S, cksum 0x8705 (correct), 3198687796:3198687796(0) win 5840 <mss
+1460,sackOK,timestamp 7856107 0,nop,wscale 6>
+2009-04-29 14:42:23.600806 IP (tos 0x0, ttl 64, id 50656, offset 0, flags
+[DF], proto TCP (6), length 40) 192.168.182.8.39637 > 155.136.66.34.443:
+., cksum 0x694f (correct), 3198687797:3198687797(0) ack 1583482761 win
+5840
+2009-04-29 14:42:23.601056 IP (tos 0x0, ttl 64, id 50657, offset 0, flags
+[DF], proto TCP (6), length 121) 192.168.182.8.39637 > 155.136.66.34.443:
+P 0:81(81) ack 1 win 5840
+2009-04-29 14:42:23.601425 IP (tos 0x0, ttl 64, id 0, offset 0, flags
+[DF], proto TCP (6), length 40) 192.168.182.8.39637 > 155.136.66.34.443:
+R, cksum 0xe616 (correct), 3198687797:3198687797(0) win 0
+2009-04-29 14:42:23.601776 IP (tos 0x0, ttl 64, id 38104, offset 0, flags
+[DF], proto TCP (6), length 60) 192.168.182.8.39638 > 155.136.66.34.443:
+S, cksum 0x5655 (correct), 3193064238:3193064238(0) win 5840 <mss
+1460,sackOK,timestamp 7856118 0,nop,wscale 6>
+2009-04-29 14:42:23.633068 IP (tos 0x0, ttl 64, id 38105, offset 0, flags
+[DF], proto TCP (6), length 40) 192.168.182.8.39638 > 155.136.66.34.443:
+., cksum 0x3370 (correct), 3193064239:3193064239(0) ack 1583484099 win
+5840
+2009-04-29 14:42:23.633463 IP (tos 0x0, ttl 64, id 38106, offset 0, flags
+[DF], proto TCP (6), length 121) 192.168.182.8.39638 > 155.136.66.34.443:
+P 0:81(81) ack 1 win 5840
+2009-04-29 14:42:23.635702 IP (tos 0x0, ttl 64, id 0, offset 0, flags
+[DF], proto TCP (6), length 40) 192.168.182.8.39638 > 155.136.66.34.443:
+R, cksum 0xb571 (correct), 3193064239:3193064239(0) win 0
+2009-04-29 14:42:23.636422 IP (tos 0x0, ttl 64, id 57842, offset 0, flags
+[DF], proto TCP (6), length 60) 192.168.182.8.39639 > 155.136.66.34.443:
+S, cksum 0x6324 (correct), 3197779469:3197779469(0) win 5840 <mss
+1460,sackOK,timestamp 7856127 0,nop,wscale 6>
+2009-04-29 14:42:23.667316 IP (tos 0x0, ttl 64, id 57843, offset 0, flags
+[DF], proto TCP (6), length 40) 192.168.182.8.39639 > 155.136.66.34.443:
+., cksum 0x3b40 (correct), 3197779470:3197779470(0) ack 1583485387 win
+5840
+2009-04-29 14:42:23.667575 IP (tos 0x0, ttl 64, id 57844, offset 0, flags
+[DF], proto TCP (6), length 121) 192.168.182.8.39639 > 155.136.66.34.443:
+P 0:81(81) ack 1 win 5840
+2009-04-29 14:42:23.667987 IP (tos 0x0, ttl 64, id 0, offset 0, flags
+[DF], proto TCP (6), length 40) 192.168.182.8.39639 > 155.136.66.34.443:
+R, cksum 0xc249 (correct), 3197779470:3197779470(0) win 0
+2009-04-29 14:42:23.668483 IP (tos 0x0, ttl 64, id 25120, offset 0, flags
+[DF], proto TCP (6), length 60) 192.168.182.8.39640 > 155.136.66.34.443:
+S, cksum 0x1e99 (correct), 3204612647:3204612647(0) win 5840 <mss
+1460,sackOK,timestamp 7856135 0,nop,wscale 6>
+2009-04-29 14:42:23.699223 IP (tos 0x0, ttl 64, id 25121, offset 0, flags
+[DF], proto TCP (6), length 40) 192.168.182.8.39640 > 155.136.66.34.443:
+., cksum 0xf108 (correct), 3204612648:3204612648(0) ack 1583486847 win
+5840
+2009-04-29 14:42:23.699454 IP (tos 0x0, ttl 64, id 25122, offset 0, flags
+[DF], proto TCP (6), length 121) 192.168.182.8.39640 > 155.136.66.34.443:
+P 0:81(81) ack 1 win 5840
+2009-04-29 14:42:23.699683 IP (tos 0x0, ttl 64, id 0, offset 0, flags
+[DF], proto TCP (6), length 40) 192.168.182.8.39640 > 155.136.66.34.443:
+R, cksum 0x7dc6 (correct), 3204612648:3204612648(0) win 0
+2009-04-29 14:42:23.700172 IP (tos 0x0, ttl 64, id 34593, offset 0, flags
+[DF], proto TCP (6), length 60) 192.168.182.8.39641 > 155.136.66.34.443:
+S, cksum 0x39ba (correct), 3201394478:3201394478(0) win 5840 <mss
+1460,sackOK,timestamp 7856143 0,nop,wscale 6>
+2009-04-29 14:42:23.739014 IP (tos 0x0, ttl 64, id 34594, offset 0, flags
+[DF], proto TCP (6), length 40) 192.168.182.8.39641 > 155.136.66.34.443:
+., cksum 0x07c2 (correct), 3201394479:3201394479(0) ack 1583487983 win
+5840
+2009-04-29 14:42:23.739253 IP (tos 0x0, ttl 64, id 34595, offset 0, flags
+[DF], proto TCP (6), length 121) 192.168.182.8.39641 > 155.136.66.34.443:
+P 0:81(81) ack 1 win 5840
+2009-04-29 14:42:23.739408 IP (tos 0x0, ttl 64, id 0, offset 0, flags
+[DF], proto TCP (6), length 40) 192.168.182.8.39641 > 155.136.66.34.443:
+R, cksum 0x98ef (correct), 3201394479:3201394479(0) win 0
+2009-04-29 14:42:23.739895 IP (tos 0x0, ttl 64, id 59295, offset 0, flags
+[DF], proto TCP (6), length 60) 192.168.182.8.39642 > 155.136.66.34.443:
+S, cksum 0x98d3 (correct), 3210020743:3210020743(0) win 5840 <mss
+1460,sackOK,timestamp 7856152 0,nop,wscale 6>
+2009-04-29 14:42:23.770729 IP (tos 0x0, ttl 64, id 0, offset 0, flags
+[DF], proto TCP (6), length 40) 192.168.182.8.39642 > 155.136.66.34.443:
+R, cksum 0xf811 (correct), 3210020744:3210020744(0) win 0
+2009-04-29 14:42:23.772019 IP (tos 0x0, ttl 64, id 0, offset 0, flags
+[DF], proto TCP (6), length 40) 192.168.182.8.39642 > 155.136.66.34.443:
+R, cksum 0xf811 (correct), 3210020744:3210020744(0) win 0
+2009-04-29 14:42:26.740876 IP (tos 0x0, ttl 64, id 41143, offset 0, flags
+[DF], proto TCP (6), length 60) 192.168.182.8.39643 > 155.136.66.34.443:
+S, cksum 0x57e6 (correct), 3240706992:3240706992(0) win 5840 <mss
+1460,sackOK,timestamp 7856903 0,nop,wscale 6>
+2009-04-29 14:42:26.771637 IP (tos 0x0, ttl 64, id 41144, offset 0, flags
+[DF], proto TCP (6), length 40) 192.168.182.8.39643 > 155.136.66.34.443:
+., cksum 0x2bf6 (correct), 3240706993:3240706993(0) ack 1583618269 win
+5840
+2009-04-29 14:42:26.772182 IP (tos 0x0, ttl 64, id 41145, offset 0, flags
+[DF], proto TCP (6), length 121) 192.168.182.8.39643 > 155.136.66.34.443:
+P 0:81(81) ack 1 win 5840
+2009-04-29 14:42:26.772242 IP (tos 0x0, ttl 64, id 0, offset 0, flags
+[DF], proto TCP (6), length 40) 192.168.182.8.39643 > 155.136.66.34.443:
+R, cksum 0xba13 (correct), 3240706993:3240706993(0) win 0
+2009-04-29 14:42:26.772989 IP (tos 0x0, ttl 64, id 38625, offset 0, flags
+[DF], proto TCP (6), length 60) 192.168.182.8.39644 > 155.136.66.34.443:
+S, cksum 0x24b8 (correct), 3255858670:3255858670(0) win 5840 <mss
+1460,sackOK,timestamp 7856911 0,nop,wscale 6>
+2009-04-29 14:42:26.803655 IP (tos 0x0, ttl 64, id 38626, offset 0, flags
+[DF], proto TCP (6), length 40) 192.168.182.8.39644 > 155.136.66.34.443:
+., cksum 0xf1bd (correct), 3255858671:3255858671(0) ack 1583620079 win
+5840
+2009-04-29 14:42:26.803892 IP (tos 0x0, ttl 64, id 38627, offset 0, flags
+[DF], proto TCP (6), length 121) 192.168.182.8.39644 > 155.136.66.34.443:
+P 0:81(81) ack 1 win 5840
+2009-04-29 14:42:26.806045 IP (tos 0x0, ttl 64, id 0, offset 0, flags
+[DF], proto TCP (6), length 40) 192.168.182.8.39644 > 155.136.66.34.443:
+R, cksum 0x86ed (correct), 3255858671:3255858671(0) win 0
+2009-04-29 14:42:26.806549 IP (tos 0x0, ttl 64, id 24031, offset 0, flags
+[DF], proto TCP (6), length 60) 192.168.182.8.39645 > 155.136.66.34.443:
+S, cksum 0xdc0f (correct), 3252010696:3252010696(0) win 5840 <mss
+1460,sackOK,timestamp 7856919 0,nop,wscale 6>
+2009-04-29 14:42:26.840977 IP (tos 0x0, ttl 64, id 24032, offset 0, flags
+[DF], proto TCP (6), length 40) 192.168.182.8.39645 > 155.136.66.34.443:
+., cksum 0xa4ab (correct), 3252010697:3252010697(0) ack 1583621217 win
+5840
+2009-04-29 14:42:26.841282 IP (tos 0x0, ttl 64, id 24033, offset 0, flags
+[DF], proto TCP (6), length 121) 192.168.182.8.39645 > 155.136.66.34.443:
+P 0:81(81) ack 1 win 5840
+2009-04-29 14:42:26.843606 IP (tos 0x0, ttl 64, id 0, offset 0, flags
+[DF], proto TCP (6), length 40) 192.168.182.8.39645 > 155.136.66.34.443:
+R, cksum 0x3e4d (correct), 3252010697:3252010697(0) win 0
+2009-04-29 14:42:26.844045 IP (tos 0x0, ttl 64, id 64303, offset 0, flags
+[DF], proto TCP (6), length 60) 192.168.182.8.39646 > 155.136.66.34.443:
+S, cksum 0x8292 (correct), 3254917135:3254917135(0) win 5840 <mss
+1460,sackOK,timestamp 7856928 0,nop,wscale 6>
+2009-04-29 14:42:26.873253 IP (tos 0x0, ttl 64, id 64304, offset 0, flags
+[DF], proto TCP (6), length 40) 192.168.182.8.39646 > 155.136.66.34.443:
+., cksum 0x46ab (correct), 3254917136:3254917136(0) ack 1583622381 win
+5840
+2009-04-29 14:42:26.873916 IP (tos 0x0, ttl 64, id 64305, offset 0, flags
+[DF], proto TCP (6), length 121) 192.168.182.8.39646 > 155.136.66.34.443:
+P 0:81(81) ack 1 win 5840
+2009-04-29 14:42:26.875675 IP (tos 0x0, ttl 64, id 0, offset 0, flags
+[DF], proto TCP (6), length 40) 192.168.182.8.39646 > 155.136.66.34.443:
+R, cksum 0xe4d8 (correct), 3254917136:3254917136(0) win 0
+2009-04-29 14:42:26.876329 IP (tos 0x0, ttl 64, id 33681, offset 0, flags
+[DF], proto TCP (6), length 60) 192.168.182.8.39647 > 155.136.66.34.443:
+S, cksum 0x39cf (correct), 3255984312:3255984312(0) win 5840 <mss
+1460,sackOK,timestamp 7856937 0,nop,wscale 6>
+2009-04-29 14:42:26.911793 IP (tos 0x0, ttl 64, id 0, offset 0, flags
+[DF], proto TCP (6), length 40) 192.168.182.8.39646 > 155.136.66.34.443:
+R, cksum 0xe487 (correct), 3254917217:3254917217(0) win 0
+2009-04-29 14:42:26.912459 IP (tos 0x0, ttl 64, id 0, offset 0, flags
+[DF], proto TCP (6), length 40) 192.168.182.8.39646 > 155.136.66.34.443:
+R, cksum 0xe487 (correct), 3254917217:3254917217(0) win 0
+2009-04-29 14:42:26.912650 IP (tos 0x0, ttl 64, id 33682, offset 0, flags
+[DF], proto TCP (6), length 40) 192.168.182.8.39647 > 155.136.66.34.443:
+., cksum 0xf8d4 (correct), 3255984313:3255984313(0) ack 1583623689 win
+5840
+2009-04-29 14:42:26.912968 IP (tos 0x0, ttl 64, id 33683, offset 0, flags
+[DF], proto TCP (6), length 121) 192.168.182.8.39647 > 155.136.66.34.443:
+P 0:81(81) ack 1 win 5840
+2009-04-29 14:42:26.913234 IP (tos 0x0, ttl 64, id 0, offset 0, flags
+[DF], proto TCP (6), length 40) 192.168.182.8.39647 > 155.136.66.34.443:
+R, cksum 0x9c1e (correct), 3255984313:3255984313(0) win 0
+2009-04-29 14:42:26.913971 IP (tos 0x0, ttl 64, id 27545, offset 0, flags
+[DF], proto TCP (6), length 60) 192.168.182.8.39648 > 155.136.66.34.443:
+S, cksum 0x1198 (correct), 3259795627:3259795627(0) win 5840 <mss
+1460,sackOK,timestamp 7856946 0,nop,wscale 6>
+2009-04-29 14:42:26.949845 IP (tos 0x0, ttl 64, id 27546, offset 0, flags
+[DF], proto TCP (6), length 40) 192.168.182.8.39648 > 155.136.66.34.443:
+., cksum 0xc8c4 (correct), 3259795628:3259795628(0) ack 1583625707 win
+5840
+2009-04-29 14:42:26.950296 IP (tos 0x0, ttl 64, id 27547, offset 0, flags
+[DF], proto TCP (6), length 121) 192.168.182.8.39648 > 155.136.66.34.443:
+P 0:81(81) ack 1 win 5840
+2009-04-29 14:42:26.950855 IP (tos 0x0, ttl 64, id 0, offset 0, flags
+[DF], proto TCP (6), length 40) 192.168.182.8.39648 > 155.136.66.34.443:
+R, cksum 0x73f0 (correct), 3259795628:3259795628(0) win 0
+2009-04-29 14:42:26.951396 IP (tos 0x0, ttl 64, id 11405, offset 0, flags
+[DF], proto TCP (6), length 60) 192.168.182.8.39649 > 155.136.66.34.443:
+S, cksum 0xca76 (correct), 3260600246:3260600246(0) win 5840 <mss
+1460,sackOK,timestamp 7856955 0,nop,wscale 6>
+2009-04-29 14:42:26.981823 IP (tos 0x0, ttl 64, id 11406, offset 0, flags
+[DF], proto TCP (6), length 40) 192.168.182.8.39649 > 155.136.66.34.443:
+., cksum 0x7c5e (correct), 3260600247:3260600247(0) ack 1583627065 win
+5840
+2009-04-29 14:42:26.982206 IP (tos 0x0, ttl 64, id 11407, offset 0, flags
+[DF], proto TCP (6), length 121) 192.168.182.8.39649 > 155.136.66.34.443:
+P 0:81(81) ack 1 win 5840
+2009-04-29 14:42:26.982411 IP (tos 0x0, ttl 64, id 0, offset 0, flags
+[DF], proto TCP (6), length 40) 192.168.182.8.39649 > 155.136.66.34.443:
+R, cksum 0x2cd8 (correct), 3260600247:3260600247(0) win 0
+2009-04-29 14:42:26.982991 IP (tos 0x0, ttl 64, id 3433, offset 0, flags
+[DF], proto TCP (6), length 60) 192.168.182.8.39650 > 155.136.66.34.443:
+S, cksum 0xacd2 (correct), 3246386730:3246386730(0) win 5840 <mss
+1460,sackOK,timestamp 7856963 0,nop,wscale 6>
+2009-04-29 14:42:27.015292 IP (tos 0x0, ttl 64, id 3434, offset 0, flags
+[DF], proto TCP (6), length 40) 192.168.182.8.39650 > 155.136.66.34.443:
+., cksum 0x58c8 (correct), 3246386731:3246386731(0) ack 1583628595 win
+5840
+2009-04-29 14:42:27.015745 IP (tos 0x0, ttl 64, id 0, offset 0, flags
+[DF], proto TCP (6), length 40) 192.168.182.8.39650 > 155.136.66.34.443:
+R, cksum 0x0f3c (correct), 3246386731:3246386731(0) win 0
+
+
+
+
+-- 
+Derek C
+In Ireland
+
+
+
+From jmeiring at amobia.com  Wed Apr 29 14:06:10 2009
+From: jmeiring at amobia.com (Johan Meiring)
+Date: Wed, 29 Apr 2009 16:06:10 +0200
+Subject: UAMALLOWED and HTTPS (to select.worldpay.com)
+In-Reply-To: <59577.149.5.32.200.1241013395.squirrel@www.rivertowermail.com>
+References: <41198.149.5.32.200.1240935851.squirrel@www.rivertowermail.com>          <59077.149.5.32.200.1240962420.squirrel@www.rivertowermail.com>          <1240979754.7893.0.camel@david-laptop>       <52057.149.5.32.200.1240991586.squirrel@www.rivertowermail.com>       <49F819E6.2010201@amobia.com>    <42057.149.5.32.200.1241006618.squirrel@www.rivertowermail.com>    <49F844C0.8090907@amobia.com> <59577.149.5.32.200.1241013395.squirrel@www.rivertowermail.com>
+Message-ID: <49F85ED2.6070303@amobia.com>
+
+Derek C wrote:
+> Hi Johan,
+> 
+> Below is the output of "tcpdump -vvntttt -i ath0 dst 155.136.66.34" (where
+> that IP is select.worldpay.com).
+> 
+
+Your filter is of such a nature that you will only see outgoing traffic.
+
+tcpdump -vvntttt -i ath0 host 155.136.66.34
+                          ^^^^
+is better.
+
+Also you are filtering other traffic.
+
+Best to use:
+tcpdump -vvntttt -s 1500 -i ath0
+(-s 1500 makes it capture the whole packet, and you then get more info)
+
+If you feel the output is too long, use something like pastebin.com
+
+
+-- 
+
+
+Johan Meiring
+Amobia Communications
+Tel: (0861) AMOBIA / (0861) 266242
+Fax: (0861) AMOFAX / (0861) 266329
+
+
+
+From derekchilli at hssl.ie  Wed Apr 29 14:13:44 2009
+From: derekchilli at hssl.ie (Derek C)
+Date: Wed, 29 Apr 2009 15:13:44 +0100 (IST)
+Subject: UAMALLOWED and HTTPS (to select.worldpay.com)
+In-Reply-To: <49F85ED2.6070303@amobia.com>
+References: <41198.149.5.32.200.1240935851.squirrel@www.rivertowermail.com>  
+           <59077.149.5.32.200.1240962420.squirrel@www.rivertowermail.com> 
+            <1240979754.7893.0.camel@david-laptop>      
+    <52057.149.5.32.200.1240991586.squirrel@www.rivertowermail.com>      
+    <49F819E6.2010201@amobia.com>   
+    <42057.149.5.32.200.1241006618.squirrel@www.rivertowermail.com>   
+    <49F844C0.8090907@amobia.com>
+    <59577.149.5.32.200.1241013395.squirrel@www.rivertowermail.com>
+    <49F85ED2.6070303@amobia.com>
+Message-ID: <36896.149.5.32.200.1241014424.squirrel@www.rivertowermail.com>
+
+Hi Johan,
+
+> Best to use:
+> tcpdump -vvntttt -s 1500 -i ath0 (-s 1500 makes it capture the whole
+> packet, and you then get more info)
+
+Without using Firefox and only telnet (because my problem seems to be that
+I don't seem to be able to establish a socket connection) here is the
+output from tcpdump -vvntttt -s 1500 -i ath0 when I try to "telnet
+155.136.66.34 443".  I'll get a full dump for Firefox too but I also want
+to see if I have this problem if I uamallow other HTTPs servers out there
+and not just the Worldpay payment gateway.
+
+Results from "tcpdump -vvntttt -s 1500 -i ath0" when doing "telnet
+155.136.66.34 443": -
+
+2009-04-29 15:10:06.083836 IP (tos 0x10, ttl 64, id 40577, offset 0, flags
+[DF], proto TCP (6), length 60) 192.168.182.9.38910 > 155.136.66.34.443:
+S, cksum 0x9078 (correct), 3501107707:3501107707(0) win 5840 <mss
+1460,sackOK,timestamp 8271738 0,nop,wscale 6>
+2009-04-29 15:10:06.114643 IP (tos 0x0, ttl 238, id 2, offset 0, flags
+[none], proto TCP (6), length 44) 155.136.66.34.443 > 192.168.182.9.38910:
+S, cksum 0xc430 (correct), 1660020786:1660020786(0) ack 3501107708 win
+8192 <mss 1460>
+2009-04-29 15:10:06.114717 IP (tos 0x10, ttl 64, id 40578, offset 0, flags
+[DF], proto TCP (6), length 40) 192.168.182.9.38910 > 155.136.66.34.443:
+., cksum 0xe51d (correct), 1:1(0) ack 1 win 5840
+2009-04-29 15:10:06.115111 IP (tos 0x0, ttl 238, id 3, offset 0, flags
+[none], proto TCP (6), length 44) 155.136.66.34.443 > 192.168.182.9.38910:
+S, cksum 0xa42f (correct), 1660020787:1660020787(0) ack 3501107708 win
+16384 <mss 1460>
+2009-04-29 15:10:06.115144 IP (tos 0x0, ttl 64, id 0, offset 0, flags
+[DF], proto TCP (6), length 40) 192.168.182.9.38910 > 155.136.66.34.443:
+R, cksum 0x471f (correct), 3501107708:3501107708(0) win 0
+
+
+
+-- 
+Derek C
+In Ireland
+
+
+
+From derekchilli at hssl.ie  Wed Apr 29 14:38:27 2009
+From: derekchilli at hssl.ie (Derek C)
+Date: Wed, 29 Apr 2009 15:38:27 +0100 (IST)
+Subject: Ah ha - Re: UAMALLOWED and HTTPS (to select.worldpay.com)
+In-Reply-To: <49F85ED2.6070303@amobia.com>
+References: <41198.149.5.32.200.1240935851.squirrel@www.rivertowermail.com>  
+           <59077.149.5.32.200.1240962420.squirrel@www.rivertowermail.com> 
+            <1240979754.7893.0.camel@david-laptop>      
+    <52057.149.5.32.200.1240991586.squirrel@www.rivertowermail.com>      
+    <49F819E6.2010201@amobia.com>   
+    <42057.149.5.32.200.1241006618.squirrel@www.rivertowermail.com>   
+    <49F844C0.8090907@amobia.com>
+    <59577.149.5.32.200.1241013395.squirrel@www.rivertowermail.com>
+    <49F85ED2.6070303@amobia.com>
+Message-ID: <40106.149.5.32.200.1241015907.squirrel@www.rivertowermail.com>
+
+Hi again,
+
+Ok: Now I realised something.  Its Worldpay that's doing the blocking when
+traffic is routing via my Coova Chilli box (BTW Worldpay is a credit/debit
+card payment gateway - a part of the Royal Bank of Scotland group).
+
+I can add another site to the uamallowed directive and access their SSL
+site fine (and "telnet SITE 443" works fine too).
+
+What could it be that Worldpay is identifying with Coova Chilli traffic
+and makes them drop it?
+
+On my Coova Chilli AP I'm doing the usual NAT handling with "iptables -t
+nat -A POSTROUTING -o eth0 -j MASQUERADE" and if I don't use Coova Chilli
+and put an IP on the wifi AP interface then Worldpay does NOT block my
+connection (i.e. it only happens when Coova Chilli is handling the IP DHCP
+allocation).
+
+Maybe its something with the masquerading not fully handling the IP
+mapping - something that makes Worldpay reject the traffic due to, in
+their opinion, IP spoofing?
+
+Derek
+
+On Wed, April 29, 2009 3:06 pm, Johan Meiring wrote:
+> Derek C wrote:
+>
+>> Hi Johan,
+>>
+>>
+>> Below is the output of "tcpdump -vvntttt -i ath0 dst 155.136.66.34"
+>> (where
+>> that IP is select.worldpay.com).
+>>
+>
+> Your filter is of such a nature that you will only see outgoing traffic.
+>
+>
+> tcpdump -vvntttt -i ath0 host 155.136.66.34 ^^^^
+> is better.
+>
+> Also you are filtering other traffic.
+>
+>
+> Best to use:
+> tcpdump -vvntttt -s 1500 -i ath0 (-s 1500 makes it capture the whole
+> packet, and you then get more info)
+>
+> If you feel the output is too long, use something like pastebin.com
+>
+>
+>
+> --
+>
+>
+>
+> Johan Meiring
+> Amobia Communications
+> Tel: (0861) AMOBIA / (0861) 266242
+> Fax: (0861) AMOFAX / (0861) 266329
+>
+>
+>
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>
+>
+>
+
+
+-- 
+Derek C
+In Ireland
+
+
+
+From derekchilli at hssl.ie  Wed Apr 29 16:07:24 2009
+From: derekchilli at hssl.ie (Derek C)
+Date: Wed, 29 Apr 2009 17:07:24 +0100 (IST)
+Subject: Ah ha - Re: UAMALLOWED and HTTPS (to select.worldpay.com)
+In-Reply-To: <40106.149.5.32.200.1241015907.squirrel@www.rivertowermail.com>
+References: <41198.149.5.32.200.1240935851.squirrel@www.rivertowermail.com>  
+             
+    <59077.149.5.32.200.1240962420.squirrel@www.rivertowermail.com>        
+        <1240979754.7893.0.camel@david-laptop>         
+    <52057.149.5.32.200.1240991586.squirrel@www.rivertowermail.com>        
+     <49F819E6.2010201@amobia.com>      
+    <42057.149.5.32.200.1241006618.squirrel@www.rivertowermail.com>      
+    <49F844C0.8090907@amobia.com>   
+    <59577.149.5.32.200.1241013395.squirrel@www.rivertowermail.com>   
+    <49F85ED2.6070303@amobia.com>
+    <40106.149.5.32.200.1241015907.squirrel@www.rivertowermail.com>
+Message-ID: <47769.149.5.32.200.1241021244.squirrel@www.rivertowermail.com>
+
+To confirm:  When I'm not using Coova Chilli in my test box (just an AP
+wlandev, with an IP but otherwise all setup exactly the same) I can
+associate and connect to select.worldpay.com port 443 (with telnet and
+with Firefox).
+
+Here are some baffling points: -
+
+ 1. I CAN connect to other uamallowed computers out there on port 443 (and
+on other ports of course)
+
+ 2. I CAN connect to select.worldpay.com port 443 with an Apple Macbook
+but NOT with a Ubuntu notebook or a Windows XP notebook
+
+
+How weird is this?
+
+
+Derek
+
+
+On Wed, April 29, 2009 3:38 pm, Derek C wrote:
+> Hi again,
+>
+>
+> Ok: Now I realised something.  Its Worldpay that's doing the blocking
+> when traffic is routing via my Coova Chilli box (BTW Worldpay is a
+> credit/debit card payment gateway - a part of the Royal Bank of Scotland
+> group).
+>
+> I can add another site to the uamallowed directive and access their SSL
+> site fine (and "telnet SITE 443" works fine too).
+>
+> What could it be that Worldpay is identifying with Coova Chilli traffic
+> and makes them drop it?
+>
+> On my Coova Chilli AP I'm doing the usual NAT handling with "iptables -t
+> nat -A POSTROUTING -o eth0 -j MASQUERADE" and if I don't use Coova Chilli
+> and put an IP on the wifi AP interface then Worldpay does NOT block my
+> connection (i.e. it only happens when Coova Chilli is handling the IP
+> DHCP
+> allocation).
+>
+> Maybe its something with the masquerading not fully handling the IP
+> mapping - something that makes Worldpay reject the traffic due to, in their
+> opinion, IP spoofing?
+>
+> Derek
+>
+>
+> On Wed, April 29, 2009 3:06 pm, Johan Meiring wrote:
+>
+>> Derek C wrote:
+>>
+>>
+>>> Hi Johan,
+>>>
+>>>
+>>>
+>>> Below is the output of "tcpdump -vvntttt -i ath0 dst 155.136.66.34"
+>>> (where
+>>> that IP is select.worldpay.com).
+>>>
+>>
+>> Your filter is of such a nature that you will only see outgoing
+>> traffic.
+>>
+>>
+>> tcpdump -vvntttt -i ath0 host 155.136.66.34 ^^^^ is better.
+>>
+>> Also you are filtering other traffic.
+>>
+>>
+>>
+>> Best to use:
+>> tcpdump -vvntttt -s 1500 -i ath0 (-s 1500 makes it capture the whole
+>> packet, and you then get more info)
+>>
+>> If you feel the output is too long, use something like pastebin.com
+>>
+>>
+>>
+>>
+>> --
+>>
+>>
+>>
+>>
+>> Johan Meiring
+>> Amobia Communications
+>> Tel: (0861) AMOBIA / (0861) 266242
+>> Fax: (0861) AMOFAX / (0861) 266329
+>>
+>>
+>>
+>>
+>> ---------------------------------------------------------------------
+>> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+>> For additional commands, e-mail: chilli-help at coova.org
+>> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+>> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>>
+>>
+>>
+>>
+>
+>
+> --
+> Derek C
+> In Ireland
+>
+>
+>
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>
+>
+>
+
+
+-- 
+Derek C
+In Ireland
+
+
+
+From jmeiring at amobia.com  Wed Apr 29 16:58:31 2009
+From: jmeiring at amobia.com (Johan Meiring)
+Date: Wed, 29 Apr 2009 18:58:31 +0200
+Subject: UAMALLOWED and HTTPS (to select.worldpay.com)
+In-Reply-To: <36896.149.5.32.200.1241014424.squirrel@www.rivertowermail.com>
+References: <41198.149.5.32.200.1240935851.squirrel@www.rivertowermail.com>             <59077.149.5.32.200.1240962420.squirrel@www.rivertowermail.com>             <1240979754.7893.0.camel@david-laptop>          <52057.149.5.32.200.1240991586.squirrel@www.rivertowermail.com>          <49F819E6.2010201@amobia.com>       <42057.149.5.32.200.1241006618.squirrel@www.rivertowermail.com>       <49F844C0.8090907@amobia.com>    <59577.149.5.32.200.1241013395.squirrel@www.rivertowermail.com>    <49F85ED2.6070303@amobia.com> <36896.149.5.32.200.1241014424.squirrel@www.rivertowermail.com>
+Message-ID: <49F88737.1040201@amobia.com>
+
+Derek C wrote:
+> Hi Johan,
+> 
+>> Best to use:
+>> tcpdump -vvntttt -s 1500 -i ath0 (-s 1500 makes it capture the whole
+>> packet, and you then get more info)
+> 
+> Without using Firefox and only telnet (because my problem seems to be that
+> I don't seem to be able to establish a socket connection) here is the
+> output from tcpdump -vvntttt -s 1500 -i ath0 when I try to "telnet
+> 155.136.66.34 443".  I'll get a full dump for Firefox too but I also want
+> to see if I have this problem if I uamallow other HTTPs servers out there
+> and not just the Worldpay payment gateway.
+> 
+> Results from "tcpdump -vvntttt -s 1500 -i ath0" when doing "telnet
+> 155.136.66.34 443": -
+> 
+> 2009-04-29 15:10:06.083836 IP (tos 0x10, ttl 64, id 40577, offset 0, flags
+> [DF], proto TCP (6), length 60) 192.168.182.9.38910 > 155.136.66.34.443:
+> S, cksum 0x9078 (correct), 3501107707:3501107707(0) win 5840 <mss
+> 1460,sackOK,timestamp 8271738 0,nop,wscale 6>
+> 2009-04-29 15:10:06.114643 IP (tos 0x0, ttl 238, id 2, offset 0, flags
+> [none], proto TCP (6), length 44) 155.136.66.34.443 > 192.168.182.9.38910:
+> S, cksum 0xc430 (correct), 1660020786:1660020786(0) ack 3501107708 win
+> 8192 <mss 1460>
+> 2009-04-29 15:10:06.114717 IP (tos 0x10, ttl 64, id 40578, offset 0, flags
+> [DF], proto TCP (6), length 40) 192.168.182.9.38910 > 155.136.66.34.443:
+> ., cksum 0xe51d (correct), 1:1(0) ack 1 win 5840
+> 2009-04-29 15:10:06.115111 IP (tos 0x0, ttl 238, id 3, offset 0, flags
+> [none], proto TCP (6), length 44) 155.136.66.34.443 > 192.168.182.9.38910:
+> S, cksum 0xa42f (correct), 1660020787:1660020787(0) ack 3501107708 win
+> 16384 <mss 1460>
+> 2009-04-29 15:10:06.115144 IP (tos 0x0, ttl 64, id 0, offset 0, flags
+> [DF], proto TCP (6), length 40) 192.168.182.9.38910 > 155.136.66.34.443:
+> R, cksum 0x471f (correct), 3501107708:3501107708(0) win 0
+> 
+> 
+> 
+
+I must say, I have no idea.
+All looks good.
+
+The only other thing I can think of is MTU issues.
+
+Try issuing the following on your hotspot, and see if it helps.
+
+iptables -I FORWARD -t mangle -p tcp -m tcp --tcp-flags SYN,RST SYN -j 
+TCPMSS --clamp-mss-to-pmtu
+(the above command is one line)
+
+-- 
+
+
+Johan Meiring
+Amobia Communications
+Tel: (0861) AMOBIA / (0861) 266242
+Fax: (0861) AMOFAX / (0861) 266329
+
+
+
+From henk at skyrove.com  Wed Apr 29 17:44:31 2009
+From: henk at skyrove.com (Henk Kleynhans)
+Date: Wed, 29 Apr 2009 19:44:31 +0200
+Subject: UAMALLOWED and HTTPS (to select.worldpay.com)
+In-Reply-To: <49F88737.1040201@amobia.com>
+References: <41198.149.5.32.200.1240935851.squirrel@www.rivertowermail.com>
+	 <1240979754.7893.0.camel@david-laptop>
+	 <52057.149.5.32.200.1240991586.squirrel@www.rivertowermail.com>
+	 <49F819E6.2010201@amobia.com>
+	 <42057.149.5.32.200.1241006618.squirrel@www.rivertowermail.com>
+	 <49F844C0.8090907@amobia.com>
+	 <59577.149.5.32.200.1241013395.squirrel@www.rivertowermail.com>
+	 <49F85ED2.6070303@amobia.com>
+	 <36896.149.5.32.200.1241014424.squirrel@www.rivertowermail.com>
+	 <49F88737.1040201@amobia.com>
+Message-ID: <d42f029a0904291044v5c43d882v73d7f6e718da51e3@mail.gmail.com>
+
+It may well be useful to test if it's an MTU issue.
+
+In my experience, the MTU issue is only apparent when your Coova router is
+doing a PPPoE dial-up, not when getting a DHCP lease.
+
+Furthermore, the MTU issue should be apparent regardless of whether you are
+adding the URL into the uamallowed var.
+
+You can test this fairly easily by changing the MTU on your PC manually,
+before implementing the rule on your router (though, the rule Johan gives
+below is good to keep on your router permanently, in either case.)
+
+To test it, in Ubuntu, issue:
+
+sudo ifconfig eth0 mtu 1352
+
+(where 1352 is your desired MTU in this case)
+
+Good luck!
+
+henk
+
+
+
+
+
+On Wed, Apr 29, 2009 at 6:58 PM, Johan Meiring <jmeiring at amobia.com> wrote:
+
+> Derek C wrote:
+>
+>> Hi Johan,
+>>
+>>  Best to use:
+>>> tcpdump -vvntttt -s 1500 -i ath0 (-s 1500 makes it capture the whole
+>>> packet, and you then get more info)
+>>>
+>>
+>> Without using Firefox and only telnet (because my problem seems to be that
+>> I don't seem to be able to establish a socket connection) here is the
+>> output from tcpdump -vvntttt -s 1500 -i ath0 when I try to "telnet
+>> 155.136.66.34 443".  I'll get a full dump for Firefox too but I also want
+>> to see if I have this problem if I uamallow other HTTPs servers out there
+>> and not just the Worldpay payment gateway.
+>>
+>> Results from "tcpdump -vvntttt -s 1500 -i ath0" when doing "telnet
+>> 155.136.66.34 443": -
+>>
+>> 2009-04-29 15:10:06.083836 IP (tos 0x10, ttl 64, id 40577, offset 0, flags
+>> [DF], proto TCP (6), length 60) 192.168.182.9.38910 > 155.136.66.34.443:
+>> S, cksum 0x9078 (correct), 3501107707:3501107707(0) win 5840 <mss
+>> 1460,sackOK,timestamp 8271738 0,nop,wscale 6>
+>> 2009-04-29 15:10:06.114643 IP (tos 0x0, ttl 238, id 2, offset 0, flags
+>> [none], proto TCP (6), length 44) 155.136.66.34.443 > 192.168.182.9.38910:
+>> S, cksum 0xc430 (correct), 1660020786:1660020786(0) ack 3501107708 win
+>> 8192 <mss 1460>
+>> 2009-04-29 15:10:06.114717 IP (tos 0x10, ttl 64, id 40578, offset 0, flags
+>> [DF], proto TCP (6), length 40) 192.168.182.9.38910 > 155.136.66.34.443:
+>> ., cksum 0xe51d (correct), 1:1(0) ack 1 win 5840
+>> 2009-04-29 15:10:06.115111 IP (tos 0x0, ttl 238, id 3, offset 0, flags
+>> [none], proto TCP (6), length 44) 155.136.66.34.443 > 192.168.182.9.38910:
+>> S, cksum 0xa42f (correct), 1660020787:1660020787(0) ack 3501107708 win
+>> 16384 <mss 1460>
+>> 2009-04-29 15:10:06.115144 IP (tos 0x0, ttl 64, id 0, offset 0, flags
+>> [DF], proto TCP (6), length 40) 192.168.182.9.38910 > 155.136.66.34.443:
+>> R, cksum 0x471f (correct), 3501107708:3501107708(0) win 0
+>>
+>>
+>>
+>>
+> I must say, I have no idea.
+> All looks good.
+>
+> The only other thing I can think of is MTU issues.
+>
+> Try issuing the following on your hotspot, and see if it helps.
+>
+> iptables -I FORWARD -t mangle -p tcp -m tcp --tcp-flags SYN,RST SYN -j
+> TCPMSS --clamp-mss-to-pmtu
+> (the above command is one line)
+>
+> --
+>
+>
+> Johan Meiring
+> Amobia Communications
+> Tel: (0861) AMOBIA / (0861) 266242
+> Fax: (0861) AMOFAX / (0861) 266329
+>
+>
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>
+>
+
+
+-- 
+Henk Kleynhans
+CTO & Founder
+Skyrove (Pty) Ltd
+Technology Top 100 - Most Promising Emerging Enterprise 2006
+Tel: +27 (21) 4488843
+Cell: +27 (84) 3073451
+Fax: +27 (86) 6204077
+henk at skyrove.com
+blog: www.geekrebel.com
+
+------
+
+"A person with ubuntu is open and available to others, affirming of others,
+does not feel threatened that others are able and good, for he or she has a
+proper self-assurance that comes from knowing that he or she belongs in a
+greater whole and is diminished when others are humiliated or diminished,
+when others are tortured or oppressed." - Desmond Tutu
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20090429/561b4c32/attachment.htm>
+
+From derekchilli at hssl.ie  Wed Apr 29 18:22:23 2009
+From: derekchilli at hssl.ie (Derek C)
+Date: Wed, 29 Apr 2009 19:22:23 +0100 (IST)
+Subject: UAMALLOWED and HTTPS (to select.worldpay.com)
+In-Reply-To: <49F88737.1040201@amobia.com>
+References: <41198.149.5.32.200.1240935851.squirrel@www.rivertowermail.com>  
+             
+    <59077.149.5.32.200.1240962420.squirrel@www.rivertowermail.com>        
+        <1240979754.7893.0.camel@david-laptop>         
+    <52057.149.5.32.200.1240991586.squirrel@www.rivertowermail.com>        
+     <49F819E6.2010201@amobia.com>      
+    <42057.149.5.32.200.1241006618.squirrel@www.rivertowermail.com>      
+    <49F844C0.8090907@amobia.com>   
+    <59577.149.5.32.200.1241013395.squirrel@www.rivertowermail.com>   
+    <49F85ED2.6070303@amobia.com>
+    <36896.149.5.32.200.1241014424.squirrel@www.rivertowermail.com>
+    <49F88737.1040201@amobia.com>
+Message-ID: <38459.149.5.32.200.1241029343.squirrel@www.rivertowermail.com>
+
+
+On Wed, April 29, 2009 5:58 pm, Johan Meiring wrote:
+> The only other thing I can think of is MTU issues.
+> Try issuing the following on your hotspot, and see if it helps.
+> iptables -I FORWARD -t mangle -p tcp -m tcp --tcp-flags SYN,RST SYN -j
+> TCPMSS --clamp-mss-to-pmtu
+> (the above command is one line)
+
+Hi Johan,
+
+This didn't work either.
+
+I have a work-around to my problems (which is great) - but it's horrible! 
+On the Coova Chilli AP I'm redirecting traffic with a DNAT iptables rule
+to a server I have in a data centre.  In that server I'm proxying the
+traffic with socat - and its working so I have the payment gateway up &
+running.  But its horrible because if Worldpay change their IP....
+
+Derek
+
+
+-- 
+Derek C
+In Ireland
+
+
+
+From derekchilli at hssl.ie  Wed Apr 29 18:38:22 2009
+From: derekchilli at hssl.ie (Derek C)
+Date: Wed, 29 Apr 2009 19:38:22 +0100 (IST)
+Subject: UAMALLOWED and HTTPS (to select.worldpay.com)
+In-Reply-To: <d42f029a0904291044v5c43d882v73d7f6e718da51e3@mail.gmail.com>
+References: <41198.149.5.32.200.1240935851.squirrel@www.rivertowermail.com> 
+    <1240979754.7893.0.camel@david-laptop> 
+    <52057.149.5.32.200.1240991586.squirrel@www.rivertowermail.com> 
+    <49F819E6.2010201@amobia.com> 
+    <42057.149.5.32.200.1241006618.squirrel@www.rivertowermail.com> 
+    <49F844C0.8090907@amobia.com> 
+    <59577.149.5.32.200.1241013395.squirrel@www.rivertowermail.com> 
+    <49F85ED2.6070303@amobia.com> 
+    <36896.149.5.32.200.1241014424.squirrel@www.rivertowermail.com> 
+    <49F88737.1040201@amobia.com>
+    <d42f029a0904291044v5c43d882v73d7f6e718da51e3@mail.gmail.com>
+Message-ID: <40012.149.5.32.200.1241030302.squirrel@www.rivertowermail.com>
+
+Hi Henk,
+
+> It may well be useful to test if it's an MTU issue.
+>
+I'd love to know what it is.  I found one other problem with Worldpay with
+a Google search - but, surely, there must be other people having this
+problem (maybe the problem doesn't happen with other versions of Coova
+Chilli?  I'm using 1.0.13).
+
+>
+> To test it, in Ubuntu, issue:
+> sudo ifconfig eth0 mtu 1352
+>
+I tried this - Ubuntu took it fine but still the same old "Connection
+Interrupted" Firefox error message.
+
+Derek
+
+
+-- 
+Derek C
+In Ireland
+
+
+
+From derekchilli at hssl.ie  Wed Apr 29 18:43:35 2009
+From: derekchilli at hssl.ie (Derek C)
+Date: Wed, 29 Apr 2009 19:43:35 +0100 (IST)
+Subject: UAMALLOWED and HTTPS (to select.worldpay.com)
+In-Reply-To: <38459.149.5.32.200.1241029343.squirrel@www.rivertowermail.com>
+References: <41198.149.5.32.200.1240935851.squirrel@www.rivertowermail.com>  
+                   
+    <59077.149.5.32.200.1240962420.squirrel@www.rivertowermail.com>        
+           <1240979754.7893.0.camel@david-laptop>            
+    <52057.149.5.32.200.1240991586.squirrel@www.rivertowermail.com>        
+        <49F819E6.2010201@amobia.com>         
+    <42057.149.5.32.200.1241006618.squirrel@www.rivertowermail.com>        
+     <49F844C0.8090907@amobia.com>      
+    <59577.149.5.32.200.1241013395.squirrel@www.rivertowermail.com>      
+    <49F85ED2.6070303@amobia.com>   
+    <36896.149.5.32.200.1241014424.squirrel@www.rivertowermail.com>   
+    <49F88737.1040201@amobia.com>
+    <38459.149.5.32.200.1241029343.squirrel@www.rivertowermail.com>
+Message-ID: <49340.149.5.32.200.1241030615.squirrel@www.rivertowermail.com>
+
+I should have said:  I'm only redirecting traffic that is destined for the
+Worldpay SSL server.
+
+I use this rule: -
+
+iptables -t nat -I PREROUTING -p tcp -d select.worldpay.com --dport 443 -j
+DNAT --to-destination MY-SERVER-IP:443
+
+That server is using socat to listen on 443 and proxy traffic from the
+Worldpay SSL server.  I use this socat command:
+
+socat TCP4-LISTEN:443,bind=MY-SERVER-IP,fork TCP4:select.worldpay.com:443
+
+But I'm pretty sure that if Worldpay change their IP this setup will be
+dead until restarted.
+
+Derek
+
+
+
+
+On Wed, April 29, 2009 7:22 pm, Derek C wrote:
+>
+
+> On Wed, April 29, 2009 5:58 pm, Johan Meiring wrote:
+>
+>> The only other thing I can think of is MTU issues.
+>> Try issuing the following on your hotspot, and see if it helps.
+>> iptables -I FORWARD -t mangle -p tcp -m tcp --tcp-flags SYN,RST SYN -j
+>> TCPMSS --clamp-mss-to-pmtu
+>> (the above command is one line)
+>>
+>
+> Hi Johan,
+>
+>
+> This didn't work either.
+>
+>
+> I have a work-around to my problems (which is great) - but it's horrible!
+>  On the Coova Chilli AP I'm redirecting traffic with a DNAT iptables rule
+>  to a server I have in a data centre.  In that server I'm proxying the
+> traffic with socat - and its working so I have the payment gateway up &
+> running.  But its horrible because if Worldpay change their IP....
+>
+> Derek
+>
+>
+>
+> --
+> Derek C
+> In Ireland
+>
+>
+>
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>
+>
+>
+
+
+-- 
+Derek C
+In Ireland
+
+
+
+From derekchilli at hssl.ie  Wed Apr 29 18:47:42 2009
+From: derekchilli at hssl.ie (Derek C)
+Date: Wed, 29 Apr 2009 19:47:42 +0100 (IST)
+Subject: Does Mac authentication requre HTTP access/redirection ?
+Message-ID: <49618.149.5.32.200.1241030862.squirrel@www.rivertowermail.com>
+
+Hi,
+
+A different question (thankfully) -
+
+With macauth (and now macreauth) are users authorised against the radius
+server on AP association (or rather DHCP lease granting) without any HTTP
+redirection?
+
+In other words:  If a user's MAC is in the radcheck table does this mean
+they'll never see the splash page(s)?  (this is what I'd like and I think
+it's this way when I'm monitoring the freeradius log in debug mode).
+
+thanks,
+
+Derek
+
+
+-- 
+Derek C
+In Ireland
+
+
+
+From liran.tal at gmail.com  Wed Apr 29 19:17:09 2009
+From: liran.tal at gmail.com (Liran Tal)
+Date: Wed, 29 Apr 2009 22:17:09 +0300
+Subject: Does Mac authentication requre HTTP access/redirection ?
+In-Reply-To: <49618.149.5.32.200.1241030862.squirrel@www.rivertowermail.com>
+References: <49618.149.5.32.200.1241030862.squirrel@www.rivertowermail.com>
+Message-ID: <81237f640904291217r59871847nd7f12c06eafecb8c@mail.gmail.com>
+
+Yes, that's how it's behaving because Chilli captures the MAC address when
+assigning IP's
+via DHCP and when macauth is turned on then it runs an access request to the
+radius server.
+
+
+On Wed, Apr 29, 2009 at 9:47 PM, Derek C <derekchilli at hssl.ie> wrote:
+
+> Hi,
+>
+> A different question (thankfully) -
+>
+> With macauth (and now macreauth) are users authorised against the radius
+> server on AP association (or rather DHCP lease granting) without any HTTP
+> redirection?
+>
+> In other words:  If a user's MAC is in the radcheck table does this mean
+> they'll never see the splash page(s)?  (this is what I'd like and I think
+> it's this way when I'm monitoring the freeradius log in debug mode).
+>
+> thanks,
+>
+> Derek
+>
+>
+> --
+> Derek C
+> In Ireland
+>
+>
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>
+>
+
+
+-- 
+-- 
+Sincerely, Liran Tal
+
+Founder and CTO
+Linux and Open Source
+Enginx - http://enginx.com
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20090429/7128d66e/attachment.htm>
+
+From henk at skyrove.com  Wed Apr 29 20:30:12 2009
+From: henk at skyrove.com (Henk Kleynhans)
+Date: Wed, 29 Apr 2009 22:30:12 +0200
+Subject: UAMALLOWED and HTTPS (to select.worldpay.com)
+In-Reply-To: <49340.149.5.32.200.1241030615.squirrel@www.rivertowermail.com>
+References: <41198.149.5.32.200.1240935851.squirrel@www.rivertowermail.com>
+	 <49F819E6.2010201@amobia.com>
+	 <42057.149.5.32.200.1241006618.squirrel@www.rivertowermail.com>
+	 <49F844C0.8090907@amobia.com>
+	 <59577.149.5.32.200.1241013395.squirrel@www.rivertowermail.com>
+	 <49F85ED2.6070303@amobia.com>
+	 <36896.149.5.32.200.1241014424.squirrel@www.rivertowermail.com>
+	 <49F88737.1040201@amobia.com>
+	 <38459.149.5.32.200.1241029343.squirrel@www.rivertowermail.com>
+	 <49340.149.5.32.200.1241030615.squirrel@www.rivertowermail.com>
+Message-ID: <d42f029a0904291330j6b285425odc591cb834c8cf06@mail.gmail.com>
+
+Sometimes a random problem requires a random solution ;-)
+
+You said earlier that you are only having this problem with Ubuntu Hardy
+Heron, but not with Mac OS X.
+
+Have you tested with other computers?  (I imagine for some reason you
+mentioned XP somewhere, but now can't find it in the thread).
+
+Can you definitely rule out that it's not a problem specific to your Ubuntu
+setup?
+
+henk
+
+
+On Wed, Apr 29, 2009 at 8:43 PM, Derek C <derekchilli at hssl.ie> wrote:
+
+> I should have said:  I'm only redirecting traffic that is destined for the
+> Worldpay SSL server.
+>
+> I use this rule: -
+>
+> iptables -t nat -I PREROUTING -p tcp -d select.worldpay.com --dport 443 -j
+> DNAT --to-destination MY-SERVER-IP:443
+>
+> That server is using socat to listen on 443 and proxy traffic from the
+> Worldpay SSL server.  I use this socat command:
+>
+> socat TCP4-LISTEN:443,bind=MY-SERVER-IP,fork TCP4:select.worldpay.com:443
+>
+> But I'm pretty sure that if Worldpay change their IP this setup will be
+> dead until restarted.
+>
+> Derek
+>
+>
+>
+>
+> On Wed, April 29, 2009 7:22 pm, Derek C wrote:
+> >
+>
+> > On Wed, April 29, 2009 5:58 pm, Johan Meiring wrote:
+> >
+> >> The only other thing I can think of is MTU issues.
+> >> Try issuing the following on your hotspot, and see if it helps.
+> >> iptables -I FORWARD -t mangle -p tcp -m tcp --tcp-flags SYN,RST SYN -j
+> >> TCPMSS --clamp-mss-to-pmtu
+> >> (the above command is one line)
+> >>
+> >
+> > Hi Johan,
+> >
+> >
+> > This didn't work either.
+> >
+> >
+> > I have a work-around to my problems (which is great) - but it's horrible!
+> >  On the Coova Chilli AP I'm redirecting traffic with a DNAT iptables rule
+> >  to a server I have in a data centre.  In that server I'm proxying the
+> > traffic with socat - and its working so I have the payment gateway up &
+> > running.  But its horrible because if Worldpay change their IP....
+> >
+> > Derek
+> >
+> >
+> >
+> > --
+> > Derek C
+> > In Ireland
+> >
+> >
+> >
+> > ---------------------------------------------------------------------
+> > To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> > For additional commands, e-mail: chilli-help at coova.org
+> > Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> > Forum: http://coova.org/phpBB3/viewforum.php?f=4
+> >
+> >
+> >
+>
+>
+> --
+> Derek C
+> In Ireland
+>
+>
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>
+>
+
+
+-- 
+Henk Kleynhans
+CTO & Founder
+Skyrove (Pty) Ltd
+Technology Top 100 - Most Promising Emerging Enterprise 2006
+Tel: +27 (21) 4488843
+Cell: +27 (84) 3073451
+Fax: +27 (86) 6204077
+henk at skyrove.com
+blog: www.geekrebel.com
+
+------
+
+"A person with ubuntu is open and available to others, affirming of others,
+does not feel threatened that others are able and good, for he or she has a
+proper self-assurance that comes from knowing that he or she belongs in a
+greater whole and is diminished when others are humiliated or diminished,
+when others are tortured or oppressed." - Desmond Tutu
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20090429/800216f6/attachment.htm>
+
+From liske at ibh.de  Wed Apr 29 20:45:41 2009
+From: liske at ibh.de (Thomas Liske)
+Date: Wed, 29 Apr 2009 22:45:41 +0200
+Subject: UAMALLOWED and HTTPS (to select.worldpay.com)
+In-Reply-To: <40012.149.5.32.200.1241030302.squirrel@www.rivertowermail.com>
+References: <41198.149.5.32.200.1240935851.squirrel@www.rivertowermail.com>     <1240979754.7893.0.camel@david-laptop>     <52057.149.5.32.200.1240991586.squirrel@www.rivertowermail.com>     <49F819E6.2010201@amobia.com>     <42057.149.5.32.200.1241006618.squirrel@www.rivertowermail.com>     <49F844C0.8090907@amobia.com>     <59577.149.5.32.200.1241013395.squirrel@www.rivertowermail.com>     <49F85ED2.6070303@amobia.com>     <36896.149.5.32.200.1241014424.squirrel@www.rivertowermail.com>     <49F88737.1040201@amobia.com>    <d42f029a0904291044v5c43d882v73d7f6e718da51e3@mail.gmail.com> <40012.149.5.32.200.1241030302.squirrel@www.rivertowermail.com>
+Message-ID: <49F8BC75.9020901@ibh.de>
+
+Hi,
+
+Derek C schrieb:
+> Hi Henk,
+> 
+>> It may well be useful to test if it's an MTU issue.
+
+it is not an MTU issue. The Tcp 3-way handshake should always complete 
+and later, if bigger chunks of data are transfered via the connection it 
+will froze. The handshake pakets are quite small, they have to pass.
+
+
+Could you provide a dumpfile (i.e. tcpdump -ni ath0 -s 0 -w dumpfile) of 
+the telnet thing? It would be perfekt to have a second dump from the 
+other side of the chilli-box for in the same moment.
+
+
+Did you have an extraordenary iptables rules running on chilli before? 
+Maybe you could provide a iptables-save output.
+
+
+
+Regards,
+Thomas
+
+
+From derekchilli at hssl.ie  Wed Apr 29 21:07:39 2009
+From: derekchilli at hssl.ie (Derek C)
+Date: Wed, 29 Apr 2009 22:07:39 +0100 (IST)
+Subject: UAMALLOWED and HTTPS (to select.worldpay.com)
+In-Reply-To: <d42f029a0904291330j6b285425odc591cb834c8cf06@mail.gmail.com>
+References: <41198.149.5.32.200.1240935851.squirrel@www.rivertowermail.com> 
+    <49F819E6.2010201@amobia.com> 
+    <42057.149.5.32.200.1241006618.squirrel@www.rivertowermail.com> 
+    <49F844C0.8090907@amobia.com> 
+    <59577.149.5.32.200.1241013395.squirrel@www.rivertowermail.com> 
+    <49F85ED2.6070303@amobia.com> 
+    <36896.149.5.32.200.1241014424.squirrel@www.rivertowermail.com> 
+    <49F88737.1040201@amobia.com> 
+    <38459.149.5.32.200.1241029343.squirrel@www.rivertowermail.com> 
+    <49340.149.5.32.200.1241030615.squirrel@www.rivertowermail.com>
+    <d42f029a0904291330j6b285425odc591cb834c8cf06@mail.gmail.com>
+Message-ID: <40953.149.5.32.200.1241039259.squirrel@www.rivertowermail.com>
+
+Hi Henk,
+
+It's a more general problem - Here I've got a test AP setup and another
+setup about 100KM away (the, to-be, live unit - both units are WRAP boards
+with Ubiquiti XR2 radio cards, Kamikaze 8.09 release and Coova Chilli
+1.0.13).
+
+The remote system is on a completely different broadband supply too.
+
+Here I only have a Ubuntu notebook and [the Wife's] Macbook and the
+Macbook worked fine (that is very weird...).
+
+I setup the live unit in the same way and someone tested there today with
+an XP notebook and... exactly the same problem as my Ubuntu notebook (I
+was hoping it was a Ubuntu only problem so I said nothing until they came
+back to me with the problem)
+
+I suppose this does mean that this problem can (does?) happen with Coova
+Chilli and other SSL websites?  Why even SSL I wonder?  but could it be
+some sort of extra security that, one could easily imagine, Worldpay use
+to curtail everything from DOS attacks to money stealing attempts?
+
+Needless to say I'll do any more testing that anyone can think of :)
+
+Derek
+
+
+On Wed, April 29, 2009 9:30 pm, Henk Kleynhans wrote:
+> Sometimes a random problem requires a random solution ;-)
+>
+>
+> You said earlier that you are only having this problem with Ubuntu Hardy
+> Heron, but not with Mac OS X.
+>
+>
+> Have you tested with other computers?  (I imagine for some reason you
+> mentioned XP somewhere, but now can't find it in the thread).
+>
+> Can you definitely rule out that it's not a problem specific to your
+> Ubuntu
+> setup?
+>
+> henk
+>
+>
+> On Wed, Apr 29, 2009 at 8:43 PM, Derek C <derekchilli at hssl.ie> wrote:
+>
+>
+>> I should have said:  I'm only redirecting traffic that is destined for
+>> the Worldpay SSL server.
+>>
+>>
+>> I use this rule: -
+>>
+>>
+>> iptables -t nat -I PREROUTING -p tcp -d select.worldpay.com --dport 443
+>> -j
+>> DNAT --to-destination MY-SERVER-IP:443
+>>
+>>
+>> That server is using socat to listen on 443 and proxy traffic from the
+>> Worldpay SSL server.  I use this socat command:
+>>
+>>
+>> socat TCP4-LISTEN:443,bind=MY-SERVER-IP,fork
+>> TCP4:select.worldpay.com:443
+>>
+>>
+>> But I'm pretty sure that if Worldpay change their IP this setup will be
+>>  dead until restarted.
+>>
+>> Derek
+>>
+>>
+>>
+>>
+>>
+>> On Wed, April 29, 2009 7:22 pm, Derek C wrote:
+>>
+>>>
+>>
+>>> On Wed, April 29, 2009 5:58 pm, Johan Meiring wrote:
+>>>
+>>>
+>>>> The only other thing I can think of is MTU issues.
+>>>> Try issuing the following on your hotspot, and see if it helps.
+>>>> iptables -I FORWARD -t mangle -p tcp -m tcp --tcp-flags SYN,RST SYN
+>>>> -j
+>>>> TCPMSS --clamp-mss-to-pmtu
+>>>> (the above command is one line)
+>>>>
+>>>>
+>>>
+>>> Hi Johan,
+>>>
+>>>
+>>>
+>>> This didn't work either.
+>>>
+>>>
+>>>
+>>> I have a work-around to my problems (which is great) - but it's
+>>> horrible! On the Coova Chilli AP I'm redirecting traffic with a DNAT
+>>> iptables rule to a server I have in a data centre.  In that server I'm
+>>> proxying the traffic with socat - and its working so I have the
+>>> payment gateway up & running.  But its horrible because if Worldpay
+>>> change their IP....
+>>>
+>>> Derek
+>>>
+>>>
+>>>
+>>>
+>>> --
+>>> Derek C
+>>> In Ireland
+>>>
+>>>
+>>>
+>>>
+>>> ---------------------------------------------------------------------
+>>>  To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+>>> For additional commands, e-mail: chilli-help at coova.org
+>>> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+>>> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>>>
+>>>
+>>>
+>>>
+>>
+>>
+>> --
+>> Derek C
+>> In Ireland
+>>
+>>
+>>
+>> ---------------------------------------------------------------------
+>> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+>> For additional commands, e-mail: chilli-help at coova.org
+>> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+>> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>>
+>>
+>>
+>
+>
+> --
+> Henk Kleynhans
+> CTO & Founder
+> Skyrove (Pty) Ltd
+> Technology Top 100 - Most Promising Emerging Enterprise 2006
+> Tel: +27 (21) 4488843
+> Cell: +27 (84) 3073451
+> Fax: +27 (86) 6204077
+> henk at skyrove.com blog: www.geekrebel.com
+>
+>
+> ------
+>
+>
+> "A person with ubuntu is open and available to others, affirming of
+> others, does not feel threatened that others are able and good, for he or
+> she has a proper self-assurance that comes from knowing that he or she
+> belongs in a greater whole and is diminished when others are humiliated or
+> diminished, when others are tortured or oppressed." - Desmond Tutu
+>
+
+
+-- 
+Derek C
+In Ireland
+
+
+
+From derekchilli at hssl.ie  Wed Apr 29 21:10:42 2009
+From: derekchilli at hssl.ie (Derek C)
+Date: Wed, 29 Apr 2009 22:10:42 +0100 (IST)
+Subject: UAMALLOWED and HTTPS (to select.worldpay.com)
+In-Reply-To: <49F8BC75.9020901@ibh.de>
+References: <41198.149.5.32.200.1240935851.squirrel@www.rivertowermail.com>  
+      <1240979754.7893.0.camel@david-laptop>    
+    <52057.149.5.32.200.1240991586.squirrel@www.rivertowermail.com>    
+    <49F819E6.2010201@amobia.com>    
+    <42057.149.5.32.200.1241006618.squirrel@www.rivertowermail.com>    
+    <49F844C0.8090907@amobia.com>    
+    <59577.149.5.32.200.1241013395.squirrel@www.rivertowermail.com>    
+    <49F85ED2.6070303@amobia.com>    
+    <36896.149.5.32.200.1241014424.squirrel@www.rivertowermail.com>    
+    <49F88737.1040201@amobia.com>   
+    <d42f029a0904291044v5c43d882v73d7f6e718da51e3@mail.gmail.com>
+    <40012.149.5.32.200.1241030302.squirrel@www.rivertowermail.com>
+    <49F8BC75.9020901@ibh.de>
+Message-ID: <40963.149.5.32.200.1241039442.squirrel@www.rivertowermail.com>
+
+Hi Thomas,
+
+I'll do the telnet test again and get a tcpdump on both my notebook and
+the Coova Chilli box.  The output from tcpdump is very small for this test
+(3 lines) between trying to connect and telnet failing.
+
+I'm only using Masquerading on the output [eth0] interface as usual
+(command is "iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE") -
+nothing else.
+
+I'll email back here in a while with the dumps
+
+Derek
+
+
+On Wed, April 29, 2009 9:45 pm, Thomas Liske wrote:
+> Hi,
+>
+>
+> Derek C schrieb:
+>
+>> Hi Henk,
+>>
+>>
+>>> It may well be useful to test if it's an MTU issue.
+>>>
+>
+> it is not an MTU issue. The Tcp 3-way handshake should always complete and
+> later, if bigger chunks of data are transfered via the connection it will
+> froze. The handshake pakets are quite small, they have to pass.
+>
+>
+> Could you provide a dumpfile (i.e. tcpdump -ni ath0 -s 0 -w dumpfile) of
+> the telnet thing? It would be perfekt to have a second dump from the other
+> side of the chilli-box for in the same moment.
+>
+>
+> Did you have an extraordenary iptables rules running on chilli before?
+> Maybe you could provide a iptables-save output.
+>
+>
+>
+>
+> Regards,
+> Thomas
+>
+>
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>
+>
+>
+
+
+-- 
+Derek C
+In Ireland
+
+
+
+From derekchilli at hssl.ie  Wed Apr 29 21:15:59 2009
+From: derekchilli at hssl.ie (Derek C)
+Date: Wed, 29 Apr 2009 22:15:59 +0100 (IST)
+Subject: Transparent Coova Chilli / Radius (WAS Re: Does Mac authentication 
+     requre HTTP access/redirection ?)
+In-Reply-To: <81237f640904291217r59871847nd7f12c06eafecb8c@mail.gmail.com>
+References: <49618.149.5.32.200.1241030862.squirrel@www.rivertowermail.com>
+    <81237f640904291217r59871847nd7f12c06eafecb8c@mail.gmail.com>
+Message-ID: <60970.149.5.32.200.1241039759.squirrel@www.rivertowermail.com>
+
+Hi Liran,
+
+That's great - it is doing that for me but I wasn't 100% sure about that.
+
+Do you think it would be therefore "safe" to consider having a Coova
+Chilli setup, with MAC authentication and a freeradius server, that puts
+the user's MAC into the radcheck table *before* the authentication just
+for accounting purposes (i.e. freeradius is guaranteed to get an ACK back
+to Coova Chilli for any MAC authentication request).
+
+I'm very interested in the backgrounding accounting abilities of a
+"transparent" Coova Chilli setup.
+
+Do you think there splash page would/could ever show up?  (hopefully not...)
+
+Derek
+
+
+
+On Wed, April 29, 2009 8:17 pm, Liran Tal wrote:
+> Yes, that's how it's behaving because Chilli captures the MAC address
+> when assigning IP's via DHCP and when macauth is turned on then it runs an
+> access request to the radius server.
+
+
+-- 
+Derek C
+In Ireland
+
+
+
+From info at easyhorpak.com  Thu Apr 30 01:26:42 2009
+From: info at easyhorpak.com (EasyHorpak.com)
+Date: Thu, 30 Apr 2009 08:26:42 +0700
+Subject: Does Mac authentication requre HTTP access/redirection ?
+References: <49618.149.5.32.200.1241030862.squirrel@www.rivertowermail.com>
+Message-ID: <006101c9c932$b7e66fd0$03b6a8c0@nznf80c39ca487>
+
+no it 's not require login page.
+just you walk pass door by body sensor.
+you dont' need to sign the paper before entry.
+
+chuan
+
+----- Original Message ----- 
+From: "Derek C" <derekchilli at hssl.ie>
+To: <chilli at coova.org>
+Sent: Thursday, April 30, 2009 1:47 AM
+Subject: Does Mac authentication requre HTTP access/redirection ?
+
+
+> Hi,
+> 
+> A different question (thankfully) -
+> 
+> With macauth (and now macreauth) are users authorised against the radius
+> server on AP association (or rather DHCP lease granting) without any HTTP
+> redirection?
+> 
+> In other words:  If a user's MAC is in the radcheck table does this mean
+> they'll never see the splash page(s)?  (this is what I'd like and I think
+> it's this way when I'm monitoring the freeradius log in debug mode).
+> 
+> thanks,
+> 
+> Derek
+> 
+> 
+> -- 
+> Derek C
+> In Ireland
+> 
+> 
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+> 
+>
+
+
+From carle at vianet.ca  Thu Apr 30 14:38:07 2009
+From: carle at vianet.ca (Carle Brisson)
+Date: Thu, 30 Apr 2009 10:38:07 -0400 (EDT)
+Subject: Problem with 'uamanyip'.
+Message-ID: <Pine.LNX.4.64.0904301034240.19116@localhost>
+
+
+version 1.0.11
+
+I've been reading through the forum and haven't been able to get enough 
+info on the 'uamanyip' option. I've read posts where some claim that they 
+are using this feature without any problems.
+
+I understand that using this 'uamanyip' option should allow any wireless 
+client to use their existing static IP settings when connecting to 
+coova-chilli. Unless there is something else that I missed, this does not 
+work for me.
+
+I would appreciate any help from someone currently using this feature.
+
+--
+Carle Brisson
+carle at vianet.ca
+
+
+From carle at vianet.ca  Thu Apr 30 18:08:18 2009
+From: carle at vianet.ca (Carle Brisson)
+Date: Thu, 30 Apr 2009 14:08:18 -0400 (EDT)
+Subject: Problem with 'uamanyip'.
+In-Reply-To: <Pine.LNX.4.64.0904301034240.19116@localhost>
+References: <Pine.LNX.4.64.0904301034240.19116@localhost>
+Message-ID: <Pine.LNX.4.64.0904301405480.19116@localhost>
+
+
+I solved my problem. I didn't realize I needed to specify the Static IP 
+Pool Network settings as well.
+
+I used the following settings which appear to work for me:
+
+Static IP Pool Network: 0.0.0.0
+Static IP Pool Netmask: 255.0.0.0
+Allow Any IP: Enabled
+
+--
+Carle Brisson
+carle at vianet.ca
+
+On Thu, 30 Apr 2009, Carle Brisson wrote:
+
+>
+> version 1.0.11
+>
+> I've been reading through the forum and haven't been able to get enough info 
+> on the 'uamanyip' option. I've read posts where some claim that they are 
+> using this feature without any problems.
+>
+> I understand that using this 'uamanyip' option should allow any wireless 
+> client to use their existing static IP settings when connecting to 
+> coova-chilli. Unless there is something else that I missed, this does not 
+> work for me.
+>
+> I would appreciate any help from someone currently using this feature.
+>
+> --
+> Carle Brisson
+> carle at vianet.ca
+>
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>
+>
+>
+
+

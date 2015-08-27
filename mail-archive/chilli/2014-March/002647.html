@@ -1,0 +1,159 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] Best way to enforce MTU 1480?
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Best%20way%20to%20enforce%20MTU%201480%3F&In-Reply-To=%3CCADSh-SMnfCKckQpP5cF_KGM74nF%2Bg4bk%3DHMc2xkS7n__CJdqvg%40mail.gmail.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="002644.html">
+   <LINK REL="Next"  HREF="002646.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] Best way to enforce MTU 1480?</H1>
+    <B>Ben West</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Best%20way%20to%20enforce%20MTU%201480%3F&In-Reply-To=%3CCADSh-SMnfCKckQpP5cF_KGM74nF%2Bg4bk%3DHMc2xkS7n__CJdqvg%40mail.gmail.com%3E"
+       TITLE="[Chilli] Best way to enforce MTU 1480?">ben at gowasabi.net
+       </A><BR>
+    <I>Fri Mar 28 15:24:30 UTC 2014</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="002644.html">[Chilli] Best way to enforce MTU 1480?
+</A></li>
+        <LI>Next message: <A HREF="002646.html">[Chilli] Best way to enforce MTU 1480?
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2647">[ date ]</a>
+              <a href="thread.html#2647">[ thread ]</a>
+              <a href="subject.html#2647">[ subject ]</a>
+              <a href="author.html#2647">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Thanks for the feedback Derek.  My original experience was that possible
+MTU issues w/ coovachilli seemed to occur on devices that were *below* a
+node on an OLSRd-managed mesh (e.g. a sub-mesh of OLSR nodes connected to
+the LAN port of a node in a larger OLSR mesh).  I hope to repeat that
+configuration soon to see if the command line param for chilli addresses it.
+
+My value of MTU 1480 comes from the docs provided with OLSRd (section 5.4)
+<A HREF="http://olsr.org/git/?p=olsrd.git;a=blob_plain;f=README-Olsr-Extensions;hb=release-0.6.5">http://olsr.org/git/?p=olsrd.git;a=blob_plain;f=README-Olsr-Extensions;hb=release-0.6.5</A>
+
+I was assuming the need for maximum MTU 1500, as I must have packets
+originating on a mesh forwarded through ethernet, e.g. for Internet
+gateway. Thus, 1480 from (ethernet max - OLSRd tunnel overhead).
+
+Indeed, the OLSRd overhead might compound with multiple layers of mesh, so
+I will also be testing with MTU 1440 too, if needed.  My hair falls out on
+its own, if you were curious. ;)
+
+
+
+On Thu, Mar 27, 2014 at 4:38 PM, Derek Conniffe &lt;<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">derek at hssl.ie</A>&gt; wrote:
+
+&gt;<i>  Hi Ben,
+</I>&gt;<i>
+</I>&gt;<i> I use a MESH as well (with UBNT M radios &amp; ATH9K with an AdHoc VAP) but
+</I>&gt;<i> what I did was set the MTU of the MESH I/F to something like 1528 so that
+</I>&gt;<i> standard (1500) packets get though OK.  Last year I was trying to clamp MTU
+</I>&gt;<i> on a couple of I/Fs (for a different reason - it was on an EC2 instance
+</I>&gt;<i> with VPN &amp; Squid and not MESH related) and it nearly broke my spirit and
+</I>&gt;<i> cost me a couple of days in hair-pulling!
+</I>&gt;<i>
+</I>&gt;<i> Derek
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> On 27/03/2014 20:52, David Bird wrote:
+</I>&gt;<i>
+</I>&gt;<i> The MTU option will send the MTU value in DHCP, but doesn't mean it's
+</I>&gt;<i> always respected. You might refer to
+</I>&gt;<i> <A HREF="http://lartc.org/howto/lartc.cookbook.mtu-mss.html">http://lartc.org/howto/lartc.cookbook.mtu-mss.html</A>
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> On Thu, Mar 27, 2014 at 12:30 PM, Ben West &lt;<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">ben at gowasabi.net</A>&gt; wrote:
+</I>&gt;<i>
+</I>&gt;&gt;<i>  I'm running coovachilli v1.3.0 under OpenWRT AA on Ubiquiti Nanostation
+</I>&gt;&gt;<i> gear, with only 32Mbytes of RAM.  Since these are nodes in a mesh managed
+</I>&gt;&gt;<i> by OLSR, I need to enforce MTU=1480 for all client sessions authorized by
+</I>&gt;&gt;<i> chilli.
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i>  From the online Changlog, it appears I can do this by adding a parameter
+</I>&gt;&gt;<i> to the start-up command in coovachilli's init script:
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> /usr/sbin/chilli --mtu 1480
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i>  However, the tap interface which I believe is what chilli sets up to
+</I>&gt;&gt;<i> manage bandwidth throttling on client sessions still reports MTU 1500:
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> tun0      Link encap:UNSPEC  HWaddr
+</I>&gt;&gt;<i> 00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00
+</I>&gt;&gt;<i>           inet addr:101.232.44.1  P-t-P:101.232.44.1  Mask:255.255.255.0
+</I>&gt;&gt;<i>           UP POINTOPOINT RUNNING  MTU:1500  Metric:1
+</I>&gt;&gt;<i>           RX packets:0 errors:0 dropped:0 overruns:0 frame:0
+</I>&gt;&gt;<i>           TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
+</I>&gt;&gt;<i>           collisions:0 txqueuelen:100
+</I>&gt;&gt;<i>           RX bytes:0 (0.0 B)  TX bytes:0 (0.0 B)
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i>  ... where 101.232.44.1 is the NAP IP of the device where I quoted this
+</I>&gt;&gt;<i> from.
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i>  Is there a way I can ensure proper MTU settings on chilli client
+</I>&gt;&gt;<i> sessions?
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> --
+</I>&gt;&gt;<i> Ben West
+</I>&gt;&gt;<i> <A HREF="http://gowasabi.net">http://gowasabi.net</A>
+</I>&gt;&gt;<i> <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">ben at gowasabi.net</A>
+</I>&gt;&gt;<i> 314-246-9434
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> _______________________________________________
+</I>&gt;&gt;<i> Chilli mailing list
+</I>&gt;&gt;<i> <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">Chilli at coova.org</A>
+</I>&gt;&gt;<i> <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">http://lists.coova.org/cgi-bin/mailman/listinfo/chilli</A>
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> _______________________________________________
+</I>&gt;<i> Chilli mailing <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">listChilli at coova.orghttp</A>://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>
+</I>
+
+-- 
+Ben West
+<A HREF="http://gowasabi.net">http://gowasabi.net</A>
+<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">ben at gowasabi.net</A>
+314-246-9434
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: &lt;<A HREF="http://lists.coova.org/pipermail/chilli/attachments/20140328/705eebe7/attachment.html">http://lists.coova.org/pipermail/chilli/attachments/20140328/705eebe7/attachment.html</A>&gt;
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="002644.html">[Chilli] Best way to enforce MTU 1480?
+</A></li>
+	<LI>Next message: <A HREF="002646.html">[Chilli] Best way to enforce MTU 1480?
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2647">[ date ]</a>
+              <a href="thread.html#2647">[ thread ]</a>
+              <a href="subject.html#2647">[ subject ]</a>
+              <a href="author.html#2647">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

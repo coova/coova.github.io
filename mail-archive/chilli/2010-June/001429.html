@@ -1,0 +1,149 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] CoovaChilli and RadSec
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20CoovaChilli%20and%20RadSec&In-Reply-To=%3CAANLkTimbVIKdOKBs7XK7_AqccGtp8PFI2nEHF8CLxGpU%40mail.gmail.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001425.html">
+   <LINK REL="Next"  HREF="001430.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] CoovaChilli and RadSec</H1>
+    <B>Stelio Gouveia</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20CoovaChilli%20and%20RadSec&In-Reply-To=%3CAANLkTimbVIKdOKBs7XK7_AqccGtp8PFI2nEHF8CLxGpU%40mail.gmail.com%3E"
+       TITLE="[Chilli] CoovaChilli and RadSec">stelio at skyrove.com
+       </A><BR>
+    <I>Wed Jun 23 08:32:02 UTC 2010</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001425.html">[Chilli] CoovaChilli and RadSec
+</A></li>
+        <LI>Next message: <A HREF="001430.html">[Chilli] CoovaChilli and RadSec
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1429">[ date ]</a>
+              <a href="thread.html#1429">[ thread ]</a>
+              <a href="subject.html#1429">[ subject ]</a>
+              <a href="author.html#1429">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>The problem it seems is when Coova-Chilli sends a SSLv2 CLIENT-HELLO
+message. RadSecProxy doesn't know what to do with it and fails to establish
+a SSL connection as it's listening for TLSv1 CLIENT-HELLO messages.
+
+Now if we replace the SSLv23_client_method with the TLSv1_client_method,
+then we can get Coova-Chilli and RadSecProxy sending encrypted packets.
+
+Are there any objections to doing this? Other than the fact that SSLv23
+method is no longer supported
+
+See the patch bellow:
+
+--- ssl.c.orginal 2010-06-23 09:53:51.406061947 +0200
++++ ssl.c 2010-06-23 09:54:05.966062034 +0200
+@@ -182,7 +182,7 @@
+   if (server) {
+     env-&gt;meth = SSLv23_server_method();
+   } else {
+-    env-&gt;meth = SSLv23_client_method();
++    env-&gt;meth = TLSv1_client_method();
+   }
+   env-&gt;ctx = SSL_CTX_new(env-&gt;meth);
+   SSL_CTX_set_options(env-&gt;ctx, SSL_OP_ALL);
+
+- Stelio
+
+On Fri, Jun 18, 2010 at 10:28 AM, Stelio Gouveia &lt;<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">stelio at skyrove.com</A>&gt; wrote:
+
+&gt;<i> Hi Folks
+</I>&gt;<i>
+</I>&gt;<i> I'm trying to get CoovaChilli (v1.2.3) to encrypt it's packets using RadSec
+</I>&gt;<i> and forward them on to RadSecProxy 1.4
+</I>&gt;<i>
+</I>&gt;<i> On my RadSecProxy side, i get the following:
+</I>&gt;<i> Jun 17 15:30:54 2010: tlsservernew: incoming TLS connection from 10.0.0.44
+</I>&gt;<i> Jun 17 15:30:54 2010: tlsservernew: SSL: error:1408F10B:SSL
+</I>&gt;<i> routines:SSL3_GET_RECORD:wrong version number
+</I>&gt;<i> Jun 17 15:30:54 2010: tlsservernew: SSL_accept failed
+</I>&gt;<i>
+</I>&gt;<i> Some posts i've read suggest this could be down to using the wrong
+</I>&gt;<i> TLS_PROTOCOL version on either the client or server. Which version does
+</I>&gt;<i> CoovaChilli use?
+</I>&gt;<i>
+</I>&gt;<i> Has anyone else tried to marry these two pieces of software?
+</I>&gt;<i>
+</I>&gt;<i> - Stelio
+</I>&gt;<i>
+</I>&gt;<i> --
+</I>&gt;<i> Skyrove Software Engineer,
+</I>&gt;<i> Skyrove (Pty) Ltd
+</I>&gt;<i> Technology Top 100 Award Winner (2006)
+</I>&gt;<i> Mobile: +27 82 34 09 120
+</I>&gt;<i> Tel: +27 861 ROVERS (0861 768 377)
+</I>&gt;<i> Fax: +27 86 6204077
+</I>&gt;<i> Email &amp; Gtalk: <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">stelio at skyrove.com</A>
+</I>&gt;<i> Web:   www.skyrove.com
+</I>&gt;<i>
+</I>&gt;<i> This message contains confidential information. If you are not the intended
+</I>&gt;<i> recipient you are notified that disclosing, copying, distributing or taking
+</I>&gt;<i> any action in reliance on the contents of this information is strictly
+</I>&gt;<i> prohibited. E-mail transmission cannot be guaranteed to be secure or
+</I>&gt;<i> error-free as information could be intercepted, corrupted, lost, destroyed,
+</I>&gt;<i> arrive late or incomplete, or contain viruses. The sender therefore does not
+</I>&gt;<i> accept liability for any errors or omissions in the contents of this
+</I>&gt;<i> message.
+</I>&gt;<i>
+</I>
+
+
+-- 
+Regards
+Stelio Gouveia
+--
+Skyrove Software Engineer,
+Skyrove (Pty) Ltd
+Technology Top 100 Award Winner (2006)
+Mobile: +27 82 34 09 120
+Tel: +27 861 ROVERS (0861 768 377)
+Fax: +27 86 6204077
+Email &amp; Gtalk: <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">stelio at skyrove.com</A>
+Web:   www.skyrove.com
+
+This message contains confidential information. If you are not the intended
+recipient you are notified that disclosing, copying, distributing or taking
+any action in reliance on the contents of this information is strictly
+prohibited. E-mail transmission cannot be guaranteed to be secure or
+error-free as information could be intercepted, corrupted, lost, destroyed,
+arrive late or incomplete, or contain viruses. The sender therefore does not
+accept liability for any errors or omissions in the contents of this
+message.
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: &lt;<A HREF="http://lists.coova.org/pipermail/chilli/attachments/20100623/95ed5c52/attachment.htm">http://lists.coova.org/pipermail/chilli/attachments/20100623/95ed5c52/attachment.htm</A>&gt;
+</PRE>
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001425.html">[Chilli] CoovaChilli and RadSec
+</A></li>
+	<LI>Next message: <A HREF="001430.html">[Chilli] CoovaChilli and RadSec
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1429">[ date ]</a>
+              <a href="thread.html#1429">[ thread ]</a>
+              <a href="subject.html#1429">[ subject ]</a>
+              <a href="author.html#1429">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

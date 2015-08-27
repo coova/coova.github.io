@@ -1,0 +1,3424 @@
+From radius.sir at gmail.com  Thu May  1 16:08:23 2014
+From: radius.sir at gmail.com (Russell Mike)
+Date: Thu, 1 May 2014 16:08:23 +0000
+Subject: [Chilli] CoovaChilli NAS Static Port Number For Logoff
+Message-ID: <CADao4CpLx4_=+eO1U7K8741-iCownp9XB+soFEnX8_iaBnX01A@mail.gmail.com>
+
+Dear List
+
+i need help, i have build central CoovaChilli captive portal in ISP NOC
+data centre. This serves about 260 hotspots across the city from central
+location (hosted environment). It has some cool features such as, Log off,
+Top-Up. As soon as users logs in successfully, a small window pop up which
+has logoff & Top-up switches. When user clicks on logoff, in the
+background, i execute following command on FreeRADIUS to logoff user. By
+doing so, FreeRADIUS send disconnection message to NAS (CoovaChilli) on the
+port 53467 in this example.
+
+
+*echo "User-Name='{username}'" | radclient -x {localhost}:{53467}
+disconnect radiusSecret*
+
+
+This works fine except that the port number changes from time to time on
+NAS restart and i have to manually edit the port number for the logout
+mechanism to work every time.
+
+Could you please tell, if its possible to set a static port number or if
+that is not possible, a better way to execute logout command on FreeRADIUS
+to logout user.
+
+*Problem Definition:* When NAS (CoovaChilli) restarts this port got change
+every time.
+
+I would highly appreciate & grateful for any kind of help.
+
+Thanks /    --RM
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20140501/5fe55967/attachment.html>
+
+From dbird at google.com  Fri May  2 14:59:53 2014
+From: dbird at google.com (David Bird)
+Date: Fri, 2 May 2014 07:59:53 -0700
+Subject: [Chilli] Dev Help
+In-Reply-To: <048201cf63e9$a5ad46c0$f107d440$@cabocom.cv>
+References: <048201cf63e9$a5ad46c0$f107d440$@cabocom.cv>
+Message-ID: <CADo9JyUq811uvb-7WFaQEoJHqdDzwWNGUQ1YtJNS7Te-VeO19A@mail.gmail.com>
+
+I use emacs, but your development environment is a personal choice.
+
+Just a reminder, that the code is now being worked on here:
+https://github.com/coova/coova-chilli
+
+David
+
+
+On Tue, Apr 29, 2014 at 1:28 PM, Luis Ferreira <lferreira at cabocom.cv> wrote:
+
+> Hi everyone,
+>
+>
+>
+> I would like your opinion on how to develop on CoovaChilli. Was it
+> developed using vi or nano, or was developed using some IDE like eclipse,
+> Kdevelop, etc?
+>
+> What are the advises that I can get from you gurus that program on the
+> source.
+>
+>
+>
+>
+>
+> Regards,
+>
+> Luis
+>
+>
+>
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20140502/d6635a5e/attachment.html>
+
+From dbird at google.com  Fri May  2 15:01:14 2014
+From: dbird at google.com (David Bird)
+Date: Fri, 2 May 2014 08:01:14 -0700
+Subject: [Chilli] OpenWRT and redirssl
+In-Reply-To: <2099711209.4695.1398784819222.JavaMail.zimbra@yetopen.it>
+References: <702870183.4688.1398784617487.JavaMail.zimbra@yetopen.it>
+ <2099711209.4695.1398784819222.JavaMail.zimbra@yetopen.it>
+Message-ID: <CADo9JyWaBxeBMVxDA419+iwJk3iP5-pfyrqxZcQ9obS70pCHrw@mail.gmail.com>
+
+You can modify (in OpenWrt, at least) the package so that the necessary
+compile time options are enabled. And, of course, add openssl package as
+well.
+
+
+On Tue, Apr 29, 2014 at 8:20 AM, Lorenzo Milesi <maxxer at ufficyo.com> wrote:
+
+> Hi.
+> Anyone is using redirssl on embedded devices?
+> Apparently neither OpenWRT and DDWRT do compile their Coova packages with
+> openssl, thus redirssl not working.
+>
+> Any package available around?
+> thanks
+> --
+> Lorenzo Milesi - lorenzo.milesi at yetopen.it
+>
+> YetOpen S.r.l. - http://www.yetopen.it/
+>
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20140502/67253660/attachment.html>
+
+From radius.sir at gmail.com  Fri May  2 16:29:34 2014
+From: radius.sir at gmail.com (Russell Mike)
+Date: Fri, 2 May 2014 16:29:34 +0000
+Subject: [Chilli] CoovaChilli NAS Static Port Number For Logoff
+In-Reply-To: <CADao4CpLx4_=+eO1U7K8741-iCownp9XB+soFEnX8_iaBnX01A@mail.gmail.com>
+References: <CADao4CpLx4_=+eO1U7K8741-iCownp9XB+soFEnX8_iaBnX01A@mail.gmail.com>
+Message-ID: <CADao4Cri553RpyVBERBwFV5MxCoTuWkJNHmOKGnpMg4V3itF5w@mail.gmail.com>
+
+Can anyone help me please?
+
+Thanks
+
+
+On Thu, May 1, 2014 at 4:08 PM, Russell Mike <radius.sir at gmail.com> wrote:
+
+> Dear List
+>
+> i need help, i have build central CoovaChilli captive portal in ISP NOC
+> data centre. This serves about 260 hotspots across the city from central
+> location (hosted environment). It has some cool features such as, Log off,
+> Top-Up. As soon as users logs in successfully, a small window pop up which
+> has logoff & Top-up switches. When user clicks on logoff, in the
+> background, i execute following command on FreeRADIUS to logoff user. By
+> doing so, FreeRADIUS send disconnection message to NAS (CoovaChilli) on the
+> port 53467 in this example.
+>
+>
+> *echo "User-Name='{username}'" | radclient -x {localhost}:{53467}
+> disconnect radiusSecret*
+>
+>
+> This works fine except that the port number changes from time to time on
+> NAS restart and i have to manually edit the port number for the logout
+> mechanism to work every time.
+>
+> Could you please tell, if its possible to set a static port number or if
+> that is not possible, a better way to execute logout command on FreeRADIUS
+> to logout user.
+>
+> *Problem Definition:* When NAS (CoovaChilli) restarts this port got
+> change every time.
+>
+> I would highly appreciate & grateful for any kind of help.
+>
+> Thanks /    --RM
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20140502/0b14b511/attachment.html>
+
+From xoneca at gmail.com  Fri May  2 21:21:24 2014
+From: xoneca at gmail.com (Xabier Oneca -- xOneca)
+Date: Fri, 2 May 2014 23:21:24 +0200
+Subject: [Chilli] Dev Help
+In-Reply-To: <CADo9JyUq811uvb-7WFaQEoJHqdDzwWNGUQ1YtJNS7Te-VeO19A@mail.gmail.com>
+References: <048201cf63e9$a5ad46c0$f107d440$@cabocom.cv>
+ <CADo9JyUq811uvb-7WFaQEoJHqdDzwWNGUQ1YtJNS7Te-VeO19A@mail.gmail.com>
+Message-ID: <CACkgH72oBB8LkEH6dYjNkxWP0TwsveTC-dbKwnRtgeTbC9Y_4A@mail.gmail.com>
+
+Hello Luis,
+
+I usually code in Kwrite/Kate. But, as David said, it's more a personal
+taste. Take the editor/IDE you are confortable with; that's enough.
+
+For testing, I use one virtual machine with Chilli, and a couple other
+connected only to the first as clients (with Firefox as a browser and X11
+redirected by SSH).
+
+Cheers,
+
+Xabier Oneca_,,_
+
+El 02/05/2014 17:07, "David Bird" <dbird at google.com> escribi?:
+>
+> I use emacs, but your development environment is a personal choice.
+>
+> Just a reminder, that the code is now being worked on here:
+https://github.com/coova/coova-chilli
+>
+> David
+>
+>
+> On Tue, Apr 29, 2014 at 1:28 PM, Luis Ferreira <lferreira at cabocom.cv>
+wrote:
+>>
+>> Hi everyone,
+>>
+>>
+>> I would like your opinion on how to develop on CoovaChilli. Was it
+developed using vi or nano, or was developed using some IDE like eclipse,
+Kdevelop, etc?
+>>
+>> What are the advises that I can get from you gurus that program on the
+source.
+>>
+>>
+>> Regards,
+>>
+>> Luis
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20140502/b5d6bfd6/attachment.html>
+
+From dbird at google.com  Sat May  3 01:33:05 2014
+From: dbird at google.com (David Bird)
+Date: Fri, 2 May 2014 18:33:05 -0700
+Subject: [Chilli] CoovaChilli NAS Static Port Number For Logoff
+In-Reply-To: <CADao4Cri553RpyVBERBwFV5MxCoTuWkJNHmOKGnpMg4V3itF5w@mail.gmail.com>
+References: <CADao4CpLx4_=+eO1U7K8741-iCownp9XB+soFEnX8_iaBnX01A@mail.gmail.com>
+ <CADao4Cri553RpyVBERBwFV5MxCoTuWkJNHmOKGnpMg4V3itF5w@mail.gmail.com>
+Message-ID: <CADo9JyX-NjawkHA841VMjVwiOxgENxTuuxsenUwNCNO4n+KNGQ@mail.gmail.com>
+
+Are you defining the --coaport option? How are you determining the port to
+send to?
+
+
+On Fri, May 2, 2014 at 9:29 AM, Russell Mike <radius.sir at gmail.com> wrote:
+
+> Can anyone help me please?
+>
+> Thanks
+>
+>
+> On Thu, May 1, 2014 at 4:08 PM, Russell Mike <radius.sir at gmail.com> wrote:
+>
+>> Dear List
+>>
+>> i need help, i have build central CoovaChilli captive portal in ISP NOC
+>> data centre. This serves about 260 hotspots across the city from central
+>> location (hosted environment). It has some cool features such as, Log off,
+>> Top-Up. As soon as users logs in successfully, a small window pop up which
+>> has logoff & Top-up switches. When user clicks on logoff, in the
+>> background, i execute following command on FreeRADIUS to logoff user. By
+>> doing so, FreeRADIUS send disconnection message to NAS (CoovaChilli) on the
+>> port 53467 in this example.
+>>
+>>
+>> *echo "User-Name='{username}'" | radclient -x {localhost}:{53467}
+>> disconnect radiusSecret*
+>>
+>>
+>> This works fine except that the port number changes from time to time on
+>> NAS restart and i have to manually edit the port number for the logout
+>> mechanism to work every time.
+>>
+>> Could you please tell, if its possible to set a static port number or if
+>> that is not possible, a better way to execute logout command on FreeRADIUS
+>> to logout user.
+>>
+>> *Problem Definition:* When NAS (CoovaChilli) restarts this port got
+>> change every time.
+>>
+>> I would highly appreciate & grateful for any kind of help.
+>>
+>> Thanks /    --RM
+>>
+>
+>
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20140502/b1f321e9/attachment-0001.html>
+
+From lferreira at cabocom.cv  Mon May  5 10:36:03 2014
+From: lferreira at cabocom.cv (Luis Ferreira)
+Date: Mon, 5 May 2014 09:36:03 -0100
+Subject: [Chilli] Best Coova - Radius centralized setup (at least what you
+	think)
+Message-ID: <000601cf684d$d205a6f0$7610f4d0$@cabocom.cv>
+
+Hi everyone,
+
+ 
+
+I would like to have your opinion on the smartest setup that in your opinion
+is the best chilli ? radius connectivity for centralized NAS.
+
+ 
+
+Imagin a scenario where you have several hotspots spread, and you want to
+interconnect them.
+
+ 
+
+For instance, I?ve tried the following:
+
+ 
+
+               +------------------+
++---------------------------+
+
+               |   Location 1     |             | Remote Centralized Server
+|
+
+               +------------------+
++---------------------------+
+
+               |                  |             |
+|
+
+Subscribers <> | CoovaChilli box  |  <=======>  |  Free Radius + MySQL DB
+|
+
+               |                  |             |
+|
+
+               +------------------+
++---------------------------+
+
+ 
+
+ 
+
+ 
+
+Pros:     Fast Radius response
+
+Easy configuration in case of Radius changes (centralized)
+
+ 
+
+Cons:    Some ?stalled? accounts, where the radius sends a disconnect packet
+to Location, but due to network problems it does not arrive on chilli CoA
+port, for instance. 
+
+Due to radius server communication that might fail some time, due to line
+blackouts, it enter in a state where users cannot make login and then, when
+they can, radius or chilli does not allow
+
+ 
+
+ 
+
+               +--------------------------------+
++---------------------------+
+
+               |   Location 1                   |             | Remote
+Centralized Server |
+
+               +--------------------------------+
++---------------------------+
+
+               |                                |             |
+|
+
+Subscribers <> | CoovaChilli box + Free Radius  |  <=======>  |
+MySQL DB          |
+
+               |                                |             |
+|
+
+               +--------------------------------+
++---------------------------+
+
+ 
+
+Pros:     When losing connection to MySQL DB, radius fails to authenticate,
+and so does chilli, preventing creating those communication issues between
+Chilli and Radius
+
+                When loosing connectivity, system still works, and when it
+returns, it is able to resume it?s normal process, not leaving ?Stalled?
+Accounts
+
+In the event of potential ?Stalled? Accounts, it would be easy to wipe them
+out, since radius and chilli would always be in sync
+
+ 
+
+Cons:    Slow in getting a response from MySQL DB, due to connection speed
+(creating a socket or waiting for timeout to create a new one).
+
+                Hard configuration changes (have to change in all locations
+radius config file.
+
+ 
+
+ 
+
+What other setup?s do you know or what in your opinion are the better ones
+(if possible, telling good things and bad things).
+
+ 
+
+ 
+
+Atentamente,
+
+
+Descri??o: Descri??o: Descri??o: C:\CABOCOM\CABOCOM WORK\logo-e-mail.gif
+
+Luis Ferreira
+
+CTO
+
+Cabocom S.A.
+
+ 
+
+ 
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20140505/69e7ac89/attachment.html>
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: image001.png
+Type: image/png
+Size: 3526 bytes
+Desc: not available
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20140505/69e7ac89/attachment.png>
+
+From info at easyhorpak.com  Tue May  6 04:41:37 2014
+From: info at easyhorpak.com (EasyHorpak.com)
+Date: Tue, 06 May 2014 11:41:37 +0700
+Subject: [Chilli] Best Coova - Radius centralized setup (at least what
+ you think)
+In-Reply-To: <000601cf684d$d205a6f0$7610f4d0$@cabocom.cv>
+References: <000601cf684d$d205a6f0$7610f4d0$@cabocom.cv>
+Message-ID: <53686801.3010106@easyhorpak.com>
+
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20140506/ce040477/attachment.html>
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: not available
+Type: image/png
+Size: 3526 bytes
+Desc: not available
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20140506/ce040477/attachment.png>
+
+From david at dkxl.co.uk  Tue May  6 09:03:48 2014
+From: david at dkxl.co.uk (David Harrold)
+Date: Tue, 6 May 2014 10:03:48 +0100
+Subject: [Chilli] Best Coova - Radius centralized setup (at least what
+	you	think)
+In-Reply-To: <mailman.1.1399291201.26473.chilli@coova.org>
+References: <mailman.1.1399291201.26473.chilli@coova.org>
+Message-ID: <498A98A0-4BDF-4988-A1AC-EE939D187C62@dkxl.co.uk>
+
+Distributing the Chilli boxes so they are close to your subscribers is fine.
+
+I would centralise your RADIUS servers and keep them close to your SQL DB. Usually people put them on the same subnet in their data centre.
+
+The RADIUS protocol between Chilli and the RADIUS server will in general be able to handle any transient network outages and be more robust than the SQL protocols between RADIUS and the SQL DB.  
+
+If you are able to use DiffServ QoS across the network links between the Chilli boxes and the RADIUS servers, then I would prioritise the RADIUS messages above the subscriber traffic. 
+
+BR
+-David
+
+
+
+> 
+> ----------------------------------------------------------------------
+> 
+> Message: 1
+> Date: Mon, 5 May 2014 09:36:03 -0100
+> From: "Luis Ferreira" <lferreira at cabocom.cv>
+> To: <chilli at coova.org>
+> Subject: [Chilli] Best Coova - Radius centralized setup (at least what
+> 	you	think)
+> Message-ID: <000601cf684d$d205a6f0$7610f4d0$@cabocom.cv>
+> Content-Type: text/plain; charset="iso-8859-1"
+> 
+> Hi everyone,
+> 
+> 
+> 
+> I would like to have your opinion on the smartest setup that in your opinion
+> is the best chilli ? radius connectivity for centralized NAS.
+> 
+> 
+> 
+> Imagin a scenario where you have several hotspots spread, and you want to
+> interconnect them.
+> 
+> 
+> 
+> For instance, I?ve tried the following:
+> 
+> 
+> 
+>               +------------------+
+> +---------------------------+
+> 
+>               |   Location 1     |             | Remote Centralized Server
+> |
+> 
+>               +------------------+
+> +---------------------------+
+> 
+>               |                  |             |
+> |
+> 
+> Subscribers <> | CoovaChilli box  |  <=======>  |  Free Radius + MySQL DB
+> |
+> 
+>               |                  |             |
+> |
+> 
+>               +------------------+
+> +---------------------------+
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> Pros:     Fast Radius response
+> 
+> Easy configuration in case of Radius changes (centralized)
+> 
+> 
+> 
+> Cons:    Some ?stalled? accounts, where the radius sends a disconnect packet
+> to Location, but due to network problems it does not arrive on chilli CoA
+> port, for instance. 
+> 
+> Due to radius server communication that might fail some time, due to line
+> blackouts, it enter in a state where users cannot make login and then, when
+> they can, radius or chilli does not allow
+> 
+> 
+> 
+> 
+> 
+>               +--------------------------------+
+> +---------------------------+
+> 
+>               |   Location 1                   |             | Remote
+> Centralized Server |
+> 
+>               +--------------------------------+
+> +---------------------------+
+> 
+>               |                                |             |
+> |
+> 
+> Subscribers <> | CoovaChilli box + Free Radius  |  <=======>  |
+> MySQL DB          |
+> 
+>               |                                |             |
+> |
+> 
+>               +--------------------------------+
+> +---------------------------+
+> 
+> 
+> 
+> Pros:     When losing connection to MySQL DB, radius fails to authenticate,
+> and so does chilli, preventing creating those communication issues between
+> Chilli and Radius
+> 
+>                When loosing connectivity, system still works, and when it
+> returns, it is able to resume it?s normal process, not leaving ?Stalled?
+> Accounts
+> 
+> In the event of potential ?Stalled? Accounts, it would be easy to wipe them
+> out, since radius and chilli would always be in sync
+> 
+> 
+> 
+> Cons:    Slow in getting a response from MySQL DB, due to connection speed
+> (creating a socket or waiting for timeout to create a new one).
+> 
+>                Hard configuration changes (have to change in all locations
+> radius config file.
+> 
+> 
+> 
+> 
+> 
+> What other setup?s do you know or what in your opinion are the better ones
+> (if possible, telling good things and bad things).
+> 
+> 
+> 
+> 
+> 
+> Atentamente,
+> 
+> 
+> Descri??o: Descri??o: Descri??o: C:\CABOCOM\CABOCOM WORK\logo-e-mail.gif
+> 
+> Luis Ferreira
+> 
+> CTO
+> 
+> Cabocom S.A.
+> 
+> 
+> 
+> 
+> 
+> -------------- next part --------------
+> An HTML attachment was scrubbed...
+> URL: <http://lists.coova.org/pipermail/chilli/attachments/20140505/69e7ac89/attachment-0001.html>
+> -------------- next part --------------
+> A non-text attachment was scrubbed...
+> Name: image001.png
+> Type: image/png
+> Size: 3526 bytes
+> Desc: not available
+> URL: <http://lists.coova.org/pipermail/chilli/attachments/20140505/69e7ac89/attachment-0001.png>
+> 
+> ------------------------------
+> 
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+> 
+> 
+> End of Chilli Digest, Vol 54, Issue 4
+> *************************************
+
+
+From maxxer at ufficyo.com  Tue May  6 13:13:11 2014
+From: maxxer at ufficyo.com (Lorenzo Milesi)
+Date: Tue, 6 May 2014 15:13:11 +0200 (CEST)
+Subject: [Chilli] OpenWRT and redirssl
+In-Reply-To: <CADo9JyWaBxeBMVxDA419+iwJk3iP5-pfyrqxZcQ9obS70pCHrw@mail.gmail.com>
+References: <702870183.4688.1398784617487.JavaMail.zimbra@yetopen.it>
+ <2099711209.4695.1398784819222.JavaMail.zimbra@yetopen.it>
+ <CADo9JyWaBxeBMVxDA419+iwJk3iP5-pfyrqxZcQ9obS70pCHrw@mail.gmail.com>
+Message-ID: <1288948067.2878.1399381991993.JavaMail.zimbra@yetopen.it>
+
+> You can modify (in OpenWrt, at least) the package so that the necessary
+> compile time options are enabled. And, of course, add openssl package as
+> well.
+
+Hi David, thanks for your reply, but could you be a little more specific?
+Should I rebuild the package or just "unpack" and edit the current one?
+
+thanks
+-- 
+Lorenzo Milesi - lorenzo.milesi at yetopen.it
+
+YetOpen S.r.l. - http://www.yetopen.it/
+
+
+From steffen.dettmer at nomadrail.com  Wed May  7 08:45:06 2014
+From: steffen.dettmer at nomadrail.com (Steffen Dettmer)
+Date: Wed, 7 May 2014 08:45:06 +0000
+Subject: [Chilli] Best Coova - Radius centralized setup (at least what
+ you	think)
+In-Reply-To: <000601cf684d$d205a6f0$7610f4d0$@cabocom.cv>
+References: <000601cf684d$d205a6f0$7610f4d0$@cabocom.cv>
+Message-ID: <ac2cefcc4c8748c18e936f2a5896ca44@AM3PR05MB323.eurprd05.prod.outlook.com>
+
+Hi,
+
+> I would like to have your opinion on the smartest setup that in
+> your opinion is the best chilli - radius connectivity for
+> centralized NAS.
+
+I think better keep RADIUS service centralized, it should work
+(it is designed for that). I think MySQL/PostgreSQL backends
+should be considered an implementation detail of the RADIUS
+server, I wouldn't like dependencies to table structures as part
+of "location interface". Also, usually the privileges of the DBMS
+connections might not be configured as fine grained as possible,
+potentially allowing a compromised "location1" to obtain database
+information that would never be possible through RADIUS.
+
+Steffen
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20140507/3b794f95/attachment.html>
+
+From radius.sir at gmail.com  Wed May  7 13:42:15 2014
+From: radius.sir at gmail.com (Russell Mike)
+Date: Wed, 7 May 2014 13:42:15 +0000
+Subject: [Chilli] separate log file for each instance coovachilli
+Message-ID: <CADao4CrkLKxVSt1Ag+wdnmQ=g0ED7VJDVcw1PvvDX2ARkzUHBA@mail.gmail.com>
+
+Hi CoovaChilli List
+
+
+i run multiple (about 65) instances for chilli on same server using VLANs.
+all instances logs in to *"/var/log/syslog" *but i want separate log file
+for each instance for troubleshoot purpose. How can we do this ?
+
+Thanks --RM
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20140507/cc9bcf72/attachment.html>
+
+From rwhite at globalgossip.net  Thu May  8 23:47:03 2014
+From: rwhite at globalgossip.net (Robert White)
+Date: Fri, 9 May 2014 09:47:03 +1000
+Subject: [Chilli] CoovaChilli 1.3.1
+Message-ID: <CAODoKgBu1n9dOs+6_xBpy_ppMr42vKbnTYeyJKKsPCS2gf+xKg@mail.gmail.com>
+
+Hi all,
+
+Does anyone have any idea when CoovaChilli 1.3.1 may make it to final
+release?  I downloaded the beta version many months ago and have been
+running it in a test environment without issues.
+
+It's been over a year since 1.3.0 release.  Can we expect to see 1.3.1 soon?
+
+Thanks,
+
+Rob
+
+-- 
+-------------------------------------------------
+
+IMPORTANT NOTICE: The information in this email is confidential and may 
+also be privileged. 
+If you are not the intended recipient, any use or dissemination of the 
+information and any disclosure or copying of this email is unauthorised and 
+strictly prohibited.  If you have received this email in error, please 
+promptly inform us by reply email or telephone.  You should also 
+delete this email and destroy any hard copies produced.
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20140509/fd22f9d1/attachment.html>
+
+From venture37 at gmail.com  Fri May  9 22:53:42 2014
+From: venture37 at gmail.com (Sevan / Venture37)
+Date: Fri, 9 May 2014 23:53:42 +0100
+Subject: [Chilli] Building Coova-Chilli with clang
+Message-ID: <CA+U3Mf4coSrhDJ32HzGLf6HA4B+DCByCH1wOAUYx_bzbJvnjPw@mail.gmail.com>
+
+Hi,
+The source code in its current state will not build when using the
+clang, the attached diff fixes that. This work is part of getting
+Coova-Chill to run on FreeBSD 10 & newer however these changes affect
+all platforms not just FreeBSD so I'm posting the diff here to ask for
+testing/feedback.
+I'm currently unable to do propper testing as there is more prep work
+that needs to be done on FreeBSD so that everything is running
+correctly.
+There will also be another diff coming up which fixes the network side
+of things on FreeBSD.
+This diff is against the latest sources in the GitHub repository.
+You should test this diff if you are still using GCC as your compiler.
+
+Sevan / Venture37
+-------------- next part --------------
+diff --git a/src/dhcp.c b/src/dhcp.c
+index 023c1f7..53dd369 100644
+--- a/src/dhcp.c
++++ b/src/dhcp.c
+@@ -4131,6 +4131,64 @@ int dhcp_receive_ip(struct dhcp_ctx *ctx, uint8_t *pack, size_t len) {
+ }
+ 
+ #ifdef ENABLE_IPV6
++void check_options(int datalen, uint8_t *data, uint8_t b[256]) {
++        if (datalen > 0) {
++          uint8_t t, l;
++          int i=0;
++          while (datalen > 0) {
++            int dlen = -1;
++            t = data[i++]; datalen--;
++            if (!datalen) break;
++            l = data[i++]; datalen--;
++            if (!datalen) break;
++            switch(t) {
++            case 1: /* source link-layer address */
++            case 2: /* target link-layer address */
++              dlen = l * PKT_ETH_ALEN;
++              break;
++            default:
++              log_dbg(0, "could not parse ICMP option");
++              datalen = 0;
++              break;
++            }
++            if (dlen > 0) {
++              if (dlen <= datalen) {
++                log_dbg("ICMPv6 Option %d %d %d",(int)t,(int)l,dlen);
++                memcpy(b, data + i, dlen);
++                switch(t) {
++                case 1: /* source link-layer address */
++                case 2: /* target link-layer address */
++              dlen = l * PKT_ETH_ALEN;
++              break;
++            default:
++              log_dbg(0, "could not parse ICMP option");
++              datalen = 0;
++              break;
++            }
++            if (dlen > 0) {
++              if (dlen <= datalen) {
++                log_dbg("ICMPv6 Option %d %d %d",(int)t,(int)l,dlen);
++                memcpy(b, data + i, dlen);
++                switch(t) {
++                case 1: /* source link-layer address */
++                case 2: /* target link-layer address */
++                  log_dbg("ICMPv6 Source Link-Layer Address Option "MAC_FMT,
++                          MAC_ARG(b));
++                  break;
++                default:
++                  break;
++                }
++              }
++
++              i += dlen;
++              datalen -= dlen;
++            }
++          }
++        }
++}
++}
++}
++
+ int dhcp_receive_ipv6(struct dhcp_ctx *ctx, uint8_t *pack, size_t len) {
+   struct dhcp_t *this = ctx->parent;
+   struct pkt_ethhdr_t *ethh = pkt_ethhdr(pack);
+@@ -4151,53 +4209,13 @@ int dhcp_receive_ipv6(struct dhcp_ctx *ctx, uint8_t *pack, size_t len) {
+   case ICMPv6_NEXT_HEADER:
+     {
+       int datalen = 0;
+-      uint8_t b[256], *data;
++      uint8_t b[256], *data = NULL;
+       
+       struct pkt_icmphdr_t * icmphdr = 
+ 	(struct pkt_icmphdr_t *)
+ 	(((uint8_t *)iphdr) + sizeof(struct pkt_ip6hdr_t));
+ 
+-      void check_options() {
+-	if (datalen > 0) {
+-	  uint8_t t, l;
+-	  int i=0;
+-	  while (datalen > 0) {
+-	    int dlen = -1;
+-	    t = data[i++]; datalen--;
+-	    if (!datalen) break;
+-	    l = data[i++]; datalen--;
+-	    if (!datalen) break;
+-	    switch(t) {
+-	    case 1: /* source link-layer address */
+-	    case 2: /* target link-layer address */
+-	      dlen = l * PKT_ETH_ALEN;
+-	      break;
+-	    default:
+-	      log_dbg(0, "could not parse ICMP option");
+-	      datalen = 0;
+-	      break;
+-	    }
+-	    if (dlen > 0) {
+-	      if (dlen <= datalen) {
+-		log_dbg("ICMPv6 Option %d %d %d",(int)t,(int)l,dlen);
+-		memcpy(b, data + i, dlen);
+-		switch(t) {
+-		case 1: /* source link-layer address */
+-		case 2: /* target link-layer address */
+-		  log_dbg("ICMPv6 Source Link-Layer Address Option "MAC_FMT,
+-			  MAC_ARG(b));
+-		  break;
+-		default:
+-		  break;
+-		}
+-	      }
+-	      
+-	      i += dlen;
+-	      datalen -= dlen;
+-	    }
+-	  }
+-	}
+-      }
++      check_options(datalen, data, b);
+ 
+       data = ((uint8_t *)icmphdr) + sizeof(struct pkt_icmphdr_t);
+       
+@@ -4231,7 +4249,7 @@ int dhcp_receive_ipv6(struct dhcp_ctx *ctx, uint8_t *pack, size_t len) {
+ 
+ 	data += 4;
+ 	datalen -= 4;
+-	check_options();
++	check_options(datalen, data, b);
+ 	
+ 	/*	  
+ 	  4.2. Router Advertisement Message Format
+@@ -4388,7 +4406,7 @@ int dhcp_receive_ipv6(struct dhcp_ctx *ctx, uint8_t *pack, size_t len) {
+ 	  data += 16;
+ 	  datalen -= 16;
+ 
+-	  check_options();
++	  check_options(datalen, data, b);
+ 	  
+ 	  memset(packet, 0, sizeof(packet));
+ 	  copy_ethproto(pack, packet);
+diff --git a/src/garden.c b/src/garden.c
+index fbc5458..65089c1 100644
+--- a/src/garden.c
++++ b/src/garden.c
+@@ -53,7 +53,8 @@ void garden_print_list(int fd, pass_through *ptlist, int ptcnt) {
+ #endif
+ 		  );
+     
+-    if (!safe_write(fd, line, strlen(line))) /* error */;
++    if (!safe_write(fd, line, strlen(line))) /* error */
++	;
+   }
+ }
+ 
+@@ -103,7 +104,8 @@ void garden_print(int fd) {
+ 		"static garden (%d/%d):\n",
+ 		_options.num_pass_throughs,
+ 		MAX_PASS_THROUGHS);
+-  if (!safe_write(fd, line, strlen(line))) /* error */;
++  if (!safe_write(fd, line, strlen(line))) /* error */
++	;
+ 
+ #ifdef HAVE_PATRICIA
+   if (dhcp->ptree) {
+@@ -118,7 +120,8 @@ void garden_print(int fd) {
+ 		"dynamic garden (%d/%d):\n",
+ 		dhcp->num_pass_throughs,
+ 		MAX_PASS_THROUGHS);
+-  if (!safe_write(fd, line, strlen(line))) /* error */;
++  if (!safe_write(fd, line, strlen(line))) /* error */
++	;
+   
+ #ifdef HAVE_PATRICIA
+   if (dhcp->ptree_dyn) {
+diff --git a/src/ippool.c b/src/ippool.c
+index 61a6243..3f2b883 100644
+--- a/src/ippool.c
++++ b/src/ippool.c
+@@ -501,7 +501,7 @@ int ippool_newip(struct ippool_t *this,
+     /* Find in hash table */
+     hash = ippool_hash4(addr) & this->hashmask;
+     for (p = this->hash[hash]; p; p = p->nexthash) {
+-      if ((p->addr.s_addr == addr->s_addr)) {
++      if (p->addr.s_addr == addr->s_addr) {
+ 	p2 = p;
+ 	break;
+       }
+diff --git a/src/md5.c b/src/md5.c
+index 849e2f8..93c71af 100644
+--- a/src/md5.c
++++ b/src/md5.c
+@@ -140,7 +140,7 @@ void MD5Final(unsigned char digest[16], struct MD5Context *ctx)
+     MD5Transform(ctx->buf, (uint32_t *) ctx->in);
+     byteReverse((unsigned char *) ctx->buf, 4);
+     memcpy(digest, ctx->buf, 16);
+-    memset(ctx, 0, sizeof(ctx));	/* In case it's sensitive */
++    memset(ctx, 0, sizeof(*ctx));	/* In case it's sensitive */
+ }
+ 
+ /* The four core functions - F1 is optimized somewhat */
+diff --git a/src/redir.c b/src/redir.c
+index 9d6d63e..80401bb 100644
+--- a/src/redir.c
++++ b/src/redir.c
+@@ -955,6 +955,26 @@ void redir_wispr1_reply (struct redir_t *redir, struct redir_conn_t *conn,
+   bdestroy(bt);
+ }
+ 
++void write_authentication_msg_header (struct redir_conn_t *conn, bstring b) {
++  if (conn->authdata.type == REDIR_AUTH_EAP) {
++    bcatcstr(b,
++             "<EAPAuthenticationReply>\r\n"
++             "<MessageType>121</MessageType>\r\n"); /* response to authentication notification */
++  } else {
++    bcatcstr(b,
++             "<AuthenticationReply>\r\n"
++             "<MessageType>120</MessageType>\r\n"); /* response to authentication notification */
++  }
++}
++
++void write_authentication_msg_footer(struct redir_conn_t *conn, bstring b) {
++  if (conn->authdata.type == REDIR_AUTH_EAP) {
++    bcatcstr(b, "</EAPAuthenticationReply>\r\n");
++  } else {
++    bcatcstr(b, "</AuthenticationReply>\r\n");
++  }
++}
++
+ /* Make a WISPr 2.0 XML reply 
+  * Note: This method must be called if Coova advertises the support of both 
+  * WISPr 1.0 and WISPr 2.0 in the "NOTYET" phase */
+@@ -964,26 +984,6 @@ void redir_wispr2_reply (struct redir_t *redir, struct redir_conn_t *conn,
+   bstring bt = bfromcstr("");
+   char eap64str [MAX_EAP_LEN*2];
+   
+-  void write_authentication_msg_header () {
+-    if (conn->authdata.type == REDIR_AUTH_EAP) {
+-      bcatcstr(b, 
+-	       "<EAPAuthenticationReply>\r\n"
+-	       "<MessageType>121</MessageType>\r\n"); /* response to authentication notification */
+-    } else {
+-      bcatcstr(b, 
+-	       "<AuthenticationReply>\r\n" 
+-	       "<MessageType>120</MessageType>\r\n"); /* response to authentication notification */
+-    }
+-  }
+-  
+-  void write_authentication_msg_footer() {
+-    if (conn->authdata.type == REDIR_AUTH_EAP) {
+-      bcatcstr(b, "</EAPAuthenticationReply>\r\n");
+-    } else {
+-      bcatcstr(b, "</AuthenticationReply>\r\n");
+-    }
+-  }
+-
+   log_dbg("%s", __FUNCTION__);
+   
+   bcatcstr(b,
+@@ -1056,7 +1056,7 @@ void redir_wispr2_reply (struct redir_t *redir, struct redir_conn_t *conn,
+     break;
+     
+   case REDIR_FAILED_REJECT:
+-    write_authentication_msg_header();     
++    write_authentication_msg_header(conn,b);
+     
+     bcatcstr(b, 
+ 	     "<ResponseCode>100</ResponseCode>\r\n"); /* login failed (Access REJECT) */
+@@ -1069,33 +1069,33 @@ void redir_wispr2_reply (struct redir_t *redir, struct redir_conn_t *conn,
+       bcatcstr(b, "<ReplyMessage>Invalid Password</ReplyMessage>\r\n");
+     }
+         
+-    write_authentication_msg_footer();
++    write_authentication_msg_footer(conn,b);
+     break;
+     
+   case REDIR_FAILED_NOROUTE:
+-    write_authentication_msg_header();     
++    write_authentication_msg_header(conn,b);
+     
+     bcatcstr(b, 
+ 	     "<ResponseCode>105</ResponseCode>\r\n"); /* RADIUS serveur error/timeout */
+     
+     bcatcstr(b, "<ReplyMessage>no route for realm</ReplyMessage>\r\n");
+     
+-    write_authentication_msg_footer();
++    write_authentication_msg_footer(conn,b);
+     break;
+     
+   case REDIR_FAILED_MTU:
+-    write_authentication_msg_header();     
++    write_authentication_msg_header(conn,b);
+     
+     bcatcstr(b, 
+ 	     "<ResponseCode>253</ResponseCode>\r\n"); /* MTU is too big */
+     
+     bcatcstr(b, "<ReplyMessage>AAA MTU is too big</ReplyMessage>\r\n");
+     
+-    write_authentication_msg_footer();
++    write_authentication_msg_footer(conn,b);
+     break;
+     
+   case REDIR_FAILED_TIMEOUT:
+-    write_authentication_msg_header();     
++    write_authentication_msg_header(conn,b);
+     
+     bcatcstr(b, 
+ 	     "<ResponseCode>102</ResponseCode>\r\n"); /* RADIUS serveur timeout */
+@@ -1107,11 +1107,11 @@ void redir_wispr2_reply (struct redir_t *redir, struct redir_conn_t *conn,
+       bcatcstr(b, "<ReplyMessage>Radius timeout</ReplyMessage>\r\n");
+     }
+     
+-    write_authentication_msg_footer();
++    write_authentication_msg_footer(conn,b);
+     break;
+     
+   case REDIR_ERROR_PROTOCOL:
+-    write_authentication_msg_header();     
++    write_authentication_msg_header(conn,b);
+     
+     bcatcstr(b, 
+ 	     "<ResponseCode>254</ResponseCode>\r\n"); /* WISPr 2.0 protocol error */
+@@ -1123,11 +1123,11 @@ void redir_wispr2_reply (struct redir_t *redir, struct redir_conn_t *conn,
+       bcatcstr(b, "<ReplyMessage>WISPr 2.0 protocol error</ReplyMessage>\r\n");
+     }
+     
+-    write_authentication_msg_footer();
++    write_authentication_msg_footer(conn,b);
+     break;
+     
+   case REDIR_FAILED_OTHER:
+-    write_authentication_msg_header();     
++    write_authentication_msg_header(conn,b);
+     
+     bcatcstr(b, 
+ 	     "<ResponseCode>255</ResponseCode>\r\n"); /* RADIUS serveur error */
+@@ -1139,7 +1139,7 @@ void redir_wispr2_reply (struct redir_t *redir, struct redir_conn_t *conn,
+       bcatcstr(b, "<ReplyMessage>Radius error</ReplyMessage>\r\n");
+     }
+     
+-    write_authentication_msg_footer();
++    write_authentication_msg_footer(conn,b);
+     break;
+     
+   case REDIR_CHALLENGE:
+@@ -1167,7 +1167,7 @@ void redir_wispr2_reply (struct redir_t *redir, struct redir_conn_t *conn,
+     break;
+     
+   case REDIR_SUCCESS:
+-    write_authentication_msg_header();     
++    write_authentication_msg_header(conn,b);
+     
+     bcatcstr(b, 
+ 	     "<ResponseCode>50</ResponseCode>\r\n"); 
+@@ -1204,7 +1204,7 @@ void redir_wispr2_reply (struct redir_t *redir, struct redir_conn_t *conn,
+       bconcat(b, bt);
+     }
+     
+-    write_authentication_msg_footer();
++    write_authentication_msg_footer(conn,b);
+     break;
+     
+   case REDIR_LOGOFF:
+@@ -1911,6 +1918,7 @@ int redir_getparam(struct redir_t *redir, char *src, char *param, bstring dst) {
+ 
+   return 0;
+ }
++char forked;
+ 
+ /* Read the an HTTP request from a client */
+ static int redir_getreq(struct redir_t *redir, struct redir_socket_t *sock,
+@@ -1930,7 +1938,7 @@ static int redir_getreq(struct redir_t *redir, struct redir_socket_t *sock,
+ 
+   char *path = httpreq->path;
+ 
+-  char forked = (rreq == 0);
++  forked = (rreq == 0);
+ 
+   char wblock = 0, done = 0, eoh = 0;
+ 
+@@ -3182,6 +3190,25 @@ pid_t redir_fork(int in, int out) {
+   return pid;
+ }
+ 
++int redir_main_exit(struct redir_socket_t *socket) {
++    /* if (httpreq->data_in) bdestroy(httpreq->data_in); */
++    /* if (!forked) return 0; XXXX*/
++#ifdef HAVE_SSL
++    if (socket.sslcon) {
++#if(_debug_ > 1)
++      log_dbg("Shutting down SSL");
++#endif
++      openssl_shutdown(socket.sslcon, 2);
++      openssl_free(socket.sslcon);
++      socket.sslcon = 0;
++      if (rreq)
++        rreq->sslcon = 0;
++    }
++#endif
++    if (forked) _redir_close_exit(socket->fd[0], socket->fd[1]);
++    return _redir_close(socket->fd[0], socket->fd[1]);
++}
++
+ int redir_main(struct redir_t *redir, 
+ 	       int infd, int outfd, 
+ 	       struct sockaddr_in *address, 
+@@ -3215,25 +3242,6 @@ int redir_main(struct redir_t *redir,
+   int forked = (rreq == 0);
+   int err;
+ 
+-  int redir_main_exit() {
+-    /* if (httpreq->data_in) bdestroy(httpreq->data_in); */
+-    /* if (!forked) return 0; XXXX*/
+-#ifdef HAVE_SSL
+-    if (socket.sslcon) {
+-#if(_debug_ > 1)
+-      log_dbg("Shutting down SSL");
+-#endif
+-      openssl_shutdown(socket.sslcon, 2);
+-      openssl_free(socket.sslcon);
+-      socket.sslcon = 0;
+-      if (rreq) 
+-	rreq->sslcon = 0;
+-    }
+-#endif
+-    if (forked) _redir_close_exit(socket.fd[0], socket.fd[1]);
+-    return _redir_close(socket.fd[0], socket.fd[1]);
+-  }
+-
+ 
+   memset(&httpreq,0,sizeof(httpreq));
+   httpreq.allow_post = isui || _options.uamallowpost;
+@@ -3260,7 +3268,7 @@ int redir_main(struct redir_t *redir,
+   memcpy(&msg.mdata.redir, &conn.s_state.redir, sizeof(msg.mdata.redir)); \
+   if (redir_send_msg(redir, &msg) < 0) { \
+     log_err(errno, "write() failed! msgfd=%d type=%d len=%d", redir->msgfd, msg.mtype, sizeof(msg.mdata)); \
+-    return redir_main_exit(); \
++    return redir_main_exit(&socket); \
+   } 
+ #else
+ #define redir_msg_send(msgopt) \
+@@ -3271,7 +3279,7 @@ int redir_main(struct redir_t *redir,
+   memcpy(&msg.mdata.redir, &conn.s_state.redir, sizeof(msg.mdata.redir)); \
+   if (msgsnd(redir->msgid, (void *)&msg, sizeof(msg.mdata), 0) < 0) { \
+     log_err(errno, "msgsnd() failed! msgid=%d type=%d len=%d", redir->msgid, msg.mtype, sizeof(msg.mdata)); \
+-    return redir_main_exit(); \
++    return redir_main_exit(&socket); \
+   } 
+ #endif
+ 
+@@ -3291,7 +3299,7 @@ int redir_main(struct redir_t *redir,
+   /*
+   if (ndelay_on(socket.fd[0])) {
+     log_err(errno, "fcntl() failed");
+-    return redir_main_exit();
++    return redir_main_exit(&socket);
+   }
+   */
+ 
+@@ -3307,7 +3315,7 @@ int redir_main(struct redir_t *redir,
+ 
+   if (!redir->cb_getstate) { 
+     log_err(0, "No cb_getstate() defined!"); 
+-    return redir_main_exit();
++    return redir_main_exit(&socket);
+   }
+ 
+   /* get_state returns 0 for unauth'ed and 1 for auth'ed */
+@@ -3331,7 +3339,7 @@ int redir_main(struct redir_t *redir,
+     } else 
+ #endif
+     {
+-      return redir_main_exit();
++      return redir_main_exit(&socket);
+     }
+   }
+   
+@@ -3371,7 +3379,7 @@ int redir_main(struct redir_t *redir,
+ #if(_debug_ > 1)
+ 	log_dbg("redir error, redir_main_exit");
+ #endif
+-	return redir_main_exit();
++	return redir_main_exit(&socket);
+       case 1:
+ 	if (!loop) {
+ 	  log_dbg("Continue... SSL pending");
+@@ -3402,7 +3410,7 @@ int redir_main(struct redir_t *redir,
+     return 1;
+   default:
+     log_dbg("Error calling get_req. Terminating %d", err);
+-    return redir_main_exit();
++    return redir_main_exit(&socket);
+   }
+ 
+ #if(_debug_ > 1)
+@@ -3445,7 +3453,7 @@ int redir_main(struct redir_t *redir,
+ 	if (isEWT) {
+ 	  if (!(conn.s_params.flags & ADMIN_LOGIN)) {
+ 	    log_warn(0, "Permission denied to EWT API");
+-	    return redir_main_exit();
++	    return redir_main_exit(&socket);
+ 	  }
+ 	} else 
+ #endif
+@@ -3471,7 +3479,7 @@ int redir_main(struct redir_t *redir,
+ 	    if (*p >= '0' && *p <= '9') continue;
+ 	    /* invalid file name! */
+ 	    log_err(0, "invalid www request [%s]!", filename);
+-	    return redir_main_exit();
++	    return redir_main_exit(&socket);
+ 	  }
+ 	}
+ 
+@@ -3505,7 +3513,7 @@ int redir_main(struct redir_t *redir,
+ 	else { 
+ 	  /* we do not serve it! */
+ 	  log_err(0, "invalid file extension! [%s]", filename);
+-	  return redir_main_exit();
++	  return redir_main_exit(&socket);
+ 	}
+ 	
+ 	if (!forked) {
+@@ -3515,7 +3523,7 @@ int redir_main(struct redir_t *redir,
+ 	   */
+ 	  forkpid = redir_fork(infd, outfd);
+ 	  if (forkpid) { /* parent or error */
+-	    return redir_main_exit();
++	    return redir_main_exit(&socket);
+ 	  }
+ 	}
+ 	
+@@ -3523,7 +3531,7 @@ int redir_main(struct redir_t *redir,
+ 	  
+ 	  if (!_options.wwwbin) {
+ 	    log_err(0, "the 'wwwbin' setting must be configured for CGI use");
+-	    return redir_main_exit();
++	    return redir_main_exit(&socket);
+ 	  }
+ 
+ 	  if (ndelay_off(socket.fd[0])) {
+@@ -3542,14 +3550,14 @@ int redir_main(struct redir_t *redir,
+ 	    
+ 	    if (pipe(ptoc) == -1 || pipe(ctop) == -1) {
+ 	      log_err(errno, "pipe() failed");
+-	      return redir_main_exit();
++	      return redir_main_exit(&socket);
+ 	    }
+ 	    
+ 	    forkpid = redir_fork(ptoc[0], ctop[1]);
+ 	    
+ 	    if (forkpid < 0) {
+ 	      log_err(errno, "fork() failed");
+-	      return redir_main_exit();
++	      return redir_main_exit(&socket);
+ 	    }
+ 	    
+ 	    forked = 1;
+@@ -3573,7 +3581,7 @@ int redir_main(struct redir_t *redir,
+ 		if ((buflen = openssl_read(socket.sslcon, buffer, rd, 0)) > 0) {
+ 		  if (safe_write(ptoc[1], buffer, (size_t) buflen) < 0) {
+ 		    log_err(errno, "error");
+-		    return redir_main_exit();
++		    return redir_main_exit(&socket);
+ 		  }
+ 		  clen -= buflen;
+ 		}
+@@ -3609,7 +3617,7 @@ int redir_main(struct redir_t *redir,
+ 	      safe_close(ptoc[1]);
+ 	      safe_close(ctop[0]);
+ 	      
+-	      return redir_main_exit();
++	      return redir_main_exit(&socket);
+ 	      
+ 	    } else {
+ 	      /* child */
+@@ -3691,7 +3699,7 @@ int redir_main(struct redir_t *redir,
+ 	    break;
+ 	  }
+ 	  
+-	  return redir_main_exit();
++	  return redir_main_exit(&socket);
+ 	}
+ 	
+ 	if ( (_options.uid == 0 && !chroot(_options.wwwdir) && !chdir("/")) ||
+@@ -3739,7 +3747,7 @@ int redir_main(struct redir_t *redir,
+       }
+       else log_err(0, "Required: 'wwwdir' (in chilli.conf) and 'file' query-string param"); 
+       
+-      return redir_main_exit();
++      return redir_main_exit(&socket);
+     }
+   }
+ 
+@@ -3774,7 +3782,7 @@ int redir_main(struct redir_t *redir,
+ 		    (char *)conn.s_params.url, conn.hismac, 
+ 		    &conn.hisip, httpreq.qs);
+ 	
+-	return redir_main_exit();
++	return redir_main_exit(&socket);
+       }
+     }
+ 
+@@ -3792,7 +3800,7 @@ int redir_main(struct redir_t *redir,
+ 		  0, hexchal, NULL, NULL, NULL, 
+ 		  0, conn.hismac, &conn.hisip, httpreq.qs);
+ 
+-      return redir_main_exit();
++      return redir_main_exit(&socket);
+     }
+ 
+     if (is_local_user(redir, &conn)) { 
+@@ -3813,7 +3821,7 @@ int redir_main(struct redir_t *redir,
+ 	 */
+ 	pid_t forkpid = redir_fork(infd, outfd);
+ 	if (forkpid) { /* parent or error */
+-	  return redir_main_exit();
++	  return redir_main_exit(&socket);
+ 	}
+       }
+ 
+@@ -3829,7 +3837,7 @@ int redir_main(struct redir_t *redir,
+ 	    flags |= modresult;
+ 	    switch(chilli_mod_state(modresult)) {
+ 	    case CHILLI_MOD_ERROR:
+-	      return redir_main_exit();
++	      return redir_main_exit(&socket);
+ 	    default: 
+ 	      break;
+ 	    }
+@@ -3905,7 +3913,7 @@ int redir_main(struct redir_t *redir,
+     }    
+ 
+     log_dbg("-->> Msg userurl=[%s]\n",conn.s_state.redir.userurl);
+-    return redir_main_exit();
++    return redir_main_exit(&socket);
+   }
+ 
+   case REDIR_LOGOUT:
+@@ -3919,7 +3927,7 @@ int redir_main(struct redir_t *redir,
+ 		  hexchal, NULL, conn.s_state.redir.userurl, NULL, 
+ 		  NULL, conn.hismac, &conn.hisip, httpreq.qs);
+       
+-      return redir_main_exit();
++      return redir_main_exit(&socket);
+     }
+     
+   case REDIR_MACREAUTH:
+@@ -3950,7 +3958,7 @@ int redir_main(struct redir_t *redir,
+ 		  NULL, 0, hexchal, NULL, conn.s_state.redir.userurl, NULL, 
+ 		  NULL, conn.hismac, &conn.hisip, httpreq.qs);
+     }
+-    return redir_main_exit();
++    return redir_main_exit(&socket);
+ 
+   case REDIR_ABORT:
+     if (state == 1) {
+@@ -3966,12 +3974,12 @@ int redir_main(struct redir_t *redir,
+ 		  NULL, 0, hexchal, NULL, conn.s_state.redir.userurl, NULL, 
+ 		  NULL, conn.hismac, &conn.hisip, httpreq.qs);
+     }
+-    return redir_main_exit();
++    return redir_main_exit(&socket);
+ 
+   case REDIR_ABOUT:
+     redir_reply(redir, &socket, &conn, REDIR_ABOUT, NULL, 
+ 		0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, httpreq.qs);
+-    return redir_main_exit();
++    return redir_main_exit(&socket);
+ 
+   case REDIR_STATUS:
+     {
+@@ -3998,13 +4006,13 @@ int redir_main(struct redir_t *redir,
+ 		  conn.s_state.redir.userurl, conn.reply, 
+ 		  0, conn.hismac, &conn.hisip, httpreq.qs);
+       
+-      return redir_main_exit();
++      return redir_main_exit(&socket);
+     }
+ 
+   case REDIR_MSDOWNLOAD:
+     safe_snprintf(buffer, bufsize, "HTTP/1.0 403 Forbidden\r\n\r\n");
+     redir_write(&socket, buffer, strlen(buffer));
+-    return redir_main_exit();
++    return redir_main_exit(&socket);
+ 
+ #if(0)
+   {
+@@ -4043,7 +4051,7 @@ int redir_main(struct redir_t *redir,
+ 
+     safe_snprintf(buffer, bufsize, cnt);
+     redir_write(&socket, buffer, strlen(buffer));
+-    return redir_main_exit();
++    return redir_main_exit(&socket);
+   }
+ #endif
+ 
+@@ -4223,7 +4231,7 @@ int redir_main(struct redir_t *redir,
+ 		NULL, conn.hismac, &conn.hisip, httpreq.qs);
+   }
+ 
+-  return redir_main_exit();
++  return redir_main_exit(&socket);
+ }
+ 
+ 
+
+From venture37 at gmail.com  Sat May 10 23:02:23 2014
+From: venture37 at gmail.com (Sevan / Venture37)
+Date: Sun, 11 May 2014 00:02:23 +0100
+Subject: [Chilli] Patch to dev_set_address() in tun.c
+Message-ID: <CA+U3Mf6vdKO39if5r71LXokOLD1xHCBRwEMr74Ok69oaENX7FQ@mail.gmail.com>
+
+Hi,
+Another patch for testing, again it's intended for a specific problem
+but it effects everyone.
+Attached patch fixes issues with FreeBSD 10 & newer where the tun(4)
+interface would not be configured with an address.
+This is due to the removal of a macro which has been marked as
+deprecated (10+ years apparently) across the BSD's.
+The diff separates out the configuration of interface so Linux uses
+the traditional method & the BSD's use the new method.
+
+
+Sevan
+-------------- next part --------------
+diff --git a/src/net.c b/src/net.c
+index c1f8cba..ef6a529 100644
+--- a/src/net.c
++++ b/src/net.c
+@@ -91,29 +91,28 @@ int dev_get_flags(char const *dev, int *flags) {
+ 
+ int dev_set_address(char const *devname, struct in_addr *address, 
+ 		    struct in_addr *dstaddr, struct in_addr *netmask) {
++#if defined(__linux__)
+   struct ifreq ifr;
++#elif defined(__FreeBSD__) || defined (__APPLE__) || defined (__OpenBSD__) || defined (__NetBSD__)
++  struct ifaliasreq ifr;
++#endif
+   int fd;
+ 
+   memset(&ifr, 0, sizeof (ifr));
+-  ifr.ifr_addr.sa_family = AF_INET;
+-  ifr.ifr_dstaddr.sa_family = AF_INET;
+-  
+-#if defined(__linux__)
+-  ifr.ifr_netmask.sa_family = AF_INET;
+-  
+-#elif defined(__FreeBSD__) || defined (__APPLE__) || defined (__OpenBSD__) || defined (__NetBSD__)
+-  ((struct sockaddr_in *) &ifr.ifr_addr)->sin_len = sizeof (struct sockaddr_in);
+-  ((struct sockaddr_in *) &ifr.ifr_dstaddr)->sin_len = sizeof (struct sockaddr_in);
+-#endif
+-  
+-  safe_strncpy(ifr.ifr_name, devname, IFNAMSIZ);
+-  
++
+   /* Create a channel to the NET kernel. */
+   if ((fd = socket(AF_INET, SOCK_DGRAM, 0)) < 0) {
+     log_err(errno, "socket() failed");
+     return -1;
+   }
+-  
++
++#if defined(__linux__)
++  safe_strncpy(ifr.ifr_name, devname, IFNAMSIZ);
++  ifr.ifr_addr.sa_family = AF_INET;
++  ifr.ifr_dstaddr.sa_family = AF_INET;
++  ifr.ifr_netmask.sa_family = AF_INET;
++  ifr.ifr_name[IFNAMSIZ-1] = 0; /* Make sure to terminate */
++
+   if (address) { /* Set the interface address */
+     ((struct sockaddr_in *) &ifr.ifr_addr)->sin_addr.s_addr = address->s_addr;
+     if (ioctl(fd, SIOCSIFADDR, (void *) &ifr) < 0) {
+@@ -138,23 +137,46 @@ int dev_set_address(char const *devname, struct in_addr *address,
+   }
+ 
+   if (netmask) { /* Set the netmask */
+-#if defined(__linux__)
+     ((struct sockaddr_in *) &ifr.ifr_netmask)->sin_addr.s_addr =  netmask->s_addr;
+-#elif defined(__FreeBSD__) || defined (__APPLE__) || defined (__OpenBSD__) || defined (__NetBSD__)
+-    ((struct sockaddr_in *) &ifr.ifr_addr)->sin_addr.s_addr =  netmask->s_addr;
+-#elif defined(__sun__)
+-    ((struct sockaddr_in *) &ifr.ifr_addr)->sin_addr.s_addr =  netmask->s_addr;
+-#else
+-#error  "Unknown platform!" 
+-#endif
+-
+     if (ioctl(fd, SIOCSIFNETMASK, (void *) &ifr) < 0) {
+       log_err(errno, "ioctl(SIOCSIFNETMASK) failed");
+       close(fd);
+       return -1;
+     }
+   }
++
+   
++#elif defined(__FreeBSD__) || defined (__APPLE__) || defined (__OpenBSD__) || defined (__NetBSD__)
++  strncpy(ifr.ifra_name, devname, IFNAMSIZ);
++  ifr.ifra_name[IFNAMSIZ-1] = 0; /* Make sure to terminate */
++
++  ((struct sockaddr_in*) &ifr.ifra_addr)->sin_family = AF_INET;
++  ((struct sockaddr_in*) &ifr.ifra_addr)->sin_len = sizeof(ifr.ifra_addr);
++  ((struct sockaddr_in*) &ifr.ifra_addr)->sin_addr.s_addr = address->s_addr;
++
++  ((struct sockaddr_in*) &ifr.ifra_mask)->sin_family = AF_INET;
++  ((struct sockaddr_in*) &ifr.ifra_mask)->sin_len    = sizeof(ifr.ifra_mask);
++  ((struct sockaddr_in*) &ifr.ifra_mask)->sin_addr.s_addr = netmask->s_addr;
++
++  /* For some reason FreeBSD uses ifra_broadcast for specifying dstaddr */
++  ((struct sockaddr_in*) &ifr.ifra_broadaddr)->sin_family = AF_INET;
++  ((struct sockaddr_in*) &ifr.ifra_broadaddr)->sin_len = sizeof(ifr.ifra_broadaddr);
++  ((struct sockaddr_in*) &ifr.ifra_broadaddr)->sin_addr.s_addr = dstaddr->s_addr;
++
++    if (ioctl(fd, SIOCAIFADDR, (void *) &ifr) < 0) {
++      if (errno != EEXIST) {
++	  log_err(errno, "ioctl(SIOCAIFADDR) failed");
++      }
++      else {
++	  log_warn(errno, "ioctl(SIOCAIFADDR): Address already exists");
++      }
++      close(fd);
++      return -1;
++    }
++#else
++#error  "Unknown platform!"
++#endif
++
+   close(fd);
+   
+   return dev_set_flags(devname, IFF_UP | IFF_RUNNING); 
+
+From radius.sir at gmail.com  Tue May 13 10:04:39 2014
+From: radius.sir at gmail.com (Russell Mike)
+Date: Tue, 13 May 2014 10:04:39 +0000
+Subject: [Chilli] CoovaChilli DHCP Tuning
+Message-ID: <CADao4Cp9WjTkmJ2k13_96ENPgbLhHYi_JHTO0ei9y3EjnwyFMg@mail.gmail.com>
+
+Hello Chilli List
+
+
+how would i configure local.conf for following requirements ?
+
+HS_NETWORK=172.16.0.0
+HS_NETMASK=255.255.248.0
+
+
+CoovaChilli would issue ip address
+
+FROM: 172.16.0.1
+
+TO: 172.16.7.254
+
+BUT i want to end 172.16.6.254
+
+
+dhcpstart = ?
+dhcpend = ?
+
+
+Thanks
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20140513/3c4803fd/attachment.html>
+
+From steffen.dettmer at nomadrail.com  Tue May 13 11:42:22 2014
+From: steffen.dettmer at nomadrail.com (Steffen Dettmer)
+Date: Tue, 13 May 2014 11:42:22 +0000
+Subject: [Chilli] CoovaChilli DHCP Tuning
+In-Reply-To: <CADao4Cp9WjTkmJ2k13_96ENPgbLhHYi_JHTO0ei9y3EjnwyFMg@mail.gmail.com>
+References: <CADao4Cp9WjTkmJ2k13_96ENPgbLhHYi_JHTO0ei9y3EjnwyFMg@mail.gmail.com>
+Message-ID: <f0b949c783f24d619716fcfc0d00a188@AM3PR05MB323.eurprd05.prod.outlook.com>
+
+Hi,
+
+at this level of configuration I guess you could use:
+
+HS_DHCP_START=1
+HS_DHCP_END=1790
+(with x.y.6.254 = 6*256+254=1790)
+
+Regards,
+Steffen
+
+Von: chilli-bounces at coova.org [mailto:chilli-bounces at coova.org] Im Auftrag von Russell Mike
+Gesendet: Dienstag, 13. Mai 2014 12:05
+An: chilli list
+Betreff: [Chilli] CoovaChilli DHCP Tuning
+
+Hello Chilli List
+
+how would i configure local.conf for following requirements ?
+
+HS_NETWORK=172.16.0.0
+HS_NETMASK=255.255.248.0
+
+CoovaChilli would issue ip address
+
+FROM: 172.16.0.1
+
+TO: 172.16.7.254
+
+BUT i want to end 172.16.6.254
+
+
+dhcpstart = ?
+dhcpend = ?
+
+Thanks
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20140513/7ce52573/attachment.html>
+
+From bojan at gajba.net  Wed May 14 19:59:30 2014
+From: bojan at gajba.net (Bojan Pogacar)
+Date: Wed, 14 May 2014 21:59:30 +0200
+Subject: [Chilli] Roaming between different openwrt routers with common
+	radius server
+Message-ID: <5373CB22.8070905@gajba.net>
+
+Hi everyone!
+
+Is it possible to roam between different openwrt router with coova 
+chilli instances  with common radius server. Is it possible that user 
+connects on one side of a building and then walks through a building and 
+stays connected on the other side on different openwrt router. Means 
+that he doesn't have to relogin through captive portal.
+
+All SSISs are the same and also IP pools.
+
+Thank you.
+
+Bojan
+
+
+
+
+From alexander.szlezak at unwired.at  Wed May 14 21:45:48 2014
+From: alexander.szlezak at unwired.at (Szlezak, Alexander)
+Date: Wed, 14 May 2014 23:45:48 +0200
+Subject: [Chilli] Roaming between different openwrt routers with common
+ radius server
+In-Reply-To: <5373CB22.8070905@gajba.net>
+References: <5373CB22.8070905@gajba.net>
+Message-ID: <CA+jq8krxAePoYp6vkLcO8BRosenghMzmT6yqNY7_AYcymLRcvg@mail.gmail.com>
+
+Hi Bojan,
+
+Yes, use a central chilli and not chilli on each access point. Works fine.
+
+best,
+Alex
+
+
+2014-05-14 21:59 GMT+02:00 Bojan Pogacar <bojan at gajba.net>:
+
+> Hi everyone!
+>
+> Is it possible to roam between different openwrt router with coova chilli
+> instances  with common radius server. Is it possible that user connects on
+> one side of a building and then walks through a building and stays
+> connected on the other side on different openwrt router. Means that he
+> doesn't have to relogin through captive portal.
+>
+> All SSISs are the same and also IP pools.
+>
+> Thank you.
+>
+> Bojan
+>
+>
+>
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20140514/4c02308f/attachment.html>
+
+From dbird at google.com  Thu May 15 00:31:03 2014
+From: dbird at google.com (David Bird)
+Date: Wed, 14 May 2014 17:31:03 -0700
+Subject: [Chilli] Roaming between different openwrt routers with common
+ radius server
+In-Reply-To: <CA+jq8krxAePoYp6vkLcO8BRosenghMzmT6yqNY7_AYcymLRcvg@mail.gmail.com>
+References: <5373CB22.8070905@gajba.net>
+ <CA+jq8krxAePoYp6vkLcO8BRosenghMzmT6yqNY7_AYcymLRcvg@mail.gmail.com>
+Message-ID: <CADo9JyW9+d3hPtX5FBRdavxMfy8V7+G9o+fQa1VKwab18efGEw@mail.gmail.com>
+
+Another option is to use MAC-Authentication coordinated by your RADIUS
+server.
+
+
+On Wed, May 14, 2014 at 2:45 PM, Szlezak, Alexander <
+alexander.szlezak at unwired.at> wrote:
+
+> Hi Bojan,
+>
+> Yes, use a central chilli and not chilli on each access point. Works fine.
+>
+> best,
+> Alex
+>
+>
+> 2014-05-14 21:59 GMT+02:00 Bojan Pogacar <bojan at gajba.net>:
+>
+> Hi everyone!
+>>
+>> Is it possible to roam between different openwrt router with coova chilli
+>> instances  with common radius server. Is it possible that user connects on
+>> one side of a building and then walks through a building and stays
+>> connected on the other side on different openwrt router. Means that he
+>> doesn't have to relogin through captive portal.
+>>
+>> All SSISs are the same and also IP pools.
+>>
+>> Thank you.
+>>
+>> Bojan
+>>
+>>
+>>
+>> _______________________________________________
+>> Chilli mailing list
+>> Chilli at coova.org
+>> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>>
+>
+>
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20140514/fd8ce1bf/attachment.html>
+
+From ravikant.4784 at gmail.com  Thu May 15 04:26:17 2014
+From: ravikant.4784 at gmail.com (Ravikant Patil)
+Date: Thu, 15 May 2014 09:56:17 +0530
+Subject: [Chilli] Roaming between different openwrt routers with common
+ radius server
+In-Reply-To: <CADo9JyW9+d3hPtX5FBRdavxMfy8V7+G9o+fQa1VKwab18efGEw@mail.gmail.com>
+References: <5373CB22.8070905@gajba.net>
+ <CA+jq8krxAePoYp6vkLcO8BRosenghMzmT6yqNY7_AYcymLRcvg@mail.gmail.com>
+ <CADo9JyW9+d3hPtX5FBRdavxMfy8V7+G9o+fQa1VKwab18efGEw@mail.gmail.com>
+Message-ID: <CAGPhq8LnZBvkMFWOmrO+oXNLs+r_8q_OAouspiYEbnErsL_XyA@mail.gmail.com>
+
+Hi,
+
+Is there a pure Layer-2 alternative for coova-chilli?
+
+In my understanding, Coova Chilli on Opewnrt (or coovaAP) creates following
+situation/concerns.
+
+   - DHCP server on each AP, creating bubbles/subnetworks within intra-net
+   - Roaming is not transparent
+      - Client IP address changes after roaming to different AP (Intranet,
+      Internet connections are broken)
+      - User needs to re-login using portal.
+   - Clients can not directly communicate with each other across APs unless
+   NAT rules are established in APs
+
+Is it possible to shift 'user traffic control' functionality to APs without
+disturbing architecture of conventional AP based systems (APs + L-2 Switch
++ Gateway Router) ?
+
+Please correct me if I am wrong. I have a beginner level understanding of
+Coova Chilli and Openwrt.
+
+
+Thanks and Regards,
+Ravikant
+
+
+On Thu, May 15, 2014 at 6:01 AM, David Bird <dbird at google.com> wrote:
+
+> Another option is to use MAC-Authentication coordinated by your RADIUS
+> server.
+>
+>
+> On Wed, May 14, 2014 at 2:45 PM, Szlezak, Alexander <
+> alexander.szlezak at unwired.at> wrote:
+>
+>> Hi Bojan,
+>>
+>> Yes, use a central chilli and not chilli on each access point. Works
+>> fine.
+>>
+>> best,
+>> Alex
+>>
+>>
+>> 2014-05-14 21:59 GMT+02:00 Bojan Pogacar <bojan at gajba.net>:
+>>
+>> Hi everyone!
+>>>
+>>> Is it possible to roam between different openwrt router with coova
+>>> chilli instances  with common radius server. Is it possible that user
+>>> connects on one side of a building and then walks through a building and
+>>> stays connected on the other side on different openwrt router. Means that
+>>> he doesn't have to relogin through captive portal.
+>>>
+>>> All SSISs are the same and also IP pools.
+>>>
+>>> Thank you.
+>>>
+>>> Bojan
+>>>
+>>>
+>>>
+>>> _______________________________________________
+>>> Chilli mailing list
+>>> Chilli at coova.org
+>>> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>>>
+>>
+>>
+>> _______________________________________________
+>> Chilli mailing list
+>> Chilli at coova.org
+>> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>>
+>>
+>
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20140515/a367c4bc/attachment.html>
+
+From sourav.chakraborty at netcommwireless.com  Thu May 15 07:51:50 2014
+From: sourav.chakraborty at netcommwireless.com (Sourav)
+Date: Thu, 15 May 2014 17:51:50 +1000
+Subject: [Chilli] inconsistency in downlink and uplink bandwidths using
+	coovachilli
+Message-ID: <53747216.8030300@netcommwireless.com>
+
+Without Radius and with the following --
+/sbin/chilli -Ffd -c $CONFIG --pidfile=$pidfile --maxclients=512 
+--defbandwidthmaxdown=100000000 \
+         --defbandwidthmaxup=100000000 --defsessiontimeout=600 \
+         --defidletimeout=600 -Ffd
+
+we are only seeing downlink and uplink bandwidth of ~8Mbps (measured 
+using www.speedtest.net),when we have configured coovachilli to 
+100Mbps......though when we have configured coovachilli to
+1Mbps(--defbandwidthmaxdown=1000 and --defbandwidthmaxup=1000), the 
+measured d/l and u/l bandwidth ~0.98Mbps(which is consistent with 
+www.speedtest.net measurements).
+Also we have checked,that our wifi link can go much higher without 
+coovachilli.
+
+Is there any rate limiting cap being set by Coovachilli? If so how to 
+get over it?
+
+-- 
+Warm Regards,
+Sourav
+
+
+______________________________________________________________________
+This communication contains information which may be confidential or privileged. The information is intended solely for the use of the individual or entity named above.  If you are not the intended recipient, be aware that any disclosure, copying, distribution or use of the contents of this information is prohibited.  If you have received this communication in error, please notify me by telephone immediately.
+______________________________________________________________________
+
+From bergonz at labs.it  Thu May 15 08:19:32 2014
+From: bergonz at labs.it (Michele Bergonzoni)
+Date: Thu, 15 May 2014 10:19:32 +0200
+Subject: [Chilli] inconsistency in downlink and uplink bandwidths using
+ coovachilli
+In-Reply-To: <53747216.8030300@netcommwireless.com>
+References: <53747216.8030300@netcommwireless.com>
+Message-ID: <53747894.1030201@labs.it>
+
+> we are only seeing downlink and uplink bandwidth of ~8Mbps (measured
+> using www.speedtest.net),when we have configured coovachilli to
+> 100Mbps
+
+I had a simlar issue, it turned out to be quite weird but, I think, not 
+uncommon. Your issue could be related or not, but it is very quick to 
+check if you have the same problem I had.
+
+With tcpdump on the dhcp interface, check if you see ICMP unreachables, 
+with remote servers as source, of the "Fragmentation needed and DF set" 
+kind.
+
+If you see this messages, you will probably also see huge TCP segments 
+being received on the same interface: in this case your NIC hardware is 
+glueing TCP segments to offload your CPU, but chilli does not understand 
+this.
+
+If this is the problem, you can solve it by disabling "coalesce" or 
+whatever it is called, in your NIC with ethtool or similar.
+
+Regards,
+			Bergonz
+
+-- 
+Ing. Michele Bergonzoni - Laboratori Guglielmo Marconi S.p.a.
+Phone:+39-051-6781926 e-mail: bergonz at labs.it
+alt.advanced.networks.design.configure.operate
+
+From maxxer at ufficyo.com  Thu May 15 11:01:03 2014
+From: maxxer at ufficyo.com (Lorenzo Milesi)
+Date: Thu, 15 May 2014 13:01:03 +0200 (CEST)
+Subject: [Chilli] RedirSSL and certificate error AFTER login
+Message-ID: <1549616529.19828.1400151663716.JavaMail.zimbra@yetopen.it>
+
+hi.
+I've been giving a try to redirssl on 1.3.0, it works fine (as expected), I reach the login page but after successful login in Firefox I get an error:
+Secure connection failed
+ssl_error_rx_record_too_long
+
+Anyone having the same issue?
+thanks
+-- 
+Lorenzo Milesi - lorenzo.milesi at yetopen.it
+
+YetOpen S.r.l. - http://www.yetopen.it/
+
+
+From ben at gowasabi.net  Thu May 15 13:18:39 2014
+From: ben at gowasabi.net (Ben West)
+Date: Thu, 15 May 2014 08:18:39 -0500
+Subject: [Chilli] Roaming between different openwrt routers with common
+ radius server
+In-Reply-To: <CAGPhq8LnZBvkMFWOmrO+oXNLs+r_8q_OAouspiYEbnErsL_XyA@mail.gmail.com>
+References: <5373CB22.8070905@gajba.net>
+ <CA+jq8krxAePoYp6vkLcO8BRosenghMzmT6yqNY7_AYcymLRcvg@mail.gmail.com>
+ <CADo9JyW9+d3hPtX5FBRdavxMfy8V7+G9o+fQa1VKwab18efGEw@mail.gmail.com>
+ <CAGPhq8LnZBvkMFWOmrO+oXNLs+r_8q_OAouspiYEbnErsL_XyA@mail.gmail.com>
+Message-ID: <CADSh-SMion62aR3gdfWhqmqRvr4S_PgNEnZj1n5Y2yzjq8oCvA@mail.gmail.com>
+
+The batman-adv routing agent is used in mesh deployments to do layer 2
+meshing, for example on Open Mesh nodes managed with the Cloudtrax
+dashboard service.  These nodes will run coovachilli and the DHCP server
+just on the gateway node (i.e. the one with the wired gateway), with a
+10.x.x.x subnet distributed out to repeater nodes.  Clients can then
+associate to different nodes / AP's without their leased IP changing.
+
+
+On Wed, May 14, 2014 at 11:26 PM, Ravikant Patil <ravikant.4784 at gmail.com>wrote:
+
+> Hi,
+>
+> Is there a pure Layer-2 alternative for coova-chilli?
+>
+> In my understanding, Coova Chilli on Opewnrt (or coovaAP) creates
+> following situation/concerns.
+>
+>    - DHCP server on each AP, creating bubbles/subnetworks within intra-net
+>    - Roaming is not transparent
+>       - Client IP address changes after roaming to different AP
+>       (Intranet, Internet connections are broken)
+>       - User needs to re-login using portal.
+>    - Clients can not directly communicate with each other across APs
+>    unless NAT rules are established in APs
+>
+> Is it possible to shift 'user traffic control' functionality to APs
+> without disturbing architecture of conventional AP based systems (APs + L-2
+> Switch + Gateway Router) ?
+>
+> Please correct me if I am wrong. I have a beginner level understanding of
+> Coova Chilli and Openwrt.
+>
+>
+> Thanks and Regards,
+> Ravikant
+>
+>
+> On Thu, May 15, 2014 at 6:01 AM, David Bird <dbird at google.com> wrote:
+>
+>> Another option is to use MAC-Authentication coordinated by your RADIUS
+>> server.
+>>
+>>
+>> On Wed, May 14, 2014 at 2:45 PM, Szlezak, Alexander <
+>> alexander.szlezak at unwired.at> wrote:
+>>
+>>> Hi Bojan,
+>>>
+>>> Yes, use a central chilli and not chilli on each access point. Works
+>>> fine.
+>>>
+>>> best,
+>>> Alex
+>>>
+>>>
+>>> 2014-05-14 21:59 GMT+02:00 Bojan Pogacar <bojan at gajba.net>:
+>>>
+>>> Hi everyone!
+>>>>
+>>>> Is it possible to roam between different openwrt router with coova
+>>>> chilli instances  with common radius server. Is it possible that user
+>>>> connects on one side of a building and then walks through a building and
+>>>> stays connected on the other side on different openwrt router. Means that
+>>>> he doesn't have to relogin through captive portal.
+>>>>
+>>>> All SSISs are the same and also IP pools.
+>>>>
+>>>> Thank you.
+>>>>
+>>>> Bojan
+>>>>
+>>>>
+>>>>
+>>>> _______________________________________________
+>>>> Chilli mailing list
+>>>> Chilli at coova.org
+>>>> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>>>>
+>>>
+>>>
+>>> _______________________________________________
+>>> Chilli mailing list
+>>> Chilli at coova.org
+>>> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>>>
+>>>
+>>
+>> _______________________________________________
+>> Chilli mailing list
+>> Chilli at coova.org
+>> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>>
+>>
+>
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+>
+
+
+-- 
+Ben West
+http://gowasabi.net
+ben at gowasabi.net
+314-246-9434
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20140515/cb894959/attachment.html>
+
+From steffen.dettmer at nomadrail.com  Thu May 15 14:06:09 2014
+From: steffen.dettmer at nomadrail.com (Steffen Dettmer)
+Date: Thu, 15 May 2014 14:06:09 +0000
+Subject: [Chilli] inconsistency in downlink and uplink bandwidths using
+ coovachilli
+In-Reply-To: <53747894.1030201@labs.it>
+References: <53747216.8030300@netcommwireless.com> <53747894.1030201@labs.it>
+Message-ID: <044121484fa64e83aff8b183ddd474cd@AM3PR05MB323.eurprd05.prod.outlook.com>
+
+Hi,
+
+I had a similar issue which may or may not be related.
+If client sends fragments, they are also dropped by Coova Chilli, I patched this out of "my" version and asked why Coova drops fragments, but did not get any answer.
+
+Does anyone know why Coova drops IP fragments?
+
+Steffen
+
+-----Urspr?ngliche Nachricht-----
+Von: chilli-bounces at coova.org [mailto:chilli-bounces at coova.org] Im Auftrag von Michele Bergonzoni
+Gesendet: Donnerstag, 15. Mai 2014 10:20
+An: chilli at coova.org
+Betreff: Re: [Chilli] inconsistency in downlink and uplink bandwidths using coovachilli
+
+> we are only seeing downlink and uplink bandwidth of ~8Mbps (measured 
+> using www.speedtest.net),when we have configured coovachilli to 
+> 100Mbps
+
+I had a simlar issue, it turned out to be quite weird but, I think, not uncommon. Your issue could be related or not, but it is very quick to check if you have the same problem I had.
+
+With tcpdump on the dhcp interface, check if you see ICMP unreachables, with remote servers as source, of the "Fragmentation needed and DF set" 
+kind.
+
+If you see this messages, you will probably also see huge TCP segments being received on the same interface: in this case your NIC hardware is glueing TCP segments to offload your CPU, but chilli does not understand this.
+
+If this is the problem, you can solve it by disabling "coalesce" or whatever it is called, in your NIC with ethtool or similar.
+
+Regards,
+			Bergonz
+
+--
+Ing. Michele Bergonzoni - Laboratori Guglielmo Marconi S.p.a.
+Phone:+39-051-6781926 e-mail: bergonz at labs.it alt.advanced.networks.design.configure.operate
+_______________________________________________
+Chilli mailing list
+Chilli at coova.org
+http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+From steve at base-it.co.uk  Fri May 16 08:10:29 2014
+From: steve at base-it.co.uk (Stephen Davies)
+Date: Fri, 16 May 2014 09:10:29 +0100
+Subject: [Chilli] CoovaChilli not redirecting
+Message-ID: <5375C7F5.7020604@base-it.co.uk>
+
+Hello all,
+
+Having finally got to grips with Coova, my final unsolved problem is 
+that before authentication, users are not redirected to the login page 
+when they request a URL. If I manually enter the Coova server address 
+"http://10.1.0.1:3990" it then redirects? Does anyone know why it is 
+failing. I have seen a few posts regarding this. I am running Coova on 
+OpenWRT which could be the problem and not Coova.
+
+Thanks
+Steve
+
+
+
+From steffen.dettmer at nomadrail.com  Fri May 16 13:42:26 2014
+From: steffen.dettmer at nomadrail.com (Steffen Dettmer)
+Date: Fri, 16 May 2014 13:42:26 +0000
+Subject: [Chilli] CoovaChilli DHCP Tuning
+References: <CADao4Cp9WjTkmJ2k13_96ENPgbLhHYi_JHTO0ei9y3EjnwyFMg@mail.gmail.com> 
+Message-ID: <cd57ea05c96b47a8b53fbeb6ee9301ad@AM3PR05MB323.eurprd05.prod.outlook.com>
+
+Hi,
+
+sorry, I patched in support for HS_DHCP_START/ HS_DHCP_END in
+some wrapper script, normal Coova config does not support them,
+and my calculation leaves the very last IP of the pool unused, so
+correct should be to add in e.g. local.conf:
+
+  dhcpstart=2 # configures offset to be added to HS_NETWORK
+  dhcpend=1791 # configures offset to be added to HS_NETWORK
+  maxclients=1789 # Maximum number of clients/subscribers
+
+I set maxclients a bit bigger (i.e. at least 1790) to get ?Failed
+allocate dynamic IP address? before ?reached max connections 1790?.
+
+Best regards,
+Steffen
+
+-----------------------------------------------------
+
+Von: Steffen Dettmer 
+Gesendet: Dienstag, 13. Mai 2014 13:42
+An: chilli list
+Betreff: AW: [Chilli] CoovaChilli DHCP Tuning
+
+Hi,
+
+at this level of configuration I guess you could use:
+
+HS_DHCP_START=1
+HS_DHCP_END=1790
+(with x.y.6.254 = 6*256+254=1790)
+
+Regards,
+Steffen
+
+Von: chilli-bounces at coova.org [mailto:chilli-bounces at coova.org] Im Auftrag von Russell Mike
+Gesendet: Dienstag, 13. Mai 2014 12:05
+An: chilli list
+Betreff: [Chilli] CoovaChilli DHCP Tuning
+
+Hello Chilli List
+how would i configure local.conf for following requirements ?
+
+HS_NETWORK=172.16.0.0
+HS_NETMASK=255.255.248.0
+CoovaChilli would issue ip address   
+
+FROM: 172.16.0.1  
+
+TO: 172.16.7.254  
+
+BUT i want to end 172.16.6.254
+
+  
+dhcpstart = ?
+dhcpend = ?
+Thanks
+
+From venture37 at gmail.com  Mon May 19 00:42:18 2014
+From: venture37 at gmail.com (Sevan / Venture37)
+Date: Sun, 18 May 2014 20:42:18 -0400
+Subject: [Chilli] Patch to dev_set_address() in tun.c
+In-Reply-To: <CA+U3Mf6vdKO39if5r71LXokOLD1xHCBRwEMr74Ok69oaENX7FQ@mail.gmail.com>
+References: <CA+U3Mf6vdKO39if5r71LXokOLD1xHCBRwEMr74Ok69oaENX7FQ@mail.gmail.com>
+Message-ID: <5EC51EC1-B341-445E-BEB8-C8A401EF8801@gmail.com>
+
+
+
+> On 10 May 2014, at 19:02, "Sevan / Venture37" <venture37 at gmail.com> wrote:
+> 
+> Another patch for testing, again it's intended for a specific problem
+> but it effects everyone
+
+Any feedback on this diff?
+
+
+Sevan / Venture37
+
+From venture37 at gmail.com  Mon May 19 00:40:45 2014
+From: venture37 at gmail.com (Sevan / Venture37)
+Date: Sun, 18 May 2014 20:40:45 -0400
+Subject: [Chilli] Building Coova-Chilli with clang
+In-Reply-To: <CA+U3Mf4coSrhDJ32HzGLf6HA4B+DCByCH1wOAUYx_bzbJvnjPw@mail.gmail.com>
+References: <CA+U3Mf4coSrhDJ32HzGLf6HA4B+DCByCH1wOAUYx_bzbJvnjPw@mail.gmail.com>
+Message-ID: <A3E76458-8309-4555-960C-637D4B07AFA0@gmail.com>
+
+
+> On 9 May 2014, at 18:53, "Sevan / Venture37" <venture37 at gmail.com> wrote:
+> 
+> You should test this diff if you are still using GCC as your compiler.
+
+Hi,
+Did anyone get a chance to test this diff?
+
+
+Sevan / Venture37
+
+From cchamb2 at gmail.com  Mon May 19 15:51:50 2014
+From: cchamb2 at gmail.com (Charles Chambers)
+Date: Mon, 19 May 2014 08:51:50 -0700
+Subject: [Chilli] Installation question
+Message-ID: <537A2896.5080200@gmail.com>
+
+Hi, All:
+
+I'm trying to set up Chilli, and it's giving me a problem that I hope 
+has come up before.
+
+The computer on which I'm setting up a wireless captive portal is 
+running Ubuntu 14.04.  It's a Dell GX620 with a gig of RAM and an 80 gig 
+hard drive.  I have it currently configured with its built in ethernet 
+port (eth0) connected to my router for Internet access. I'm trying to go 
+directly to a TP-Link725N nano wireless USB adapter.  It's working 
+properly; I get the expected response off ifconfig.
+
+Chilli doesn't want to deal with wlan0, it wants both network 
+connections to be ethernet (eth0 and eth1).
+
+Any way to configure Chilli so that eth1 can be wlan0?
+
+Charlie
+
+From maxxer at ufficyo.com  Mon May 19 16:34:04 2014
+From: maxxer at ufficyo.com (Lorenzo Milesi)
+Date: Mon, 19 May 2014 18:34:04 +0200 (CEST)
+Subject: [Chilli] Installation question
+In-Reply-To: <537A2896.5080200@gmail.com>
+References: <537A2896.5080200@gmail.com>
+Message-ID: <702649405.28073.1400517244636.JavaMail.zimbra@yetopen.it>
+
+> Any way to configure Chilli so that eth1 can be wlan0?
+
+can you post your config file?
+-- 
+Lorenzo Milesi - lorenzo.milesi at yetopen.it
+
+YetOpen S.r.l. - http://www.yetopen.it/
+
+
+From marvelliu at gmail.com  Mon May 19 17:15:40 2014
+From: marvelliu at gmail.com (Liu Wenmao)
+Date: Tue, 20 May 2014 01:15:40 +0800
+Subject: [Chilli] client MTU too small for SSL requests
+Message-ID: <CAL7G-MZbwyX_FsOCjwm9LB43sc4L8FjpLHCQKPtrn-LVBh63FA@mail.gmail.com>
+
+Hi list:
+
+I recently use coova-chilli as wifi auth service on my openwrt box, http
+web seems ok, but some of my client can not rearch some https webs, which
+are random, for example, my android phone can not load one https page, but
+my ipad can.
+
+After I googled I find that it may be a MTU problem, so I set a small MTU
+value,say 1400 for the android phone, so it can load the https page now.
+But I can not change every mobile phone because it is not convinient, so I
+probably should change the chilli settings. But I do not know how, any
+someone help?
+
+I notice that all interfaces of the openwrt system has MTU 1500, and none
+of them drop any packets from 'ifconfig' cmd output.
+
+I tcpdumped the packets and find that the key exchage finishes, but when
+client sends requests, it seems to have no responses because it retransmit
+the packets for 3 more times, but there are no error icmp responses from
+chilli during the retransmission,which I think should occur when the router
+find a too big segment, is it a bug?
+
+Wenmao Liu
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20140520/3b48177c/attachment.html>
+
+From andrew at polkaspots.com  Mon May 19 20:02:26 2014
+From: andrew at polkaspots.com (andrew@PolkaSpots.com)
+Date: Mon, 19 May 2014 21:02:26 +0100
+Subject: [Chilli] client MTU too small for SSL requests
+In-Reply-To: <CAL7G-MZbwyX_FsOCjwm9LB43sc4L8FjpLHCQKPtrn-LVBh63FA@mail.gmail.com>
+References: <CAL7G-MZbwyX_FsOCjwm9LB43sc4L8FjpLHCQKPtrn-LVBh63FA@mail.gmail.com>
+Message-ID: <537A6352.20205@polkaspots.com>
+
+Hi Liu,
+
+Not sure if this is the best way of doing it, but try in
+/etc/config/network
+
+to add on the wan interface
+
+option mtu '1400'
+
+Have a great one
+
+On 19/05/14 18:15, Liu Wenmao wrote:
+> Hi list:
+>
+> I recently use coova-chilli as wifi auth service on my openwrt box, 
+> http web seems ok, but some of my client can not rearch some https 
+> webs, which are random, for example, my android phone can not load one 
+> https page, but my ipad can.
+>
+> After I googled I find that it may be a MTU problem, so I set a small 
+> MTU value,say 1400 for the android phone, so it can load the https 
+> page now. But I can not change every mobile phone because it is not 
+> convinient, so I probably should change the chilli settings. But I do 
+> not know how, any someone help?
+>
+> I notice that all interfaces of the openwrt system has MTU 1500, and 
+> none of them drop any packets from 'ifconfig' cmd output.
+>
+> I tcpdumped the packets and find that the key exchage finishes, but 
+> when client sends requests, it seems to have no responses because it 
+> retransmit the packets for 3 more times, but there are no error icmp 
+> responses from chilli during the retransmission,which I think should 
+> occur when the router find a too big segment, is it a bug?
+>
+> Wenmao Liu
+>
+>
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+
+---------------------------------------------------------------------------------------
+
+The information contained in this email and its attachments is confidential and may be the subject of legal, professional or other privilege. It is intended only for the named addressees and may not be disclosed to anyone else without consent from PolkaSpots Limited. If you are not the named addressee you must not use, disclose, distribute, copy, print or rely on the contents of this email and should destroy it immediately. Whilst PolkaSpots Limited takes care to protect its systems from electronic virus attack or other harmful event, the firm gives no warranty that this email message (including any attachments to it) is free of any virus or other harmful matter and accepts no responsibility for any loss or damage resulting from the recipient receiving, opening or using it. If you need any further information, please contact the originator of this message on +44 (0)20 7183 1471.
+
+PolkaSpots is a limited company registered in the UK (registered number 05508105). Registered Office: 204 Buspace Studios, Conlan Street, London W10 5AP
+
+Website: www.polkaspots.com
+WiFi Hotspot Blog: www.polkaspots.com/blog
+
+---------------------------------------------------------------------------------------
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20140519/b7afe060/attachment.html>
+
+From steve at base-it.co.uk  Mon May 19 22:26:06 2014
+From: steve at base-it.co.uk (Stephen Davies)
+Date: Mon, 19 May 2014 23:26:06 +0100
+Subject: [Chilli] TP-LINK TL-WR703N
+Message-ID: <537A84FE.4030807@base-it.co.uk>
+
+Hi all,
+
+I have had a go at installing CoovaChilli on a TP-LINK TL-WR703N. I have 
+chosen this router as it is very compact, simple in design and low cost. 
+The recommended Linksys platform for Chilli is not an option for me. 
+Everything has been fairly straight forward to get OpenWRT and 
+CoovaChilli installed.
+
+I have gone with the default config and Chilli starts with no problems. 
+When I connect to the wifi I am handed an address (192.168.1.x) from the 
+router behind the TP-LINK TL-WR703N and not the expected 10.1.0.x as 
+configured. If I run 'ifconfig tun0' I can see the interface running but 
+I just don't get an address? Has anyone managed to get Chilli running on 
+a TP-LINK TL-WR703N or does anyone have any pointers as to why I just 
+can't get an address from Chilli? I have been struggling with Chilli for 
+a week now but I am determined to crack it.
+
+Thanks in advance.
+Steve
+
+From rwhite at globalgossip.net  Tue May 20 04:30:20 2014
+From: rwhite at globalgossip.net (Robert White)
+Date: Tue, 20 May 2014 14:30:20 +1000
+Subject: [Chilli] CoovaChilli 1.3.1
+In-Reply-To: <CAC-LwPPYrEiRBB3OdDSyzLKj2h-C-9tHXN2L0dunHzO51s-biA@mail.gmail.com>
+References: <CAODoKgBu1n9dOs+6_xBpy_ppMr42vKbnTYeyJKKsPCS2gf+xKg@mail.gmail.com>
+ <CAC-LwPPYrEiRBB3OdDSyzLKj2h-C-9tHXN2L0dunHzO51s-biA@mail.gmail.com>
+Message-ID: <CAODoKgAot6YQwsvgFDGPJSmx9TeP-txzC_6yCg=idXzaJUYQAw@mail.gmail.com>
+
+The code is available but until it's an official release out of beta i dont
+feel comfortable running it.
+
+
+On 20 May 2014 06:36, Vik Killa <vipkilla at gmail.com> wrote:
+
+> Is there a code repo somewhere?
+>
+>
+> On Thu, May 8, 2014 at 7:47 PM, Robert White <rwhite at globalgossip.net>wrote:
+>
+>> Hi all,
+>>
+>> Does anyone have any idea when CoovaChilli 1.3.1 may make it to final
+>> release?  I downloaded the beta version many months ago and have been
+>> running it in a test environment without issues.
+>>
+>> It's been over a year since 1.3.0 release.  Can we expect to see 1.3.1
+>> soon?
+>>
+>> Thanks,
+>>
+>> Rob
+>>
+>> -------------------------------------------------
+>>
+>> IMPORTANT NOTICE: The information in this email is confidential and may
+>> also be privileged.
+>> If you are not the intended recipient, any use or dissemination of the
+>> information and any disclosure or copying of this email is unauthorised and
+>> strictly prohibited.  If you have received this email in error, please
+>> promptly inform us by reply email or telephone.  You should also
+>> delete this email and destroy any hard copies produced.
+>>
+>> _______________________________________________
+>> Chilli mailing list
+>> Chilli at coova.org
+>> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>>
+>>
+>
+
+-- 
+-------------------------------------------------
+
+IMPORTANT NOTICE: The information in this email is confidential and may 
+also be privileged. 
+If you are not the intended recipient, any use or dissemination of the 
+information and any disclosure or copying of this email is unauthorised and 
+strictly prohibited.  If you have received this email in error, please 
+promptly inform us by reply email or telephone.  You should also 
+delete this email and destroy any hard copies produced.
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20140520/39e33f54/attachment-0001.html>
+
+From steffen.dettmer at nomadrail.com  Tue May 20 08:12:17 2014
+From: steffen.dettmer at nomadrail.com (Steffen Dettmer)
+Date: Tue, 20 May 2014 08:12:17 +0000
+Subject: [Chilli] Installation question
+In-Reply-To: <537A2896.5080200@gmail.com>
+References: <537A2896.5080200@gmail.com>
+Message-ID: <fa77604690814dc1880587181bbce826@AM3PR05MB323.eurprd05.prod.outlook.com>
+
+* Charles Chambers
+> Chilli doesn't want to deal with wlan0, it wants both network
+> connections to be ethernet (eth0 and eth1).
+
+Could you describe a bit more in detail, please?
+Coova works fine with wlan0, a standard config for me.
+
+> Any way to configure Chilli so that eth1 can be wlan0?
+
+Sure, should be straight-forward:
+
+HS_WANIF="uplink-tun" # Give interface of default route or omit (=auto).
+HS_LANIF="wlan0"      # Your WiFi interface.
+HS_TUNDEV="wlan0-tun" # Name of the tun dev.
+...
+
+Steffen
+
+
+From steffen.dettmer at nomadrail.com  Tue May 20 08:28:44 2014
+From: steffen.dettmer at nomadrail.com (Steffen Dettmer)
+Date: Tue, 20 May 2014 08:28:44 +0000
+Subject: [Chilli] TP-LINK TL-WR703N
+In-Reply-To: <537A84FE.4030807@base-it.co.uk>
+References: <537A84FE.4030807@base-it.co.uk>
+Message-ID: <e2d78de2b67f4638aead3db424afe537@AM3PR05MB323.eurprd05.prod.outlook.com>
+
+* Stephen Davies
+> I have gone with the default config and Chilli starts with no problems.
+
+so there are no messages in syslog?
+
+> When I connect to the wifi I am handed an address (192.168.1.x)
+> from the router behind the TP-LINK TL-WR703N and not the
+> expected 10.1.0.x as configured. If I run 'ifconfig tun0' I can
+> see the interface running but I just don't get an address?
+
+Normally you should see an IP, however "ifconfig" is deprecated
+by "ip". Not all IP addresses are shown by ifconfig, so in
+general better use "ip addr show wlan0" to ensure to see all IPs.
+
+> Has anyone managed to get Chilli running on a TP-LINK TL-WR703N
+> or does anyone have any pointers as to why I just can't get an
+> address from Chilli? I have been struggling with Chilli for a
+> week now but I am determined to crack it.
+
+Could it be some configuration issue? Netmask not matching, IP
+not in network or such? Can you manually configure the values you
+configured? You may check syslog and enable chilli debug.
+
+Steffen
+
+
+
+From steffen.dettmer at nomadrail.com  Tue May 20 18:13:53 2014
+From: steffen.dettmer at nomadrail.com (Steffen Dettmer)
+Date: Tue, 20 May 2014 18:13:53 +0000
+Subject: [Chilli] Installation question
+In-Reply-To: <CAGPMUcHe-SS+S-+S7=agF_e7yawJtrEtq9tvrrRJO2rbkoaOnA@mail.gmail.com>
+References: <537A2896.5080200@gmail.com>
+ <fa77604690814dc1880587181bbce826@AM3PR05MB323.eurprd05.prod.outlook.com>
+ <CAGPMUcHe-SS+S-+S7=agF_e7yawJtrEtq9tvrrRJO2rbkoaOnA@mail.gmail.com>
+Message-ID: <4063ce36d53b459882e9562d9d1b8df2@AM3PR05MB323.eurprd05.prod.outlook.com>
+
+Hi,
+
+Normally you copy /etc/chilli defaults to /etc/chilli/config and edit it e.g. to include
+HS_WANIF="eth0" # Give interface of default route or omit (=auto).
+HS_LANIF="wlan0"      # Your WiFi interface.
+
+There is a *very* brief note http://coova.org/CoovaChilli/Configuration
+Looking at the init.d script and the function file it uses may help,
+Google should point you to some configuration HOWTOs,
+Setting up backends (RADIUS) can be challenging.
+
+Steffen
+
+Von: Charles Chambers [mailto:cchamb2 at gmail.com]
+Gesendet: Dienstag, 20. Mai 2014 15:24
+An: Steffen Dettmer
+Betreff: Re: AW: [Chilli] Installation question
+
+
+Sure.
+
+I'm installing on an Ubuntu server (14. 04) with basic system files,  with RadiusDesk already configured.  I'm at the step of starting CoovaChilli,  and the daemon is looking to bind to eth0 and eth1 (WAN and LAN interface... assuming that eth1 connects to an access point).
+
+There is no eth1.   ifconfig shows eth0 and wlan0 for the network adapters,  along with lo.
+
+I'm asking how/where/what to change so that the daemon accepts wlan0 instead of eth0.
+On May 20, 2014 1:12 AM, "Steffen Dettmer" <steffen.dettmer at nomadrail.com<mailto:steffen.dettmer at nomadrail.com>> wrote:
+* Charles Chambers
+> Chilli doesn't want to deal with wlan0, it wants both network
+> connections to be ethernet (eth0 and eth1).
+
+Could you describe a bit more in detail, please?
+Coova works fine with wlan0, a standard config for me.
+
+> Any way to configure Chilli so that eth1 can be wlan0?
+
+Sure, should be straight-forward:
+
+HS_WANIF="uplink-tun" # Give interface of default route or omit (=auto).
+HS_LANIF="wlan0"      # Your WiFi interface.
+HS_TUNDEV="wlan0-tun" # Name of the tun dev.
+...
+
+Steffen
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20140520/a0921575/attachment.html>
+
+From steffen.dettmer at nomadrail.com  Wed May 21 08:14:20 2014
+From: steffen.dettmer at nomadrail.com (Steffen Dettmer)
+Date: Wed, 21 May 2014 08:14:20 +0000
+Subject: [Chilli] Installation question
+In-Reply-To: <537BA0F1.1020409@base-it.co.uk>
+References: <537A2896.5080200@gmail.com>
+ <fa77604690814dc1880587181bbce826@AM3PR05MB323.eurprd05.prod.outlook.com>
+ <CAGPMUcHe-SS+S-+S7=agF_e7yawJtrEtq9tvrrRJO2rbkoaOnA@mail.gmail.com>
+ <4063ce36d53b459882e9562d9d1b8df2@AM3PR05MB323.eurprd05.prod.outlook.com>
+ <537BA0F1.1020409@base-it.co.uk>
+Message-ID: <b9e934e807f74054b76147fa45ae796b@AM3PR05MB323.eurprd05.prod.outlook.com>
+
+Hi,
+
+I'm in a hurry, sorry, but without difficult tricky stuff you need one device for coova client net (wlan0 or eth1.10 or whatever) and Coova is DHCP server on that interface (because coova checks MAC address etc). You must not have another DHCP server on that device, it will be a race with undefined results I guess. Also notice that Coova rewrites firewalling (and has to).
+I don't understand what you mean with "DHCP of the lan", you mean outside HS_NETWORK?
+
+Steffen
+
+
+
+Von: Stephen Davies [mailto:steve at base-it.co.uk]
+Gesendet: Dienstag, 20. Mai 2014 20:38
+An: Steffen Dettmer
+Betreff: Re: [Chilli] Installation question
+
+Thanks again Steffen,
+
+I have Chilli working great on an Ubuntu PC with the same running RadiusDesk. I now need a Chilli hotspot 'device' rather than a PC and that is where the problems have started. i've tried to keep the minimal config initially to make things easier to get running. i just cant work out for the life of me why an IP as set is given to the client and a DHCP off the lan is given instead. i'm thinking Chilli will just not wok on certain types of router although OpenWRT is installed fine.
+
+Thanks
+Steve
+
+On 20/05/2014 19:13, Steffen Dettmer wrote:
+Hi,
+
+Normally you copy /etc/chilli defaults to /etc/chilli/config and edit it e.g. to include
+HS_WANIF="eth0" # Give interface of default route or omit (=auto).
+HS_LANIF="wlan0"      # Your WiFi interface.
+
+
+There is a *very* brief note http://coova.org/CoovaChilli/Configuration
+Looking at the init.d script and the function file it uses may help,
+Google should point you to some configuration HOWTOs,
+Setting up backends (RADIUS) can be challenging.
+
+Steffen
+
+Von: Charles Chambers [mailto:cchamb2 at gmail.com]
+Gesendet: Dienstag, 20. Mai 2014 15:24
+An: Steffen Dettmer
+Betreff: Re: AW: [Chilli] Installation question
+
+
+Sure.
+
+I'm installing on an Ubuntu server (14. 04) with basic system files,  with RadiusDesk already configured.  I'm at the step of starting CoovaChilli,  and the daemon is looking to bind to eth0 and eth1 (WAN and LAN interface... assuming that eth1 connects to an access point).
+
+There is no eth1.   ifconfig shows eth0 and wlan0 for the network adapters,  along with lo.
+
+I'm asking how/where/what to change so that the daemon accepts wlan0 instead of eth0.
+On May 20, 2014 1:12 AM, "Steffen Dettmer" <steffen.dettmer at nomadrail.com<mailto:steffen.dettmer at nomadrail.com>> wrote:
+* Charles Chambers
+> Chilli doesn't want to deal with wlan0, it wants both network
+> connections to be ethernet (eth0 and eth1).
+
+Could you describe a bit more in detail, please?
+Coova works fine with wlan0, a standard config for me.
+
+> Any way to configure Chilli so that eth1 can be wlan0?
+
+Sure, should be straight-forward:
+
+HS_WANIF="uplink-tun" # Give interface of default route or omit (=auto).
+HS_LANIF="wlan0"      # Your WiFi interface.
+HS_TUNDEV="wlan0-tun" # Name of the tun dev.
+...
+
+Steffen
+
+
+
+
+_______________________________________________
+
+Chilli mailing list
+
+Chilli at coova.org<mailto:Chilli at coova.org>
+
+http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20140521/2ef06354/attachment-0001.html>
+
+From vipkilla at gmail.com  Wed May 21 13:21:30 2014
+From: vipkilla at gmail.com (Vik Killa)
+Date: Wed, 21 May 2014 09:21:30 -0400
+Subject: [Chilli] update tos.chi
+In-Reply-To: <CAC-LwPPPcWpyLq5-YL5gfCX+cbJx6Jf2qB-U_EjfHRVnt6p9ZA@mail.gmail.com>
+References: <CAC-LwPPPcWpyLq5-YL5gfCX+cbJx6Jf2qB-U_EjfHRVnt6p9ZA@mail.gmail.com>
+Message-ID: <CAC-LwPP7PpemUqyK12VJfOT0PBW_yeMdnmHT+HLTDUAaEXs4Rg@mail.gmail.com>
+
+oops, here is the tutorial:
+www.linksysinfo.org/index.php?threads/walkthrough-how-to-setup-a-public-hotspot-with-coovaap.69495/
+
+line 37 of /etc/chilli/www/tos.chi
+
+from: if [ "$tos" = "1" ]; then
+to: if [ "$HS_REG_MODE" = "tos" ]; then
+
+
+
+
+On Wed, May 21, 2014 at 9:20 AM, Vik Killa <vipkilla at gmail.com> wrote:
+
+> I found this great tutorial on how to setup coovaAP for ToS
+> I was struggling because I could not get the ToS to ever come up... but
+> this tutorial notes that lines 37 of /etc/chilli/www/tos.chi
+> needs to be fixed.
+> Can this fix be pushed to the stable release of CoovaAP?
+> Thanks,
+> E. Schmidbauer
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20140521/5604aef9/attachment.html>
+
+From vipkilla at gmail.com  Wed May 21 13:20:47 2014
+From: vipkilla at gmail.com (Vik Killa)
+Date: Wed, 21 May 2014 09:20:47 -0400
+Subject: [Chilli] update tos.chi
+Message-ID: <CAC-LwPPPcWpyLq5-YL5gfCX+cbJx6Jf2qB-U_EjfHRVnt6p9ZA@mail.gmail.com>
+
+I found this great tutorial on how to setup coovaAP for ToS
+I was struggling because I could not get the ToS to ever come up... but
+this tutorial notes that lines 37 of /etc/chilli/www/tos.chi
+needs to be fixed.
+Can this fix be pushed to the stable release of CoovaAP?
+Thanks,
+E. Schmidbauer
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20140521/1e0d6f98/attachment.html>
+
+From jake.he at gmail.com  Sat May 24 07:59:59 2014
+From: jake.he at gmail.com (Jake He)
+Date: Sat, 24 May 2014 15:59:59 +0800
+Subject: [Chilli] AVS radius support. Non hotspot implementation.
+Message-ID: <CAE96WpXVYGOt_FhBn7JsN1W+FCe_n30z7vrEbmQBu3fmV1Z-iA@mail.gmail.com>
+
+Hi,
+
+I am looking into implementing an EAP wireless network to control users
+data usage.
+
+Before I go ahead. I want to check I have the correct understanding.
+
+This post describes what I want to do.
+http://coova.org/node/1039
+
+Does chilli support attributes like Chillispot-Max-Total-Octets without
+running it as a hotspot? I don't want to use hotspot.
+
+Your response is much appreciated
+
+Jake
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20140524/2bdcfe83/attachment.html>
+
+From email at brunocorreia.com.br  Mon May 26 14:42:51 2014
+From: email at brunocorreia.com.br (Bruno Correia)
+Date: Mon, 26 May 2014 11:42:51 -0300
+Subject: [Chilli] Enable encoding UTF-8 - coovachilli 1.3.0
+Message-ID: <538352EB.1060403@brunocorreia.com.br>
+
+Hello all,
+
+I'm with problems in encoding pages the coovachilli, ../www/login.tmpl 
+per example. My native language is Portuguese Brazilian, and many words 
+need of encoding UTF-8, i am translating the texts direct in files html 
+and / or tmpl in "Document Root" of coovachili. ( 
+/usr/local/etc/chilli/www/ )
+
+I use the configure next:
+
+./configure --enable-miniportal --with-openssl
+
+In header the files, per example coova.html, i use the next line for 
+encoding UTF-8:
+
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+
+But work only in internet explorer.
+
+Any idea?
+-- 
+**Bruno G Correia**
+Network Analyst
+<http://br.linkedin.com/in/brunocorr>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20140526/64e56d73/attachment.html>
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: linkedinbn.png
+Type: image/png
+Size: 1015 bytes
+Desc: not available
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20140526/64e56d73/attachment.png>
+
+From eric at craftti.com.br  Tue May 27 04:42:21 2014
+From: eric at craftti.com.br (Eric Chaves)
+Date: Tue, 27 May 2014 01:42:21 -0300
+Subject: [Chilli] SSL certificates not being trusted by clients
+Message-ID: <CAF+USJ5ceEmMDFjvOnqA-GEQfGsQZ16u8NVFeorOn+e0DO9++Q@mail.gmail.com>
+
+Hi folks,
+
+I'm trying to use a comodo certificate to encrypt traffic between my
+captive portal and Coova's JSON interface (on the controller) but I'm
+facing a trouble where clients are not being able to verify the
+controller's identity to match it's name with the SSL certificate.
+
+It seems to me that the problem is related to how clients resolve the
+controller's name to IP address but I'm not 100% sure.
+
+To issue the controller's certificate I defined valid server name under my
+domain, like "nac.mydomain.com", and in my authoritative DNS (hosted
+outside of the controllers network) I added an "A record" pointing to the
+controller's internal IP address (for example, 172.16.0.1).
+
+The controller's hostname is "ctrl001" (not "nac") and coova is configured
+to use google's public DNS (8.8.8.8) to resolve dns lookups.
+
+When a client connects on the wifi and get's an IP address (like
+172.16.0.25) if it queries DNS for "nac.mydomain.com", the response is
+1.0.0.1 instead of 172.16.0.1 which was what I expected to see.  And if the
+client pings 1.0.0.1, the controller replies with his internal IP
+(172.16.0.1). I assume coova is intercepting this DNS query and somehow
+it's replying with the 1.0.0.1 instead of relying on the real DNS reply. Am
+I correct?
+
+What should I do to setup the controller's name in order to have it
+matching the SSL subject name?
+
+Thanks in advance,
+
+Eric
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20140527/d3191c27/attachment.html>
+
+From sachin0235 at yahoo.com  Tue May 27 05:00:20 2014
+From: sachin0235 at yahoo.com (Sachin Yadav)
+Date: Mon, 26 May 2014 22:00:20 -0700 (PDT)
+Subject: [Chilli] Intermittent Radius request timed out error in coova chilli
+Message-ID: <1401166820.65491.YahooMailNeo@web161301.mail.bf1.yahoo.com>
+
+Hi,
+
+I am running coova chilli 1.3 on openwrt deployed in my APs. My hotspot portal, radius and mysql runs on cloud. Sometimes during the day my clients; while attempting to login can not login due to "Radius request timed out" error in coovachilli. I had confirmed that no request for radius-authentication ever arrived on my freeradius server.
+
+Can someone please help me understand how do i fix this error??
+
+Thanks,
+Sachin
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20140526/eab09a0e/attachment.html>
+
+From outbackdingo at gmail.com  Tue May 27 05:26:35 2014
+From: outbackdingo at gmail.com (Outback Dingo)
+Date: Tue, 27 May 2014 15:26:35 +1000
+Subject: [Chilli] Intermittent Radius request timed out error in coova
+	chilli
+In-Reply-To: <1401166820.65491.YahooMailNeo@web161301.mail.bf1.yahoo.com>
+References: <1401166820.65491.YahooMailNeo@web161301.mail.bf1.yahoo.com>
+Message-ID: <CAKYr3zw5_W5khe4OEA=jMAZugXb4xLaJwCoB+QNdrfuHWS601A@mail.gmail.com>
+
+On Tue, May 27, 2014 at 3:00 PM, Sachin Yadav <sachin0235 at yahoo.com> wrote:
+
+> Hi,
+>
+> I am running coova chilli 1.3 on openwrt deployed in my APs. My hotspot
+> portal, radius and mysql runs on cloud. Sometimes during the day my
+> clients; while attempting to login can not login due to "Radius request
+> timed out" error in coovachilli. I had confirmed that no request for
+> radius-authentication ever arrived on my freeradius server.
+>
+> Can someone please help me understand how do i fix this error?
+>
+
+sounds like a potential link issue or other problem communication with the
+radius server
+
+
+>
+> Thanks,
+> Sachin
+>
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20140527/b1eededf/attachment.html>
+
+From andrew at polkaspots.com  Tue May 27 11:52:36 2014
+From: andrew at polkaspots.com (andrew@PolkaSpots.com)
+Date: Tue, 27 May 2014 12:52:36 +0100
+Subject: [Chilli] OpenWRT trunk chilli 1.3 init.d
+In-Reply-To: <CAKYr3zw5_W5khe4OEA=jMAZugXb4xLaJwCoB+QNdrfuHWS601A@mail.gmail.com>
+References: <1401166820.65491.YahooMailNeo@web161301.mail.bf1.yahoo.com>
+ <CAKYr3zw5_W5khe4OEA=jMAZugXb4xLaJwCoB+QNdrfuHWS601A@mail.gmail.com>
+Message-ID: <53847C84.4080405@polkaspots.com>
+
+Hi guys,
+
+Does anyone have a working/latest init.d chilli 1.3 for openwrt?
+
+Regards,
+Andrew
+
+On 27/05/14 06:26, Outback Dingo wrote:
+>
+>
+> On Tue, May 27, 2014 at 3:00 PM, Sachin Yadav <sachin0235 at yahoo.com 
+> <mailto:sachin0235 at yahoo.com>> wrote:
+>
+>     Hi,
+>
+>     I am running coova chilli 1.3 on openwrt deployed in my APs. My
+>     hotspot portal, radius and mysql runs on cloud. Sometimes during
+>     the day my clients; while attempting to login can not login due to
+>     "Radius request timed out" error in coovachilli. I had confirmed
+>     that no request for radius-authentication ever arrived on my
+>     freeradius server.
+>
+>     Can someone please help me understand how do i fix this error?
+>
+>
+> sounds like a potential link issue or other problem communication with 
+> the radius server
+>
+>
+>     Thanks,
+>     Sachin
+>
+>     _______________________________________________
+>     Chilli mailing list
+>     Chilli at coova.org <mailto:Chilli at coova.org>
+>     http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+>
+>
+>
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+
+---------------------------------------------------------------------------------------
+
+The information contained in this email and its attachments is confidential and may be the subject of legal, professional or other privilege. It is intended only for the named addressees and may not be disclosed to anyone else without consent from PolkaSpots Limited. If you are not the named addressee you must not use, disclose, distribute, copy, print or rely on the contents of this email and should destroy it immediately. Whilst PolkaSpots Limited takes care to protect its systems from electronic virus attack or other harmful event, the firm gives no warranty that this email message (including any attachments to it) is free of any virus or other harmful matter and accepts no responsibility for any loss or damage resulting from the recipient receiving, opening or using it. If you need any further information, please contact the originator of this message on +44 (0)20 7183 1471.
+
+PolkaSpots is a limited company registered in the UK (registered number 05508105). Registered Office: 204 Buspace Studios, Conlan Street, London W10 5AP
+
+Website: www.polkaspots.com
+WiFi Hotspot Blog: www.polkaspots.com/blog
+
+---------------------------------------------------------------------------------------
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20140527/73edcfbc/attachment-0001.html>
+
+From steve at base-it.co.uk  Tue May 27 12:04:19 2014
+From: steve at base-it.co.uk (Stephen Davies)
+Date: Tue, 27 May 2014 13:04:19 +0100
+Subject: [Chilli] OpenWRT trunk chilli 1.3 init.d
+In-Reply-To: <53847C84.4080405@polkaspots.com>
+References: <1401166820.65491.YahooMailNeo@web161301.mail.bf1.yahoo.com>
+ <CAKYr3zw5_W5khe4OEA=jMAZugXb4xLaJwCoB+QNdrfuHWS601A@mail.gmail.com>
+ <53847C84.4080405@polkaspots.com>
+Message-ID: <53847F43.8070108@base-it.co.uk>
+
+This works for me. Run it with 'etc/init.d/chilli start' to create the 
+necessary config files eg: hs.conf, main.conf. Then start chilli with 
+the command 'chilli'.
+
+|#!/bin/sh /etc/rc.common
+# ============================================
+# == Coova Chilli Startup Script =============
+# == Hardware: Ubiquity PicoStation2 =========
+# == Version: 0.1 ============================
+# == Date: 2009-10-22 ========================
+# == Author: Dirk van der Walt ===============
+# ============================================
+
+START=80
+STOP=85
+
+. /etc/chilli/functions
+
+start() {
+         echo start
+         # commands to launch application
+         /sbin/modprobe tun > /dev/null 2>&1
+         echo 1 > /proc/sys/net/ipv4/ip_forward
+         writeconfig
+         radiusconfig
+         iptables -F POSTROUTING -t nat
+         iptables -I POSTROUTING -t nat -o $HS_WANIF -j MASQUERADE
+         ifconfig $HS_LANIF 0.0.0.0
+         checkrunning
+
+
+}
+
+stop() {
+         echo stop
+         killall chilli
+         # commands to kill application
+}
+
+checkrunning(){
+         check=`/bin/pidof chilli`
+         if [ -z $check ]
+         then
+                 echo "Chilli not running"
+                 chilli
+
+         else
+                 echo "Chilli runnig PID: "$check
+         fi
+}|
+
+
+On 27/05/2014 12:52, andrew at PolkaSpots.com wrote:
+> Hi guys,
+>
+> Does anyone have a working/latest init.d chilli 1.3 for openwrt?
+>
+> Regards,
+> Andrew
+>
+> On 27/05/14 06:26, Outback Dingo wrote:
+>>
+>>
+>> On Tue, May 27, 2014 at 3:00 PM, Sachin Yadav <sachin0235 at yahoo.com 
+>> <mailto:sachin0235 at yahoo.com>> wrote:
+>>
+>>     Hi,
+>>
+>>     I am running coova chilli 1.3 on openwrt deployed in my APs. My
+>>     hotspot portal, radius and mysql runs on cloud. Sometimes during
+>>     the day my clients; while attempting to login can not login due
+>>     to "Radius request timed out" error in coovachilli. I had
+>>     confirmed that no request for radius-authentication ever arrived
+>>     on my freeradius server.
+>>
+>>     Can someone please help me understand how do i fix this error?
+>>
+>>
+>> sounds like a potential link issue or other problem communication 
+>> with the radius server
+>>
+>>
+>>     Thanks,
+>>     Sachin
+>>
+>>     _______________________________________________
+>>     Chilli mailing list
+>>     Chilli at coova.org <mailto:Chilli at coova.org>
+>>     http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>>
+>>
+>>
+>>
+>> _______________________________________________
+>> Chilli mailing list
+>> Chilli at coova.org
+>> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+> ---------------------------------------------------------------------------------------
+>
+> The information contained in this email and its attachments is confidential and may be the subject of legal, professional or other privilege. It is intended only for the named addressees and may not be disclosed to anyone else without consent from PolkaSpots Limited. If you are not the named addressee you must not use, disclose, distribute, copy, print or rely on the contents of this email and should destroy it immediately. Whilst PolkaSpots Limited takes care to protect its systems from electronic virus attack or other harmful event, the firm gives no warranty that this email message (including any attachments to it) is free of any virus or other harmful matter and accepts no responsibility for any loss or damage resulting from the recipient receiving, opening or using it. If you need any further information, please contact the originator of this message on +44 (0)20 7183 1471.
+>
+> PolkaSpots is a limited company registered in the UK (registered number 05508105). Registered Office: 204 Buspace Studios, Conlan Street, London W10 5AP
+>
+> Website: www.polkaspots.com
+> WiFi Hotspot Blog: www.polkaspots.com/blog
+>
+> ---------------------------------------------------------------------------------------
+>
+>
+>
+>
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+>
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20140527/9d7fb413/attachment.html>
+
+From cchamb2 at gmail.com  Tue May 27 19:23:47 2014
+From: cchamb2 at gmail.com (Charles Chambers)
+Date: Tue, 27 May 2014 12:23:47 -0700
+Subject: [Chilli] Router
+Message-ID: <5384E643.6010306@gmail.com>
+
+Hi, all:
+
+I am now at the point of implementation where I can hook up a laptop to 
+eth1/HS_LAN on the CoovaChilli server and I get the captive portal 
+page.  I'm obviously in the walled garden because it's asking for a 
+username and password.  I'm trying to get a Netgear WGR614v5 router 
+connected to HS_LAN/eth1.
+
+I can connect the CoovaChilli server via eth1 to a switch port on the 
+router with a crossover cable and I continue to get the walled garden 
+login page.  For this, a laptop is connected with a straight through 
+cable to a different switch port on the router.  It gets an IP of 
+10.20.7.3, and I get the walled_garden login page.
+
+I understand that turning off NAT turns the router into a switch.  I 
+have a straight through cable connecting the router's WAN port to eth0, 
+with NAT being disabled, and the laptop has an address of 10.20.7.4 as 
+it is connected to a switch port.  i can also browse to 10.20.7.1/rd and 
+access RadiusDesk, which is also installed and working properly (it asks 
+for a username and password as well).
+
+Connecting the router WAN port and turning off NAT works, but how do I 
+continue to access the router for maintenance purposes (changing WPA 
+password, for instance)?
+
+Could someone  please enlighten me on why eth1 on the CoovaChilli server 
+does not appear to have an IP address?
+
+What is the opening page for the walled_garden found on the CoovaChilli 
+server?
+
+Is self-registration for basic (minimal) access to the Internet possible 
+yet?
+
+Is there a URL for configuring CoovaChilli, for example 
+http://192.168.0.6:1447?
+
+
+From muffycompoqm at gmail.com  Wed May 28 12:25:00 2014
+From: muffycompoqm at gmail.com (Mfawa Alfred Onen)
+Date: Wed, 28 May 2014 13:25:00 +0100
+Subject: [Chilli] Router
+Message-ID: <CAEtJ39J8PZ1B+DfkKvRt+ZxuwS+1pdO1sFCJOsmE7dxqd86oCg@mail.gmail.com>
+
+Charles, the reason why there is no IP address on ETH1 is because
+coovachilli creates a tun0 interface and applies the IP address there.
+Can you explain your scenario?
+
+I believe you are trying to achieve this:
+
+[NetGear Router] WAN (192.168.1.0/24) ---> CoovaChilli --->LAN
+(10.20.7.0/24) --> Laptop Client
+
+Now what you want is for the Laptop client to able to access the
+NetGear Router (For maintenance purposes) right?
+
+CoovaChilli for now does not have a GUI except the ones built on
+OpenWRT based APs or CloudTrax mesh cloud. CoovaChilli works better as
+a daemon service as well and so people prefer to have a UI for RADIUS
+(RADIUSDesk for example) since bulk of the work is done there.
+
+Let us know how your network design looks like (Maybe include a
+diagram of what you want to achive).
+
+Regards!
+
+
+
+On Wed, May 28, 2014 at 1:00 PM,  <chilli-request at coova.org> wrote:
+> Send Chilli mailing list submissions to
+>         chilli at coova.org
+>
+> To subscribe or unsubscribe via the World Wide Web, visit
+>         http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+> or, via email, send a message with subject or body 'help' to
+>         chilli-request at coova.org
+>
+> You can reach the person managing the list at
+>         chilli-owner at coova.org
+>
+> When replying, please edit your Subject line so it is more specific
+> than "Re: Contents of Chilli digest..."
+>
+>
+> Today's Topics:
+>
+>    1. Router (Charles Chambers)
+>
+>
+> ----------------------------------------------------------------------
+>
+> Message: 1
+> Date: Tue, 27 May 2014 12:23:47 -0700
+> From: Charles Chambers <cchamb2 at gmail.com>
+> To: chilli at coova.org
+> Subject: [Chilli] Router
+> Message-ID: <5384E643.6010306 at gmail.com>
+> Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+>
+> Hi, all:
+>
+> I am now at the point of implementation where I can hook up a laptop to
+> eth1/HS_LAN on the CoovaChilli server and I get the captive portal
+> page.  I'm obviously in the walled garden because it's asking for a
+> username and password.  I'm trying to get a Netgear WGR614v5 router
+> connected to HS_LAN/eth1.
+>
+> I can connect the CoovaChilli server via eth1 to a switch port on the
+> router with a crossover cable and I continue to get the walled garden
+> login page.  For this, a laptop is connected with a straight through
+> cable to a different switch port on the router.  It gets an IP of
+> 10.20.7.3, and I get the walled_garden login page.
+>
+> I understand that turning off NAT turns the router into a switch.  I
+> have a straight through cable connecting the router's WAN port to eth0,
+> with NAT being disabled, and the laptop has an address of 10.20.7.4 as
+> it is connected to a switch port.  i can also browse to 10.20.7.1/rd and
+> access RadiusDesk, which is also installed and working properly (it asks
+> for a username and password as well).
+>
+> Connecting the router WAN port and turning off NAT works, but how do I
+> continue to access the router for maintenance purposes (changing WPA
+> password, for instance)?
+>
+> Could someone  please enlighten me on why eth1 on the CoovaChilli server
+> does not appear to have an IP address?
+>
+> What is the opening page for the walled_garden found on the CoovaChilli
+> server?
+>
+> Is self-registration for basic (minimal) access to the Internet possible
+> yet?
+>
+> Is there a URL for configuring CoovaChilli, for example
+> http://192.168.0.6:1447?
+>
+>
+>
+> ------------------------------
+>
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+>
+> End of Chilli Digest, Vol 54, Issue 24
+> **************************************
+
+
+
+-- 
+Mfawa Alfred Onen
+M.Sc Telecoms, B.Eng Elect/Elect, CCNA, RHCE(in view)
+System Administrator
+Department of Computer Science,
+Bingham University.
+
+E-Mail: systemadmin at binghamuni.edu.ng
+Phone1: +234 805 944 3154
+Phone2: +234 803 079 6088
+
+From steffen.dettmer at nomadrail.com  Wed May 28 14:16:24 2014
+From: steffen.dettmer at nomadrail.com (Steffen Dettmer)
+Date: Wed, 28 May 2014 14:16:24 +0000
+Subject: [Chilli] Router
+In-Reply-To: <5384E643.6010306@gmail.com>
+References: <5384E643.6010306@gmail.com>
+Message-ID: <45a402d18f4f44678be812de8004e1bc@AM3PR05MB323.eurprd05.prod.outlook.com>
+
+Hi!
+
+> I understand that turning off NAT turns the router into a switch.
+
+Not sure if this is right, normally you can route with or without
+NAT, on OSI layer 3,
+or alternatively switch (bridge) on OSI layer 2.
+
+> Connecting the router WAN port and turning off NAT works, but how do I
+> continue to access the router for maintenance purposes (changing WPA
+> password, for instance)?
+
+Maybe via secure shell (SSH)?
+It might be needed to add your SSH port to HS_TCP_PORTS in
+/etc/chilli/config, e.g.:
+HS_TCP_PORTS="22 80"
+
+> Could someone  please enlighten me on why eth1 on the CoovaChilli server does
+> not appear to have an IP address?
+
+Coova sets an IP on the appropriate tun device. Coova captures
+all traffic on the interface (bypassing kernel's routing and
+firewalling), so no IP needed here, similarly for sending.
+Sending to client network is done using the tun dev, and this has
+an IP.
+
+> What is the opening page for the walled_garden found on the CoovaChilli
+> server?
+
+By default, Coova is configured to use:
+  HS_UAMFORMAT=http://\$HS_UAMLISTEN:\$HS_UAMUIPORT/www/login.chi
+a script generated from miniportal/ login.chi.in and installed as /etc/chilli/www/login.chi.
+
+> Is self-registration for basic (minimal) access to the Internet
+> possible yet?
+
+For testing, you also could create /etc/chilli/localusers files
+with <username>:<cleartextpw>, e.g.
+  user:secret
+this works with the built-in mini portal.
+and in /etc/chilli/config, add:
+  HS_USELOCALUSERS=on
+after restart it should work.
+
+> Is there a URL for configuring CoovaChilli, for example
+> http://192.168.0.6:1447?
+
+You would need a portal or website supporting this, but I don't
+think anything like this is part of Coova Chilli distribution.
+Typically you configure the backend (DB) the RADIUS server is using.
+When you like to support updating the contents of your local
+portal or such, things can get more and more complicated of course.
+
+Steffen
+
+
+
+From steve at base-it.co.uk  Wed May 28 18:54:56 2014
+From: steve at base-it.co.uk (Stephen Davies)
+Date: Wed, 28 May 2014 19:54:56 +0100
+Subject: [Chilli] IPTABLES
+Message-ID: <53863100.9080707@base-it.co.uk>
+
+Hello all,
+
+Does anyone have any experience with IPTABLES and setting up rules to 
+prevent access from the captive portal clients to the local LAN. My 
+wireless Coovachilli access point is plugged into my LAN and is assigned 
+(HS_WANIF) an IP in the range of 192.168.1.x. The wireless captive 
+portal side (HS_LANIF) is running a subnet of 10.1.0.x.
+
+When a client is authenticated and granted internet access, the client 
+can access services or ping any device in the private LAN of 
+192.168.1.x. I want to prevent this for security reasons. I have tried 
+and tried with various settings in IPTABLES but I am not getting very 
+far. Does anyone have any pointers or rules examples. I am guessing this 
+is a very important subject for public access Coovachilli installations.
+
+Thanks
+Steve
+
+

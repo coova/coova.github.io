@@ -1,0 +1,169 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] MiniPortal - Error on submit
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20MiniPortal%20-%20Error%20on%20submit&In-Reply-To=%3C8AB4BFF9-B1AB-409B-A4D6-63B0A16E0A02%40coova.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001116.html">
+   <LINK REL="Next"  HREF="001118.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] MiniPortal - Error on submit</H1>
+    <B>David Bird</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20MiniPortal%20-%20Error%20on%20submit&In-Reply-To=%3C8AB4BFF9-B1AB-409B-A4D6-63B0A16E0A02%40coova.com%3E"
+       TITLE="[Chilli] MiniPortal - Error on submit">david at coova.com
+       </A><BR>
+    <I>Thu Jan 28 04:40:10 UTC 2010</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001116.html">[Chilli] MiniPortal - Error on submit
+</A></li>
+        <LI>Next message: <A HREF="001118.html">[Chilli] chilli configuration
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1117">[ date ]</a>
+              <a href="thread.html#1117">[ thread ]</a>
+              <a href="subject.html#1117">[ subject ]</a>
+              <a href="author.html#1117">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Actually, the bug in that script is with the  [ &quot;$HTTPS&quot; == &quot;on&quot; ]  
+which should be  [ &quot;$HTTPS&quot; = &quot;on&quot; ] instead. The change you made also  
+means the URL is not checked against the uam secret and therefore the  
+URL may have been altered by the user.
+
+David
+
+Sent from my iPod
+
+On Jan 27, 2010, at 4:09 PM, Felipe Augusto van de Wiel &lt;<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">felipe.wiel at hpp.org.br</A> 
+ &gt; wrote:
+
+&gt;<i> -----BEGIN PGP SIGNED MESSAGE-----
+</I>&gt;<i> Hash: SHA512
+</I>&gt;<i>
+</I>&gt;<i> On 25-01-2010 06:05, Christopher Markovic wrote:
+</I>&gt;&gt;<i> I have been having an interesting issue with the
+</I>&gt;&gt;<i> miniportal and coovachilli. On a submit it
+</I>&gt;&gt;<i> immediately fails with a cannot find server or
+</I>&gt;&gt;<i> dns error under ie. This is when attempting to
+</I>&gt;&gt;<i> submit on the /www/login.chi. Hitting refresh
+</I>&gt;&gt;<i> immediately brings back up the login page.
+</I>&gt;<i>
+</I>&gt;<i>    Yes, we had the same problem on a IE 6, I
+</I>&gt;<i> installed Firefox and that solved the problem, I
+</I>&gt;<i> didn't had the chance to teste IE7 or IE8 on the
+</I>&gt;<i> same machine.
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;&gt;<i> The curious part is after about 3 &#8211; 4 minutes of
+</I>&gt;&gt;<i> leaving the website on the login.chi page and
+</I>&gt;&gt;<i> then logging in, it will proceed correctly.
+</I>&gt;<i>
+</I>&gt;<i>    I will try that the next time, there are 2
+</I>&gt;<i> other clients with the same behavior/scenario.
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;&gt;<i> The debug logs show it always processing and
+</I>&gt;&gt;<i> attempting to return the login.chi page without
+</I>&gt;&gt;<i> error.
+</I>&gt;<i>
+</I>&gt;&gt;<i> The only thing I have spotted which seems to
+</I>&gt;&gt;<i> correlate with the time out is the system does
+</I>&gt;&gt;<i> some DHCP Arp replying and DNS checking.
+</I>&gt;<i>
+</I>&gt;&gt;<i> Has anyone else had the same problem?
+</I>&gt;<i>
+</I>&gt;<i>    I had, and as I mentioned above, we installed
+</I>&gt;<i> Firefox and recommended the person to use it. :-)
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>    BTW, the miniportal was a great addition to
+</I>&gt;<i> Coova, the redirect works greatly and it made much
+</I>&gt;<i> easier to present the terms of use.
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>    Related to that, also an error on submit, I
+</I>&gt;<i> found a small problem with the auth form on some
+</I>&gt;<i> smart phones, the final part of config-local.sh is
+</I>&gt;<i> an if:
+</I>&gt;<i>
+</I>&gt;<i> if [ &quot;$FORM_uamip&quot; != &quot;&quot; ]; then
+</I>&gt;<i>    QS=$(echo $QUERY_STRING | sed 's/&amp;md=[^&amp;=]*$//')
+</I>&gt;<i>    HTTP=&quot;http&quot;
+</I>&gt;<i>    [ &quot;$HTTPS&quot; == &quot;on&quot; ] &amp;&amp; HTTP=&quot;https&quot;
+</I>&gt;<i>    URL=&quot;$<A HREF="HTTP://$SERVER_NAME/$REQUEST_URI?$QS&quot;">HTTP://$SERVER_NAME/$REQUEST_URI?$QS&quot;</A>
+</I>&gt;<i>    CHECK=&quot;$URL$hs_uamsecret&quot;
+</I>&gt;<i>    CHECK_MD5=$(echo -n &quot;$CHECK&quot; |md5sum|cut -d' ' -f1|tr 'a-z' 'A-Z');
+</I>&gt;<i>    #echo &quot;$URL&quot; &gt;&gt; /tmp/debug
+</I>&gt;<i>    #echo &quot;$CHECK&quot; &gt;&gt; /tmp/debug
+</I>&gt;<i>    #echo &quot;$CHECK_MD5&quot; &gt;&gt; /tmp/debug
+</I>&gt;<i>    #echo &quot;$FORM_md&quot; &gt;&gt; /tmp/debug
+</I>&gt;<i>    if [ &quot;$CHECK_MD5&quot; = &quot;$FORM_md&quot; ]; then
+</I>&gt;<i>        COOVA_USERURL=$FORM_userurl
+</I>&gt;<i>    else
+</I>&gt;<i>        #http_redirect &quot;/www/error.chi&quot;
+</I>&gt;<i>        COOVA_USERURL=&quot;<A HREF="http://www.hpp.org.br&quot;">http://www.hpp.org.br&quot;</A>
+</I>&gt;<i>    fi
+</I>&gt;<i> fi
+</I>&gt;<i>
+</I>&gt;<i>    I changed the final 'else', otherwise some phones
+</I>&gt;<i> after clicking to login receives a &quot;an error occurred&quot;,
+</I>&gt;<i> the above changed fixed it, not sure if it is totally
+</I>&gt;<i> harmless, but hope this helps improving it.
+</I>&gt;<i>
+</I>&gt;<i> Kind regards,
+</I>&gt;<i> - --
+</I>&gt;<i> Felipe Augusto van de Wiel &lt;<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">felipe.wiel at hpp.org.br</A>&gt;
+</I>&gt;<i> Tecnologia da Informa&#231;&#227;o (TI) - Complexo Pequeno Pr&#237;ncipe
+</I>&gt;<i> <A HREF="http://www.pequenoprincipe.org.br/">http://www.pequenoprincipe.org.br/</A>    T: +55 41 3310 1747
+</I>&gt;<i> -----BEGIN PGP SIGNATURE-----
+</I>&gt;<i> Version: GnuPG v1.4.10 (GNU/Linux)
+</I>&gt;<i> Comment: Using GnuPG with Mozilla - <A HREF="http://enigmail.mozdev.org/">http://enigmail.mozdev.org/</A>
+</I>&gt;<i>
+</I>&gt;<i> iQIcBAEBCgAGBQJLYFcfAAoJECCPPxLgxLxPYDoP/RjdiCTrw/MT3kRfxIEzPnzd
+</I>&gt;<i> 8xt7ZNO44IJZG1rDxvP8R0FxSN/a2/eb+a8kbIJ+4nGrk677J4H/UsLPRtf4hv5L
+</I>&gt;<i> LdM5VUZmPsaBBHOEWXpKS2vJ1JYfOTiuwOF3VjSTVqmwqeuepyRJl6nL0AuJkbap
+</I>&gt;<i> m6q2rcuY+xKyVd4vjWX/iFoSMfFIcva6bWx/ic9C9ugstbYy0PNdUUaOPsLk3cKN
+</I>&gt;<i> d3TXo8JP2mlulLFvnd2cwoiZqrjincaSb+kR7+tAlM6Ef7gWzb8gCAo0EMrUqJA3
+</I>&gt;<i> N8Pkt5FqJ+5dH4BbBPkV1gQDgqVNtPxvWxS/u1/1jbivU9TNScg7wNLftoS+E1nm
+</I>&gt;<i> xtTziiSdPu2reCDDuiY7BtcOKzBv2SSOvmxZhO3KoEctUk9NUMgA80q+4GhtCiZY
+</I>&gt;<i> QVe0dTdosFOA5yIA56ZKVJ69LGxw+jTZEoX/ezRZtRBJ+XNsI5Vwc8JBETlaGDC9
+</I>&gt;<i> XU09hqlPnFwC77dXaR5sCVQlvuHJhxbWzziOllPD+vNkcOtrErK8f6TITXUE0rzr
+</I>&gt;<i> Sh2P6ULelNZfRu030YtRNk96IRjlWubZUoPUhE1xHphlUDec3aPD2VAFgHor5R3X
+</I>&gt;<i> xdCzQvIw0h4gINwqVEqHYxJocV4wPb96f3u2OU5rk0S9IZgDdc017MUnZnXZxxr4
+</I>&gt;<i> xPHxgvtN/r/khdREbpr3
+</I>&gt;<i> =v12l
+</I>&gt;<i> -----END PGP SIGNATURE-----
+</I>&gt;<i> _______________________________________________
+</I>&gt;<i> Chilli mailing list
+</I>&gt;<i> <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">Chilli at coova.org</A>
+</I>&gt;<i> <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">http://lists.coova.org/cgi-bin/mailman/listinfo/chilli</A>
+</I></PRE>
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001116.html">[Chilli] MiniPortal - Error on submit
+</A></li>
+	<LI>Next message: <A HREF="001118.html">[Chilli] chilli configuration
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1117">[ date ]</a>
+              <a href="thread.html#1117">[ thread ]</a>
+              <a href="subject.html#1117">[ subject ]</a>
+              <a href="author.html#1117">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

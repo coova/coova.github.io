@@ -1,0 +1,120 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] CoovaChilli uam secret / RADIUS secret causing
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20CoovaChilli%20uam%20secret%20/%20RADIUS%20secret%20causing&In-Reply-To=%3C049001cf63f6%244bda0e00%24e38e2a00%24%40cabocom.cv%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="002697.html">
+   <LINK REL="Next"  HREF="002700.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] CoovaChilli uam secret / RADIUS secret causing</H1>
+    <B>Luis Ferreira</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20CoovaChilli%20uam%20secret%20/%20RADIUS%20secret%20causing&In-Reply-To=%3C049001cf63f6%244bda0e00%24e38e2a00%24%40cabocom.cv%3E"
+       TITLE="[Chilli] CoovaChilli uam secret / RADIUS secret causing">lferreira at cabocom.cv
+       </A><BR>
+    <I>Tue Apr 29 21:59:23 UTC 2014</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="002697.html">[Chilli] CoovaChilli uam secret / RADIUS secret causing
+</A></li>
+        <LI>Next message: <A HREF="002700.html">[Chilli] CoovaChilli uam secret / RADIUS secret causing
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2698">[ date ]</a>
+              <a href="thread.html#2698">[ thread ]</a>
+              <a href="subject.html#2698">[ subject ]</a>
+              <a href="author.html#2698">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>This is by design to increase security on a CHAP.
+
+Imagine the following:
+In your design, I could sniff the network traffic, and knowing account
+password (a subscriber), the computer mac and the generated hash, I could
+possibly reverse engineer to get your radius secret.
+Then, with the radius secret, I could sniff for other accounts password,
+since I could see the MAC, secret and encrypted hash, or even worst things.
+
+But obviously while true and possible, I don't know up to what point someone
+will spend his time doing that (except me on a booring weekend :) )
+
+Luis
+
+
+-----Mensagem original-----
+De: <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli-bounces at coova.org</A> [mailto:<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli-bounces at coova.org</A>] Em nome de
+<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">james at purple.so</A>
+Enviada: 29 de abril de 2014 20:29
+Para: <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli at coova.org</A>
+Assunto: Re: [Chilli] CoovaChilli uam secret / RADIUS secret causing
+
+Hi Luis
+
+Thanks very much for your reply.
+
+Yes, I had thought this may be the issue, but I assumed that coova does not
+re-generate a new challenge for every HTTP request a client makes. To test,
+I opened 10 tabs in my browser, and 5 tabs in another browser, and the
+&quot;challenge&quot; value in the URL was the same across them all. We notice the
+challenge does change after around 10 minutes though (it must time out)...
+
+We've recently modified the coova code to generate the challenge based on
+something more unique to the user (their mac address, plus a secret, then
+hashed), rather than what coova uses by default (a 16 character string from
+/dev/random), so now, the challenge is unique per client MAC, and therefore
+no matter what sessions they have open it will always be the same
+&quot;challenge&quot;. Does that make sense? Even if they return in 1 hour, the
+challenge is the same, and only we know what the challenge is made up from
+on our external splash page side.
+
+But, I think coova should ensure that the same challenge is given to the
+same client MAC, as without it, it's near impossible to know which challenge
+to use at the correct one when encrypting the password to send back to coova
+for the login (we use an external splash page).
+
+What are your thoughts?
+
+Thanks
+
+James
+
+
+_______________________________________________
+Chilli mailing list
+<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">Chilli at coova.org</A>
+<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">http://lists.coova.org/cgi-bin/mailman/listinfo/chilli</A>
+
+</PRE>
+
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="002697.html">[Chilli] CoovaChilli uam secret / RADIUS secret causing
+</A></li>
+	<LI>Next message: <A HREF="002700.html">[Chilli] CoovaChilli uam secret / RADIUS secret causing
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2698">[ date ]</a>
+              <a href="thread.html#2698">[ thread ]</a>
+              <a href="subject.html#2698">[ subject ]</a>
+              <a href="author.html#2698">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

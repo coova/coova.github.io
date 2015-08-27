@@ -1,0 +1,112 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] Port Forwarding With CovvaChilli
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Port%20Forwarding%20With%20CovvaChilli&In-Reply-To=%3CCADao4CqMJRZ70a09d1zzMQX9pXE6KZ-RnNpP5fnP%3DoedQtgEtA%40mail.gmail.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="002170.html">
+   <LINK REL="Next"  HREF="002171.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] Port Forwarding With CovvaChilli</H1>
+    <B>Russell Mike</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Port%20Forwarding%20With%20CovvaChilli&In-Reply-To=%3CCADao4CqMJRZ70a09d1zzMQX9pXE6KZ-RnNpP5fnP%3DoedQtgEtA%40mail.gmail.com%3E"
+       TITLE="[Chilli] Port Forwarding With CovvaChilli">radius.sir at gmail.com
+       </A><BR>
+    <I>Thu Feb 21 16:05:06 UTC 2013</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="002170.html">[Chilli] CoovaChilli Behind DHCP Relay Agent
+</A></li>
+        <LI>Next message: <A HREF="002171.html">[Chilli] Port Forwarding With CovvaChilli
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2169">[ date ]</a>
+              <a href="thread.html#2169">[ thread ]</a>
+              <a href="subject.html#2169">[ subject ]</a>
+              <a href="author.html#2169">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hi List,
+
+looking for advice because i have requirement to enable port mapping (port
+forwarding) from CoovaChilli's external ip to a web server on the LAN side.
+i am bit confuse how to do that. There are many iptable rules always
+created every time Coova starts, using *ipup.sh* under
+
+*Output: &quot;/var/run/chilli.tun0.sh&quot;. *
+
+<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">root at captive</A>:~# cat /var/run/chilli.tun0.sh
+iptables -D INPUT -i tun0 -p tcp -m tcp --dport 3100 --dst 192.168.10.10 -j
+ACCEPT
+iptables -D INPUT -i tun0 -p tcp -m tcp --dport 4100 --dst 192.168.10.10 -j
+ACCEPT
+iptables -D INPUT -i tun0 -p udp -d 255.255.255.255 --destination-port
+67:68 -j ACCEPT
+iptables -D INPUT -i tun0 -p udp -d 192.168.10.10 --destination-port 67:68
+-j ACCEPT
+iptables -D INPUT -i tun0 -p udp --dst 192.168.10.10 --dport 53 -j ACCEPT
+iptables -D INPUT -i tun0 -p icmp --dst 192.168.10.10 -j ACCEPT
+iptables -D INPUT -i tun0 --dst 192.168.10.10 -j DROP
+iptables -D INPUT -i vlan10 -j DROP
+iptables -D FORWARD -i vlan10 -j DROP
+iptables -D FORWARD -o vlan10 -j DROP
+iptables -D FORWARD -i tun0 -j ACCEPT
+iptables -D FORWARD -o tun0 -j ACCEPT
+iptables -D FORWARD -p tcp -m tcp --tcp-flags SYN,RST SYN -j TCPMSS
+--clamp-mss-to-pmtu
+iptables -D FORWARD -t mangle -p tcp -m tcp --tcp-flags SYN,RST SYN -j
+TCPMSS --clamp-mss-to-pmtu
+iptables -D FORWARD -i tun0 ! -o eth0 -j DROP
+iptables -D FORWARD -i tun0 -o eth0 -j ACCEPT
+
+*Scenario:*
+Web_Server On LAN has: 192.168.10.10 someone want remote desktop of this
+server when hitting external ip for CoovaChilli *WAN:41.222.34.72  *
+
+i am confused, if the rules created by Coova will interfere with the in
+coming traffic from the WAN interface to LAN side. Cannot understand, if i
+should add new rules in *&quot;ipup.sh&quot;* or how.
+
+Note: It is Ubuntu 12.4LTS default firewall is off (ufw disabled) expect
+the Chilli creates some rules.
+
+thanks everyone for attending to my request.
+
+Regards --RM
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: &lt;<A HREF="http://lists.coova.org/pipermail/chilli/attachments/20130221/3da9d31e/attachment-0001.html">http://lists.coova.org/pipermail/chilli/attachments/20130221/3da9d31e/attachment-0001.html</A>&gt;
+</PRE>
+
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="002170.html">[Chilli] CoovaChilli Behind DHCP Relay Agent
+</A></li>
+	<LI>Next message: <A HREF="002171.html">[Chilli] Port Forwarding With CovvaChilli
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2169">[ date ]</a>
+              <a href="thread.html#2169">[ thread ]</a>
+              <a href="subject.html#2169">[ subject ]</a>
+              <a href="author.html#2169">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

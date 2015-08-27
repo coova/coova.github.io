@@ -1,0 +1,106 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] Does option noradallow effect radconf only?
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Does%20option%20noradallow%20effect%20radconf%20only%3F&In-Reply-To=%3CCACkgH721T0mCPuHGc97rt%2B%3DA_i9q%3DrACcS%3DrOtCa0QJt3dD89A%40mail.gmail.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="002482.html">
+   <LINK REL="Next"  HREF="002487.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] Does option noradallow effect radconf only?</H1>
+    <B>Xabier Oneca -- xOneca</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Does%20option%20noradallow%20effect%20radconf%20only%3F&In-Reply-To=%3CCACkgH721T0mCPuHGc97rt%2B%3DA_i9q%3DrACcS%3DrOtCa0QJt3dD89A%40mail.gmail.com%3E"
+       TITLE="[Chilli] Does option noradallow effect radconf only?">xoneca at gmail.com
+       </A><BR>
+    <I>Mon Dec  2 19:53:58 UTC 2013</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="002482.html">[Chilli] Does option noradallow effect radconf only?
+</A></li>
+        <LI>Next message: <A HREF="002487.html">[Chilli] Does option noradallow effect radconf only?
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2485">[ date ]</a>
+              <a href="thread.html#2485">[ thread ]</a>
+              <a href="subject.html#2485">[ subject ]</a>
+              <a href="author.html#2485">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>&gt;<i> when changing redir_cb_radius_auth_conf() to handle timeout as
+</I>&gt;<i> REDIR_SUCCESS with session_param_defaults(), what would be bad
+</I>&gt;<i> consequences?
+</I>
+The &quot;bad&quot; consecuences (cons) I see are lost statistics and that the user
+gets free connection (in case of a paid service).
+
+The pros are that users won't blame the Wi-Fi not working.
+
+&gt;<i> (Of course it is doubtful whether it makes sense at
+</I>&gt;<i> all to authenticate everyone when no RADIUS server is available,
+</I>&gt;<i> except maybe for test automation or other really special cases).
+</I>
+The correct thing would be to use a backup RADIUS server. But, as I said in
+the &quot;pros&quot;, if it/they get out of reach for any reason, hotspot operators
+can continue providing Internet service to their customers.
+
+&gt;<i> --- ../../coova-chilli/coova-chilli-1.3.1-svn/src/redir.c
+</I>2013-01-24 01:32:23.000000000 +0100
+&gt;<i> +++ redir.c     2013-12-02 13:42:48.834270456 +0100
+</I>&gt;<i> @@ -2442,6 +2442,13 @@
+</I>&gt;<i>
+</I>&gt;<i>    if (!pack) { /* Timeout */
+</I>&gt;<i>      log_err(0, &quot;Radius request timed out&quot;);
+</I>&gt;<i> +    if (_options.noradallow) {
+</I>&gt;<i> +      log_info(&quot;RADIUS timeout but noradallow: default redir session.&quot;);
+</I>&gt;<i> +      session_param_defaults(&amp;conn-&gt;s_params);
+</I>&gt;<i> +      conn-&gt;response = REDIR_SUCCESS;
+</I>&gt;<i> +      return 0;
+</I>&gt;<i> +    }
+</I>&gt;<i> +    log_info(&quot;RADIUS timeout and no noradallow: timeout redir session.&quot;);
+</I>&gt;<i>      conn-&gt;response = REDIR_FAILED_TIMEOUT;
+</I>&gt;<i>      return 0;
+</I>&gt;<i>    }
+</I>
+I will test the patch, but I vote for the inclusion in the mainline version.
+
+Cheers,
+
+Xabier Oneca_,,_
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: &lt;<A HREF="http://lists.coova.org/pipermail/chilli/attachments/20131202/d70b1b1a/attachment.html">http://lists.coova.org/pipermail/chilli/attachments/20131202/d70b1b1a/attachment.html</A>&gt;
+</PRE>
+
+
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="002482.html">[Chilli] Does option noradallow effect radconf only?
+</A></li>
+	<LI>Next message: <A HREF="002487.html">[Chilli] Does option noradallow effect radconf only?
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2485">[ date ]</a>
+              <a href="thread.html#2485">[ thread ]</a>
+              <a href="subject.html#2485">[ subject ]</a>
+              <a href="author.html#2485">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

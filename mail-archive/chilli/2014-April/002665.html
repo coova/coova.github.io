@@ -1,0 +1,173 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] CoovaChilli Kernel Mode issue
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20CoovaChilli%20Kernel%20Mode%20issue&In-Reply-To=%3C490b4be4f02948a8a5398b50feaa80b0%40AMSPR05MB328.eurprd05.prod.outlook.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="002663.html">
+   <LINK REL="Next"  HREF="002666.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] CoovaChilli Kernel Mode issue</H1>
+    <B>Steffen Dettmer</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20CoovaChilli%20Kernel%20Mode%20issue&In-Reply-To=%3C490b4be4f02948a8a5398b50feaa80b0%40AMSPR05MB328.eurprd05.prod.outlook.com%3E"
+       TITLE="[Chilli] CoovaChilli Kernel Mode issue">steffen.dettmer at nomadrail.com
+       </A><BR>
+    <I>Wed Apr  9 07:44:56 UTC 2014</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="002663.html">[Chilli] CoovaChilli Kernel Mode issue
+</A></li>
+        <LI>Next message: <A HREF="002666.html">[Chilli] CoovaChilli Kernel Mode issue
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2665">[ date ]</a>
+              <a href="thread.html#2665">[ thread ]</a>
+              <a href="subject.html#2665">[ subject ]</a>
+              <a href="author.html#2665">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hi,
+
+Duplication of packets related to the redirect? Normally I would assume they shouldn't matter, because the redirect is HTTP via TCP and TCP shouldn't have any issue with packet duplication.
+
+What indications did you found for duplication?
+
+Also I think I verified that the kernel module does not forward such unauthorized traffic, for the kernel each packet sent by Coova on the tun should be a new packet, so I don't think firewall state (conntrack or such) is a hot candidate, either...
+
+Steffen
+
+-----Urspr&#252;ngliche Nachricht-----
+Von: Phyo Wai Soe [mailto:<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">phyo.w.soe at frontiir.net</A>] 
+Gesendet: Dienstag, 8. April 2014 04:58
+An: Tariq Ramadan
+Cc: Steffen Dettmer; <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli at coova.org</A>
+Betreff: Re: [Chilli] CoovaChilli Kernel Mode issue
+
+Hi Tariq,
+
+We think that the issue arises from packet duplication between kernel and user space modules. The fact that so many of us are having the issue probably mean that the issue exists and packet routing rules need to be revised. I hope the next version of Coova addresses this.
+
+Regards,
+Phyo Wai Soe
+
+
+----- Original Message -----
+From: &quot;Tariq Ramadan&quot; &lt;<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">tr23101 at yahoo.com</A>&gt;
+To: &quot;Phyo Wai Soe&quot; &lt;<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">phyo.w.soe at frontiir.net</A>&gt;, &quot;Steffen Dettmer&quot; &lt;<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">steffen.dettmer at nomadrail.com</A>&gt;
+Cc: <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli at coova.org</A>
+Sent: Tuesday, April 8, 2014 12:53:14 AM
+Subject: Re: [Chilli] CoovaChilli Kernel Mode issue
+
+Hi,
+I also have the similar problem which I wrote today:&#160;<A HREF="http://lists.coova.org/pipermail/chilli/2014-April/002657.html">http://lists.coova.org/pipermail/chilli/2014-April/002657.html</A>
+I tried the patches on 3 december(<A HREF="http://lists.coova.org/pipermail/chilli/2013-December/002489.html">http://lists.coova.org/pipermail/chilli/2013-December/002489.html</A>), but it doesn't change. Have you solved your problem?
+
+Thanks.
+
+On Friday, December 6, 2013 1:20 PM, Phyo Wai Soe &lt;<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">phyo.w.soe at frontiir.net</A>&gt; wrote:
+ 
+Hi Steffen,
+
+Your reply does give me some comfort :) . I have tried almost all the things you suggested. When we analyzed traffics on tun0 and eth0 of clients and the server with Wireshark, we saw some fishy things that may or may not indicate issues. Other possible sources of failure we are looking at are the kernel version we are using (Ubuntu 12.04) and the fact that we are running them on virtual machines. Maybe all they are needing are the patches you suggested on 3 Dec :)
+
+Thanks.
+
+Regards,
+Phyo Wai Soe
+
+
+----- Original Message -----
+From: &quot;Steffen Dettmer&quot; &lt;<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">steffen.dettmer at nomadrail.com</A>&gt;
+To: &quot;Phyo Wai Soe&quot; &lt;<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">phyo.w.soe at frontiir.net</A>&gt;, <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli at coova.org</A>
+Sent: Wednesday, December 4, 2013 11:18:00 PM
+Subject: RE: CoovaChilli Kernel Mode issue
+
+Hi,
+
+because it seems no one knew how to solve, I try to add my experiences, but unfortunately I can only say that I had a very similar situation and didn't solve it.
+
+&gt;<i> Phyo Wai Soe, November 28, 2013 12:36 PM I saw your mails to the list 
+</I>&gt;<i> regarding the redir error message and hoped I could get some clues. So 
+</I>&gt;<i> far, I am still stuck :( In my case, when I see redir_read messages in 
+</I>&gt;<i> the server's syslog, it normally means that clients see &quot;The 
+</I>&gt;<i> connection was reset&quot; error in their browsers and can't go anywhere. 
+</I>&gt;<i> They don't even see the &quot;redirecting&quot; message with the animated circle 
+</I>&gt;<i> (www/wait.gif).
+</I>
+I did some performance tests with kernel mode Coova (but not using the original Coova Portal), but I also was not able to get the redirects working. To progress, I manually authorized test clients using chilli_query command line commands, as you did :)
+
+&gt;<i> I tried different config settings. If I make HS_UAMLISTEN address in 
+</I>&gt;<i> the same range as HS_NETWORK, clients do see redirection/login pages 
+</I>&gt;<i> but that's all.
+</I>
+I think, following Davids annoucement mail, in main.conf &quot;net&quot;
+should be e.g. in 10.1.1.0 and uamlisten e.g. 11.1.1.0. The up.sh script generates different iptables rules; I think in your case the traffic to the login page could even be passing by coova.
+
+&gt;<i> I don't see any record in /proc/net/coova/chilli (which should happen 
+</I>&gt;<i> if the kernel module mode is on)
+</I>
+I think only authorized clients appear here.
+
+&gt;<i> or issue authorize, log out, etc., commands on the server with 
+</I>&gt;<i> chilli_query. It's as if the commands don't have any effect on the 
+</I>&gt;<i> clients.
+</I>
+I simply manually called chilli_query on shell command line to authenticate my clients, then they appeared in the /proc file output. I think this is expected: Coova handles all non-authorized traffic. Sorry that I don't know why it is not working for the redirects.
+
+&gt;<i> However, if I make HS_UAMLISTEN address to be on another network range 
+</I>&gt;<i> like David mentioned, clients get that connection reset error. But 
+</I>&gt;<i> /proc/net/coova/chilli is populated and if I manually authorize a 
+</I>&gt;<i> client, he/she can browse the web.
+</I>
+Do the counters of the -m coova firewall rules increase (e.g.
+iptables-save -c)? If so, I think this proves the kernel module is working (it matches packets, which then are routed by the kernel). Maybe verify with &quot;killall -STOP chilli&quot;, but I didn't try.
+
+&gt;<i> It's possible that there is a config problem or the NAT between 
+</I>&gt;<i> UAMLISTEN and DHCPLISTEN has a issue. I am trying out all possible 
+</I>&gt;<i> things I can think of but so far, I am not getting it right.
+</I>
+The portal I used responded with a redirect - to the current URL.
+I thought it could be cause by the fact, that the client network is within 10/8 as a &quot;default&quot; config may assume, but from 11/8, because Coova performs some SNAT (?) of unauthorized clients. I think you already tried, traced and verified that. Maybe it helps to use a browser debugger like Firebug and check &quot;Network&quot; to see what happens or even better tcpdump -w + Wireshark the traffic; maybe the redirect works, but not the portal as in my case?
+
+Sorry that I couldn't help you, but at least you know you are not the only one who had such an issue :-)
+
+Regards,
+Steffen
+
+_______________________________________________
+Chilli mailing list
+<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">Chilli at coova.org</A>
+<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">http://lists.coova.org/cgi-bin/mailman/listinfo/chilli</A>
+</PRE>
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="002663.html">[Chilli] CoovaChilli Kernel Mode issue
+</A></li>
+	<LI>Next message: <A HREF="002666.html">[Chilli] CoovaChilli Kernel Mode issue
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2665">[ date ]</a>
+              <a href="thread.html#2665">[ thread ]</a>
+              <a href="subject.html#2665">[ subject ]</a>
+              <a href="author.html#2665">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

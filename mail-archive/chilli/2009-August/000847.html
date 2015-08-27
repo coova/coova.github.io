@@ -1,0 +1,126 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> Encrypt passwords
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20Encrypt%20passwords&In-Reply-To=%3C4A7BD1FA.40901%40wiggy.net%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000846.html">
+   <LINK REL="Next"  HREF="000845.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>Encrypt passwords</H1>
+    <B>Wichert Akkerman</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20Encrypt%20passwords&In-Reply-To=%3C4A7BD1FA.40901%40wiggy.net%3E"
+       TITLE="Encrypt passwords">wichert at wiggy.net
+       </A><BR>
+    <I>Fri Aug  7 07:04:26 UTC 2009</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000846.html">Encrypt passwords
+</A></li>
+        <LI>Next message: <A HREF="000845.html">No peer protocol defined
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#847">[ date ]</a>
+              <a href="thread.html#847">[ thread ]</a>
+              <a href="subject.html#847">[ subject ]</a>
+              <a href="author.html#847">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>On 2009-8-7 09:02, Wichert Akkerman wrote:
+&gt;<i> This should be about right, although it seems to go wrong still with
+</I>&gt;<i> passwords over 16 characters in a way that I have not figured out yet:
+</I>&gt;<i>
+</I>&gt;<i> def ObfuscatePassword(challenge, password):
+</I>&gt;<i> xorpad=challenge.decode(&quot;hex&quot;)
+</I>&gt;<i> assert len(xorpad)==16
+</I>&gt;<i> uamsecret=pylons.config.get(&quot;chilli.uamsecret&quot;, None)
+</I>&gt;<i> if uamsecret:
+</I>&gt;<i> xorpad=hashlib.md5(xorpad+uamsecret).digest()
+</I>&gt;<i>
+</I>&gt;<i> while len(xorpad)&lt;len(password):
+</I>&gt;<i> xorpad+=xorpad
+</I>&gt;<i> # NUL-pad the password to make it a multiple of the XOR-pad size
+</I>&gt;<i> password+=&quot;\x00&quot;*(len(xorpad)-len(password))
+</I>&gt;<i>
+</I>&gt;<i> assert len(password)==len(xorpad)
+</I>&gt;<i>
+</I>&gt;<i> result=[]
+</I>&gt;<i> for i in range(len(password)):
+</I>&gt;<i> result.append(chr(ord(password[i]) ^ ord(xorpad[i])))
+</I>&gt;<i> result=&quot;&quot;.join(result)
+</I>&gt;<i> return result.encode(&quot;hex&quot;)
+</I>
+And for completeness here are the unit tests that go with it:
+
+class TestObfuscatePassword(unittest.TestCase):
+     def setUp(self):
+         import pylons
+         self._pylons_config=pylons.config
+         pylons.config=dict()
+
+     def tearDown(self):
+         import pylons
+         pylons.config=self._pylons_config
+
+     def setSecret(self, secret):
+         import pylons
+         pylons.config[&quot;chilli.uamsecret&quot;]=secret
+
+     def testSimplePasswordNoSecret(self):
+         pw=ObfuscatePassword(&quot;0102030405060708090A0B0C0D0E0F00&quot;, &quot;AAAA&quot;)
+         self.assertEqual(len(pw), 32, &quot;Password padded to challenge 
+length&quot;)
+         self.assertEqual(pw, &quot;4043424505060708090a0b0c0d0e0f00&quot;)
+
+     def testSimplePasswordWithSecret(self):
+         self.setSecret(&quot;secret&quot;)
+         pw=ObfuscatePassword(&quot;0102030405060708090A0B0C0D0E0F00&quot;, &quot;AAAA&quot;)
+         self.assertEqual(pw, &quot;417fad1cfde2ffcdab12cf6db574ea9a&quot;)
+
+     def testPasswordLongerThanChallenge(self):
+         pw=ObfuscatePassword(&quot;01020102010201020102010201020102&quot;, 
+&quot;AAAAAAAAAAAAAAAAAAAA&quot;)
+         self.assertEqual(len(pw), 64)
+         self.assertEqual(pw, 
+&quot;4043404340434043404340434043404340434043010201020102010201020102&quot;)
+
+     def testEvilPassword(self):
+         evil=&quot;a`~!@#$%^&amp;*()-_=&quot;
+         pw=ObfuscatePassword(&quot;00000000000000000000000000000000&quot;, evil)
+         self.assertEqual(pw, evil.encode(&quot;hex&quot;))
+
+
+Wichert.
+
+
+-- 
+Wichert Akkerman &lt;<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">wichert at wiggy.net</A>&gt;   It is simple to make things.
+<A HREF="http://www.wiggy.net/">http://www.wiggy.net/</A>                  It is hard to make things simple.
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000846.html">Encrypt passwords
+</A></li>
+	<LI>Next message: <A HREF="000845.html">No peer protocol defined
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#847">[ date ]</a>
+              <a href="thread.html#847">[ thread ]</a>
+              <a href="subject.html#847">[ subject ]</a>
+              <a href="author.html#847">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

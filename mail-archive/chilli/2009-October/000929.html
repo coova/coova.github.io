@@ -1,0 +1,211 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [OT] Re: dhcp relay
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BOT%5D%20Re%3A%20dhcp%20relay&In-Reply-To=%3C4AD46C00.3050309%40ibh.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000927.html">
+   <LINK REL="Next"  HREF="000926.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[OT] Re: dhcp relay</H1>
+    <B>Thomas Liske</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BOT%5D%20Re%3A%20dhcp%20relay&In-Reply-To=%3C4AD46C00.3050309%40ibh.de%3E"
+       TITLE="[OT] Re: dhcp relay">liske at ibh.de
+       </A><BR>
+    <I>Tue Oct 13 12:01:04 UTC 2009</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000927.html">dhcp relay
+</A></li>
+        <LI>Next message: <A HREF="000926.html">dhcp relay
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#929">[ date ]</a>
+              <a href="thread.html#929">[ thread ]</a>
+              <a href="subject.html#929">[ subject ]</a>
+              <a href="author.html#929">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hi,
+
+wlanmac wrote:
+&gt;<i> As mentioned, you shouldn't have two DHCP servers listening for
+</I>
+I now it's OT, but:
+
+It's _absolute legal_ (to get some high available) to have more than one 
+DHCP server on the same network segment.
+
+Poor man's scenario:
+
+DHCP servers with non overlaping pools (any DHCP server(s)) and 
+identical static assignments.
+
+Rich man's scenario:
+
+DHCP server cluster with some replication mechanism (like ISC DHCPD 
+version &gt;= 3) and possible overlaping pools and identical static 
+assignments.
+
+
+Getting a HA chilli is another topic I ponder about from time to time ;).
+
+
+Regards,
+Thomas
+
+&gt;<i> broadcasts, but your dhcp relay configuration is starting to look good.
+</I>&gt;<i> Though, do be sure that the real dhcp server isn't also replying
+</I>&gt;<i> directly to the same request. 
+</I>&gt;<i> 
+</I>&gt;<i> You might also consider using MAC authentication and Framed-IP-Address
+</I>&gt;<i> in an Access-Accept to set &quot;static&quot; IP addresses in your network based
+</I>&gt;<i> on MAC address. 
+</I>&gt;<i> 
+</I>&gt;<i> David
+</I>&gt;<i> 
+</I>&gt;<i> On Tue, 2009-10-13 at 11:30 +0300, Oguzhan Kayhan wrote:
+</I>&gt;&gt;<i> Last correction
+</I>&gt;&gt;<i> dhcpgateway 192.168.1.10
+</I>&gt;&gt;<i> dhcpgatewayport 67
+</I>&gt;&gt;<i> dhcprelayagent  192.168.255.1
+</I>&gt;&gt;<i> usetap
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> with this config, it seems client gets necessary ip address which i set on
+</I>&gt;&gt;<i> dhcp server running on 192.168.1.10  but on syslog,
+</I>&gt;&gt;<i> i keep on getting
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> Oct 13 11:28:44 gw coova-chilli[13573]: dhcp.c: 2262: received DHCP
+</I>&gt;&gt;<i> response from host other than our gateway
+</I>&gt;&gt;<i> Oct 13 11:28:44 gw coova-chilli[13573]: chilli.c: 4164:
+</I>&gt;&gt;<i> dhcp_relay_decaps() failed!
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> But it seems everything is working..
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> So is there a real error, or is it just a bug that keeps on giving this
+</I>&gt;&gt;<i> msgs..
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i>
+</I>&gt;&gt;&gt;<i> Anybody??? :)
+</I>&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;<i> I made a few tests more..
+</I>&gt;&gt;&gt;<i> I installed dhcp server to another server.
+</I>&gt;&gt;&gt;<i> And i also installed coova.
+</I>&gt;&gt;&gt;<i> Lets assume DHCP server is on 192.168.1.10
+</I>&gt;&gt;&gt;<i> and coova wan ip is 192.168.1.11
+</I>&gt;&gt;&gt;<i> So what i need to enter on coova config i guess is,
+</I>&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;<i> But when i enter dhcpgateway 192.168.1.10
+</I>&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;<i> the msg i got on syslog is
+</I>&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;<i> Oct 13 11:00:04 gw coova-chilli[11812]: dhcp.c: 2262: received DHCP
+</I>&gt;&gt;&gt;<i> response from host other than our gateway
+</I>&gt;&gt;&gt;<i> Oct 13 11:00:04 gw coova-chilli[11812]: chilli.c: 4164:
+</I>&gt;&gt;&gt;<i> dhcp_relay_decaps() failed!
+</I>&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;<i> if i enter dhcprelayagent 192.168.1.10
+</I>&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;<i> nothing happens..it still gives the ip addresses from coova.
+</I>&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;<i> Anybody experienced about that????
+</I>&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;&gt;<i> Hello,
+</I>&gt;&gt;&gt;&gt;<i> I wonder am i thinking wrong about dhcprelay..
+</I>&gt;&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;&gt;<i> I am planning to run a dhcpserver on same server with coova.
+</I>&gt;&gt;&gt;&gt;<i> And i want to disable coova's own dhcp server, so i can give static ip's
+</I>&gt;&gt;&gt;&gt;<i> to some of MACID's (like printers etc)
+</I>&gt;&gt;&gt;&gt;<i> I dont wanna use anyip and and dynamic-static ip masks.
+</I>&gt;&gt;&gt;&gt;<i> Because it creates other problems too.
+</I>&gt;&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;&gt;<i> As i see it seems possible  via freeradius+jradius.
+</I>&gt;&gt;&gt;&gt;<i> What i wonder how (or can I) can i set coova to use local dhcp server
+</I>&gt;&gt;&gt;&gt;<i> instead of its own or freeradius..
+</I>&gt;&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;&gt;<i> ---------------------------------------------------------------------
+</I>&gt;&gt;&gt;&gt;<i> To unsubscribe, e-mail: <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli-unsubscribe at coova.org</A>
+</I>&gt;&gt;&gt;&gt;<i> For additional commands, e-mail: <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli-help at coova.org</A>
+</I>&gt;&gt;&gt;&gt;<i> <A HREF="http://www.coova.org/CoovaChilli">http://www.coova.org/CoovaChilli</A>
+</I>&gt;&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;<i> ---------------------------------------------------------------------
+</I>&gt;&gt;&gt;<i> To unsubscribe, e-mail: <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli-unsubscribe at coova.org</A>
+</I>&gt;&gt;&gt;<i> For additional commands, e-mail: <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli-help at coova.org</A>
+</I>&gt;&gt;&gt;<i> <A HREF="http://www.coova.org/CoovaChilli">http://www.coova.org/CoovaChilli</A>
+</I>&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;<i>
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> ---------------------------------------------------------------------
+</I>&gt;&gt;<i> To unsubscribe, e-mail: <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli-unsubscribe at coova.org</A>
+</I>&gt;&gt;<i> For additional commands, e-mail: <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli-help at coova.org</A>
+</I>&gt;&gt;<i> <A HREF="http://www.coova.org/CoovaChilli">http://www.coova.org/CoovaChilli</A>
+</I>&gt;&gt;<i>
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> ---------------------------------------------------------------------
+</I>&gt;<i> To unsubscribe, e-mail: <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli-unsubscribe at coova.org</A>
+</I>&gt;<i> For additional commands, e-mail: <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli-help at coova.org</A>
+</I>&gt;<i> <A HREF="http://www.coova.org/CoovaChilli">http://www.coova.org/CoovaChilli</A>
+</I>&gt;<i> 
+</I>
+
+-- 
+<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">support at ibh.de</A>                              Tel. +49 351 477 77 30
+www.ibh.de                                  Fax  +49 351 477 77 39
+
+-----------------------------------------------------------------------
+Dipl.-Ing. Thomas Liske
+Netzwerk- und System-Design
+
+
+IBH IT-Service GmbH                         Amtsgericht Dresden
+Gostritzer Str. 61-63                       HRB 13626
+D-01217 Dresden                             GF: Prof. Dr. Thomas Horn
+Germany                                     VAT DE182302907
+-----------------------------------------------------------------------
+Ihr Partner f&#252;r: LAN, WAN IP-Quality, Security, VoIP, SAN, Backup, USV
+-----------------------------------------------------------------------
+        professioneller IT-Service - kompetent und zuverl&#228;ssig
+-----------------------------------------------------------------------
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000927.html">dhcp relay
+</A></li>
+	<LI>Next message: <A HREF="000926.html">dhcp relay
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#929">[ date ]</a>
+              <a href="thread.html#929">[ thread ]</a>
+              <a href="subject.html#929">[ subject ]</a>
+              <a href="author.html#929">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

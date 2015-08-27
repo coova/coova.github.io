@@ -1,0 +1,154 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] Patch to not account broadcast and multicast traffic
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Patch%20to%20not%20account%20broadcast%20and%20multicast%20traffic&In-Reply-To=%3C20111018140806.GI27906%40thot.informatik.uni-kl.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001751.html">
+   <LINK REL="Next"  HREF="001753.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] Patch to not account broadcast and multicast traffic</H1>
+    <B>Joerg Mayer</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Patch%20to%20not%20account%20broadcast%20and%20multicast%20traffic&In-Reply-To=%3C20111018140806.GI27906%40thot.informatik.uni-kl.de%3E"
+       TITLE="[Chilli] Patch to not account broadcast and multicast traffic">jmayer at loplof.de
+       </A><BR>
+    <I>Tue Oct 18 14:08:06 UTC 2011</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001751.html">[Chilli] Patch to not account broadcast and multicast traffic
+</A></li>
+        <LI>Next message: <A HREF="001753.html">[Chilli] Coova Chilli Layer 3
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1752">[ date ]</a>
+              <a href="thread.html#1752">[ thread ]</a>
+              <a href="subject.html#1752">[ subject ]</a>
+              <a href="author.html#1752">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>On Tue, Oct 18, 2011 at 03:48:16PM +0200, Joerg Mayer wrote:
+Please ignore the part in chilli.c, it's not related to the problem.
+Only the change to src/dhcp.c is relevant.
+
+Sorry
+   J&#195;&#182;rg
+
+&gt;<i> Index: src/dhcp.c
+</I>&gt;<i> ===================================================================
+</I>&gt;<i> --- src/dhcp.c	(revision 452)
+</I>&gt;<i> +++ src/dhcp.c	(working copy)
+</I>&gt;<i> @@ -3087,6 +3087,7 @@
+</I>&gt;<i>    char allowed = 0;
+</I>&gt;<i>    char has_ip = 0;
+</I>&gt;<i>    char is_dhcp = 0;
+</I>&gt;<i> +  char not_valid_unicast = 0;
+</I>&gt;<i>  
+</I>&gt;<i>    int authstate = 0;
+</I>&gt;<i>  
+</I>&gt;<i> @@ -3183,8 +3184,22 @@
+</I>&gt;<i>      log_dbg(&quot;dhcp/bootps request being processed&quot;);
+</I>&gt;<i>      return dhcp_getreq(this, pack, len);
+</I>&gt;<i>    }
+</I>&gt;<i> -  
+</I>&gt;<i> -  /* 
+</I>&gt;<i> +  not_valid_unicast =
+</I>&gt;<i> +       /* Multicast */
+</I>&gt;<i> +       (pack_iph-&gt;daddr &amp; 0xf0000000) == 0xe0000000 ||
+</I>&gt;<i> +       /* All 0s broadcast */
+</I>&gt;<i> +       pack_iph-&gt;daddr == 0 ||
+</I>&gt;<i> +       /* All 1s broadcast */
+</I>&gt;<i> +       pack_iph-&gt;daddr == 0xffffffff ||
+</I>&gt;<i> +       /* Net directed broadcast */
+</I>&gt;<i> +       pack_iph-&gt;daddr == (_options.net.s_addr  | ~_options.mask.s_addr);
+</I>&gt;<i> +
+</I>&gt;<i> +  if (not_valid_unicast) {
+</I>&gt;<i> +    log_dbg(&quot;dropping packet; no valid unicast destination&quot;);
+</I>&gt;<i> +    return 0;
+</I>&gt;<i> +  }
+</I>&gt;<i> +
+</I>&gt;<i> +  /*
+</I>&gt;<i>     *  Check to see if we know MAC address
+</I>&gt;<i>     */
+</I>&gt;<i>    if (!dhcp_hashget(this, &amp;conn, pack_ethh-&gt;src)) {
+</I>&gt;<i> Index: src/chilli.c
+</I>&gt;<i> ===================================================================
+</I>&gt;<i> --- src/chilli.c	(revision 452)
+</I>&gt;<i> +++ src/chilli.c	(working copy)
+</I>&gt;<i> @@ -5052,10 +5047,13 @@
+</I>&gt;<i>      if (_options.layer3) {
+</I>&gt;<i>        struct ippoolm_t *ipm = 0;
+</I>&gt;<i>        struct in_addr addr;
+</I>&gt;<i> +      struct in_addr daddr;
+</I>&gt;<i>  
+</I>&gt;<i>        addr.s_addr = ipph-&gt;saddr;
+</I>&gt;<i> +      daddr.s_addr = ipph-&gt;daddr;
+</I>&gt;<i>  
+</I>&gt;<i>        if (!addr.s_addr) {
+</I>&gt;<i> +printf(&quot;from: %s to %s\n&quot;, inet_ntoa(addr), inet_ntoa(daddr));
+</I>&gt;<i>  	return tun_encaps(tun, pack, len, 0);
+</I>&gt;<i>        }
+</I>&gt;<i>  
+</I>&gt;<i> @@ -5123,6 +5121,16 @@
+</I>&gt;<i>         ))
+</I>&gt;<i>      return tun_encaps(tun, pack, len, 0);
+</I>&gt;<i>    
+</I>&gt;<i> +  /*
+</I>&gt;<i> +   * Drop if destination is some private IP address - this is to avoid this
+</I>&gt;<i> +   * traffic to be accounted - it would get dropped in our FORWARD filter
+</I>&gt;<i> +   * anyway.
+</I>&gt;<i> +   */
+</I>&gt;<i> +  if ((ipph-&gt;daddr &amp; 0xff000000) == 0x0a000000 ||
+</I>&gt;<i> +      (ipph-&gt;daddr &amp; 0xfff00000) == 0xac100000 ||
+</I>&gt;<i> +      (ipph-&gt;daddr &amp; 0xffff0000) == 0xc0a80000)
+</I>&gt;<i> +    return 0;
+</I>&gt;<i> +
+</I>&gt;<i>    if (appconn-&gt;s_state.authenticated == 1) {
+</I>&gt;<i>      if (chilli_acct_fromsub(appconn, len))
+</I>&gt;<i>        return 0;
+</I>
+&gt;<i> _______________________________________________
+</I>&gt;<i> Chilli mailing list
+</I>&gt;<i> <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">Chilli at coova.org</A>
+</I>&gt;<i> <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">http://lists.coova.org/cgi-bin/mailman/listinfo/chilli</A>
+</I>
+
+-- 
+Joerg Mayer                                           &lt;<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">jmayer at loplof.de</A>&gt;
+We are stuck with technology when what we really want is just stuff that
+works. Some say that should read Microsoft instead of technology.
+</PRE>
+
+
+
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001751.html">[Chilli] Patch to not account broadcast and multicast traffic
+</A></li>
+	<LI>Next message: <A HREF="001753.html">[Chilli] Coova Chilli Layer 3
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1752">[ date ]</a>
+              <a href="thread.html#1752">[ thread ]</a>
+              <a href="subject.html#1752">[ subject ]</a>
+              <a href="author.html#1752">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

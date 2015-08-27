@@ -1,0 +1,804 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] External uam server(json_html.tmpl)
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20External%20uam%20server%28json_html.tmpl%29&In-Reply-To=%3CCAG63ifbVuJ2c_ph9bj8zDi1O2x49BN0bJZurYg7gxGYjLrZJFw%40mail.gmail.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001732.html">
+   
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] External uam server(json_html.tmpl)</H1>
+    <B>John Green</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20External%20uam%20server%28json_html.tmpl%29&In-Reply-To=%3CCAG63ifbVuJ2c_ph9bj8zDi1O2x49BN0bJZurYg7gxGYjLrZJFw%40mail.gmail.com%3E"
+       TITLE="[Chilli] External uam server(json_html.tmpl)">onlineprogamers at gmail.com
+       </A><BR>
+    <I>Wed Aug 17 08:46:50 UTC 2011</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001732.html">[Chilli] Chilli 1.2.8 segfault
+</A></li>
+        
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1733">[ date ]</a>
+              <a href="thread.html#1733">[ thread ]</a>
+              <a href="subject.html#1733">[ subject ]</a>
+              <a href="author.html#1733">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hi guys,
+
+I have installed and configure coovachilli version 1.2.7 , freeradius 2.1.7
+and mysql 5.2 on a same box (CentOS 5.6).
+I named it as box1.If/When I makes a connection from my laptop to the box1
+port eth1, there are no problem,
+any url will redirect (coova.html) to json login page.After log in, I can
+see the json status page then
+click the original url to continue browsing.
+
+chilli config file
+....
+...
+...
+HS_RADIUS=myip1
+HS_RADIUS2=myip1
+HS_RADSECRET=mysecret
+HS_UAMSERVER=myip1
+HS_UAMFORMAT=<A HREF="http://myip1/uam/">http://myip1/uam/</A>
+HS_UAMHOMEPAGE=<A HREF="http://myip1:myport/www/coova.html">http://myip1:myport/www/coova.html</A>
+....
+...
+...
+myip1 = public ip
+
+Then I installed and configure coovachilli version 1.2.7 on another box. I
+name it as box2 (still CentOS 5.6) but
+I point the uamservser and radius to the 1st box. Any url will redirect to
+json login page but
+after enter username and password, nothing happen on the login page.
+
+at 1st, box1 and box2 have same chilli configuration
+
+chilli config file
+....
+...
+...
+HS_RADIUS=myip1
+HS_RADIUS2=myip1
+HS_RADSECRET=mysecret
+HS_UAMSERVER=myip2
+HS_UAMFORMAT=<A HREF="http://myip2/uam/">http://myip2/uam/</A>
+HS_UAMHOMEPAGE=<A HREF="http://myip2:myport/www/coova.html">http://myip2:myport/www/coova.html</A>
+....
+...
+...
+myip2 = public ip
+
+There are no problem, only when I changed the uamserver, point to box1 uam.
+
+chilli config file box2
+....
+....
+...
+HS_RADIUS=myip1
+HS_RADIUS2=myip1
+HS_RADSECRET=mysecret
+HS_UAMSERVER=myip1
+HS_UAMFORMAT=<A HREF="http://myip1/uam/index.html">http://myip1/uam/index.html</A>
+HS_UAMHOMEPAGE=<A HREF="http://myip1/uam/coova.html">http://myip1/uam/coova.html</A>
+....
+....
+....
+
+case 1,
+username = arsene
+password = test123
+username and password are valid.
+
+&gt;<i>From radiusd -X
+</I>
+Waking up in 4.9 seconds.
+Cleaning up request 34 ID 15 with timestamp +3006
+Ready to process requests.
+rad_recv: Access-Request packet from host box2.box2.box2.box2 port 55871,
+id=17, length=236
+        ChilliSpot-Version = &quot;1.2.7&quot;
+        User-Name = &quot;arsene&quot;
+        CHAP-Challenge = 0x51edb4c4aaa4898d76018a2c6b65911d
+        CHAP-Password = 0x00a49ad12ee79fcb32e3dbc00d08edd580
+        Service-Type = Login-User
+        Acct-Session-Id = &quot;4e4b6f6e00000001&quot;
+        Framed-IP-Address = 10.0.0.2
+        NAS-Port-Type = Wireless-802.11
+        NAS-Port = 1
+        NAS-Port-Id = &quot;00000001&quot;
+        Calling-Station-Id = &quot;BC-AE-C5-4A-67-8A&quot;
+        Called-Station-Id = &quot;00-04-23-CE-28-81&quot;
+        NAS-IP-Address = 10.0.0.1
+        NAS-Identifier = &quot;hotspot&quot;
+        WISPr-Logoff-URL = &quot;<A HREF="http://10.0.0.1:3990/logoff">http://10.0.0.1:3990/logoff</A>&quot;
+        Message-Authenticator = 0xe3b34607a829086ae7288888896da869
++- entering group authorize {...}
+++[preprocess] returns ok
+[chap] Setting 'Auth-Type := CHAP'
+++[chap] returns ok
+++[mschap] returns noop
+[suffix] No '@' in User-Name = &quot;arsene&quot;, looking up realm NULL
+[suffix] No such realm &quot;NULL&quot;
+++[suffix] returns noop
+[eap] No EAP-Message, not doing EAP
+++[eap] returns noop
+++[unix] returns notfound
+[sql]   expand: %{User-Name} -&gt; arsene
+[sql] sql_set_user escaped user --&gt; 'arsene'
+rlm_sql (sql): Reserving sql socket id: 2
+[sql]   expand: SELECT id, username, attribute, value, op           FROM
+radcheck           WHERE username = '%{SQL-User-Name}'           ORDER BY id
+-&gt; SELECT id, username, attribute, value, op           FROM
+radcheck           WHERE username = 'arsene'           ORDER BY id
+WARNING: Found User-Password == &quot;...&quot;.
+WARNING: Are you sure you don't mean Cleartext-Password?
+WARNING: See &quot;man rlm_pap&quot; for more information.
+[sql] User found in radcheck table
+[sql]   expand: SELECT id, username, attribute, value, op           FROM
+radreply           WHERE username = '%{SQL-User-Name}'           ORDER BY id
+-&gt; SELECT id, username, attribute, value, op           FROM
+radreply           WHERE username = 'arsene'           ORDER BY id
+[sql]   expand: SELECT groupname           FROM radusergroup           WHERE
+username = '%{SQL-User-Name}'           ORDER BY priority -&gt; SELECT
+groupname           FROM radusergroup           WHERE username =
+'arsene'           ORDER BY priority
+rlm_sql (sql): Released sql socket id: 2
+++[sql] returns ok
+++? if (notfound)
+? Evaluating (notfound) -&gt; FALSE
+++? if (notfound) -&gt; FALSE
+++? if (reject)
+? Evaluating (reject) -&gt; FALSE
+++? if (reject) -&gt; FALSE
+rlm_sqlcounter: Entering module authorize code
+rlm_sqlcounter: Could not find Check item value pair
+++[noresetQuotaLimit] returns noop
+++? if (reject)
+? Evaluating (reject) -&gt; FALSE
+++? if (reject) -&gt; FALSE
+rlm_sqlcounter: Entering module authorize code
+rlm_sqlcounter: Could not find Check item value pair
+++[expirationdate] returns noop
+++? if (reject)
+? Evaluating (reject) -&gt; FALSE
+++? if (reject) -&gt; FALSE
+rlm_sqlcounter: Entering module authorize code
+rlm_sqlcounter: Could not find Check item value pair
+++[bandwidthup] returns noop
+rlm_sqlcounter: Entering module authorize code
+rlm_sqlcounter: Could not find Check item value pair
+++[bandwidthdown] returns noop
+rlm_sqlcounter: Entering module authorize code
+rlm_sqlcounter: Could not find Check item value pair
+++[FOCmonthlyresetcounter] returns noop
+++? if (reject)
+? Evaluating (reject) -&gt; FALSE
+++? if (reject) -&gt; FALSE
+++[expiration] returns noop
+++? if (userlock)
+? Evaluating (userlock) -&gt; FALSE
+++? if (userlock) -&gt; FALSE
+++[logintime] returns noop
+[pap] Found existing Auth-Type, not changing it.
+++[pap] returns noop
+Found Auth-Type = CHAP
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!    Replacing User-Password in config items with Cleartext-Password.
+!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!! Please update your configuration so that the &quot;known good&quot;
+!!!
+!!! clear text password is in Cleartext-Password, and not in User-Password.
+!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
++- entering group CHAP {...}
+[chap] login attempt by &quot;arsene&quot; with CHAP password
+[chap] Using clear text password &quot;test123&quot; for user arsene authentication.
+[chap] Password check failed
+++[chap] returns reject
+Failed to authenticate the user.
+Using Post-Auth-Type Reject
++- entering group REJECT {...}
+[attr_filter.access_reject]     expand: %{User-Name} -&gt; arsene
+ attr_filter: Matched entry DEFAULT at line 11
+++[attr_filter.access_reject] returns updated
+Delaying reject of request 35 for 1 seconds
+Going to the next request
+Waking up in 0.9 seconds.
+Sending delayed reject for request 35
+Sending Access-Reject of id 17 to box2.box2.box2.box2 port 55871
+Waking up in 4.9 seconds.
+Cleaning up request 35 ID 17 with timestamp +3097
+Ready to process requests.
+
+
+
+case 2,
+username = arsene
+password = abc123
+username valid but not password.
+
+&gt;<i>From radiusd -X
+</I>
+Ready to process requests.
+rad_recv: Access-Request packet from host box2.box2.box2.box2 port 50833,
+id=15, length=236
+        ChilliSpot-Version = &quot;1.2.7&quot;
+        User-Name = &quot;arsene&quot;
+        CHAP-Challenge = 0x32bfb315e2fddb0b7393de2568f8c0b4
+        CHAP-Password = 0x00e0559e504ade88abcebc04542d659a2d
+        Service-Type = Login-User
+        Acct-Session-Id = &quot;4e4b6ef600000001&quot;
+        Framed-IP-Address = 10.0.0.2
+        NAS-Port-Type = Wireless-802.11
+        NAS-Port = 1
+        NAS-Port-Id = &quot;00000001&quot;
+        Calling-Station-Id = &quot;BC-AE-C5-4A-67-8A&quot;
+        Called-Station-Id = &quot;00-04-23-CE-28-81&quot;
+        NAS-IP-Address = 10.0.0.1
+        NAS-Identifier = &quot;hotspot&quot;
+        WISPr-Logoff-URL = &quot;<A HREF="http://10.0.0.1:3990/logoff">http://10.0.0.1:3990/logoff</A>&quot;
+        Message-Authenticator = 0x7ba5682d606dc8ce34b37df504f1df47
++- entering group authorize {...}
+++[preprocess] returns ok
+[chap] Setting 'Auth-Type := CHAP'
+++[chap] returns ok
+++[mschap] returns noop
+[suffix] No '@' in User-Name = &quot;arsene&quot;, looking up realm NULL
+[suffix] No such realm &quot;NULL&quot;
+++[suffix] returns noop
+[eap] No EAP-Message, not doing EAP
+++[eap] returns noop
+++[unix] returns notfound
+[sql]   expand: %{User-Name} -&gt; arsene
+[sql] sql_set_user escaped user --&gt; 'arsene'
+rlm_sql (sql): Reserving sql socket id: 3
+[sql]   expand: SELECT id, username, attribute, value, op           FROM
+radcheck           WHERE username = '%{SQL-User-Name}'           ORDER BY id
+-&gt; SELECT id, username, attribute, value, op           FROM
+radcheck           WHERE username = 'arsene'           ORDER BY id
+WARNING: Found User-Password == &quot;...&quot;.
+WARNING: Are you sure you don't mean Cleartext-Password?
+WARNING: See &quot;man rlm_pap&quot; for more information.
+[sql] User found in radcheck table
+[sql]   expand: SELECT id, username, attribute, value, op           FROM
+radreply           WHERE username = '%{SQL-User-Name}'           ORDER BY id
+-&gt; SELECT id, username, attribute, value, op           FROM
+radreply           WHERE username = 'arsene'           ORDER BY id
+[sql]   expand: SELECT groupname           FROM radusergroup           WHERE
+username = '%{SQL-User-Name}'           ORDER BY priority -&gt; SELECT
+groupname           FROM radusergroup           WHERE username =
+'arsene'           ORDER BY priority
+rlm_sql (sql): Released sql socket id: 3
+++[sql] returns ok
+++? if (notfound)
+? Evaluating (notfound) -&gt; FALSE
+++? if (notfound) -&gt; FALSE
+++? if (reject)
+? Evaluating (reject) -&gt; FALSE
+++? if (reject) -&gt; FALSE
+rlm_sqlcounter: Entering module authorize code
+rlm_sqlcounter: Could not find Check item value pair
+++[noresetQuotaLimit] returns noop
+++? if (reject)
+? Evaluating (reject) -&gt; FALSE
+++? if (reject) -&gt; FALSE
+rlm_sqlcounter: Entering module authorize code
+rlm_sqlcounter: Could not find Check item value pair
+++[expirationdate] returns noop
+++? if (reject)
+? Evaluating (reject) -&gt; FALSE
+++? if (reject) -&gt; FALSE
+rlm_sqlcounter: Entering module authorize code
+rlm_sqlcounter: Could not find Check item value pair
+++[bandwidthup] returns noop
+rlm_sqlcounter: Entering module authorize code
+rlm_sqlcounter: Could not find Check item value pair
+++[bandwidthdown] returns noop
+rlm_sqlcounter: Entering module authorize code
+rlm_sqlcounter: Could not find Check item value pair
+++[FOCmonthlyresetcounter] returns noop
+++? if (reject)
+? Evaluating (reject) -&gt; FALSE
+++? if (reject) -&gt; FALSE
+++[expiration] returns noop
+++? if (userlock)
+? Evaluating (userlock) -&gt; FALSE
+++? if (userlock) -&gt; FALSE
+++[logintime] returns noop
+[pap] Found existing Auth-Type, not changing it.
+++[pap] returns noop
+Found Auth-Type = CHAP
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!    Replacing User-Password in config items with Cleartext-Password.
+!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!! Please update your configuration so that the &quot;known good&quot;
+!!!
+!!! clear text password is in Cleartext-Password, and not in User-Password.
+!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
++- entering group CHAP {...}
+[chap] login attempt by &quot;arsene&quot; with CHAP password
+[chap] Using clear text password &quot;test123&quot; for user arsene authentication.
+[chap] Password check failed
+++[chap] returns reject
+Failed to authenticate the user.
+Using Post-Auth-Type Reject
++- entering group REJECT {...}
+[attr_filter.access_reject]     expand: %{User-Name} -&gt; arsene
+ attr_filter: Matched entry DEFAULT at line 11
+++[attr_filter.access_reject] returns updated
+Delaying reject of request 34 for 1 seconds
+Going to the next request
+Waking up in 0.9 seconds.
+Sending delayed reject for request 34
+Sending Access-Reject of id 15 to box2.box2.box2.box2 port 50833
+Waking up in 4.9 seconds.
+Cleaning up request 34 ID 15 with timestamp +3006
+Ready to process requests.
+
+
+
+case 3,
+
+username = SAF
+password = rival
+username and password not valid.
+
+
+&gt;<i>From radius -X
+</I>
+Waking up in 4.9 seconds.
+Cleaning up request 32 ID 8 with timestamp +2823
+Ready to process requests.
+rad_recv: Access-Request packet from host box2.box2.box2.box2 port 41610,
+id=11, length=233
+        ChilliSpot-Version = &quot;1.2.7&quot;
+        User-Name = &quot;SAF&quot;
+        CHAP-Challenge = 0x67be2b82c613c1eb21b317307a14fbac
+        CHAP-Password = 0x00ec42738159f87a63866400682ee82e91
+        Service-Type = Login-User
+        Acct-Session-Id = &quot;4e4b6eb700000001&quot;
+        Framed-IP-Address = 10.0.0.2
+        NAS-Port-Type = Wireless-802.11
+        NAS-Port = 1
+        NAS-Port-Id = &quot;00000001&quot;
+        Calling-Station-Id = &quot;BC-AE-C5-4A-67-8A&quot;
+        Called-Station-Id = &quot;00-04-23-CE-28-81&quot;
+        NAS-IP-Address = 10.0.0.1
+        NAS-Identifier = &quot;hotspot&quot;
+        WISPr-Logoff-URL = &quot;<A HREF="http://10.0.0.1:3990/logoff">http://10.0.0.1:3990/logoff</A>&quot;
+        Message-Authenticator = 0x99d5960453f117f966f9930ce0307ca1
++- entering group authorize {...}
+++[preprocess] returns ok
+[chap] Setting 'Auth-Type := CHAP'
+++[chap] returns ok
+++[mschap] returns noop
+[suffix] No '@' in User-Name = &quot;SAF&quot;, looking up realm NULL
+[suffix] No such realm &quot;NULL&quot;
+++[suffix] returns noop
+[eap] No EAP-Message, not doing EAP
+++[eap] returns noop
+++[unix] returns notfound
+[sql]   expand: %{User-Name} -&gt; SAF
+[sql] sql_set_user escaped user --&gt; 'SAF'
+rlm_sql (sql): Reserving sql socket id: 4
+[sql]   expand: SELECT id, username, attribute, value, op           FROM
+radcheck           WHERE username = '%{SQL-User-Name}'           ORDER BY id
+-&gt; SELECT id, username, attribute, value, op           FROM
+radcheck           WHERE username = 'SAF'           ORDER BY id
+[sql]   expand: SELECT groupname           FROM radusergroup           WHERE
+username = '%{SQL-User-Name}'           ORDER BY priority -&gt; SELECT
+groupname           FROM radusergroup           WHERE username =
+'SAF'           ORDER BY priority
+rlm_sql (sql): Released sql socket id: 4
+[sql] User SAF not found
+++[sql] returns notfound
+++? if (notfound)
+? Evaluating (notfound) -&gt; TRUE
+++? if (notfound) -&gt; TRUE
+++- entering if (notfound) {...}
++++[reply] returns notfound
+++- if (notfound) returns notfound
+++? if (reject)
+? Evaluating (reject) -&gt; FALSE
+++? if (reject) -&gt; FALSE
+rlm_sqlcounter: Entering module authorize code
+rlm_sqlcounter: Could not find Check item value pair
+++[noresetQuotaLimit] returns noop
+++? if (reject)
+? Evaluating (reject) -&gt; FALSE
+++? if (reject) -&gt; FALSE
+rlm_sqlcounter: Entering module authorize code
+rlm_sqlcounter: Could not find Check item value pair
+++[expirationdate] returns noop
+++? if (reject)
+? Evaluating (reject) -&gt; FALSE
+++? if (reject) -&gt; FALSE
+rlm_sqlcounter: Entering module authorize code
+rlm_sqlcounter: Could not find Check item value pair
+++[bandwidthup] returns noop
+rlm_sqlcounter: Entering module authorize code
+rlm_sqlcounter: Could not find Check item value pair
+++[bandwidthdown] returns noop
+rlm_sqlcounter: Entering module authorize code
+rlm_sqlcounter: Could not find Check item value pair
+++[FOCmonthlyresetcounter] returns noop
+++? if (reject)
+? Evaluating (reject) -&gt; FALSE
+++? if (reject) -&gt; FALSE
+++[expiration] returns noop
+++? if (userlock)
+? Evaluating (userlock) -&gt; FALSE
+++? if (userlock) -&gt; FALSE
+++[logintime] returns noop
+[pap] WARNING! No &quot;known good&quot; password found for the user.  Authentication
+may fail because of this.
+++[pap] returns noop
+Found Auth-Type = CHAP
++- entering group CHAP {...}
+[chap] login attempt by &quot;SAF&quot; with CHAP password
+[chap] Cleartext-Password is required for authentication
+++[chap] returns invalid
+Failed to authenticate the user.
+Using Post-Auth-Type Reject
++- entering group REJECT {...}
+[attr_filter.access_reject]     expand: %{User-Name} -&gt; SAF
+ attr_filter: Matched entry DEFAULT at line 11
+++[attr_filter.access_reject] returns updated
+Delaying reject of request 33 for 1 seconds
+Going to the next request
+Waking up in 0.9 seconds.
+Sending delayed reject for request 33
+Sending Access-Reject of id 11 to box2.box2.box2.box2 port 41610
+        Reply-Message = &quot;Login Failed. Please check your Username and
+Password.&quot;
+Waking up in 4.9 seconds.
+Cleaning up request 33 ID 11 with timestamp +2885
+Ready to process requests.
+
+Case 1 and 2 give same radius -X result.
+
+Im using default(got those files after install coovachilli)files inside
+/usr/local/etc/chilli/www/
+I create uam folder /var/www/html/uam/
+and I donwload default index.html file and chilli.js and put inside uam/
+folder.
+
+what make me confius is
+
+if I change my uamformat to standard(default hotspotlogin.cgi or
+chillispotlogin.php)
+uamsecret inside .php or .cgi = mysecret
+so my chilli config become like this:-
+
+chilli config file
+....
+...
+...
+HS_UAMSECRET=mysecret
+HS_RADIUS=myip1
+HS_RADIUS2=myip1
+HS_RADSECRET=mysecret
+HS_UAMSERVER=myip1
+HS_UAMFORMAT=<A HREF="http://myip1/uam/">http://myip1/uam/</A>
+HS_UAMHOMEPAGE=<A HREF="http://myip1:myport/www/coova.html">http://myip1:myport/www/coova.html</A>
+....
+...
+...
+Any url will redirect to login page.
+I can see the login page ( not json login page) and I can successfully
+login.
+
+Here is radiusd -X
+
+Ready to process requests.
+rad_recv: Access-Request packet from host box2.box2.box2.box2 port 40411,
+id=20, length=217
+        ChilliSpot-Version = &quot;1.2.7&quot;
+        User-Name = &quot;arsene&quot;
+        User-Password = &quot;test123&quot;
+        Service-Type = Login-User
+        Acct-Session-Id = &quot;4e4b759a00000001&quot;
+        Framed-IP-Address = 10.0.0.2
+        NAS-Port-Type = Wireless-802.11
+        NAS-Port = 1
+        NAS-Port-Id = &quot;00000001&quot;
+        Calling-Station-Id = &quot;BC-AE-C5-4A-67-8A&quot;
+        Called-Station-Id = &quot;00-04-23-CE-28-81&quot;
+        NAS-IP-Address = 10.0.0.1
+        NAS-Identifier = &quot;hotspot&quot;
+        WISPr-Logoff-URL = &quot;<A HREF="http://10.0.0.1:3990/logoff">http://10.0.0.1:3990/logoff</A>&quot;
+        Message-Authenticator = 0xfb38cc10210034081001ce401f2893cf
++- entering group authorize {...}
+++[preprocess] returns ok
+++[chap] returns noop
+++[mschap] returns noop
+[suffix] No '@' in User-Name = &quot;arsene&quot;, looking up realm NULL
+[suffix] No such realm &quot;NULL&quot;
+++[suffix] returns noop
+[eap] No EAP-Message, not doing EAP
+++[eap] returns noop
+++[unix] returns notfound
+[sql]   expand: %{User-Name} -&gt; arsene
+[sql] sql_set_user escaped user --&gt; 'arsene'
+rlm_sql (sql): Reserving sql socket id: 2
+[sql]   expand: SELECT id, username, attribute, value, op           FROM
+radcheck           WHERE username = '%{SQL-User-Name}'           ORDER BY id
+-&gt; SELECT id, username, attribute, value, op           FROM
+radcheck           WHERE username = 'arsene'           ORDER BY id
+WARNING: Found User-Password == &quot;...&quot;.
+WARNING: Are you sure you don't mean Cleartext-Password?
+WARNING: See &quot;man rlm_pap&quot; for more information.
+[sql] User found in radcheck table
+[sql]   expand: SELECT id, username, attribute, value, op           FROM
+radreply           WHERE username = '%{SQL-User-Name}'           ORDER BY id
+-&gt; SELECT id, username, attribute, value, op           FROM
+radreply           WHERE username = 'arsene'           ORDER BY id
+[sql]   expand: SELECT groupname           FROM radusergroup           WHERE
+username = '%{SQL-User-Name}'           ORDER BY priority -&gt; SELECT
+groupname           FROM radusergroup           WHERE username =
+'arsene'           ORDER BY priority
+rlm_sql (sql): Released sql socket id: 2
+++[sql] returns ok
+++? if (notfound)
+? Evaluating (notfound) -&gt; FALSE
+++? if (notfound) -&gt; FALSE
+++? if (reject)
+? Evaluating (reject) -&gt; FALSE
+++? if (reject) -&gt; FALSE
+rlm_sqlcounter: Entering module authorize code
+rlm_sqlcounter: Could not find Check item value pair
+++[noresetQuotaLimit] returns noop
+++? if (reject)
+? Evaluating (reject) -&gt; FALSE
+++? if (reject) -&gt; FALSE
+rlm_sqlcounter: Entering module authorize code
+rlm_sqlcounter: Could not find Check item value pair
+++[expirationdate] returns noop
+++? if (reject)
+? Evaluating (reject) -&gt; FALSE
+++? if (reject) -&gt; FALSE
+rlm_sqlcounter: Entering module authorize code
+rlm_sqlcounter: Could not find Check item value pair
+++[bandwidthup] returns noop
+rlm_sqlcounter: Entering module authorize code
+rlm_sqlcounter: Could not find Check item value pair
+++[bandwidthdown] returns noop
+rlm_sqlcounter: Entering module authorize code
+rlm_sqlcounter: Could not find Check item value pair
+++[FOCmonthlyresetcounter] returns noop
+++? if (reject)
+? Evaluating (reject) -&gt; FALSE
+++? if (reject) -&gt; FALSE
+++[expiration] returns noop
+++? if (userlock)
+? Evaluating (userlock) -&gt; FALSE
+++? if (userlock) -&gt; FALSE
+++[logintime] returns noop
+++[pap] returns updated
+Found Auth-Type = PAP
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!    Replacing User-Password in config items with Cleartext-Password.
+!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!! Please update your configuration so that the &quot;known good&quot;
+!!!
+!!! clear text password is in Cleartext-Password, and not in User-Password.
+!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
++- entering group PAP {...}
+[pap] login attempt with password &quot;test123&quot;
+[pap] Using clear text password &quot;test123&quot;
+[pap] User authenticated successfully
+++[pap] returns ok
++- entering group post-auth {...}
+[reply_log]     expand:
+/var/log/radius/radacct/%{Client-IP-Address}/reply-detail-%Y%m%d -&gt;
+/var/log/radius/radacct/box2.box2.box2.box2/reply-detail-20110817
+[reply_log] /var/log/radius/radacct/%{Client-IP-Address}/reply-detail-%Y%m%d
+expands to /var/log/radius/radacct/box2.box2.box2.box2/reply-detail-20110817
+[reply_log]     expand: %t -&gt; Wed Aug 17 16:00:25 2011
+++[reply_log] returns ok
+[sql]   expand: %{User-Name} -&gt; arsene
+[sql] sql_set_user escaped user --&gt; 'arsene'
+[sql]   expand: %{User-Password} -&gt; test123
+[sql]   expand: INSERT INTO radpostauth                           (username,
+pass, reply, authdate)                           VALUES
+(                           '%{User-Name}',
+'%{%{User-Password}:-%{Chap-Password}}',
+'%{reply:Packet-Type}', '%S') -&gt; INSERT INTO
+radpostauth                           (username, pass, reply,
+authdate)                           VALUES (
+'arsene',                           'test123',
+'Access-Accept', '2011-08-17 16:00:25')
+rlm_sql (sql) in sql_postauth: query is INSERT INTO
+radpostauth                           (username, pass, reply,
+authdate)                           VALUES (
+'arsene',                           'test123',
+'Access-Accept', '2011-08-17 16:00:25')
+rlm_sql (sql): Reserving sql socket id: 1
+rlm_sql (sql): Released sql socket id: 1
+++[sql] returns ok
+[sql_log] Processing sql_log_postauth
+[sql_log]       expand: %{User-Name} -&gt; arsene
+[sql_log]       expand: %{%{User-Name}:-DEFAULT} -&gt; arsene
+[sql_log] sql_set_user escaped user --&gt; 'arsene'
+[sql_log] WARNING: Deprecated conditional expansion &quot;:-&quot;.  See &quot;man unlang&quot;
+for details
+[sql_log]       expand: INSERT INTO radpostauth
+(username, pass, reply, authdate) VALUES
+('%{User-Name}', '%{User-Password:-Chap-Password}',
+'%{reply:Packet-Type}', '%S'); -&gt; INSERT INTO
+radpostauth                       (username, pass, reply, authdate)
+VALUES                       ('arsene', 'test123',
+'Access-Accept', '2011-08-17 16:00:25');
+[sql_log]       expand: /var/log/radius/radacct/sql-relay -&gt;
+/var/log/radius/radacct/sql-relay
+++[sql_log] returns ok
+++[exec] returns noop
+Sending Access-Accept of id 20 to box2.box2.box2.box2 port 40411
+Finished request 67.
+Going to the next request
+Waking up in 4.9 seconds.
+rad_recv: Accounting-Request packet from host box2.box2.box2.box2 port
+58016, id=13, length=164
+        ChilliSpot-Version = &quot;1.2.7&quot;
+        ChilliSpot-Acct-View-Point = ChilliSpot-Client-View-Point
+        Event-Timestamp = &quot;Aug 17 2011 16:02:47 MYT&quot;
+        Acct-Status-Type = Start
+        User-Name = &quot;arsene&quot;
+        Acct-Session-Id = &quot;4e4b759a00000001&quot;
+        Framed-IP-Address = 10.0.0.2
+        NAS-Port-Type = Wireless-802.11
+        NAS-Port = 1
+        NAS-Port-Id = &quot;00000001&quot;
+        Calling-Station-Id = &quot;BC-AE-C5-4A-67-8A&quot;
+        Called-Station-Id = &quot;00-04-23-CE-28-81&quot;
+        NAS-IP-Address = 10.0.0.1
+        NAS-Identifier = &quot;hotspot&quot;
++- entering group preacct {...}
+++[preprocess] returns ok
+[acct_unique] Hashing 'NAS-Port = 1,Client-IP-Address =
+box2.box2.box2.box2,NAS-IP-Address = 10.0.0.1,Acct-Session-Id =
+&quot;4e4b759a00000001&quot;,User-Name = &quot;arsene&quot;'
+[acct_unique] Acct-Unique-Session-ID = &quot;b0073ddfcd6e1d2e&quot;.
+++[acct_unique] returns ok
+[suffix] No '@' in User-Name = &quot;arsene&quot;, looking up realm NULL
+[suffix] No such realm &quot;NULL&quot;
+++[suffix] returns noop
++- entering group accounting {...}
+[detail]        expand:
+/var/log/radius/radacct/%{Client-IP-Address}/detail-%Y%m%d -&gt;
+/var/log/radius/radacct/box2.box2.box2.box2/detail-20110817
+[detail] /var/log/radius/radacct/%{Client-IP-Address}/detail-%Y%m%d expands
+to /var/log/radius/radacct/box2.box2.box2.box2/detail-20110817
+[detail]        expand: %t -&gt; Wed Aug 17 16:00:25 2011
+++[detail] returns ok
+++[unix] returns ok
+[radutmp]       expand: /var/log/radius/radutmp -&gt; /var/log/radius/radutmp
+[radutmp]       expand: %{User-Name} -&gt; arsene
+++[radutmp] returns ok
+[sql]   expand: %{User-Name} -&gt; arsene
+[sql] sql_set_user escaped user --&gt; 'arsene'
+[sql]   expand: %{Acct-Delay-Time} -&gt;
+[sql]   expand:            INSERT INTO radacct
+(acctsessionid,    acctuniqueid,     username,
+realm,            nasipaddress,     nasportid,
+nasporttype,      acctstarttime,    acctstoptime,
+acctsessiontime,  acctauthentic,    connectinfo_start,
+connectinfo_stop, acctinputoctets,  acctoutputoctets,
+calledstationid,  callingstationid, acctterminatecause,
+servicetype,      framedprotocol,   framedipaddress,
+acctstartdelay,   acctstopdelay,    xascendsessionsvrkey,
+WISPrLocationName)           VALUES             ('%{Acct-Session-Id}',
+'%{Acct-Unique-Session-Id}',              '%{SQL-User-Name}',
+'%{Realm}', '%{NAS-IP-Address}', '%{NAS-Port}',
+'%{NAS-Port-Type}', '%S', NULL,              '0', '%{Acct-Authentic}',
+'%{Connect-Info}',              '', '0', '0',
+'%{Called-Station-Id}', '%{Calling-Station-Id}', '',
+'%{Service-Type}', '%{Framed-Protocol}', '%{Framed-I
+rlm_sql (sql): Reserving sql socket id: 0
+rlm_sql_mysql: MYSQL check_error: 1054 received
+[sql] Couldn't insert SQL accounting START record - Unknown column
+'username' in 'where clause'
+[sql]   expand: %{Acct-Delay-Time} -&gt;
+[sql]   expand:            UPDATE radacct SET              acctstarttime
+= '%S',              acctstartdelay    =
+'%{%{Acct-Delay-Time}:-0}',              connectinfo_start =
+'%{Connect-Info}'           WHERE acctsessionid  =
+'%{Acct-Session-Id}'           AND username         =
+'%{SQL-User-Name}'           AND nasipaddress     = '%{NAS-IP-Address}'
+-&gt;            UPDATE radacct SET              acctstarttime     =
+'2011-08-17 16:00:25',              acctstartdelay    = '0',
+connectinfo_start = ''           WHERE acctsessionid  =
+'4e4b759a00000001'           AND username         = 'arsene'           AND
+nasipaddress     = '10.0.0.1'
+rlm_sql (sql): Released sql socket id: 0
+++[sql] returns ok
+[sql_log] Processing sql_log_accounting
+[sql_log]       expand: %{User-Name} -&gt; arsene
+[sql_log]       expand: %{%{User-Name}:-DEFAULT} -&gt; arsene
+[sql_log] sql_set_user escaped user --&gt; 'arsene'
+[sql_log]       expand: INSERT INTO radacct (AcctSessionId, UserName,
+NASIPAddress, FramedIPAddress, AcctStartTime, AcctStopTime,
+AcctSessionTime, AcctTerminateCause) VALUES
+('%{Acct-Session-Id}', '%{User-Name}', '%{NAS-IP-Address}',
+'%{Framed-IP-Address}', '%S', '0', '0', ''); -&gt; INSERT INTO radacct
+(AcctSessionId, UserName,          NASIPAddress, FramedIPAddress,
+AcctStartTime, AcctStopTime,    AcctSessionTime, AcctTerminateCause)
+VALUES                    ('4e4b759a00000001', 'arsene', '10.0.0.1',
+'10.0.0.2', '2011-08-17 16:00:25', '0', '0', '');
+[sql_log]       expand: /var/log/radius/radacct/sql-relay -&gt;
+/var/log/radius/radacct/sql-relay
+++[sql_log] returns ok
+[attr_filter.accounting_response]       expand: %{User-Name} -&gt; arsene
+ attr_filter: Matched entry DEFAULT at line 12
+++[attr_filter.accounting_response] returns updated
+Sending Accounting-Response of id 13 to box2.box2.box2.box2 port 58016
+Finished request 68.
+Cleaning up request 68 ID 13 with timestamp +4599
+Going to the next request
+Waking up in 4.9 seconds.
+Cleaning up request 67 ID 20 with timestamp +4599
+Ready to process requests.
+
+
+
+
+Im not good in programming (html/js/php). Could anyone point me where my
+mistake is and perhaps can give me some advice to solve this case.
+
+
+One more thing,
+
+If I connect to coovaAP(syslink), uam server point to uam ser box1 (splash
+page coova.html then format index.html to show json login page,
+I received the same result from radiusd -X but I can successfuly login if I
+point to uam server (hotspotlogin.cgi or chillispotlogin.php).
+
+
+Thanks in advance.
+
+.....
+Opochot
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: &lt;<A HREF="http://lists.coova.org/pipermail/chilli/attachments/20110817/43cdc24c/attachment-0001.html">http://lists.coova.org/pipermail/chilli/attachments/20110817/43cdc24c/attachment-0001.html</A>&gt;
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001732.html">[Chilli] Chilli 1.2.8 segfault
+</A></li>
+	
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1733">[ date ]</a>
+              <a href="thread.html#1733">[ thread ]</a>
+              <a href="subject.html#1733">[ subject ]</a>
+              <a href="author.html#1733">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

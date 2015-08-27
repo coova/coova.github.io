@@ -1,0 +1,102 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> handle initial requests to http proxy
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20handle%20initial%20requests%20to%20http%20proxy&In-Reply-To=%3C1210938853.3146.67.camel%40azathoth.ing.unitn.it%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000309.html">
+   <LINK REL="Next"  HREF="000316.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>handle initial requests to http proxy</H1>
+    <B>Ivano Cristofolini</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20handle%20initial%20requests%20to%20http%20proxy&In-Reply-To=%3C1210938853.3146.67.camel%40azathoth.ing.unitn.it%3E"
+       TITLE="handle initial requests to http proxy">Ivano.Cristofolini at ing.unitn.it
+       </A><BR>
+    <I>Fri May 16 11:54:13 UTC 2008</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000309.html">[chilli] Re: [chilli] Re: Sense of self awareness? :)
+</A></li>
+        <LI>Next message: <A HREF="000316.html">handle initial requests to http proxy
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#314">[ date ]</a>
+              <a href="thread.html#314">[ thread ]</a>
+              <a href="subject.html#314">[ subject ]</a>
+              <a href="author.html#314">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hello,
+
+I need to modify coova-chilli to capture http requests directed to a
+(NON transparent) http proxy running on port 3128 (keeping current
+functionality as well).
+
+I have successfully modified the http parsing functions in redir.c (very
+simple: only redirurl changes).
+
+I'm trying to modify the DNAT routines in dhcp.c so that requests to
+port 3128 are handled in the same way as regular requests to http
+servers (i.e. they are NATted to uamserver).
+
+This is easy for dhcp_doDNAT() (I added the last line):
+
+...
+  /* Was it a http request for another server? */
+  /* We are changing dest IP and dest port to local UAM server */
+  if ((pack-&gt;iph.protocol == PKT_IP_PROTO_TCP) &amp;&amp;
+      ((tcph-&gt;dst == htons(DHCP_HTTP)) || 
+       (tcph-&gt;dst == htons(3128)))) {
+...
+
+I don't know how to do it for dhcp_undoDNAT().
+
+...
+/* Was it a reply from redir server? */
+...
+if (something???) {
+  tcph-&gt;src = htons(DHCP_HTTP);
+else
+  tcph-&gt;src = htons(3128);
+...
+
+Any suggestions?
+
+-- 
+Ivano Cristofolini
+Presidio Informatico Ingegneria
+Direzione Informatica e Telecomunicazioni
+Universita' degli Studi di Trento
+Via Mesiano 77,
+38050 Povo(TN), Italy
+Tel: +39 0461/881940
+Fax: +39 0461/882628
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000309.html">[chilli] Re: [chilli] Re: Sense of self awareness? :)
+</A></li>
+	<LI>Next message: <A HREF="000316.html">handle initial requests to http proxy
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#314">[ date ]</a>
+              <a href="thread.html#314">[ thread ]</a>
+              <a href="subject.html#314">[ subject ]</a>
+              <a href="author.html#314">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,157 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] [PATCH] Issue with EDNS
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20%5BPATCH%5D%20Issue%20with%20EDNS&In-Reply-To=%3C5284DE18.9060405%40labs.it%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="002451.html">
+   <LINK REL="Next"  HREF="002456.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] [PATCH] Issue with EDNS</H1>
+    <B>Michele Bergonzoni</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20%5BPATCH%5D%20Issue%20with%20EDNS&In-Reply-To=%3C5284DE18.9060405%40labs.it%3E"
+       TITLE="[Chilli] [PATCH] Issue with EDNS">bergonz at labs.it
+       </A><BR>
+    <I>Thu Nov 14 14:28:40 UTC 2013</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="002451.html">[Chilli] [PATCH] Failed to compile with --enable-debug2
+</A></li>
+        <LI>Next message: <A HREF="002456.html">[Chilli] CoovaChilli 1.3.0 does not call dhcp release mac after	idle timeout
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2452">[ date ]</a>
+              <a href="thread.html#2452">[ thread ]</a>
+              <a href="subject.html#2452">[ subject ]</a>
+              <a href="author.html#2452">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>I have a patch to submit for dealing with EDNS requests.
+
+I am trying to setup a layer3-only environment, and in my tests I got 
+inconsistent results, some clients working and some other not working.
+
+I discovered that a PC with a brand-new freshly-installed ubuntu, 
+querying a DNS server with bind 9.8.4 (debian 7.2) consistently fails to 
+receive a DNS answer, with a &quot;Record type 41&quot; debug message. No DNS 
+means no redirection, no login page, just browser error.
+
+Record type 41 is a pseudo record used in EDNS requests. So I am now 
+using this patch (relative to svn revision 485):
+
+Index: src/dns.c
+===================================================================
+--- src/dns.c   (revision 485)
++++ src/dns.c   (working copy)
+@@ -360,6 +360,7 @@
+      break;
+    case 29: log_dbg(&quot;LOC record&quot;); break;
+    case 33: log_dbg(&quot;SRV record&quot;); break;
++  case 41: log_dbg(&quot;EDNS OPT pseudorecord&quot;); break;
+    case 47: log_dbg(&quot;NSEC record&quot;); break;
+    }
+
+This patch makes my client happy and working with many sites (all the 
+sites that I tried), but Coovachilli's code is complex and EDNS is 
+complex as well, so I am not really sure that this is the right thing to do.
+
+In fact I am almost sure that this isn't a proper EDNS support, because 
+the command (a standard test for EDNS):
+
+dig tcf.rs.dns-oarc.net txt
+
+fails (timeouts) on the connected client, and works on the chilli 
+machine. When the client tries it, the debug says (previous patch applied):
+
+dhcp.c: 5020: 0 (Debug) dhcp_decaps: src=&lt;MAC of first router fronting 
+chilli's DHCP interface&gt; dst=&lt;mac of chilli's DHCP interface&gt; prot=0800 
+2048 len=90
+dhcp.c: 3551: 0 (Debug) function dhcp_receive_ip()
+dhcp.c: 238: 0 (Debug) Looking up appconn for 198.18.253.1 (IP of client 
+machine)
+dhcp.c: 1703: 0 (Debug) dhcp_dns plen=90 dlen=36 olen=36
+dhcp.c: 1704: 0 (Debug) DNS ID:    40833
+dhcp.c: 1705: 0 (Debug) DNS Flags: 256
+dns.c: 156: 0 (Debug) dns_copy_res: left=36 olen=36 qsize=512
+dns.c: 40: 0 (Debug) dns_fullname dlen=1499 reslen=36 olen=36 lvl=0
+dns.c: 80: 0 (Debug) part[tcf] reslen=35 l=3 dlen=1499
+dns.c: 80: 0 (Debug) part[rs] reslen=31 l=2 dlen=1495
+dns.c: 80: 0 (Debug) part[dns-oarc] reslen=28 l=8 dlen=1492
+dns.c: 80: 0 (Debug) part[net] reslen=19 l=3 dlen=1483
+dns.c: 187: 0 (Debug) It was a dns record type: 16 class: 1
+dns.c: 40: 0 (Debug) dns_fullname dlen=512 reslen=36 olen=36 lvl=0
+dns.c: 80: 0 (Debug) part[tcf] reslen=35 l=3 dlen=512
+dns.c: 80: 0 (Debug) part[rs] reslen=31 l=2 dlen=508
+dns.c: 80: 0 (Debug) part[dns-oarc] reslen=28 l=8 dlen=505
+dns.c: 80: 0 (Debug) part[net] reslen=19 l=3 dlen=496
+dns.c: 194: 0 (Debug) DNS: tcf.rs.dns-oarc.net
+dns.c: 156: 0 (Debug) dns_copy_res: left=11 olen=36 qsize=512
+dns.c: 40: 0 (Debug) dns_fullname dlen=1499 reslen=11 olen=36 lvl=0
+dns.c: 187: 0 (Debug) It was a dns record type: 41 class: 4096
+dns.c: 280: 0 (Debug) -&gt; w ttl: 0 rdlength: 0/0
+dns.c: 363: 0 (Debug) EDNS OPT pseudorecord
+dhcp.c: 1787: 0 (Debug) left (should be zero): 0 q=tcf.rs.dns-oarc.net
+dhcp.c: 238: 0 (Debug) Looking up appconn for 198.18.253.1
+tun.c: 1089: 0 (Debug) tun_encaps(tun0) len=76
+tun.c: 802: 0 (Debug) tun_decaps(idx=0, len=1500)
+chilli.c: 2664: 0 (Debug) invalid UDP packet 1500 / 4062 / 1500
+tun.c: 802: 0 (Debug) tun_decaps(idx=0, len=1500)
+chilli.c: 2664: 0 (Debug) invalid UDP packet 1500 / 29494 / 1500
+tun.c: 802: 0 (Debug) tun_decaps(idx=0, len=1122)
+chilli.c: 2677: 0 (Debug) sending to : 198.18.253.1
+dhcp.c: 5376: 0 (Debug) adding 14 to IP frame length 1136
+dhcp.c: 238: 0 (Debug) Looking up appconn for 198.18.253.1
+dhcp.c: 411: 0 (Debug) dhcp_send() len=1136
+
+I really don't know if this can be a real issue in a production 
+environment or is just a overzaelous test, but hope this helps somehow.
+
+BTW, I found that if I use the chilli machine as a DNS resolver, I have 
+to use the WAN IP address and not the DHCP interface IP address, that 
+gives only UDP port unreachable on UDP 53. Since the workaround is so 
+straightforward, I didnt' test and dig this very much.
+
+Best regards and thanks everybody for your patience,
+
+			Bergonz
+
+-- 
+Ing. Michele Bergonzoni - Laboratori Guglielmo Marconi S.p.a.
+Phone:+39-051-6781926 e-mail: <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">bergonz at labs.it</A>
+alt.advanced.networks.design.configure.operate
+</PRE>
+
+
+
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="002451.html">[Chilli] [PATCH] Failed to compile with --enable-debug2
+</A></li>
+	<LI>Next message: <A HREF="002456.html">[Chilli] CoovaChilli 1.3.0 does not call dhcp release mac after	idle timeout
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2452">[ date ]</a>
+              <a href="thread.html#2452">[ thread ]</a>
+              <a href="subject.html#2452">[ subject ]</a>
+              <a href="author.html#2452">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

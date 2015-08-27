@@ -1,0 +1,208 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] MAC blacklist and other security measures
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20MAC%20blacklist%20and%20other%20security%20measures&In-Reply-To=%3C1274417199.3330.11.camel%40david-laptop%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001382.html">
+   <LINK REL="Next"  HREF="001387.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] MAC blacklist and other security measures</H1>
+    <B>David Bird</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20MAC%20blacklist%20and%20other%20security%20measures&In-Reply-To=%3C1274417199.3330.11.camel%40david-laptop%3E"
+       TITLE="[Chilli] MAC blacklist and other security measures">david at coova.com
+       </A><BR>
+    <I>Fri May 21 04:46:39 UTC 2010</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001382.html">[Chilli] MAC blacklist and other security measures
+</A></li>
+        <LI>Next message: <A HREF="001387.html">[Chilli] MAC blacklist and other security measures
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1383">[ date ]</a>
+              <a href="thread.html#1383">[ thread ]</a>
+              <a href="subject.html#1383">[ subject ]</a>
+              <a href="author.html#1383">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hi,
+
+
+&gt;<i> 	Let me revive this thread in order to add a
+</I>&gt;<i> few comments that would be nice to have and publicly
+</I>&gt;<i> archived, specially because a few things have changed.
+</I>&gt;<i> 
+</I>
+Thanks for your feedback!
+
+&gt;<i> 	Using the scenario where you reply with
+</I>&gt;<i> Access-Accept as a DEFAULT entry has a side effect,
+</I>&gt;<i> traffic is allowed on all other ports (if you do a
+</I>&gt;<i> full NAT) without needing to authenticate on the
+</I>&gt;<i> captive portal.
+</I>&gt;<i> 
+</I>
+Yes, giving an access-accept during MAC authentication will have it's
+side effects. There are a few options, however, that you can put into
+RADIUS replies, more on that below. 
+
+&gt;<i> 
+</I>&gt;<i> On 06-04-2010 12:42, Felipe Augusto van de Wiel wrote:
+</I>&gt;<i> &gt; On 21-03-2010 03:16, David Bird wrote:
+</I>&gt;<i> &gt;&gt; Hm.. one way might be to enable MAC authentication
+</I>&gt;<i> &gt;&gt; such that:
+</I>&gt;<i> &gt; 
+</I>&gt;<i> &gt; 	That means enable 'macauth', right?  Using
+</I>&gt;<i> &gt; only 'macauthdeny' didn't result in the expected
+</I>&gt;<i> &gt; behavior.
+</I>&gt;<i> 
+</I>&gt;<i> 	Although it was not clear before, now it
+</I>&gt;<i> makes a lot of sense that macauthdeny depends on
+</I>&gt;<i> macauth, otherwise you are not authenticating MAC
+</I>&gt;<i> addresses.
+</I>&gt;<i> 
+</I>
+Indeed, macauthdeny is used with macauth. It makes it such that an
+Access-Reject means the user session is put in DROP state (where there
+is no returning from). 
+
+&gt;<i> 
+</I>&gt;<i> 	In this new scenario, it would be great to
+</I>&gt;<i> have a way to &quot;drop&quot; clients that got a Access-Reject
+</I>&gt;<i> from RADIUS.
+</I>&gt;<i> 
+</I>
+That is what the macauthdeny option does, really. If you don't want all
+Access-Accepted sessions to have full access, then you can try out the
+feature where you also return this in the access-accept:
+
+  ChilliSpot-Config = 'splash' 
+
+which will put the user in a 'splash' state (full Internet access, just
+with portal redirection). You can also try 'require-uam-auth' (which
+requires using option --wpaguests even if not using WPA, btw) which will
+put the user in the standard &quot;DNAT&quot; state. In an Access-Reject, you can
+also use ChilliSpot-Config = 'admin-reset' to release the DHCP release
+right away. Using that, you can also enforce a &quot;DROP&quot; state where you
+keep revoking the lease (but will also potentially mean you get a LOT of
+mac auth RADIUS requests). 
+
+&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> &gt;&gt; - You always return Access-Accept (plus attribute
+</I>&gt;<i> &gt;&gt;   Chillispot-Config = 'splash') for non-blocked
+</I>&gt;<i> &gt;&gt;   users.
+</I>&gt;<i> &gt; 
+</I>&gt;<i> &gt;&gt; - You can return an Access-Reject for blocked users.
+</I>&gt;<i> &gt;&gt;   When used with --macauthdeny, it means these
+</I>&gt;<i> &gt;&gt;   devices will be ignored.
+</I>&gt;<i> &gt; 
+</I>&gt;<i> &gt; 	The proper way to achieve that would be to
+</I>&gt;<i> &gt; use a DEFAULT user in RADIUS? Here is the relevant
+</I>&gt;<i> &gt; part of my FreeRADIUS' users file:
+</I>&gt;<i> 
+</I>&gt;<i> 	I changed it, now I add multiple entries but
+</I>&gt;<i> I check Calling-Station-Id, that gives the MAC and
+</I>&gt;<i> it is sufficient to make a blacklist.
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> &gt; &lt;...&gt;
+</I>&gt;<i> &gt; | AA-BB-CC-DD-EE-FF  Auth-Type := Reject
+</I>&gt;<i> &gt; |                    Reply-Message = &quot;MAC address administratively blocked.&quot;
+</I>&gt;<i> &gt; |
+</I>&gt;<i> &gt; | 11-22-33-44-55-66  Auth-Type := Reject
+</I>&gt;<i> &gt; |                    Reply-Message = &quot;MAC address administratively blocked.&quot;
+</I>&gt;<i> &gt; |
+</I>&gt;<i> &gt; | DEFAULT            Auth-Type := Accept
+</I>&gt;<i> &gt; |                    Chillispot-config = 'splash',
+</I>&gt;<i> &gt; |                    Fall-Through = Yes
+</I>&gt;<i> &gt; |
+</I>&gt;<i> &gt; | &quot;user&quot;             Cleartext-Password := &quot;pass&quot;
+</I>&gt;<i> &gt; |                    Reply-Message = &quot;Hello, %{User-Name}&quot;
+</I>&gt;<i> &gt; &lt;...&gt;
+</I>&gt;<i> 
+</I>&gt;<i> 	Instead of the above, I now use:
+</I>&gt;<i> 
+</I>&gt;<i> &lt;...&gt;
+</I>&gt;<i> | &quot;user&quot;	Calling-Station-Id == AA-BB-CC-DD-EE-FF, Auth-Type := Reject
+</I>&gt;<i> |		Reply-Message = &quot;MAC address administratively blocked.&quot;
+</I>&gt;<i> |
+</I>&gt;<i> | &quot;user&quot;	Calling-Station-Id == 11-22-33-44-55-66, Auth-Type := Reject
+</I>&gt;<i> |		Reply-Message = &quot;MAC address administratively blocked.&quot;
+</I>&gt;<i> |
+</I>&gt;<i> | &quot;user&quot;	Cleartext-Password := &quot;pass&quot;
+</I>&gt;<i> |		Reply-Message = &quot;Welcome to our network!&quot;
+</I>&gt;<i> &lt;...&gt;
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> 	Of course, I had to disable the macauth and as
+</I>&gt;<i> this renders macauthdeny not very useful, I also turned
+</I>&gt;<i> it off.
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> &gt; 	Of course, that only worked after I added an
+</I>&gt;<i> &gt; include line inside /etc/freeradius/dictionary:
+</I>&gt;<i> &gt; 
+</I>&gt;<i> &gt; $INCLUDE        /etc/freeradius/dictionary.chillispot
+</I>&gt;<i> &gt; 
+</I>&gt;<i> &gt; 
+</I>&gt;<i> &gt; 	Now, the MAC addresses listed on the users
+</I>&gt;<i> &gt; file gets a 'drop' state when chilli starts, the rest
+</I>&gt;<i> &gt; gets a 'splash' state and addresses in the ethers file
+</I>&gt;<i> &gt; stays as 'dnat'. Once the user authenticates thru the
+</I>&gt;<i> &gt; splash screen they change to 'pass' as expected.
+</I>&gt;<i> 
+</I>&gt;<i> 	It then goes back to the behavior where everybody
+</I>&gt;<i> is 'dnat' until authenticated and changed to 'pass'.
+</I>&gt;<i> 
+</I>&gt;<i> 	I was wondering if it is possible to have the
+</I>&gt;<i> blocked MAC address to move to a 'drop' state after
+</I>&gt;<i> Access-Reject, is there such possibility in Coova?
+</I>&gt;<i> 
+</I>
+It might be nice to have a &quot;ChilliSpot-Config = 'blocked'&quot; option that
+can be used outside of macauthdeny for this kind of use. 
+
+&gt;<i> 	The idea is that MAC addresses block can't
+</I>&gt;<i> even navigate on the authorized pages like search
+</I>&gt;<i> engines or map sites.
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> 	Once again, I do hope it help others looking for
+</I>&gt;<i> a blacklist implementation. :)
+</I>
+
+</PRE>
+
+
+
+
+
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001382.html">[Chilli] MAC blacklist and other security measures
+</A></li>
+	<LI>Next message: <A HREF="001387.html">[Chilli] MAC blacklist and other security measures
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1383">[ date ]</a>
+              <a href="thread.html#1383">[ thread ]</a>
+              <a href="subject.html#1383">[ subject ]</a>
+              <a href="author.html#1383">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

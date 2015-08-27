@@ -1,0 +1,106 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] [PATCH] Failed to compile with --enable-debug2
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20%5BPATCH%5D%20Failed%20to%20compile%20with%20--enable-debug2&In-Reply-To=%3C5284CB03.4000408%40labs.it%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="002455.html">
+   <LINK REL="Next"  HREF="002451.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] [PATCH] Failed to compile with --enable-debug2</H1>
+    <B>Michele Bergonzoni</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20%5BPATCH%5D%20Failed%20to%20compile%20with%20--enable-debug2&In-Reply-To=%3C5284CB03.4000408%40labs.it%3E"
+       TITLE="[Chilli] [PATCH] Failed to compile with --enable-debug2">bergonz at labs.it
+       </A><BR>
+    <I>Thu Nov 14 13:07:15 UTC 2013</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="002455.html">[Chilli] Dynamic VLAN and 8021x
+</A></li>
+        <LI>Next message: <A HREF="002451.html">[Chilli] [PATCH] Failed to compile with --enable-debug2
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2450">[ date ]</a>
+              <a href="thread.html#2450">[ thread ]</a>
+              <a href="subject.html#2450">[ subject ]</a>
+              <a href="author.html#2450">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>I tried to compile SVN revision 485 with --enable-debug2 and it failed with:
+
+dhcp.c:5016:5: error: implicit declaration of function 'MAC_ACR' 
+[-Werror=implicit-function-declaration]
+
+I think MAC_ACR is a misspelling of MAC_ARG, so I substituted it in the 
+source.
+
+It now compiles OK and apparently works, but I still didn't happen to 
+trigger one of those two particular debug lines.
+
+Regards,
+				Bergonz
+
+Index: src/dhcp.c
+===================================================================
+--- src/dhcp.c  (revision 485)
++++ src/dhcp.c  (working copy)
+@@ -904,7 +904,7 @@
+      if (_options.debug) {
+        addr.s_addr = pack_iph-&gt;saddr;
+        log_dbg(&quot;NFQUEUE: From &quot;MAC_FMT&quot; %s %s&quot;,
+-             MAC_ACR(hw-&gt;hw_addr),
++             MAC_ARG(hw-&gt;hw_addr),
+               inet_ntoa(addr),
+               result == NF_ACCEPT ? &quot;Accept&quot; : &quot;Drop&quot;);
+
+@@ -5015,7 +5015,7 @@
+      struct pkt_ethhdr_t *ethh = pkt_ethhdr(packet);
+      log_dbg(&quot;dhcp_decaps: src=&quot;MAC_FMT&quot; &quot;
+             &quot;dst=&quot;MAC_FMT&quot; prot=%.4x %d len=%d&quot;,
+-           MAC_ACR(ethh-&gt;src),
++           MAC_ARG(ethh-&gt;src),
+             MAC_ARG(ethh-&gt;dst),
+             prot, (int)prot, length);
+    }
+
+
+-- 
+Ing. Michele Bergonzoni - Laboratori Guglielmo Marconi S.p.a.
+Phone:+39-051-6781926 e-mail: <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">bergonz at labs.it</A>
+alt.advanced.networks.design.configure.operate
+</PRE>
+
+
+
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="002455.html">[Chilli] Dynamic VLAN and 8021x
+</A></li>
+	<LI>Next message: <A HREF="002451.html">[Chilli] [PATCH] Failed to compile with --enable-debug2
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2450">[ date ]</a>
+              <a href="thread.html#2450">[ thread ]</a>
+              <a href="subject.html#2450">[ subject ]</a>
+              <a href="author.html#2450">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

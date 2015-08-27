@@ -1,0 +1,746 @@
+From derekchilli at hssl.ie  Fri Jan  9 16:11:56 2009
+From: derekchilli at hssl.ie (Derek C)
+Date: Fri, 9 Jan 2009 16:11:56 -0000 (UTC)
+Subject: Radius check time - possible to specify?
+Message-ID: <46802.149.5.32.200.1231517516.squirrel@www.rivertowermail.com>
+
+Hi all,
+
+I've found that Coova Chilli works excellently with OpenWRT based APs and
+freeradius on a central (Internet) server:
+
+I'm easily able to add a user's MAC address into the radcheck and
+usergroup tables and after this the user can get past my "splash screen" -
+super.
+
+BUT, and this is the reason for my post today, what I haven't worked out
+is how to tell Coova Chilli to do a frequent check against the free radius
+server to see if the user (by MAC) is still in there.
+
+I'm automatically removing the user from the tables with a script that
+runs on the [same server as] freeradius server.
+
+Example: When a user tries to access the web on my Coova Chilli enabled AP
+they are redirected to my splash page (because their MAC is NOT in the
+free radius tables). Then they accept that they want free access and I add
+them in to the free radius tables and then I send them on to their
+requested Internet page. Because they [MAC] are now in the free radius
+tables they ARE allowed Internet access. After 5 minutes I erase their MAC
+entry from the free radius tables. HERE IS THE CRUNCH: I notice that you
+may still have, say, 1 hour on the Internet even though their MAC is no
+longer in the free radius tables.
+
+I'm guessing that this is because Coova Chilli is just not often
+re-checking against the free radius server that the user should still get
+access?
+
+Does anyone know how to tune this in Coova Chilli?
+
+
+thanks very much!!!
+
+
+Derek
+
+
+
+-- 
+Derek C
+In Ireland
+
+
+
+From henk at skyrove.com  Fri Jan  9 16:42:04 2009
+From: henk at skyrove.com (Henk Kleynhans)
+Date: Fri, 9 Jan 2009 18:42:04 +0200
+Subject: Radius check time - possible to specify?
+In-Reply-To: <46802.149.5.32.200.1231517516.squirrel@www.rivertowermail.com>
+References: <46802.149.5.32.200.1231517516.squirrel@www.rivertowermail.com>
+Message-ID: <d42f029a0901090842o63634c37x1d988c8b1bba2005@mail.gmail.com>
+
+Hi Derek,
+Normally when accounting for usage, you set an Acct-Update-Interval
+variable. Not sure if this applies though in your setup, as you're not doing
+accounting. But it's the first place I'd look.
+henk
+
+
+On Fri, Jan 9, 2009 at 6:11 PM, Derek C <derekchilli at hssl.ie> wrote:
+
+> Hi all,
+>
+> I've found that Coova Chilli works excellently with OpenWRT based APs and
+> freeradius on a central (Internet) server:
+>
+> I'm easily able to add a user's MAC address into the radcheck and
+> usergroup tables and after this the user can get past my "splash screen" -
+> super.
+>
+> BUT, and this is the reason for my post today, what I haven't worked out
+> is how to tell Coova Chilli to do a frequent check against the free radius
+> server to see if the user (by MAC) is still in there.
+>
+> I'm automatically removing the user from the tables with a script that
+> runs on the [same server as] freeradius server.
+>
+> Example: When a user tries to access the web on my Coova Chilli enabled AP
+> they are redirected to my splash page (because their MAC is NOT in the
+> free radius tables). Then they accept that they want free access and I add
+> them in to the free radius tables and then I send them on to their
+> requested Internet page. Because they [MAC] are now in the free radius
+> tables they ARE allowed Internet access. After 5 minutes I erase their MAC
+> entry from the free radius tables. HERE IS THE CRUNCH: I notice that you
+> may still have, say, 1 hour on the Internet even though their MAC is no
+> longer in the free radius tables.
+>
+> I'm guessing that this is because Coova Chilli is just not often
+> re-checking against the free radius server that the user should still get
+> access?
+>
+> Does anyone know how to tune this in Coova Chilli?
+>
+>
+> thanks very much!!!
+>
+>
+> Derek
+>
+>
+>
+> --
+> Derek C
+> In Ireland
+>
+>
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>
+
+Henk Kleynhans
+CTO & Founder
+Skyrove (Pty) Ltd
+Technology Top 100 - Most Promising Emerging Enterprise 2006
+Tel: +27 (21) 4488843
+Cell: +27 (84) 3073451
+Fax: +27 (86) 6204077
+henk at skyrove.com
+blog: www.geekrebel.com
+
+------
+
+"A person with ubuntu is open and available to others, affirming of others,
+does not feel threatened that others are able and good, for he or she has a
+proper self-assurance that comes from knowing that he or she belongs in a
+greater whole and is diminished when others are humiliated or diminished,
+when others are tortured or oppressed." - Desmond Tutu
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20090109/7b50527d/attachment.htm>
+
+From derekchilli at hssl.ie  Fri Jan  9 21:20:08 2009
+From: derekchilli at hssl.ie (Derek C)
+Date: Fri, 9 Jan 2009 21:20:08 -0000 (UTC)
+Subject: Radius check time - possible to specify?
+In-Reply-To: <d42f029a0901090842o63634c37x1d988c8b1bba2005@mail.gmail.com>
+References: <46802.149.5.32.200.1231517516.squirrel@www.rivertowermail.com>
+    <d42f029a0901090842o63634c37x1d988c8b1bba2005@mail.gmail.com>
+Message-ID: <47755.149.5.32.200.1231536008.squirrel@www.rivertowermail.com>
+
+Hi Henk,
+
+I'll give that directive a try.
+
+Actually I am accounting [or, rather, it does accounting by default - at
+least data is being written into the radacct table although the write
+interval is whatever default coova chilli is going for].
+
+Out of interest I've just checked the table now:  It looks like for a
+given user [MAC addr] I can see that the radacct records are being written
+every 70 minutes (funny figure isn't it?).
+
+I'll see what happens if I can adjust the radius accounting times
+
+thanks,
+
+Derek
+
+
+On Fri, January 9, 2009 4:42 pm, Henk Kleynhans wrote:
+> Hi Derek,
+> Normally when accounting for usage, you set an Acct-Update-Interval
+> variable. Not sure if this applies though in your setup, as you're not
+> doing accounting. But it's the first place I'd look. henk
+>
+>
+> On Fri, Jan 9, 2009 at 6:11 PM, Derek C <derekchilli at hssl.ie> wrote:
+>
+>
+>> Hi all,
+>>
+>>
+>> I've found that Coova Chilli works excellently with OpenWRT based APs
+>> and freeradius on a central (Internet) server:
+>>
+>> I'm easily able to add a user's MAC address into the radcheck and
+>> usergroup tables and after this the user can get past my "splash screen"
+>> -
+>> super.
+>>
+>> BUT, and this is the reason for my post today, what I haven't worked
+>> out is how to tell Coova Chilli to do a frequent check against the free
+>> radius server to see if the user (by MAC) is still in there.
+>>
+>> I'm automatically removing the user from the tables with a script that
+>> runs on the [same server as] freeradius server.
+>>
+>> Example: When a user tries to access the web on my Coova Chilli enabled
+>> AP
+>> they are redirected to my splash page (because their MAC is NOT in the
+>> free radius tables). Then they accept that they want free access and I
+>> add them in to the free radius tables and then I send them on to their
+>> requested Internet page. Because they [MAC] are now in the free radius
+>> tables they ARE allowed Internet access. After 5 minutes I erase their
+>> MAC
+>> entry from the free radius tables. HERE IS THE CRUNCH: I notice that you
+>>  may still have, say, 1 hour on the Internet even though their MAC is
+>> no longer in the free radius tables.
+>>
+>> I'm guessing that this is because Coova Chilli is just not often
+>> re-checking against the free radius server that the user should still
+>> get access?
+>>
+>> Does anyone know how to tune this in Coova Chilli?
+>>
+>>
+>>
+>> thanks very much!!!
+>>
+>>
+>> Derek
+>>
+>>
+>>
+>>
+>> --
+>> Derek C
+>> In Ireland
+>>
+>>
+>>
+>> ---------------------------------------------------------------------
+>> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+>> For additional commands, e-mail: chilli-help at coova.org
+>> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+>> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>>
+>>
+>
+> Henk Kleynhans
+> CTO & Founder
+> Skyrove (Pty) Ltd
+> Technology Top 100 - Most Promising Emerging Enterprise 2006
+> Tel: +27 (21) 4488843
+> Cell: +27 (84) 3073451
+> Fax: +27 (86) 6204077
+> henk at skyrove.com blog: www.geekrebel.com
+>
+>
+> ------
+>
+>
+> "A person with ubuntu is open and available to others, affirming of
+> others, does not feel threatened that others are able and good, for he or
+> she has a proper self-assurance that comes from knowing that he or she
+> belongs in a greater whole and is diminished when others are humiliated or
+> diminished, when others are tortured or oppressed." - Desmond Tutu
+>
+
+
+-- 
+Derek C
+In Ireland
+
+
+
+From wlan at mac.com  Sat Jan 10 02:05:35 2009
+From: wlan at mac.com (wlanmac)
+Date: Sat, 10 Jan 2009 03:05:35 +0100
+Subject: Radius check time - possible to specify?
+In-Reply-To: <47755.149.5.32.200.1231536008.squirrel@www.rivertowermail.com>
+References: <46802.149.5.32.200.1231517516.squirrel@www.rivertowermail.com>
+ <d42f029a0901090842o63634c37x1d988c8b1bba2005@mail.gmail.com>
+ <47755.149.5.32.200.1231536008.squirrel@www.rivertowermail.com>
+Message-ID: <1231553135.7030.3.camel@david-laptop>
+
+If you are provisioning access with a time limit, you should be setting
+the Session-Timeout attribute in your Access-Accept. It should be the
+"time remaining" - a dynamic variable based on time allowed minus time
+consumed (take from radacct). 
+
+David
+
+On Fri, 2009-01-09 at 21:20 +0000, Derek C wrote:
+> Hi Henk,
+> 
+> I'll give that directive a try.
+> 
+> Actually I am accounting [or, rather, it does accounting by default - at
+> least data is being written into the radacct table although the write
+> interval is whatever default coova chilli is going for].
+> 
+> Out of interest I've just checked the table now:  It looks like for a
+> given user [MAC addr] I can see that the radacct records are being written
+> every 70 minutes (funny figure isn't it?).
+> 
+> I'll see what happens if I can adjust the radius accounting times
+> 
+> thanks,
+> 
+> Derek
+> 
+> 
+> On Fri, January 9, 2009 4:42 pm, Henk Kleynhans wrote:
+> > Hi Derek,
+> > Normally when accounting for usage, you set an Acct-Update-Interval
+> > variable. Not sure if this applies though in your setup, as you're not
+> > doing accounting. But it's the first place I'd look. henk
+> >
+> >
+> > On Fri, Jan 9, 2009 at 6:11 PM, Derek C <derekchilli at hssl.ie> wrote:
+> >
+> >
+> >> Hi all,
+> >>
+> >>
+> >> I've found that Coova Chilli works excellently with OpenWRT based APs
+> >> and freeradius on a central (Internet) server:
+> >>
+> >> I'm easily able to add a user's MAC address into the radcheck and
+> >> usergroup tables and after this the user can get past my "splash screen"
+> >> -
+> >> super.
+> >>
+> >> BUT, and this is the reason for my post today, what I haven't worked
+> >> out is how to tell Coova Chilli to do a frequent check against the free
+> >> radius server to see if the user (by MAC) is still in there.
+> >>
+> >> I'm automatically removing the user from the tables with a script that
+> >> runs on the [same server as] freeradius server.
+> >>
+> >> Example: When a user tries to access the web on my Coova Chilli enabled
+> >> AP
+> >> they are redirected to my splash page (because their MAC is NOT in the
+> >> free radius tables). Then they accept that they want free access and I
+> >> add them in to the free radius tables and then I send them on to their
+> >> requested Internet page. Because they [MAC] are now in the free radius
+> >> tables they ARE allowed Internet access. After 5 minutes I erase their
+> >> MAC
+> >> entry from the free radius tables. HERE IS THE CRUNCH: I notice that you
+> >>  may still have, say, 1 hour on the Internet even though their MAC is
+> >> no longer in the free radius tables.
+> >>
+> >> I'm guessing that this is because Coova Chilli is just not often
+> >> re-checking against the free radius server that the user should still
+> >> get access?
+> >>
+> >> Does anyone know how to tune this in Coova Chilli?
+> >>
+> >>
+> >>
+> >> thanks very much!!!
+> >>
+> >>
+> >> Derek
+> >>
+> >>
+> >>
+> >>
+> >> --
+> >> Derek C
+> >> In Ireland
+> >>
+> >>
+> >>
+> >> ---------------------------------------------------------------------
+> >> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> >> For additional commands, e-mail: chilli-help at coova.org
+> >> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> >> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+> >>
+> >>
+> >
+> > Henk Kleynhans
+> > CTO & Founder
+> > Skyrove (Pty) Ltd
+> > Technology Top 100 - Most Promising Emerging Enterprise 2006
+> > Tel: +27 (21) 4488843
+> > Cell: +27 (84) 3073451
+> > Fax: +27 (86) 6204077
+> > henk at skyrove.com blog: www.geekrebel.com
+> >
+> >
+> > ------
+> >
+> >
+> > "A person with ubuntu is open and available to others, affirming of
+> > others, does not feel threatened that others are able and good, for he or
+> > she has a proper self-assurance that comes from knowing that he or she
+> > belongs in a greater whole and is diminished when others are humiliated or
+> > diminished, when others are tortured or oppressed." - Desmond Tutu
+> >
+> 
+> 
+
+
+
+From venture37 at gmail.com  Mon Jan 12 12:37:31 2009
+From: venture37 at gmail.com (Sevan / Venture37)
+Date: Mon, 12 Jan 2009 12:37:31 +0000
+Subject: FreeBSD port
+Message-ID: <496B398B.6030005@gmail.com>
+
+I've submitted the port of v1.0.12 for inclusion in the ports tree, as 
+there is a back log of submissions from when the tree was locked whilst 
+they where trying to get FreeBSD 7.1 out of the door it may be a while 
+before it gets commited. In the mean time get a copy of the port here:
+https://www.geeklan.co.uk/files/coova-chilli/coova-freebsd-port-mk4.tgz
+http://www.geeklan.co.uk/?p=106
+
+You can keep up with the progress of the port
+http://www.freebsd.org/cgi/query-pr.cgi?pr=130357
+
+
+Sevan / Venture37
+
+
+From gunther.mayer at googlemail.com  Tue Jan 13 12:14:27 2009
+From: gunther.mayer at googlemail.com (Gunther Mayer)
+Date: Tue, 13 Jan 2009 14:14:27 +0200
+Subject: Packet of death not causing proper session termination?
+Message-ID: <496C85A3.1040607@gmail.com>
+
+Hi there,
+
+We just came across a peculiar problem whose solution is not clear to 
+me: Customer logs in, gets a very long (or non-existing/infinite) 
+session timeout and happily surfs away happily. Now something special 
+happens and we need to terminate his session prematurely. I know I can 
+do that with a packet of death sent directly to the nas on its coaport, 
+BUT, I've noticed that this makes the NAS close the session only *in its 
+internal state* and doesn't send an Accounting-Stop packet back to 
+radius to update session parameters (most noteably input&output octets). 
+I know I can close the session *on the database* manually but I 
+obviously lose those up-to-date session parameters.
+
+So, how can solve this dilemna? It would be nice to be able to force 
+chilli to terminate the session properly upon receiving a packet of death...
+
+Gunther
+
+
+From daniel at firewall-services.com  Tue Jan 13 17:28:31 2009
+From: daniel at firewall-services.com (Daniel Berteaud)
+Date: Tue, 13 Jan 2009 18:28:31 +0100
+Subject: privileges
+Message-ID: <1231867711.6866.141.camel@germaine.lapiole.org>
+
+Hi.
+
+I use coova-chilli on some servers and I'm quite happy with it.
+
+But there's one *huge* security issue with it: it must runs as root.
+I'm realy not very found of daemon listening on a public interface with
+root privileges.
+I understand coova daemon must start with root privileges as it has to
+create a tun interface, configure the real one etc... but, I think it
+should then drop the privileges to another user (just like openvpn do
+for example).
+
+Additionnaly, the daemon could be chrooted in a directory.
+
+Is there a way to do this, or is something like this a planed feature ?
+
+Cheers, Daniel
+
+-- 
+Daniel Berteaud
+FIREWALL-SERVICES SARL.
+Soci?t? de Services en Logiciels Libres
+Technop?le Montesquieu
+33650 MARTILLAC
+Tel : 05 56 64 15 32
+Fax : 05 56 64 15 32
+Mail: daniel at firewall-services.com
+Web : http://www.firewall-services.com
+
+
+
+From liran.tal at gmail.com  Tue Jan 20 12:22:12 2009
+From: liran.tal at gmail.com (Liran Tal)
+Date: Tue, 20 Jan 2009 14:22:12 +0200
+Subject: CoovaChilli 1.0-12 on OpenWRT Kamikaze with X-WRT
+Message-ID: <81237f640901200422l7ab1165i920368fbc1c6e07f@mail.gmail.com>
+
+Hey,
+
+It seems that HS_UAMALLOW always contain the URLs coova.org,
+www.internet-wifi.com.ar, x-wrt.org,openwrt.org
+and it seems there's no configuration to remove these or put any others in
+the GUI (web gui for OpenWRT/X-WRT),
+where are options these modified?
+
+
+
+-- 
+-- 
+Sincerely, Liran Tal
+
+Founder and CTO
+Linux and Open Source
+Enginx - http://enginx.com
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20090120/a7578f68/attachment.htm>
+
+From venture37 at gmail.com  Tue Jan 20 12:24:42 2009
+From: venture37 at gmail.com (Sevan / Venture37)
+Date: Tue, 20 Jan 2009 12:24:42 +0000
+Subject: FreeBSD port
+In-Reply-To: <496B398B.6030005@gmail.com>
+References: <496B398B.6030005@gmail.com>
+Message-ID: <4975C28A.1000001@gmail.com>
+
+Sevan / Venture37 wrote:
+> I've submitted the port of v1.0.12 for inclusion in the ports tree, as 
+> there is a back log of submissions from when the tree was locked whilst 
+> they where trying to get FreeBSD 7.1 out of the door it may be a while 
+> before it gets commited. In the mean time get a copy of the port here:
+> https://www.geeklan.co.uk/files/coova-chilli/coova-freebsd-port-mk4.tgz
+> http://www.geeklan.co.uk/?p=106
+> 
+> You can keep up with the progress of the port
+> http://www.freebsd.org/cgi/query-pr.cgi?pr=130357
+> 
+> 
+> Sevan / Venture37
+
+the port has been commited
+http://www.freebsd.org/cgi/cvsweb.cgi/ports/net-mgmt/coovachilli/
+
+
+
+From outbackdingo at gmail.com  Tue Jan 20 12:47:34 2009
+From: outbackdingo at gmail.com (Outback Dingo)
+Date: Tue, 20 Jan 2009 19:47:34 +0700
+Subject: CoovaChilli 1.0-12 on OpenWRT Kamikaze with X-WRT
+In-Reply-To: <81237f640901200422l7ab1165i920368fbc1c6e07f@mail.gmail.com>
+References: <81237f640901200422l7ab1165i920368fbc1c6e07f@mail.gmail.com>
+Message-ID: <5635aa0d0901200447y3f02c569hecc297624add8f01@mail.gmail.com>
+
+look in /etc/chilli and create your own file named "config" which will then
+be used to create main.conf vua the start/stop scripts
+variables available are in default, which contains the "default" setting for
+coova.org
+
+On Tue, Jan 20, 2009 at 7:22 PM, Liran Tal <liran.tal at gmail.com> wrote:
+
+> Hey,
+>
+> It seems that HS_UAMALLOW always contain the URLs coova.org,
+> www.internet-wifi.com.ar, x-wrt.org,openwrt.org
+> and it seems there's no configuration to remove these or put any others in
+> the GUI (web gui for OpenWRT/X-WRT),
+> where are options these modified?
+>
+>
+>
+> --
+> --
+> Sincerely, Liran Tal
+>
+> Founder and CTO
+> Linux and Open Source
+> Enginx - http://enginx.com
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20090120/f68c92ef/attachment.htm>
+
+From liran.tal at gmail.com  Tue Jan 20 13:21:47 2009
+From: liran.tal at gmail.com (Liran Tal)
+Date: Tue, 20 Jan 2009 15:21:47 +0200
+Subject: CoovaChilli 1.0-12 on OpenWRT Kamikaze with X-WRT
+In-Reply-To: <5635aa0d0901200447y3f02c569hecc297624add8f01@mail.gmail.com>
+References: <81237f640901200422l7ab1165i920368fbc1c6e07f@mail.gmail.com>
+	 <5635aa0d0901200447y3f02c569hecc297624add8f01@mail.gmail.com>
+Message-ID: <81237f640901200521v542703c6pe2805ee8ae8d4112@mail.gmail.com>
+
+First thing I did was to change that file (/etc/chilli/config) for the
+UAM_ALLOW config option that I would like but
+that didn't do the trick when I restarted chilli.
+
+
+On Tue, Jan 20, 2009 at 2:47 PM, Outback Dingo <outbackdingo at gmail.com>wrote:
+
+> look in /etc/chilli and create your own file named "config" which will then
+> be used to create main.conf vua the start/stop scripts
+> variables available are in default, which contains the "default" setting
+> for coova.org
+>
+>
+> On Tue, Jan 20, 2009 at 7:22 PM, Liran Tal <liran.tal at gmail.com> wrote:
+>
+>> Hey,
+>>
+>> It seems that HS_UAMALLOW always contain the URLs coova.org,
+>> www.internet-wifi.com.ar, x-wrt.org,openwrt.org
+>> and it seems there's no configuration to remove these or put any others in
+>> the GUI (web gui for OpenWRT/X-WRT),
+>> where are options these modified?
+>>
+>>
+>>
+>> --
+>> --
+>> Sincerely, Liran Tal
+>>
+>> Founder and CTO
+>> Linux and Open Source
+>> Enginx - http://enginx.com
+>>
+>
+>
+
+
+-- 
+-- 
+Sincerely, Liran Tal
+
+Founder and CTO
+Linux and Open Source
+Enginx - http://enginx.com
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20090120/a07e908e/attachment.htm>
+
+From outbackdingo at gmail.com  Tue Jan 20 14:30:18 2009
+From: outbackdingo at gmail.com (Outback Dingo)
+Date: Tue, 20 Jan 2009 21:30:18 +0700
+Subject: CoovaChilli 1.0-12 on OpenWRT Kamikaze with X-WRT
+In-Reply-To: <81237f640901200521v542703c6pe2805ee8ae8d4112@mail.gmail.com>
+References: <81237f640901200422l7ab1165i920368fbc1c6e07f@mail.gmail.com>
+	 <5635aa0d0901200447y3f02c569hecc297624add8f01@mail.gmail.com>
+	 <81237f640901200521v542703c6pe2805ee8ae8d4112@mail.gmail.com>
+Message-ID: <5635aa0d0901200630v3ac08acfs7259014a5a52909a@mail.gmail.com>
+
+check the variable in default... is is UAMALLOWED or UAM_ALLOW or
+UAM_ALLOWED because it does work for me on my systems
+
+On Tue, Jan 20, 2009 at 8:21 PM, Liran Tal <liran.tal at gmail.com> wrote:
+
+>
+> First thing I did was to change that file (/etc/chilli/config) for the
+> UAM_ALLOW config option that I would like but
+> that didn't do the trick when I restarted chilli.
+>
+>
+>
+> On Tue, Jan 20, 2009 at 2:47 PM, Outback Dingo <outbackdingo at gmail.com>wrote:
+>
+>> look in /etc/chilli and create your own file named "config" which will
+>> then be used to create main.conf vua the start/stop scripts
+>> variables available are in default, which contains the "default" setting
+>> for coova.org
+>>
+>>
+>> On Tue, Jan 20, 2009 at 7:22 PM, Liran Tal <liran.tal at gmail.com> wrote:
+>>
+>>> Hey,
+>>>
+>>> It seems that HS_UAMALLOW always contain the URLs coova.org,
+>>> www.internet-wifi.com.ar, x-wrt.org,openwrt.org
+>>> and it seems there's no configuration to remove these or put any others
+>>> in the GUI (web gui for OpenWRT/X-WRT),
+>>> where are options these modified?
+>>>
+>>>
+>>>
+>>> --
+>>> --
+>>> Sincerely, Liran Tal
+>>>
+>>> Founder and CTO
+>>> Linux and Open Source
+>>> Enginx - http://enginx.com
+>>>
+>>
+>>
+>
+>
+> --
+> --
+> Sincerely, Liran Tal
+>
+> Founder and CTO
+> Linux and Open Source
+> Enginx - http://enginx.com
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20090120/590ffecd/attachment.htm>
+
+From mem.corruption at gmail.com  Sat Jan 31 10:28:20 2009
+From: mem.corruption at gmail.com (David Bird)
+Date: Sat, 31 Jan 2009 11:28:20 +0100
+Subject: privileges
+In-Reply-To: <1231867711.6866.141.camel@germaine.lapiole.org>
+References: <1231867711.6866.141.camel@germaine.lapiole.org>
+Message-ID: <ef21d1850901310228n2e813c59g57089fcf534c2534@mail.gmail.com>
+
+Options for uid and gid will be in the next svn update, most likely.
+
+David
+
+On 1/13/09, Daniel Berteaud <daniel at firewall-services.com> wrote:
+> Hi.
+>
+> I use coova-chilli on some servers and I'm quite happy with it.
+>
+> But there's one *huge* security issue with it: it must runs as root.
+> I'm realy not very found of daemon listening on a public interface with
+> root privileges.
+> I understand coova daemon must start with root privileges as it has to
+> create a tun interface, configure the real one etc... but, I think it
+> should then drop the privileges to another user (just like openvpn do
+> for example).
+>
+> Additionnaly, the daemon could be chrooted in a directory.
+>
+> Is there a way to do this, or is something like this a planed feature ?
+>
+> Cheers, Daniel
+>
+> --
+> Daniel Berteaud
+> FIREWALL-SERVICES SARL.
+> Soci?t? de Services en Logiciels Libres
+> Technop?le Montesquieu
+> 33650 MARTILLAC
+> Tel : 05 56 64 15 32
+> Fax : 05 56 64 15 32
+> Mail: daniel at firewall-services.com
+> Web : http://www.firewall-services.com
+>
+>
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>
+>
+
+

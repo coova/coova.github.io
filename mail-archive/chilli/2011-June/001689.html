@@ -1,0 +1,90 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] Exclude up/down traffic from &quot;quota&quot; if in walled	garden
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Exclude%20up/down%20traffic%20from%20%22quota%22%20if%20in%20walled%0A%09garden&In-Reply-To=%3CDB6F5BC5-D768-4477-BAE9-7576DFC622AB%40coova.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001683.html">
+   <LINK REL="Next"  HREF="001684.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] Exclude up/down traffic from &quot;quota&quot; if in walled	garden</H1>
+    <B>David Bird</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Exclude%20up/down%20traffic%20from%20%22quota%22%20if%20in%20walled%0A%09garden&In-Reply-To=%3CDB6F5BC5-D768-4477-BAE9-7576DFC622AB%40coova.com%3E"
+       TITLE="[Chilli] Exclude up/down traffic from &quot;quota&quot; if in walled	garden">david at coova.com
+       </A><BR>
+    <I>Tue Jun 14 04:22:54 UTC 2011</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001683.html">[Chilli] Exclude up/down traffic from &quot;quota&quot; if in walled garden
+</A></li>
+        <LI>Next message: <A HREF="001684.html">[Chilli] Period &quot;Reauthorisation&quot;
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1689">[ date ]</a>
+              <a href="thread.html#1689">[ thread ]</a>
+              <a href="subject.html#1689">[ subject ]</a>
+              <a href="author.html#1689">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Look in the garden.c file for the walled garden routines. From what you explained, I think you are on the right track. 
+
+--
+  David Bird
+  Coova Technologies, LLC
+
+On Jun 13, 2011, at 11:54 AM, Tim White &lt;<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">timwhite88 at gmail.com</A>&gt; wrote:
+
+&gt;<i> I wrote a patch a long time ago to exclude traffic to a from the local coovachilli server from the &quot;quota&quot; counting. It basically matches for port 80 on the uamlisten at the same time that we already check for uamport and uamuiport. My reasoning was that I wanted to use a different webserver for the captive portal, that also hosts a local mirror.  It can be seen at <A HREF="http://grase.bzr.sf.net/bzr/grase/grase-coova-chilli/annotate/head%3A/debian/patches/ignore_localhttp.diff">http://grase.bzr.sf.net/bzr/grase/grase-coova-chilli/annotate/head%3A/debian/patches/ignore_localhttp.diff</A>
+</I>&gt;<i> 
+</I>&gt;<i> What I'm hoping to try and do is extend this so that we can exclude all traffic from the walled garden hosts so that I can allow access to some local mirrors that are on the other side of the coovachilli machine, without it counting against the quota.
+</I>&gt;<i> 
+</I>&gt;<i> Currently both my modifications are in the cb_tun_ind function. I understand that my modifications would need to be moved into it's own area (as currently the second one actually forces the packet through the tun/tap interface due to me piggybacking on other code.
+</I>&gt;<i> 
+</I>&gt;<i> If I understand the code correctly, the functions I need to bypass are chilli_acct_fromsub and chilli_acct_tosub. Both those functions only modify the accounting data, and don't modify the packet path. Please correct me if I'm wrong.
+</I>&gt;<i> 
+</I>&gt;<i> So for example, before the chilli_acct_fromsub call I'd put an if statement to call a funky function to check if the daddr is in the uam list and if so, then call the tun_encaps function otherwise allow the chilli_acct_fromsub to call.
+</I>&gt;<i> Can someone point me to where I can get access to the list of uamdomains/address, and functions that already compare to the list? C hasn't been my main language for a good number of years and I'm having trouble finding things in the rather large chilli.c file.
+</I>&gt;<i> 
+</I>&gt;<i> Also, if I'm trying to put these functions in the wrong area, i.e. me bypassing chilli_acct_fromsub, and it's going to cause serious problems somewhere, please tell me!
+</I>&gt;<i> 
+</I>&gt;<i> I hope this won't work out too difficult, and that I can code it well enough that it can be come a feature.
+</I>&gt;<i> 
+</I>&gt;<i> Thanks
+</I>&gt;<i> 
+</I>&gt;<i> Tim
+</I>&gt;<i> _______________________________________________
+</I>&gt;<i> Chilli mailing list
+</I>&gt;<i> <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">Chilli at coova.org</A>
+</I>&gt;<i> <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">http://lists.coova.org/cgi-bin/mailman/listinfo/chilli</A>
+</I></PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001683.html">[Chilli] Exclude up/down traffic from &quot;quota&quot; if in walled garden
+</A></li>
+	<LI>Next message: <A HREF="001684.html">[Chilli] Period &quot;Reauthorisation&quot;
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1689">[ date ]</a>
+              <a href="thread.html#1689">[ thread ]</a>
+              <a href="subject.html#1689">[ subject ]</a>
+              <a href="author.html#1689">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

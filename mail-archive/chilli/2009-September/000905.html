@@ -1,0 +1,137 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> 15 character maximum password length for PAP?
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%2015%20character%20maximum%20password%20length%20for%20PAP%3F&In-Reply-To=%3C1252558225.8133.6.camel%40david-laptop%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000901.html">
+   <LINK REL="Next"  HREF="000907.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>15 character maximum password length for PAP?</H1>
+    <B>wlanmac</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%2015%20character%20maximum%20password%20length%20for%20PAP%3F&In-Reply-To=%3C1252558225.8133.6.camel%40david-laptop%3E"
+       TITLE="15 character maximum password length for PAP?">wlan at mac.com
+       </A><BR>
+    <I>Thu Sep 10 04:50:25 UTC 2009</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000901.html">15 character maximum password length for PAP?
+</A></li>
+        <LI>Next message: <A HREF="000907.html">15 character maximum password length for PAP?
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#905">[ date ]</a>
+              <a href="thread.html#905">[ thread ]</a>
+              <a href="subject.html#905">[ subject ]</a>
+              <a href="author.html#905">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>committed, thanks! btw, I also saw your writeup in your blog. thanks
+again. 
+
+
+On Wed, 2009-09-09 at 18:33 +0100, Mark Dennehy wrote:
+&gt;<i> Ref:[Mark Dennehy, Wed, 09/09/09 @ 16:39 +0100]
+</I>&gt;<i> &gt; Ref:[Wichert Akkerman, Wed, 09/09/09 @ 17:19 +0200]
+</I>&gt;<i> &gt; &gt;&gt; Are the changes not also in revision 223?
+</I>&gt;<i> &gt; &gt; There might have been other changes since then which affect that code.  
+</I>&gt;<i> &gt; &gt; Knowing if 217 works for you will help us track that down.
+</I>&gt;<i> &gt; &gt; Wichert.
+</I>&gt;<i> &gt; Okay, checking it out now.
+</I>&gt;<i> 
+</I>&gt;<i> Nope, getting the same problem again. If I put in
+</I>&gt;<i> &quot;test/12345678901234567890&quot; as the username/password into the captive
+</I>&gt;<i> portal, I get &quot;test/1234567890123456&quot; as the username/password being
+</I>&gt;<i> received by FreeRADIUS.
+</I>&gt;<i> 
+</I>&gt;<i> I think it's down to lines 1653-1655 in redir.c:
+</I>&gt;<i> 
+</I>&gt;<i>     /*
+</I>&gt;<i>      * decode password - encoded by the UAM portal/script. 
+</I>&gt;<i>      */
+</I>&gt;<i>     for (m=0; m &lt; RADIUS_PWSIZE;) 
+</I>&gt;<i>           for (n=0; n &lt; REDIR_MD5LEN; m++, n++)
+</I>&gt;<i>             user_password[m] = conn-&gt;password[m] ^ chap_challenge[n];
+</I>&gt;<i>                 
+</I>&gt;<i> 
+</I>&gt;<i> The problem is, they do the right thing :-)
+</I>&gt;<i> If conn-&gt;password[] is longer than chap_challange[], those lines repeat
+</I>&gt;<i> chap_challange[] to compensate.
+</I>&gt;<i> 
+</I>&gt;<i> Whereas in hotspotlogin.cgi:
+</I>&gt;<i> 
+</I>&gt;<i>   $hexchal  = pack &quot;H32&quot;, $challenge;
+</I>&gt;<i> 
+</I>&gt;<i>   ...
+</I>&gt;<i> 
+</I>&gt;<i>   } elsif (defined($userpassword)) {
+</I>&gt;<i>     # Encode plain text password with challenge 
+</I>&gt;<i>     # (which may or may not be uamsecret encoded)
+</I>&gt;<i> 
+</I>&gt;<i>     $pappassword = unpack &quot;H32&quot;, ($password ^ $newchal);
+</I>&gt;<i> 
+</I>&gt;<i>     $logonUrl = &quot;<A HREF="http://$uamip:$uamport/logon?username=$username&amp;password=$pappassword&quot;;">http://$uamip:$uamport/logon?username=$username&amp;password=$pappassword&quot;;</A>
+</I>&gt;<i> 
+</I>&gt;<i> So if the password is longer than 16 characters
+</I>&gt;<i> (the default size of the challange), firstly only the first 16
+</I>&gt;<i> characters of the password are xor'd with the challange - everything
+</I>&gt;<i> after that is left in plaintext (well, actually it's xor'd with 0
+</I>&gt;<i> but that's the same end result); and secondly (and masking the first
+</I>&gt;<i> problem), everything after the 16th character is dropped by the use of
+</I>&gt;<i> the &quot;H32&quot; template for the pack and unpack commands on lines 153 and
+</I>&gt;<i> 173.
+</I>&gt;<i> 
+</I>&gt;<i> So, changes to hotspotlogin.cgi (I know it's legacy, but it's in use)
+</I>&gt;<i> and the problem's fixed, I'm able to use 100-character passwords now
+</I>&gt;<i> (I've not tested it for passwords over 128 characters):
+</I>&gt;<i> 
+</I>&gt;<i>   $hexchal  = pack &quot;H*&quot;, $challenge;
+</I>&gt;<i> 
+</I>&gt;<i> ...
+</I>&gt;<i> 
+</I>&gt;<i>   } elsif (defined($userpassword)) {
+</I>&gt;<i>     # Encode plain text password with challenge 
+</I>&gt;<i>     # (which may or may not be uamsecret encoded)
+</I>&gt;<i> 
+</I>&gt;<i>     while (length($newchal) &lt; length($password)){
+</I>&gt;<i>        $newchal .= $newchal;
+</I>&gt;<i>     }
+</I>&gt;<i> 
+</I>&gt;<i>     $pappassword = unpack &quot;H*&quot;, ($password ^ $newchal);
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> Patch attached.
+</I>&gt;<i> 
+</I>&gt;<i> ---------------------------------------------------------------------
+</I>&gt;<i> To unsubscribe, e-mail: <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli-unsubscribe at coova.org</A>
+</I>&gt;<i> For additional commands, e-mail: <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli-help at coova.org</A>
+</I>&gt;<i> <A HREF="http://www.coova.org/CoovaChilli">http://www.coova.org/CoovaChilli</A>
+</I>
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000901.html">15 character maximum password length for PAP?
+</A></li>
+	<LI>Next message: <A HREF="000907.html">15 character maximum password length for PAP?
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#905">[ date ]</a>
+              <a href="thread.html#905">[ thread ]</a>
+              <a href="subject.html#905">[ subject ]</a>
+              <a href="author.html#905">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

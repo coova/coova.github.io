@@ -1,0 +1,238 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] Problem upload data using latest coovachilli git
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Problem%20upload%20data%20using%20latest%20coovachilli%20git&In-Reply-To=%3C1403865340.27381.216.camel%40marces.madrid.commsmundi.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="002778.html">
+   <LINK REL="Next"  HREF="002780.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] Problem upload data using latest coovachilli git</H1>
+    <B>Anonio Silva</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Problem%20upload%20data%20using%20latest%20coovachilli%20git&In-Reply-To=%3C1403865340.27381.216.camel%40marces.madrid.commsmundi.com%3E"
+       TITLE="[Chilli] Problem upload data using latest coovachilli git">asilva at wirelessmundi.com
+       </A><BR>
+    <I>Fri Jun 27 10:35:40 UTC 2014</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="002778.html">[Chilli]  Build troubles
+</A></li>
+        <LI>Next message: <A HREF="002780.html">[Chilli] Problem upload data using latest coovachilli git
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2779">[ date ]</a>
+              <a href="thread.html#2779">[ thread ]</a>
+              <a href="subject.html#2779">[ subject ]</a>
+              <a href="author.html#2779">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hi,
+
+With last git 9b7138f4d85a88e6e7e0b1cb5d3202d1a3bbad27, I've a problem
+with data upload.  The connection is very inconstant going from 400Kbps
+to 0Kpbs, then to 50Kbps,  150Kbps and sometimes it just freezes...
+
+My scenario is very simple:
+
+WAN --- Server running Chilli (eth1: e1000e: 100Mb/s) ------ PC (windows
+7)
+
+Once the pc is authenticate (by MAC), i try to upload a file to the ftp
+server running on the same server where the chilli is running. It also
+happens if i upload data to WAN. 
+With the download there is no problem.
+
+
+My configuration:
+
+chilli.conf
+fg
+debug
+unixipc=chilli2.ipc
+tundev=tuneth1
+nasmac=&quot;portal2&quot;
+pidfile=/var/run/chilli/chilli2.pid
+dhcpif=eth1
+net=192.168.30.0/24
+statip=192.168.30.0/24
+dynip=192.168.30.0/24
+dhcpstart=2
+dhcpend=10
+lease=1800
+dns1=192.168.10.254
+domain=local.local
+radiusserver1=localhost
+radiusserver2=localhost
+radiusauthport=1812
+radiusacctport=1813
+radiussecret=secret
+coaport=3771
+uamlisten=192.168.30.1
+uamserver=<A HREF="https://192.168.10.254">https://192.168.10.254</A>
+uamlogoutip=5.5.5.1
+uamsecret=secret
+uamport=3990
+uamuiport=3992
+macauth
+strictmacauth
+
+i run it with:
+/usr/sbin/chilli --conf chilli.conf --pidfile /var/run/chilli/chilli.pid
+--cmdsock /var/run/chilli/chilli.sock
+
+for iptables i have:
+-A INPUT --in-interface eth1 -j DROP
+-A FORWARD --in-interface eth1 -j DROP
+
+
+If i drop the iptables rules that block the traffic on the dhcpif the
+upload is fine. There is no radius attribute to limit the speed.
+
+I'm running debian wheezy. I download the coova-chilli from the git
+repos, and compile it using the debian package, in the trunk directory i
+did dpkg-buildpackage.  then i install de coova-chilli.deb
+
+Can you help me to figure out where is the problem?
+
+
+Thanks,
+Ant&#243;nio
+
+
+
+LOG of chilli:
+
+main-opt.c: 453: 0 (Debug) IPv6 disabled 
+main-opt.c: 640: 0 (Debug) DHCP Listen: 192.168.30.1
+main-opt.c: 641: 0 (Debug) UAM Listen: 192.168.30.1
+garden.c: 439: 0 (Debug) Uamallowed IP address #0:1024: proto=0
+host=192.168.10.254 port=443
+options.c: 446: 0 (Debug) PID 7669 saving options
+to /var/run/chilli.7668.cfg.bin
+options.c: 414: 0 (Debug) Loading modules
+options.c: 658: 0 (Debug) PID 7668 reloaded binary options file
+chilli.c: 7270: 0 (Debug) clock realtime sec 1403863345 nsec 332183759
+chilli.c: 7275: 0 (Debug) clock monotonic sec 7232 nsec 305988264
+tun.c: 605: 0 (Debug) TX queue length set to 100
+ippool.c: 338: 0 (Debug) Hashlog 9 264 512
+net.c: 1279: 0 (Debug) Net SNDBUF 212992
+net.c: 1282: 0 (Debug) Net RCVBUF 212992
+net.c: 1337: 0 (Debug) device eth1 ifindex 4
+net.c: 1353: 0 (Debug) lo  address family: 17 (AF_PACKET)
+net.c: 1353: 0 (Debug) eth3  address family: 17 (AF_PACKET)
+net.c: 1353: 0 (Debug) eth0  address family: 17 (AF_PACKET)
+net.c: 1353: 0 (Debug) eth1  address family: 17 (AF_PACKET)
+net.c: 1353: 0 (Debug) lo  address family: 2 (AF_INET)
+net.c: 1353: 0 (Debug) eth0  address family: 2 (AF_INET)
+net.c: 1353: 0 (Debug) eth1  address family: 2 (AF_INET)
+net.c: 1353: 0 (Debug) tuneth3  address family: 2 (AF_INET)
+net.c: 1353: 0 (Debug) tuneth1  address family: 2 (AF_INET)
+dhcp.c: 481: 0 (Debug) hash table size 64 (56)
+dhcp.c: 333: 0 (Debug) GARP: Replying to broadcast
+dhcp.c: 1169: 0 (Debug) dhcpif (eth1) IPv6 address ::
+radius.c: 1316: 0 (Debug) RADIUS client 0.0.0.0:3771
+chilli.c: 7430: 0 (Debug) Waiting for client request...
+net.c: 416: 0 (Debug) net select count: 1
+net.c: 416: 0 (Debug) net select count: 2
+net.c: 416: 0 (Debug) net select count: 3
+net.c: 416: 0 (Debug) net select count: 4
+net.c: 416: 0 (Debug) net select count: 5
+net.c: 416: 0 (Debug) net select count: 6
+net.c: 416: 0 (Debug) net select count: 7
+rtmon.c: 465: 0 (Debug) i=0 sz=1
+rtmon.c: 465: 0 (Debug) i=0 sz=2
+rtmon.c: 465: 0 (Debug) i=1 sz=2
+rtmon.c: 465: 0 (Debug) i=0 sz=3
+rtmon.c: 465: 0 (Debug) i=1 sz=3
+rtmon.c: 465: 0 (Debug) i=2 sz=3
+rtmon.c: 465: 0 (Debug) i=0 sz=4
+rtmon.c: 465: 0 (Debug) i=1 sz=4
+rtmon.c: 465: 0 (Debug) i=2 sz=4
+rtmon.c: 465: 0 (Debug) i=3 sz=4
+
+System Interfaces
+0) lo (1) ip=127.0.0.1 net=127.0.0.0 mask=255.0.0.0
+mac=00-00-00-00-00-00 mtu=65536
+1) eth0 (3) ip=192.168.10.254 net=192.168.10.0 mask=255.255.255.0
+bcase=192.168.10.255 mac=00-15-17-DA-4A-cd mtu=1500
+2) eth1 (4) ip=10.10.1.1 net=10.10.1.0 mask=255.255.255.0
+bcase=10.10.1.255 mac=00-15-17-DA-4A-cc mtu=1500
+3) tuneth3 (26) ip=192.168.20.1 net=192.168.20.0 mask=255.255.255.0
+peer=192.168.20.1 mac=00-00-00-00-00-00 mtu=1500
+4) tuneth1 (30) ip=192.168.30.1 net=192.168.30.0 mask=255.255.255.0
+peer=192.168.30.1 mac=00-00-00-00-00-00 mtu=1500
+
+System Routes
+0) dst=10.10.1.0 mask=255.255.255.0 dev=eth1 (4)
+1) dst=192.168.10.0 mask=255.255.255.0 dev=eth0 (3)
+2) dst=192.168.20.0 mask=255.255.255.0 dev=tuneth3 (26)
+3) dst=192.168.30.0 mask=255.255.255.0 dev=tuneth1 (30)
+net.c: 416: 0 (Debug) net select count: 8
+net.c: 416: 0 (Debug) net select count: 9
+radius.c: 1907: 0 (Debug) Received RADIUS packet id=0
+radius.c: 427: 0 (Debug) RADIUS queue-out id=0 idx=0
+dhcp.c: 3713: 0 (Debug) Address not found (192.168.30.2)
+dhcp.c: 728: 0 (Debug) DHCP newconn: 68-B5-99-DB-72-AC
+chilli.c: 5137: 0 (Debug) New DHCP request from MAC=68-B5-99-DB-72-AC
+chilli.c: 5140: 0 (Debug) New DHCP connection established
+chilli.c: 5098: 0 (Debug) New Chilli Connection
+chilli.c: 4896: 0 (Debug) ----&gt; cb_dhcp_request &lt;----
+chilli.c: 4900: 0 (Debug) DHCP request for IP address 192.168.30.2
+chilli.c: 1542: 0 (Debug) Starting radius authentication
+dhcp.c: 3965: 0 (Debug) dropping packet; ip not known: 192.168.30.2
+radius.c: 1907: 0 (Debug) Received RADIUS packet id=1
+radius.c: 427: 0 (Debug) RADIUS queue-out id=1 idx=1
+chilli.c: 4419: 0 (Debug) Received RADIUS response id=1
+chilli.c: 4608: 0 (Debug) Received RADIUS Access-Accept
+chilli.c: 865: 0 (Debug) newip 192.168.30.2
+ippool.c: 456: 0 (Debug) Requesting new static ip: 192.168.30.2
+radius.c: 1907: 0 (Debug) Received RADIUS packet id=2
+radius.c: 427: 0 (Debug) RADIUS queue-out id=2 idx=2
+dhcp.c: 3785: 0 (Debug) ICMP frag forbidden for IP packet with length
+2560 &gt; 1500
+dhcp.c: 3785: 0 (Debug) ICMP frag forbidden for IP packet with length
+2560 &gt; 1500
+dhcp.c: 3785: 0 (Debug) ICMP frag forbidden for IP packet with length
+2560 &gt; 1500
+dhcp.c: 3785: 0 (Debug) ICMP frag forbidden for IP packet with length
+2560 &gt; 1500
+dhcp.c: 3785: 0 (Debug) ICMP frag forbidden for IP packet with length
+2560 &gt; 1500
+(... continues until the transfer is complete, when i remote the
+firewall rule the ouput speed of this messages is faster) 
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: &lt;<A HREF="http://lists.coova.org/pipermail/chilli/attachments/20140627/b2c1f333/attachment.html">http://lists.coova.org/pipermail/chilli/attachments/20140627/b2c1f333/attachment.html</A>&gt;
+</PRE>
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="002778.html">[Chilli]  Build troubles
+</A></li>
+	<LI>Next message: <A HREF="002780.html">[Chilli] Problem upload data using latest coovachilli git
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2779">[ date ]</a>
+              <a href="thread.html#2779">[ thread ]</a>
+              <a href="subject.html#2779">[ subject ]</a>
+              <a href="author.html#2779">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

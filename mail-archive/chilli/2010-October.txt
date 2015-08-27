@@ -1,0 +1,2225 @@
+From m.simioni at gmail.com  Wed Oct  6 09:26:19 2010
+From: m.simioni at gmail.com (Marco Simioni)
+Date: Wed, 6 Oct 2010 11:26:19 +0200
+Subject: [Chilli] 100% cpu problem
+In-Reply-To: <AANLkTin5=AMMg=Ub5_nXawBvszYkrmSxHtrqP3i3K5ax@mail.gmail.com>
+References: <AANLkTi=vfw-wOt5AdWzYiPVB_hWSri2Qd1yModDSeD1x@mail.gmail.com>
+	<1280214335.3366.10.camel@david-laptop>
+	<AANLkTin1zNacK-T6L4UdJr=OBkRBG31GcH2YNxfjatYh@mail.gmail.com>
+	<1280241577.2600.3.camel@david-laptop>
+	<AANLkTin5=AMMg=Ub5_nXawBvszYkrmSxHtrqP3i3K5ax@mail.gmail.com>
+Message-ID: <AANLkTimV11CQ23HMQgWUFzYBT13fnt1cMRqMn2i=_DDQ@mail.gmail.com>
+
+No news.
+
+Stil happened.
+
+I'm using latest SVN version.
+
+How can i investigate the problem ?
+
+2010/9/23 Marco Simioni <m.simioni at gmail.com>:
+> It happened again: i had 100% cpu after days of uptime.
+>
+> This time, i was able to identify the following:
+>
+> 1) Thanks to "sar" utility, i was able to localize the CPU usage
+> between 09:45 and 10:05.
+>
+> 09:05:02 ? ? ? ?CPU ? ? %user ? ? %nice ? %system ? %iowait ? ?%steal ? ? %idle
+> 09:45:02 ? ? ? ?all ? ? ?0,00 ? ? ?0,00 ? ? ?0,04 ? ? ?4,26 ? ? ?0,00 ? ? 95,70
+> 09:55:02 ? ? ? ?all ? ? ?2,51 ? ? ?0,00 ? ? ?0,08 ? ? ?3,47 ? ? ?0,00 ? ? 93,94
+> 10:05:02 ? ? ? ?all ? ? 98,32 ? ? ?0,00 ? ? ?1,68 ? ? ?0,00 ? ? ?0,00 ? ? ?0,00
+>
+> 2) In syslog, the messages i see are:
+>
+> Sep 23 09:51:10 izc coova-chilli[939]: chilli.c: 3402: DHCP addr
+> released by MAC=90-84-0D-D2-00-2D IP=0.0.0.0
+> Sep 23 09:51:11 izc coova-chilli[939]: chilli.c: 3248: New DHCP
+> request from MAC=90-84-0D-D2-00-2D
+> Sep 23 09:52:02 izc coova-chilli[939]: chilli.c: 3248: New DHCP
+> request from MAC=00-0E-6A-7A-AB-9C
+> Sep 23 09:52:02 izc coova-chilli[939]: chilli.c: 3209: Client
+> MAC=00-0E-6A-7A-AB-9C assigned IP 10.1.0.73
+> Sep 23 09:55:02 izc CRON[9452]: (root) CMD (command -v debian-sa1 >
+> /dev/null && debian-sa1 1 1)
+> Sep 23 10:00:03 izc CRON[9455]: (root) CMD (/etc/rc2.d/S20chilli radconfig)
+> Sep 23 10:05:01 izc CRON[9461]: (root) CMD (command -v debian-sa1 >
+> /dev/null && debian-sa1 1 1)
+>
+> 3) I tried to attach with "gdb" to the chilli process. Nothing
+> happened. I didn't know what to do, so tried to make a step and i got
+> the following:
+>
+> (gdb) step
+> Single stepping until exit from function radius_getnextattr, wich has
+> no line number information.
+>
+> than nothing else.
+>
+> 4) Tried to attach with "strace"
+>
+> root at izc:# strace -p 939
+> Process 939 attached - interrupt to quit
+>
+> and nothing happened.
+>
+> Now i had to reboot to let customers surf.
+>
+> What can i do next time?
+>
+> The syslog "radconf" and the gdb message "radius_getnextattr" could
+> point to something ?
+>
+> Keep in mind that the radius server is a proprietary one, it is not
+> freeradius or something else.
+>
+> Is there something i can to the next time with gdb and/or strace ?
+>
+> Thank you again.
+>
+> 2010/7/27 David Bird <david at coova.com>:
+>> Wichert asked a good question; are you using SSL features of
+>> CoovaChilli?
+>>
+>> For info on gdb, you can google for it, of course. Here is a quick howto
+>> page:
+>> http://www.freebsd.org/doc/en/books/developers-handbook/debugging.html
+>>
+>> For strace, use "strace -p <pid>" and you will see the system calls
+>> being executed - if it is using 100%, there must be a runaway loop
+>> occurring.
+>>
+>> David
+>>
+>> On Tue, 2010-07-27 at 09:20 +0200, Marco Simioni wrote:
+>>> It happened 3 times in a month,
+>>>
+>>> not immediately but after some day of regular work.
+>>>
+>>> "top" command sayd chilli was consuming 100% CPU.
+>>>
+>>> customers reported that they could not get dhcp and then login page.
+>>>
+>>> i will try to use chilli_query when will happen again.
+>>>
+>>> how can i attach with gdb or strace? can you point me some documentation?
+>>>
+>>> i can run it in debug mode only in console mode, with -fd, or also as
+>>> a service ?
+>>>
+>>> thank you i.a.
+>>>
+>>> regards,
+>>>
+>>> Marco
+>>>
+>>> 2010/7/27 David Bird <david at coova.com>:
+>>> > How quickly does this start to happen? Immediately? After how long?
+>>> >
+>>> > Is chilli also not working during this time? Does chilli_query hang?
+>>> >
+>>> > Are you able to attach gdb or use strace to get more info?
+>>> >
+>>> > If able, you can try running in debug mode for additional log
+>>> > information?
+>>> >
+>>> > Thanks,
+>>> > David
+>>> >
+>>> >
+>>> > On Tue, 2010-07-27 at 08:55 +0200, Marco Simioni wrote:
+>>> >> Hi all, my customer is reporting a cpu problem.
+>>> >>
+>>> >> Chilli goes to consume all the processor, going to 100%.
+>>> >>
+>>> >> It is a brand new setup, bult on a VMWare ESXi Virtual Machine on HP ML115,
+>>> >> 1.8GHz CPU allocated,
+>>> >> 512MB RAM allocated,
+>>> >> coova-chilli 1.2.2,
+>>> >> Ubuntu 9.10 ( 2.6.31-14-server ).
+>>> >>
+>>> >> It's about three times it happens, solved it with a reboot.
+>>> >>
+>>> >> Very few clients, < 10.
+>>> >>
+>>> >> Suggestions ?
+>>> >>
+>>> >> How can i investigate and understand when it happens ?
+>>> >>
+>>> >> Thank i.a.
+>>> >>
+>>> >> Best regards,
+>>> >>
+>>> >> Marco
+>>> >> _______________________________________________
+>>> >> Chilli mailing list
+>>> >> Chilli at coova.org
+>>> >> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>>> >
+>>> >
+>>> >
+>>
+>>
+>>
+>
+
+From albesvs at yahoo.it  Wed Oct  6 11:36:38 2010
+From: albesvs at yahoo.it (Alberto Bellettato)
+Date: Wed, 6 Oct 2010 13:36:38 +0200
+Subject: [Chilli] 100% cpu problem
+In-Reply-To: <AANLkTimV11CQ23HMQgWUFzYBT13fnt1cMRqMn2i=_DDQ@mail.gmail.com>
+References: <AANLkTi=vfw-wOt5AdWzYiPVB_hWSri2Qd1yModDSeD1x@mail.gmail.com><1280214335.3366.10.camel@david-laptop><AANLkTin1zNacK-T6L4UdJr=OBkRBG31GcH2YNxfjatYh@mail.gmail.com><1280241577.2600.3.camel@david-laptop><AANLkTin5=AMMg=Ub5_nXawBvszYkrmSxHtrqP3i3K5ax@mail.gmail.com>
+	<AANLkTimV11CQ23HMQgWUFzYBT13fnt1cMRqMn2i=_DDQ@mail.gmail.com>
+Message-ID: <CC0831F940784C33B19FE6E07D430E59@AlbertoDell>
+
+Have you tried to temporarily remove the "/etc/rc2.d/S20chilli radconfig" 
+script by your cron table? It could help isolating the problem.
+Then have you enabled ssl or redir in your chilli config?
+
+----- Original Message ----- 
+From: "Marco Simioni" <m.simioni at gmail.com>
+To: <chilli at coova.org>
+Sent: Wednesday, October 06, 2010 11:26 AM
+Subject: Re: [Chilli] 100% cpu problem
+
+
+No news.
+
+Stil happened.
+
+I'm using latest SVN version.
+
+How can i investigate the problem ?
+
+2010/9/23 Marco Simioni <m.simioni at gmail.com>:
+> It happened again: i had 100% cpu after days of uptime.
+>
+> This time, i was able to identify the following:
+>
+> 1) Thanks to "sar" utility, i was able to localize the CPU usage
+> between 09:45 and 10:05.
+>
+> 09:05:02 CPU %user %nice %system %iowait %steal %idle
+> 09:45:02 all 0,00 0,00 0,04 4,26 0,00 95,70
+> 09:55:02 all 2,51 0,00 0,08 3,47 0,00 93,94
+> 10:05:02 all 98,32 0,00 1,68 0,00 0,00 0,00
+>
+> 2) In syslog, the messages i see are:
+>
+> Sep 23 09:51:10 izc coova-chilli[939]: chilli.c: 3402: DHCP addr
+> released by MAC=90-84-0D-D2-00-2D IP=0.0.0.0
+> Sep 23 09:51:11 izc coova-chilli[939]: chilli.c: 3248: New DHCP
+> request from MAC=90-84-0D-D2-00-2D
+> Sep 23 09:52:02 izc coova-chilli[939]: chilli.c: 3248: New DHCP
+> request from MAC=00-0E-6A-7A-AB-9C
+> Sep 23 09:52:02 izc coova-chilli[939]: chilli.c: 3209: Client
+> MAC=00-0E-6A-7A-AB-9C assigned IP 10.1.0.73
+> Sep 23 09:55:02 izc CRON[9452]: (root) CMD (command -v debian-sa1 >
+> /dev/null && debian-sa1 1 1)
+> Sep 23 10:00:03 izc CRON[9455]: (root) CMD (/etc/rc2.d/S20chilli 
+> radconfig)
+> Sep 23 10:05:01 izc CRON[9461]: (root) CMD (command -v debian-sa1 >
+> /dev/null && debian-sa1 1 1)
+>
+> 3) I tried to attach with "gdb" to the chilli process. Nothing
+> happened. I didn't know what to do, so tried to make a step and i got
+> the following:
+>
+> (gdb) step
+> Single stepping until exit from function radius_getnextattr, wich has
+> no line number information.
+>
+> than nothing else.
+>
+> 4) Tried to attach with "strace"
+>
+> root at izc:# strace -p 939
+> Process 939 attached - interrupt to quit
+>
+> and nothing happened.
+>
+> Now i had to reboot to let customers surf.
+>
+> What can i do next time?
+>
+> The syslog "radconf" and the gdb message "radius_getnextattr" could
+> point to something ?
+>
+> Keep in mind that the radius server is a proprietary one, it is not
+> freeradius or something else.
+>
+> Is there something i can to the next time with gdb and/or strace ?
+>
+> Thank you again.
+>
+> 2010/7/27 David Bird <david at coova.com>:
+>> Wichert asked a good question; are you using SSL features of
+>> CoovaChilli?
+>>
+>> For info on gdb, you can google for it, of course. Here is a quick howto
+>> page:
+>> http://www.freebsd.org/doc/en/books/developers-handbook/debugging.html
+>>
+>> For strace, use "strace -p <pid>" and you will see the system calls
+>> being executed - if it is using 100%, there must be a runaway loop
+>> occurring.
+>>
+>> David
+>>
+>> On Tue, 2010-07-27 at 09:20 +0200, Marco Simioni wrote:
+>>> It happened 3 times in a month,
+>>>
+>>> not immediately but after some day of regular work.
+>>>
+>>> "top" command sayd chilli was consuming 100% CPU.
+>>>
+>>> customers reported that they could not get dhcp and then login page.
+>>>
+>>> i will try to use chilli_query when will happen again.
+>>>
+>>> how can i attach with gdb or strace? can you point me some 
+>>> documentation?
+>>>
+>>> i can run it in debug mode only in console mode, with -fd, or also as
+>>> a service ?
+>>>
+>>> thank you i.a.
+>>>
+>>> regards,
+>>>
+>>> Marco
+>>>
+>>> 2010/7/27 David Bird <david at coova.com>:
+>>> > How quickly does this start to happen? Immediately? After how long?
+>>> >
+>>> > Is chilli also not working during this time? Does chilli_query hang?
+>>> >
+>>> > Are you able to attach gdb or use strace to get more info?
+>>> >
+>>> > If able, you can try running in debug mode for additional log
+>>> > information?
+>>> >
+>>> > Thanks,
+>>> > David
+>>> >
+>>> >
+>>> > On Tue, 2010-07-27 at 08:55 +0200, Marco Simioni wrote:
+>>> >> Hi all, my customer is reporting a cpu problem.
+>>> >>
+>>> >> Chilli goes to consume all the processor, going to 100%.
+>>> >>
+>>> >> It is a brand new setup, bult on a VMWare ESXi Virtual Machine on HP 
+>>> >> ML115,
+>>> >> 1.8GHz CPU allocated,
+>>> >> 512MB RAM allocated,
+>>> >> coova-chilli 1.2.2,
+>>> >> Ubuntu 9.10 ( 2.6.31-14-server ).
+>>> >>
+>>> >> It's about three times it happens, solved it with a reboot.
+>>> >>
+>>> >> Very few clients, < 10.
+>>> >>
+>>> >> Suggestions ?
+>>> >>
+>>> >> How can i investigate and understand when it happens ?
+>>> >>
+>>> >> Thank i.a.
+>>> >>
+>>> >> Best regards,
+>>> >>
+>>> >> Marco
+>>> >> _______________________________________________
+>>> >> Chilli mailing list
+>>> >> Chilli at coova.org
+>>> >> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>>> >
+>>> >
+>>> >
+>>
+>>
+>>
+>
+_______________________________________________
+Chilli mailing list
+Chilli at coova.org
+http://lists.coova.org/cgi-bin/mailman/listinfo/chilli 
+
+
+From adam at freerunr.com  Wed Oct  6 14:22:41 2010
+From: adam at freerunr.com (Adam Hammond)
+Date: Wed, 6 Oct 2010 15:22:41 +0100
+Subject: [Chilli] Event-Timestamp
+In-Reply-To: <AANLkTikvh1FR+1GhMM_=Cak__UP7ur_sQFD0M9An1i3j@mail.gmail.com>
+References: <AANLkTikvh1FR+1GhMM_=Cak__UP7ur_sQFD0M9An1i3j@mail.gmail.com>
+Message-ID: <B13D6B77-EA92-4B41-ACBE-F1D6E7ADF123@freerunr.com>
+
+Hi,
+
+I don't know of a way to do this but I thought I'd reply as I think it  
+would be excellent to have this attribute in the future.
+
+Certainly if anyone does work out how to add it I would love to know.
+
+regards,
+Adam
+
+
+On 27 Sep 2010, at 14:12, Murray Long wrote:
+
+> Hi All,
+>
+> Does anyone know if CoovaChilli supports the Event-Timestamp attribute
+> as specified in radius extensions?
+> If so how does one enable it?
+>
+> Many Thanks,
+> Murray
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+
+From david at coova.com  Wed Oct  6 15:47:54 2010
+From: david at coova.com (David Bird)
+Date: Wed, 06 Oct 2010 17:47:54 +0200
+Subject: [Chilli] Event-Timestamp
+In-Reply-To: <B13D6B77-EA92-4B41-ACBE-F1D6E7ADF123@freerunr.com>
+References: <AANLkTikvh1FR+1GhMM_=Cak__UP7ur_sQFD0M9An1i3j@mail.gmail.com>
+	<B13D6B77-EA92-4B41-ACBE-F1D6E7ADF123@freerunr.com>
+Message-ID: <1286380074.28202.262.camel@david-laptop>
+
+Pretty simple, really...
+
+Index: radius.c
+===================================================================
+--- radius.c	(revision 381)
++++ radius.c	(working copy)
+@@ -1579,6 +1579,10 @@
+ 		     RADIUS_VENDOR_CHILLISPOT,
+ 		     RADIUS_ATTR_CHILLISPOT_ACCT_VIEW_POINT, 
+ 		     v, 0, 0);
++
++      radius_addattr(this, pack, RADIUS_ATTR_EVENT_TIMESTAMP, 0, 0, 
++		     mainclock_rt(), NULL, 0); 
++      
+     }
+     break;
+
+
+On Wed, 2010-10-06 at 15:22 +0100, Adam Hammond wrote:
+> Hi,
+> 
+> I don't know of a way to do this but I thought I'd reply as I think it  
+> would be excellent to have this attribute in the future.
+> 
+> Certainly if anyone does work out how to add it I would love to know.
+> 
+> regards,
+> Adam
+> 
+> 
+> On 27 Sep 2010, at 14:12, Murray Long wrote:
+> 
+> > Hi All,
+> >
+> > Does anyone know if CoovaChilli supports the Event-Timestamp attribute
+> > as specified in radius extensions?
+> > If so how does one enable it?
+> >
+> > Many Thanks,
+> > Murray
+> > _______________________________________________
+> > Chilli mailing list
+> > Chilli at coova.org
+> > http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+> 
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+
+
+From lmercucci at rsit.com.br  Wed Oct  6 19:56:24 2010
+From: lmercucci at rsit.com.br (Luciano M. Mercucci)
+Date: Wed, 6 Oct 2010 16:56:24 -0300
+Subject: [Chilli] management interface
+Message-ID: <0c6b01cb6590$8f995dc0$aecc1940$@rsit.com.br>
+
+Gostaria de saber se o coova tem alguma interface de gerenciamento? 
+
+ 
+
+I wonder if the coova has some management interface?
+
+ 
+
+ 
+
+ 
+
+ 
+
+
+Descri??o: cid:image002.jpg at 01C939C4.31896170
+
+Luciano M. Mercucci
+Analista de Seguran?a 
+Redes Seguras                                             
+Cel.: (11) 9209-0275
+ <mailto:lmercucci at redesseguras.com.br> lmercucci at redesseguras.com.br
+ <http://www.redesseguras.com.br/> www.redesseguras.com.br
+
+ 
+
+ 
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20101006/a1262cab/attachment.htm>
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: not available
+Type: image/jpeg
+Size: 5551 bytes
+Desc: not available
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20101006/a1262cab/attachment.jpeg>
+
+From derekchilli at hssl.ie  Wed Oct  6 23:06:54 2010
+From: derekchilli at hssl.ie (Derek C)
+Date: Thu, 7 Oct 2010 00:06:54 +0100 (IST)
+Subject: [Chilli] Receiving customer DHCP hostname - how?
+In-Reply-To: <1281990965.4782.21.camel@david-laptop>
+References: <59357.149.5.32.250.1281946609.squirrel@www.rivertowermail.com> 
+	<55574.90.49.92.235.1281990637.squirrel@www.rivertowermail.com>
+	<1281990965.4782.21.camel@david-laptop>
+Message-ID: <34857.172.16.15.251.1286406414.squirrel@www.rivertowermail.com>
+
+Hi David & All,
+
+Do you have any links to docs on JRadius?  I'm a Java programmer so I
+should be able to work with JRadius (Just downloaded it into a spare x86
+server along with a source install with JRADIUS support).
+
+Thanks for any information
+
+Derek
+
+On Mon, August 16, 2010 9:36 pm, David Bird wrote:
+> Personally, I use JRadius for virtually all my RADIUS logic and data
+> access layer. In JRadius, it's easy... but, you'll have to consult your
+> language of choice for details on how you can get that value and save to
+> your database.
+>
+>
+> On Mon, 2010-08-16 at 21:30 +0100, Derek C wrote:
+>
+>> Hi all,
+>>
+>>
+>> It looks like I need to trap the "ChilliSpot-DHCP-Hostname" Coovachilli
+>>  radius "attribute" in freeradius somehow (all the radius attributes
+>> are listed here:
+>> http://dev.coova.org/svn/coova-chilli/doc/dictionary.chillispot).
+>>
+>>
+>> Does anyone know how to configure freeradius to catch this "attribute"
+>> and record it in the database (I'm not even sure if this would go into
+>> the radacct table or another table!)
+>>
+>> thanks for any help!
+>>
+>> Derek
+>>
+>>
+>>
+>> On Mon, August 16, 2010 9:16 am, Derek C wrote:
+>>
+>>>
+>>
+>>> Hi all,
+>>>
+>>>
+>>>
+>>> Does anyone know how to retrieve and store a client computer's
+>>> DHCP hostname when using macauth with freeradius and Coova Chilli?
+>>>
+>>>
+>>>
+>>> thanks for any information
+>>>
+>>> Derek
+>>>
+>>>
+>>>
+>>>
+>>> --
+>>> Derek C
+>>> In Ireland
+>>>
+>>>
+>>>
+>>> _______________________________________________
+>>> Chilli mailing list
+>>> Chilli at coova.org
+>>> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>>>
+>>>
+>>>
+>>
+>>
+>
+>
+>
+
+
+-- 
+Derek C
+In Ireland
+
+
+From m.simioni at gmail.com  Thu Oct  7 08:54:20 2010
+From: m.simioni at gmail.com (Marco Simioni)
+Date: Thu, 7 Oct 2010 10:54:20 +0200
+Subject: [Chilli] 100% cpu problem
+In-Reply-To: <CC0831F940784C33B19FE6E07D430E59@AlbertoDell>
+References: <AANLkTi=vfw-wOt5AdWzYiPVB_hWSri2Qd1yModDSeD1x@mail.gmail.com>
+	<1280214335.3366.10.camel@david-laptop>
+	<AANLkTin1zNacK-T6L4UdJr=OBkRBG31GcH2YNxfjatYh@mail.gmail.com>
+	<1280241577.2600.3.camel@david-laptop>
+	<AANLkTin5=AMMg=Ub5_nXawBvszYkrmSxHtrqP3i3K5ax@mail.gmail.com>
+	<AANLkTimV11CQ23HMQgWUFzYBT13fnt1cMRqMn2i=_DDQ@mail.gmail.com>
+	<CC0831F940784C33B19FE6E07D430E59@AlbertoDell>
+Message-ID: <AANLkTinVj=Z7VaT7XWA=-JHPoN0JTxyno1Q-tPOoH_jG@mail.gmail.com>
+
+Thank you alberto for your answer.
+
+I tried to debug another time with gdb, and i saw it was into the
+"rad_getnextattr" again.
+
+I'm now trying to look into the "rad_getnextattr()" function.
+
+I see there is a while loop, that could turn into potential endless
+loop: "while (offset < len)".
+
+I inserted some debug messages, let's see the next time it happens
+
+Then, i'll try your suggestions.
+
+Thank you.
+
+Regards,
+
+Marco
+
+2010/10/6 Alberto Bellettato <albesvs at yahoo.it>:
+> Have you tried to temporarily remove the "/etc/rc2.d/S20chilli radconfig"
+> script by your cron table? It could help isolating the problem.
+> Then have you enabled ssl or redir in your chilli config?
+>
+> ----- Original Message ----- From: "Marco Simioni" <m.simioni at gmail.com>
+> To: <chilli at coova.org>
+> Sent: Wednesday, October 06, 2010 11:26 AM
+> Subject: Re: [Chilli] 100% cpu problem
+>
+>
+> No news.
+>
+> Stil happened.
+>
+> I'm using latest SVN version.
+>
+> How can i investigate the problem ?
+>
+> 2010/9/23 Marco Simioni <m.simioni at gmail.com>:
+>>
+>> It happened again: i had 100% cpu after days of uptime.
+>>
+>> This time, i was able to identify the following:
+>>
+>> 1) Thanks to "sar" utility, i was able to localize the CPU usage
+>> between 09:45 and 10:05.
+>>
+>> 09:05:02 CPU %user %nice %system %iowait %steal %idle
+>> 09:45:02 all 0,00 0,00 0,04 4,26 0,00 95,70
+>> 09:55:02 all 2,51 0,00 0,08 3,47 0,00 93,94
+>> 10:05:02 all 98,32 0,00 1,68 0,00 0,00 0,00
+>>
+>> 2) In syslog, the messages i see are:
+>>
+>> Sep 23 09:51:10 izc coova-chilli[939]: chilli.c: 3402: DHCP addr
+>> released by MAC=90-84-0D-D2-00-2D IP=0.0.0.0
+>> Sep 23 09:51:11 izc coova-chilli[939]: chilli.c: 3248: New DHCP
+>> request from MAC=90-84-0D-D2-00-2D
+>> Sep 23 09:52:02 izc coova-chilli[939]: chilli.c: 3248: New DHCP
+>> request from MAC=00-0E-6A-7A-AB-9C
+>> Sep 23 09:52:02 izc coova-chilli[939]: chilli.c: 3209: Client
+>> MAC=00-0E-6A-7A-AB-9C assigned IP 10.1.0.73
+>> Sep 23 09:55:02 izc CRON[9452]: (root) CMD (command -v debian-sa1 >
+>> /dev/null && debian-sa1 1 1)
+>> Sep 23 10:00:03 izc CRON[9455]: (root) CMD (/etc/rc2.d/S20chilli
+>> radconfig)
+>> Sep 23 10:05:01 izc CRON[9461]: (root) CMD (command -v debian-sa1 >
+>> /dev/null && debian-sa1 1 1)
+>>
+>> 3) I tried to attach with "gdb" to the chilli process. Nothing
+>> happened. I didn't know what to do, so tried to make a step and i got
+>> the following:
+>>
+>> (gdb) step
+>> Single stepping until exit from function radius_getnextattr, wich has
+>> no line number information.
+>>
+>> than nothing else.
+>>
+>> 4) Tried to attach with "strace"
+>>
+>> root at izc:# strace -p 939
+>> Process 939 attached - interrupt to quit
+>>
+>> and nothing happened.
+>>
+>> Now i had to reboot to let customers surf.
+>>
+>> What can i do next time?
+>>
+>> The syslog "radconf" and the gdb message "radius_getnextattr" could
+>> point to something ?
+>>
+>> Keep in mind that the radius server is a proprietary one, it is not
+>> freeradius or something else.
+>>
+>> Is there something i can to the next time with gdb and/or strace ?
+>>
+>> Thank you again.
+>>
+>> 2010/7/27 David Bird <david at coova.com>:
+>>>
+>>> Wichert asked a good question; are you using SSL features of
+>>> CoovaChilli?
+>>>
+>>> For info on gdb, you can google for it, of course. Here is a quick howto
+>>> page:
+>>> http://www.freebsd.org/doc/en/books/developers-handbook/debugging.html
+>>>
+>>> For strace, use "strace -p <pid>" and you will see the system calls
+>>> being executed - if it is using 100%, there must be a runaway loop
+>>> occurring.
+>>>
+>>> David
+>>>
+>>> On Tue, 2010-07-27 at 09:20 +0200, Marco Simioni wrote:
+>>>>
+>>>> It happened 3 times in a month,
+>>>>
+>>>> not immediately but after some day of regular work.
+>>>>
+>>>> "top" command sayd chilli was consuming 100% CPU.
+>>>>
+>>>> customers reported that they could not get dhcp and then login page.
+>>>>
+>>>> i will try to use chilli_query when will happen again.
+>>>>
+>>>> how can i attach with gdb or strace? can you point me some
+>>>> documentation?
+>>>>
+>>>> i can run it in debug mode only in console mode, with -fd, or also as
+>>>> a service ?
+>>>>
+>>>> thank you i.a.
+>>>>
+>>>> regards,
+>>>>
+>>>> Marco
+>>>>
+>>>> 2010/7/27 David Bird <david at coova.com>:
+>>>> > How quickly does this start to happen? Immediately? After how long?
+>>>> >
+>>>> > Is chilli also not working during this time? Does chilli_query hang?
+>>>> >
+>>>> > Are you able to attach gdb or use strace to get more info?
+>>>> >
+>>>> > If able, you can try running in debug mode for additional log
+>>>> > information?
+>>>> >
+>>>> > Thanks,
+>>>> > David
+>>>> >
+>>>> >
+>>>> > On Tue, 2010-07-27 at 08:55 +0200, Marco Simioni wrote:
+>>>> >> Hi all, my customer is reporting a cpu problem.
+>>>> >>
+>>>> >> Chilli goes to consume all the processor, going to 100%.
+>>>> >>
+>>>> >> It is a brand new setup, bult on a VMWare ESXi Virtual Machine on HP
+>>>> >> >> ML115,
+>>>> >> 1.8GHz CPU allocated,
+>>>> >> 512MB RAM allocated,
+>>>> >> coova-chilli 1.2.2,
+>>>> >> Ubuntu 9.10 ( 2.6.31-14-server ).
+>>>> >>
+>>>> >> It's about three times it happens, solved it with a reboot.
+>>>> >>
+>>>> >> Very few clients, < 10.
+>>>> >>
+>>>> >> Suggestions ?
+>>>> >>
+>>>> >> How can i investigate and understand when it happens ?
+>>>> >>
+>>>> >> Thank i.a.
+>>>> >>
+>>>> >> Best regards,
+>>>> >>
+>>>> >> Marco
+>>>> >> _______________________________________________
+>>>> >> Chilli mailing list
+>>>> >> Chilli at coova.org
+>>>> >> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>>>> >
+>>>> >
+>>>> >
+>>>
+>>>
+>>>
+>>
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+
+From david at coova.com  Thu Oct  7 09:19:10 2010
+From: david at coova.com (David Bird)
+Date: Thu, 07 Oct 2010 11:19:10 +0200
+Subject: [Chilli] 100% cpu problem
+In-Reply-To: <AANLkTinVj=Z7VaT7XWA=-JHPoN0JTxyno1Q-tPOoH_jG@mail.gmail.com>
+References: <AANLkTi=vfw-wOt5AdWzYiPVB_hWSri2Qd1yModDSeD1x@mail.gmail.com>
+	<1280214335.3366.10.camel@david-laptop>
+	<AANLkTin1zNacK-T6L4UdJr=OBkRBG31GcH2YNxfjatYh@mail.gmail.com>
+	<1280241577.2600.3.camel@david-laptop>
+	<AANLkTin5=AMMg=Ub5_nXawBvszYkrmSxHtrqP3i3K5ax@mail.gmail.com>
+	<AANLkTimV11CQ23HMQgWUFzYBT13fnt1cMRqMn2i=_DDQ@mail.gmail.com>
+	<CC0831F940784C33B19FE6E07D430E59@AlbertoDell>
+	<AANLkTinVj=Z7VaT7XWA=-JHPoN0JTxyno1Q-tPOoH_jG@mail.gmail.com>
+Message-ID: <1286443150.28202.283.camel@david-laptop>
+
+In getnextattr offset should always increment, and both offset and len
+are unsigned. Though, to be safe (to protect against a bad radius
+packet), we could change:
+
+-    if (t->t == 0)
++    if (t->t == 0 || t->l < 2)
+       return -1;
+
+On Thu, 2010-10-07 at 10:54 +0200, Marco Simioni wrote:
+> Thank you alberto for your answer.
+> 
+> I tried to debug another time with gdb, and i saw it was into the
+> "rad_getnextattr" again.
+> 
+> I'm now trying to look into the "rad_getnextattr()" function.
+> 
+> I see there is a while loop, that could turn into potential endless
+> loop: "while (offset < len)".
+> 
+> I inserted some debug messages, let's see the next time it happens
+> 
+> Then, i'll try your suggestions.
+> 
+> Thank you.
+> 
+> Regards,
+> 
+> Marco
+> 
+> 2010/10/6 Alberto Bellettato <albesvs at yahoo.it>:
+> > Have you tried to temporarily remove the "/etc/rc2.d/S20chilli radconfig"
+> > script by your cron table? It could help isolating the problem.
+> > Then have you enabled ssl or redir in your chilli config?
+> >
+> > ----- Original Message ----- From: "Marco Simioni" <m.simioni at gmail.com>
+> > To: <chilli at coova.org>
+> > Sent: Wednesday, October 06, 2010 11:26 AM
+> > Subject: Re: [Chilli] 100% cpu problem
+> >
+> >
+> > No news.
+> >
+> > Stil happened.
+> >
+> > I'm using latest SVN version.
+> >
+> > How can i investigate the problem ?
+> >
+> > 2010/9/23 Marco Simioni <m.simioni at gmail.com>:
+> >>
+> >> It happened again: i had 100% cpu after days of uptime.
+> >>
+> >> This time, i was able to identify the following:
+> >>
+> >> 1) Thanks to "sar" utility, i was able to localize the CPU usage
+> >> between 09:45 and 10:05.
+> >>
+> >> 09:05:02 CPU %user %nice %system %iowait %steal %idle
+> >> 09:45:02 all 0,00 0,00 0,04 4,26 0,00 95,70
+> >> 09:55:02 all 2,51 0,00 0,08 3,47 0,00 93,94
+> >> 10:05:02 all 98,32 0,00 1,68 0,00 0,00 0,00
+> >>
+> >> 2) In syslog, the messages i see are:
+> >>
+> >> Sep 23 09:51:10 izc coova-chilli[939]: chilli.c: 3402: DHCP addr
+> >> released by MAC=90-84-0D-D2-00-2D IP=0.0.0.0
+> >> Sep 23 09:51:11 izc coova-chilli[939]: chilli.c: 3248: New DHCP
+> >> request from MAC=90-84-0D-D2-00-2D
+> >> Sep 23 09:52:02 izc coova-chilli[939]: chilli.c: 3248: New DHCP
+> >> request from MAC=00-0E-6A-7A-AB-9C
+> >> Sep 23 09:52:02 izc coova-chilli[939]: chilli.c: 3209: Client
+> >> MAC=00-0E-6A-7A-AB-9C assigned IP 10.1.0.73
+> >> Sep 23 09:55:02 izc CRON[9452]: (root) CMD (command -v debian-sa1 >
+> >> /dev/null && debian-sa1 1 1)
+> >> Sep 23 10:00:03 izc CRON[9455]: (root) CMD (/etc/rc2.d/S20chilli
+> >> radconfig)
+> >> Sep 23 10:05:01 izc CRON[9461]: (root) CMD (command -v debian-sa1 >
+> >> /dev/null && debian-sa1 1 1)
+> >>
+> >> 3) I tried to attach with "gdb" to the chilli process. Nothing
+> >> happened. I didn't know what to do, so tried to make a step and i got
+> >> the following:
+> >>
+> >> (gdb) step
+> >> Single stepping until exit from function radius_getnextattr, wich has
+> >> no line number information.
+> >>
+> >> than nothing else.
+> >>
+> >> 4) Tried to attach with "strace"
+> >>
+> >> root at izc:# strace -p 939
+> >> Process 939 attached - interrupt to quit
+> >>
+> >> and nothing happened.
+> >>
+> >> Now i had to reboot to let customers surf.
+> >>
+> >> What can i do next time?
+> >>
+> >> The syslog "radconf" and the gdb message "radius_getnextattr" could
+> >> point to something ?
+> >>
+> >> Keep in mind that the radius server is a proprietary one, it is not
+> >> freeradius or something else.
+> >>
+> >> Is there something i can to the next time with gdb and/or strace ?
+> >>
+> >> Thank you again.
+> >>
+> >> 2010/7/27 David Bird <david at coova.com>:
+> >>>
+> >>> Wichert asked a good question; are you using SSL features of
+> >>> CoovaChilli?
+> >>>
+> >>> For info on gdb, you can google for it, of course. Here is a quick howto
+> >>> page:
+> >>> http://www.freebsd.org/doc/en/books/developers-handbook/debugging.html
+> >>>
+> >>> For strace, use "strace -p <pid>" and you will see the system calls
+> >>> being executed - if it is using 100%, there must be a runaway loop
+> >>> occurring.
+> >>>
+> >>> David
+> >>>
+> >>> On Tue, 2010-07-27 at 09:20 +0200, Marco Simioni wrote:
+> >>>>
+> >>>> It happened 3 times in a month,
+> >>>>
+> >>>> not immediately but after some day of regular work.
+> >>>>
+> >>>> "top" command sayd chilli was consuming 100% CPU.
+> >>>>
+> >>>> customers reported that they could not get dhcp and then login page.
+> >>>>
+> >>>> i will try to use chilli_query when will happen again.
+> >>>>
+> >>>> how can i attach with gdb or strace? can you point me some
+> >>>> documentation?
+> >>>>
+> >>>> i can run it in debug mode only in console mode, with -fd, or also as
+> >>>> a service ?
+> >>>>
+> >>>> thank you i.a.
+> >>>>
+> >>>> regards,
+> >>>>
+> >>>> Marco
+> >>>>
+> >>>> 2010/7/27 David Bird <david at coova.com>:
+> >>>> > How quickly does this start to happen? Immediately? After how long?
+> >>>> >
+> >>>> > Is chilli also not working during this time? Does chilli_query hang?
+> >>>> >
+> >>>> > Are you able to attach gdb or use strace to get more info?
+> >>>> >
+> >>>> > If able, you can try running in debug mode for additional log
+> >>>> > information?
+> >>>> >
+> >>>> > Thanks,
+> >>>> > David
+> >>>> >
+> >>>> >
+> >>>> > On Tue, 2010-07-27 at 08:55 +0200, Marco Simioni wrote:
+> >>>> >> Hi all, my customer is reporting a cpu problem.
+> >>>> >>
+> >>>> >> Chilli goes to consume all the processor, going to 100%.
+> >>>> >>
+> >>>> >> It is a brand new setup, bult on a VMWare ESXi Virtual Machine on HP
+> >>>> >> >> ML115,
+> >>>> >> 1.8GHz CPU allocated,
+> >>>> >> 512MB RAM allocated,
+> >>>> >> coova-chilli 1.2.2,
+> >>>> >> Ubuntu 9.10 ( 2.6.31-14-server ).
+> >>>> >>
+> >>>> >> It's about three times it happens, solved it with a reboot.
+> >>>> >>
+> >>>> >> Very few clients, < 10.
+> >>>> >>
+> >>>> >> Suggestions ?
+> >>>> >>
+> >>>> >> How can i investigate and understand when it happens ?
+> >>>> >>
+> >>>> >> Thank i.a.
+> >>>> >>
+> >>>> >> Best regards,
+> >>>> >>
+> >>>> >> Marco
+> >>>> >> _______________________________________________
+> >>>> >> Chilli mailing list
+> >>>> >> Chilli at coova.org
+> >>>> >> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+> >>>> >
+> >>>> >
+> >>>> >
+> >>>
+> >>>
+> >>>
+> >>
+> > _______________________________________________
+> > Chilli mailing list
+> > Chilli at coova.org
+> > http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+> > _______________________________________________
+> > Chilli mailing list
+> > Chilli at coova.org
+> > http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+> >
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+
+
+From m.simioni at gmail.com  Thu Oct  7 09:35:11 2010
+From: m.simioni at gmail.com (Marco Simioni)
+Date: Thu, 7 Oct 2010 11:35:11 +0200
+Subject: [Chilli] 100% cpu problem
+In-Reply-To: <1286443150.28202.283.camel@david-laptop>
+References: <AANLkTi=vfw-wOt5AdWzYiPVB_hWSri2Qd1yModDSeD1x@mail.gmail.com>
+	<1280214335.3366.10.camel@david-laptop>
+	<AANLkTin1zNacK-T6L4UdJr=OBkRBG31GcH2YNxfjatYh@mail.gmail.com>
+	<1280241577.2600.3.camel@david-laptop>
+	<AANLkTin5=AMMg=Ub5_nXawBvszYkrmSxHtrqP3i3K5ax@mail.gmail.com>
+	<AANLkTimV11CQ23HMQgWUFzYBT13fnt1cMRqMn2i=_DDQ@mail.gmail.com>
+	<CC0831F940784C33B19FE6E07D430E59@AlbertoDell>
+	<AANLkTinVj=Z7VaT7XWA=-JHPoN0JTxyno1Q-tPOoH_jG@mail.gmail.com>
+	<1286443150.28202.283.camel@david-laptop>
+Message-ID: <AANLkTinVZoQhSVXaarwbRu50RPOCaWQjoMnMb1hHq_sN@mail.gmail.com>
+
+I'll let you know.
+
+I printed to log both offset and len.
+
+Let's see what happens.
+
+Regards.
+
+2010/10/7 David Bird <david at coova.com>:
+> In getnextattr offset should always increment, and both offset and len
+> are unsigned. Though, to be safe (to protect against a bad radius
+> packet), we could change:
+>
+> - ? ?if (t->t == 0)
+> + ? ?if (t->t == 0 || t->l < 2)
+> ? ? ? return -1;
+>
+> On Thu, 2010-10-07 at 10:54 +0200, Marco Simioni wrote:
+>> Thank you alberto for your answer.
+>>
+>> I tried to debug another time with gdb, and i saw it was into the
+>> "rad_getnextattr" again.
+>>
+>> I'm now trying to look into the "rad_getnextattr()" function.
+>>
+>> I see there is a while loop, that could turn into potential endless
+>> loop: "while (offset < len)".
+>>
+>> I inserted some debug messages, let's see the next time it happens
+>>
+>> Then, i'll try your suggestions.
+>>
+>> Thank you.
+>>
+>> Regards,
+>>
+>> Marco
+>>
+>> 2010/10/6 Alberto Bellettato <albesvs at yahoo.it>:
+>> > Have you tried to temporarily remove the "/etc/rc2.d/S20chilli radconfig"
+>> > script by your cron table? It could help isolating the problem.
+>> > Then have you enabled ssl or redir in your chilli config?
+>> >
+>> > ----- Original Message ----- From: "Marco Simioni" <m.simioni at gmail.com>
+>> > To: <chilli at coova.org>
+>> > Sent: Wednesday, October 06, 2010 11:26 AM
+>> > Subject: Re: [Chilli] 100% cpu problem
+>> >
+>> >
+>> > No news.
+>> >
+>> > Stil happened.
+>> >
+>> > I'm using latest SVN version.
+>> >
+>> > How can i investigate the problem ?
+>> >
+>> > 2010/9/23 Marco Simioni <m.simioni at gmail.com>:
+>> >>
+>> >> It happened again: i had 100% cpu after days of uptime.
+>> >>
+>> >> This time, i was able to identify the following:
+>> >>
+>> >> 1) Thanks to "sar" utility, i was able to localize the CPU usage
+>> >> between 09:45 and 10:05.
+>> >>
+>> >> 09:05:02 CPU %user %nice %system %iowait %steal %idle
+>> >> 09:45:02 all 0,00 0,00 0,04 4,26 0,00 95,70
+>> >> 09:55:02 all 2,51 0,00 0,08 3,47 0,00 93,94
+>> >> 10:05:02 all 98,32 0,00 1,68 0,00 0,00 0,00
+>> >>
+>> >> 2) In syslog, the messages i see are:
+>> >>
+>> >> Sep 23 09:51:10 izc coova-chilli[939]: chilli.c: 3402: DHCP addr
+>> >> released by MAC=90-84-0D-D2-00-2D IP=0.0.0.0
+>> >> Sep 23 09:51:11 izc coova-chilli[939]: chilli.c: 3248: New DHCP
+>> >> request from MAC=90-84-0D-D2-00-2D
+>> >> Sep 23 09:52:02 izc coova-chilli[939]: chilli.c: 3248: New DHCP
+>> >> request from MAC=00-0E-6A-7A-AB-9C
+>> >> Sep 23 09:52:02 izc coova-chilli[939]: chilli.c: 3209: Client
+>> >> MAC=00-0E-6A-7A-AB-9C assigned IP 10.1.0.73
+>> >> Sep 23 09:55:02 izc CRON[9452]: (root) CMD (command -v debian-sa1 >
+>> >> /dev/null && debian-sa1 1 1)
+>> >> Sep 23 10:00:03 izc CRON[9455]: (root) CMD (/etc/rc2.d/S20chilli
+>> >> radconfig)
+>> >> Sep 23 10:05:01 izc CRON[9461]: (root) CMD (command -v debian-sa1 >
+>> >> /dev/null && debian-sa1 1 1)
+>> >>
+>> >> 3) I tried to attach with "gdb" to the chilli process. Nothing
+>> >> happened. I didn't know what to do, so tried to make a step and i got
+>> >> the following:
+>> >>
+>> >> (gdb) step
+>> >> Single stepping until exit from function radius_getnextattr, wich has
+>> >> no line number information.
+>> >>
+>> >> than nothing else.
+>> >>
+>> >> 4) Tried to attach with "strace"
+>> >>
+>> >> root at izc:# strace -p 939
+>> >> Process 939 attached - interrupt to quit
+>> >>
+>> >> and nothing happened.
+>> >>
+>> >> Now i had to reboot to let customers surf.
+>> >>
+>> >> What can i do next time?
+>> >>
+>> >> The syslog "radconf" and the gdb message "radius_getnextattr" could
+>> >> point to something ?
+>> >>
+>> >> Keep in mind that the radius server is a proprietary one, it is not
+>> >> freeradius or something else.
+>> >>
+>> >> Is there something i can to the next time with gdb and/or strace ?
+>> >>
+>> >> Thank you again.
+>> >>
+>> >> 2010/7/27 David Bird <david at coova.com>:
+>> >>>
+>> >>> Wichert asked a good question; are you using SSL features of
+>> >>> CoovaChilli?
+>> >>>
+>> >>> For info on gdb, you can google for it, of course. Here is a quick howto
+>> >>> page:
+>> >>> http://www.freebsd.org/doc/en/books/developers-handbook/debugging.html
+>> >>>
+>> >>> For strace, use "strace -p <pid>" and you will see the system calls
+>> >>> being executed - if it is using 100%, there must be a runaway loop
+>> >>> occurring.
+>> >>>
+>> >>> David
+>> >>>
+>> >>> On Tue, 2010-07-27 at 09:20 +0200, Marco Simioni wrote:
+>> >>>>
+>> >>>> It happened 3 times in a month,
+>> >>>>
+>> >>>> not immediately but after some day of regular work.
+>> >>>>
+>> >>>> "top" command sayd chilli was consuming 100% CPU.
+>> >>>>
+>> >>>> customers reported that they could not get dhcp and then login page.
+>> >>>>
+>> >>>> i will try to use chilli_query when will happen again.
+>> >>>>
+>> >>>> how can i attach with gdb or strace? can you point me some
+>> >>>> documentation?
+>> >>>>
+>> >>>> i can run it in debug mode only in console mode, with -fd, or also as
+>> >>>> a service ?
+>> >>>>
+>> >>>> thank you i.a.
+>> >>>>
+>> >>>> regards,
+>> >>>>
+>> >>>> Marco
+>> >>>>
+>> >>>> 2010/7/27 David Bird <david at coova.com>:
+>> >>>> > How quickly does this start to happen? Immediately? After how long?
+>> >>>> >
+>> >>>> > Is chilli also not working during this time? Does chilli_query hang?
+>> >>>> >
+>> >>>> > Are you able to attach gdb or use strace to get more info?
+>> >>>> >
+>> >>>> > If able, you can try running in debug mode for additional log
+>> >>>> > information?
+>> >>>> >
+>> >>>> > Thanks,
+>> >>>> > David
+>> >>>> >
+>> >>>> >
+>> >>>> > On Tue, 2010-07-27 at 08:55 +0200, Marco Simioni wrote:
+>> >>>> >> Hi all, my customer is reporting a cpu problem.
+>> >>>> >>
+>> >>>> >> Chilli goes to consume all the processor, going to 100%.
+>> >>>> >>
+>> >>>> >> It is a brand new setup, bult on a VMWare ESXi Virtual Machine on HP
+>> >>>> >> >> ML115,
+>> >>>> >> 1.8GHz CPU allocated,
+>> >>>> >> 512MB RAM allocated,
+>> >>>> >> coova-chilli 1.2.2,
+>> >>>> >> Ubuntu 9.10 ( 2.6.31-14-server ).
+>> >>>> >>
+>> >>>> >> It's about three times it happens, solved it with a reboot.
+>> >>>> >>
+>> >>>> >> Very few clients, < 10.
+>> >>>> >>
+>> >>>> >> Suggestions ?
+>> >>>> >>
+>> >>>> >> How can i investigate and understand when it happens ?
+>> >>>> >>
+>> >>>> >> Thank i.a.
+>> >>>> >>
+>> >>>> >> Best regards,
+>> >>>> >>
+>> >>>> >> Marco
+>> >>>> >> _______________________________________________
+>> >>>> >> Chilli mailing list
+>> >>>> >> Chilli at coova.org
+>> >>>> >> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>> >>>> >
+>> >>>> >
+>> >>>> >
+>> >>>
+>> >>>
+>> >>>
+>> >>
+>> > _______________________________________________
+>> > Chilli mailing list
+>> > Chilli at coova.org
+>> > http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>> > _______________________________________________
+>> > Chilli mailing list
+>> > Chilli at coova.org
+>> > http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>> >
+>> _______________________________________________
+>> Chilli mailing list
+>> Chilli at coova.org
+>> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+>
+>
+
+From david at coova.com  Thu Oct  7 15:48:49 2010
+From: david at coova.com (David Bird)
+Date: Thu, 07 Oct 2010 17:48:49 +0200
+Subject: [Chilli] 100% cpu problem
+In-Reply-To: <AANLkTinVZoQhSVXaarwbRu50RPOCaWQjoMnMb1hHq_sN@mail.gmail.com>
+References: <AANLkTi=vfw-wOt5AdWzYiPVB_hWSri2Qd1yModDSeD1x@mail.gmail.com>
+	<1280214335.3366.10.camel@david-laptop>
+	<AANLkTin1zNacK-T6L4UdJr=OBkRBG31GcH2YNxfjatYh@mail.gmail.com>
+	<1280241577.2600.3.camel@david-laptop>
+	<AANLkTin5=AMMg=Ub5_nXawBvszYkrmSxHtrqP3i3K5ax@mail.gmail.com>
+	<AANLkTimV11CQ23HMQgWUFzYBT13fnt1cMRqMn2i=_DDQ@mail.gmail.com>
+	<CC0831F940784C33B19FE6E07D430E59@AlbertoDell>
+	<AANLkTinVj=Z7VaT7XWA=-JHPoN0JTxyno1Q-tPOoH_jG@mail.gmail.com>
+	<1286443150.28202.283.camel@david-laptop>
+	<AANLkTinVZoQhSVXaarwbRu50RPOCaWQjoMnMb1hHq_sN@mail.gmail.com>
+Message-ID: <1286466529.7546.8.camel@david-laptop>
+
+I've also been fixing some issues related to DNS that could cause
+crashing and could be an issue if someone were, for example, tunneling
+traffic in DNS packets past the captive portal. See the subversion
+trunk. 
+
+On Thu, 2010-10-07 at 11:35 +0200, Marco Simioni wrote:
+> I'll let you know.
+> 
+> I printed to log both offset and len.
+> 
+> Let's see what happens.
+> 
+> Regards.
+> 
+> 2010/10/7 David Bird <david at coova.com>:
+> > In getnextattr offset should always increment, and both offset and len
+> > are unsigned. Though, to be safe (to protect against a bad radius
+> > packet), we could change:
+> >
+> > -    if (t->t == 0)
+> > +    if (t->t == 0 || t->l < 2)
+> >       return -1;
+> >
+> > On Thu, 2010-10-07 at 10:54 +0200, Marco Simioni wrote:
+> >> Thank you alberto for your answer.
+> >>
+> >> I tried to debug another time with gdb, and i saw it was into the
+> >> "rad_getnextattr" again.
+> >>
+> >> I'm now trying to look into the "rad_getnextattr()" function.
+> >>
+> >> I see there is a while loop, that could turn into potential endless
+> >> loop: "while (offset < len)".
+> >>
+> >> I inserted some debug messages, let's see the next time it happens
+> >>
+> >> Then, i'll try your suggestions.
+> >>
+> >> Thank you.
+> >>
+> >> Regards,
+> >>
+> >> Marco
+> >>
+> >> 2010/10/6 Alberto Bellettato <albesvs at yahoo.it>:
+> >> > Have you tried to temporarily remove the "/etc/rc2.d/S20chilli radconfig"
+> >> > script by your cron table? It could help isolating the problem.
+> >> > Then have you enabled ssl or redir in your chilli config?
+> >> >
+> >> > ----- Original Message ----- From: "Marco Simioni" <m.simioni at gmail.com>
+> >> > To: <chilli at coova.org>
+> >> > Sent: Wednesday, October 06, 2010 11:26 AM
+> >> > Subject: Re: [Chilli] 100% cpu problem
+> >> >
+> >> >
+> >> > No news.
+> >> >
+> >> > Stil happened.
+> >> >
+> >> > I'm using latest SVN version.
+> >> >
+> >> > How can i investigate the problem ?
+> >> >
+> >> > 2010/9/23 Marco Simioni <m.simioni at gmail.com>:
+> >> >>
+> >> >> It happened again: i had 100% cpu after days of uptime.
+> >> >>
+> >> >> This time, i was able to identify the following:
+> >> >>
+> >> >> 1) Thanks to "sar" utility, i was able to localize the CPU usage
+> >> >> between 09:45 and 10:05.
+> >> >>
+> >> >> 09:05:02 CPU %user %nice %system %iowait %steal %idle
+> >> >> 09:45:02 all 0,00 0,00 0,04 4,26 0,00 95,70
+> >> >> 09:55:02 all 2,51 0,00 0,08 3,47 0,00 93,94
+> >> >> 10:05:02 all 98,32 0,00 1,68 0,00 0,00 0,00
+> >> >>
+> >> >> 2) In syslog, the messages i see are:
+> >> >>
+> >> >> Sep 23 09:51:10 izc coova-chilli[939]: chilli.c: 3402: DHCP addr
+> >> >> released by MAC=90-84-0D-D2-00-2D IP=0.0.0.0
+> >> >> Sep 23 09:51:11 izc coova-chilli[939]: chilli.c: 3248: New DHCP
+> >> >> request from MAC=90-84-0D-D2-00-2D
+> >> >> Sep 23 09:52:02 izc coova-chilli[939]: chilli.c: 3248: New DHCP
+> >> >> request from MAC=00-0E-6A-7A-AB-9C
+> >> >> Sep 23 09:52:02 izc coova-chilli[939]: chilli.c: 3209: Client
+> >> >> MAC=00-0E-6A-7A-AB-9C assigned IP 10.1.0.73
+> >> >> Sep 23 09:55:02 izc CRON[9452]: (root) CMD (command -v debian-sa1 >
+> >> >> /dev/null && debian-sa1 1 1)
+> >> >> Sep 23 10:00:03 izc CRON[9455]: (root) CMD (/etc/rc2.d/S20chilli
+> >> >> radconfig)
+> >> >> Sep 23 10:05:01 izc CRON[9461]: (root) CMD (command -v debian-sa1 >
+> >> >> /dev/null && debian-sa1 1 1)
+> >> >>
+> >> >> 3) I tried to attach with "gdb" to the chilli process. Nothing
+> >> >> happened. I didn't know what to do, so tried to make a step and i got
+> >> >> the following:
+> >> >>
+> >> >> (gdb) step
+> >> >> Single stepping until exit from function radius_getnextattr, wich has
+> >> >> no line number information.
+> >> >>
+> >> >> than nothing else.
+> >> >>
+> >> >> 4) Tried to attach with "strace"
+> >> >>
+> >> >> root at izc:# strace -p 939
+> >> >> Process 939 attached - interrupt to quit
+> >> >>
+> >> >> and nothing happened.
+> >> >>
+> >> >> Now i had to reboot to let customers surf.
+> >> >>
+> >> >> What can i do next time?
+> >> >>
+> >> >> The syslog "radconf" and the gdb message "radius_getnextattr" could
+> >> >> point to something ?
+> >> >>
+> >> >> Keep in mind that the radius server is a proprietary one, it is not
+> >> >> freeradius or something else.
+> >> >>
+> >> >> Is there something i can to the next time with gdb and/or strace ?
+> >> >>
+> >> >> Thank you again.
+> >> >>
+> >> >> 2010/7/27 David Bird <david at coova.com>:
+> >> >>>
+> >> >>> Wichert asked a good question; are you using SSL features of
+> >> >>> CoovaChilli?
+> >> >>>
+> >> >>> For info on gdb, you can google for it, of course. Here is a quick howto
+> >> >>> page:
+> >> >>> http://www.freebsd.org/doc/en/books/developers-handbook/debugging.html
+> >> >>>
+> >> >>> For strace, use "strace -p <pid>" and you will see the system calls
+> >> >>> being executed - if it is using 100%, there must be a runaway loop
+> >> >>> occurring.
+> >> >>>
+> >> >>> David
+> >> >>>
+> >> >>> On Tue, 2010-07-27 at 09:20 +0200, Marco Simioni wrote:
+> >> >>>>
+> >> >>>> It happened 3 times in a month,
+> >> >>>>
+> >> >>>> not immediately but after some day of regular work.
+> >> >>>>
+> >> >>>> "top" command sayd chilli was consuming 100% CPU.
+> >> >>>>
+> >> >>>> customers reported that they could not get dhcp and then login page.
+> >> >>>>
+> >> >>>> i will try to use chilli_query when will happen again.
+> >> >>>>
+> >> >>>> how can i attach with gdb or strace? can you point me some
+> >> >>>> documentation?
+> >> >>>>
+> >> >>>> i can run it in debug mode only in console mode, with -fd, or also as
+> >> >>>> a service ?
+> >> >>>>
+> >> >>>> thank you i.a.
+> >> >>>>
+> >> >>>> regards,
+> >> >>>>
+> >> >>>> Marco
+> >> >>>>
+> >> >>>> 2010/7/27 David Bird <david at coova.com>:
+> >> >>>> > How quickly does this start to happen? Immediately? After how long?
+> >> >>>> >
+> >> >>>> > Is chilli also not working during this time? Does chilli_query hang?
+> >> >>>> >
+> >> >>>> > Are you able to attach gdb or use strace to get more info?
+> >> >>>> >
+> >> >>>> > If able, you can try running in debug mode for additional log
+> >> >>>> > information?
+> >> >>>> >
+> >> >>>> > Thanks,
+> >> >>>> > David
+> >> >>>> >
+> >> >>>> >
+> >> >>>> > On Tue, 2010-07-27 at 08:55 +0200, Marco Simioni wrote:
+> >> >>>> >> Hi all, my customer is reporting a cpu problem.
+> >> >>>> >>
+> >> >>>> >> Chilli goes to consume all the processor, going to 100%.
+> >> >>>> >>
+> >> >>>> >> It is a brand new setup, bult on a VMWare ESXi Virtual Machine on HP
+> >> >>>> >> >> ML115,
+> >> >>>> >> 1.8GHz CPU allocated,
+> >> >>>> >> 512MB RAM allocated,
+> >> >>>> >> coova-chilli 1.2.2,
+> >> >>>> >> Ubuntu 9.10 ( 2.6.31-14-server ).
+> >> >>>> >>
+> >> >>>> >> It's about three times it happens, solved it with a reboot.
+> >> >>>> >>
+> >> >>>> >> Very few clients, < 10.
+> >> >>>> >>
+> >> >>>> >> Suggestions ?
+> >> >>>> >>
+> >> >>>> >> How can i investigate and understand when it happens ?
+> >> >>>> >>
+> >> >>>> >> Thank i.a.
+> >> >>>> >>
+> >> >>>> >> Best regards,
+> >> >>>> >>
+> >> >>>> >> Marco
+> >> >>>> >> _______________________________________________
+> >> >>>> >> Chilli mailing list
+> >> >>>> >> Chilli at coova.org
+> >> >>>> >> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+> >> >>>> >
+> >> >>>> >
+> >> >>>> >
+> >> >>>
+> >> >>>
+> >> >>>
+> >> >>
+> >> > _______________________________________________
+> >> > Chilli mailing list
+> >> > Chilli at coova.org
+> >> > http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+> >> > _______________________________________________
+> >> > Chilli mailing list
+> >> > Chilli at coova.org
+> >> > http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+> >> >
+> >> _______________________________________________
+> >> Chilli mailing list
+> >> Chilli at coova.org
+> >> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+> >
+> >
+> >
+
+
+
+From me at gionn.net  Thu Oct  7 16:13:24 2010
+From: me at gionn.net (Giovanni Toraldo)
+Date: Thu, 7 Oct 2010 18:13:24 +0200
+Subject: [Chilli] 100% cpu problem
+In-Reply-To: <1286466529.7546.8.camel@david-laptop>
+References: <AANLkTi=vfw-wOt5AdWzYiPVB_hWSri2Qd1yModDSeD1x@mail.gmail.com>
+	<1280214335.3366.10.camel@david-laptop>
+	<AANLkTin1zNacK-T6L4UdJr=OBkRBG31GcH2YNxfjatYh@mail.gmail.com>
+	<1280241577.2600.3.camel@david-laptop>
+	<AANLkTin5=AMMg=Ub5_nXawBvszYkrmSxHtrqP3i3K5ax@mail.gmail.com>
+	<AANLkTimV11CQ23HMQgWUFzYBT13fnt1cMRqMn2i=_DDQ@mail.gmail.com>
+	<CC0831F940784C33B19FE6E07D430E59@AlbertoDell>
+	<AANLkTinVj=Z7VaT7XWA=-JHPoN0JTxyno1Q-tPOoH_jG@mail.gmail.com>
+	<1286443150.28202.283.camel@david-laptop>
+	<AANLkTinVZoQhSVXaarwbRu50RPOCaWQjoMnMb1hHq_sN@mail.gmail.com>
+	<1286466529.7546.8.camel@david-laptop>
+Message-ID: <AANLkTimr6DkSFqHgXHJmJODJ6TDRJ0Qo_=-XvkuyBmXV@mail.gmail.com>
+
+Hi,
+
+I am writing this to ley you know that I am facing the same issue.
+
+Unfortunately, I cannot give more informations than Marco provided:
+chilli_redir seems to hangs quiet rapidly, but however the coova
+service will get only some lag due to high loads generated by the
+hanging processes.
+
+My system is already on production, with an average of 10 users
+connected, with spikes of thousands.
+Before the lastest relase, I was never faced this issue.
+
+Hope I can help some way to fix this issue.
+
+Thanks.
+
+-- 
+Giovanni Toraldo
+http://gionn.net/
+
+From pzz at touk.pl  Thu Oct 14 15:17:36 2010
+From: pzz at touk.pl (=?utf-8?B?UGF3ZcWC?= Zuzelski)
+Date: Thu, 14 Oct 2010 17:17:36 +0200
+Subject: [Chilli] Unresolved symbols in libchilli.so.0.0.0
+Message-ID: <20101014151736.GB4612@davabel.touk.pl>
+
+Hello,
+
+libchilli.so.0.0.0 is not linked with libbstring, but it uses
+symbols from libbstring, so there are several unresolved symbols in
+libchilli.so.0.0.0:
+
+Unresolved symbols found in: /tmp/coovachilli-1.2.4-root-z/usr/lib/libchilli.so.0.0.0
+	bfromcstralloc
+	bdestroy
+	bconchar
+	ballocmin
+	bassigncstr
+	bassignformat
+	_options
+	blk2bstr
+	bcatblk
+	bconcat
+	bvcformata
+	btrimws
+	portable_snprintf
+	bcatcstr
+	bfromcstr
+
+It works, because chilli is linked with libbstring, though it is
+evil practice. I.e. libchilli.so should links with libbstring
+directly.
+
+There is a patch against SVN trunk, written by Przemys?aw Iskra
+<sparky at pld-linux.org>, that partially fixes linking.
+Please, consider applying it:
+http://cvs.pld-linux.org/cgi-bin/cvsweb.cgi/packages/coovachilli/coovachilli-link.patch?rev=1.1.2.1;content-type=text%2Fplain;only_with_tag=DEVEL
+
+Even after applying this patch there is still one unresolved symbol:
+_options. This symbol comes from chilli binary. Why on earth shared
+library needs a symbol from executable binary? Note that it means
+that no other binary would be able to link with libchilli unless it
+provides _options, so it makes splitting part of the code to shared
+library pointless.
+
+-- 
+Regards,
+Pawe? Zuzelski
+
+From mihamina at gulfsat.mg  Fri Oct 15 09:15:01 2010
+From: mihamina at gulfsat.mg (Mihamina Rakotomandimby)
+Date: Fri, 15 Oct 2010 12:15:01 +0300
+Subject: [Chilli] vlan and network configuration interpretation
+Message-ID: <20101015121501.0ae3c1e2@packard.rktmb.org>
+
+Manao ahoana, Hello, Bonjour,
+
+VLANs:
+On my WRT54GL unit running CoovaAP, when:
+    # cat /proc/switch/eth0/vlan/1/ports 
+    4	5t	
+    # cat /proc/switch/eth0/vlan/0/ports 
+    0	1	2	3	5t*	
+
+I try to read + interpret it:
+-- "4" is the "WAN" port ("WAN" in the case)
+-- "0" - "3" are the "LAN" ports ("1"-"4" in the case)
+-> What is the meaning of "5t" and "5t*"?
+
+Network:
+
+    root at ADEMAWIFI:~# ifconfig | grep "Link "
+    br0       Link encap:Ethernet  HWaddr 00:25:9C:BF:4C:F4  
+    eth0      Link encap:Ethernet  HWaddr 00:25:9C:BF:4C:F2  
+    eth1      Link encap:Ethernet  HWaddr 00:25:9C:BF:4C:F4  
+    lo        Link encap:Local Loopback  
+    tap0      Link encap:Ethernet  HWaddr 00:FF:F1:24:CF:0C  
+    vlan0     Link encap:Ethernet  HWaddr 00:25:9C:BF:4C:F2  
+    vlan1     Link encap:Ethernet  HWaddr 00:25:9C:BF:4C:F2  
+
+    root at ADEMAWIFI:~# brctl show
+    bridge name	bridge id         STP enabled   interfaces
+    br0         8000.00259cbf4cf4 no		eth1
+
+I guess that the Wireless is "eth1": How to be sure?
+
+"tap0" is a virtual interface created by Chilli.
+
+Note:
+-- when reading http://wiki.openwrt.org/doc/uci and trying to
+issue "uci -P/var/state show network.wan", I get "-ash: uci: not
+found". I think that is because "uci" has been introduced after the
+release of my version.
+-- Please forgive my Cross-Post. :-)
+
+Misaotra, Thanks, Merci.
+
+
+-- 
+
+       Architecte Informatique chez Blueline/Gulfsat:
+    Administration Systeme, Recherche & Developpement
+                                    +261 34 56 000 19
+
+From mihamina at gulfsat.mg  Fri Oct 15 11:40:28 2010
+From: mihamina at gulfsat.mg (Mihamina Rakotomandimby)
+Date: Fri, 15 Oct 2010 14:40:28 +0300
+Subject: [Chilli] management interface
+In-Reply-To: <0c6b01cb6590$8f995dc0$aecc1940$@rsit.com.br>
+References: <0c6b01cb6590$8f995dc0$aecc1940$@rsit.com.br>
+Message-ID: <20101015144028.63d655e8@packard.rktmb.org>
+
+> lmercucci at rsit.com.br :
+>I wonder if the coova has some management interface?
+
+It has.
+At least, the CoovaAP has.
+
+-- 
+
+       Architecte Informatique chez Blueline/Gulfsat:
+    Administration Systeme, Recherche & Developpement
+                                    +261 34 56 000 19
+
+From mihamina at gulfsat.mg  Fri Oct 15 13:01:19 2010
+From: mihamina at gulfsat.mg (Mihamina Rakotomandimby)
+Date: Fri, 15 Oct 2010 16:01:19 +0300
+Subject: [Chilli] what loss if using a recent openWRT
+Message-ID: <20101015160119.248148d2@packard.rktmb.org>
+
+Manao ahoana, Hello, Bonjour,
+
+Given the CoovaAP is based on an old version of openWRT, I would like
+to install a more recent openWRT firmware
+(http://downloads.openwrt.org/snapshots/trunk/brcm-2.4/openwrt-wrt54g-squashfs.bin)
+and then:
+- install 2.6 kernel 
+- install chilli
+
+What would be the traps?
+Any recommandations?
+
+Misaotra, Thanks, Merci.
+
+
+-- 
+
+       Architecte Informatique chez Blueline/Gulfsat:
+    Administration Systeme, Recherche & Developpement
+                                    +261 34 56 000 19
+
+From caciano at gmail.com  Fri Oct 15 13:12:21 2010
+From: caciano at gmail.com (Caciano Machado)
+Date: Fri, 15 Oct 2010 10:12:21 -0300
+Subject: [Chilli] 100% cpu problem
+In-Reply-To: <AANLkTimr6DkSFqHgXHJmJODJ6TDRJ0Qo_=-XvkuyBmXV@mail.gmail.com>
+References: <AANLkTi=vfw-wOt5AdWzYiPVB_hWSri2Qd1yModDSeD1x@mail.gmail.com>
+	<1280214335.3366.10.camel@david-laptop>
+	<AANLkTin1zNacK-T6L4UdJr=OBkRBG31GcH2YNxfjatYh@mail.gmail.com>
+	<1280241577.2600.3.camel@david-laptop>
+	<AANLkTin5=AMMg=Ub5_nXawBvszYkrmSxHtrqP3i3K5ax@mail.gmail.com>
+	<AANLkTimV11CQ23HMQgWUFzYBT13fnt1cMRqMn2i=_DDQ@mail.gmail.com>
+	<CC0831F940784C33B19FE6E07D430E59@AlbertoDell>
+	<AANLkTinVj=Z7VaT7XWA=-JHPoN0JTxyno1Q-tPOoH_jG@mail.gmail.com>
+	<1286443150.28202.283.camel@david-laptop>
+	<AANLkTinVZoQhSVXaarwbRu50RPOCaWQjoMnMb1hHq_sN@mail.gmail.com>
+	<1286466529.7546.8.camel@david-laptop>
+	<AANLkTimr6DkSFqHgXHJmJODJ6TDRJ0Qo_=-XvkuyBmXV@mail.gmail.com>
+Message-ID: <AANLkTimT9hRZgbeb_QyTxs-Rb9yw_7pNrtK2EQMpa8JM@mail.gmail.com>
+
+Hi,
+
+Has anyone tried run coova chilli with gprof to figure out which function is
+eating cpu?
+
+Cheers
+
+On Thu, Oct 7, 2010 at 1:13 PM, Giovanni Toraldo <me at gionn.net> wrote:
+
+> Hi,
+>
+> I am writing this to ley you know that I am facing the same issue.
+>
+> Unfortunately, I cannot give more informations than Marco provided:
+> chilli_redir seems to hangs quiet rapidly, but however the coova
+> service will get only some lag due to high loads generated by the
+> hanging processes.
+>
+> My system is already on production, with an average of 10 users
+> connected, with spikes of thousands.
+> Before the lastest relase, I was never faced this issue.
+>
+> Hope I can help some way to fix this issue.
+>
+> Thanks.
+>
+> --
+> Giovanni Toraldo
+> http://gionn.net/
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20101015/c83caa22/attachment.htm>
+
+From m.simioni at gmail.com  Tue Oct 19 17:10:50 2010
+From: m.simioni at gmail.com (Marco Simioni)
+Date: Tue, 19 Oct 2010 19:10:50 +0200
+Subject: [Chilli] 100% cpu problem
+In-Reply-To: <AANLkTimT9hRZgbeb_QyTxs-Rb9yw_7pNrtK2EQMpa8JM@mail.gmail.com>
+References: <AANLkTi=vfw-wOt5AdWzYiPVB_hWSri2Qd1yModDSeD1x@mail.gmail.com>
+	<1280214335.3366.10.camel@david-laptop>
+	<AANLkTin1zNacK-T6L4UdJr=OBkRBG31GcH2YNxfjatYh@mail.gmail.com>
+	<1280241577.2600.3.camel@david-laptop>
+	<AANLkTin5=AMMg=Ub5_nXawBvszYkrmSxHtrqP3i3K5ax@mail.gmail.com>
+	<AANLkTimV11CQ23HMQgWUFzYBT13fnt1cMRqMn2i=_DDQ@mail.gmail.com>
+	<CC0831F940784C33B19FE6E07D430E59@AlbertoDell>
+	<AANLkTinVj=Z7VaT7XWA=-JHPoN0JTxyno1Q-tPOoH_jG@mail.gmail.com>
+	<1286443150.28202.283.camel@david-laptop>
+	<AANLkTinVZoQhSVXaarwbRu50RPOCaWQjoMnMb1hHq_sN@mail.gmail.com>
+	<1286466529.7546.8.camel@david-laptop>
+	<AANLkTimr6DkSFqHgXHJmJODJ6TDRJ0Qo_=-XvkuyBmXV@mail.gmail.com>
+	<AANLkTimT9hRZgbeb_QyTxs-Rb9yw_7pNrtK2EQMpa8JM@mail.gmail.com>
+Message-ID: <AANLkTi=FC9DnqDDD=snVoZW734ktPACVQUjGYHhsNNb3@mail.gmail.com>
+
+I have some news.
+
+It happened again, but this time i had my debug messages inserted into
+rad_getattr, and here what i see into debug log:
+
+Oct 17 23:27:33 izc coova-chilli[955]: chilli.c: 3142: Received RADIUS response
+Oct 17 23:27:33 izc coova-chilli[955]: chilli.c: 3164: Received
+Access-Reject from radius server
+Oct 17 23:27:33 izc coova-chilli[955]: radius.c: 805: radius_getnextattr
+Oct 17 23:27:33 izc coova-chilli[955]: radius.c: 808: offset=0, len=39
+Oct 17 23:27:33 izc coova-chilli[955]: radius.c: 808: offset=21, len=39
+Oct 17 23:27:33 izc coova-chilli[955]: radius.c: 805: radius_getnextattr
+Oct 17 23:27:33 izc coova-chilli[955]: radius.c: 808: offset=0, len=39
+Oct 17 23:27:33 izc coova-chilli[955]: radius.c: 808: offset=21, len=39
+Oct 17 23:27:33 izc coova-chilli[955]: radius.c: 805: radius_getnextattr
+Oct 17 23:27:33 izc coova-chilli[955]: radius.c: 808: offset=0, len=39
+Oct 17 23:27:33 izc coova-chilli[955]: radius.c: 808: offset=21, len=39
+Oct 17 23:27:33 izc coova-chilli[955]: radius.c: 805: radius_getnextattr
+Oct 17 23:27:33 izc coova-chilli[955]: radius.c: 808: offset=0, len=39
+Oct 17 23:27:33 izc coova-chilli[955]: radius.c: 808: offset=21, len=39
+
+So it seems that i received a radius malformed packet, and chilli goes
+into an infinite loop  calling "radius_getnextattr".
+
+The debug messages are displayed this way (please note log_dbg() calls):
+
+int
+radius_getnextattr(struct radius_packet_t *pack, struct radius_attr_t **attr,
+	       uint8_t type, uint32_t vendor_id, uint8_t vendor_type,
+	       int instance, size_t *roffset) {
+  struct radius_attr_t *t;
+  size_t len = ntohs(pack->length) - RADIUS_HDRSIZE;
+  size_t offset = *roffset;
+  int count = 0;
+
+  /*
+  if (0) {
+    printf("radius_getattr payload(len=%d,off=%d) %.2x %.2x %.2x %.2x\n",
+	   len, offset, pack->payload[offset], pack->payload[offset+1],
+	   pack->payload[offset+2], pack->payload[offset+3]);
+  }
+  */
+
+  log_dbg("radius_getnextattr");
+
+  while (offset < len) {
+    log_dbg("offset=%d, len=%d", offset, len);
+
+    t = (struct radius_attr_t *)(&pack->payload[offset]);
+
+    /*
+    if (0) {
+      printf("radius_getattr %d %d %d %.2x %.2x \n", t->t, t->l,
+	     ntohl(t->v.vv.i), (int) t->v.vv.t, (int) t->v.vv.l);
+    }
+    */
+
+    offset +=  t->l;
+
+    if (t->t == 0)
+      return -1;
+
+    if (t->t != type)
+      continue;
+
+    if (t->t == RADIUS_ATTR_VENDOR_SPECIFIC && vendor_id &&
+	(ntohl(t->v.vv.i) != vendor_id || t->v.vv.t != vendor_type))
+      continue;
+
+    if (count == instance) {
+
+      if (type == RADIUS_ATTR_VENDOR_SPECIFIC && vendor_id)
+	*attr = (struct radius_attr_t *) &t->v.vv.t;
+      else
+	*attr = t;
+
+      /*
+      if (0) printf("Found %.*s\n", (*attr)->l - 2, (char *)(*attr)->v.t);
+      */
+
+      *roffset = offset;
+      return 0;
+    }
+    else {
+      count++;
+    }
+  }
+
+  return -1; /* Not found */
+}
+
+
+So, it is not the "while (offset < len) {" that is going into a loop,
+but somebody calling the radius_getnextattr() routine.
+
+For example, it is called several times into chilli.c inside while
+loops, like this:
+
+Line 2860:
+
+    while (!radius_getnextattr(pack, &attr, RADIUS_ATTR_VENDOR_SPECIFIC,
+			       RADIUS_VENDOR_CHILLISPOT, RADIUS_ATTR_CHILLISPOT_CONFIG,
+			       0, &offset)) {
+
+Line 2895:
+
+    while (!radius_getnextattr(pack, &attr, RADIUS_ATTR_VENDOR_SPECIFIC,
+			       RADIUS_VENDOR_WISPR, RADIUS_ATTR_WISPR_REDIRECTION_URL,
+			       0, &offset)) {
+
+Line 3026:
+
+	while (!radius_getnextattr(pack, &attr,
+				   RADIUS_ATTR_VENDOR_SPECIFIC,
+				   RADIUS_VENDOR_CHILLISPOT,
+				   RADIUS_ATTR_CHILLISPOT_CONFIG,
+				   0, &offset));
+
+
+I tried inserting further debug messages onto these lines to see what
+is the while loop that ends to an infinite loop.
+
+Suggestions ?
+
+Regards,
+
+Marco
+
+
+2010/10/15 Caciano Machado <caciano at gmail.com>:
+> Hi,
+>
+> Has anyone tried run coova chilli with gprof to figure out which function is
+> eating cpu?
+>
+> Cheers
+>
+> On Thu, Oct 7, 2010 at 1:13 PM, Giovanni Toraldo <me at gionn.net> wrote:
+>>
+>> Hi,
+>>
+>> I am writing this to ley you know that I am facing the same issue.
+>>
+>> Unfortunately, I cannot give more informations than Marco provided:
+>> chilli_redir seems to hangs quiet rapidly, but however the coova
+>> service will get only some lag due to high loads generated by the
+>> hanging processes.
+>>
+>> My system is already on production, with an average of 10 users
+>> connected, with spikes of thousands.
+>> Before the lastest relase, I was never faced this issue.
+>>
+>> Hope I can help some way to fix this issue.
+>>
+>> Thanks.
+>>
+>> --
+>> Giovanni Toraldo
+>> http://gionn.net/
+>> _______________________________________________
+>> Chilli mailing list
+>> Chilli at coova.org
+>> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+>
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+>
+
+From david at coova.com  Wed Oct 20 06:33:50 2010
+From: david at coova.com (David Bird)
+Date: Wed, 20 Oct 2010 08:33:50 +0200
+Subject: [Chilli] what loss if using a recent openWRT
+In-Reply-To: <20101015160119.248148d2@packard.rktmb.org>
+References: <20101015160119.248148d2@packard.rktmb.org>
+Message-ID: <1287556430.3682.117.camel@david-laptop>
+
+No traps... CoovaChilli should build pretty easily for any OpenWrt
+distro. 
+
+On Fri, 2010-10-15 at 16:01 +0300, Mihamina Rakotomandimby wrote:
+> Manao ahoana, Hello, Bonjour,
+> 
+> Given the CoovaAP is based on an old version of openWRT, I would like
+> to install a more recent openWRT firmware
+> (http://downloads.openwrt.org/snapshots/trunk/brcm-2.4/openwrt-wrt54g-squashfs.bin)
+> and then:
+> - install 2.6 kernel 
+> - install chilli
+> 
+> What would be the traps?
+> Any recommandations?
+> 
+> Misaotra, Thanks, Merci.
+> 
+> 
+
+
+
+From murray at skyrove.com  Wed Oct 20 12:45:02 2010
+From: murray at skyrove.com (Murray Long)
+Date: Wed, 20 Oct 2010 14:45:02 +0200
+Subject: [Chilli] User Password not sent in accounting Stop packet
+Message-ID: <AANLkTi=vK_+n=uDwpFk5Mb_2j0PeqB_fC5kdgCbLOxm5@mail.gmail.com>
+
+Hi everyone,
+
+I'm attempting a WISPr 2.0 logoff from my coova chilli client (version
+1.2.3-rc1), and have found that the user password specified in the
+WISPR request is not inserted into the radius accounting Stop packet
+generated by chilli.
+
+Is this a bug? or expected behavior for chilli?
+
+Does anyone have a fix for this?
+
+Many Thanks,
+Murray Long
+
+From wichert at wiggy.net  Wed Oct 20 12:54:17 2010
+From: wichert at wiggy.net (Wichert Akkerman)
+Date: Wed, 20 Oct 2010 14:54:17 +0200
+Subject: [Chilli] User Password not sent in accounting Stop packet
+In-Reply-To: <AANLkTi=vK_+n=uDwpFk5Mb_2j0PeqB_fC5kdgCbLOxm5@mail.gmail.com>
+References: <AANLkTi=vK_+n=uDwpFk5Mb_2j0PeqB_fC5kdgCbLOxm5@mail.gmail.com>
+Message-ID: <4CBEE679.7020007@wiggy.net>
+
+On 10/20/10 14:45 , Murray Long wrote:
+> Hi everyone,
+>
+> I'm attempting a WISPr 2.0 logoff from my coova chilli client (version
+> 1.2.3-rc1), and have found that the user password specified in the
+> WISPR request is not inserted into the radius accounting Stop packet
+> generated by chilli.
+>
+> Is this a bug? or expected behavior for chilli?
+
+Passwords are never present in accounting packets, only in access 
+request related packets.
+
+Wichert.
+
+From david at coova.com  Wed Oct 20 15:28:55 2010
+From: david at coova.com (David Bird)
+Date: Wed, 20 Oct 2010 17:28:55 +0200
+Subject: [Chilli] CoovaChilli 1.2.5
+Message-ID: <1287588535.3682.159.camel@david-laptop>
+
+== ChangeLog (CoovaChilli-v1.2.5 svn revision 394) ==
+
+* Removed CoovaChilli-Version from Access-Accept/Challenge/Reject to EAP
+NAS
+* Fix to not update chilli session from a IPC request when already
+autheticated
+* Fix for non-null terminates username when proxying EAP
+* Added options ''--macup'' and ''--macdown'' defining scripts to run
+during DHCP up (assignment) and down (release)
+* Added option flag ''--redir'' to turn on redir daemon when built with
+''--enable-chilliredir''
+* Release DHCP leave on a DHCP-Decline
+* Added length checks in more places to verify proper packets
+* Reviewed use of all string functions, now including snprintf.c in
+bstring
+* Allow for the parsing of HTTP Proxy requests for clients configured
+with proxy
+* Compile time option ''--enable-dnslog'' to allow for run-time option
+''--dnslog'' to log all DNS requests
+* Added compile time option ''--enable-ipwhitelist'' and runtime option
+--ipwhitelist to define a binary IP white list file (thanks to FON)
+* Added compile time support for SSDP Multicast with ''--enable-ssdp''
+thanks to Colin McFarlane 
+* Consolidated DNS parsing functions into one
+
+
+
+From pzz at touk.pl  Tue Oct 26 14:50:30 2010
+From: pzz at touk.pl (=?utf-8?B?UGF3ZcWC?= Zuzelski)
+Date: Tue, 26 Oct 2010 16:50:30 +0200
+Subject: [Chilli] Simultaneous-Use := 1 and ghost sessions
+Message-ID: <20101026145030.GE4869@davabel.touk.pl>
+
+Hi all,
+
+I'm setting up hotspot using multiple coova-chilli instances and
+remote freeradius.
+
+I would like to disallow multiple sessions for single user. I would
+also like to set account expiration time. I use:
+
+DEFAULT Simultaneous-Use := 1
+          Fall-Through = 1
+
+in users file in radius, and Access-Valid attribute in radcheck
+SQL table.
+
+It works. chilli terminates sessions at Access-Valid time.
+
+My problem is that logout notifications are unreliable. If radius is
+unavaliable at Access-Valid time it misses the message from chilli.
+As a results, system is unconsistent state - chilli thinks that
+users is not logged in, radius thinks it is logged in. Even if I
+extend account validity, I won't be able to login again, because
+radius won't allow the second session.
+
+Thanks in advance for any hints.
+
+-- 
+Regards,
+Pawe? Zuzelski
+
+From adamanov at gmail.com  Tue Oct 26 14:59:11 2010
+From: adamanov at gmail.com (=?UTF-8?B?0JLRj9GH0LXRgdC70LDQsiDQkNC00LDQvNCw0L3QvtCy?=)
+Date: Tue, 26 Oct 2010 17:59:11 +0300
+Subject: [Chilli] Simultaneous-Use := 1 and ghost sessions
+In-Reply-To: <20101026145030.GE4869@davabel.touk.pl>
+References: <20101026145030.GE4869@davabel.touk.pl>
+Message-ID: <AANLkTimS35g_TEmmtX1-v6WsyVoMxOF4ex5e3cdPNdK_@mail.gmail.com>
+
+As an option to use idle-timeout.
+
+2010/10/26 Pawe? Zuzelski <pzz at touk.pl>
+
+> Hi all,
+>
+> I'm setting up hotspot using multiple coova-chilli instances and
+> remote freeradius.
+>
+> I would like to disallow multiple sessions for single user. I would
+> also like to set account expiration time. I use:
+>
+> DEFAULT Simultaneous-Use := 1
+>          Fall-Through = 1
+>
+> in users file in radius, and Access-Valid attribute in radcheck
+> SQL table.
+>
+> It works. chilli terminates sessions at Access-Valid time.
+>
+> My problem is that logout notifications are unreliable. If radius is
+> unavaliable at Access-Valid time it misses the message from chilli.
+> As a results, system is unconsistent state - chilli thinks that
+> users is not logged in, radius thinks it is logged in. Even if I
+> extend account validity, I won't be able to login again, because
+> radius won't allow the second session.
+>
+> Thanks in advance for any hints.
+>
+> --
+> Regards,
+> Pawe? Zuzelski
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+
+
+
+-- 
+__________________________
+Adamanov Vyacheslav
+87500, Ukraine, Mariupol,
+st. Apatova 136?
+mob: +38 (067) 621 32 61
+email: adamanov at gmail.com
+www: http://hl.ua
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20101026/6bb03606/attachment.htm>
+
+From pzz at touk.pl  Tue Oct 26 14:59:03 2010
+From: pzz at touk.pl (=?utf-8?B?UGF3ZcWC?= Zuzelski)
+Date: Tue, 26 Oct 2010 16:59:03 +0200
+Subject: [Chilli] Simultaneous-Use := 1 and ghost sessions
+In-Reply-To: <AANLkTimS35g_TEmmtX1-v6WsyVoMxOF4ex5e3cdPNdK_@mail.gmail.com>
+References: <20101026145030.GE4869@davabel.touk.pl>
+	<AANLkTimS35g_TEmmtX1-v6WsyVoMxOF4ex5e3cdPNdK_@mail.gmail.com>
+Message-ID: <20101026145903.GF4869@davabel.touk.pl>
+
+On Tue, 26 Oct 2010, ???????? ???????? wrote:
+
+> As an option to use idle-timeout.
+
+I use idle-timeout as well, but idle-timeout is also hadled by
+chilli, so it is vulnerable to the same issue.
+
+-- 
+Regards,
+Pawe? Zuzelski
+
+From murray at skyrove.com  Tue Oct 26 13:14:17 2010
+From: murray at skyrove.com (Murray Long)
+Date: Tue, 26 Oct 2010 15:14:17 +0200
+Subject: [Chilli] Chilli losing username, User-Name = "\000\000"
+Message-ID: <AANLkTi=0WzCGG8tWhPzKLd5yXDk5m=-v3SUfbR4nQU_3@mail.gmail.com>
+
+Hi all,
+
+I've stumbled onto an intermittent problem with our chilli clients
+(version 1.2.3-rc1).
+It seems in some sessions chilli loses the Username associated with
+the session and sends User-Name = "\000\000" instead.
+
+Authorization and accounting start are correct, however any Interim
+update, and accounting stop packets  have this strange value for the
+username.
+
+The are not using mac auth.
+
+Has anyone seen this before?
+
+Thanks,
+Murray
+
+From david at coova.com  Tue Oct 26 17:36:11 2010
+From: david at coova.com (David Bird)
+Date: Tue, 26 Oct 2010 19:36:11 +0200
+Subject: [Chilli] Simultaneous-Use := 1 and ghost sessions
+In-Reply-To: <20101026145903.GF4869@davabel.touk.pl>
+References: <20101026145030.GE4869@davabel.touk.pl>
+	<AANLkTimS35g_TEmmtX1-v6WsyVoMxOF4ex5e3cdPNdK_@mail.gmail.com>
+	<20101026145903.GF4869@davabel.touk.pl>
+Message-ID: <1288114571.18020.33.camel@david-laptop>
+
+Run some logic in the back-end (RADIUS/Database) that "stops" stale
+sessions (those no longer getting acct'ing interim messages).
+
+On Tue, 2010-10-26 at 16:59 +0200, Pawe? Zuzelski wrote:
+> On Tue, 26 Oct 2010, ???????? ???????? wrote:
+> 
+> > As an option to use idle-timeout.
+> 
+> I use idle-timeout as well, but idle-timeout is also hadled by
+> chilli, so it is vulnerable to the same issue.
+> 
+
+
+

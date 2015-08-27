@@ -1,0 +1,1422 @@
+From murray at skyrove.com  Sun Aug  1 22:30:07 2010
+From: murray at skyrove.com (Murray Long)
+Date: Mon, 2 Aug 2010 00:30:07 +0200
+Subject: [Chilli] IPass GIS protocol
+Message-ID: <AANLkTi=nR_ue6KULCO4HR81eDSqv3jxX2MU-YNOtQiQB@mail.gmail.com>
+
+Hi All,
+
+We've been trying to integrate our hotspots with Ipass and are running into
+problems with the GIS login.
+
+We're running coovachilli  v1.2.3 on two different hardware platforms:
+Ubiquity Picostation 2 running openwrt kamikaze
+and Linksys wrt54gl running openwrt whiterussian
+
+The Picostations work correctly but the Ipass client cannot connect to the
+Linksys.
+
+In the case of the Linksys, the client does successfully log in, but it
+doesn't seem to recognize the "success" message, and eventually times out
+and disconnects displaying "Invallid Username/Password".
+
+Has anyone come across anything like this before?
+
+Many Thanks,
+Murray Long
+Skyrove.
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20100802/07e176f4/attachment.htm>
+
+From gbastien at versatic.net  Mon Aug  2 19:20:52 2010
+From: gbastien at versatic.net (Genevieve Bastien)
+Date: Mon, 02 Aug 2010 15:20:52 -0400
+Subject: [Chilli] chilli http proxy questions
+Message-ID: <4C571A94.2080508@versatic.net>
+
+Hi all,
+
+I'm a developer on the wifidog and AuthPuppy authentication servers and 
+we are trying to include support for coovachilli ap on our servers (to 
+include some open-mesh nodes among other things).  The chilli http proxy 
+looks quite promising, but I'm having difficulties setting it up (I'm 
+new to chilli).
+
+My first problem is compiling it into openwrt.  I'm using the coova 
+chilli 1.2.3 sources and modified the openwrt package Makefile like this 
+so it compiles the http_proxy with it.  I added this to the Makefile:
+
+define Build/Configure
+         $(call Build/Configure/Default, \
+                 --enable-chilliproxy \
+                 --with-curl \
+         )
+endef
+
+But when trying to compile, it complains that curl is not available 
+(even though the package curl for openwrt is included in the image and I 
+set it as a dependency for chilli)
+
+configure: error: in 
+`/opt/dev/openmesh/trunk/openwrt/build_dir/mips/coova-chilli-1.2.3':
+configure: error: --with-curl was given, but test for curl failed
+See `config.log' for more details.
+
+Any hint?  Was anyone able to compile the http proxy in openwrt and have 
+it working?
+
+Thanks,
+Genevi?ve
+
+
+From stelio at skyrove.com  Fri Aug  6 08:11:05 2010
+From: stelio at skyrove.com (Stelio Gouveia)
+Date: Fri, 6 Aug 2010 10:11:05 +0200
+Subject: [Chilli] Chilli errors in syslog
+Message-ID: <AANLkTi=Q2ueR3FF1uinFRFT9=M-3fc=4pccS3ZGiQvut@mail.gmail.com>
+
+Hi Folks
+
+I've got RadSec and UAMSSL running on coova-chilli v1.2.3 with openssl
+0.9.8d
+
+Recently i've seen the following error messages:
+
+1. main-radsec.c: 88: Dropping RADIUS packet!
+2. redir.c: 1435: 145 (Connection timed out) SSL_read(21) failed!
+3. ssl.c: 344: 32 (Broken pipe) SSL handshake interrupted by system [Hint:
+Stop button pressed in browser?!]--
+
+I haven't figured out what triggers these errors. Has anyone else
+encountered these? If so, what did you do to fix?
+
+- Stelio
+
+Skyrove Software Engineer,
+Skyrove (Pty) Ltd
+Technology Top 100 Award Winner (2006)
+Mobile: +27 82 34 09 120
+Tel: +27 861 ROVERS (0861 768 377)
+Fax: +27 86 6204077
+Email & Gtalk: stelio at skyrove.com
+Web:   www.skyrove.com
+
+This message contains confidential information. If you are not the intended
+recipient you are notified that disclosing, copying, distributing or taking
+any action in reliance on the contents of this information is strictly
+prohibited. E-mail transmission cannot be guaranteed to be secure or
+error-free as information could be intercepted, corrupted, lost, destroyed,
+arrive late or incomplete, or contain viruses. The sender therefore does not
+accept liability for any errors or omissions in the contents of this
+message.
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20100806/a8134820/attachment.htm>
+
+From david at coova.com  Sat Aug  7 17:03:25 2010
+From: david at coova.com (David Bird)
+Date: Sat, 07 Aug 2010 19:03:25 +0200
+Subject: [Chilli] IPass GIS protocol
+In-Reply-To: <AANLkTi=nR_ue6KULCO4HR81eDSqv3jxX2MU-YNOtQiQB@mail.gmail.com>
+References: <AANLkTi=nR_ue6KULCO4HR81eDSqv3jxX2MU-YNOtQiQB@mail.gmail.com>
+Message-ID: <1281200605.26760.31.camel@david-laptop>
+
+Hmm.. odd that it seems to be platform dependent... can you do a
+wireshark trace? 
+
+Speaking of WISPr, now in subversion is a working first go at WISPr 1.0
++ 2.0 implementation (thanks for patch against chilli 1.0.11 from
+Comfone). I've tested it a bit with the Coova firefox extension, which
+we've modified to successfully login using EAP-MD5 over WISPr 2.0. 
+
+David
+
+
+On Mon, 2010-08-02 at 00:30 +0200, Murray Long wrote:
+> Hi All,
+> 
+> 
+> We've been trying to integrate our hotspots with Ipass and are running
+> into problems with the GIS login. 
+> 
+> 
+> We're running coovachilli  v1.2.3 on two different hardware platforms:
+> Ubiquity Picostation 2 running openwrt kamikaze
+> and Linksys wrt54gl running openwrt whiterussian
+> 
+> 
+> The Picostations work correctly but the Ipass client cannot connect to
+> the Linksys.
+>  
+> In the case of the Linksys, the client does successfully log in, but
+> it doesn't seem to recognize the "success" message, and eventually
+> times out and disconnects displaying "Invallid Username/Password".
+> 
+> 
+> Has anyone come across anything like this before?
+> 
+> 
+> Many Thanks,
+> Murray Long
+> Skyrove.
+> 
+> 
+> 
+> 
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+
+
+From baobaz at gmail.com  Sun Aug  8 16:41:51 2010
+From: baobaz at gmail.com (Baobaz Barleyz)
+Date: Sun, 8 Aug 2010 23:41:51 +0700
+Subject: [Chilli] get price value..
+Message-ID: <AANLkTi=1wbiTMMBHHckmv03VeQ9fCQJtOF=Z-xK5ouqW@mail.gmail.com>
+
+Hi all coova dev..
+
+I have a problem..
+
+I add some additional tabel to database scema of radius..
+And then I want to get the value from there and show the information to
+the logon coova form like
+
+sessionid
+sessiontimeout
+sessiontime and bla bla bla..
+price  <- not from database scema radius..
+
+how to show that information via json coova..
+is anyone have any ideas?
+
+:)
+
+
+
+-- 
+visit my blog at http://blog.omongkosong.com
+visit our T'Lab shop at http://tlab.co.id
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20100808/576e5954/attachment.htm>
+
+From henk at skyrove.com  Sun Aug  8 18:47:38 2010
+From: henk at skyrove.com (Henk Kleynhans)
+Date: Sun, 8 Aug 2010 20:47:38 +0200
+Subject: [Chilli] get price value..
+In-Reply-To: <AANLkTik4KHMkUrNRBjVy9ug-q0sZ4C8tRSrD2veQERYb@mail.gmail.com>
+References: <AANLkTi=1wbiTMMBHHckmv03VeQ9fCQJtOF=Z-xK5ouqW@mail.gmail.com>
+	<AANLkTik4KHMkUrNRBjVy9ug-q0sZ4C8tRSrD2veQERYb@mail.gmail.com>
+Message-ID: <AANLkTi=e1TPV6bB9nsJjtCYnX4wqi0f7+_gETJQY62V0@mail.gmail.com>
+
+You could probably just use http to pull price from DB and show in status
+window.
+
+Henk
+
+On 8 Aug 2010 18:49, "Baobaz Barleyz" <baobaz at gmail.com> wrote:
+
+Hi all coova dev..
+
+I have a problem..
+
+I add some additional tabel to database scema of radius..
+And then I want to get the value from there and show the information to
+the logon coova form like
+
+sessionid
+sessiontimeout
+sessiontime and bla bla bla..
+price  <- not from database scema radius..
+
+how to show that information via json coova..
+is anyone have any ideas?
+
+:)
+
+
+
+-- 
+visit my blog at http://blog.omongkosong.com
+visit our T'Lab shop at http://tlab.co.id
+
+_______________________________________________
+Chilli mailing list
+Chilli at coova.org
+http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20100808/3cf73c1a/attachment.htm>
+
+From stelio at skyrove.com  Wed Aug 11 11:14:59 2010
+From: stelio at skyrove.com (Stelio Gouveia)
+Date: Wed, 11 Aug 2010 13:14:59 +0200
+Subject: [Chilli] Spurious SSL handshake interrupt
+Message-ID: <AANLkTikzbVk0vxjgdydzGsgNSCJJj13DApsovgmvRe_J@mail.gmail.com>
+
+Hi Folks
+
+Has anyone seen this before?
+
+Mem: 28868K used, 1192K free, 0K shrd, 1660K buff, 5616K cached
+CPU:  68% usr  26% sys   0% nice   0% idle   0% io   0% irq   4% softirq
+Load average: 8.04 2.35 0.86
+  PID  PPID USER     STAT   VSZ %MEM %CPU COMMAND
+ 2995  2673 root     R     6312  21%   4% /usr/sbin/chilli
+-c/etc/chilli.conf
+ 2996  2673 root     R     6312  21%   4% /usr/sbin/chilli
+-c/etc/chilli.conf
+ 2998  2673 root     R     6312  21%   4% /usr/sbin/chilli
+-c/etc/chilli.conf
+ 2997  2673 root     R     6312  21%   4% /usr/sbin/chilli
+-c/etc/chilli.conf
+ 3015  2673 root     R     6312  21%   4% /usr/sbin/chilli
+-c/etc/chilli.conf
+ 3021  2673 root     R     6312  21%   4% /usr/sbin/chilli
+-c/etc/chilli.conf
+ 3064  2673 root     R     6312  21%   4% /usr/sbin/chilli
+-c/etc/chilli.conf
+ 2999  2673 root     R     6312  21%   4% /usr/sbin/chilli
+-c/etc/chilli.conf
+ 3002  2673 root     R     6312  21%   4% /usr/sbin/chilli
+-c/etc/chilli.conf
+ 3016  2673 root     R     6312  21%   4% /usr/sbin/chilli
+-c/etc/chilli.conf
+ 3024  2673 root     R     6312  21%   4% /usr/sbin/chilli
+-c/etc/chilli.conf
+ 3060  2673 root     R     6312  21%   4% /usr/sbin/chilli
+-c/etc/chilli.conf
+ 3066  2673 root     R     6312  21%   4% /usr/sbin/chilli
+-c/etc/chilli.conf
+ 3079  2673 root     R     6228  21%   4% /usr/sbin/chilli
+-c/etc/chilli.conf
+ 3082  2673 root     R     6036  20%   4% /usr/sbin/chilli
+-c/etc/chilli.conf
+ 2673     1 root     S     5348  18%   2% /usr/sbin/chilli
+-c/etc/chilli.conf
+ 2404  2396 root     R     1988   7%   1% top
+   61     2 root     SW<      0   0%   1% [mtdblockd]
+ 2328  1548 root     S     2016   7%   0% /usr/sbin/dropbear -p 22
+
+My logs report:
+Aug 11 10:20:18 skyrove_development local6.err coova-chilli[3000]: ssl.c:
+345: Spurious SSL handshake interrupt [Hint: Usually just one of those
+OpenSSL confusions!?]
+Aug 11 10:20:32 skyrove_development local6.err coova-chilli[3022]: ssl.c:
+345: Spurious SSL handshake interrupt [Hint: Usually just one of those
+OpenSSL confusions!?]
+Aug 11 10:20:32 skyrove_development local6.err coova-chilli[3026]: ssl.c:
+345: Spurious SSL handshake interrupt [Hint: Usually just one of those
+OpenSSL confusions!?]
+Aug 11 10:20:47 skyrove_development local6.err coova-chilli[3067]: ssl.c:
+345: Spurious SSL handshake interrupt [Hint: Usually just one of those
+OpenSSL confusions!?]
+Aug 11 10:20:48 skyrove_development local6.err coova-chilli[3068]: ssl.c:
+345: Spurious SSL handshake interrupt [Hint: Usually just one of those
+OpenSSL confusions!?]
+Aug 11 10:20:48 skyrove_development local6.err coova-chilli[3069]: ssl.c:
+345: Spurious SSL handshake interrupt [Hint: Usually just one of those
+OpenSSL confusions!?]
+Aug 11 10:20:50 skyrove_development local6.err coova-chilli[3076]: ssl.c:
+345: Spurious SSL handshake interrupt [Hint: Usually just one of those
+OpenSSL confusions!?]
+Aug 11 10:20:57 skyrove_development local6.err coova-chilli[3079]: ssl.c:
+343: 131 (Connection reset by peer) SSL handshake interrupted by system
+[Hint: Stop button pressed in browser?!]
+
+As you can see, the load goes up drastically and multiple chilli threads
+seem to spawn at a very rapid rate. The device also becomes
+very temperamental.
+
+Regards
+Stelio Gouveia
+--
+Skyrove Software Engineer,
+Skyrove (Pty) Ltd
+Technology Top 100 Award Winner (2006)
+Mobile: +27 82 34 09 120
+Tel: +27 861 ROVERS (0861 768 377)
+Fax: +27 86 6204077
+Email & Gtalk: stelio at skyrove.com
+Web:   www.skyrove.com
+
+This message contains confidential information. If you are not the intended
+recipient you are notified that disclosing, copying, distributing or taking
+any action in reliance on the contents of this information is strictly
+prohibited. E-mail transmission cannot be guaranteed to be secure or
+error-free as information could be intercepted, corrupted, lost, destroyed,
+arrive late or incomplete, or contain viruses. The sender therefore does not
+accept liability for any errors or omissions in the contents of this
+message.
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20100811/2eb3ac51/attachment.htm>
+
+From murray at skyrove.com  Thu Aug 12 13:36:19 2010
+From: murray at skyrove.com (Murray Long)
+Date: Thu, 12 Aug 2010 15:36:19 +0200
+Subject: [Chilli] Increased load due to redirssl
+Message-ID: <AANLkTikYG2N7zJuxtCOPQ=8m_073R6wh=Gg54dj5snrm@mail.gmail.com>
+
+Hi everyone,
+
+We're running coova chilli and openwrt on Ubiquiti Picostations, and have
+enabled redirssl so that clients trying to access https sites
+(google.comfor example) will still be redirected to our portal page.
+
+Unfortunately this means that the Picostations are responding to many https
+requests from unauthenticated clients (running applications like webmail,
+tweetdeck etc.) and the volume of these requests drives up load on the
+Picos, destroying their stability.  This gets significantly worse If we host
+our UAM homepage on SSL as well.
+
+Has anyone else tried running chilli+ssl on this type of hardware?  Are
+simply asking too much of a slow processor?
+
+For both a https uam homepage and redir ssl, we get a lot of "Spurious SSL
+handshake interrupt" errors, is this something to be concerned about?
+
+Regards,
+Murray
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20100812/daf99dab/attachment.htm>
+
+From skreech2 at gmail.com  Thu Aug 12 18:10:27 2010
+From: skreech2 at gmail.com (Roger Pixley)
+Date: Thu, 12 Aug 2010 13:10:27 -0500
+Subject: [Chilli] IPhone Issue
+Message-ID: <AANLkTinu7F_0f7YGRO8kPtKsdjG-nTZ+NAazGLE2jYGv@mail.gmail.com>
+
+Hello I'm having an issue with Coova Chilli 1.0.9 with iPhones. The
+cgi runs but the Safari browser (shipped on the iPhone) doesn't render
+the login page. so there is no way to authenticate. Similar for iPads.
+I put in a JS wait before the body load which makes the Login page
+turn up on the iPhone but breaks every other device.
+
+Can anyone say why this would happen or suggest a way to debug?
+
+From catarack at hotmail.com  Fri Aug 13 14:12:20 2010
+From: catarack at hotmail.com (Cat Arak)
+Date: Fri, 13 Aug 2010 14:12:20 +0000
+Subject: [Chilli] (no subject)
+Message-ID: <SNT136-w359370BF8A0BB543D92F6FC3980@phx.gbl>
+
+
+
+
+
+Hi All,
+
+I'm try to get WISPr-Redirection-URL to work when using MACAUTH.  In radius.radgroupreply I have:
+
+default WISPr-Redirection-URL := http://www.mywebserver.com/splashpage/index.html
+
+And I can see the radius request being returned correctly for the user:
+
+Sending Access-Accept of id 7 to 10.10.10.10 port 40333
+	Acct-Interim-Interval := 60
+	WISPr-Logoff-URL := "http://10.1.0.1:3390/logoff"
+	WISPr-Redirection-URL := "http://www.mywebserver.com/splashpage/index.html"
+
+Which Chilli seems to ignore... However they do get redirected on a access reject!
+
+WISPr-Redirection-URL : If present the client will be redirected to this URL once authenticated. 
+This URL should include a link to WISPr-Logoff-URL in order to enable the client to log off.
+
+http://dev.coova.org/svn/coova-chilli/doc/attributes
+
+Cheers
+
+Cat.
+ 		 	   		  
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20100813/75c84657/attachment.htm>
+
+From skreech2 at gmail.com  Fri Aug 13 21:15:59 2010
+From: skreech2 at gmail.com (Roger Pixley)
+Date: Fri, 13 Aug 2010 13:15:59 -0800
+Subject: [Chilli] IPhone Issue
+In-Reply-To: <AANLkTinu7F_0f7YGRO8kPtKsdjG-nTZ+NAazGLE2jYGv@mail.gmail.com>
+References: <AANLkTinu7F_0f7YGRO8kPtKsdjG-nTZ+NAazGLE2jYGv@mail.gmail.com>
+Message-ID: <AANLkTinyo3ZjhufZFEzM7sP51ocMfScrYa1DB88PV7uo@mail.gmail.com>
+
+Upgraded to CoovaChilli 1.2.2 and did some tracing. I now have it
+working on any device that's not a blackberry or an i* as far as I can
+test. Traced the issue and in the compiled chillijs.chi I have a line
+that assigns chillijsWindowOnLoad to the window.onload event.
+The window.onload event is assigned to generic function() which sets
+the logon form. On other browsers this function gets run but on Safari
+it simply skips to the end of the function then sits there
+interminably (though sometimes I'll get a login form after 20 minutes
+or so)
+
+I think that the way the function is called by window.onload throws
+off how Safari (presumably by extension all the other apple devices)
+implements the onload function. Has anyone seen this in their usage of
+Coova? I had tested by replacing the function() body with a simple pop
+up which shows up on other browsers but not on Safari.
+
+On Thu, Aug 12, 2010 at 10:10 AM, Roger Pixley <skreech2 at gmail.com> wrote:
+> Hello I'm having an issue with Coova Chilli 1.0.9 with iPhones. The
+> cgi runs but the Safari browser (shipped on the iPhone) doesn't render
+> the login page. so there is no way to authenticate. Similar for iPads.
+> I put in a JS wait before the body load which makes the Login page
+> turn up on the iPhone but breaks every other device.
+>
+> Can anyone say why this would happen or suggest a way to debug?
+>
+
+From skreech2 at gmail.com  Fri Aug 13 22:26:57 2010
+From: skreech2 at gmail.com (Roger Pixley)
+Date: Fri, 13 Aug 2010 17:26:57 -0500
+Subject: [Chilli] IPhone Issue
+In-Reply-To: <AANLkTinyo3ZjhufZFEzM7sP51ocMfScrYa1DB88PV7uo@mail.gmail.com>
+References: <AANLkTinu7F_0f7YGRO8kPtKsdjG-nTZ+NAazGLE2jYGv@mail.gmail.com>
+	<AANLkTinyo3ZjhufZFEzM7sP51ocMfScrYa1DB88PV7uo@mail.gmail.com>
+Message-ID: <AANLkTi=Mxwu6_kJwjCja0=O_HdyQbC8wESSwqz7djqSo@mail.gmail.com>
+
+Solved the issue by splitting out the call to chilliform.js to it's
+own named function then calling that function name (loadForm if you
+care which you probably don't) via window.onload. The majorissue that
+I have now is that certain websites once they are filtered through
+coova are unreachable. Specifically it throws a kCFErrorDomainWinSock
+error. I can ping the server follow the route to the server but
+requesting a webpage seems impossible. I'll try and figure it out and
+post back.
+
+On Fri, Aug 13, 2010 at 4:15 PM, Roger Pixley <skreech2 at gmail.com> wrote:
+> Upgraded to CoovaChilli 1.2.2 and did some tracing. I now have it
+> working on any device that's not a blackberry or an i* as far as I can
+> test. Traced the issue and in the compiled chillijs.chi I have a line
+> that assigns chillijsWindowOnLoad to the window.onload event.
+> The window.onload event is assigned to generic function() which sets
+> the logon form. On other browsers this function gets run but on Safari
+> it simply skips to the end of the function then sits there
+> interminably (though sometimes I'll get a login form after 20 minutes
+> or so)
+>
+> I think that the way the function is called by window.onload throws
+> off how Safari (presumably by extension all the other apple devices)
+> implements the onload function. Has anyone seen this in their usage of
+> Coova? I had tested by replacing the function() body with a simple pop
+> up which shows up on other browsers but not on Safari.
+>
+> On Thu, Aug 12, 2010 at 10:10 AM, Roger Pixley <skreech2 at gmail.com> wrote:
+>> Hello I'm having an issue with Coova Chilli 1.0.9 with iPhones. The
+>> cgi runs but the Safari browser (shipped on the iPhone) doesn't render
+>> the login page. so there is no way to authenticate. Similar for iPads.
+>> I put in a JS wait before the body load which makes the Login page
+>> turn up on the iPhone but breaks every other device.
+>>
+>> Can anyone say why this would happen or suggest a way to debug?
+>>
+>
+
+From catarack at hotmail.com  Sat Aug 14 00:31:53 2010
+From: catarack at hotmail.com (Cat Arak)
+Date: Sat, 14 Aug 2010 00:31:53 +0000
+Subject: [Chilli] WISPr-Redirection-URL not getting redirected
+Message-ID: <SNT136-w21150725904581404B32BEC3990@phx.gbl>
+
+
+Apologies for the repost, but forgot to put a valid subject line in last mail.
+
+Hi All,
+
+I'm try to get WISPr-Redirection-URL to work when using MACAUTH on Chilli 1.2.3.  In radius.radgroupreply I have:
+
+default WISPr-Redirection-URL := http://www.mywebserver.com/splashpage/index.html
+
+And I can see the radius request being returned correctly for the user:
+
+Sending Access-Accept of id 7 to 10.10.10.10 port 40333
+	Acct-Interim-Interval := 60
+	WISPr-Logoff-URL := "http://10.1.0.1:3390/logoff"
+	WISPr-Redirection-URL := "http://www.mywebserver.com/splashpage/index.html"
+
+Which Chilli seems to ignore... However they do get redirected on a access reject!
+
+WISPr-Redirection-URL : If present the client will be redirected to this URL once authenticated. 
+This URL should include a link to WISPr-Logoff-URL in order to enable the client to log off.
+
+http://dev.coova.org/svn/coova-chilli/doc/attributes
+
+Cheers
+
+Cat. 		 	   		  
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20100814/e54fa685/attachment.htm>
+
+From toboganfing at googlegroups.com  Sun Aug 15 23:40:08 2010
+From: toboganfing at googlegroups.com (Lulu GO)
+Date: Sun, 15 Aug 2010 20:40:08 -0300
+Subject: [Chilli] How can chilli respond dhcp requests in lo interface?
+Message-ID: <AANLkTi=PwCZ-Dtr4L+EOYf-szRNMcEzVkTb=ykK0Opu-@mail.gmail.com>
+
+Hello, maybe this is a strange question, but I'm trying to get coova chilli
+to respond dhcp discover packets in the loopback interface. The situation is
+this (is for a student project at my university) I made a dhcp relay program
+to listen dhcp discover packets before chilli and then if the network state
+is ok relay the packet to chilli. So I made two tests, I change chilli
+listen port to 5067 and set chilli to reply in 68 port and another one where
+chilli is set to answer in 5068 port and my program relay also that answer
+to the client.
+
+Here are some logs
+
+My program running in 67 port, chilli in 5067 and a laptop asking dhcp to 67
+port, I can see the packets being forward to 5067 port, to coova, but no
+packets after that
+
+19:26:10.458579 IP (tos 0x0, ttl 64, id 0, offset 0, flags [DF], proto UDP
+(17), length 284) 10.20.1.1.bootps > 10.20.1.1.5067: BOOTP/DHCP, Request
+from 00:17:c4:89:db:da (oui Unknown), length 256, xid 0x2fde6c7a, secs 8,
+Flags [none] (0x0000)
+  Client-Ethernet-Address 00:17:c4:89:db:da (oui Unknown) [|bootp]
+19:26:10.458609 IP (tos 0xc0, ttl 64, id 12772, offset 0, flags [none],
+proto ICMP (1), length 312) 10.20.1.1 > 10.20.1.1: ICMP 10.20.1.1 udp port
+5067 unreachable, length 292
+
+there's an ICMP unreachable port but the discover gets to the chilli, I can
+see the new dhcp request in syslog
+
+Aug 15 19:26:10 tobogan coova-chilli[2724]: chilli.c: 2822: New DHCP request
+from MAC=00-17-C4-89-DB-DA
+Aug 15 19:26:53 tobogan coova-chilli[2724]: options.c: 821: Rereading
+configuration file and doing DNS lookup
+Aug 15 19:30:01 tobogan /USR/SBIN/CRON[3725]: (root) CMD (/etc/init.d/chilli
+checkrunning)
+
+Another test I made was changing the unicast flag of the dhcp response to
+broadcast, so chilli would respond broadcast, but the result was the same.
+
+My question is, how can i tell chilli to manage the lo interface? so it can
+respond ok, or, where can I change the dhcp sources in order to achive this?
+
+thank you very much for your time
+
+Luc?a
+Montevideo - Uruguay
+
+ps: sorry for my english!
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20100815/d491a5c5/attachment.htm>
+
+From derekchilli at hssl.ie  Mon Aug 16 08:16:49 2010
+From: derekchilli at hssl.ie (Derek C)
+Date: Mon, 16 Aug 2010 09:16:49 +0100 (IST)
+Subject: [Chilli] Receiving customer DHCP hostname - how?
+Message-ID: <59357.149.5.32.250.1281946609.squirrel@www.rivertowermail.com>
+
+
+Hi all,
+
+Does anyone know how to retrieve and store a client computer's
+DHCP hostname when using macauth with freeradius and Coova Chilli?
+
+thanks for any information
+
+Derek
+
+
+-- 
+Derek C
+In Ireland
+
+
+From derekchilli at hssl.ie  Mon Aug 16 20:30:37 2010
+From: derekchilli at hssl.ie (Derek C)
+Date: Mon, 16 Aug 2010 21:30:37 +0100 (IST)
+Subject: [Chilli] Receiving customer DHCP hostname - how?
+In-Reply-To: <59357.149.5.32.250.1281946609.squirrel@www.rivertowermail.com>
+References: <59357.149.5.32.250.1281946609.squirrel@www.rivertowermail.com>
+Message-ID: <55574.90.49.92.235.1281990637.squirrel@www.rivertowermail.com>
+
+Hi all,
+
+It looks like I need to trap the "ChilliSpot-DHCP-Hostname" Coovachilli
+radius "attribute" in freeradius somehow (all the radius attributes are
+listed here:
+http://dev.coova.org/svn/coova-chilli/doc/dictionary.chillispot).
+
+Does anyone know how to configure freeradius to catch this "attribute" and
+record it in the database (I'm not even sure if this would go into the
+radacct table or another table!)
+
+thanks for any help!
+
+Derek
+
+
+On Mon, August 16, 2010 9:16 am, Derek C wrote:
+>
+
+> Hi all,
+>
+>
+> Does anyone know how to retrieve and store a client computer's
+> DHCP hostname when using macauth with freeradius and Coova Chilli?
+>
+>
+> thanks for any information
+>
+> Derek
+>
+>
+>
+> --
+> Derek C
+> In Ireland
+>
+>
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+>
+
+
+-- 
+Derek C
+In Ireland
+
+
+From david at coova.com  Mon Aug 16 20:36:05 2010
+From: david at coova.com (David Bird)
+Date: Mon, 16 Aug 2010 22:36:05 +0200
+Subject: [Chilli] Receiving customer DHCP hostname - how?
+In-Reply-To: <55574.90.49.92.235.1281990637.squirrel@www.rivertowermail.com>
+References: <59357.149.5.32.250.1281946609.squirrel@www.rivertowermail.com>
+	<55574.90.49.92.235.1281990637.squirrel@www.rivertowermail.com>
+Message-ID: <1281990965.4782.21.camel@david-laptop>
+
+Personally, I use JRadius for virtually all my RADIUS logic and data
+access layer. In JRadius, it's easy... but, you'll have to consult your
+language of choice for details on how you can get that value and save to
+your database. 
+
+
+On Mon, 2010-08-16 at 21:30 +0100, Derek C wrote:
+> Hi all,
+> 
+> It looks like I need to trap the "ChilliSpot-DHCP-Hostname" Coovachilli
+> radius "attribute" in freeradius somehow (all the radius attributes are
+> listed here:
+> http://dev.coova.org/svn/coova-chilli/doc/dictionary.chillispot).
+> 
+> Does anyone know how to configure freeradius to catch this "attribute" and
+> record it in the database (I'm not even sure if this would go into the
+> radacct table or another table!)
+> 
+> thanks for any help!
+> 
+> Derek
+> 
+> 
+> On Mon, August 16, 2010 9:16 am, Derek C wrote:
+> >
+> 
+> > Hi all,
+> >
+> >
+> > Does anyone know how to retrieve and store a client computer's
+> > DHCP hostname when using macauth with freeradius and Coova Chilli?
+> >
+> >
+> > thanks for any information
+> >
+> > Derek
+> >
+> >
+> >
+> > --
+> > Derek C
+> > In Ireland
+> >
+> >
+> > _______________________________________________
+> > Chilli mailing list
+> > Chilli at coova.org
+> > http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+> >
+> >
+> 
+> 
+
+
+
+From josu.lazkano at gmail.com  Tue Aug 17 16:19:12 2010
+From: josu.lazkano at gmail.com (Josu Lazkano)
+Date: Tue, 17 Aug 2010 18:19:12 +0200
+Subject: [Chilli] CoovaChilli on Fonera 2100
+Message-ID: <AANLkTikvm9qJ73=CHV9vhhsPEtHvAQNAfK-w7O=pDfSi@mail.gmail.com>
+
+Hello everybody! I am new on this mail-list. I have a Fonera 2100
+router and I want to use it with CoovaChilli.
+
+The idea is to share my internet connection and win some money with it.
+
+I need something else to start? I am new on this, I must config all
+the paid process?
+
+How much money do you earn with this on a month? I suppose that it
+will depend on the place of the HotSpot, I live near lots of hostal
+and hotels.
+
+Thanks for all and best regards.
+
+-- 
+Josu Lazkano
+
+From stelio at skyrove.com  Thu Aug 19 09:45:10 2010
+From: stelio at skyrove.com (Stelio Gouveia)
+Date: Thu, 19 Aug 2010 11:45:10 +0200
+Subject: [Chilli] RadSec and JRadius
+Message-ID: <AANLkTinGBP3ZjO9eh-yoos0oLLEEyzUijtUWuCOj+fTd@mail.gmail.com>
+
+Hi Folks
+
+I've been trying for some time now to marry CoovaChilli and RadSecProxy.
+We've also managed to uncover some serious design flaws with the
+implementation of RadSec by RadSecProxy.
+
+You can read the discussion here -> http://bit.ly/czEpxt
+
+It's become apparent that JRadius may be another options for RadSec
+implementation, and in our case
+we would use it to handle ONLY the RadSec protocol and forward to our
+FreeRadius server.
+
+I have a few question that maybe someone in the community could answer:
+
+   1. Is anyone actually using JRadius with RadSec? If so, how many routers
+   to you have connected and is it scalable?
+   2. Does JRadius thread each incoming connection and keep the connection
+   alive for the duration of the CoovaChilli runtime?
+   3. How many open sockets can it handle? Linux default is 1024, or it
+   this irrelevant?
+
+- Stelio
+
+Skyrove Software Engineer,
+Skyrove (Pty) Ltd
+Technology Top 100 Award Winner (2006)
+Mobile: +27 82 34 09 120
+Tel: +27 861 ROVERS (0861 768 377)
+Fax: +27 86 6204077
+Email & Gtalk: stelio at skyrove.com
+Web:   www.skyrove.com
+
+This message contains confidential information. If you are not the intended
+recipient you are notified that disclosing, copying, distributing or taking
+any action in reliance on the contents of this information is strictly
+prohibited. E-mail transmission cannot be guaranteed to be secure or
+error-free as information could be intercepted, corrupted, lost, destroyed,
+arrive late or incomplete, or contain viruses. The sender therefore does not
+accept liability for any errors or omissions in the contents of this
+message.
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20100819/9f3f5b54/attachment.htm>
+
+From derekchilli at hssl.ie  Sat Aug 21 07:50:01 2010
+From: derekchilli at hssl.ie (Derek C)
+Date: Sat, 21 Aug 2010 08:50:01 +0100 (IST)
+Subject: [Chilli] New setup - pings [often] stop after 10 seconds of
+	connecting
+Message-ID: <43920.90.49.250.136.1282377001.squirrel@www.rivertowermail.com>
+
+Hi All,
+
+I'm playing around with a new setup of APs running Kamikaze 8.09 and Coova
+Chilli 1.0.13
+
+A funny thing is happening here:  When I connect with a linux laptop (I
+have two Ubuntu 10.04 based laptops) pings to 192.168.182.1 can stop after
+about 10 seconds of associating and getting a DHCP IP from CoovaChilli.
+
+After I re-connect again the problem seems to go away and pings keep going
+through no problem.
+
+I do have multiple APs here but I've checked the associated Mac on my
+notebook and I don't think it's linked to the notebook jumping APs.
+
+I also always notice that I always get two ping responses from
+192.168.182.1 (one "dup" - as below) - I've always ignored this.
+
+Has this loss of communication just after associating happened to anyone
+else?
+
+thanks,
+
+Derek
+
+64 bytes from 192.168.182.1: icmp_seq=642 ttl=64 time=3.42 ms
+64 bytes from 192.168.182.1: icmp_seq=642 ttl=64 time=4.75 ms (DUP!)
+64 bytes from 192.168.182.1: icmp_seq=643 ttl=64 time=2.60 ms
+64 bytes from 192.168.182.1: icmp_seq=643 ttl=64 time=4.20 ms (DUP!)
+64 bytes from 192.168.182.1: icmp_seq=644 ttl=64 time=2.56 ms
+64 bytes from 192.168.182.1: icmp_seq=644 ttl=64 time=4.60 ms (DUP!)
+
+
+-- 
+Derek C
+In Ireland
+
+
+From david at coova.com  Tue Aug 24 12:34:35 2010
+From: david at coova.com (David Bird)
+Date: Tue, 24 Aug 2010 14:34:35 +0200
+Subject: [Chilli] CoovaChilli 1.2.4 released
+Message-ID: <1282653275.3558.16.camel@david-laptop>
+
+http://coova.org/CoovaChilli
+
+== ChangeLog (CoovaChilli-v1.2.4 svn revision 371) ==
+
+* Integrated changes from Comfone AG
+** Implemented support for WISPr 2.0 username/password and EAP
+** Implemented support for Radius CUI
+** Fixed missing WISPr 1.0 reply on Radius timeout
+** Clean-up of some redir.c debugging messages
+** Removed NO_UAMWISPR configuration parameter
+** Added NO_WISPR2 configuration parameter. Added NO_WISPR1
+configuration parameter
+** Allow multiple concurrent UAM login methods
+** Added support Radius State attribute
+** Changes made by Laurent Frelechoux (Comfone AG)
+* Segfault bug fix in ''chilli_radconfig''
+* Fix for EAPOL, thanks to Francesco Sinopoli
+* Bug fix for ''--enable-chilliredir'' plus SSL
+* Signal handling clean-ups, using self-pipe technique
+* Better statedir handling - allowing full paths for various files
+* A timeout for ''chilli_query'' hardcoded to 10 seconds
+
+
+
+From wichert at wiggy.net  Tue Aug 24 12:36:05 2010
+From: wichert at wiggy.net (Wichert Akkerman)
+Date: Tue, 24 Aug 2010 14:36:05 +0200
+Subject: [Chilli] CoovaChilli 1.2.4 released
+In-Reply-To: <1282653275.3558.16.camel@david-laptop>
+References: <1282653275.3558.16.camel@david-laptop>
+Message-ID: <4C73BCB5.1040908@wiggy.net>
+
+Hi David,
+
+On 8/24/10 14:34 , David Bird wrote:
+> * Bug fix for ''--enable-chilliredir'' plus SSL
+
+What kind of bug was that?
+
+Wichert.
+
+From david at coova.com  Tue Aug 24 14:28:21 2010
+From: david at coova.com (David Bird)
+Date: Tue, 24 Aug 2010 16:28:21 +0200
+Subject: [Chilli] CoovaChilli 1.2.4 released
+In-Reply-To: <4C73BCB5.1040908@wiggy.net>
+References: <1282653275.3558.16.camel@david-laptop>
+	<4C73BCB5.1040908@wiggy.net>
+Message-ID: <1282660101.3558.20.camel@david-laptop>
+
+There were places where an SSL connection was shutdown, but a pointer
+was not cleared, and would cause a segfault as a result - when
+processing a chilli_redir SSL connection. 
+
+On Tue, 2010-08-24 at 14:36 +0200, Wichert Akkerman wrote:
+> Hi David,
+> 
+> On 8/24/10 14:34 , David Bird wrote:
+> > * Bug fix for ''--enable-chilliredir'' plus SSL
+> 
+> What kind of bug was that?
+> 
+> Wichert.
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+
+
+From ronald at rmacd.com  Thu Aug 26 13:53:33 2010
+From: ronald at rmacd.com (Ronald MacDonald)
+Date: Thu, 26 Aug 2010 14:53:33 +0100
+Subject: [Chilli] CoovaAP and an all-offsite (centralised?) solution
+Message-ID: <53888F6D-0815-429B-9408-4F55A6D1704B@rmacd.com>
+
+Hello all,
+
+After fighting with configuration for a few hours, I thought it'd be a good idea to see if what I'm trying to do is actually possible.
+
+Many of the web sites with documentation as to going about setting up an AP with Coova assume having a CoovaChilli server running at the gateway for authentication management and so as to provide DHCP service etc.
+
+I am using a Linksys WGR54GL which originally had the stock firmware, but I've just put CoovaAP on it. I am able to get it to show up the internal portal and let users log in as such, but what I'd like to see is a bit different again.
+
+I've got it in my head that it should be possible to have the AP sitting on the LAN, which has a direct internet connection. Unauthenticated users would be sent to a portal login running on a remote server (across the 'net) which itself has mechanisms by which to register and authenticate users. The server already has a table of credentials which Radius is configured to look up.
+
+However I can't see how doing that would work, as CoovaChilli seems to be built around this notion of a local gateway server, two nic's, it providing the DHCP server for the AP clients, etc.
+
+Surely I must be doing something wrong or have simply failed to understand how CoovaAP running on my router fits into the big scheme of things.
+
+Best wishes,
+Ronald.
+
+From outbackdingo at gmail.com  Thu Aug 26 14:06:08 2010
+From: outbackdingo at gmail.com (Outback Dingo)
+Date: Thu, 26 Aug 2010 10:06:08 -0400
+Subject: [Chilli] CoovaAP and an all-offsite (centralised?) solution
+In-Reply-To: <53888F6D-0815-429B-9408-4F55A6D1704B@rmacd.com>
+References: <53888F6D-0815-429B-9408-4F55A6D1704B@rmacd.com>
+Message-ID: <AANLkTinBgt1q9BzAvs7sBjywOF0vXQp-D0ZAvpJfanHL@mail.gmail.com>
+
+yes, using radius authentication this would work its how we do it
+
+On Thu, Aug 26, 2010 at 9:53 AM, Ronald MacDonald <ronald at rmacd.com> wrote:
+
+> Hello all,
+>
+> After fighting with configuration for a few hours, I thought it'd be a good
+> idea to see if what I'm trying to do is actually possible.
+>
+> Many of the web sites with documentation as to going about setting up an AP
+> with Coova assume having a CoovaChilli server running at the gateway for
+> authentication management and so as to provide DHCP service etc.
+>
+> I am using a Linksys WGR54GL which originally had the stock firmware, but
+> I've just put CoovaAP on it. I am able to get it to show up the internal
+> portal and let users log in as such, but what I'd like to see is a bit
+> different again.
+>
+> I've got it in my head that it should be possible to have the AP sitting on
+> the LAN, which has a direct internet connection. Unauthenticated users would
+> be sent to a portal login running on a remote server (across the 'net) which
+> itself has mechanisms by which to register and authenticate users. The
+> server already has a table of credentials which Radius is configured to look
+> up.
+>
+> However I can't see how doing that would work, as CoovaChilli seems to be
+> built around this notion of a local gateway server, two nic's, it providing
+> the DHCP server for the AP clients, etc.
+>
+> Surely I must be doing something wrong or have simply failed to understand
+> how CoovaAP running on my router fits into the big scheme of things.
+>
+> Best wishes,
+> Ronald.
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20100826/2479f445/attachment.htm>
+
+From andres at meigal.com  Mon Aug 30 11:43:24 2010
+From: andres at meigal.com (=?ISO-8859-1?Q?Andr=E9s_Guerrero_Doblado?=)
+Date: Mon, 30 Aug 2010 13:43:24 +0200
+Subject: [Chilli] High CPU load
+Message-ID: <4C7B995C.2050901@meigal.com>
+
+  Hi all,
+
+I've just migrated from Chillispot to CoovaChilli and I have a lot of 
+problems with CPU load. It seems that from time to time, the chilli 
+processes take all the CPU available.
+I'm using CoovaChilli 1.2.4. If I run it in debug mode, thousands of 
+lines like these appear in the log:
+
+main-redir.c: 533: 0 (Debug) #23 (31) 264987 connection from 10.0.193.37 
+51844
+main-redir.c: 533: 0 (Debug) #24 (37) 264938 connection from 10.0.193.37 
+51778
+main-redir.c: 533: 0 (Debug) #25 (39) 264941 connection from 10.0.193.37 
+51781
+main-redir.c: 533: 0 (Debug) #26 (40) 264953 connection from 10.0.193.37 
+51799
+main-redir.c: 533: 0 (Debug) #27 (18) 264956 connection from 10.0.193.37 
+51802
+main-redir.c: 533: 0 (Debug) #28 (41) 264964 connection from 10.0.193.37 
+51811
+redir.c: 3124: 0 (Debug) Calling redir_getstate()
+redir.c: 3150: 0 (Debug) Receiving HTTP Request
+redir.c: 2119: 0 (Debug) Didn't see end of headers, continue...
+redir.c: 3194: 0 (Debug) Continue...
+redir.c: 3124: 0 (Debug) Calling redir_getstate()
+redir.c: 3150: 0 (Debug) Receiving HTTP Request
+redir.c: 2119: 0 (Debug) Didn't see end of headers, continue...
+redir.c: 3194: 0 (Debug) Continue...
+redir.c: 3124: 0 (Debug) Calling redir_getstate()
+redir.c: 3150: 0 (Debug) Receiving HTTP Request
+redir.c: 2119: 0 (Debug) Didn't see end of headers, continue...
+redir.c: 3194: 0 (Debug) Continue...
+redir.c: 3124: 0 (Debug) Calling redir_getstate()
+redir.c: 3150: 0 (Debug) Receiving HTTP Request
+redir.c: 2119: 0 (Debug) Didn't see end of headers, continue...
+redir.c: 3194: 0 (Debug) Continue...
+redir.c: 3124: 0 (Debug) Calling redir_getstate()
+redir.c: 3150: 0 (Debug) Receiving HTTP Request
+redir.c: 2119: 0 (Debug) Didn't see end of headers, continue...
+redir.c: 3194: 0 (Debug) Continue...
+
+Any clue?
+
+
+-- 
+Andr?s Guerrero Doblado
+andres at meigal.com
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20100830/184f2af5/attachment.htm>
+
+From henk at skyrove.com  Mon Aug 30 21:06:01 2010
+From: henk at skyrove.com (Henk Kleynhans)
+Date: Mon, 30 Aug 2010 23:06:01 +0200
+Subject: [Chilli] High CPU load
+In-Reply-To: <4C7B995C.2050901@meigal.com>
+References: <4C7B995C.2050901@meigal.com>
+Message-ID: <AANLkTinh4H84hFKjyW98V8oaAMJYLXA6vo7+UijcC2SD@mail.gmail.com>
+
+Hi Andres,
+
+Is this on "live" installation?
+
+Chilli sometimes misbehaves if your router isn't connected to a gateway.
+
+Henk
+
+2010/8/30 Andr?s Guerrero Doblado <andres at meigal.com>:
+> Hi all,
+>
+> I've just migrated from Chillispot to CoovaChilli and I have a lot of
+> problems with CPU load. It seems that from time to time, the chilli
+> processes take all the CPU available.
+> I'm using CoovaChilli 1.2.4. If I run it in debug mode, thousands of lines
+> like these appear in the log:
+>
+> main-redir.c: 533: 0 (Debug) #23 (31) 264987 connection from 10.0.193.37
+> 51844
+> main-redir.c: 533: 0 (Debug) #24 (37) 264938 connection from 10.0.193.37
+> 51778
+> main-redir.c: 533: 0 (Debug) #25 (39) 264941 connection from 10.0.193.37
+> 51781
+> main-redir.c: 533: 0 (Debug) #26 (40) 264953 connection from 10.0.193.37
+> 51799
+> main-redir.c: 533: 0 (Debug) #27 (18) 264956 connection from 10.0.193.37
+> 51802
+> main-redir.c: 533: 0 (Debug) #28 (41) 264964 connection from 10.0.193.37
+> 51811
+> redir.c: 3124: 0 (Debug) Calling redir_getstate()
+> redir.c: 3150: 0 (Debug) Receiving HTTP Request
+> redir.c: 2119: 0 (Debug) Didn't see end of headers, continue...
+> redir.c: 3194: 0 (Debug) Continue...
+> redir.c: 3124: 0 (Debug) Calling redir_getstate()
+> redir.c: 3150: 0 (Debug) Receiving HTTP Request
+> redir.c: 2119: 0 (Debug) Didn't see end of headers, continue...
+> redir.c: 3194: 0 (Debug) Continue...
+> redir.c: 3124: 0 (Debug) Calling redir_getstate()
+> redir.c: 3150: 0 (Debug) Receiving HTTP Request
+> redir.c: 2119: 0 (Debug) Didn't see end of headers, continue...
+> redir.c: 3194: 0 (Debug) Continue...
+> redir.c: 3124: 0 (Debug) Calling redir_getstate()
+> redir.c: 3150: 0 (Debug) Receiving HTTP Request
+> redir.c: 2119: 0 (Debug) Didn't see end of headers, continue...
+> redir.c: 3194: 0 (Debug) Continue...
+> redir.c: 3124: 0 (Debug) Calling redir_getstate()
+> redir.c: 3150: 0 (Debug) Receiving HTTP Request
+> redir.c: 2119: 0 (Debug) Didn't see end of headers, continue...
+> redir.c: 3194: 0 (Debug) Continue...
+>
+> Any clue?
+>
+>
+> --
+> Andr?s Guerrero Doblado
+> andres at meigal.com
+>
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+>
+
+
+
+-- 
+Henk Kleynhans
+CEO & Founder
+Skyrove (Pty) Ltd
+Technology Top 100 - Most Promising Emerging Enterprise
+Tel: 0861 768 377
+Cell: +27 (84) 3073451
+Fax: +27 (86) 6204077
+henk at skyrove.com
+?blog: www.geekrebel.com
+
+------
+
+"A person with ubuntu is open and available to others, affirming of
+others, does not feel threatened that others are able and good, for he
+or she has a proper self-assurance that comes from knowing that he or
+she belongs in a greater whole and is diminished when others are
+humiliated or diminished, when others are tortured or oppressed." -
+Desmond Tutu
+
+From andres at meigal.com  Tue Aug 31 07:11:15 2010
+From: andres at meigal.com (=?ISO-8859-1?Q?Andr=E9s_Guerrero_Doblado?=)
+Date: Tue, 31 Aug 2010 09:11:15 +0200
+Subject: [Chilli] High CPU load
+In-Reply-To: <4C7CA670.8030505@meigal.com>
+References: <4C7B995C.2050901@meigal.com>	<AANLkTinh4H84hFKjyW98V8oaAMJYLXA6vo7+UijcC2SD@mail.gmail.com>	<4C7C962D.80404@meigal.com>
+	<AANLkTi=kmC=X8-7ReXjbJ7grud_7ym-df9NbXACcDfOR@mail.gmail.com>
+	<4C7CA670.8030505@meigal.com>
+Message-ID: <4C7CAB13.5000502@meigal.com>
+
+
+Sorry, I've just realised that I was replying directly to Henk :)
+
+On 31/08/2010 08:51, Andr?s Guerrero Doblado wrote:
+>
+> I have just suffered the problem again for some minutes: chilli takes 
+> 100% of CPU for more than 5 minutes
+>
+> redir.c: 3124: 0 (Debug) Calling redir_getstate()
+> redir.c: 3150: 0 (Debug) Receiving HTTP Request
+> redir.c: 2119: 0 (Debug) Didn't see end of headers, continue...
+> redir.c: 3194: 0 (Debug) Continue...
+> redir.c: 3124: 0 (Debug) Calling redir_getstate()
+> redir.c: 3150: 0 (Debug) Receiving HTTP Request
+> redir.c: 2119: 0 (Debug) Didn't see end of headers, continue...
+> redir.c: 3194: 0 (Debug) Continue...
+> redir.c: 3124: 0 (Debug) Calling redir_getstate()
+> redir.c: 3150: 0 (Debug) Receiving HTTP Request
+> redir.c: 2119: 0 (Debug) Didn't see end of headers, continue...
+> redir.c: 3194: 0 (Debug) Continue...
+> main-redir.c: 533: 0 (Debug) #1 (20) 3553 connection from 10.0.193.11 
+> 49192
+> main-redir.c: 533: 0 (Debug) #2 (21) 3553 connection from 10.0.193.11 
+> 49193
+> main-redir.c: 533: 0 (Debug) #3 (22) 3553 connection from 10.0.193.11 
+> 49194
+> main-redir.c: 533: 0 (Debug) #4 (23) 3553 connection from 10.0.193.11 
+> 49195
+> main-redir.c: 533: 0 (Debug) #5 (24) 3553 connection from 10.0.193.11 
+> 49196
+> main-redir.c: 533: 0 (Debug) #6 (25) 3553 connection from 10.0.193.11 
+> 49197
+> main-redir.c: 533: 0 (Debug) #7 (26) 3553 connection from 10.0.193.11 
+> 49198
+> main-redir.c: 533: 0 (Debug) #8 (27) 3568 connection from 10.0.193.11 
+> 49213
+> main-redir.c: 533: 0 (Debug) #9 (28) 3568 connection from 10.0.193.11 
+> 49214
+> main-redir.c: 533: 0 (Debug) #10 (29) 3568 connection from 10.0.193.11 
+> 49215
+> main-redir.c: 533: 0 (Debug) #11 (30) 3568 connection from 10.0.193.11 
+> 49216
+> main-redir.c: 533: 0 (Debug) #12 (31) 3568 connection from 10.0.193.11 
+> 49217
+> main-redir.c: 533: 0 (Debug) #13 (32) 3568 connection from 10.0.193.11 
+> 49218
+> main-redir.c: 533: 0 (Debug) #14 (33) 3568 connection from 10.0.193.11 
+> 49219
+> main-redir.c: 533: 0 (Debug) #15 (34) 3583 connection from 10.0.193.11 
+> 49235
+> main-redir.c: 533: 0 (Debug) #16 (35) 3583 connection from 10.0.193.11 
+> 49236
+> main-redir.c: 533: 0 (Debug) #17 (36) 3584 connection from 10.0.193.11 
+> 49237
+> main-redir.c: 533: 0 (Debug) #18 (37) 3584 connection from 10.0.193.11 
+> 49238
+> main-redir.c: 533: 0 (Debug) #19 (38) 3584 connection from 10.0.193.11 
+> 49239
+> main-redir.c: 533: 0 (Debug) #20 (39) 3584 connection from 10.0.193.11 
+> 49240
+> main-redir.c: 533: 0 (Debug) #21 (40) 3584 connection from 10.0.193.11 
+> 49241
+>
+> If I run a chilli_query list:
+>
+> [root at s-jrcsvqwi031p log]# chilli_query list
+> 00-50-56-97-7B-BF 0.0.0.0 none 4c7ca3bd00000008 0 - 0/0 0/0 0/0 0/0 0 
+> 0 0/0 0/0 -
+> F8-1E-DF-DF-47-55 10.0.193.11 dnat 4c7ca31d00000001 0 - 0/0 0/0 0/0 
+> 0/0 0 0 0/0 0/0 http://conn.skype.com/
+> 00-1F-3C-01-40-4A 10.0.193.10 dnat 4c7ca1d000000003 0 - 0/0 0/0 0/0 
+> 0/0 0 0 0/0 0/0 
+> http://cr-tools.clients.google.com/service/check2?appid=%7B430FD4D0-B729-4F61-AA34-91526481799D%7D&appversion=1.2.183.23&applang=&machine=1&version=1.2.183.23&osversion=5.1&servicepack=Service%20Pack%203
+> 00-22-55-42-6D-92 10.0.193.7 dnat 4c7c980900000007 0 - 0/0 0/0 0/0 0/0 
+> 0 0 0/0 0/0 -
+> 00-16-47-EA-37-A3 10.0.193.6 dnat 4c7c980800000006 0 - 0/0 0/0 0/0 0/0 
+> 0 0 0/0 0/0 -
+> 00-16-47-EA-37-98 10.0.193.5 dnat 4c7c980700000005 0 - 0/0 0/0 0/0 0/0 
+> 0 0 0/0 0/0 -
+> 00-16-47-EA-32-D1 10.0.193.4 dnat 4c7c980600000004 0 - 0/0 0/0 0/0 0/0 
+> 0 0 0/0 0/0 -
+> 00-16-47-EA-36-7E 10.0.193.3 dnat 4c7c969700000002 0 - 0/0 0/0 0/0 0/0 
+> 0 0 0/0 0/0 -
+>
+> I've identified the machine F8-1E-DF-DF-47-55 and it's a Apple 
+> machine. The software that seems to cause the problem is not a virus, 
+> it seems to be Skype, so I think that trying to identify the client 
+> and block the mac is not the solution.
+>
+> The users are redirected to the Apache webserver installed locally. 
+> The AAA server is also local to this machine.
+>
+> On 31/08/2010 08:37, Henk Kleynhans wrote:
+>> Could well be.
+>>
+>> Do a chilli_query list and see if you can find out more about the IP
+>> 10.0.193.37
+>>
+>> If you're getting so many redirs, it's probably not authenticated, but
+>> is connected. A virus could easily cause many redir requests.
+>>
+>> You should be able to block the client based on their mac address (can
+>> be seen with chilli_query list)
+>>
+>> Also, where do you attempt to redir the client to? If you find this is
+>> a common problem (which it will be if you have a large network), you
+>> can redirect clients to a page on the router itself, then from there,
+>> do a javascript redirection to your AAA server. In that way, you will
+>> also be able to prevent thousands of attempted page loads being called
+>> from your server (that will in any case get dumped once they get to
+>> the router). It _might_ also reduce the load on your router (assuming
+>> that trying to redirect to the server is to blame here)
+>>
+>> Henk
+>>
+>> 2010/8/31 Andr?s Guerrero Doblado<andres at meigal.com>:
+>>> Yes Henk. The problem occurs on "live". In fact, it only happens once is
+>>> live. I think that the problem can be related with an infected machine
+>>> connected to the network, because it was working last weekend perfectly, but
+>>> yesterday at 9.30am (monday morning) the problem appears again.
+>>>
+>>>
+>>> On 30/08/2010 23:06, Henk Kleynhans wrote:
+>>>
+>>> Hi Andres,
+>>>
+>>> Is this on "live" installation?
+>>>
+>>> Chilli sometimes misbehaves if your router isn't connected to a gateway.
+>>>
+>>> Henk
+>>>
+>>> 2010/8/30 Andr?s Guerrero Doblado<andres at meigal.com>:
+>>>
+>>> Hi all,
+>>>
+>>> I've just migrated from Chillispot to CoovaChilli and I have a lot of
+>>> problems with CPU load. It seems that from time to time, the chilli
+>>> processes take all the CPU available.
+>>> I'm using CoovaChilli 1.2.4. If I run it in debug mode, thousands of lines
+>>> like these appear in the log:
+>>>
+>>> main-redir.c: 533: 0 (Debug) #23 (31) 264987 connection from 10.0.193.37
+>>> 51844
+>>> main-redir.c: 533: 0 (Debug) #24 (37) 264938 connection from 10.0.193.37
+>>> 51778
+>>> main-redir.c: 533: 0 (Debug) #25 (39) 264941 connection from 10.0.193.37
+>>> 51781
+>>> main-redir.c: 533: 0 (Debug) #26 (40) 264953 connection from 10.0.193.37
+>>> 51799
+>>> main-redir.c: 533: 0 (Debug) #27 (18) 264956 connection from 10.0.193.37
+>>> 51802
+>>> main-redir.c: 533: 0 (Debug) #28 (41) 264964 connection from 10.0.193.37
+>>> 51811
+>>> redir.c: 3124: 0 (Debug) Calling redir_getstate()
+>>> redir.c: 3150: 0 (Debug) Receiving HTTP Request
+>>> redir.c: 2119: 0 (Debug) Didn't see end of headers, continue...
+>>> redir.c: 3194: 0 (Debug) Continue...
+>>> redir.c: 3124: 0 (Debug) Calling redir_getstate()
+>>> redir.c: 3150: 0 (Debug) Receiving HTTP Request
+>>> redir.c: 2119: 0 (Debug) Didn't see end of headers, continue...
+>>> redir.c: 3194: 0 (Debug) Continue...
+>>> redir.c: 3124: 0 (Debug) Calling redir_getstate()
+>>> redir.c: 3150: 0 (Debug) Receiving HTTP Request
+>>> redir.c: 2119: 0 (Debug) Didn't see end of headers, continue...
+>>> redir.c: 3194: 0 (Debug) Continue...
+>>> redir.c: 3124: 0 (Debug) Calling redir_getstate()
+>>> redir.c: 3150: 0 (Debug) Receiving HTTP Request
+>>> redir.c: 2119: 0 (Debug) Didn't see end of headers, continue...
+>>> redir.c: 3194: 0 (Debug) Continue...
+>>> redir.c: 3124: 0 (Debug) Calling redir_getstate()
+>>> redir.c: 3150: 0 (Debug) Receiving HTTP Request
+>>> redir.c: 2119: 0 (Debug) Didn't see end of headers, continue...
+>>> redir.c: 3194: 0 (Debug) Continue...
+>>>
+>>> Any clue?
+>>>
+>>>
+>>> --
+>>> Andr?s Guerrero Doblado
+>>> andres at meigal.com
+>>>
+>>> _______________________________________________
+>>> Chilli mailing list
+>>> Chilli at coova.org
+>>> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>>>
+>>>
+>>>
+>>>
+>>>
+>>> --
+>>> Andr?s Guerrero Doblado
+>>> andres at meigal.com
+>>
+>
+> -- 
+> Andr?s Guerrero Doblado
+> andres at meigal.com
+
+-- 
+Andr?s Guerrero Doblado
+andres at meigal.com
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20100831/19e3c48f/attachment.htm>
+
+From fahd.kasri at weblib.eu  Tue Aug 31 13:45:02 2010
+From: fahd.kasri at weblib.eu (Fahd Kasri)
+Date: Tue, 31 Aug 2010 15:45:02 +0200
+Subject: [Chilli] Changing UAM port - Outgoing port 3990 blocked
+Message-ID: <AANLkTim3DYOM5RTmUg7oeMR-Wut0NzgEV7UDHDOgSoqu@mail.gmail.com>
+
+Hi all,
+
+Several of our users have been unable to get past our captive portal. After
+investigating the problem, I've found that some users with over zealous
+firewalls have all outgoing ports blocked, except the classic ones
+(80,443...). This keeps them from contacting 192.168.182.1:3990 (where
+192.168.182.1 is the router's ip)
+
+Has anybody had this type of problem?
+
+I've tried changing uamport to 80, but it doesn't seem to work (when I try
+to visit a webpage, I get a 404).
+
+Thanks.
+
+-- 
+Fahd
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20100831/c46391dd/attachment.htm>
+

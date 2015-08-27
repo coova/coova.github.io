@@ -1,0 +1,157 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> traffic logging
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20traffic%20logging&In-Reply-To=%3Cf71cb680908070055r64400ceem4eb2d3b6a4b2aa60%40mail.gmail.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000842.html">
+   <LINK REL="Next"  HREF="000855.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>traffic logging</H1>
+    <B>Marco Simioni</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20traffic%20logging&In-Reply-To=%3Cf71cb680908070055r64400ceem4eb2d3b6a4b2aa60%40mail.gmail.com%3E"
+       TITLE="traffic logging">m.simioni at gmail.com
+       </A><BR>
+    <I>Fri Aug  7 07:55:39 UTC 2009</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000842.html">traffic logging
+</A></li>
+        <LI>Next message: <A HREF="000855.html">traffic logging
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#848">[ date ]</a>
+              <a href="thread.html#848">[ thread ]</a>
+              <a href="subject.html#848">[ subject ]</a>
+              <a href="author.html#848">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>You're right.
+
+On my old machine, i am receiving this log:
+
+Aug  7 09:35:53 izc kernel: [26916606.764000] IPTABLES IZC : IN=eth1
+OUT= MAC=X:X:X:X:X:X:X:X:X:X:X:X SRC=X.X.X.X DST=X.X.X.X LEN=89
+TOS=0x00 PREC=0x00 TTL=255 ID=8000 PROTO=UDP SPT=54528 DPT=53 LEN=69
+
+It is logging on interface eth1, not on tun0.
+
+Btw, the iptables command was the same, in up.sh:
+
+iptables -t nat -I PREROUTING 1 -j LOG -m state --state NEW
+--log-tcp-options --log-ip-options --log-prefix &quot;IPTABLES : &quot;
+
+What is the difference? Why on my old machine it logs on eth1, and on
+my new machine it logs on tun0? Something changed on chilli?
+
+Old machine setup:
+
+Linux izc 2.6.15-26-386 #1 PREEMPT Fri Sep 8 19:55:17 UTC 2006 i686 GNU/Linux
+Ubuntu 6.06.1 LTS \n \l
+coova-chilli 1.0.12
+
+New machine setup:
+
+Linux izc.tecnofingroup.it 2.6.24-24-generic #1 SMP Fri Jul 24
+22:46:06 UTC 2009 i686 GNU/Linux
+Ubuntu 8.04.3 LTS \n \l
+coova-chilli 1.0.14
+
+Something changed on chilli? Or on ubuntu? Or whatelse?
+
+
+Thank you i.a.,
+
+Marco
+
+
+
+
+
+2009/8/6 EasyHorpak.com &lt;<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">info at easyhorpak.com</A>&gt;:
+&gt;<i> Mac address not appear on interfaces tun0.
+</I>&gt;<i> Cause it virtual interfaces on eth1.
+</I>&gt;<i>
+</I>&gt;<i> wait for another additional..
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> ----- Original Message ----- From: &quot;Marco Simioni&quot; &lt;<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">m.simioni at gmail.com</A>&gt;
+</I>&gt;<i> To: &lt;<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli at coova.org</A>&gt;
+</I>&gt;<i> Sent: Wednesday, August 05, 2009 7:06 PM
+</I>&gt;<i> Subject: traffic logging
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;&gt;<i> Hi,
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> i always logged network traffic throught my hotspot using this command in
+</I>&gt;&gt;<i> up.sh:
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> &#160; #(LOGGING)
+</I>&gt;&gt;<i> &#160; iptables -t nat -I PREROUTING 1 -j LOG -m state --state NEW
+</I>&gt;&gt;<i> --log-tcp-options --log-ip-options --log-prefix &quot;IPTABLES : &quot;
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> and this is the ouput in my syslog:
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> Aug &#160;5 18:01:02 izc kernel: [ 1430.272826] IPTABLES : IN=tun0 OUT=
+</I>&gt;&gt;<i> MAC= SRC=XX.XX.XX.XX DST=XX.XX.XX.XX LEN=52 TOS=0x00 PREC=0x00 TTL=128
+</I>&gt;&gt;<i> ID=7897 DF PROTO=TCP SPT=50034 DPT=80 WINDOW=8192 RES=0x00 SYN URGP=0
+</I>&gt;&gt;<i> OPT (020405B40103030201010402)
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> The MAC part is always empty.
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> I am pretty sure that this worked on another machines, with older
+</I>&gt;&gt;<i> chilli versions (1.0.12 and 1.0.13).
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> Now i'm using 1.0.14, ubuntu binary build.
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> Linux izc 2.6.24-24-generic #1 SMP Fri Jul 24 22:46:06 UTC 2009 i686
+</I>&gt;&gt;<i> GNU/Linux
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> Ubuntu 8.04.3 LTS \n \l
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> Suggestions?
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> ---------------------------------------------------------------------
+</I>&gt;&gt;<i> To unsubscribe, e-mail: <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli-unsubscribe at coova.org</A>
+</I>&gt;&gt;<i> For additional commands, e-mail: <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli-help at coova.org</A>
+</I>&gt;&gt;<i> Wiki: <A HREF="http://coova.org/wiki/index.php/CoovaChilli">http://coova.org/wiki/index.php/CoovaChilli</A>
+</I>&gt;&gt;<i> Forum: <A HREF="http://coova.org/phpBB3/viewforum.php?f=4">http://coova.org/phpBB3/viewforum.php?f=4</A>
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> ---------------------------------------------------------------------
+</I>&gt;<i> To unsubscribe, e-mail: <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli-unsubscribe at coova.org</A>
+</I>&gt;<i> For additional commands, e-mail: <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli-help at coova.org</A>
+</I>&gt;<i> Wiki: <A HREF="http://coova.org/wiki/index.php/CoovaChilli">http://coova.org/wiki/index.php/CoovaChilli</A>
+</I>&gt;<i> Forum: <A HREF="http://coova.org/phpBB3/viewforum.php?f=4">http://coova.org/phpBB3/viewforum.php?f=4</A>
+</I>&gt;<i>
+</I>&gt;<i>
+</I>
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000842.html">traffic logging
+</A></li>
+	<LI>Next message: <A HREF="000855.html">traffic logging
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#848">[ date ]</a>
+              <a href="thread.html#848">[ thread ]</a>
+              <a href="subject.html#848">[ subject ]</a>
+              <a href="author.html#848">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

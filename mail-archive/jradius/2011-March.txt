@@ -1,0 +1,90 @@
+From mgenov at gmail.com  Tue Mar  8 15:09:12 2011
+From: mgenov at gmail.com (Miroslav Genov)
+Date: Tue, 8 Mar 2011 17:09:12 +0200
+Subject: [Jradius] EhCache and RadiusSession serializations
+Message-ID: <AANLkTi=EX1MMJaPLvj6GPh2=049fjGC+Eon+iyhvVVry@mail.gmail.com>
+
+Hello,
+I'm using the latest (trunk) version of JRadius and I'm encountering strange
+issue with ehcache's diskstore. I made a small fix in the code which is
+allowing me to use a custom configuration of ehcache (spring injection), so
+my sessions configuration is looking like:
+
+<?xml version="1.0" encoding="UTF-8"?>
+<ehcache>
+
+    <!-- store disk cache in default java tmp dir -->
+    <diskStore path="java.io.tmpdir"/>
+
+    <!-- define a default cache. -->
+    <defaultCache
+        maxElementsInMemory="1000"
+        eternal="false"
+        timeToIdleSeconds="30"
+        timeToLiveSeconds="5"
+        overflowToDisk="true"
+        diskPersistent="true"
+        diskExpiryThreadIntervalSeconds="120" />
+
+</ehcache>
+
+The problem is occurring when ehcache is trying to store all new elements in
+the temp folder. Here is the error which I'm getting:
+
+java.io.NotSerializableException: net.jradius.freeradius.FreeRadiusListener
+at java.io.ObjectOutputStream.writeObject0(ObjectOutputStream.java:1156)
+~[na:1.6.0_20]
+at
+java.io.ObjectOutputStream.defaultWriteFields(ObjectOutputStream.java:1509)
+~[na:1.6.0_20]
+at java.io.ObjectOutputStream.writeSerialData(ObjectOutputStream.java:1474)
+~[na:1.6.0_20]
+at
+java.io.ObjectOutputStream.writeOrdinaryObject(ObjectOutputStream.java:1392)
+~[na:1.6.0_20]
+at java.io.ObjectOutputStream.writeObject0(ObjectOutputStream.java:1150)
+~[na:1.6.0_20]
+at
+java.io.ObjectOutputStream.defaultWriteFields(ObjectOutputStream.java:1509)
+~[na:1.6.0_20]
+at java.io.ObjectOutputStream.writeSerialData(ObjectOutputStream.java:1474)
+~[na:1.6.0_20]
+at
+java.io.ObjectOutputStream.writeOrdinaryObject(ObjectOutputStream.java:1392)
+~[na:1.6.0_20]
+at java.io.ObjectOutputStream.writeObject0(ObjectOutputStream.java:1150)
+~[na:1.6.0_20]
+at
+java.io.ObjectOutputStream.defaultWriteFields(ObjectOutputStream.java:1509)
+~[na:1.6.0_20]
+at
+java.io.ObjectOutputStream.defaultWriteObject(ObjectOutputStream.java:416)
+~[na:1.6.0_20]
+at net.sf.ehcache.Element.writeObject(Element.java:787) ~[auth.jar:na]
+at sun.reflect.GeneratedMethodAccessor46.invoke(Unknown Source) ~[na:na]
+at
+sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+~[na:1.6.0_20]
+at java.lang.reflect.Method.invoke(Method.java:597) ~[na:1.6.0_20]
+at java.io.ObjectStreamClass.invokeWriteObject(ObjectStreamClass.java:945)
+~[na:1.6.0_20]
+at java.io.ObjectOutputStream.writeSerialData(ObjectOutputStream.java:1461)
+~[na:1.6.0_20]
+at
+java.io.ObjectOutputStream.writeOrdinaryObject(ObjectOutputStream.java:1392)
+~[na:1.6.0_20]
+at java.io.ObjectOutputStream.writeObject0(ObjectOutputStream.java:1150)
+~[na:1.6.0_20]
+
+Just was wondering whether JRadius could handle ~3k accounting sessions
+without using of all available memory (2GB per process) and if it's not
+possible, how can I use serialization to store some of the session objects
+on the file system ?
+
+
+-- 
+The human knowledge belongs to the world.
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/jradius/attachments/20110308/5fe61554/attachment.html>
+

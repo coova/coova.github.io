@@ -1,0 +1,166 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Jradius] JRadius Simulator and radsecproxy (TLS)
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:jradius%40coova.org?Subject=Re%3A%20%5BJradius%5D%20JRadius%20Simulator%20and%20radsecproxy%20%28TLS%29&In-Reply-To=%3C1370288508.2973.0.camel%40david-XPS%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000045.html">
+   <LINK REL="Next"  HREF="000047.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Jradius] JRadius Simulator and radsecproxy (TLS)</H1>
+    <B>David Bird</B> 
+    <A HREF="mailto:jradius%40coova.org?Subject=Re%3A%20%5BJradius%5D%20JRadius%20Simulator%20and%20radsecproxy%20%28TLS%29&In-Reply-To=%3C1370288508.2973.0.camel%40david-XPS%3E"
+       TITLE="[Jradius] JRadius Simulator and radsecproxy (TLS)">dwbird at mac.com
+       </A><BR>
+    <I>Mon Jun  3 19:41:48 UTC 2013</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000045.html">[Jradius] JRadius Simulator and radsecproxy (TLS)
+</A></li>
+        <LI>Next message: <A HREF="000047.html">[Jradius] JRadius Simulator and radsecproxy (TLS)
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#46">[ date ]</a>
+              <a href="thread.html#46">[ thread ]</a>
+              <a href="subject.html#46">[ subject ]</a>
+              <a href="author.html#46">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Glad to hear it...
+
+Is this more or less what you have done? :
+
+ public class RadSecClientTransport extends RadiusClientTransport
+ {
+-	private Socket socket;
+-	private Socket socketAcct;
++	private SSLSocket socket;
++	private SSLSocket socketAcct;
+ 	private KeyManager keyManagers[];
+ 	private TrustManager trustManagers[];
+ 	
+@@ -71,19 +72,21 @@
+ 	{
+ 		try
+ 		{
+-	        SSLContext sslContext = SSLContext.getInstance(&quot;SSLv3&quot;);
++	        SSLContext sslContext = SSLContext.getInstance(&quot;TLSv1&quot;);
+ 	        sslContext.init(keyManagers, trustManagers, null);
+ 	        
+ 	        SSLSocketFactory socketFactory =
+sslContext.getSocketFactory();
+-	        socket = socketFactory.createSocket(getRemoteInetAddress(),
+getAuthPort());
++	        socket = (SSLSocket)
+socketFactory.createSocket(getRemoteInetAddress(), getAuthPort());
+ 	        socket.setReuseAddress(true);
+ 	        socket.setSoTimeout(getSocketTimeout() * 1000);
++	        socket.setEnabledProtocols(new String[] { &quot;TLSv1&quot; });
+ 	        
+ 	        if (getAcctPort() != getAuthPort())
+ 	        {
+-		        socketAcct =
+socketFactory.createSocket(getRemoteInetAddress(), getAcctPort());
++		        socketAcct = (SSLSocket)
+socketFactory.createSocket(getRemoteInetAddress(), getAcctPort());
+ 		        socketAcct.setReuseAddress(true);
+ 		        socketAcct.setSoTimeout(getSocketTimeout() * 1000);
++		        socketAcct.setEnabledProtocols(new String[] { &quot;TLSv1&quot; });
+ 	        }
+ 		} 
+ 		catch (Exception e)
+
+
+
+On Mon, 2013-06-03 at 21:21 +0200, JB wrote:
+&gt;<i> I think, I got it!
+</I>&gt;<i> 
+</I>&gt;<i> Apparently, SSLContext.getInstance(&quot;TLSv1&quot;) isn't a broad enough hint for the SSLSocketFactory which protocol the socket should apply.
+</I>&gt;<i> I had to explicitly enable the &quot;TLSv1&quot; protocol via socket.setEnabledProtocols() .
+</I>&gt;<i> For this to work, socket and socketAcct have to be instances of SSLSocket.
+</I>&gt;<i> 
+</I>&gt;<i> Cheers,
+</I>&gt;<i> JB
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> &gt; I will give it a look...
+</I>&gt;<i> &gt; 
+</I>&gt;<i> &gt; 
+</I>&gt;<i> &gt; 
+</I>&gt;<i> &gt; On Mon, 2013-06-03 at 12:40 +0200, JB wrote:
+</I>&gt;<i> &gt;&gt; Okay, I've spent the whole morning installing a Java development environment and missing libraries (I thought Maven should take care of that?).
+</I>&gt;<i> &gt;&gt; Now, I can successfully build the client with the change you proposed.
+</I>&gt;<i> &gt;&gt; Unfortunately, I'm still getting the same error (&quot;SSL3_GET_RECORD:wrong version number&quot;) from radsecproxy when I make a request.
+</I>&gt;<i> &gt;&gt; 
+</I>&gt;<i> &gt;&gt; Am I missing something?
+</I>&gt;<i> &gt;&gt; 
+</I>&gt;<i> &gt;&gt; Thanks!
+</I>&gt;<i> &gt;&gt; JB
+</I>&gt;<i> &gt;&gt; 
+</I>&gt;<i> &gt;&gt;&gt; Yes, RadSecClientTransport.initialize(), change
+</I>&gt;<i> &gt;&gt;&gt; SSLContext.getInstance(&quot;SSLv3&quot;) to SSLContext.getInstance(&quot;TLSv1&quot;)
+</I>&gt;<i> &gt;&gt;&gt; 
+</I>&gt;<i> &gt;&gt;&gt; Cheers,
+</I>&gt;<i> &gt;&gt;&gt; David
+</I>&gt;<i> &gt;&gt;&gt; 
+</I>&gt;<i> &gt;&gt;&gt; On Fri, 2013-05-31 at 20:47 +0200, JB wrote:
+</I>&gt;<i> &gt;&gt;&gt;&gt; Hi!
+</I>&gt;<i> &gt;&gt;&gt;&gt; 
+</I>&gt;<i> &gt;&gt;&gt;&gt; I wanted to use the JRadius Simulator to test my radsecproxy configuration.
+</I>&gt;<i> &gt;&gt;&gt;&gt; Unfortunately, I'm getting an &quot;SSL3_GET_RECORD:wrong version number&quot; error from radsecproxy.
+</I>&gt;<i> &gt;&gt;&gt;&gt; 
+</I>&gt;<i> &gt;&gt;&gt;&gt; I found an old thread over on the CoovaChilli mailing list which addresses the very same issue:
+</I>&gt;<i> &gt;&gt;&gt;&gt; <A HREF="http://lists.coova.org/pipermail/chilli/2010-June/001430.html">http://lists.coova.org/pipermail/chilli/2010-June/001430.html</A>
+</I>&gt;<i> &gt;&gt;&gt;&gt; 
+</I>&gt;<i> &gt;&gt;&gt;&gt; Could this also be a solution for JRadiusSimulator or is this a different issue?
+</I>&gt;<i> &gt;&gt;&gt;&gt; 
+</I>&gt;<i> &gt;&gt;&gt;&gt; Thanks!
+</I>&gt;<i> &gt;&gt;&gt;&gt; 
+</I>&gt;<i> &gt;&gt;&gt;&gt; JB
+</I>&gt;<i> &gt;&gt; 
+</I>&gt;<i> &gt; 
+</I>&gt;<i> &gt; 
+</I>&gt;<i> 
+</I>&gt;<i> _______________________________________________
+</I>&gt;<i> Jradius mailing list
+</I>&gt;<i> <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/jradius">Jradius at coova.org</A>
+</I>&gt;<i> <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/jradius">http://lists.coova.org/cgi-bin/mailman/listinfo/jradius</A>
+</I>
+-- 
+--
+David Bird
+<A HREF="http://www.linkedin.com/in/dwbird/">http://www.linkedin.com/in/dwbird/</A>
+
+</PRE>
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000045.html">[Jradius] JRadius Simulator and radsecproxy (TLS)
+</A></li>
+	<LI>Next message: <A HREF="000047.html">[Jradius] JRadius Simulator and radsecproxy (TLS)
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#46">[ date ]</a>
+              <a href="thread.html#46">[ thread ]</a>
+              <a href="subject.html#46">[ subject ]</a>
+              <a href="author.html#46">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/jradius">More information about the Jradius
+mailing list</a><br>
+</body></html>

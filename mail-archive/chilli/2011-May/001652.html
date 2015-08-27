@@ -1,0 +1,425 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] Crazy TCP resets when CoovaChilli is enabled (UAM redirection problem)
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Crazy%20TCP%20resets%20when%20CoovaChilli%20is%20enabled%20%28UAM%0A%20redirection%20problem%29&In-Reply-To=%3CBANLkTi%3DunxtHLXaL7woQ99%3Ddqq5mDsDzow%40mail.gmail.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001651.html">
+   <LINK REL="Next"  HREF="001653.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] Crazy TCP resets when CoovaChilli is enabled (UAM redirection problem)</H1>
+    <B>Yuh-Rong Leu</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Crazy%20TCP%20resets%20when%20CoovaChilli%20is%20enabled%20%28UAM%0A%20redirection%20problem%29&In-Reply-To=%3CBANLkTi%3DunxtHLXaL7woQ99%3Ddqq5mDsDzow%40mail.gmail.com%3E"
+       TITLE="[Chilli] Crazy TCP resets when CoovaChilli is enabled (UAM redirection problem)">yuhrong.leu at gmail.com
+       </A><BR>
+    <I>Wed May  4 10:06:17 UTC 2011</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001651.html">[Chilli] Crazy TCP resets when CoovaChilli is enabled (UAM	redirection problem)
+</A></li>
+        <LI>Next message: <A HREF="001653.html">[Chilli] Crazy TCP resets when CoovaChilli is enabled (UAM redirection problem)
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1652">[ date ]</a>
+              <a href="thread.html#1652">[ thread ]</a>
+              <a href="subject.html#1652">[ subject ]</a>
+              <a href="author.html#1652">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Please see the attached firewall rules (firewall.txt) and iptables dump
+(iptables.txt).
+
+Yuh-Rong Leu
+
+2011/5/4 David Bird &lt;<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">david at coova.com</A>&gt;
+
+&gt;<i>  Hi, after your change, do you see duplicate packets on the dhcpif
+</I>&gt;<i> interface? What do your iptables rules look l like? My suspicion is that
+</I>&gt;<i> both the kernel and chilli are forwarding packets off of the dhcpif ... In
+</I>&gt;<i> iptables, you should have a DROP for the FORWARD coming in from the dhcpif.
+</I>&gt;<i>
+</I>&gt;<i> --
+</I>&gt;<i>   David Bird
+</I>&gt;<i>   Coova Technologies, LLC
+</I>&gt;<i>
+</I>&gt;<i> On Apr 27, 2011, at 4:33 PM, Yuh-Rong Leu &lt;<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">yuhrong.leu at gmail.com</A>&gt; wrote:
+</I>&gt;<i>
+</I>&gt;<i>   I found the root cause of the crazy TCP reset messages.
+</I>&gt;<i>
+</I>&gt;<i> In dhcp.c, the dhcp_data_req() function calls dhcp_undoDNAT with the
+</I>&gt;<i> do_reset parameter set to 1 when authstate == DHCP_AUTH_DNAT (at around
+</I>&gt;<i> line# 4074). Therefore, crazy TCP reset messages will be sent inside
+</I>&gt;<i> dhcp_undoDNAT.
+</I>&gt;<i>
+</I>&gt;<i> After the code is changed to use 0 for the do_reset  parameter when calling
+</I>&gt;<i> dhcp_undoDNAT, the problem goes away, and Web redirection works well with
+</I>&gt;<i> any triggering any URL on any browser.
+</I>&gt;<i>
+</I>&gt;<i> Yuh-Rong Leu
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> 2011/4/26 Yuh-Rong Leu &lt;<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">yuhrong.leu at gmail.com</A>&gt;
+</I>&gt;<i>
+</I>&gt;&gt;<i> Web redirection doesn't work stably with my CoovaChilli/OpenWrt box. Here
+</I>&gt;&gt;<i> are the test results:
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> If the browser home page is set to <A HREF="http://www.google.com:">http://www.google.com:</A>
+</I>&gt;&gt;<i> - IE9 is seldom redirected to the welcome/login page
+</I>&gt;&gt;<i> - Chrome 10 is redirected to the welcome/login page most of the time.
+</I>&gt;&gt;<i> - Firefox 4 is is redirected to the welcome/login page most of the time.
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> If the browser home page is set to <A HREF="http://www.microsoft.com:">http://www.microsoft.com:</A>
+</I>&gt;&gt;<i> - Redirection works quite fine with all kinds of browsers.
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> If the browser home page is set to <A HREF="http://www.apple.com">http://www.apple.com</A> or
+</I>&gt;&gt;<i> <A HREF="http://www.bing.com:">http://www.bing.com:</A>
+</I>&gt;&gt;<i> - Redirection does not work at all with any browsers.
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> Peeking the packets with Wireshark, I found TCP connections are reset
+</I>&gt;&gt;<i> several times by CoovaChilli/OpenWrt. And some TCP reset messages sent by
+</I>&gt;&gt;<i> CoovaChilli/OpenWrt have insanely large SEQ number. As the attached
+</I>&gt;&gt;<i> Wireshard packet capture, which was generated by &quot;telnet 64.233.183.105 80,&quot;
+</I>&gt;&gt;<i> shows, 5 RST messages were sent, and 4 of them are with Seq=1246334216.
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> I believe it's these crazy RST messages that make UAM redirection not work
+</I>&gt;&gt;<i> stably. I doubt the RST messages were due to Firwall rules CoovaChilli added
+</I>&gt;&gt;<i> to iptables, but I have not been able to figure out where the firewall rules
+</I>&gt;&gt;<i> reside.
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> Can anyone tell how CoovaChilli manipulates iptables before it sends HTTP
+</I>&gt;&gt;<i> 302 Moved Temporarily for UAM redireciton?
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> Yuh-Rong Leu
+</I>&gt;&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>  _______________________________________________
+</I>&gt;<i> Chilli mailing list
+</I>&gt;<i> <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">Chilli at coova.org</A>
+</I>&gt;<i> <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">http://lists.coova.org/cgi-bin/mailman/listinfo/chilli</A>
+</I>&gt;<i>
+</I>&gt;<i>
+</I>-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: &lt;<A HREF="http://lists.coova.org/pipermail/chilli/attachments/20110504/3f6fde63/attachment-0001.html">http://lists.coova.org/pipermail/chilli/attachments/20110504/3f6fde63/attachment-0001.html</A>&gt;
+-------------- next part --------------
+
+config 'rule'
+	option 'src' 'wan'
+	option 'dest_port' '22'
+	option 'target' 'DROP'
+	
+
+config 'rule'
+	option 'src' 'wan'
+	option 'dest_port' '80'
+	option 'target' 'ACCEPT'
+
+config 'rule'
+	option 'src' 'lan'
+	option 'dest_port' '22'
+	option 'target' 'ACCEPT'
+
+config 'rule'
+	option 'src' 'wan'
+	option 'dest_port' '80'
+	option 'target' 'ACCEPT'
+	option 'src_ip' '211.75.128.1'
+
+config 'rule'
+	option 'src' 'wan'
+	option 'dest_port' '80'
+	option 'src_ip' '1.2.3.4'
+	option 'target' 'ACCEPT'
+
+
+config 'rule'
+	option 'src' 'wan'
+	option 'dest_port' '80'
+	option 'src_ip' '1.2.3.4'
+	option 'target' 'ACCEPT'
+
+config 'rule'
+	option 'src' 'wan'
+	option 'dest_port' '22'
+	option 'src_ip' '192.168.0.113'
+	option 'target' 'ACCEPT'
+
+config 'rule'
+	option 'src' 'wan'
+	option 'src_ip' '211.75.128.1'
+	option 'proto' 'icmp'
+	option 'target' 'ACCEPT'
+
+config 'rule'
+	option 'src' 'wan'
+	option 'src_ip' '211.75.128.2'
+	option 'proto' 'icmp'
+	option 'target' 'ACCEPT'
+
+config 'rule'
+	option 'src' 'wan'
+	option 'src_ip' '211.75.128.1'
+	option 'target' 'ACCEPT'
+
+config 'rule'
+	option 'src' 'wan'
+	option 'src_ip' '211.75.128.2'
+	option 'target' 'ACCEPT'
+
+config 'defaults'
+	option 'syn_flood' '1'
+	option 'input' 'ACCEPT'
+	option 'output' 'ACCEPT'
+	option 'forward' 'ACCEPT'
+
+config 'zone'
+	option 'name' 'lan'
+	option 'input' 'ACCEPT'
+	option 'output' 'ACCEPT'
+	option 'forward' 'ACCEPT'
+
+config 'zone'
+	option 'name' 'wireless1'
+	option 'input' 'ACCEPT'
+	option 'output' 'ACCEPT'
+	option 'forward' 'ACCEPT'
+	
+config 'forwarding'
+	option 'src' 'wireless1'
+	option 'dest' 'wan'
+	option 'mtu_fix' '1'
+
+config 'zone'
+	option 'name' 'wan'
+	option 'input' 'ACCEPT'
+	option 'output' 'ACCEPT'
+	option 'forward' 'ACCEPT'
+	option 'masq' '1'
+
+config 'forwarding'
+	option 'src' 'lan'
+	option 'dest' 'wan'
+	option 'mtu_fix' '1'
+
+config 'include'
+	option 'path' '/etc/firewall.user'
+-------------- next part --------------
+Chain INPUT (policy ACCEPT)
+target     prot opt source               destination         
+ACCEPT     all  --  anywhere             anywhere            state RELATED,ESTABLISHED 
+ACCEPT     all  --  anywhere             anywhere            
+syn_flood  tcp  --  anywhere             anywhere            tcp flags:FIN,SYN,RST,ACK/SYN 
+input_rule  all  --  anywhere             anywhere            
+input      all  --  anywhere             anywhere            
+
+Chain FORWARD (policy ACCEPT)
+target     prot opt source               destination         
+ACCEPT     all  --  anywhere             anywhere            state RELATED,ESTABLISHED 
+forwarding_rule  all  --  anywhere             anywhere            
+forward    all  --  anywhere             anywhere            
+
+Chain OUTPUT (policy ACCEPT)
+target     prot opt source               destination         
+ACCEPT     all  --  anywhere             anywhere            state RELATED,ESTABLISHED 
+ACCEPT     all  --  anywhere             anywhere            
+output_rule  all  --  anywhere             anywhere            
+output     all  --  anywhere             anywhere            
+
+Chain forward (1 references)
+target     prot opt source               destination         
+zone_lan_forward  all  --  anywhere             anywhere            
+zone_wan_forward  all  --  anywhere             anywhere            
+zone_wireless1_forward  all  --  anywhere             anywhere            
+
+Chain forwarding_lan (1 references)
+target     prot opt source               destination         
+
+Chain forwarding_rule (1 references)
+target     prot opt source               destination         
+
+Chain forwarding_wan (1 references)
+target     prot opt source               destination         
+
+Chain forwarding_wireless1 (1 references)
+target     prot opt source               destination         
+
+Chain input (1 references)
+target     prot opt source               destination         
+zone_lan   all  --  anywhere             anywhere            
+zone_wan   all  --  anywhere             anywhere            
+zone_wireless1  all  --  anywhere             anywhere            
+
+Chain input_lan (1 references)
+target     prot opt source               destination         
+
+Chain input_rule (1 references)
+target     prot opt source               destination         
+
+Chain input_wan (1 references)
+target     prot opt source               destination         
+
+Chain input_wireless1 (1 references)
+target     prot opt source               destination         
+
+Chain output (1 references)
+target     prot opt source               destination         
+zone_lan_ACCEPT  all  --  anywhere             anywhere            
+zone_wireless1_ACCEPT  all  --  anywhere             anywhere            
+zone_wan_ACCEPT  all  --  anywhere             anywhere            
+
+Chain output_rule (1 references)
+target     prot opt source               destination         
+
+Chain reject (6 references)
+target     prot opt source               destination         
+REJECT     all  --  anywhere             anywhere            reject-with icmp-port-unreachable 
+
+Chain syn_flood (1 references)
+target     prot opt source               destination         
+RETURN     tcp  --  anywhere             anywhere            tcp flags:FIN,SYN,RST,ACK/SYN limit: avg 25/sec burst 50 
+DROP       all  --  anywhere             anywhere            
+
+Chain zone_lan (1 references)
+target     prot opt source               destination         
+ACCEPT     udp  --  anywhere             anywhere            udp dpt:22 
+ACCEPT     tcp  --  anywhere             anywhere            tcp dpt:22 
+input_lan  all  --  anywhere             anywhere            
+zone_lan_ACCEPT  all  --  anywhere             anywhere            
+
+Chain zone_lan_ACCEPT (3 references)
+target     prot opt source               destination         
+ACCEPT     all  --  anywhere             anywhere            
+ACCEPT     all  --  anywhere             anywhere            
+
+Chain zone_lan_DROP (0 references)
+target     prot opt source               destination         
+DROP       all  --  anywhere             anywhere            
+DROP       all  --  anywhere             anywhere            
+
+Chain zone_lan_MSSFIX (0 references)
+target     prot opt source               destination         
+TCPMSS     tcp  --  anywhere             anywhere            tcp flags:SYN,RST/SYN TCPMSS clamp to PMTU 
+
+Chain zone_lan_REJECT (0 references)
+target     prot opt source               destination         
+reject     all  --  anywhere             anywhere            
+reject     all  --  anywhere             anywhere            
+
+Chain zone_lan_forward (1 references)
+target     prot opt source               destination         
+zone_wan_MSSFIX  all  --  anywhere             anywhere            
+zone_wan_ACCEPT  all  --  anywhere             anywhere            
+forwarding_lan  all  --  anywhere             anywhere            
+zone_lan_ACCEPT  all  --  anywhere             anywhere            
+
+Chain zone_wan (1 references)
+target     prot opt source               destination         
+ACCEPT     udp  --  www.yesturnkey.com   anywhere            
+ACCEPT     tcp  --  www.yesturnkey.com   anywhere            
+ACCEPT     udp  --  yesturnkey.com       anywhere            
+ACCEPT     tcp  --  yesturnkey.com       anywhere            
+ACCEPT     icmp --  www.yesturnkey.com   anywhere            
+ACCEPT     icmp --  yesturnkey.com       anywhere            
+ACCEPT     udp  --  192.168.0.113        anywhere            udp dpt:22 
+ACCEPT     tcp  --  192.168.0.113        anywhere            tcp dpt:22 
+ACCEPT     udp  --  1.2.3.4              anywhere            udp dpt:80 
+ACCEPT     tcp  --  1.2.3.4              anywhere            tcp dpt:80 
+ACCEPT     udp  --  1.2.3.4              anywhere            udp dpt:80 
+ACCEPT     tcp  --  1.2.3.4              anywhere            tcp dpt:80 
+ACCEPT     udp  --  yesturnkey.com       anywhere            udp dpt:80 
+ACCEPT     tcp  --  yesturnkey.com       anywhere            tcp dpt:80 
+ACCEPT     udp  --  anywhere             anywhere            udp dpt:80 
+ACCEPT     tcp  --  anywhere             anywhere            tcp dpt:80 
+DROP       udp  --  anywhere             anywhere            udp dpt:22 
+DROP       tcp  --  anywhere             anywhere            tcp dpt:22 
+input_wan  all  --  anywhere             anywhere            
+zone_wan_ACCEPT  all  --  anywhere             anywhere            
+
+Chain zone_wan_ACCEPT (5 references)
+target     prot opt source               destination         
+ACCEPT     all  --  anywhere             anywhere            
+ACCEPT     all  --  anywhere             anywhere            
+
+Chain zone_wan_DROP (0 references)
+target     prot opt source               destination         
+DROP       all  --  anywhere             anywhere            
+DROP       all  --  anywhere             anywhere            
+
+Chain zone_wan_MSSFIX (2 references)
+target     prot opt source               destination         
+TCPMSS     tcp  --  anywhere             anywhere            tcp flags:SYN,RST/SYN TCPMSS clamp to PMTU 
+
+Chain zone_wan_REJECT (0 references)
+target     prot opt source               destination         
+reject     all  --  anywhere             anywhere            
+reject     all  --  anywhere             anywhere            
+
+Chain zone_wan_forward (1 references)
+target     prot opt source               destination         
+forwarding_wan  all  --  anywhere             anywhere            
+zone_wan_ACCEPT  all  --  anywhere             anywhere            
+
+Chain zone_wireless1 (1 references)
+target     prot opt source               destination         
+input_wireless1  all  --  anywhere             anywhere            
+zone_wireless1_ACCEPT  all  --  anywhere             anywhere            
+
+Chain zone_wireless1_ACCEPT (3 references)
+target     prot opt source               destination         
+ACCEPT     all  --  anywhere             anywhere            
+ACCEPT     all  --  anywhere             anywhere            
+
+Chain zone_wireless1_DROP (0 references)
+target     prot opt source               destination         
+DROP       all  --  anywhere             anywhere            
+DROP       all  --  anywhere             anywhere            
+
+Chain zone_wireless1_MSSFIX (0 references)
+target     prot opt source               destination         
+TCPMSS     tcp  --  anywhere             anywhere            tcp flags:SYN,RST/SYN TCPMSS clamp to PMTU 
+
+Chain zone_wireless1_REJECT (0 references)
+target     prot opt source               destination         
+reject     all  --  anywhere             anywhere            
+reject     all  --  anywhere             anywhere            
+
+Chain zone_wireless1_forward (1 references)
+target     prot opt source               destination         
+zone_wan_MSSFIX  all  --  anywhere             anywhere            
+zone_wan_ACCEPT  all  --  anywhere             anywhere            
+forwarding_wireless1  all  --  anywhere             anywhere            
+zone_wireless1_ACCEPT  all  --  anywhere             anywhere            
+</PRE>
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001651.html">[Chilli] Crazy TCP resets when CoovaChilli is enabled (UAM	redirection problem)
+</A></li>
+	<LI>Next message: <A HREF="001653.html">[Chilli] Crazy TCP resets when CoovaChilli is enabled (UAM redirection problem)
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1652">[ date ]</a>
+              <a href="thread.html#1652">[ thread ]</a>
+              <a href="subject.html#1652">[ subject ]</a>
+              <a href="author.html#1652">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

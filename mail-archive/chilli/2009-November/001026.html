@@ -1,0 +1,139 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli]  VLAN Support
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20%20VLAN%20Support&In-Reply-To=%3Cf1cd8c6d0911200349y69f52429u9c44adc3c1445635%40mail.gmail.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001017.html">
+   <LINK REL="Next"  HREF="001028.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli]  VLAN Support</H1>
+    <B>Gergely Kiss</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20%20VLAN%20Support&In-Reply-To=%3Cf1cd8c6d0911200349y69f52429u9c44adc3c1445635%40mail.gmail.com%3E"
+       TITLE="[Chilli]  VLAN Support">mail.gery at gmail.com
+       </A><BR>
+    <I>Fri Nov 20 11:49:51 UTC 2009</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001017.html">[Chilli] subversion
+</A></li>
+        <LI>Next message: <A HREF="001028.html">[Chilli] VLAN Support
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1026">[ date ]</a>
+              <a href="thread.html#1026">[ thread ]</a>
+              <a href="subject.html#1026">[ subject ]</a>
+              <a href="author.html#1026">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Could the attached scripts be integrated to the source somehow? A lot
+of users are wanting to run Chilli on multiple interfaces and probably
+these scripts are suitable for most situations.
+
+George
+
+---------- Forwarded message ----------
+From: Gergely Kiss &lt;<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">mail.gery at gmail.com</A>&gt;
+Date: 2009/11/19
+Subject: Re: [Chilli] VLAN Support
+To: Devinder Singh &lt;<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">devinder at palettemm.com</A>&gt;
+
+
+I'm happy to announce that I managed to run 4 separate Chilli
+instances at the same time. :)
+Two files had to be modified to achieve this, /etc/init.d/chilli (the
+init script) and /etc/chilli/functions.
+
+You can find the files attached to this message as a gzip archive.
+
+Just copy the files over the existing ones (create backup first!),
+then open /etc/init.d/chilli in a text editor. You have two options
+now:
+
+1. Leave the variable CONFDIR empty, so that only one instance will be
+run by the script, using the default config file in
+/etc/chilli/config.
+2. Enter a path to the CONFDIR variable. In this case, the script will
+try to create separate instances for each files in the directory you
+specify here.
+
+There's another variable, which can be used to pass arguments to all
+instances (CHILLI_PARAMS). Anything you specify here will be passed to
+all of the chilli processes.
+
+Let's see an example:
+
+You have the directory &quot;/etc/chilli/configs&quot; in your system, and it
+contains 3 config files (their syntax should be identical to the
+default configuration). To be able to run multiple instances, make
+sure that the following variables are unique in each configuration:
+
+HS_LANIF -&gt; which is the subscriber interface?
+HS_NETWORK -&gt; which subnet to use for DHCP?
+HS_UAMLISTEN -&gt; which IP to listen for auth requests?
+HS_UAMPORT -&gt; which port to use for auth requests?
+HS_UAMUIPORT -&gt; the port of the internal webserver
+
+Once you are done with configuring, open the init script
+(/etc/init.d/chilli) in a text editor and set:
+
+CONFDIR=/etc/chilli/configs
+
+Save the script and start up Chilli using the well-known command:
+
+# /etc/init.d/chilli start
+
+After this, a separate chilli process will be run for each
+configuration and they will be completely independent on each other
+(just make sure you specify different directories for the HS_WWWDIR
+setting).
+
+Now, check if all the required instances are running with &quot;ps waux |
+grep chilli&quot;.
+You should see one running chilli process per configuration.
+
+To test the script, I've included some sample configs in the archive,
+just copy them to /etc/chilli/configs and you are done. Also, make
+sure you create VLAN interfaces with IDs of 2, 3, 4, 5 to use my
+config files for testing.
+
+That's all! I hope, you can make use of what I made.
+
+Regards
+George
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: chilli_multi.tar.gz
+Type: application/x-gzip
+Size: 7335 bytes
+Desc: not available
+URL: &lt;<A HREF="http://lists.coova.org/pipermail/chilli/attachments/20091120/2ff9f68a/attachment.bin">http://lists.coova.org/pipermail/chilli/attachments/20091120/2ff9f68a/attachment.bin</A>&gt;
+</PRE>
+
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001017.html">[Chilli] subversion
+</A></li>
+	<LI>Next message: <A HREF="001028.html">[Chilli] VLAN Support
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1026">[ date ]</a>
+              <a href="thread.html#1026">[ thread ]</a>
+              <a href="subject.html#1026">[ subject ]</a>
+              <a href="author.html#1026">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

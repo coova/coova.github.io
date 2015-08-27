@@ -1,0 +1,3366 @@
+From v at haghnazarian.de  Sat May  4 15:18:00 2013
+From: v at haghnazarian.de (Varand Haghnazarian)
+Date: Sat, 04 May 2013 17:18:00 +0200
+Subject: [Chilli] coova-Chilli Peers Peerid Peerkey benfit of all
+Message-ID: <518526A8.6040800@haghnazarian.de>
+
+Hey People,
+
+i hope you can help.
+before i start sorry for my bad english.
+What is the Principal and the benefit of the multi coova archtitecture. 
+How it works?
+And why just 7 peers? or are there more possible?
+for what is peerid, and for what peer key?
+And should i use another ip-network for every coova instance?
+
+Sorry but i think the online documentation is a bit outdated or iam just 
+lame.
+so i hope that somebody can help........................................
+Thanks before!
+
+Regards
+
+Burnerx
+
+From james at adsl24.co.uk  Tue May  7 12:13:45 2013
+From: james at adsl24.co.uk (James @ ADSL24)
+Date: Tue, 7 May 2013 13:13:45 +0100
+Subject: [Chilli] Coova / VLAN / Multi SSID
+Message-ID: <19d801ce4b1c$52cfa330$f86ee990$@adsl24.co.uk>
+
+Hi David,
+
+We use coova on OpenWRT and set up a bridged interface between 2 different
+SSID's we've created which are bound to a VLAN we've created to keep them
+separate from the LAN.
+
+We also allocate port 4 on the back of the router to this VLAN so that
+customers can plug in their own access points/devices and be routed through
+coova in the same way as when they go through the wifi. This works perfectly
+if we can separate the AP's they have in to its own switch and then in to
+port 4 on our router.
+
+We're now facing a problem in that if a customer has multiple devices
+plugged in to the switch, or if they have one cable feeding the switch, then
+AP's and internal devices fed from that switch, all traffic would be routed
+through coova.
+
+So, is there a way we can set OpenWRT/coova to check the VLAN ID that is
+passed from an external switch/AP and route the traffic through coova or
+not, depending on this VLAN ID?
+
+This would also allow us to split any SSID's we have in to their own VLAN so
+we can have one for guest access and the other for private use (WPA2'd).
+
+Thanks,
+
+James
+
+
+From ravikant.4784 at gmail.com  Tue May  7 13:09:23 2013
+From: ravikant.4784 at gmail.com (Ravikant Patil)
+Date: Tue, 7 May 2013 18:39:23 +0530
+Subject: [Chilli]  macup/macdown passing/using parameters
+Message-ID: <CAGPhq8+thNEUJGRDWsZSqhhSdxnCXXC5ZcJMTz1YrSsdh_o3Dg@mail.gmail.com>
+
+Hi all,
+
+I would like to use *macup *and* macdown *options to get specific
+information about client connection - mac address, dhcp information etc.
+
+It seems, No parameters are passed to these scripts. Can anyone tell me how
+do I access these parameters in macup/macdown script?
+
+Correct me if I am wrong.
+
+Thank you.
+??
+
+Regards,
+Ravikant
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130507/f4bf9724/attachment.html>
+
+From xoneca at gmail.com  Tue May  7 13:58:00 2013
+From: xoneca at gmail.com (Xabier Oneca -- xOneca)
+Date: Tue, 7 May 2013 15:58:00 +0200
+Subject: [Chilli] macup/macdown passing/using parameters
+In-Reply-To: <CAGPhq8+thNEUJGRDWsZSqhhSdxnCXXC5ZcJMTz1YrSsdh_o3Dg@mail.gmail.com>
+References: <CAGPhq8+thNEUJGRDWsZSqhhSdxnCXXC5ZcJMTz1YrSsdh_o3Dg@mail.gmail.com>
+Message-ID: <CACkgH73J7S5R1mOE4wB6dAaTLrpbmcbjUCcptUwD2u6rY08qmw@mail.gmail.com>
+
+Scripts get parameters as environment variables, at least in conup/condown,
+ipup/ipdown.
+
+Maybe with the following script that outputs all environment to stderr you
+can see in chilli log messages what are those variables...
+
+============
+#!/bin/sh
+set >&2
+============
+--
+Xabier Oneca_,,_
+El 07/05/2013 15:17, "Ravikant Patil" <ravikant.4784 at gmail.com> escribi?:
+
+>
+> Hi all,
+>
+> I would like to use *macup *and* macdown *options to get specific
+> information about client connection - mac address, dhcp information etc.
+>
+> It seems, No parameters are passed to these scripts. Can anyone tell me
+> how do I access these parameters in macup/macdown script?
+>
+> Correct me if I am wrong.
+>
+> Thank you.
+> ??
+>
+> Regards,
+> Ravikant
+>
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130507/2bf75c7c/attachment.html>
+
+From ravikant.4784 at gmail.com  Tue May  7 14:15:42 2013
+From: ravikant.4784 at gmail.com (Ravikant Patil)
+Date: Tue, 7 May 2013 19:45:42 +0530
+Subject: [Chilli] macup/macdown passing/using parameters
+In-Reply-To: <CACkgH73J7S5R1mOE4wB6dAaTLrpbmcbjUCcptUwD2u6rY08qmw@mail.gmail.com>
+References: <CAGPhq8+thNEUJGRDWsZSqhhSdxnCXXC5ZcJMTz1YrSsdh_o3Dg@mail.gmail.com>
+ <CACkgH73J7S5R1mOE4wB6dAaTLrpbmcbjUCcptUwD2u6rY08qmw@mail.gmail.com>
+Message-ID: <CAGPhq8+OUYubAO8G7qi8JxgYvxk8=Nfow3oRRf08=uRTCSzp-Q@mail.gmail.com>
+
+Many thanks Xabier !! It works very well.
+
+Regards,
+
+Ravikant
+
+
+On Tue, May 7, 2013 at 7:28 PM, Xabier Oneca -- xOneca <xoneca at gmail.com>wrote:
+
+> Scripts get parameters as environment variables, at least in
+> conup/condown, ipup/ipdown.
+>
+> Maybe with the following script that outputs all environment to stderr you
+> can see in chilli log messages what are those variables...
+>
+> ============
+> #!/bin/sh
+> set >&2
+> ============
+> --
+> Xabier Oneca_,,_
+> El 07/05/2013 15:17, "Ravikant Patil" <ravikant.4784 at gmail.com> escribi?:
+>
+>>
+>> Hi all,
+>>
+>> I would like to use *macup *and* macdown *options to get specific
+>> information about client connection - mac address, dhcp information etc.
+>>
+>> It seems, No parameters are passed to these scripts. Can anyone tell me
+>> how do I access these parameters in macup/macdown script?
+>>
+>> Correct me if I am wrong.
+>>
+>> Thank you.
+>> ??
+>>
+>> Regards,
+>> Ravikant
+>>
+>> _______________________________________________
+>> Chilli mailing list
+>> Chilli at coova.org
+>> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>>
+>>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130507/efb2ccb2/attachment.html>
+
+From jedgainer at gmail.com  Sat May 11 19:29:22 2013
+From: jedgainer at gmail.com (Jed Gainer)
+Date: Sat, 11 May 2013 12:29:22 -0700
+Subject: [Chilli] dnsmasq
+Message-ID: <CAJc1nupJvxyOAD6nQ1p1tryPq9e8DRQYKJ_jn5+x9PapKm9-Zw@mail.gmail.com>
+
+Has anyone else setup dnsmasq as the DHCP server? I would like to have a
+leases file and the CoovaChilli DHCP server does not appear to offer such
+features.
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130511/bc1a6c4f/attachment.html>
+
+From jedgainer at gmail.com  Tue May 14 02:25:42 2013
+From: jedgainer at gmail.com (Jed Gainer)
+Date: Mon, 13 May 2013 19:25:42 -0700
+Subject: [Chilli] ignore 10.1.0.1:80 traffic
+Message-ID: <CAJc1nurJTWNA3wk7BLN1AiOFV00si2z_FOt3DKVJ6MjOi_Cjmg@mail.gmail.com>
+
+I am trying to stop chilli from counting internal traffic towards their
+quota.
+
+https://gist.github.com/d3x7ro/3d7ad16f864613023a99
+
+does that look acceptable?
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130513/07810420/attachment.html>
+
+From crox53 at gmail.com  Wed May 15 15:44:04 2013
+From: crox53 at gmail.com (Crox .)
+Date: Wed, 15 May 2013 17:44:04 +0200
+Subject: [Chilli] Bug "foreground mode"
+Message-ID: <CAHs_NPF2-=UNqM6783vwd-PFk5DFQMaNxh1L0YXx9Yv7N=G5gg@mail.gmail.com>
+
+Hi,
+
+I just installed the last available version of Coova-Chilli (ie :
+Coova-Chilli-1.3.0), and I encountered two bugs.
+
+                 *1) First note*
+After built the souce code as follows :
+*
+*
+*"./configure --disable-static --enable-shared --enable-largelimits
+--enable-chilliredir --enable-chilliproxy --enable-chilliscript --with-poll"
+*
+
+During the make step I got this error message :
+*
+*
+*"net.c: In fonction 'net_select_prepare' :*
+* net.c:267:7 error: variable 'i' set but not used
+[-Werror=unused-but-set-varaiable]"*
+
+In fact in the *net.c* source the variable 'i' is define but not used
+because of build options.
+Then to fix it, i comment the lines 267 and 282, and add two new
+declaration of 'i' after the two DEFINES : ENABLE_MODULES (line 270) and
+USING_POLL (line 285).
+
+                  *2) Second note*
+When I try to launch Chilli in foreground mode ( option -f ), I get a
+"*segmentation
+fault*" error message. I suspect a small error in the source code, doesn't
+it ?
+
+Moreover, I precise that I got these two bugs with the versions *1.2.9* and
+*1.3.0* of Coova-Chilli.
+
+Otherwise I don't know if it can interested someone, but for my project I
+realized the Coova-Chilli rpms for Mageia2 (32 and 64 bits). These rpms are
+not generic because I willingly deleted the build option number and
+files embedded the rpms to restrict the packet size. However the most of
+the work has been done on the SPEC file and it just has to be adapted to
+your needs.
+
+Regards,
+-- 
+*Crox - Junior Developer for ALCASAR team*
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130515/47900225/attachment.html>
+
+From david at coova.com  Wed May 15 20:16:33 2013
+From: david at coova.com (David Bird)
+Date: Wed, 15 May 2013 13:16:33 -0700
+Subject: [Chilli] Bug "foreground mode"
+In-Reply-To: <CAHs_NPF2-=UNqM6783vwd-PFk5DFQMaNxh1L0YXx9Yv7N=G5gg@mail.gmail.com>
+References: <CAHs_NPF2-=UNqM6783vwd-PFk5DFQMaNxh1L0YXx9Yv7N=G5gg@mail.gmail.com>
+Message-ID: <1368648993.6409.2.camel@david-laptop>
+
+Hi,
+
+The compile issues should be resolved in the Subversion code. 
+
+Try the subversion code, if the seg fault continues, if you could try
+running it under gdb and do a backtrace, I'd appreciate it. 
+
+Cheers,
+David
+
+
+
+On Wed, 2013-05-15 at 17:44 +0200, Crox . wrote:
+> Hi,
+> 
+> 
+> I just installed the last available version of Coova-Chilli (ie :
+> Coova-Chilli-1.3.0), and I encountered two bugs.
+> 
+> 
+>                  1) First note
+> After built the souce code as follows :
+> 
+> 
+> "./configure --disable-static --enable-shared --enable-largelimits
+> --enable-chilliredir --enable-chilliproxy --enable-chilliscript
+> --with-poll"
+> 
+> 
+> During the make step I got this error message :
+> 
+> 
+> "net.c: In fonction 'net_select_prepare' :
+>  net.c:267:7 error: variable 'i' set but not used
+> [-Werror=unused-but-set-varaiable]"
+> 
+> 
+> In fact in the net.c source the variable 'i' is define but not used
+> because of build options.
+> Then to fix it, i comment the lines 267 and 282, and add two new
+> declaration of 'i' after the two DEFINES : ENABLE_MODULES (line 270)
+> and USING_POLL (line 285).
+> 
+> 
+>                   2) Second note
+> When I try to launch Chilli in foreground mode ( option -f ), I get a
+> "segmentation fault" error message. I suspect a small error in the
+> source code, doesn't it ?
+> 
+> 
+> Moreover, I precise that I got these two bugs with the versions 1.2.9
+> and 1.3.0 of Coova-Chilli.
+> 
+> 
+> Otherwise I don't know if it can interested someone, but for my
+> project I realized the Coova-Chilli rpms for Mageia2 (32 and 64 bits).
+> These rpms are not generic because I willingly deleted the build
+> option number and files embedded the rpms to restrict the packet size.
+> However the most of the work has been done on the SPEC file and it
+> just has to be adapted to your needs.
+> 
+> 
+> 
+> Regards,
+> -- 
+> Crox - Junior Developer for ALCASAR team
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+-- 
+--
+David Bird
+http://www.linkedin.com/in/dwbird
+https://twitter.com/wlanmac
+
+
+From crox53 at gmail.com  Thu May 16 12:59:52 2013
+From: crox53 at gmail.com (Crox .)
+Date: Thu, 16 May 2013 14:59:52 +0200
+Subject: [Chilli] Bug "foreground mode"
+In-Reply-To: <1368648993.6409.2.camel@david-laptop>
+References: <CAHs_NPF2-=UNqM6783vwd-PFk5DFQMaNxh1L0YXx9Yv7N=G5gg@mail.gmail.com>
+ <1368648993.6409.2.camel@david-laptop>
+Message-ID: <CAHs_NPFOTVLnXuh5rLRTdgWhcj5zrTK+9Q45Tg9tTrdVxX5vLw@mail.gmail.com>
+
+Hi,
+
+I have just tried the Subversion code of Coova-Chilli (ie : coova-chilli
+1.3.1-svn).
+Indeed the compile issue works fine with this version.
+However the "*segmentation fault*" problem with the foreground mode ( option
+* -f *) is still present.
+
+Cheers,
+
+
+2013/5/15 David Bird <david at coova.com>
+
+> Hi,
+>
+> The compile issues should be resolved in the Subversion code.
+>
+> Try the subversion code, if the seg fault continues, if you could try
+> running it under gdb and do a backtrace, I'd appreciate it.
+>
+> Cheers,
+> David
+>
+>
+>
+> On Wed, 2013-05-15 at 17:44 +0200, Crox . wrote:
+> > Hi,
+> >
+> >
+> > I just installed the last available version of Coova-Chilli (ie :
+> > Coova-Chilli-1.3.0), and I encountered two bugs.
+> >
+> >
+> >                  1) First note
+> > After built the souce code as follows :
+> >
+> >
+> > "./configure --disable-static --enable-shared --enable-largelimits
+> > --enable-chilliredir --enable-chilliproxy --enable-chilliscript
+> > --with-poll"
+> >
+> >
+> > During the make step I got this error message :
+> >
+> >
+> > "net.c: In fonction 'net_select_prepare' :
+> >  net.c:267:7 error: variable 'i' set but not used
+> > [-Werror=unused-but-set-varaiable]"
+> >
+> >
+> > In fact in the net.c source the variable 'i' is define but not used
+> > because of build options.
+> > Then to fix it, i comment the lines 267 and 282, and add two new
+> > declaration of 'i' after the two DEFINES : ENABLE_MODULES (line 270)
+> > and USING_POLL (line 285).
+> >
+> >
+> >                   2) Second note
+> > When I try to launch Chilli in foreground mode ( option -f ), I get a
+> > "segmentation fault" error message. I suspect a small error in the
+> > source code, doesn't it ?
+> >
+> >
+> > Moreover, I precise that I got these two bugs with the versions 1.2.9
+> > and 1.3.0 of Coova-Chilli.
+> >
+> >
+> > Otherwise I don't know if it can interested someone, but for my
+> > project I realized the Coova-Chilli rpms for Mageia2 (32 and 64 bits).
+> > These rpms are not generic because I willingly deleted the build
+> > option number and files embedded the rpms to restrict the packet size.
+> > However the most of the work has been done on the SPEC file and it
+> > just has to be adapted to your needs.
+> >
+> >
+> >
+> > Regards,
+> > --
+> > Crox - Junior Developer for ALCASAR team
+> > _______________________________________________
+> > Chilli mailing list
+> > Chilli at coova.org
+> > http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+> --
+> --
+> David Bird
+> http://www.linkedin.com/in/dwbird
+> https://twitter.com/wlanmac
+>
+>
+
+
+-- 
+*Crox - Junior Developer for ALCASAR team*
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130516/12009d0f/attachment.html>
+
+From radius.sir at gmail.com  Tue May 21 08:21:25 2013
+From: radius.sir at gmail.com (Russell Mike)
+Date: Tue, 21 May 2013 08:21:25 +0000
+Subject: [Chilli] CoovaChiili Permit Server IP
+Message-ID: <CADao4CotgoPusHzRXDQtJ+u4tVzW69X-tHm5bEFJWPymybV_OQ@mail.gmail.com>
+
+Dear Coova Gurus,
+
+CoovaChilli Layer3, Working great. But for some days now, i am working
+CoovaChilli to allow some devices to allow access without authentication
+AND have *Static IP address*. (Servers, IP phones, Apple TV etc..).
+
+MAC auth do not help because of L3 setup. Have anyone got the idea. How can
+configure coovachilli to allow access 10 static ip address out of a subnet
+by default.
+
+Thanks in advance.
+
+Thanks / Regards
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130521/00ff8984/attachment.html>
+
+From lferreira at cabocom.cv  Tue May 21 10:23:46 2013
+From: lferreira at cabocom.cv (Luis Ferreira)
+Date: Tue, 21 May 2013 09:23:46 -0100
+Subject: [Chilli] CoovaChiili Permit Server IP
+In-Reply-To: <CADao4CotgoPusHzRXDQtJ+u4tVzW69X-tHm5bEFJWPymybV_OQ@mail.gmail.com>
+References: <CADao4CotgoPusHzRXDQtJ+u4tVzW69X-tHm5bEFJWPymybV_OQ@mail.gmail.com>
+Message-ID: <011401ce560d$47856090$d69021b0$@cabocom.cv>
+
+Hi Russell,
+
+ 
+
+Here we had the same problem, and were able to fix it with the following
+script:
+
+
+
+
+#!/bin/bash
+
+ 
+
+usercheck=$(/usr/local/sbin/chilli_query -s
+/usr/local/var/run/chilli.vlanxx.sock list |grep -c "1 accountusername ")
+
+ 
+
+if [ $usercheck = '0' ];
+
+then
+
+        echo "Logging in accountname"
+
+        /usr/local/sbin/chilli_query -s
+/usr/local/var/run/chilli.vlanxx.sock login ip 192.168.10.251 username
+accountusername password accountpassword
+
+fi
+
+ 
+
+Replace account name, account password and IP for the correct ones. Also
+check the location of the sock files.
+
+ 
+
+This script is running every minute. If the IP is not present, Chilli will
+not perform the login and ignore it. But if it is present (client connected)
+it will trigger the account login.
+
+ 
+
+This is a very dirty hack, but we have been using it for more than 2 years
+and it never failed (except when the account would ran out of credit J ).
+
+ 
+
+Btw, if someone as a different (and less hacked) way of doing this on layer
+3, please share it.
+
+ 
+
+Regards,
+
+Luis
+
+ 
+
+ 
+
+Dear Coova Gurus,
+
+ 
+
+CoovaChilli Layer3, Working great. But for some days now, i am working
+CoovaChilli to allow some devices to allow access without authentication AND
+have Static IP address. (Servers, IP phones, Apple TV etc..).
+
+ 
+
+MAC auth do not help because of L3 setup. Have anyone got the idea. How can
+configure coovachilli to allow access 10 static ip address out of a subnet
+by default. 
+
+ 
+
+Thanks in advance. 
+
+ 
+
+Thanks / Regards
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130521/37e07402/attachment.html>
+
+From david at coova.com  Tue May 21 17:00:33 2013
+From: david at coova.com (David Bird)
+Date: Tue, 21 May 2013 10:00:33 -0700
+Subject: [Chilli] CoovaChiili Permit Server IP
+In-Reply-To: <011401ce560d$47856090$d69021b0$@cabocom.cv>
+References: <CADao4CotgoPusHzRXDQtJ+u4tVzW69X-tHm5bEFJWPymybV_OQ@mail.gmail.com>
+ <011401ce560d$47856090$d69021b0$@cabocom.cv>
+Message-ID: <1369155633.2851.3.camel@david-XPS>
+
+There could be an option similar to macallowed (plus macallowlocal) but
+for layer3 mode using ip addresses. Using a script like the one
+suggested would also work - though, I think you'd want 'authorize'
+instead of 'login' since you don't have RADIUS. You can also do
+something similar from the conup script so that as soon as the station
+connects, you authorize it. 
+
+
+On Tue, 2013-05-21 at 09:23 -0100, Luis Ferreira wrote:
+> Hi Russell,
+> 
+>  
+> 
+> Here we had the same problem, and were able to fix it with the
+> following script:
+> 
+> 
+> 
+> #!/bin/bash
+> 
+>  
+> 
+> usercheck=$(/usr/local/sbin/chilli_query
+> -s /usr/local/var/run/chilli.vlanxx.sock list |grep -c "1
+> accountusername ")
+> 
+>  
+> 
+> if [ $usercheck = '0' ];
+> 
+> then
+> 
+>         echo "Logging in accountname"
+> 
+>         /usr/local/sbin/chilli_query
+> -s /usr/local/var/run/chilli.vlanxx.sock login ip 192.168.10.251
+> username accountusername password accountpassword
+> 
+> fi
+> 
+> 
+> 
+>  
+> 
+> Replace account name, account password and IP for the correct ones.
+> Also check the location of the sock files.
+> 
+>  
+> 
+> This script is running every minute. If the IP is not present, Chilli
+> will not perform the login and ignore it. But if it is present (client
+> connected) it will trigger the account login.
+> 
+>  
+> 
+> This is a very dirty hack, but we have been using it for more than 2
+> years and it never failed (except when the account would ran out of
+> credit J ).
+> 
+>  
+> 
+> Btw, if someone as a different (and less hacked) way of doing this on
+> layer 3, please share it.
+> 
+>  
+> 
+> Regards,
+> 
+> Luis
+> 
+>  
+> 
+>  
+> 
+> Dear Coova Gurus,
+> 
+>  
+> 
+> 
+> CoovaChilli Layer3, Working great. But for some days now, i am working
+> CoovaChilli to allow some devices to allow access without
+> authentication AND have Static IP address. (Servers, IP phones, Apple
+> TV etc..).
+> 
+> 
+>  
+> 
+> 
+> MAC auth do not help because of L3 setup. Have anyone got the idea.
+> How can configure coovachilli to allow access 10 static ip address out
+> of a subnet by default. 
+> 
+> 
+>  
+> 
+> 
+> Thanks in advance. 
+> 
+> 
+>  
+> 
+> 
+> Thanks / Regards
+> 
+> 
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+-- 
+--
+David Bird
+http://www.linkedin.com/in/dwbird/
+
+
+From lferreira at cabocom.cv  Tue May 21 18:10:08 2013
+From: lferreira at cabocom.cv (Luis Ferreira)
+Date: Tue, 21 May 2013 17:10:08 -0100
+Subject: [Chilli] CoovaChiili Permit Server IP
+In-Reply-To: <1369155633.2851.3.camel@david-XPS>
+References: <CADao4CotgoPusHzRXDQtJ+u4tVzW69X-tHm5bEFJWPymybV_OQ@mail.gmail.com>
+ <011401ce560d$47856090$d69021b0$@cabocom.cv>
+ <1369155633.2851.3.camel@david-XPS>
+Message-ID: <004601ce564e$6e748190$4b5d84b0$@cabocom.cv>
+
+Hi David,
+
+Can you clarify on the conup?
+>From what I understood, you are saying that is a script that is run every
+time a client connects to the network. (correct?)
+If true, will that work in my case, with another server running ISC-DHCP?
+Where can I configure it? Where is it located?
+
+
+Regards,
+Luis
+
+-----Mensagem original-----
+De: chilli-bounces at coova.org [mailto:chilli-bounces at coova.org] Em nome de
+David Bird
+Enviada: ter?a-feira, 21 de Maio de 2013 16:01
+Para: chilli at coova.org
+Assunto: Re: [Chilli] CoovaChiili Permit Server IP
+
+There could be an option similar to macallowed (plus macallowlocal) but for
+layer3 mode using ip addresses. Using a script like the one suggested would
+also work - though, I think you'd want 'authorize'
+instead of 'login' since you don't have RADIUS. You can also do something
+similar from the conup script so that as soon as the station connects, you
+authorize it. 
+
+
+On Tue, 2013-05-21 at 09:23 -0100, Luis Ferreira wrote:
+> Hi Russell,
+> 
+>  
+> 
+> Here we had the same problem, and were able to fix it with the 
+> following script:
+> 
+> 
+> 
+> #!/bin/bash
+> 
+>  
+> 
+> usercheck=$(/usr/local/sbin/chilli_query
+> -s /usr/local/var/run/chilli.vlanxx.sock list |grep -c "1 
+> accountusername ")
+> 
+>  
+> 
+> if [ $usercheck = '0' ];
+> 
+> then
+> 
+>         echo "Logging in accountname"
+> 
+>         /usr/local/sbin/chilli_query
+> -s /usr/local/var/run/chilli.vlanxx.sock login ip 192.168.10.251 
+> username accountusername password accountpassword
+> 
+> fi
+> 
+> 
+> 
+>  
+> 
+> Replace account name, account password and IP for the correct ones.
+> Also check the location of the sock files.
+> 
+>  
+> 
+> This script is running every minute. If the IP is not present, Chilli 
+> will not perform the login and ignore it. But if it is present (client
+> connected) it will trigger the account login.
+> 
+>  
+> 
+> This is a very dirty hack, but we have been using it for more than 2 
+> years and it never failed (except when the account would ran out of 
+> credit J ).
+> 
+>  
+> 
+> Btw, if someone as a different (and less hacked) way of doing this on 
+> layer 3, please share it.
+> 
+>  
+> 
+> Regards,
+> 
+> Luis
+> 
+>  
+> 
+>  
+> 
+> Dear Coova Gurus,
+> 
+>  
+> 
+> 
+> CoovaChilli Layer3, Working great. But for some days now, i am working 
+> CoovaChilli to allow some devices to allow access without 
+> authentication AND have Static IP address. (Servers, IP phones, Apple 
+> TV etc..).
+> 
+> 
+>  
+> 
+> 
+> MAC auth do not help because of L3 setup. Have anyone got the idea.
+> How can configure coovachilli to allow access 10 static ip address out 
+> of a subnet by default.
+> 
+> 
+>  
+> 
+> 
+> Thanks in advance. 
+> 
+> 
+>  
+> 
+> 
+> Thanks / Regards
+> 
+> 
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+--
+--
+David Bird
+http://www.linkedin.com/in/dwbird/
+
+_______________________________________________
+Chilli mailing list
+Chilli at coova.org
+http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130521/26557370/attachment.html>
+
+From radius.sir at gmail.com  Wed May 22 07:52:45 2013
+From: radius.sir at gmail.com (Russell Mike)
+Date: Wed, 22 May 2013 07:52:45 +0000
+Subject: [Chilli] CoovaChiili Permit Server IP
+In-Reply-To: <004601ce564e$6e748190$4b5d84b0$@cabocom.cv>
+References: <CADao4CotgoPusHzRXDQtJ+u4tVzW69X-tHm5bEFJWPymybV_OQ@mail.gmail.com>
+ <011401ce560d$47856090$d69021b0$@cabocom.cv>
+ <1369155633.2851.3.camel@david-XPS>
+ <004601ce564e$6e748190$4b5d84b0$@cabocom.cv>
+Message-ID: <CADao4Crp3ij_o39a+tfwQSZ0g0+yZN=b44QH0K5DJignyAyXnA@mail.gmail.com>
+
+Hi Luis & David,
+
+Thanks for your inputs, discussion became very interesting. Thanks for
+sharing ideas. standing by to hear more from David. B about conup.
+
+Thanks / Regards
+--RM
+
+
+On Tue, May 21, 2013 at 6:10 PM, Luis Ferreira <lferreira at cabocom.cv> wrote:
+
+> **
+>
+> Hi David,
+>
+> Can you clarify on the conup?
+>
+> From what I understood, you are saying that is a script that is run every
+> time a client connects to the network. (correct?)
+>
+> If true, will that work in my case, with another server running ISC-DHCP?
+>
+> Where can I configure it? Where is it located?
+>
+> Regards,
+>
+> Luis
+>
+> -----Mensagem original-----
+> De: chilli-bounces at coova.org [mailto:chilli-bounces at coova.org<chilli-bounces at coova.org>]
+> Em nome de David Bird
+> Enviada: ter?a-feira, 21 de Maio de 2013 16:01
+> Para: chilli at coova.org
+> Assunto: Re: [Chilli] CoovaChiili Permit Server IP
+>
+> There could be an option similar to macallowed (plus macallowlocal) but
+> for layer3 mode using ip addresses. Using a script like the one suggested
+> would also work - though, I think you'd want 'authorize'
+>
+> instead of 'login' since you don't have RADIUS. You can also do something
+> similar from the conup script so that as soon as the station connects, you
+> authorize it.
+>
+> On Tue, 2013-05-21 at 09:23 -0100, Luis Ferreira wrote:
+>
+> > Hi Russell,
+>
+> >
+>
+> >
+>
+> >
+>
+> > Here we had the same problem, and were able to fix it with the
+>
+> > following script:
+>
+> >
+>
+> >
+>
+> >
+>
+> > #!/bin/bash
+>
+> >
+>
+> >
+>
+> >
+>
+> > usercheck=$(/usr/local/sbin/chilli_query
+>
+> > -s /usr/local/var/run/chilli.vlanxx.sock list |grep -c "1
+>
+> > accountusername ")
+>
+> >
+>
+> >
+>
+> >
+>
+> > if [ $usercheck = '0' ];
+>
+> >
+>
+> > then
+>
+> >
+>
+> >         echo "Logging in accountname"
+>
+> >
+>
+> >         /usr/local/sbin/chilli_query
+>
+> > -s /usr/local/var/run/chilli.vlanxx.sock login ip 192.168.10.251
+>
+> > username accountusername password accountpassword
+>
+> >
+>
+> > fi
+>
+> >
+>
+> >
+>
+> >
+>
+> >
+>
+> >
+>
+> > Replace account name, account password and IP for the correct ones.
+>
+> > Also check the location of the sock files.
+>
+> >
+>
+> >
+>
+> >
+>
+> > This script is running every minute. If the IP is not present, Chilli
+>
+> > will not perform the login and ignore it. But if it is present (client
+>
+> > connected) it will trigger the account login.
+>
+> >
+>
+> >
+>
+> >
+>
+> > This is a very dirty hack, but we have been using it for more than 2
+>
+> > years and it never failed (except when the account would ran out of
+>
+> > credit J ).
+>
+> >
+>
+> >
+>
+> >
+>
+> > Btw, if someone as a different (and less hacked) way of doing this on
+>
+> > layer 3, please share it.
+>
+> >
+>
+> >
+>
+> >
+>
+> > Regards,
+>
+> >
+>
+> > Luis
+>
+> >
+>
+> >
+>
+> >
+>
+> >
+>
+> >
+>
+> > Dear Coova Gurus,
+>
+> >
+>
+> >
+>
+> >
+>
+> >
+>
+> > CoovaChilli Layer3, Working great. But for some days now, i am working
+>
+> > CoovaChilli to allow some devices to allow access without
+>
+> > authentication AND have Static IP address. (Servers, IP phones, Apple
+>
+> > TV etc..).
+>
+> >
+>
+> >
+>
+> >
+>
+> >
+>
+> >
+>
+> > MAC auth do not help because of L3 setup. Have anyone got the idea.
+>
+> > How can configure coovachilli to allow access 10 static ip address out
+>
+> > of a subnet by default.
+>
+> >
+>
+> >
+>
+> >
+>
+> >
+>
+> >
+>
+> > Thanks in advance.
+>
+> >
+>
+> >
+>
+> >
+>
+> >
+>
+> >
+>
+> > Thanks / Regards
+>
+> >
+>
+> >
+>
+> > _______________________________________________
+>
+> > Chilli mailing list
+>
+> > Chilli at coova.org
+>
+> > http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+> --
+>
+> --
+>
+> David Bird
+>
+> http://www.linkedin.com/in/dwbird/
+>
+> _______________________________________________
+>
+> Chilli mailing list
+>
+> Chilli at coova.org
+>
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130522/783e5bce/attachment-0001.html>
+
+From francesc at socialandbeyond.com  Wed May 22 10:35:03 2013
+From: francesc at socialandbeyond.com (=?ISO-8859-1?Q?Francesc_Rom=E0_i_Frigol=E9?=)
+Date: Wed, 22 May 2013 12:35:03 +0200
+Subject: [Chilli] CoovaChiili Permit Server IP
+In-Reply-To: <CADao4Crp3ij_o39a+tfwQSZ0g0+yZN=b44QH0K5DJignyAyXnA@mail.gmail.com>
+References: <CADao4CotgoPusHzRXDQtJ+u4tVzW69X-tHm5bEFJWPymybV_OQ@mail.gmail.com>
+ <011401ce560d$47856090$d69021b0$@cabocom.cv>
+ <1369155633.2851.3.camel@david-XPS>
+ <004601ce564e$6e748190$4b5d84b0$@cabocom.cv>
+ <CADao4Crp3ij_o39a+tfwQSZ0g0+yZN=b44QH0K5DJignyAyXnA@mail.gmail.com>
+Message-ID: <CAJaV1AzeaEXFMuF55uT6U9U0vVOKpiij4-Fd12v1gv9jeR+SHw@mail.gmail.com>
+
+Hi,
+
+I think that what David is suggesting is to authorize the IPs syncronously,
+as soon as they show up in the network, rather than polling for them every
+minute. That would make the system more responsive.
+
+What I don't understand is how would it be possible to accomplish that with
+the conup script. As it is documented here
+http://coova.org/CoovaChilli/chilli.conf  the conup script is executed
+after a session is authorized. I wouldn't expect it to be executed when the
+device shows up in the network, before is authorized.
+
+
+Francesc Rom? i Frigol?
+CTO
+Torre Telef?nica Diagonal 00, planta 11, Wayra
+Pla?a Ernest Lluch i Mart?n, 5
+08019 Barcelona
+Tel. +34 93.1234.962
+Skype: cescpak
+
+
+
+On Wed, May 22, 2013 at 9:52 AM, Russell Mike <radius.sir at gmail.com> wrote:
+
+> Hi Luis & David,
+>
+> Thanks for your inputs, discussion became very interesting. Thanks for
+> sharing ideas. standing by to hear more from David. B about conup.
+>
+> Thanks / Regards
+> --RM
+>
+>
+>
+> On Tue, May 21, 2013 at 6:10 PM, Luis Ferreira <lferreira at cabocom.cv>wrote:
+>
+>> **
+>>
+>> Hi David,
+>>
+>> Can you clarify on the conup?
+>>
+>> From what I understood, you are saying that is a script that is run every
+>> time a client connects to the network. (correct?)
+>>
+>> If true, will that work in my case, with another server running ISC-DHCP?
+>>
+>> Where can I configure it? Where is it located?
+>>
+>> Regards,
+>>
+>> Luis
+>>
+>> -----Mensagem original-----
+>> De: chilli-bounces at coova.org [mailto:chilli-bounces at coova.org<chilli-bounces at coova.org>]
+>> Em nome de David Bird
+>> Enviada: ter?a-feira, 21 de Maio de 2013 16:01
+>> Para: chilli at coova.org
+>> Assunto: Re: [Chilli] CoovaChiili Permit Server IP
+>>
+>> There could be an option similar to macallowed (plus macallowlocal) but
+>> for layer3 mode using ip addresses. Using a script like the one suggested
+>> would also work - though, I think you'd want 'authorize'
+>>
+>> instead of 'login' since you don't have RADIUS. You can also do something
+>> similar from the conup script so that as soon as the station connects, you
+>> authorize it.
+>>
+>> On Tue, 2013-05-21 at 09:23 -0100, Luis Ferreira wrote:
+>>
+>> > Hi Russell,
+>>
+>> >
+>>
+>> >
+>>
+>> >
+>>
+>> > Here we had the same problem, and were able to fix it with the
+>>
+>> > following script:
+>>
+>> >
+>>
+>> >
+>>
+>> >
+>>
+>> > #!/bin/bash
+>>
+>> >
+>>
+>> >
+>>
+>> >
+>>
+>> > usercheck=$(/usr/local/sbin/chilli_query
+>>
+>> > -s /usr/local/var/run/chilli.vlanxx.sock list |grep -c "1
+>>
+>> > accountusername ")
+>>
+>> >
+>>
+>> >
+>>
+>> >
+>>
+>> > if [ $usercheck = '0' ];
+>>
+>> >
+>>
+>> > then
+>>
+>> >
+>>
+>> >         echo "Logging in accountname"
+>>
+>> >
+>>
+>> >         /usr/local/sbin/chilli_query
+>>
+>> > -s /usr/local/var/run/chilli.vlanxx.sock login ip 192.168.10.251
+>>
+>> > username accountusername password accountpassword
+>>
+>> >
+>>
+>> > fi
+>>
+>> >
+>>
+>> >
+>>
+>> >
+>>
+>> >
+>>
+>> >
+>>
+>> > Replace account name, account password and IP for the correct ones.
+>>
+>> > Also check the location of the sock files.
+>>
+>> >
+>>
+>> >
+>>
+>> >
+>>
+>> > This script is running every minute. If the IP is not present, Chilli
+>>
+>> > will not perform the login and ignore it. But if it is present (client
+>>
+>> > connected) it will trigger the account login.
+>>
+>> >
+>>
+>> >
+>>
+>> >
+>>
+>> > This is a very dirty hack, but we have been using it for more than 2
+>>
+>> > years and it never failed (except when the account would ran out of
+>>
+>> > credit J ).
+>>
+>> >
+>>
+>> >
+>>
+>> >
+>>
+>> > Btw, if someone as a different (and less hacked) way of doing this on
+>>
+>> > layer 3, please share it.
+>>
+>> >
+>>
+>> >
+>>
+>> >
+>>
+>> > Regards,
+>>
+>> >
+>>
+>> > Luis
+>>
+>> >
+>>
+>> >
+>>
+>> >
+>>
+>> >
+>>
+>> >
+>>
+>> > Dear Coova Gurus,
+>>
+>> >
+>>
+>> >
+>>
+>> >
+>>
+>> >
+>>
+>> > CoovaChilli Layer3, Working great. But for some days now, i am working
+>>
+>> > CoovaChilli to allow some devices to allow access without
+>>
+>> > authentication AND have Static IP address. (Servers, IP phones, Apple
+>>
+>> > TV etc..).
+>>
+>> >
+>>
+>> >
+>>
+>> >
+>>
+>> >
+>>
+>> >
+>>
+>> > MAC auth do not help because of L3 setup. Have anyone got the idea.
+>>
+>> > How can configure coovachilli to allow access 10 static ip address out
+>>
+>> > of a subnet by default.
+>>
+>> >
+>>
+>> >
+>>
+>> >
+>>
+>> >
+>>
+>> >
+>>
+>> > Thanks in advance.
+>>
+>> >
+>>
+>> >
+>>
+>> >
+>>
+>> >
+>>
+>> >
+>>
+>> > Thanks / Regards
+>>
+>> >
+>>
+>> >
+>>
+>> > _______________________________________________
+>>
+>> > Chilli mailing list
+>>
+>> > Chilli at coova.org
+>>
+>> > http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>>
+>> --
+>>
+>> --
+>>
+>> David Bird
+>>
+>> http://www.linkedin.com/in/dwbird/
+>>
+>> _______________________________________________
+>>
+>> Chilli mailing list
+>>
+>> Chilli at coova.org
+>>
+>> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>>
+>> _______________________________________________
+>> Chilli mailing list
+>> Chilli at coova.org
+>> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>>
+>>
+>
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130522/b8e84119/attachment.html>
+
+From xoneca at gmail.com  Wed May 22 11:23:57 2013
+From: xoneca at gmail.com (Xabier Oneca -- xOneca)
+Date: Wed, 22 May 2013 13:23:57 +0200
+Subject: [Chilli] CoovaChiili Permit Server IP
+In-Reply-To: <CAJaV1AzeaEXFMuF55uT6U9U0vVOKpiij4-Fd12v1gv9jeR+SHw@mail.gmail.com>
+References: <CADao4CotgoPusHzRXDQtJ+u4tVzW69X-tHm5bEFJWPymybV_OQ@mail.gmail.com>
+ <011401ce560d$47856090$d69021b0$@cabocom.cv>
+ <1369155633.2851.3.camel@david-XPS>
+ <004601ce564e$6e748190$4b5d84b0$@cabocom.cv>
+ <CADao4Crp3ij_o39a+tfwQSZ0g0+yZN=b44QH0K5DJignyAyXnA@mail.gmail.com>
+ <CAJaV1AzeaEXFMuF55uT6U9U0vVOKpiij4-Fd12v1gv9jeR+SHw@mail.gmail.com>
+Message-ID: <CACkgH73zy+4KzEi60g6Mas82wUGRNNH-mCd_62dWFrfaqauxPA@mail.gmail.com>
+
+Maybe he meant 'macup'. This *does* run after the initial DHCP request, but
+I'm afraid won't work if you have an external DHCP server set-up... Neither
+know when was implemented, as it doesn't still appear in the online manual
+page...
+
+--
+Xabier Oneca_,,_
+El 22/05/2013 12:59, "Francesc Rom? i Frigol?" <francesc at socialandbeyond.com>
+escribi?:
+
+> Hi,
+>
+> I think that what David is suggesting is to authorize the IPs
+> syncronously, as soon as they show up in the network, rather than polling
+> for them every minute. That would make the system more responsive.
+>
+> What I don't understand is how would it be possible to accomplish that
+> with the conup script. As it is documented here
+> http://coova.org/CoovaChilli/chilli.conf  the conup script is executed
+> after a session is authorized. I wouldn't expect it to be executed when the
+> device shows up in the network, before is authorized.
+>
+>
+> Francesc Rom? i Frigol?
+> CTO
+> Torre Telef?nica Diagonal 00, planta 11, Wayra
+> Pla?a Ernest Lluch i Mart?n, 5
+> 08019 Barcelona
+> Tel. +34 93.1234.962
+> Skype: cescpak
+>
+>
+>
+> On Wed, May 22, 2013 at 9:52 AM, Russell Mike <radius.sir at gmail.com>wrote:
+>
+>> Hi Luis & David,
+>>
+>> Thanks for your inputs, discussion became very interesting. Thanks for
+>> sharing ideas. standing by to hear more from David. B about conup.
+>>
+>> Thanks / Regards
+>> --RM
+>>
+>>
+>>
+>> On Tue, May 21, 2013 at 6:10 PM, Luis Ferreira <lferreira at cabocom.cv>wrote:
+>>
+>>> **
+>>>
+>>> Hi David,
+>>>
+>>> Can you clarify on the conup?
+>>>
+>>> From what I understood, you are saying that is a script that is run
+>>> every time a client connects to the network. (correct?)
+>>>
+>>> If true, will that work in my case, with another server running ISC-DHCP
+>>> ?
+>>>
+>>> Where can I configure it? Where is it located?
+>>>
+>>> Regards,
+>>>
+>>> Luis
+>>>
+>>> -----Mensagem original-----
+>>> De: chilli-bounces at coova.org [mailto:chilli-bounces at coova.org<chilli-bounces at coova.org>]
+>>> Em nome de David Bird
+>>> Enviada: ter?a-feira, 21 de Maio de 2013 16:01
+>>> Para: chilli at coova.org
+>>> Assunto: Re: [Chilli] CoovaChiili Permit Server IP
+>>>
+>>> There could be an option similar to macallowed (plus macallowlocal) but
+>>> for layer3 mode using ip addresses. Using a script like the one suggested
+>>> would also work - though, I think you'd want 'authorize'
+>>>
+>>> instead of 'login' since you don't have RADIUS. You can also do
+>>> something similar from the conup script so that as soon as the station
+>>> connects, you authorize it.
+>>>
+>>> On Tue, 2013-05-21 at 09:23 -0100, Luis Ferreira wrote:
+>>>
+>>> > Hi Russell,
+>>>
+>>> >
+>>>
+>>> >
+>>>
+>>> >
+>>>
+>>> > Here we had the same problem, and were able to fix it with the
+>>>
+>>> > following script:
+>>>
+>>> >
+>>>
+>>> >
+>>>
+>>> >
+>>>
+>>> > #!/bin/bash
+>>>
+>>> >
+>>>
+>>> >
+>>>
+>>> >
+>>>
+>>> > usercheck=$(/usr/local/sbin/chilli_query
+>>>
+>>> > -s /usr/local/var/run/chilli.vlanxx.sock list |grep -c "1
+>>>
+>>> > accountusername ")
+>>>
+>>> >
+>>>
+>>> >
+>>>
+>>> >
+>>>
+>>> > if [ $usercheck = '0' ];
+>>>
+>>> >
+>>>
+>>> > then
+>>>
+>>> >
+>>>
+>>> >         echo "Logging in accountname"
+>>>
+>>> >
+>>>
+>>> >         /usr/local/sbin/chilli_query
+>>>
+>>> > -s /usr/local/var/run/chilli.vlanxx.sock login ip 192.168.10.251
+>>>
+>>> > username accountusername password accountpassword
+>>>
+>>> >
+>>>
+>>> > fi
+>>>
+>>> >
+>>>
+>>> >
+>>>
+>>> >
+>>>
+>>> >
+>>>
+>>> >
+>>>
+>>> > Replace account name, account password and IP for the correct ones.
+>>>
+>>> > Also check the location of the sock files.
+>>>
+>>> >
+>>>
+>>> >
+>>>
+>>> >
+>>>
+>>> > This script is running every minute. If the IP is not present, Chilli
+>>>
+>>> > will not perform the login and ignore it. But if it is present (client
+>>>
+>>> > connected) it will trigger the account login.
+>>>
+>>> >
+>>>
+>>> >
+>>>
+>>> >
+>>>
+>>> > This is a very dirty hack, but we have been using it for more than 2
+>>>
+>>> > years and it never failed (except when the account would ran out of
+>>>
+>>> > credit J ).
+>>>
+>>> >
+>>>
+>>> >
+>>>
+>>> >
+>>>
+>>> > Btw, if someone as a different (and less hacked) way of doing this on
+>>>
+>>> > layer 3, please share it.
+>>>
+>>> >
+>>>
+>>> >
+>>>
+>>> >
+>>>
+>>> > Regards,
+>>>
+>>> >
+>>>
+>>> > Luis
+>>>
+>>> >
+>>>
+>>> >
+>>>
+>>> >
+>>>
+>>> >
+>>>
+>>> >
+>>>
+>>> > Dear Coova Gurus,
+>>>
+>>> >
+>>>
+>>> >
+>>>
+>>> >
+>>>
+>>> >
+>>>
+>>> > CoovaChilli Layer3, Working great. But for some days now, i am working
+>>>
+>>> > CoovaChilli to allow some devices to allow access without
+>>>
+>>> > authentication AND have Static IP address. (Servers, IP phones, Apple
+>>>
+>>> > TV etc..).
+>>>
+>>> >
+>>>
+>>> >
+>>>
+>>> >
+>>>
+>>> >
+>>>
+>>> >
+>>>
+>>> > MAC auth do not help because of L3 setup. Have anyone got the idea.
+>>>
+>>> > How can configure coovachilli to allow access 10 static ip address out
+>>>
+>>> > of a subnet by default.
+>>>
+>>> >
+>>>
+>>> >
+>>>
+>>> >
+>>>
+>>> >
+>>>
+>>> >
+>>>
+>>> > Thanks in advance.
+>>>
+>>> >
+>>>
+>>> >
+>>>
+>>> >
+>>>
+>>> >
+>>>
+>>> >
+>>>
+>>> > Thanks / Regards
+>>>
+>>> >
+>>>
+>>> >
+>>>
+>>> > _______________________________________________
+>>>
+>>> > Chilli mailing list
+>>>
+>>> > Chilli at coova.org
+>>>
+>>> > http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>>>
+>>> --
+>>>
+>>> --
+>>>
+>>> David Bird
+>>>
+>>> http://www.linkedin.com/in/dwbird/
+>>>
+>>> _______________________________________________
+>>>
+>>> Chilli mailing list
+>>>
+>>> Chilli at coova.org
+>>>
+>>> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>>>
+>>> _______________________________________________
+>>> Chilli mailing list
+>>> Chilli at coova.org
+>>> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>>>
+>>>
+>>
+>> _______________________________________________
+>> Chilli mailing list
+>> Chilli at coova.org
+>> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>>
+>>
+>
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130522/85910bcd/attachment-0001.html>
+
+From david at coova.com  Wed May 22 14:42:42 2013
+From: david at coova.com (David Bird)
+Date: Wed, 22 May 2013 07:42:42 -0700
+Subject: [Chilli] CoovaChiili Permit Server IP
+In-Reply-To: <CACkgH73zy+4KzEi60g6Mas82wUGRNNH-mCd_62dWFrfaqauxPA@mail.gmail.com>
+References: <CADao4CotgoPusHzRXDQtJ+u4tVzW69X-tHm5bEFJWPymybV_OQ@mail.gmail.com>
+ <011401ce560d$47856090$d69021b0$@cabocom.cv>
+ <1369155633.2851.3.camel@david-XPS>
+ <004601ce564e$6e748190$4b5d84b0$@cabocom.cv>
+ <CADao4Crp3ij_o39a+tfwQSZ0g0+yZN=b44QH0K5DJignyAyXnA@mail.gmail.com>
+ <CAJaV1AzeaEXFMuF55uT6U9U0vVOKpiij4-Fd12v1gv9jeR+SHw@mail.gmail.com>
+ <CACkgH73zy+4KzEi60g6Mas82wUGRNNH-mCd_62dWFrfaqauxPA@mail.gmail.com>
+Message-ID: <1369233762.2638.2.camel@david-XPS>
+
+Yes, sorry, I confused conup and macup since macup wouldn't be available
+in layer3 mode. Hmm... perhaps for layer3 there could be an option
+similar to macup but for ip-only (not to confuse with ipup which runs
+when chilli sets up the tun interface). 
+
+On Wed, 2013-05-22 at 13:23 +0200, Xabier Oneca -- xOneca wrote:
+> Maybe he meant 'macup'. This *does* run after the initial DHCP
+> request, but I'm afraid won't work if you have an external DHCP server
+> set-up... Neither know when was implemented, as it doesn't still
+> appear in the online manual page...
+> 
+> --
+> Xabier Oneca_,,_
+> 
+> El 22/05/2013 12:59, "Francesc Rom? i Frigol?"
+> <francesc at socialandbeyond.com> escribi?:
+>         Hi,
+>         
+>         
+>         I think that what David is suggesting is to authorize the IPs
+>         syncronously, as soon as they show up in the network, rather
+>         than polling for them every minute. That would make the system
+>         more responsive.
+>         
+>         
+>         What I don't understand is how would it be possible to
+>         accomplish that with the conup script. As it is documented
+>         here http://coova.org/CoovaChilli/chilli.conf  the conup
+>         script is executed after a session is authorized. I wouldn't
+>         expect it to be executed when the device shows up in the
+>         network, before is authorized. 
+>         
+>         
+>         
+>         Francesc Rom? i Frigol?
+>         
+>         CTO
+>         
+>         Torre Telef?nica Diagonal 00, planta 11, Wayra 
+>         Pla?a Ernest Lluch i Mart?n, 5
+>         
+>         08019 Barcelona 
+>         
+>         Tel. +34 93.1234.962
+>         
+>         Skype: cescpak
+>         
+>         
+>         
+>         
+>         On Wed, May 22, 2013 at 9:52 AM, Russell Mike
+>         <radius.sir at gmail.com> wrote:
+>                 Hi Luis & David,
+>                 
+>                 
+>                 Thanks for your inputs, discussion became very
+>                 interesting. Thanks for sharing ideas. standing by to
+>                 hear more from David. B about conup. 
+>                 
+>                 
+>                 Thanks / Regards   
+>                 --RM 
+>                 
+>                 
+>                 
+>                 On Tue, May 21, 2013 at 6:10 PM, Luis Ferreira
+>                 <lferreira at cabocom.cv> wrote:
+>                         Hi David,
+>                         
+>                         Can you clarify on the conup?
+>                         
+>                         From what I understood, you are saying that is
+>                         a script that is run every time a client
+>                         connects to the network. (correct?)
+>                         
+>                         If true, will that work in my case, with
+>                         another server running ISC-DHCP?
+>                         
+>                         Where can I configure it? Where is it located?
+>                         
+>                         Regards,
+>                         
+>                         Luis
+>                         
+>                         -----Mensagem original-----
+>                         De: chilli-bounces at coova.org
+>                         [mailto:chilli-bounces at coova.org] Em nome de
+>                         David Bird
+>                         Enviada: ter?a-feira, 21 de Maio de 2013 16:01
+>                         Para: chilli at coova.org
+>                         Assunto: Re: [Chilli] CoovaChiili Permit
+>                         Server IP
+>                         
+>                         There could be an option similar to macallowed
+>                         (plus macallowlocal) but for layer3 mode using
+>                         ip addresses. Using a script like the one
+>                         suggested would also work - though, I think
+>                         you'd want 'authorize'
+>                         
+>                         instead of 'login' since you don't have
+>                         RADIUS. You can also do something similar from
+>                         the conup script so that as soon as the
+>                         station connects, you authorize it. 
+>                         
+>                         
+>                         On Tue, 2013-05-21 at 09:23 -0100, Luis
+>                         Ferreira wrote:
+>                         
+>                         > Hi Russell,
+>                         
+>                         > 
+>                         
+>                         >  
+>                         
+>                         > 
+>                         
+>                         > Here we had the same problem, and were able
+>                         to fix it with the 
+>                         
+>                         > following script:
+>                         
+>                         > 
+>                         
+>                         > 
+>                         
+>                         > 
+>                         
+>                         > #!/bin/bash
+>                         
+>                         > 
+>                         
+>                         >  
+>                         
+>                         > 
+>                         
+>                         > usercheck=$(/usr/local/sbin/chilli_query
+>                         
+>                         > -s /usr/local/var/run/chilli.vlanxx.sock
+>                         list |grep -c "1 
+>                         
+>                         > accountusername ")
+>                         
+>                         > 
+>                         
+>                         >  
+>                         
+>                         > 
+>                         
+>                         > if [ $usercheck = '0' ];
+>                         
+>                         > 
+>                         
+>                         > then
+>                         
+>                         > 
+>                         
+>                         >         echo "Logging in accountname"
+>                         
+>                         > 
+>                         
+>                         >         /usr/local/sbin/chilli_query
+>                         
+>                         > -s /usr/local/var/run/chilli.vlanxx.sock
+>                         login ip 192.168.10.251 
+>                         
+>                         > username accountusername password
+>                         accountpassword
+>                         
+>                         > 
+>                         
+>                         > fi
+>                         
+>                         > 
+>                         
+>                         > 
+>                         
+>                         > 
+>                         
+>                         >  
+>                         
+>                         > 
+>                         
+>                         > Replace account name, account password and
+>                         IP for the correct ones.
+>                         
+>                         > Also check the location of the sock files.
+>                         
+>                         > 
+>                         
+>                         >  
+>                         
+>                         > 
+>                         
+>                         > This script is running every minute. If the
+>                         IP is not present, Chilli 
+>                         
+>                         > will not perform the login and ignore it.
+>                         But if it is present (client
+>                         
+>                         > connected) it will trigger the account
+>                         login.
+>                         
+>                         > 
+>                         
+>                         >  
+>                         
+>                         > 
+>                         
+>                         > This is a very dirty hack, but we have been
+>                         using it for more than 2 
+>                         
+>                         > years and it never failed (except when the
+>                         account would ran out of 
+>                         
+>                         > credit J ).
+>                         
+>                         > 
+>                         
+>                         >  
+>                         
+>                         > 
+>                         
+>                         > Btw, if someone as a different (and less
+>                         hacked) way of doing this on 
+>                         
+>                         > layer 3, please share it.
+>                         
+>                         > 
+>                         
+>                         >  
+>                         
+>                         > 
+>                         
+>                         > Regards,
+>                         
+>                         > 
+>                         
+>                         > Luis
+>                         
+>                         > 
+>                         
+>                         >  
+>                         
+>                         > 
+>                         
+>                         >  
+>                         
+>                         > 
+>                         
+>                         > Dear Coova Gurus,
+>                         
+>                         > 
+>                         
+>                         >  
+>                         
+>                         > 
+>                         
+>                         > 
+>                         
+>                         > CoovaChilli Layer3, Working great. But for
+>                         some days now, i am working 
+>                         
+>                         > CoovaChilli to allow some devices to allow
+>                         access without 
+>                         
+>                         > authentication AND have Static IP address.
+>                         (Servers, IP phones, Apple 
+>                         
+>                         > TV etc..).
+>                         
+>                         > 
+>                         
+>                         > 
+>                         
+>                         >  
+>                         
+>                         > 
+>                         
+>                         > 
+>                         
+>                         > MAC auth do not help because of L3 setup.
+>                         Have anyone got the idea.
+>                         
+>                         > How can configure coovachilli to allow
+>                         access 10 static ip address out 
+>                         
+>                         > of a subnet by default.
+>                         
+>                         > 
+>                         
+>                         > 
+>                         
+>                         >  
+>                         
+>                         > 
+>                         
+>                         > 
+>                         
+>                         > Thanks in advance. 
+>                         
+>                         > 
+>                         
+>                         > 
+>                         
+>                         >  
+>                         
+>                         > 
+>                         
+>                         > 
+>                         
+>                         > Thanks / Regards
+>                         
+>                         > 
+>                         
+>                         > 
+>                         
+>                         >
+>                         _______________________________________________
+>                         
+>                         > Chilli mailing list
+>                         
+>                         > Chilli at coova.org
+>                         
+>                         >
+>                         http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>                         
+>                         --
+>                         
+>                         --
+>                         
+>                         David Bird
+>                         
+>                         http://www.linkedin.com/in/dwbird/
+>                         
+>                         _______________________________________________
+>                         
+>                         Chilli mailing list
+>                         
+>                         Chilli at coova.org
+>                         
+>                         http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>                         
+>                         
+>                         
+>                         _______________________________________________
+>                         Chilli mailing list
+>                         Chilli at coova.org
+>                         http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>                         
+>                 
+>                 
+>                 
+>                 _______________________________________________
+>                 Chilli mailing list
+>                 Chilli at coova.org
+>                 http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>                 
+>         
+>         
+>         
+>         _______________________________________________
+>         Chilli mailing list
+>         Chilli at coova.org
+>         http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>         
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+
+
+From xoneca at gmail.com  Wed May 22 15:55:22 2013
+From: xoneca at gmail.com (Xabier Oneca -- xOneca)
+Date: Wed, 22 May 2013 17:55:22 +0200
+Subject: [Chilli] CoovaChiili Permit Server IP
+In-Reply-To: <1369233762.2638.2.camel@david-XPS>
+References: <CADao4CotgoPusHzRXDQtJ+u4tVzW69X-tHm5bEFJWPymybV_OQ@mail.gmail.com>
+ <011401ce560d$47856090$d69021b0$@cabocom.cv>
+ <1369155633.2851.3.camel@david-XPS>
+ <004601ce564e$6e748190$4b5d84b0$@cabocom.cv>
+ <CADao4Crp3ij_o39a+tfwQSZ0g0+yZN=b44QH0K5DJignyAyXnA@mail.gmail.com>
+ <CAJaV1AzeaEXFMuF55uT6U9U0vVOKpiij4-Fd12v1gv9jeR+SHw@mail.gmail.com>
+ <CACkgH73zy+4KzEi60g6Mas82wUGRNNH-mCd_62dWFrfaqauxPA@mail.gmail.com>
+ <1369233762.2638.2.camel@david-XPS>
+Message-ID: <CACkgH71t4h3sDTLdxpnY0i6OrnM-mM7WxmhEESrwFSdTzywjGQ@mail.gmail.com>
+
+Maybe a pre-authentication hook, or something like that?
+
+--
+Xabier Oneca_,,_
+El 22/05/2013 16:42, "David Bird" <david at coova.com> escribi?:
+
+> Yes, sorry, I confused conup and macup since macup wouldn't be available
+> in layer3 mode. Hmm... perhaps for layer3 there could be an option
+> similar to macup but for ip-only (not to confuse with ipup which runs
+> when chilli sets up the tun interface).
+>
+> On Wed, 2013-05-22 at 13:23 +0200, Xabier Oneca -- xOneca wrote:
+> > Maybe he meant 'macup'. This *does* run after the initial DHCP
+> > request, but I'm afraid won't work if you have an external DHCP server
+> > set-up... Neither know when was implemented, as it doesn't still
+> > appear in the online manual page...
+> >
+> > --
+> > Xabier Oneca_,,_
+> >
+> > El 22/05/2013 12:59, "Francesc Rom? i Frigol?"
+> > <francesc at socialandbeyond.com> escribi?:
+> >         Hi,
+> >
+> >
+> >         I think that what David is suggesting is to authorize the IPs
+> >         syncronously, as soon as they show up in the network, rather
+> >         than polling for them every minute. That would make the system
+> >         more responsive.
+> >
+> >
+> >         What I don't understand is how would it be possible to
+> >         accomplish that with the conup script. As it is documented
+> >         here http://coova.org/CoovaChilli/chilli.conf  the conup
+> >         script is executed after a session is authorized. I wouldn't
+> >         expect it to be executed when the device shows up in the
+> >         network, before is authorized.
+> >
+> >
+> >
+> >         Francesc Rom? i Frigol?
+> >
+> >         CTO
+> >
+> >         Torre Telef?nica Diagonal 00, planta 11, Wayra
+> >         Pla?a Ernest Lluch i Mart?n, 5
+> >
+> >         08019 Barcelona
+> >
+> >         Tel. +34 93.1234.962
+> >
+> >         Skype: cescpak
+> >
+> >
+> >
+> >
+> >         On Wed, May 22, 2013 at 9:52 AM, Russell Mike
+> >         <radius.sir at gmail.com> wrote:
+> >                 Hi Luis & David,
+> >
+> >
+> >                 Thanks for your inputs, discussion became very
+> >                 interesting. Thanks for sharing ideas. standing by to
+> >                 hear more from David. B about conup.
+> >
+> >
+> >                 Thanks / Regards
+> >                 --RM
+> >
+> >
+> >
+> >                 On Tue, May 21, 2013 at 6:10 PM, Luis Ferreira
+> >                 <lferreira at cabocom.cv> wrote:
+> >                         Hi David,
+> >
+> >                         Can you clarify on the conup?
+> >
+> >                         From what I understood, you are saying that is
+> >                         a script that is run every time a client
+> >                         connects to the network. (correct?)
+> >
+> >                         If true, will that work in my case, with
+> >                         another server running ISC-DHCP?
+> >
+> >                         Where can I configure it? Where is it located?
+> >
+> >                         Regards,
+> >
+> >                         Luis
+> >
+> >                         -----Mensagem original-----
+> >                         De: chilli-bounces at coova.org
+> >                         [mailto:chilli-bounces at coova.org] Em nome de
+> >                         David Bird
+> >                         Enviada: ter?a-feira, 21 de Maio de 2013 16:01
+> >                         Para: chilli at coova.org
+> >                         Assunto: Re: [Chilli] CoovaChiili Permit
+> >                         Server IP
+> >
+> >                         There could be an option similar to macallowed
+> >                         (plus macallowlocal) but for layer3 mode using
+> >                         ip addresses. Using a script like the one
+> >                         suggested would also work - though, I think
+> >                         you'd want 'authorize'
+> >
+> >                         instead of 'login' since you don't have
+> >                         RADIUS. You can also do something similar from
+> >                         the conup script so that as soon as the
+> >                         station connects, you authorize it.
+> >
+> >
+> >                         On Tue, 2013-05-21 at 09:23 -0100, Luis
+> >                         Ferreira wrote:
+> >
+> >                         > Hi Russell,
+> >
+> >                         >
+> >
+> >                         >
+> >
+> >                         >
+> >
+> >                         > Here we had the same problem, and were able
+> >                         to fix it with the
+> >
+> >                         > following script:
+> >
+> >                         >
+> >
+> >                         >
+> >
+> >                         >
+> >
+> >                         > #!/bin/bash
+> >
+> >                         >
+> >
+> >                         >
+> >
+> >                         >
+> >
+> >                         > usercheck=$(/usr/local/sbin/chilli_query
+> >
+> >                         > -s /usr/local/var/run/chilli.vlanxx.sock
+> >                         list |grep -c "1
+> >
+> >                         > accountusername ")
+> >
+> >                         >
+> >
+> >                         >
+> >
+> >                         >
+> >
+> >                         > if [ $usercheck = '0' ];
+> >
+> >                         >
+> >
+> >                         > then
+> >
+> >                         >
+> >
+> >                         >         echo "Logging in accountname"
+> >
+> >                         >
+> >
+> >                         >         /usr/local/sbin/chilli_query
+> >
+> >                         > -s /usr/local/var/run/chilli.vlanxx.sock
+> >                         login ip 192.168.10.251
+> >
+> >                         > username accountusername password
+> >                         accountpassword
+> >
+> >                         >
+> >
+> >                         > fi
+> >
+> >                         >
+> >
+> >                         >
+> >
+> >                         >
+> >
+> >                         >
+> >
+> >                         >
+> >
+> >                         > Replace account name, account password and
+> >                         IP for the correct ones.
+> >
+> >                         > Also check the location of the sock files.
+> >
+> >                         >
+> >
+> >                         >
+> >
+> >                         >
+> >
+> >                         > This script is running every minute. If the
+> >                         IP is not present, Chilli
+> >
+> >                         > will not perform the login and ignore it.
+> >                         But if it is present (client
+> >
+> >                         > connected) it will trigger the account
+> >                         login.
+> >
+> >                         >
+> >
+> >                         >
+> >
+> >                         >
+> >
+> >                         > This is a very dirty hack, but we have been
+> >                         using it for more than 2
+> >
+> >                         > years and it never failed (except when the
+> >                         account would ran out of
+> >
+> >                         > credit J ).
+> >
+> >                         >
+> >
+> >                         >
+> >
+> >                         >
+> >
+> >                         > Btw, if someone as a different (and less
+> >                         hacked) way of doing this on
+> >
+> >                         > layer 3, please share it.
+> >
+> >                         >
+> >
+> >                         >
+> >
+> >                         >
+> >
+> >                         > Regards,
+> >
+> >                         >
+> >
+> >                         > Luis
+> >
+> >                         >
+> >
+> >                         >
+> >
+> >                         >
+> >
+> >                         >
+> >
+> >                         >
+> >
+> >                         > Dear Coova Gurus,
+> >
+> >                         >
+> >
+> >                         >
+> >
+> >                         >
+> >
+> >                         >
+> >
+> >                         > CoovaChilli Layer3, Working great. But for
+> >                         some days now, i am working
+> >
+> >                         > CoovaChilli to allow some devices to allow
+> >                         access without
+> >
+> >                         > authentication AND have Static IP address.
+> >                         (Servers, IP phones, Apple
+> >
+> >                         > TV etc..).
+> >
+> >                         >
+> >
+> >                         >
+> >
+> >                         >
+> >
+> >                         >
+> >
+> >                         >
+> >
+> >                         > MAC auth do not help because of L3 setup.
+> >                         Have anyone got the idea.
+> >
+> >                         > How can configure coovachilli to allow
+> >                         access 10 static ip address out
+> >
+> >                         > of a subnet by default.
+> >
+> >                         >
+> >
+> >                         >
+> >
+> >                         >
+> >
+> >                         >
+> >
+> >                         >
+> >
+> >                         > Thanks in advance.
+> >
+> >                         >
+> >
+> >                         >
+> >
+> >                         >
+> >
+> >                         >
+> >
+> >                         >
+> >
+> >                         > Thanks / Regards
+> >
+> >                         >
+> >
+> >                         >
+> >
+> >                         >
+> >                         _______________________________________________
+> >
+> >                         > Chilli mailing list
+> >
+> >                         > Chilli at coova.org
+> >
+> >                         >
+> >
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+> >
+> >                         --
+> >
+> >                         --
+> >
+> >                         David Bird
+> >
+> >                         http://www.linkedin.com/in/dwbird/
+> >
+> >                         _______________________________________________
+> >
+> >                         Chilli mailing list
+> >
+> >                         Chilli at coova.org
+> >
+> >
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+> >
+> >
+> >
+> >                         _______________________________________________
+> >                         Chilli mailing list
+> >                         Chilli at coova.org
+> >
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+> >
+> >
+> >
+> >
+> >                 _______________________________________________
+> >                 Chilli mailing list
+> >                 Chilli at coova.org
+> >                 http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+> >
+> >
+> >
+> >
+> >         _______________________________________________
+> >         Chilli mailing list
+> >         Chilli at coova.org
+> >         http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+> >
+> > _______________________________________________
+> > Chilli mailing list
+> > Chilli at coova.org
+> > http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+>
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130522/b8194c50/attachment-0001.html>
+
+From pabloa502 at gmail.com  Fri May 24 08:05:16 2013
+From: pabloa502 at gmail.com (Pablo Arango)
+Date: Fri, 24 May 2013 03:05:16 -0500
+Subject: [Chilli] No upload issue
+Message-ID: <CAN5KZqXs88du0GvnL38awrtzg_NrtP2_z7ZXu5UR7Q-GMfNGmQ@mail.gmail.com>
+
+Hello.
+
+Just want to know if there is a fix for the uploads from clients being
+dropped or extremely slow.
+
+Was it OS related or is there a fix?
+
+Thanks
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130524/9179b876/attachment.html>
+
+From francesc at socialandbeyond.com  Fri May 24 09:56:14 2013
+From: francesc at socialandbeyond.com (=?ISO-8859-1?Q?Francesc_Rom=E0_i_Frigol=E9?=)
+Date: Fri, 24 May 2013 11:56:14 +0200
+Subject: [Chilli] No upload issue
+In-Reply-To: <CAN5KZqXs88du0GvnL38awrtzg_NrtP2_z7ZXu5UR7Q-GMfNGmQ@mail.gmail.com>
+References: <CAN5KZqXs88du0GvnL38awrtzg_NrtP2_z7ZXu5UR7Q-GMfNGmQ@mail.gmail.com>
+Message-ID: <CAJaV1AwZveM1LWCGFOc+oj_iqjswMsGDzKKkqwW6gG+9srQiKQ@mail.gmail.com>
+
+per chance your chilli device has a 1GB LAN interface?
+
+I'have had problems with no uploads with 1GB ethernet cards from intel and
+ended up using a 100MB card from realtek instead
+
+Francesc Rom? i Frigol?
+CTO
+Torre Telef?nica Diagonal 00, planta 11, Wayra
+Pla?a Ernest Lluch i Mart?n, 5
+08019 Barcelona
+Tel. +34 93.1234.962
+Skype: cescpak
+
+
+
+On Fri, May 24, 2013 at 10:05 AM, Pablo Arango <pabloa502 at gmail.com> wrote:
+
+> Hello.
+>
+> Just want to know if there is a fix for the uploads from clients being
+> dropped or extremely slow.
+>
+> Was it OS related or is there a fix?
+>
+> Thanks
+>
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130524/5e7c8db0/attachment.html>
+
+From david at coova.com  Fri May 24 15:37:40 2013
+From: david at coova.com (David Bird)
+Date: Fri, 24 May 2013 08:37:40 -0700
+Subject: [Chilli] No upload issue
+In-Reply-To: <CAJaV1AwZveM1LWCGFOc+oj_iqjswMsGDzKKkqwW6gG+9srQiKQ@mail.gmail.com>
+References: <CAN5KZqXs88du0GvnL38awrtzg_NrtP2_z7ZXu5UR7Q-GMfNGmQ@mail.gmail.com>
+ <CAJaV1AwZveM1LWCGFOc+oj_iqjswMsGDzKKkqwW6gG+9srQiKQ@mail.gmail.com>
+Message-ID: <1369409860.3156.0.camel@david-XPS>
+
+I am looking into it...
+
+
+On Fri, 2013-05-24 at 11:56 +0200, Francesc Rom? i Frigol? wrote:
+> per chance your chilli device has a 1GB LAN interface?
+> 
+> 
+> I'have had problems with no uploads with 1GB ethernet cards from intel
+> and ended up using a 100MB card from realtek instead
+> 
+> 
+> Francesc Rom? i Frigol?
+> 
+> CTO
+> 
+> Torre Telef?nica Diagonal 00, planta 11, Wayra 
+> Pla?a Ernest Lluch i Mart?n, 5
+> 
+> 08019 Barcelona 
+> 
+> Tel. +34 93.1234.962
+> 
+> Skype: cescpak
+> 
+> 
+> 
+> 
+> On Fri, May 24, 2013 at 10:05 AM, Pablo Arango <pabloa502 at gmail.com>
+> wrote:
+>         Hello.
+>         
+>         Just want to know if there is a fix for the uploads from
+>         clients being dropped or extremely slow.
+>         
+>         Was it OS related or is there a fix?
+>         
+>         Thanks
+>         
+>         
+>         _______________________________________________
+>         Chilli mailing list
+>         Chilli at coova.org
+>         http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>         
+> 
+> 
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+-- 
+--
+David Bird
+http://www.linkedin.com/in/dwbird/
+
+
+From david at coova.com  Fri May 24 15:48:46 2013
+From: david at coova.com (David Bird)
+Date: Fri, 24 May 2013 08:48:46 -0700
+Subject: [Chilli] No upload issue
+In-Reply-To: <1369409860.3156.0.camel@david-XPS>
+References: <CAN5KZqXs88du0GvnL38awrtzg_NrtP2_z7ZXu5UR7Q-GMfNGmQ@mail.gmail.com>
+ <CAJaV1AwZveM1LWCGFOc+oj_iqjswMsGDzKKkqwW6gG+9srQiKQ@mail.gmail.com>
+ <1369409860.3156.0.camel@david-XPS>
+Message-ID: <1369410526.3156.1.camel@david-XPS>
+
+Btw, did you build with --enable-largelimits ?
+
+On Fri, 2013-05-24 at 08:37 -0700, David Bird wrote:
+> I am looking into it...
+> 
+> 
+> On Fri, 2013-05-24 at 11:56 +0200, Francesc Rom? i Frigol? wrote:
+> > per chance your chilli device has a 1GB LAN interface?
+> > 
+> > 
+> > I'have had problems with no uploads with 1GB ethernet cards from intel
+> > and ended up using a 100MB card from realtek instead
+> > 
+> > 
+> > Francesc Rom? i Frigol?
+> > 
+> > CTO
+> > 
+> > Torre Telef?nica Diagonal 00, planta 11, Wayra 
+> > Pla?a Ernest Lluch i Mart?n, 5
+> > 
+> > 08019 Barcelona 
+> > 
+> > Tel. +34 93.1234.962
+> > 
+> > Skype: cescpak
+> > 
+> > 
+> > 
+> > 
+> > On Fri, May 24, 2013 at 10:05 AM, Pablo Arango <pabloa502 at gmail.com>
+> > wrote:
+> >         Hello.
+> >         
+> >         Just want to know if there is a fix for the uploads from
+> >         clients being dropped or extremely slow.
+> >         
+> >         Was it OS related or is there a fix?
+> >         
+> >         Thanks
+> >         
+> >         
+> >         _______________________________________________
+> >         Chilli mailing list
+> >         Chilli at coova.org
+> >         http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+> >         
+> > 
+> > 
+> > _______________________________________________
+> > Chilli mailing list
+> > Chilli at coova.org
+> > http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+> 
+
+
+
+From david at coova.com  Sat May 25 03:28:25 2013
+From: david at coova.com (David Bird)
+Date: Fri, 24 May 2013 20:28:25 -0700
+Subject: [Chilli] No upload issue
+In-Reply-To: <CAN5KZqX+puo9j7wooFMFcs8KVbQvsdTZkVqwQ42dCSqhG0Rwrw@mail.gmail.com>
+References: <CAN5KZqXs88du0GvnL38awrtzg_NrtP2_z7ZXu5UR7Q-GMfNGmQ@mail.gmail.com>
+ <CAJaV1AwZveM1LWCGFOc+oj_iqjswMsGDzKKkqwW6gG+9srQiKQ@mail.gmail.com>
+ <1369409860.3156.0.camel@david-XPS> <1369410526.3156.1.camel@david-XPS>
+ <CAN5KZqX+puo9j7wooFMFcs8KVbQvsdTZkVqwQ42dCSqhG0Rwrw@mail.gmail.com>
+Message-ID: <1369452505.2881.0.camel@david-XPS>
+
+Running "chilli -h" will print out a "Compiled with" list of options.
+
+
+On Fri, 2013-05-24 at 20:19 -0500, Pablo Arango wrote:
+> Hello Francesc, yes I am using a 1GB interface for both LAN and WAN,
+> is the problem on the LAN card? Gonna try find one and set it up.
+> 
+> 
+> Hey David, how can I check how it was built?
+> 
+> 
+> On Fri, May 24, 2013 at 10:48 AM, David Bird <david at coova.com> wrote:
+>         Btw, did you build with --enable-largelimits ?
+>         
+>         On Fri, 2013-05-24 at 08:37 -0700, David Bird wrote:
+>         > I am looking into it...
+>         >
+>         >
+>         > On Fri, 2013-05-24 at 11:56 +0200, Francesc Rom? i Frigol?
+>         wrote:
+>         > > per chance your chilli device has a 1GB LAN interface?
+>         > >
+>         > >
+>         > > I'have had problems with no uploads with 1GB ethernet
+>         cards from intel
+>         > > and ended up using a 100MB card from realtek instead
+>         > >
+>         > >
+>         > > Francesc Rom? i Frigol?
+>         > >
+>         > > CTO
+>         > >
+>         > > Torre Telef?nica Diagonal 00, planta 11, Wayra
+>         > > Pla?a Ernest Lluch i Mart?n, 5
+>         > >
+>         > > 08019 Barcelona
+>         > >
+>         > > Tel. +34 93.1234.962
+>         > >
+>         > > Skype: cescpak
+>         > >
+>         > >
+>         > >
+>         > >
+>         > > On Fri, May 24, 2013 at 10:05 AM, Pablo Arango
+>         <pabloa502 at gmail.com>
+>         > > wrote:
+>         > >         Hello.
+>         > >
+>         > >         Just want to know if there is a fix for the
+>         uploads from
+>         > >         clients being dropped or extremely slow.
+>         > >
+>         > >         Was it OS related or is there a fix?
+>         > >
+>         > >         Thanks
+>         > >
+>         > >
+>         > >         _______________________________________________
+>         > >         Chilli mailing list
+>         > >         Chilli at coova.org
+>         > >
+>         http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>         > >
+>         > >
+>         > >
+>         > > _______________________________________________
+>         > > Chilli mailing list
+>         > > Chilli at coova.org
+>         > > http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>         >
+>         
+>         
+>         _______________________________________________
+>         Chilli mailing list
+>         Chilli at coova.org
+>         http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>         
+> 
+> 
+> 
+> 
+> -- 
+> 
+> 
+> __________________________________________________________________
+> 
+> 
+> Pablo Arango Correa | Cel: 301 4198005 | Correo: pabloa502 at gmail.com
+> Ingeniero de Sistemas e Inform?tica.
+> Universidad Pontificia Bolivariana, UPB.
+> Medell?n, Colombia.
+> __________________________________________________________________
+>    "While one person hesitates because he feels inferior, the other is
+>                            busy making mistakes and becoming superior"
+> 
+>                                                        - Henry C. Link
+> 
+> 
+> 
+> 
+
+
+
+From francesc at socialandbeyond.com  Mon May 27 09:02:53 2013
+From: francesc at socialandbeyond.com (=?ISO-8859-1?Q?Francesc_Rom=E0_i_Frigol=E9?=)
+Date: Mon, 27 May 2013 11:02:53 +0200
+Subject: [Chilli] No upload issue
+In-Reply-To: <1369452505.2881.0.camel@david-XPS>
+References: <CAN5KZqXs88du0GvnL38awrtzg_NrtP2_z7ZXu5UR7Q-GMfNGmQ@mail.gmail.com>
+ <CAJaV1AwZveM1LWCGFOc+oj_iqjswMsGDzKKkqwW6gG+9srQiKQ@mail.gmail.com>
+ <1369409860.3156.0.camel@david-XPS> <1369410526.3156.1.camel@david-XPS>
+ <CAN5KZqX+puo9j7wooFMFcs8KVbQvsdTZkVqwQ42dCSqhG0Rwrw@mail.gmail.com>
+ <1369452505.2881.0.camel@david-XPS>
+Message-ID: <CAJaV1AzTKba7X4d_CWt=jDv9jmJOaLfaaygC+QGxSJv593k96A@mail.gmail.com>
+
+David,
+
+Thanks for loking into it.
+
+I've tested with the official binary for ubuntu which it is compliled with
+--enable-largelinmits:
+
+Compiled with ENABLE_BINSTATFILE ENABLE_CHILLIQUERY ENABLE_CHILLIPROXY
+ENABLE_COA ENABLE_RADPROXY ENABLE_CHILLIRADSEC ENABLE_CHILLIREDIR
+ENABLE_DHCPRADIUS ENABLE_DNSLOG ENABLE_UAMDOMAINFILE ENABLE_EAPOL
+ENABLE_IEEE8021Q ENABLE_JSON ENABLE_LARGELIMITS ENABLE_LAYER3
+ENABLE_LEAKYBUCKET ENABLE_MINIPORTAL ENABLE_MULTIROUTE ENABLE_PROXYVSA
+ENABLE_EXTADMVSA ENABLE_REDIRDNSREQ ENABLE_STATFILE ENABLE_UAMANYIP
+ENABLE_UAMUIPORT HAVE_OPENSSL USING_POLL
+
+Francesc Rom? i Frigol?
+CTO
+Torre Telef?nica Diagonal 00, planta 11, Wayra
+Pla?a Ernest Lluch i Mart?n, 5
+08019 Barcelona
+Tel. +34 93.1234.962
+Skype: cescpak
+
+
+
+On Sat, May 25, 2013 at 5:28 AM, David Bird <david at coova.com> wrote:
+
+> Running "chilli -h" will print out a "Compiled with" list of options.
+>
+>
+> On Fri, 2013-05-24 at 20:19 -0500, Pablo Arango wrote:
+> > Hello Francesc, yes I am using a 1GB interface for both LAN and WAN,
+> > is the problem on the LAN card? Gonna try find one and set it up.
+> >
+> >
+> > Hey David, how can I check how it was built?
+> >
+> >
+> > On Fri, May 24, 2013 at 10:48 AM, David Bird <david at coova.com> wrote:
+> >         Btw, did you build with --enable-largelimits ?
+> >
+> >         On Fri, 2013-05-24 at 08:37 -0700, David Bird wrote:
+> >         > I am looking into it...
+> >         >
+> >         >
+> >         > On Fri, 2013-05-24 at 11:56 +0200, Francesc Rom? i Frigol?
+> >         wrote:
+> >         > > per chance your chilli device has a 1GB LAN interface?
+> >         > >
+> >         > >
+> >         > > I'have had problems with no uploads with 1GB ethernet
+> >         cards from intel
+> >         > > and ended up using a 100MB card from realtek instead
+> >         > >
+> >         > >
+> >         > > Francesc Rom? i Frigol?
+> >         > >
+> >         > > CTO
+> >         > >
+> >         > > Torre Telef?nica Diagonal 00, planta 11, Wayra
+> >         > > Pla?a Ernest Lluch i Mart?n, 5
+> >         > >
+> >         > > 08019 Barcelona
+> >         > >
+> >         > > Tel. +34 93.1234.962
+> >         > >
+> >         > > Skype: cescpak
+> >         > >
+> >         > >
+> >         > >
+> >         > >
+> >         > > On Fri, May 24, 2013 at 10:05 AM, Pablo Arango
+> >         <pabloa502 at gmail.com>
+> >         > > wrote:
+> >         > >         Hello.
+> >         > >
+> >         > >         Just want to know if there is a fix for the
+> >         uploads from
+> >         > >         clients being dropped or extremely slow.
+> >         > >
+> >         > >         Was it OS related or is there a fix?
+> >         > >
+> >         > >         Thanks
+> >         > >
+> >         > >
+> >         > >         _______________________________________________
+> >         > >         Chilli mailing list
+> >         > >         Chilli at coova.org
+> >         > >
+> >         http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+> >         > >
+> >         > >
+> >         > >
+> >         > > _______________________________________________
+> >         > > Chilli mailing list
+> >         > > Chilli at coova.org
+> >         > > http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+> >         >
+> >
+> >
+> >         _______________________________________________
+> >         Chilli mailing list
+> >         Chilli at coova.org
+> >         http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+> >
+> >
+> >
+> >
+> >
+> > --
+> >
+> >
+> > __________________________________________________________________
+> >
+> >
+> > Pablo Arango Correa | Cel: 301 4198005 | Correo: pabloa502 at gmail.com
+> > Ingeniero de Sistemas e Inform?tica.
+> > Universidad Pontificia Bolivariana, UPB.
+> > Medell?n, Colombia.
+> > __________________________________________________________________
+> >    "While one person hesitates because he feels inferior, the other is
+> >                            busy making mistakes and becoming superior"
+> >
+> >                                                        - Henry C. Link
+> >
+> >
+> >
+> >
+>
+>
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130527/87bbcb6f/attachment.html>
+
+From lferreira at cabocom.cv  Thu May 30 17:20:05 2013
+From: lferreira at cabocom.cv (Luis Ferreira)
+Date: Thu, 30 May 2013 16:20:05 -0100
+Subject: [Chilli] CoovaChiili Permit Server IP
+In-Reply-To: <CADao4CpqnbO87rP5ub2kOXZX6yTm3awSt-bCx6hmeB55aEB0Ug@mail.gmail.com>
+References: <CADao4CotgoPusHzRXDQtJ+u4tVzW69X-tHm5bEFJWPymybV_OQ@mail.gmail.com>	<011401ce560d$47856090$d69021b0$@cabocom.cv>
+ <CADao4CpqnbO87rP5ub2kOXZX6yTm3awSt-bCx6hmeB55aEB0Ug@mail.gmail.com>
+Message-ID: <011401ce5d59$ee25cbd0$ca716370$@cabocom.cv>
+
+Hi Russell,
+
+ 
+
+You should put the IP of the client.
+
+ 
+
+For instance, I've got a client that ISC-DHCP always gives the same address
+(192.168.10.250) on the VLAN ID 10.
+
+ 
+
+So what we have to do is a script running on the chillibox that runs the
+command if the user is not online. Your mistake is running the command
+outside the chillibox.
+
+ 
+
+The script for you, should be this:
+
+ 
+
+
+#!/bi/bash
+
+usercheck=$(/usr/local/sbin/chilli_query -s
+/usr/local/var/run/chilli.vlanxx.sock list |grep -c "1 prabhpal ")
+
+if [ $usercheck = '0' ];
+then
+      /usr/local/sbin/chilli_query -s  /var/run/chilli.vlan888.sock login ip
+41.139.29.251 username prabhal password rootantipass
+fi
+
+ 
+
+1th         - If it does not work, try to identify the problem. First see if
+you can ping the client from within Chillibox.
+
+2nd        - run the command "/usr/local/sbin/chilli_query -s
+/usr/local/var/run/chilli.vlanxx.sock list" and see if it return the online
+users like this:
+
+
+10.1.10.195 51a7872300000005 0 - 0/0 0/0 0/0 0/0 0 0 0/0 0/0
+http://crl.microsoft.com/pki/crl/products/MicCodSigPCA_08-31-2010.crl
+
+10.1.10.23 51a7864800000004 0 - 0/0 0/0 0/0 0/0 0 0 0/0 0/0 -
+
+10.1.10.196 51a7863800000003 0 - 0/0 0/0 0/0 0/0 0 0 0/0 0/0 -
+
+10.1.10.192 51a785810000000c 0 - 0/0 0/0 0/0 0/0 0 0 0/0 0/0
+http://www.apple.com/library/test/success.html
+
+10.1.10.142 51a7851700000013 0 - 0/0 0/0 0/0 0/0 0 0 0/0 0/0 http:///
+
+
+10.1.10.129 51a7841f00000009 0 - 0/0 0/0 0/0 0/0 0 0 0/0 0/0
+http://www.msftncsi.com/ncsi.txt
+
+.
+
+ 
+
+3rd         - run then /usr/local/sbin/chilli_query -s
+/usr/local/var/run/chilli.vlanxx.sock list |grep -c "1 <username>" and see
+if the return is 0 or 1, depending if the user is online or not.
+
+Regards,
+
+Luis
+
+ 
+
+ 
+
+ 
+
+Dear Luis Ferreira,
+
+ 
+
+Thanks for everything in past, i am true with my lab and was testing this
+bash script. but still unable to reach device behind the Chilli Box. here
+are my details. 
+
+ 
+
+My CoovaChilli: 1.3.0 UB_12.4
+
+IP Camera Behind CoovaChilli: 41.139.29.251 (device is CoovaChilli LAN Side,
+entring through WAN side to reach device)
+
+My Username: prabhpal
+
+My Password: rootantipass
+
+My location: /var/run/chilli.vlan888.sock
+
+ 
+
+Here is my script: 
+
+ 
+
+#!/bin/bash
+
+usercheck=$(/usr/local/sbin/chilli_query -s /var/run/chilli.vlan888.sock
+list | grep -c "1 prabhpal")
+
+ if [ $usercheck = '0' ];
+
+then
+
+        echo "Logging in accountname"
+
+        /usr/local/sbin/chilli_query -s /var/run/chilli.vlan888.sock login
+ip 41.139.29.251 username prabhpal password rootantipass
+
+fi
+
+ 
+
+When i run this script chilli should be able to ping 41.139.29.251 ip right
+? and entry should be seen the 41.139.29.251 in "chilli_query list" No? 
+
+ 
+
+Thanks / Regards
+
+RM --
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130530/18b34364/attachment.html>
+
+From lferreira at cabocom.cv  Fri May 31 16:05:19 2013
+From: lferreira at cabocom.cv (Luis Ferreira)
+Date: Fri, 31 May 2013 15:05:19 -0100
+Subject: [Chilli] CoovaChiili Permit Server IP
+In-Reply-To: <CADao4Cp0ehd-WKStNxJsjhcqCu3R-UKjRe1ByhLXCcFRU62FtA@mail.gmail.com>
+References: <CADao4CotgoPusHzRXDQtJ+u4tVzW69X-tHm5bEFJWPymybV_OQ@mail.gmail.com>	<011401ce560d$47856090$d69021b0$@cabocom.cv>	<CADao4CpqnbO87rP5ub2kOXZX6yTm3awSt-bCx6hmeB55aEB0Ug@mail.gmail.com>	<011401ce5d59$ee25cbd0$ca716370$@cabocom.cv>
+ <CADao4Cp0ehd-WKStNxJsjhcqCu3R-UKjRe1ByhLXCcFRU62FtA@mail.gmail.com>
+Message-ID: <017901ce5e18$a709dab0$f51d9010$@cabocom.cv>
+
+ 
+
+?
+
+1th         - If it does not work, try to identify the problem. First see if
+you can ping the client from within Chillibox.
+
+No, i cannot ping IP Camera from Chilli Box 41.139.29.251
+
+But if i assigne same IP to a laptop can be ping, strange) Even if laptop
+did not authenticate yet, chilli bix can ping it. 
+
+2nd        - run the command ?/usr/local/sbin/chilli_query -s
+/usr/local/var/run/chilli.vlanxx.sock list? and see if it return the online
+users like this:
+
+?
+
+ 
+
+That one is easy. You configure Chilli to use VLAN ID 888, but the camera
+does not have VLAN Tagging active. That means that even if the IP
+configuration is ok, they cannot communicate between them, as that chilli
+instance will ignore traffic not tagged as VLAN ID 888 aka chilli will not
+see the camera.
+
+You already confirmed that with the laptop, that if you ping the camera, it
+will reply. (you enable VLAN tagging on the LAN card of the laptop).
+
+ 
+
+Your communication problem is because of VLAN tagging.
+
+ 
+
+Regards,
+
+Luis Ferreira
+
+ 
+
+ 
+
+De: Russell Mike [mailto:radius.sir at gmail.com] 
+Enviada: sexta-feira, 31 de Maio de 2013 11:45
+Para: Lu?s Ferreira
+Assunto: Re: [Chilli] CoovaChiili Permit Server IP
+
+ 
+
+Dear Luis Ferreira,
+
+ 
+
+Thanks for your help again, you have helped me number of times in past. i am
+grateful for that. I did add some answers under your comments. 
+
+ 
+
+On Thu, May 30, 2013 at 5:20 PM, Luis Ferreira <lferreira at cabocom.cv> wrote:
+
+Hi Russell,
+
+ 
+
+You should put the IP of the client.
+
+ 
+
+For instance, I?ve got a client that ISC-DHCP always gives the same address
+(192.168.10.250) on the VLAN ID 10.
+
+ 
+
+The Device i need to reach from our data center at customer permises is
+Camera have static IP VLAN888
+
+ 
+
+So what we have to do is a script running on the chillibox that runs the
+command if the user is not online. Your mistake is running the command
+outside the chillibox.
+
+ 
+
+I did run the script on CoovaChilli Box  
+
+ 
+
+The script for you, should be this:
+
+ 
+
+
+#!/bin/bash
+
+usercheck=$(/usr/local/sbin/chilli_query -s
+/usr/local/var/run/chilli.vlanxx.sock list |grep -c "1 prabhpal ")
+
+if [ $usercheck = '0' ];
+then
+      /usr/local/sbin/chilli_query -s  /var/run/chilli.vlan888.sock login ip
+41.139.29.251 username prabhal password rootantipass
+fi
+
+ 
+
+1th         - If it does not work, try to identify the problem. First see if
+you can ping the client from within Chillibox.
+
+No, i cannot ping IP Camera from Chilli Box 41.139.29.251
+
+But if i assigne same IP to a laptop can be ping, strange) Even if laptop
+did not authenticate yet, chilli bix can ping it. 
+
+2nd        - run the command ?/usr/local/sbin/chilli_query -s
+/usr/local/var/run/chilli.vlanxx.sock list? and see if it return the online
+users like this:
+
+
+10.1.10.195 51a7872300000005 0 - 0/0 0/0 0/0 0/0 0 0 0/0 0/0
+http://crl.microsoft.com/pki/crl/products/MicCodSigPCA_08-31-2010.crl
+
+10.1.10.23 51a7864800000004 0 - 0/0 0/0 0/0 0/0 0 0 0/0 0/0 -
+
+10.1.10.196 51a7863800000003 0 - 0/0 0/0 0/0 0/0 0 0 0/0 0/0 -
+
+10.1.10.192 51a785810000000c 0 - 0/0 0/0 0/0 0/0 0 0 0/0 0/0
+http://www.apple.com/library/test/success.html
+
+10.1.10.142 51a7851700000013 0 - 0/0 0/0 0/0 0/0 0 0 0/0 0/0 http:///
+<http://>                   
+
+10.1.10.129 51a7841f00000009 0 - 0/0 0/0 0/0 0/0 0 0 0/0 0/0
+http://www.msftncsi.com/ncsi.txt
+
+
+
+
+ 
+
+3rd         - run then /usr/local/sbin/chilli_query -s
+/usr/local/var/run/chilli.vlanxx.sock list |grep -c "1 <username>" and see
+if the return is 0 or 1, depending if the user is online or not.
+
+Regards,
+
+Luis
+
+You are right, it require some troubleshoot. i am really thanking you bottom
+of my heart. God bless you.
+
+Thanks for your tips, i will do and let you know, sir.  
+
+ 
+
+Regards / RM
+
+ 
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130531/9330eef0/attachment.html>
+

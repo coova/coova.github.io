@@ -1,0 +1,792 @@
+From alberto at web3king.com  Mon Dec  3 11:07:05 2012
+From: alberto at web3king.com (alberto at web3king.com)
+Date: Mon, 03 Dec 2012 12:07:05 +0100
+Subject: [Chilli] Multiple gateway setup
+In-Reply-To: <1354210763.6232.6.camel@david-laptop>
+References: <e2d83b8c4cb6c3efecf888b47255d5f6@web3king.com>
+ <1354210763.6232.6.camel@david-laptop>
+Message-ID: <b0e84269186d59b18cbe565149e2cbe1@web3king.com>
+
+ On Thu, 29 Nov 2012 09:39:23 -0800, David Bird wrote:
+> You can use the conup/condown scripts to setup linux routing tables 
+> for
+> the users.
+
+ Thanks David have you got some reference/tutorial about conup/condown 
+ to share?
+
+> Cheers,
+> David
+
+ Alberto
+
+From alberto at web3king.com  Mon Dec  3 12:04:14 2012
+From: alberto at web3king.com (alberto at web3king.com)
+Date: Mon, 03 Dec 2012 13:04:14 +0100
+Subject: [Chilli] Multiple gateway setup
+In-Reply-To: <1354210763.6232.6.camel@david-laptop>
+References: <e2d83b8c4cb6c3efecf888b47255d5f6@web3king.com>
+ <1354210763.6232.6.camel@david-laptop>
+Message-ID: <1f67e6a5b17c9931f7dfc2a6331b6e53@web3king.com>
+
+ On Thu, 2012-11-29 at 10:31 +0100, alberto at web3king.com wrote:
+> Hi everyone I setup a hotspot with chilli+coova but I want to use
+>  multiple gateway for internet access.
+>  I've got two type of users: standard and premium, I want to set
+>  different gateway to serve internet access for this two kind of 
+> users.
+>  This is a classic use case: a standard and a premium user see the
+>  access point wifi signal, they connect to the wifi, they see the 
+> login
+>  page and they insert their login and password. At this point I want 
+> to
+>  set two different gateways, for example: 192.168.182.20 for standard 
+> and
+>  192.168.182.30 for premium. In other words I want to set different 
+> SLA
+>  based on different gateway.
+
+ On attachment there is my configuration:
+  - on the lan side there's a DHCP 192.168.182.1/24 (eth1). I've got to 
+ kind of user that connect to the wifi signal, they put login and 
+ password and after that they're connceted with the coova+chilli server, 
+ for example
+       normal user: IP_ADDRESS 192.168.182.50 GW 192.168.182.1 NETMASK 
+ 255.255.255.0
+       premium user: IP_ADDRESS 192.168.182.70 GW 192.168.182.1 NETMASK 
+ 255.255.255.0
+
+ - on the wan side there are two type of connection to go on internet: a 
+ UMTS and SAT connection. In my case coova+chilli have to set for the 
+ normal user the connection to UMTS and for premium user the connection 
+ to SAT (dotted line on the schema). In other words this is a sort of 
+ traceroute for two user:
+ normal user (192.168.182.50) -> 192.168.182.1 (eth1 - lan) -> 
+ coova+chilli -> 192.168.181.50 (eth0:0 - wan) -> UMTS -> INTERNET
+ premium user (192.168.182.70) -> 192.168.182.1 (eth1 - lan) -> 
+ coova+chilli -> 192.168.181.100 (eth0:1 - wan) -> SAT -> INTERNET
+
+ Best Regards,
+ Alberto - Web3king.com
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: schema.png
+Type: application/octet-stream
+Size: 59786 bytes
+Desc: not available
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20121203/82cd9adf/attachment-0001.obj>
+
+From david at coova.com  Tue Dec  4 06:08:01 2012
+From: david at coova.com (David Bird)
+Date: Mon, 03 Dec 2012 22:08:01 -0800
+Subject: [Chilli] Multiple gateway setup
+In-Reply-To: <1f67e6a5b17c9931f7dfc2a6331b6e53@web3king.com>
+References: <e2d83b8c4cb6c3efecf888b47255d5f6@web3king.com>
+ <1354210763.6232.6.camel@david-laptop>
+ <1f67e6a5b17c9931f7dfc2a6331b6e53@web3king.com>
+Message-ID: <1354601281.4437.11.camel@david-laptop>
+
+Hi Alberto,
+
+I don't have an example of the script you need immediately available,
+but you should look into the conup/condown configuration (chilli --help)
+to implement the multi-wan routing. For a glimpse at the variables you
+get in the script from chilli, see runscript() in chilli.c, which set up
+the environment of the script. 
+
+Cheers,
+David
+
+
+On Mon, 2012-12-03 at 13:04 +0100, alberto at web3king.com wrote:
+> On Thu, 2012-11-29 at 10:31 +0100, alberto at web3king.com wrote:
+> > Hi everyone I setup a hotspot with chilli+coova but I want to use
+> >  multiple gateway for internet access.
+> >  I've got two type of users: standard and premium, I want to set
+> >  different gateway to serve internet access for this two kind of 
+> > users.
+> >  This is a classic use case: a standard and a premium user see the
+> >  access point wifi signal, they connect to the wifi, they see the 
+> > login
+> >  page and they insert their login and password. At this point I want 
+> > to
+> >  set two different gateways, for example: 192.168.182.20 for standard 
+> > and
+> >  192.168.182.30 for premium. In other words I want to set different 
+> > SLA
+> >  based on different gateway.
+> 
+>  On attachment there is my configuration:
+>   - on the lan side there's a DHCP 192.168.182.1/24 (eth1). I've got to 
+>  kind of user that connect to the wifi signal, they put login and 
+>  password and after that they're connceted with the coova+chilli server, 
+>  for example
+>        normal user: IP_ADDRESS 192.168.182.50 GW 192.168.182.1 NETMASK 
+>  255.255.255.0
+>        premium user: IP_ADDRESS 192.168.182.70 GW 192.168.182.1 NETMASK 
+>  255.255.255.0
+> 
+>  - on the wan side there are two type of connection to go on internet: a 
+>  UMTS and SAT connection. In my case coova+chilli have to set for the 
+>  normal user the connection to UMTS and for premium user the connection 
+>  to SAT (dotted line on the schema). In other words this is a sort of 
+>  traceroute for two user:
+>  normal user (192.168.182.50) -> 192.168.182.1 (eth1 - lan) -> 
+>  coova+chilli -> 192.168.181.50 (eth0:0 - wan) -> UMTS -> INTERNET
+>  premium user (192.168.182.70) -> 192.168.182.1 (eth1 - lan) -> 
+>  coova+chilli -> 192.168.181.100 (eth0:1 - wan) -> SAT -> INTERNET
+> 
+>  Best Regards,
+>  Alberto - Web3king.com
+
+-- 
+--
+David Bird
+http://www.linkedin.com/in/dwbird
+https://twitter.com/wlanmac
+
+
+From richard at rexy.fr  Tue Dec  4 07:06:04 2012
+From: richard at rexy.fr (Richard REY)
+Date: Tue, 04 Dec 2012 08:06:04 +0100
+Subject: [Chilli] Multiple gateway setup
+In-Reply-To: <1354601281.4437.11.camel@david-laptop>
+References: <e2d83b8c4cb6c3efecf888b47255d5f6@web3king.com>
+ <1354210763.6232.6.camel@david-laptop>
+ <1f67e6a5b17c9931f7dfc2a6331b6e53@web3king.com>
+ <1354601281.4437.11.camel@david-laptop>
+Message-ID: <50BDA0DC.7030902@rexy.fr>
+
+Hi Alberto,
+
+This is the begining of a script used in ALCASAR project that let you 
+see the available variables :
+
+----------------------
+
+#!/bin/sh
+
+# alcasar-conup.sh by Rexy
+# This script is distributed under the Gnu General Public License (GPL)
+
+# This script is launched after each successfull login
+# Debug : show all the coova parse variables. There are declared in 
+/src/chilli.c
+
+echo "parse coova variables" > /tmp/debug-conup.txt
+
+for i in LAYER3 DEV NET MASK ADDR USER_NAME NAS_IP_ADDRESS SERVICE_TYPE 
+FRAMED_IP_ADDRESS FILTER_ID STATE CLASS CUI SESSION_TIMEOUT IDLE_TIMEOUT 
+CALLING_STATION_ID CALLED_STATION_ID NAS_ID NAS_PORT_TYPE 
+ACCT_SESSION_ID ACCT_INTERIM_INTERVAL WISPR_LOCATION_ID 
+WISPR_LOCATION_NAME WISPR_BANDWIDTH_MAX_UP WISPR_BANDWIDTH_MAX_DOWN 
+WISPR-SESSION_TERMINATE_TIME CHILLISPOT_MAX_INPUT_OCTETS 
+CHILLISPOT_MAX_OUTPUT_OCTETS CHILLISPOT_MAX_TOTAL_OCTETS INPUT_OCTETS 
+OUTPUT_OCTETS SESSION_TIME IDLE_TIME LOCATION OLD_LOCATION TERMINATE_CAUSE
+
+do
+	echo "$i : ${!i}" >> /tmp/debug-conup.txt
+done
+...
+
+Best regards
+REXY
+
+Le 04/12/2012 07:08, David Bird a ?crit :
+> Hi Alberto,
+>
+> I don't have an example of the script you need immediately available,
+> but you should look into the conup/condown configuration (chilli --help)
+> to implement the multi-wan routing. For a glimpse at the variables you
+> get in the script from chilli, see runscript() in chilli.c, which set up
+> the environment of the script.
+>
+> Cheers,
+> David
+>
+>
+> On Mon, 2012-12-03 at 13:04 +0100, alberto at web3king.com wrote:
+>> On Thu, 2012-11-29 at 10:31 +0100, alberto at web3king.com wrote:
+>>> Hi everyone I setup a hotspot with chilli+coova but I want to use
+>>>   multiple gateway for internet access.
+>>>   I've got two type of users: standard and premium, I want to set
+>>>   different gateway to serve internet access for this two kind of
+>>> users.
+>>>   This is a classic use case: a standard and a premium user see the
+>>>   access point wifi signal, they connect to the wifi, they see the
+>>> login
+>>>   page and they insert their login and password. At this point I want
+>>> to
+>>>   set two different gateways, for example: 192.168.182.20 for standard
+>>> and
+>>>   192.168.182.30 for premium. In other words I want to set different
+>>> SLA
+>>>   based on different gateway.
+>>
+>>   On attachment there is my configuration:
+>>    - on the lan side there's a DHCP 192.168.182.1/24 (eth1). I've got to
+>>   kind of user that connect to the wifi signal, they put login and
+>>   password and after that they're connceted with the coova+chilli server,
+>>   for example
+>>         normal user: IP_ADDRESS 192.168.182.50 GW 192.168.182.1 NETMASK
+>>   255.255.255.0
+>>         premium user: IP_ADDRESS 192.168.182.70 GW 192.168.182.1 NETMASK
+>>   255.255.255.0
+>>
+>>   - on the wan side there are two type of connection to go on internet: a
+>>   UMTS and SAT connection. In my case coova+chilli have to set for the
+>>   normal user the connection to UMTS and for premium user the connection
+>>   to SAT (dotted line on the schema). In other words this is a sort of
+>>   traceroute for two user:
+>>   normal user (192.168.182.50) -> 192.168.182.1 (eth1 - lan) ->
+>>   coova+chilli -> 192.168.181.50 (eth0:0 - wan) -> UMTS -> INTERNET
+>>   premium user (192.168.182.70) -> 192.168.182.1 (eth1 - lan) ->
+>>   coova+chilli -> 192.168.181.100 (eth0:1 - wan) -> SAT -> INTERNET
+>>
+>>   Best Regards,
+>>   Alberto - Web3king.com
+>
+
+From Maik.Wortmann at stuttgart.de  Tue Dec  4 09:21:01 2012
+From: Maik.Wortmann at stuttgart.de (Maik.Wortmann at stuttgart.de)
+Date: Tue, 4 Dec 2012 10:21:01 +0100
+Subject: [Chilli] ipwhitelist
+Message-ID: <OF5D8C471A.38C8F8EA-ONC1257ACA.00335D02-C1257ACA.00335D03@stuttgart.de>
+
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20121204/55688208/attachment.html>
+
+From info at easyhorpak.com  Tue Dec  4 09:55:18 2012
+From: info at easyhorpak.com (EasyHorpak.com)
+Date: Tue, 04 Dec 2012 16:55:18 +0700
+Subject: [Chilli] Multiple gateway setup
+In-Reply-To: <1354601281.4437.11.camel@david-laptop>
+References: <e2d83b8c4cb6c3efecf888b47255d5f6@web3king.com>
+ <1354210763.6232.6.camel@david-laptop>
+ <1f67e6a5b17c9931f7dfc2a6331b6e53@web3king.com>
+ <1354601281.4437.11.camel@david-laptop>
+Message-ID: <50BDC886.6060305@easyhorpak.com>
+
+On 04/12/2555 13:08, David Bird wrote:
+> Hi Alberto,
+>
+> I don't have an example of the script you need immediately available,
+> but you should look into the conup/condown configuration (chilli --help)
+> to implement the multi-wan routing. For a glimpse at the variables you
+> get in the script from chilli, see runscript() in chilli.c, which set up
+> the environment of the script.
+>
+> Cheers,
+> David
+>
+>
+> On Mon, 2012-12-03 at 13:04 +0100, alberto at web3king.com wrote:
+>> On Thu, 2012-11-29 at 10:31 +0100, alberto at web3king.com wrote:
+>>> Hi everyone I setup a hotspot with chilli+coova but I want to use
+>>>   multiple gateway for internet access.
+>>>   I've got two type of users: standard and premium, I want to set
+>>>   different gateway to serve internet access for this two kind of
+>>> users.
+>>>   This is a classic use case: a standard and a premium user see the
+>>>   access point wifi signal, they connect to the wifi, they see the
+>>> login
+>>>   page and they insert their login and password. At this point I want
+>>> to
+>>>   set two different gateways, for example: 192.168.182.20 for standard
+>>> and
+>>>   192.168.182.30 for premium. In other words I want to set different
+>>> SLA
+>>>   based on different gateway.
+>>   On attachment there is my configuration:
+>>    - on the lan side there's a DHCP 192.168.182.1/24 (eth1). I've got to
+>>   kind of user that connect to the wifi signal, they put login and
+>>   password and after that they're connceted with the coova+chilli server,
+>>   for example
+>>         normal user: IP_ADDRESS 192.168.182.50 GW 192.168.182.1 NETMASK
+>>   255.255.255.0
+>>         premium user: IP_ADDRESS 192.168.182.70 GW 192.168.182.1 NETMASK
+>>   255.255.255.0
+>>
+>>   - on the wan side there are two type of connection to go on internet: a
+>>   UMTS and SAT connection. In my case coova+chilli have to set for the
+>>   normal user the connection to UMTS and for premium user the connection
+>>   to SAT (dotted line on the schema). In other words this is a sort of
+>>   traceroute for two user:
+>>   normal user (192.168.182.50) -> 192.168.182.1 (eth1 - lan) ->
+>>   coova+chilli -> 192.168.181.50 (eth0:0 - wan) -> UMTS -> INTERNET
+>>   premium user (192.168.182.70) -> 192.168.182.1 (eth1 - lan) ->
+>>   coova+chilli -> 192.168.181.100 (eth0:1 - wan) -> SAT -> INTERNET
+>>
+>>   Best Regards,
+>>   Alberto - Web3king.com
+add option to /etc/chilli.conf
+
+conup=/var/www/member/userup.sh
+condown=/var/www/member/userdown.sh
+
+some scripts from bash file
+#!/bin/bash
+echo "$FRAMED_IP_ADDRESS $USER_NAME $CALLING_STATION_ID" >> 
+/var/www/member/user.log
+
+
+more strings
+
+$DEV<br />
+$NET<br />
+$MASK<br />
+$ADDR<br />
+$USER_NAME<br />
+$NAS_IP_ADDRESS<br />
+$SERVICE_TYPE<br />
+$FRAMED_IP_ADDRESS<br />
+$FILTER_ID<br />
+$STATE<br />
+$CLASS<br />
+$SESSION_TIMEOUT<br />
+$IDLE_TIMEOUT<br />
+$CALLING_STATION_ID<br />
+$CALLED_STATION_ID<br />
+$NAS_ID<br />
+$NAS_PORT_TYPE<br />
+$ACCT_SESSION_ID<br />
+$ACCT_INTERIM_INTERVAL<br />
+$WISPR_LOCATION_ID<br />
+$WISPR_LOCATION_NAME<br />
+$WISPR_BANDWIDTH_MAX_UP<br />
+$WISPR_BANDWIDTH_MAX_DOWN<br />
+$CHILLISPOT_MAX_INPUT_OCTETS<br />
+$CHILLISPOT_MAX_OUTPUT_OCTETS<br />
+$CHILLISPOT_MAX_TOTAL_OCTETS
+
+
+From jedgainer at gmail.com  Wed Dec  5 00:38:56 2012
+From: jedgainer at gmail.com (Jed Gainer)
+Date: Tue, 4 Dec 2012 16:38:56 -0800
+Subject: [Chilli] dnsmasq
+Message-ID: <CAJc1nupmBB+GNEADdiB=4sOq6yi32gG=fsVMZ0vVV+MFtWr_rw@mail.gmail.com>
+
+I would like to add a 3rd interface to my Chilli box that doesn't
+captive portal for the office machines. I tried setting up dnsmasq on
+eth2 but it does not work is Chilli doing something to it? I have
+setup dnsmasq a hundred times without issue...
+
+From david at coova.com  Wed Dec  5 17:37:38 2012
+From: david at coova.com (David Bird)
+Date: Wed, 05 Dec 2012 09:37:38 -0800
+Subject: [Chilli] dnsmasq
+In-Reply-To: <CAJc1nupmBB+GNEADdiB=4sOq6yi32gG=fsVMZ0vVV+MFtWr_rw@mail.gmail.com>
+References: <CAJc1nupmBB+GNEADdiB=4sOq6yi32gG=fsVMZ0vVV+MFtWr_rw@mail.gmail.com>
+Message-ID: <1354729058.6369.2.camel@david-laptop>
+
+You are running chilli on something like eth1 and you want to NOT run
+chilli on eth2? Chilli should have no influence whatsoever on eth2, so I
+do not think that is the issue. 
+
+On Tue, 2012-12-04 at 16:38 -0800, Jed Gainer wrote:
+> I would like to add a 3rd interface to my Chilli box that doesn't
+> captive portal for the office machines. I tried setting up dnsmasq on
+> eth2 but it does not work is Chilli doing something to it? I have
+> setup dnsmasq a hundred times without issue...
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+
+
+From maxxer at ufficyo.com  Thu Dec  6 10:09:42 2012
+From: maxxer at ufficyo.com (Lorenzo Milesi)
+Date: Thu, 6 Dec 2012 11:09:42 +0100 (CET)
+Subject: [Chilli] Same user on different network with different properties
+In-Reply-To: <2071824882.4590.1354788280913.JavaMail.root@yetopen.it>
+Message-ID: <1852080000.4596.1354788582762.JavaMail.root@yetopen.it>
+
+Hi.
+
+Given a system with a single radius system and several hotspots, we wish to allow users self registration, for example we would like to store cell numbers as username.
+This is obviously a problem when user 3471234567 registers on hotspot A and then on hotspot B.
+In the past I've asked similar question and was redirected to HuntGroups, but it's not the solution to my problem. HuntGoup allows me to set different properties for the same user based on the nas he is connecting to, but doesn't allow me to have the same "user" registered to two different hotspots.
+
+I thought I could handle this by doing some changes on the login page, by adding some "code" (nas name?) after the username into registration, so that I could create unique username in the database.
+But this looks like a workaround, and I was wondering if there's a better solution to the problem.
+
+Thanks
+-- 
+Lorenzo Milesi - lorenzo.milesi at yetopen.it
+
+GPG/PGP Key-Id: 0xE704E230 - http://keyserver.linux.it
+
+
+
+From jedgainer at gmail.com  Fri Dec  7 03:19:44 2012
+From: jedgainer at gmail.com (Jed Gainer)
+Date: Thu, 6 Dec 2012 19:19:44 -0800
+Subject: [Chilli] freeradius
+Message-ID: <CAJc1nupBJ_f3tUrf=v7mKtB73-4DGH7chZ9WyLPc_eRMSfHXQw@mail.gmail.com>
+
+I know this isn't the place but I have no idea where else to ask.
+
+in
+
+/etc/raddb/sql/mysql/counter.conf
+
+there is
+
+%b      unix time value of beginning of reset period
+
+which makes things like
+
+        sqlcounter counterChilliSpotMaxTotalOctetsDaily {
+                        counter-name = ChilliSpot-Max-Total-Octets-Daily
+                        check-name = CS-Total-Octets-Daily
+                        counter-type = data
+                        reply-name = ChilliSpot-Max-Total-Octets
+                        sqlmod-inst = sql
+                        key = User-Name
+                        reset = daily
+                        query = "SELECT IFNULL((SUM(AcctInputOctets +
+AcctOutputOctets)),0) FROM radacct WHERE UserName='%{%k}' AND
+UNIX_TIMESTAMP(AcctStartTime) + AcctSessionTime > '%b'"
+        }
+
+possible
+
+how would i get the value of %b for a user from say PHP so i can calc
+and show them how much bandwidth they have left
+
+From maxxer at ufficyo.com  Fri Dec  7 10:41:24 2012
+From: maxxer at ufficyo.com (Lorenzo Milesi)
+Date: Fri, 7 Dec 2012 11:41:24 +0100 (CET)
+Subject: [Chilli] freeradius
+In-Reply-To: <CAJc1nupBJ_f3tUrf=v7mKtB73-4DGH7chZ9WyLPc_eRMSfHXQw@mail.gmail.com>
+Message-ID: <15799662.100.1354876878091.JavaMail.maxxer@dharma>
+
+> I know this isn't the place but I have no idea where else to ask.
+
+In freeradius mailing list? :)
+
+
+> how would i get the value of %b for a user from say PHP so i can calc
+> and show them how much bandwidth they have left
+
+you could do the same query radius is doing and retrieve the value, or you can try to include the value into the reply message so you can show it to the user, the same way it does for the remaining time in case of Max-All-Session. But I don't know the details, it's just an idea...
+
+ciao
+-- 
+Lorenzo Milesi - lorenzo.milesi at yetopen.it
+
+GPG/PGP Key-Id: 0xE704E230 - http://keyserver.linux.it
+
+
+
+From maxxer at ufficyo.com  Fri Dec 14 11:20:15 2012
+From: maxxer at ufficyo.com (Lorenzo Milesi)
+Date: Fri, 14 Dec 2012 12:20:15 +0100 (CET)
+Subject: [Chilli] NAS and NAT
+In-Reply-To: <1353951573.4335.6.camel@david-laptop>
+Message-ID: <1098613126.61370.1355484015642.JavaMail.root@yetopen.it>
+
+> list. However, in the past I have used rlm_raw to give FR the ability
+> to select a shared secret based on attributes (even if in conflict to
+> RFC).
+
+I was looking for this, thanks.
+
+
+-- 
+Lorenzo Milesi - lorenzo.milesi at yetopen.it
+
+GPG/PGP Key-Id: 0xE704E230 - http://keyserver.linux.it
+
+
+
+From jedgainer at gmail.com  Fri Dec 14 22:10:59 2012
+From: jedgainer at gmail.com (Jed Gainer)
+Date: Fri, 14 Dec 2012 14:10:59 -0800
+Subject: [Chilli] logout host
+Message-ID: <CAJc1nuqG-H0+N4rjZV1y92JJGYjmHfQadKTN19YvD4t9y0kDNA@mail.gmail.com>
+
+is it possible to add hosts like the http://logout for say
+http://bandwidth to redirect them to a bandwidth monitor I wrote?
+
+From maxxer at ufficyo.com  Mon Dec 17 08:12:23 2012
+From: maxxer at ufficyo.com (Lorenzo Milesi)
+Date: Mon, 17 Dec 2012 09:12:23 +0100 (CET)
+Subject: [Chilli] logout host
+In-Reply-To: <CAJc1nuqG-H0+N4rjZV1y92JJGYjmHfQadKTN19YvD4t9y0kDNA@mail.gmail.com>
+Message-ID: <75201433.69501.1355731943822.JavaMail.root@yetopen.it>
+
+> is it possible to add hosts like the http://logout for say
+> http://bandwidth to redirect them to a bandwidth monitor I wrote?
+
+this depends on the hostname you've choosen for dhcp.
+if you've set your own hostname (mydomain.com) then you can create bandwidth.mydomain.com and redirect them to wherever you want.
+also, add relevant hosts settings.
+
+-- 
+Lorenzo Milesi - lorenzo.milesi at yetopen.it
+
+GPG/PGP Key-Id: 0xE704E230 - http://keyserver.linux.it
+
+
+
+From jmeiring at amobia.com  Tue Dec 18 08:13:38 2012
+From: jmeiring at amobia.com (Johan Meiring)
+Date: Tue, 18 Dec 2012 10:13:38 +0200
+Subject: [Chilli] logout host
+In-Reply-To: <CAJc1nuqG-H0+N4rjZV1y92JJGYjmHfQadKTN19YvD4t9y0kDNA@mail.gmail.com>
+References: <CAJc1nuqG-H0+N4rjZV1y92JJGYjmHfQadKTN19YvD4t9y0kDNA@mail.gmail.com>
+Message-ID: <50D025B2.4090503@amobia.com>
+
+On 2012/12/15 12:10 AM, Jed Gainer wrote:
+> is it possible to add hosts like the http://logout for say
+> http://bandwidth to redirect them to a bandwidth monitor I wrote?
+
+
+Have chilli hand out a 'real' DNS suffix to the clients, e.g. 
+hotspot.yourdomain.com.
+
+then create the following A records
+
+logout.hotspot.yourdomain.com 		A	1.1.1.1
+bandwidth.hotspot.yourdomain.com	A	x.x.x.x
+
+Cheers,
+
+-- 
+
+
+Johan Meiring
+Amobia Communications
+Tel: (0861) AMOBIA / (0861) 266242
+Fax: (0861) AMOFAX / (0861) 266329
+
+
+From danny at sb-ps.ae  Tue Dec 18 13:09:39 2012
+From: danny at sb-ps.ae (Danny Magat)
+Date: Tue, 18 Dec 2012 17:09:39 +0400
+Subject: [Chilli] Chilli Digest, Vol 37, Issue 10
+In-Reply-To: <mailman.1.1355832002.31768.chilli@coova.org>
+References: <mailman.1.1355832002.31768.chilli@coova.org>
+Message-ID: <000f01cddd20$f0742d50$d15c87f0$@sb-ps.ae>
+
+In your config file put something like this:
+
+HS_DNS_DOMAIN=yourdomain.com
+
+And in yourdomain.com DNS SERVER create a A HOST  - logout  1.0.0.0
+
+
+Danny Magat
+Network Engineer
+
+Contact Numbers:               Mail Address:               Office Location:                      
+C +971 4 457 22 18               P.O. Box 111581              Aspect Tower
+? +971 4 457 22 13                Dubai, UAE                     Executive Towers - Business Bay
+ M +971 55 7060374                                                        Office No. 1104 - floor 11th
+                     
+LEGAL NOTICE: This message and attached document(s) may contain information of confidential nature and/or
+legally protected. If you have received this message by mistake, please reply to the sender, eliminate it
+from your system and do not disclose or use
+
+
+-----Original Message-----
+From: chilli-bounces at coova.org [mailto:chilli-bounces at coova.org] On Behalf Of chilli-request at coova.org
+Sent: Tuesday, December 18, 2012 4:00 PM
+To: chilli at coova.org
+Subject: Chilli Digest, Vol 37, Issue 10
+
+Send Chilli mailing list submissions to
+	chilli at coova.org
+
+To subscribe or unsubscribe via the World Wide Web, visit
+	http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+or, via email, send a message with subject or body 'help' to
+	chilli-request at coova.org
+
+You can reach the person managing the list at
+	chilli-owner at coova.org
+
+When replying, please edit your Subject line so it is more specific than "Re: Contents of Chilli digest..."
+
+
+Today's Topics:
+
+   1. Re: logout host (Johan Meiring)
+
+
+----------------------------------------------------------------------
+
+Message: 1
+Date: Tue, 18 Dec 2012 10:13:38 +0200
+From: Johan Meiring <jmeiring at amobia.com>
+To: chilli at coova.org
+Subject: Re: [Chilli] logout host
+Message-ID: <50D025B2.4090503 at amobia.com>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+
+On 2012/12/15 12:10 AM, Jed Gainer wrote:
+> is it possible to add hosts like the http://logout for say 
+> http://bandwidth to redirect them to a bandwidth monitor I wrote?
+
+
+Have chilli hand out a 'real' DNS suffix to the clients, e.g. 
+hotspot.yourdomain.com.
+
+then create the following A records
+
+logout.hotspot.yourdomain.com 		A	1.1.1.1
+bandwidth.hotspot.yourdomain.com	A	x.x.x.x
+
+Cheers,
+
+-- 
+
+
+Johan Meiring
+Amobia Communications
+Tel: (0861) AMOBIA / (0861) 266242
+Fax: (0861) AMOFAX / (0861) 266329
+
+
+
+------------------------------
+
+_______________________________________________
+Chilli mailing list
+Chilli at coova.org
+http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+
+End of Chilli Digest, Vol 37, Issue 10
+**************************************
+
+
+From danny at sb-ps.ae  Thu Dec 20 12:14:22 2012
+From: danny at sb-ps.ae (Danny Magat)
+Date: Thu, 20 Dec 2012 16:14:22 +0400
+Subject: [Chilli] Max authenticated users.
+Message-ID: <002b01cddeab$8bdcf520$a396df60$@sb-ps.ae>
+
+Dear All,
+
+ 
+
+Is there a way on how to limit the number of authenticated users?
+
+Like for example I set maxclients=100 but only limit the authenticated users
+equal to 50. 
+
+Meaning if online users with different username is equal to 50 then the rest
+on the users wants to authenticate will not allow to login.
+
+ 
+
+Thanks in Advance
+
+ 
+
+Danny Magat
+
+Network Engineer
+
+ 
+
+Contact Numbers:               Mail Address:               Office Location:
+
+
+( +971 4 457 22 18               P.O. Box 111581              Aspect Tower
+
+? +971 4 457 22 13                Dubai, UAE                     Executive
+Towers - Business Bay
+
+ M +971 55 7060374
+Office No. 1104 - floor 11th
+
+ 
+
+* danny at sb-ps.ae
+<http://www.sb-ps.com/> www.sb-ps.com 
+
+ 
+
+                     
+
+LEGAL NOTICE: This message and attached document(s) may contain information
+of confidential nature and/or
+legally protected. If you have received this message by mistake, please
+reply to the sender, eliminate it
+from your system and do not disclose or use
+
+ 
+
+ 
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20121220/2196800c/attachment.html>
+
+From info at easyhorpak.com  Thu Dec 20 12:57:15 2012
+From: info at easyhorpak.com (EasyHorpak.com)
+Date: Thu, 20 Dec 2012 19:57:15 +0700
+Subject: [Chilli] Max authenticated users.
+In-Reply-To: <002b01cddeab$8bdcf520$a396df60$@sb-ps.ae>
+References: <002b01cddeab$8bdcf520$a396df60$@sb-ps.ae>
+Message-ID: <50D30B2B.2010608@easyhorpak.com>
+
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20121220/6ad1621b/attachment.html>
+
+From maxxer at ufficyo.com  Thu Dec 20 15:16:54 2012
+From: maxxer at ufficyo.com (Lorenzo Milesi)
+Date: Thu, 20 Dec 2012 16:16:54 +0100 (CET)
+Subject: [Chilli] Auth-Type?
+In-Reply-To: <601126012.88732.1356016583047.JavaMail.root@yetopen.it>
+Message-ID: <1723316821.88738.1356016614011.JavaMail.root@yetopen.it>
+
+Hi.
+I'm testing a new FreeRadius2 installation.
+In most of the installation howtos I found around, to make the first connection test they just add the user to radcheck with either MD5-Password or Cleartext-Password and the user can authenticate. I got mad at this because wasn't working for me, and found out that I *need* to add Auth-Type := Accept to radcheck, and then it will work.
+
+Why this?
+thanks
+-- 
+Lorenzo Milesi - lorenzo.milesi at yetopen.it
+
+GPG/PGP Key-Id: 0xE704E230 - http://keyserver.linux.it
+
+
+
+From maxxer at ufficyo.com  Thu Dec 20 22:44:41 2012
+From: maxxer at ufficyo.com (Lorenzo Milesi)
+Date: Thu, 20 Dec 2012 23:44:41 +0100 (CET)
+Subject: [Chilli] Auth-Type?
+In-Reply-To: <1723316821.88738.1356016614011.JavaMail.root@yetopen.it>
+Message-ID: <14833678.56.1356043479063.JavaMail.maxxer@dharma>
+
+oups, found out it's a login page problem...
+
+----- Original Message -----
+> From: "Lorenzo Milesi" <maxxer at ufficyo.com>
+> To: chilli at coova.org
+> Sent: Gioved?, 20 dicembre 2012 16:16:54
+> Subject: [Chilli] Auth-Type?
+> 
+> Hi.
+> I'm testing a new FreeRadius2 installation.
+> In most of the installation howtos I found around, to make the first
+> connection test they just add the user to radcheck with either
+> MD5-Password or Cleartext-Password and the user can authenticate. I
+> got mad at this because wasn't working for me, and found out that I
+> *need* to add Auth-Type := Accept to radcheck, and then it will
+> work.
+
+
+-- 
+Lorenzo Milesi - lorenzo.milesi at yetopen.it
+
+GPG/PGP Key-Id: 0xE704E230 - http://keyserver.linux.it
+
+
+

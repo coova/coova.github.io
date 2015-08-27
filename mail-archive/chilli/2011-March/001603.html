@@ -1,0 +1,123 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] ioctl Permission Errors in net.c
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20ioctl%20Permission%20Errors%20in%20net.c&In-Reply-To=%3CE96799B8-923F-4CB6-828A-1BCC5C13A33A%40coova.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001602.html">
+   <LINK REL="Next"  HREF="001611.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] ioctl Permission Errors in net.c</H1>
+    <B>David Bird</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20ioctl%20Permission%20Errors%20in%20net.c&In-Reply-To=%3CE96799B8-923F-4CB6-828A-1BCC5C13A33A%40coova.com%3E"
+       TITLE="[Chilli] ioctl Permission Errors in net.c">david at coova.com
+       </A><BR>
+    <I>Fri Mar 25 06:21:46 UTC 2011</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001602.html">[Chilli] ioctl Permission Errors in net.c
+</A></li>
+        <LI>Next message: <A HREF="001611.html">[Chilli] ioctl Permission Errors in net.c
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1603">[ date ]</a>
+              <a href="thread.html#1603">[ thread ]</a>
+              <a href="subject.html#1603">[ subject ]</a>
+              <a href="author.html#1603">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>It is a runtime option to switch users after start.. See uid and gid options
+
+<A HREF="http://dev.coova.org/svn/coova-chilli/src/cmdline.ggo">http://dev.coova.org/svn/coova-chilli/src/cmdline.ggo</A>
+
+--
+  David 
+
+On Mar 25, 2011, at 4:45 AM, Timothy White &lt;<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">timwhite88 at gmail.com</A>&gt; wrote:
+
+&gt;<i> I have an issue that I thought was isolated to a single server with
+</I>&gt;<i> coova chilli randomly crashing with error messages. I've since upgrade
+</I>&gt;<i> them from 1.2.5 to 1.2.6 and the issues continued. Thinking it might
+</I>&gt;<i> be hardware related I just added a cronjob at 5 minute intervals to
+</I>&gt;<i> check if chilli is running and restart if not.
+</I>&gt;<i> Since then I have another freshly installed server also having the
+</I>&gt;<i> same issue. I've checked for IRQ interrupt conflicts and found none
+</I>&gt;<i> that I can see.
+</I>&gt;<i> 
+</I>&gt;<i> The errors are as below, and sometimes just happen a few times. Other
+</I>&gt;<i> times they repeat a good number of times before chilli shutsdown
+</I>&gt;<i> 
+</I>&gt;<i> Mar 25 11:32:16 HotSpot coova-chilli[3279]: net.c: 114: 13 (Permission
+</I>&gt;<i> denied) ioctl(SIOCSIFFLAGS) failed
+</I>&gt;<i> Mar 25 11:32:18 HotSpot coova-chilli[3280]: net.c: 114: 13 (Permission
+</I>&gt;<i> denied) ioctl(SIOCSIFFLAGS) failed
+</I>&gt;<i> Mar 25 11:32:43 HotSpot coova-chilli[3281]: net.c: 114: 13 (Permission
+</I>&gt;<i> denied) ioctl(SIOCSIFFLAGS) failed
+</I>&gt;<i> Mar 25 11:32:50 HotSpot coova-chilli[3282]: net.c: 114: 13 (Permission
+</I>&gt;<i> denied) ioctl(SIOCSIFFLAGS) failed
+</I>&gt;<i> Mar 25 11:32:51 HotSpot coova-chilli[3283]: net.c: 114: 13 (Permission
+</I>&gt;<i> denied) ioctl(SIOCSIFFLAGS) failed
+</I>&gt;<i> Mar 25 11:33:42 HotSpot coova-chilli[3233]: chilli.c: 5801:
+</I>&gt;<i> CoovaChilli shutting down
+</I>&gt;<i> Mar 25 11:33:42 HotSpot coova-chilli[3325]: main-script.c: 93: Running
+</I>&gt;<i> /etc/chilli/down.sh (105/0)
+</I>&gt;<i> Mar 25 11:33:42 HotSpot coova-chilli[3233]: net.c: 114: 13 (Permission
+</I>&gt;<i> denied) ioctl(SIOCSIFFLAGS) failed
+</I>&gt;<i> 
+</I>&gt;<i> When it shutsdown it that's the last messages in the syslog until the
+</I>&gt;<i> cronjob starts it back up again.
+</I>&gt;<i> 
+</I>&gt;<i> Any ideas? The things that comes to my mind first of all is that the
+</I>&gt;<i> thread trying to work on the device (not sure if it's tun0 or eth1) is
+</I>&gt;<i> running as chilli and not as root. I believe most of chilli drops root
+</I>&gt;<i> privs early on, but a thread/fork/process holds onto root for iptables
+</I>&gt;<i> and other things like that?
+</I>&gt;<i> 
+</I>&gt;<i> Is there a compile time option to prevent it dropping privs so I can
+</I>&gt;<i> test that theory?
+</I>&gt;<i> 
+</I>&gt;<i> Thanks
+</I>&gt;<i> 
+</I>&gt;<i> Tim
+</I>&gt;<i> _______________________________________________
+</I>&gt;<i> Chilli mailing list
+</I>&gt;<i> <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">Chilli at coova.org</A>
+</I>&gt;<i> <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">http://lists.coova.org/cgi-bin/mailman/listinfo/chilli</A>
+</I>-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: &lt;<A HREF="http://lists.coova.org/pipermail/chilli/attachments/20110325/18a4b405/attachment.html">http://lists.coova.org/pipermail/chilli/attachments/20110325/18a4b405/attachment.html</A>&gt;
+</PRE>
+
+
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001602.html">[Chilli] ioctl Permission Errors in net.c
+</A></li>
+	<LI>Next message: <A HREF="001611.html">[Chilli] ioctl Permission Errors in net.c
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1603">[ date ]</a>
+              <a href="thread.html#1603">[ thread ]</a>
+              <a href="subject.html#1603">[ subject ]</a>
+              <a href="author.html#1603">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

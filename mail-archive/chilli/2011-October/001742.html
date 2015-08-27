@@ -1,0 +1,135 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] Radius Queue Full
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Radius%20Queue%20Full&In-Reply-To=%3CCAESLx0KAULJyAkjRBxf%2BrcuLv7x1SBZUihrr02FJd%2BURUb3XCA%40mail.gmail.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001749.html">
+   <LINK REL="Next"  HREF="001744.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] Radius Queue Full</H1>
+    <B>Timothy White</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Radius%20Queue%20Full&In-Reply-To=%3CCAESLx0KAULJyAkjRBxf%2BrcuLv7x1SBZUihrr02FJd%2BURUb3XCA%40mail.gmail.com%3E"
+       TITLE="[Chilli] Radius Queue Full">timwhite88 at gmail.com
+       </A><BR>
+    <I>Sat Oct 15 11:57:42 UTC 2011</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001749.html">[Chilli] accounting for walled garden
+</A></li>
+        <LI>Next message: <A HREF="001744.html">[Chilli] Radius Queue Full
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1742">[ date ]</a>
+              <a href="thread.html#1742">[ thread ]</a>
+              <a href="subject.html#1742">[ subject ]</a>
+              <a href="author.html#1742">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>I'm guessing this was stuck in a moderation queue for a few months.
+
+My understanding is that the radius queue is used so that if the
+RADIUS server doesn't respond for a little while, accounting packets
+aren't lost. Ether, your RADIUS server isn't letting Chilli know that
+it's received those packets (or the network is congested so the
+messages don't get back), or the RADIUS server is overlaoded.
+What is your accounting interval set at? If you are experiencing
+higher &quot;loads&quot; (just think, if you set your interval at 10s, with 200
+users that's 200 accounting packets every 10 seconds, which the RADIUS
+server has to do database updates on) then setting a longer accounting
+interval would help. I know in Cisco routers that the accounting
+interval is a number of hours!! Generally for a Captive Portal Hotspot
+though, you want a smaller interval. I currently use about 2.5
+minutes, in particular so that if no accounting packets are seen in 2
+intervals (5 minutes) we assume the session to be stale and disconnect
+it (as we limit connections to 1 per user).
+
+Have you managed to fix it or are you still having problems?
+
+Tim
+
+On Mon, Aug 1, 2011 at 11:54 AM, Robert White &lt;<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">rwhite at globalgossip.net</A>&gt; wrote:
+&gt;<i> Hello there,
+</I>&gt;<i> Has any one seen this message before?
+</I>&gt;<i> ~# tail messages -n 50
+</I>&gt;<i> Jul 31 18:56:26 pxe coova-chilli[29486]: radius.c: 218: radius queue is
+</I>&gt;<i> full!
+</I>&gt;<i> Jul 31 18:56:26 pxe last message repeated 255 times
+</I>&gt;<i> Jul 31 18:56:26 pxe coova-chilli[29486]: radius.c: 1403: could not put in
+</I>&gt;<i> queue
+</I>&gt;<i> Jul 31 18:56:26 pxe coova-chilli[29486]: radius.c: 218: radius queue is
+</I>&gt;<i> full!
+</I>&gt;<i> Jul 31 18:56:26 pxe last message repeated 255 times
+</I>&gt;<i> Jul 31 18:56:26 pxe coova-chilli[29486]: radius.c: 1403: could not put in
+</I>&gt;<i> queue
+</I>&gt;<i> Jul 31 18:56:29 pxe coova-chilli[29486]: radius.c: 218: radius queue is
+</I>&gt;<i> full!
+</I>&gt;<i> Jul 31 18:56:29 pxe last message repeated 255 times
+</I>&gt;<i>
+</I>&gt;<i> The message is obviously quite self explanatory but I'm wondering exactly
+</I>&gt;<i> why this queue would fill up. &#160;What is the Radius queue actually for?
+</I>&gt;<i> &#160;Waiting for replies from a Radius server? &#160;Can i set the queue to a bigger
+</I>&gt;<i> size? &#160;is there a way of clearing the queue without restarting chilli. &#160;I
+</I>&gt;<i> run chilli across lots of different sites. &#160;I only see this message at some
+</I>&gt;<i> of my busier sites. 150~200 users and tbh i thought chilli could easily cope
+</I>&gt;<i> with more than a few 100 users. &#160;Is this a problem with my Radius setup do
+</I>&gt;<i> you think?
+</I>&gt;<i> I'd be grateful if anyone could shed some more light on this log message.
+</I>&gt;<i> Thanks,
+</I>&gt;<i>
+</I>&gt;<i> Rob White
+</I>&gt;<i>
+</I>&gt;<i> -------------------------------------------------
+</I>&gt;<i>
+</I>&gt;<i> IMPORTANT NOTICE : The information in this email is confidential and may
+</I>&gt;<i> also be privileged.
+</I>&gt;<i> If you are not the intended recipient, any use or dissemination of the
+</I>&gt;<i> information and any
+</I>&gt;<i> disclosure or copying of this email is unauthorised and strictly prohibited.
+</I>&gt;<i> If you have received
+</I>&gt;<i> this email in error, please promptly inform us by reply email or telephone.
+</I>&gt;<i> You should also delete
+</I>&gt;<i> this email and destroy any hard copies produced.
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> _______________________________________________
+</I>&gt;<i> Chilli mailing list
+</I>&gt;<i> <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">Chilli at coova.org</A>
+</I>&gt;<i> <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">http://lists.coova.org/cgi-bin/mailman/listinfo/chilli</A>
+</I>&gt;<i>
+</I>&gt;<i>
+</I></PRE>
+
+
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001749.html">[Chilli] accounting for walled garden
+</A></li>
+	<LI>Next message: <A HREF="001744.html">[Chilli] Radius Queue Full
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1742">[ date ]</a>
+              <a href="thread.html#1742">[ thread ]</a>
+              <a href="subject.html#1742">[ subject ]</a>
+              <a href="author.html#1742">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

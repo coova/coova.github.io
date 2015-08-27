@@ -1,0 +1,226 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] [Layer3] Like uamallowed, but for source address - like macallowed but for IPs - ip source whitelist - server whitelist
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20%5BLayer3%5D%20Like%20uamallowed%2C%0A%20but%20for%20source%20address%20-%20like%20macallowed%20but%20for%20IPs%20-%20ip%20source%0A%20whitelist%20-%20server%20whitelist&In-Reply-To=%3C1385661652.12462.2.camel%40david-XPS%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="002472.html">
+   <LINK REL="Next"  HREF="002470.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] [Layer3] Like uamallowed, but for source address - like macallowed but for IPs - ip source whitelist - server whitelist</H1>
+    <B>David Bird</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20%5BLayer3%5D%20Like%20uamallowed%2C%0A%20but%20for%20source%20address%20-%20like%20macallowed%20but%20for%20IPs%20-%20ip%20source%0A%20whitelist%20-%20server%20whitelist&In-Reply-To=%3C1385661652.12462.2.camel%40david-XPS%3E"
+       TITLE="[Chilli] [Layer3] Like uamallowed, but for source address - like macallowed but for IPs - ip source whitelist - server whitelist">david at coova.com
+       </A><BR>
+    <I>Thu Nov 28 18:00:52 UTC 2013</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="002472.html">[Chilli] Antwort:  [Layer3] Like uamallowed, but for source address - like macallowed but for IPs - ip source whitelist - server whitelist
+</A></li>
+        <LI>Next message: <A HREF="002470.html">[Chilli] net.c Resource temporarily unavailable
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2473">[ date ]</a>
+              <a href="thread.html#2473">[ thread ]</a>
+              <a href="subject.html#2473">[ subject ]</a>
+              <a href="author.html#2473">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Thanks! 
+
+Could you resubmit your patches as attachments and &quot;sign-off&quot; on them
+based acknowledging:
+<A HREF="http://dev.coova.org/svn/coova-chilli/Contributing">http://dev.coova.org/svn/coova-chilli/Contributing</A> ?
+
+That would be appreciated. 
+
+Doing an &quot;ipauth&quot; similar to macauth shouldn't be too hard, but you'd
+want to maintain a session for the device so that accounting would
+follow the auth. 
+
+Thanks!
+David
+
+
+
+On Wed, 2013-11-27 at 19:07 +0100, Michele Bergonzoni wrote:
+&gt;<i> In a Layer3 environment where there are servers and &quot;special&quot; devices in 
+</I>&gt;<i> the same network as the guests, you might need to whitelist some source IPs.
+</I>&gt;<i> 
+</I>&gt;<i> I found no usable solution for this (an old thread in this list ends 
+</I>&gt;<i> with a cron job that uses chilli_query, something that is not quite 
+</I>&gt;<i> perfect), so I wrote the following. It defines a new configuration 
+</I>&gt;<i> parameter and command-line switch ipsrcallowed, that you can control in 
+</I>&gt;<i> chilli/config with HS_IPSRCALLOWED, with the same syntax as uamallowed: 
+</I>&gt;<i> comma separated list of single IP addresses or IP prefixes (also domain 
+</I>&gt;<i> names, but that is not intended to work nor tested and will probably break).
+</I>&gt;<i> 
+</I>&gt;<i> Clients with IPs in that list will not be redirected. Sessions will not 
+</I>&gt;<i> be created, so you will not see them in &quot;chilli_query list&quot;.
+</I>&gt;<i> 
+</I>&gt;<i> This patch is relative to current SVN, with EDNS and previous patch applied.
+</I>&gt;<i> 
+</I>&gt;<i> My first try was with a layer3 version of macauth, to query a RADIUS 
+</I>&gt;<i> server with the IP address before redirecting, but it was too hard 
+</I>&gt;<i> (Coovachilli in my opinion would benefit from some refactoring). If 
+</I>&gt;<i> someone knows how to do that, please tell.
+</I>&gt;<i> 
+</I>&gt;<i> Regards,
+</I>&gt;<i> 				Bergonz
+</I>&gt;<i> 
+</I>&gt;<i> Index: conf/functions.in
+</I>&gt;<i> ===================================================================
+</I>&gt;<i> --- conf/functions.in   (revision 485)
+</I>&gt;<i> +++ conf/functions.in   (working copy)
+</I>&gt;<i> @@ -179,6 +179,9 @@
+</I>&gt;<i>       HS_UAMALLOW=$(echo $HS_UAMALLOW|sed 's/ /,/g')
+</I>&gt;<i>       uamallow=${HS_UAMALLOW:+&quot;,$HS_UAMALLOW&quot;}
+</I>&gt;<i> 
+</I>&gt;<i> +    HS_IPSRCALLOWED=$(echo $HS_IPSRCALLOWED|sed 's/ /,/g')
+</I>&gt;<i> +    addconfig1 ${HS_IPSRCALLOWED:+&quot;ipsrcallowed $HS_IPSRCALLOWED&quot;}
+</I>&gt;<i> +
+</I>&gt;<i>       addconfig1 ${HS_MAXCLIENTS:+&quot;maxclients $HS_MAXCLIENTS&quot;}
+</I>&gt;<i>       addconfig1 ${HS_RADIUSQSIZE:+&quot;radiusqsize $HS_RADIUSQSIZE&quot;}
+</I>&gt;<i>       addconfig1 ${HS_DHCPHASHSIZE:+&quot;dhcphashsize $HS_DHCPHASHSIZE&quot;}
+</I>&gt;<i> Index: src/options.h
+</I>&gt;<i> ===================================================================
+</I>&gt;<i> --- src/options.h       (revision 485)
+</I>&gt;<i> +++ src/options.h       (working copy)
+</I>&gt;<i> @@ -302,6 +302,11 @@
+</I>&gt;<i>     uint32_t regex_num_pass_throughs;
+</I>&gt;<i>   #endif
+</I>&gt;<i> 
+</I>&gt;<i> +#ifdef ENABLE_LAYER3
+</I>&gt;<i> +  pass_through ipsrc_pass_throughs[MAX_IPSRC_PASS_THROUGHS];
+</I>&gt;<i> +  uint32_t ipsrc_num_pass_throughs;
+</I>&gt;<i> +#endif
+</I>&gt;<i> +
+</I>&gt;<i>     char* uamdomains[MAX_UAM_DOMAINS];
+</I>&gt;<i>     int uamdomain_ttl;
+</I>&gt;<i> 
+</I>&gt;<i> Index: src/cmdline.ggo
+</I>&gt;<i> ===================================================================
+</I>&gt;<i> --- src/cmdline.ggo     (revision 485)
+</I>&gt;<i> +++ src/cmdline.ggo     (working copy)
+</I>&gt;<i> @@ -266,6 +266,7 @@
+</I>&gt;<i>   option &quot;uamdomainfile&quot; - &quot;Load uamdomains (regex) from file&quot; string no
+</I>&gt;<i> 
+</I>&gt;<i>   option &quot;layer3&quot; - &quot;Layer3 only&quot; flag off
+</I>&gt;<i> +option &quot;ipsrcallowed&quot;  - &quot;List of allowed source IP addresses, for 
+</I>&gt;<i> Layer3&quot; string no multiple
+</I>&gt;<i>   option &quot;patricia&quot; - &quot;Use patricia tries for walled garden lookup&quot; flag off
+</I>&gt;<i>   option &quot;redirdnsreq&quot; - &quot;Send DNS query on redirect to pick of DNS 
+</I>&gt;<i> based walled garden&quot; flag off
+</I>&gt;<i> 
+</I>&gt;<i> Index: src/dhcp.c
+</I>&gt;<i> ===================================================================
+</I>&gt;<i> --- src/dhcp.c  (revision 485)
+</I>&gt;<i> +++ src/dhcp.c  (working copy)
+</I>&gt;<i> @@ -2503,6 +2503,23 @@
+</I>&gt;<i>       found = 1;
+</I>&gt;<i>   #endif
+</I>&gt;<i> 
+</I>&gt;<i> +#ifdef ENABLE_LAYER3
+</I>&gt;<i> +  if (!found &amp;&amp; _options.ipsrc_pass_throughs){
+</I>&gt;<i> +    if (garden_check(_options.ipsrc_pass_throughs,
+</I>&gt;<i> +                       &amp;_options.ipsrc_num_pass_throughs, &amp;pt,
+</I>&gt;<i> +                       ipph, !dst
+</I>&gt;<i> +#ifdef HAVE_PATRICIA
+</I>&gt;<i> +                       , 0
+</I>&gt;<i> +#endif
+</I>&gt;<i> +                       )) {
+</I>&gt;<i> +      found = 1;
+</I>&gt;<i> +#if(_debug_ &gt; 1)
+</I>&gt;<i> +      log_dbg(&quot;Packet matches ipsrcallowed&quot;);
+</I>&gt;<i> +#endif
+</I>&gt;<i> +    }
+</I>&gt;<i> +  }
+</I>&gt;<i> +#endif
+</I>&gt;<i> +
+</I>&gt;<i>   #ifdef ENABLE_GARDENACCOUNTING
+</I>&gt;<i>     if (_options.uamgardendata) {
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> Index: src/main-opt.c
+</I>&gt;<i> ===================================================================
+</I>&gt;<i> --- src/main-opt.c      (revision 485)
+</I>&gt;<i> +++ src/main-opt.c      (working copy)
+</I>&gt;<i> @@ -724,6 +724,18 @@
+</I>&gt;<i>   #endif
+</I>&gt;<i>         );
+</I>&gt;<i>     }
+</I>&gt;<i> +#ifdef ENABLE_LAYER3
+</I>&gt;<i> +  for (numargs = 0; numargs &lt; args_info.ipsrcallowed_given; ++numargs) {
+</I>&gt;<i> +    pass_throughs_from_string(_options.ipsrc_pass_throughs,
+</I>&gt;<i> +                             MAX_IPSRC_PASS_THROUGHS,
+</I>&gt;<i> +                             &amp;_options.ipsrc_num_pass_throughs,
+</I>&gt;<i> +                             args_info.ipsrcallowed_arg[numargs], 0, 0
+</I>&gt;<i> +#ifdef HAVE_PATRICIA
+</I>&gt;<i> +                             , 0
+</I>&gt;<i> +#endif
+</I>&gt;<i> +      );
+</I>&gt;<i> +  }
+</I>&gt;<i> +#endif
+</I>&gt;<i> 
+</I>&gt;<i>     _options.uamauthedallowed = args_info.uamauthedallowed_flag;
+</I>&gt;<i>   #ifdef ENABLE_AUTHEDALLOWED
+</I>&gt;<i> Index: src/chilli_limits.h
+</I>&gt;<i> ===================================================================
+</I>&gt;<i> --- src/chilli_limits.h (revision 485)
+</I>&gt;<i> +++ src/chilli_limits.h (working copy)
+</I>&gt;<i> @@ -134,4 +134,12 @@
+</I>&gt;<i>   #define RADIUS_QUEUE_PACKET_PTR 1
+</I>&gt;<i>   #endif
+</I>&gt;<i> 
+</I>&gt;<i> +#ifdef ENABLE_LAYER3
+</I>&gt;<i> +#ifdef ENABLE_LARGELIMITS
+</I>&gt;<i> +#define MAX_IPSRC_PASS_THROUGHS               512 /* Max number of 
+</I>&gt;<i> allowed IP source addresses, for Layer3 */
+</I>&gt;<i> +#else
+</I>&gt;<i> +#define MAX_IPSRC_PASS_THROUGHS               8 /* Max number of 
+</I>&gt;<i> allowed IP source addresses, for Layer3 */
+</I>&gt;<i>   #endif
+</I>&gt;<i> +#endif
+</I>&gt;<i> +
+</I>&gt;<i> +#endif
+</I>&gt;<i> 
+</I>&gt;<i> _______________________________________________
+</I>&gt;<i> Chilli mailing list
+</I>&gt;<i> <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">Chilli at coova.org</A>
+</I>&gt;<i> <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">http://lists.coova.org/cgi-bin/mailman/listinfo/chilli</A>
+</I>
+
+</PRE>
+
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="002472.html">[Chilli] Antwort:  [Layer3] Like uamallowed, but for source address - like macallowed but for IPs - ip source whitelist - server whitelist
+</A></li>
+	<LI>Next message: <A HREF="002470.html">[Chilli] net.c Resource temporarily unavailable
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2473">[ date ]</a>
+              <a href="thread.html#2473">[ thread ]</a>
+              <a href="subject.html#2473">[ subject ]</a>
+              <a href="author.html#2473">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

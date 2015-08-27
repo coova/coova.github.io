@@ -1,0 +1,237 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> handle initial requests to http proxy
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20handle%20initial%20requests%20to%20http%20proxy&In-Reply-To=%3C1211357459.19347.26.camel%40azathoth.ing.unitn.it%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000317.html">
+   <LINK REL="Next"  HREF="000321.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>handle initial requests to http proxy</H1>
+    <B>Ivano Cristofolini</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20handle%20initial%20requests%20to%20http%20proxy&In-Reply-To=%3C1211357459.19347.26.camel%40azathoth.ing.unitn.it%3E"
+       TITLE="handle initial requests to http proxy">Ivano.Cristofolini at ing.unitn.it
+       </A><BR>
+    <I>Wed May 21 08:10:59 UTC 2008</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000317.html">handle initial requests to http proxy
+</A></li>
+        <LI>Next message: <A HREF="000321.html">handle initial requests to http proxy
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#320">[ date ]</a>
+              <a href="thread.html#320">[ thread ]</a>
+              <a href="subject.html#320">[ subject ]</a>
+              <a href="author.html#320">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>OK, here it is quick'n'dirty (port number is hard-coded, etc.). It's
+important to note that browsers must not use a proxy for uamserver and
+authentication server; otherwise login will not work.
+It is probably not terribly useful in general: I needed it to keep
+previous browser settings for a wired network still working on the wifi.
+
+Ivano
+
+--- old_dhcp.h	2008-05-19 09:21:33.000000000 +0200
++++ dhcp.h	2008-05-19 10:16:04.000000000 +0200
+@@ -56,6 +56,7 @@
+ /* TCP Ports */
+ #define DHCP_HTTP   80
+ #define DHCP_HTTPS 443
++#define DHCP_HTTPPROXY 3128
+ 
+ 
+ #define DHCP_ARP_REQUEST 1
+@@ -99,6 +100,7 @@
+   int nextdnat;                /* Next location to use for DNAT */
+   uint32_t dnatip[DHCP_DNAT_MAX]; /* Destination NAT destination IP
+address */
+   uint16_t dnatport[DHCP_DNAT_MAX]; /* Destination NAT source port */
++  uint16_t http_port;               /* Original (pre-NAT) destination
+port */
+   uint8_t dnatmac[DHCP_DNAT_MAX][PKT_ETH_ALEN]; /* Destination NAT
+source mac */
+ /*  uint16_t mtu;                 Maximum transfer unit */
+ };
+--- old_dhcp.c	2008-05-19 09:21:40.000000000 +0200
++++ dhcp.c	2008-05-19 09:32:42.000000000 +0200
+@@ -1245,7 +1245,8 @@
+   /* Was it a http request for another server? */
+   /* We are changing dest IP and dest port to local UAM server */
+   if ((pack-&gt;iph.protocol == PKT_IP_PROTO_TCP) &amp;&amp;
+-      (tcph-&gt;dst == htons(DHCP_HTTP))) {
++      ((tcph-&gt;dst == htons(DHCP_HTTP)) ||
++       (tcph-&gt;dst == htons(DHCP_HTTPPROXY)))) {
+     int n;
+     int pos=-1;
+     for (n=0; n&lt;DHCP_DNAT_MAX; n++) {
+@@ -1260,6 +1261,7 @@
+ 	memcpy(conn-&gt;dnatmac[conn-&gt;nextdnat], pack-&gt;ethh.dst, PKT_ETH_ALEN); 
+       conn-&gt;dnatip[conn-&gt;nextdnat] = pack-&gt;iph.daddr; 
+       conn-&gt;dnatport[conn-&gt;nextdnat] = tcph-&gt;src;
++      conn-&gt;http_port = tcph-&gt;dst;
+       conn-&gt;nextdnat = (conn-&gt;nextdnat + 1) % DHCP_DNAT_MAX;
+     }
+ 
+@@ -1420,7 +1422,7 @@
+ 	if (options.usetap) 
+ 	  memcpy(pack-&gt;ethh.src, conn-&gt;dnatmac[n], PKT_ETH_ALEN); 
+ 	pack-&gt;iph.saddr = conn-&gt;dnatip[n];
+-	tcph-&gt;src = htons(DHCP_HTTP);
++	tcph-&gt;src = conn-&gt;http_port;
+ 
+ 	dhcp_tcp_check(pack, len);
+ 	dhcp_ip_check(pack);
+--- old_redir.c	2008-05-19 09:22:03.000000000 +0200
++++ redir.c	2008-05-19 14:52:03.000000000 +0200
+@@ -1124,7 +1124,6 @@
+ 
+ 	while (*p1 == ' ') p1++; /* Advance through additional white space */
+ 	if (*p1 == '/') p1++;
+-	else return -1;
+ 	
+ 	/* The path ends with a ? or a space */
+ 	p2 = strchr(p1, '?');
+@@ -1321,9 +1320,16 @@
+   default:
+     {
+       /* some basic checks for urls we don't care about */
+-      
+-      snprintf(conn-&gt;state.redir.userurl,
+sizeof(conn-&gt;state.redir.userurl), &quot;<A HREF="http://%s/%s%s%s&quot;,">http://%s/%s%s%s&quot;,</A> 
+-	       host, path, qs[0] ? &quot;?&quot; : &quot;&quot;, qs[0] ? qs : &quot;&quot;);
++
++      /* if GET was for an http proxy then the path starts with
+<A HREF="http://host">http://host</A> */
++      if (!strncmp(path, &quot;<A HREF="http://&quot;,">http://&quot;,</A> 7)) {
++          snprintf(conn-&gt;state.redir.userurl,
+sizeof(conn-&gt;state.redir.userurl), &quot;%s%s%s&quot;,
++               path, qs[0] ? &quot;?&quot; : &quot;&quot;, qs[0] ? qs : &quot;&quot;);
++      }
++      else {
++          snprintf(conn-&gt;state.redir.userurl,
+sizeof(conn-&gt;state.redir.userurl), &quot;<A HREF="http://%s/%s%s%s&quot;,">http://%s/%s%s%s&quot;,</A>
++               host, path, qs[0] ? &quot;?&quot; : &quot;&quot;, qs[0] ? qs : &quot;&quot;);
++      }
+ 
+       if (optionsdebug) 
+ 	log_dbg(&quot;--&gt;&gt; Setting userurl=[%s]&quot;,conn-&gt;state.redir.userurl);
+
+
+On Sat, 2008-05-17 at 09:21 +0200, <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">wlan at mac.com</A> wrote:
+&gt;<i> Working contributions are welcome!
+</I>&gt;<i> 
+</I>&gt;<i> On May 16, 2008, at 4:26 PM, Ivano Cristofolini wrote:
+</I>&gt;<i> 
+</I>&gt;<i> &gt; just solved it by myself, sorry for the bother.
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; Ivano
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; On Fri, 2008-05-16 at 13:54 +0200, Ivano Cristofolini wrote:
+</I>&gt;<i> &gt;&gt; Hello,
+</I>&gt;<i> &gt;&gt;
+</I>&gt;<i> &gt;&gt; I need to modify coova-chilli to capture http requests directed to a
+</I>&gt;<i> &gt;&gt; (NON transparent) http proxy running on port 3128 (keeping current
+</I>&gt;<i> &gt;&gt; functionality as well).
+</I>&gt;<i> &gt;&gt;
+</I>&gt;<i> &gt;&gt; I have successfully modified the http parsing functions in redir.c  
+</I>&gt;<i> &gt;&gt; (very
+</I>&gt;<i> &gt;&gt; simple: only redirurl changes).
+</I>&gt;<i> &gt;&gt;
+</I>&gt;<i> &gt;&gt; I'm trying to modify the DNAT routines in dhcp.c so that requests to
+</I>&gt;<i> &gt;&gt; port 3128 are handled in the same way as regular requests to http
+</I>&gt;<i> &gt;&gt; servers (i.e. they are NATted to uamserver).
+</I>&gt;<i> &gt;&gt;
+</I>&gt;<i> &gt;&gt; This is easy for dhcp_doDNAT() (I added the last line):
+</I>&gt;<i> &gt;&gt;
+</I>&gt;<i> &gt;&gt; ...
+</I>&gt;<i> &gt;&gt;   /* Was it a http request for another server? */
+</I>&gt;<i> &gt;&gt;   /* We are changing dest IP and dest port to local UAM server */
+</I>&gt;<i> &gt;&gt;   if ((pack-&gt;iph.protocol == PKT_IP_PROTO_TCP) &amp;&amp;
+</I>&gt;<i> &gt;&gt;       ((tcph-&gt;dst == htons(DHCP_HTTP)) ||
+</I>&gt;<i> &gt;&gt;        (tcph-&gt;dst == htons(3128)))) {
+</I>&gt;<i> &gt;&gt; ...
+</I>&gt;<i> &gt;&gt;
+</I>&gt;<i> &gt;&gt; I don't know how to do it for dhcp_undoDNAT().
+</I>&gt;<i> &gt;&gt;
+</I>&gt;<i> &gt;&gt; ...
+</I>&gt;<i> &gt;&gt; /* Was it a reply from redir server? */
+</I>&gt;<i> &gt;&gt; ...
+</I>&gt;<i> &gt;&gt; if (something???) {
+</I>&gt;<i> &gt;&gt;   tcph-&gt;src = htons(DHCP_HTTP);
+</I>&gt;<i> &gt;&gt; else
+</I>&gt;<i> &gt;&gt;   tcph-&gt;src = htons(3128);
+</I>&gt;<i> &gt;&gt; ...
+</I>&gt;<i> &gt;&gt;
+</I>&gt;<i> &gt;&gt; Any suggestions?
+</I>&gt;<i> &gt;&gt;
+</I>&gt;<i> &gt; -- 
+</I>&gt;<i> &gt; Ivano Cristofolini
+</I>&gt;<i> &gt; Presidio Informatico Ingegneria
+</I>&gt;<i> &gt; Direzione Informatica e Telecomunicazioni
+</I>&gt;<i> &gt; Universita' degli Studi di Trento
+</I>&gt;<i> &gt; Via Mesiano 77,
+</I>&gt;<i> &gt; 38050 Povo(TN), Italy
+</I>&gt;<i> &gt; Tel: +39 0461/881940
+</I>&gt;<i> &gt; Fax: +39 0461/882628
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; ---------------------------------------------------------------------
+</I>&gt;<i> &gt; To unsubscribe, e-mail: <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli-unsubscribe at coova.org</A>
+</I>&gt;<i> &gt; For additional commands, e-mail: <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli-help at coova.org</A>
+</I>&gt;<i> &gt; Wiki: <A HREF="http://coova.org/wiki/index.php/CoovaChilli">http://coova.org/wiki/index.php/CoovaChilli</A>
+</I>&gt;<i> &gt; Forum: <A HREF="http://coova.org/phpBB3/viewforum.php?f=4">http://coova.org/phpBB3/viewforum.php?f=4</A>
+</I>&gt;<i> &gt;
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> ---------------------------------------------------------------------
+</I>&gt;<i> To unsubscribe, e-mail: <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli-unsubscribe at coova.org</A>
+</I>&gt;<i> For additional commands, e-mail: <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli-help at coova.org</A>
+</I>&gt;<i> Wiki: <A HREF="http://coova.org/wiki/index.php/CoovaChilli">http://coova.org/wiki/index.php/CoovaChilli</A>
+</I>&gt;<i> Forum: <A HREF="http://coova.org/phpBB3/viewforum.php?f=4">http://coova.org/phpBB3/viewforum.php?f=4</A>
+</I>&gt;<i> 
+</I>-- 
+Ivano Cristofolini
+Presidio Informatico Ingegneria
+Direzione Informatica e Telecomunicazioni
+Universita' degli Studi di Trento
+Via Mesiano 77,
+38050 Povo(TN), Italy
+Tel: +39 0461/881940
+Fax: +39 0461/882628
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: httpproxy.patch
+Type: text/x-patch
+Size: 2904 bytes
+Desc: not available
+URL: &lt;<A HREF="http://lists.coova.org/pipermail/chilli/attachments/20080521/5140b891/attachment.bin">http://lists.coova.org/pipermail/chilli/attachments/20080521/5140b891/attachment.bin</A>&gt;
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000317.html">handle initial requests to http proxy
+</A></li>
+	<LI>Next message: <A HREF="000321.html">handle initial requests to http proxy
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#320">[ date ]</a>
+              <a href="thread.html#320">[ thread ]</a>
+              <a href="subject.html#320">[ subject ]</a>
+              <a href="author.html#320">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

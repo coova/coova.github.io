@@ -1,0 +1,2271 @@
+From gunther.mayer at googlemail.com  Fri Aug  1 13:51:57 2008
+From: gunther.mayer at googlemail.com (Gunther Mayer)
+Date: Fri, 01 Aug 2008 15:51:57 +0200
+Subject: Authentication not robust against packet loss?
+In-Reply-To: <1217446898.6827.2.camel@david-laptop>
+References: <4890AD15.9090404@gmail.com> <4890AE8F.6040101@thewybles.com> <1217446898.6827.2.camel@david-laptop>
+Message-ID: <489314FD.4080702@gmail.com>
+
+wlanmac wrote:
+> Try a config with:
+>
+> radiustimeout=5
+> radiusretry=3
+> radiusretrysec=1
+>
+> It might be more to your liking than the defaults...
+>   
+I tried with those settings (both applying with SIGHUP and a restart) 
+but it still sits there not once retrying the auth request. This is on 
+1.0.11. I know the next thing that will be recommended is to upgrade to 
+1.0.12 but I must add that this will take me a while to set up.
+
+Could anyone on the list perhaps confirm if this happens on 1.0.12? I'm 
+willing to help out on how to configure your firewall if you don't know 
+how to make it drop packets randomly to simulate this.
+
+Gunther
+
+
+From ccesario at tecnomega.com.br  Fri Aug  1 14:47:23 2008
+From: ccesario at tecnomega.com.br (Carlos Cesario)
+Date: Fri, 1 Aug 2008 11:47:23 -0300
+Subject: radius server
+Message-ID: <1217602043.10563.0.camel@ccesario-laptop>
+
+Somebody already have this error in coova+freeradius ?
+
+I think is this my problem about "authentication stop"
+
+
+Fri Aug  1 10:52:19 2008 : Info: rlm_sql (sql): There are no DB handles
+to use! skipped 0, tried to connect 0
+Fri Aug  1 10:54:25 2008 : Info: rlm_sql (sql): There are no DB handles
+to use! skipped 0, tried to connect 0
+Fri Aug  1 11:01:46 2008 : Info: rlm_sql (sql): There are no DB handles
+to use! skipped 0, tried to connect 0
+Fri Aug  1 11:05:58 2008 : Info: rlm_sql (sql): There are no DB handles
+to use! skipped 0, tried to connect 0
+Fri Aug  1 11:19:37 2008 : Info: rlm_sql (sql): There are no DB handles
+to use! skipped 0, tried to connect 0
+Fri Aug  1 11:21:43 2008 : Info: rlm_sql (sql): There are no DB handles
+to use! skipped 0, tried to connect 0
+Fri Aug  1 11:22:46 2008 : Info: rlm_sql (sql): There are no DB handles
+to use! skipped 0, tried to connect 0
+Fri Aug  1 11:26:58 2008 : Info: rlm_sql (sql): There are no DB handles
+to use! skipped 0, tried to connect 0
+
+
+thanks
+
+Carlos
+
+
+
+From wlan at mac.com  Fri Aug  1 20:22:44 2008
+From: wlan at mac.com (wlanmac)
+Date: Fri, 01 Aug 2008 22:22:44 +0200
+Subject: Authentication not robust against packet loss?
+In-Reply-To: <489314FD.4080702@gmail.com>
+References: <4890AD15.9090404@gmail.com> <4890AE8F.6040101@thewybles.com>
+ <1217446898.6827.2.camel@david-laptop> <489314FD.4080702@gmail.com>
+Message-ID: <1217622164.7347.0.camel@david-laptop>
+
+There were changes with radius timeouts in version 1.0.12, so please do
+upgrade. See the changelog for details.
+
+David
+
+
+On Fri, 2008-08-01 at 15:51 +0200, Gunther Mayer wrote:
+> wlanmac wrote:
+> > Try a config with:
+> >
+> > radiustimeout=5
+> > radiusretry=3
+> > radiusretrysec=1
+> >
+> > It might be more to your liking than the defaults...
+> >   
+> I tried with those settings (both applying with SIGHUP and a restart) 
+> but it still sits there not once retrying the auth request. This is on 
+> 1.0.11. I know the next thing that will be recommended is to upgrade to 
+> 1.0.12 but I must add that this will take me a while to set up.
+> 
+> Could anyone on the list perhaps confirm if this happens on 1.0.12? I'm 
+> willing to help out on how to configure your firewall if you don't know 
+> how to make it drop packets randomly to simulate this.
+> 
+> Gunther
+> 
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+> 
+
+
+
+From liran.tal at gmail.com  Sat Aug  2 07:58:46 2008
+From: liran.tal at gmail.com (Liran Tal)
+Date: Sat, 2 Aug 2008 09:58:46 +0200
+Subject: radius server
+In-Reply-To: <1217602043.10563.0.camel@ccesario-laptop>
+References: <1217602043.10563.0.camel@ccesario-laptop>
+Message-ID: <81237f640808020058k4e1bb2b8o19b0eece3cffef26@mail.gmail.com>
+
+Hey Carlos,
+
+It seems that you are running out of connections to your sql database.
+Increase the number in FreeRADIUS's config and check why this happens.
+
+Regards.
+Liran.
+
+
+
+On Fri, Aug 1, 2008 at 4:47 PM, Carlos Cesario <ccesario at tecnomega.com.br>wrote:
+
+> Somebody already have this error in coova+freeradius ?
+>
+> I think is this my problem about "authentication stop"
+>
+>
+> Fri Aug  1 10:52:19 2008 : Info: rlm_sql (sql): There are no DB handles
+> to use! skipped 0, tried to connect 0
+> Fri Aug  1 10:54:25 2008 : Info: rlm_sql (sql): There are no DB handles
+> to use! skipped 0, tried to connect 0
+> Fri Aug  1 11:01:46 2008 : Info: rlm_sql (sql): There are no DB handles
+> to use! skipped 0, tried to connect 0
+> Fri Aug  1 11:05:58 2008 : Info: rlm_sql (sql): There are no DB handles
+> to use! skipped 0, tried to connect 0
+> Fri Aug  1 11:19:37 2008 : Info: rlm_sql (sql): There are no DB handles
+> to use! skipped 0, tried to connect 0
+> Fri Aug  1 11:21:43 2008 : Info: rlm_sql (sql): There are no DB handles
+> to use! skipped 0, tried to connect 0
+> Fri Aug  1 11:22:46 2008 : Info: rlm_sql (sql): There are no DB handles
+> to use! skipped 0, tried to connect 0
+> Fri Aug  1 11:26:58 2008 : Info: rlm_sql (sql): There are no DB handles
+> to use! skipped 0, tried to connect 0
+>
+>
+> thanks
+>
+> Carlos
+>
+>
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>
+>
+
+
+-- 
+-- 
+Sincerely, Liran Tal
+
+Research and Development
+Linux Team - Enginx.com
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20080802/041daad7/attachment.htm>
+
+From info at ollisnet.de  Sat Aug  2 18:37:17 2008
+From: info at ollisnet.de (Oliver Hinckel)
+Date: Sat, 02 Aug 2008 20:37:17 +0200
+Subject: radius server
+In-Reply-To: <1217602043.10563.0.camel@ccesario-laptop>
+References: <1217602043.10563.0.camel@ccesario-laptop>
+Message-ID: <4894A95D.5030704@ollisnet.de>
+
+Hi Carlos,
+
+this means that the radius server has no free database connection handle 
+to process the current requests.
+
+This has different reasons:
+maybe your server which is running the database is too slow,
+or the queries consume too much time to be processed (maybe something is 
+not indexed properly),
+or the amount of connections to the database are simply too less,
+or your accesspoints just send too much requests simultaneous to the 
+radius server.
+
+How many clients are connected to the accesspoint simultaneous?
+
+If you're using a MySQL server, you can take a look on this thread:
+http://www.mail-archive.com/freeradius-users at lists.cistron.nl/msg22620.html
+
+Could help you to find out what you need to check.
+
+- Olli
+
+Carlos Cesario wrote on 08/01/2008 04:47 PM:
+> Somebody already have this error in coova+freeradius ?
+> 
+> I think is this my problem about "authentication stop"
+> 
+> 
+> Fri Aug  1 10:52:19 2008 : Info: rlm_sql (sql): There are no DB handles
+> to use! skipped 0, tried to connect 0
+> Fri Aug  1 10:54:25 2008 : Info: rlm_sql (sql): There are no DB handles
+> to use! skipped 0, tried to connect 0
+> Fri Aug  1 11:01:46 2008 : Info: rlm_sql (sql): There are no DB handles
+> to use! skipped 0, tried to connect 0
+> Fri Aug  1 11:05:58 2008 : Info: rlm_sql (sql): There are no DB handles
+> to use! skipped 0, tried to connect 0
+> Fri Aug  1 11:19:37 2008 : Info: rlm_sql (sql): There are no DB handles
+> to use! skipped 0, tried to connect 0
+> Fri Aug  1 11:21:43 2008 : Info: rlm_sql (sql): There are no DB handles
+> to use! skipped 0, tried to connect 0
+> Fri Aug  1 11:22:46 2008 : Info: rlm_sql (sql): There are no DB handles
+> to use! skipped 0, tried to connect 0
+> Fri Aug  1 11:26:58 2008 : Info: rlm_sql (sql): There are no DB handles
+> to use! skipped 0, tried to connect 0
+> 
+> 
+> thanks
+> 
+> Carlos
+> 
+> 
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+
+
+From javi.larrea at gmail.com  Tue Aug  5 10:34:31 2008
+From: javi.larrea at gmail.com (=?UTF-8?B?SmF2aWVyIExhcnJlYSBBcm1hw7Fhbnphcw==?=)
+Date: Tue, 05 Aug 2008 12:34:31 +0200
+Subject: not trying radiusserver2
+In-Reply-To: <1217503753.6993.2.camel@david-laptop>
+References: <48905963.6050700@gmail.com> <1217447000.6827.4.camel@david-laptop> <48917775.7040004@gmail.com> <1217503753.6993.2.camel@david-laptop>
+Message-ID: <48982CB7.6060905@gmail.com>
+
+I've upgraded to 1.0.12 and I get the same behaviour.
+
+Regards,
+
+Javier.
+
+wlanmac escribi?:
+> You should upgrade. 
+>
+> David
+>
+> On Thu, 2008-07-31 at 10:27 +0200, Javier Larrea Arma?anzas wrote:
+>   
+>> Watching the traffic with wireshark I see only packets to radiusserver2 
+>> when the admin user (chillispot) is authenticating (to fetch config, but 
+>> I don't use this feature).   When a normal user logs in chilli doesn't 
+>> ask to radiusserver2 although radiusserver1 is down. 
+>>
+>> I've tried David's suggestion but it hasn't worked.
+>>
+>> It's a bug or I am doing something wrong?  I'm using the 1.0.11 version.
+>>
+>> Regards,
+>> Javier.
+>>
+>> wlanmac escribi?:
+>>     
+>>> Also try a config with:
+>>>
+>>> radiustimeout=5
+>>> radiusretry=3
+>>> radiusretrysec=1
+>>>
+>>> David
+>>>
+>>> On Wed, 2008-07-30 at 14:06 +0200, Javier Larrea Arma?anzas wrote:
+>>>   
+>>>       
+>>>> Hi,
+>>>> I don't know why, when radiusserver1 is down, chilli doesn't try 
+>>>> radiusserver2.  I'm using wireshark to see radius traffic and I see an 
+>>>> Access-Request to radiusserver1 and an ICMP port unreachable error in 
+>>>> return (because radiusserver1 is down).  But I don't see an 
+>>>> Access-Request to radiusserver2 ?why?
+>>>>
+>>>> Thanks,
+>>>> Javier.
+>>>>
+>>>>
+>>>> ---------------------------------------------------------------------
+>>>> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+>>>> For additional commands, e-mail: chilli-help at coova.org
+>>>> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+>>>> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>>>>
+>>>>     
+>>>>         
+>>> ---------------------------------------------------------------------
+>>> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+>>> For additional commands, e-mail: chilli-help at coova.org
+>>> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+>>> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>>>
+>>>
+>>>   
+>>>       
+>> ---------------------------------------------------------------------
+>> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+>> For additional commands, e-mail: chilli-help at coova.org
+>> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+>> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>>
+>>     
+>
+>
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>
+>
+>   
+
+
+
+From javi.larrea at gmail.com  Tue Aug  5 11:47:51 2008
+From: javi.larrea at gmail.com (=?UTF-8?B?SmF2aWVyIExhcnJlYSBBcm1hw7Fhbnphcw==?=)
+Date: Tue, 05 Aug 2008 13:47:51 +0200
+Subject: not trying radiusserver2
+In-Reply-To: <1217503753.6993.2.camel@david-laptop>
+References: <48905963.6050700@gmail.com> <1217447000.6827.4.camel@david-laptop> <48917775.7040004@gmail.com> <1217503753.6993.2.camel@david-laptop>
+Message-ID: <48983DE7.70800@gmail.com>
+
+Opps, you were right.  Upgrading AND adding
+
+radiustimeout=5
+radiusretry=3
+radiusretrysec=1
+
+it works!
+
+Thanks a lot,
+
+Javier.
+
+wlanmac escribi?:
+> You should upgrade. 
+>
+> David
+>
+> On Thu, 2008-07-31 at 10:27 +0200, Javier Larrea Arma?anzas wrote:
+>   
+>> Watching the traffic with wireshark I see only packets to radiusserver2 
+>> when the admin user (chillispot) is authenticating (to fetch config, but 
+>> I don't use this feature).   When a normal user logs in chilli doesn't 
+>> ask to radiusserver2 although radiusserver1 is down. 
+>>
+>> I've tried David's suggestion but it hasn't worked.
+>>
+>> It's a bug or I am doing something wrong?  I'm using the 1.0.11 version.
+>>
+>> Regards,
+>> Javier.
+>>
+>> wlanmac escribi?:
+>>     
+>>> Also try a config with:
+>>>
+>>> radiustimeout=5
+>>> radiusretry=3
+>>> radiusretrysec=1
+>>>
+>>> David
+>>>
+>>> On Wed, 2008-07-30 at 14:06 +0200, Javier Larrea Arma?anzas wrote:
+>>>   
+>>>       
+>>>> Hi,
+>>>> I don't know why, when radiusserver1 is down, chilli doesn't try 
+>>>> radiusserver2.  I'm using wireshark to see radius traffic and I see an 
+>>>> Access-Request to radiusserver1 and an ICMP port unreachable error in 
+>>>> return (because radiusserver1 is down).  But I don't see an 
+>>>> Access-Request to radiusserver2 ?why?
+>>>>
+>>>> Thanks,
+>>>> Javier.
+>>>>
+>>>>
+>>>> ---------------------------------------------------------------------
+>>>> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+>>>> For additional commands, e-mail: chilli-help at coova.org
+>>>> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+>>>> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>>>>
+>>>>     
+>>>>         
+>>> ---------------------------------------------------------------------
+>>> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+>>> For additional commands, e-mail: chilli-help at coova.org
+>>> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+>>> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>>>
+>>>
+>>>   
+>>>       
+>> ---------------------------------------------------------------------
+>> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+>> For additional commands, e-mail: chilli-help at coova.org
+>> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+>> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>>
+>>     
+>
+>
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>
+>
+>   
+
+
+
+From jimmy at dwalliance.com  Tue Aug  5 15:33:50 2008
+From: jimmy at dwalliance.com (Jimmy Brake)
+Date: Tue, 05 Aug 2008 08:33:50 -0700
+Subject: chilli stops sending accounting packets to the radius server
+Message-ID: <489872DE.7010207@dwalliance.com>
+
+Hi,
+
+I have gotten pretty stuck on this problem. At really random times our 
+chillispot-coova(cc) server will stop sending accounting packets to our 
+radius server. The packets stop completely and no new packets from 
+people that are are already logged on nor packets from people that log 
+on. I can send packets from the cc server using radclient and that works 
+fine .. so my presumption is the error is in chillispot.
+
+Here are the warnings I get from make when compiling the binary.
+
+chilli.c: In function 'config_radius_session':
+chilli.c:2030: warning: passing argument 3 of 
+'pass_throughs_from_string' from incompatible pointer type
+chilli.c: In function 'cmdsock_accept':
+chilli.c:3145: warning: passing argument 3 of 'accept' from incompatible 
+pointer type
+tun.c: In function 'tun_addaddr':
+tun.c:284: warning: pointer targets in passing argument 2 of 
+'tun_gifindex' differ in signedness
+tun.c:308: warning: dereferencing type-punned pointer will break 
+strict-aliasing rules
+tun.c:642:2: warning: #warning fix this
+tun.c: At top level:
+tun.c:712: warning: 'dnatip' defined but not used
+tun.c:713: warning: 'dnatport' defined but not used
+redir.c: In function 'redir_buildurl':
+redir.c:482: warning: pointer targets in assignment differ in signedness
+redir.c: At top level:
+redir.c:108: warning: 'redir_xmlencode' defined but not used
+dhcp.c: In function 'dhcp_nakDNS':
+dhcp.c:716: warning: unused variable 'dnsp'
+dhcp.c: In function 'dhcp_undoDNAT':
+dhcp.c:1026: warning: unused variable 'len'
+lookup.c: In function 'lookup':
+lookup.c:29: warning: pointer targets in passing argument 1 of 
+'SuperFastHash' differ in signedness
+dns.c: In function 'dns_copy_res':
+dns.c:174: warning: 'rdlen' is used uninitialized in this function
+main-query.c: In function 'main':
+main-query.c:135: warning: pointer targets in initialization differ in 
+signedness
+main-query.c:253: warning: unused variable 'routeidx'
+
+I am compiling on an intel dual-core 64bit - ubuntu server 8.04 (latest 
+updates) with build-essential installed.
+
+Thanks in advance any assistance.
+
+Jimmy
+
+
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20080805/71abe128/attachment.htm>
+
+From peter at endian.com  Tue Aug  5 17:34:02 2008
+From: peter at endian.com (Peter Warasin)
+Date: Tue, 05 Aug 2008 19:34:02 +0200
+Subject: check for  request for authentication server allows bypassing?
+Message-ID: <48988F0A.60400@endian.com>
+
+Hi guys
+
+I found out that coovachilli allows access to the whole uamlisten ip 
+address whether the user is authenticated or not.
+
+In my case there is a squid running on the same host, which then allows 
+people to bypass the hotspot by manually configure their browsers in 
+order to use that proxy.
+
+
+This is due to some lines commented out in dhcp.c:1936, which makes the 
+check whether it is a request for the auth server or not less specific.
+
+------------------------- snip ----------------------------------
+   /* Was it a request for authentication server? */
+   for (i = 0; i<this->authiplen; i++) {
+     if ((pack->iph.daddr == this->authip[i].s_addr) /* &&
+	(pack->iph.protocol == PKT_IP_PROTO_TCP) &&
+	((tcph->dst == htons(DHCP_HTTP)) ||
+	(tcph->dst == htons(DHCP_HTTPS)))*/)
+       return 0; /* Destination was authentication server */
+   }
+------------------------- snap ----------------------------------
+
+I would like to ask why these lines are commented out and if it is safe 
+to remove the comment and bring them back in? That would close the hole.
+
+I tested with the correct check (lines not commented out), which is 
+working fine for me (dhcp and anyip). uamallow is also working fine.
+
+So I am wondering if there is some reason, something I am missing, why 
+this check has been made less specific.
+
+I attach a patch which removes the comment, for the case that there is 
+no reason for disabling that lines.
+
+kind regards
+
+peter
+
+-- 
+:: e n d i a n
+:: open source - open minds
+
+:: peter warasin
+:: http://www.endian.com   :: peter at endian.com
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: close_access_to_host.patch
+Type: text/x-diff
+Size: 1033 bytes
+Desc: not available
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20080805/cad9ada8/attachment.patch>
+
+From wlan at mac.com  Thu Aug  7 18:14:05 2008
+From: wlan at mac.com (wlanmac)
+Date: Thu, 07 Aug 2008 20:14:05 +0200
+Subject: check for  request for authentication server allows bypassing?
+In-Reply-To: <48988F0A.60400@endian.com>
+References: <48988F0A.60400@endian.com>
+Message-ID: <1218132845.7110.53.camel@david-laptop>
+
+I seem to recall commenting it out because I found only checking http
+and https ports was too restrictive. It should probably parse out the
+uamserver url port number to check with, in the case it is not a
+standard port being used. I suppose this can be overcome with adding
+uamallowed entries for the authip:port.. For your proxy issue, you could
+always run it on another IP address. I would hate to make a change back
+like this only to have many sites, using alternate ports, not work.
+Suggestions are welcome. 
+
+David
+
+
+On Tue, 2008-08-05 at 19:34 +0200, Peter Warasin wrote:
+> Hi guys
+> 
+> I found out that coovachilli allows access to the whole uamlisten ip 
+> address whether the user is authenticated or not.
+> 
+> In my case there is a squid running on the same host, which then allows 
+> people to bypass the hotspot by manually configure their browsers in 
+> order to use that proxy.
+> 
+> 
+> This is due to some lines commented out in dhcp.c:1936, which makes the 
+> check whether it is a request for the auth server or not less specific.
+> 
+> ------------------------- snip ----------------------------------
+>    /* Was it a request for authentication server? */
+>    for (i = 0; i<this->authiplen; i++) {
+>      if ((pack->iph.daddr == this->authip[i].s_addr) /* &&
+> 	(pack->iph.protocol == PKT_IP_PROTO_TCP) &&
+> 	((tcph->dst == htons(DHCP_HTTP)) ||
+> 	(tcph->dst == htons(DHCP_HTTPS)))*/)
+>        return 0; /* Destination was authentication server */
+>    }
+> ------------------------- snap ----------------------------------
+> 
+> I would like to ask why these lines are commented out and if it is safe 
+> to remove the comment and bring them back in? That would close the hole.
+> 
+> I tested with the correct check (lines not commented out), which is 
+> working fine for me (dhcp and anyip). uamallow is also working fine.
+> 
+> So I am wondering if there is some reason, something I am missing, why 
+> this check has been made less specific.
+> 
+> I attach a patch which removes the comment, for the case that there is 
+> no reason for disabling that lines.
+> 
+> kind regards
+> 
+> peter
+> 
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+
+
+
+From peter at endian.com  Fri Aug  8 13:49:50 2008
+From: peter at endian.com (Peter Warasin)
+Date: Fri, 08 Aug 2008 15:49:50 +0200
+Subject: check for  request for authentication server allows bypassing?
+In-Reply-To: <1218132845.7110.53.camel@david-laptop>
+References: <48988F0A.60400@endian.com> <1218132845.7110.53.camel@david-laptop>
+Message-ID: <489C4EFE.6060702@endian.com>
+
+Hi david
+
+Thank you for your response!
+
+wlanmac wrote:
+> I seem to recall commenting it out because I found only checking http
+> and https ports was too restrictive. It should probably parse out the
+> uamserver url port number to check with, in the case it is not a
+> standard port being used. I suppose this can be overcome with adding
+
+Ah, I see. So if one has a different port in the uamserver url, it would 
+not work with that check.
+Well, makes perfectly sense.
+
+> uamallowed entries for the authip:port.. For your proxy issue, you could
+> always run it on another IP address. I would hate to make a change back
+> like this only to have many sites, using alternate ports, not work.
+> Suggestions are welcome. 
+
+Ok, I understand.
+
+Thank you for clearing this.
+
+peter
+
+-- 
+:: e n d i a n
+:: open source - open minds
+
+:: peter warasin
+:: http://www.endian.com   :: peter at endian.com
+
+
+From ccesario at tecnomega.com.br  Mon Aug 11 11:57:20 2008
+From: ccesario at tecnomega.com.br (Carlos Cesario)
+Date: Mon, 11 Aug 2008 08:57:20 -0300
+Subject: [chilli] Re: Captive Stopped
+In-Reply-To: <1217251555.7183.5.camel@ccesario-laptop>
+References: <1216741655.10317.10.camel@ccesario-laptop>
+	 <200807221736.m6MHaCVJ065840@himinbjorg.tucs-beachin-obx-house.com>
+	 <3ea93a690807221043u21e30832tff4ea9ba32f8d5fa@mail.gmail.com>
+	 <1217251555.7183.5.camel@ccesario-laptop>
+Message-ID: <1218455840.14560.1.camel@ccesario-laptop>
+
+
+Hi Guys....
+
+after much changes..... I'm still having problems with "Captive Page
+Stoped" :/
+
+somebody have one more idea!!?
+
+
+thanks
+
+Carlos
+
+Em Seg, 2008-07-28 ?s 10:25 -0300, Carlos Cesario escreveu:
+> Hi guys,
+> 
+> I try this option but I continue with problems....
+> 
+> in log files, I see that chilli continue running.....
+> 
+> 
+> 
+> Jul 28 10:17:23 netpopulacao coova-chilli[3039]: chilli.c: 2690: DHCP
+> addr released by MAC=00-05-9E-87-C8-18 IP=11.0.2.230
+> Jul 28 10:17:23 netpopulacao coova-chilli[3039]: chilli.c: 2602: New
+> DHCP request from MAC=00-05-9E-87-C8-18
+> Jul 28 10:17:30 netpopulacao coova-chilli[3039]: chilli.c: 2690: DHCP
+> addr released by MAC=00-0E-2E-86-D4-CF IP=0.0.0.0
+> Jul 28 10:17:38 netpopulacao coova-chilli[3039]: chilli.c: 2602: New
+> DHCP request from MAC=00-05-9E-88-C8-1F
+> Jul 28 10:17:54 netpopulacao coova-chilli[3039]: chilli.c: 2690: DHCP
+> addr released by MAC=00-05-9E-88-03-02 IP=11.0.2.211
+> 
+> 
+> But theses users is passing direct, whitouth LOGIN AUTH PAGE
+> 
+> 
+> more ideas ?
+> 
+> Thanks
+> 
+> Carlos
+> 
+> Em Ter, 2008-07-22 ?s 14:43 -0300, IanC escreveu:
+> > To be safe, what "DNS fun" are you referring to, Tuc?
+> >
+> > On Tue, Jul 22, 2008 at 1:36 PM, Tuc at T-B-O-H.NET <ml at t-b-o-h.net> wrote:
+> > > Hi,
+> > >
+> > >        Its a double edged sword though. If the unit reboots and
+> > > doesn't get the information immediately, then it never will. We
+> > > found that paying attention to the DNS and making sure it never
+> > > had to remotly look it up resolved it 90% of the way. The other
+> > > 10 % is just the fact that if it doesn't get it, it will in
+> > > the next hour.
+> > >
+> > >        Speaking of DNS, hopefully everyone is ready for the
+> > > DNS fun on Aug 7th. If anyone needs help patching/testing, lemme
+> > > know. Otherwise, will be interesting to see all the fun people
+> > > have on Aug 7th!
+> > >
+> > >                Tuc
+> > >>
+> > >> Hmmm, I'll test it....
+> > >>
+> > >> And I post the results here....
+> > >>
+> > >>
+> > >> Em Ter, 2008-07-22 ?s 12:23 -0300, Marco Simioni escreveu:
+> > >> > nano /etc/init.d/chilli
+> > >> >
+> > >> > find the following row (nearly row 19)
+> > >> >
+> > >> > OPTS="--pidfile /var/run/$NAME.pid"
+> > >> >
+> > >> > and add the interval option like this
+> > >> >
+> > >> > OPTS="--pidfile /var/run/$NAME.pid --interval 0"
+> > >> >
+> > >> > Regards
+> > >> >
+> > >> > Marco
+> > >> >
+> > >> >
+> > >> >
+> > >> > 2008/7/22 Outback Dingo <outbackdingo at gmail.com>:
+> > >> > >
+> > >> > > Exactly how and where did you do this ? its worth testing
+> > >> > >
+> > >> > >> I had to disable automatic config reload and automatic DNS look-up,
+> > >> > >> adding the interval parameter to the startup script, and now the
+> > >> > >> problem has gone.
+> > >> > >
+> > >> >
+> > >
+> > >
+> > > ---------------------------------------------------------------------
+> > > To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> > > For additional commands, e-mail: chilli-help at coova.org
+> > > Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> > > Forum: http://coova.org/phpBB3/viewforum.php?f=4
+> > >
+> > >
+> >
+> > ---------------------------------------------------------------------
+> > To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> > For additional commands, e-mail: chilli-help at coova.org
+> > Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> > Forum: http://coova.org/phpBB3/viewforum.php?f=4
+> 
+> 
+> 
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+> 
+-- 
+?_______________________________________________________________
+
+Carlos Ces?rio  - Analista de Suporte
+Tecnomega Tecnologia em Redes/Telecom e Seguran?a da Informa??o
+Fone: (18) 36089192 
+ccesario at tecnomega.com.br
+http://www.tecnomega.com.br
+
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: not available
+Type: application/pgp-signature
+Size: 189 bytes
+Desc: Esta ? uma parte de mensagem	assinada digitalmente
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20080811/18dc473b/attachment.pgp>
+
+From surfingsteve at gmail.com  Tue Aug 12 22:17:25 2008
+From: surfingsteve at gmail.com (Stephen Potter)
+Date: Tue, 12 Aug 2008 15:17:25 -0700
+Subject: Wiki Down
+Message-ID: <2587f0780808121517l1663d2b0m4dd692e9c824cfc2@mail.gmail.com>
+
+Hey,
+
+Im not sure if anyone noticed yet but it seems the Wiki is down.
+
+- Steve
+
+
+http://coova.org/wiki/
+
+MediaWiki internal error.
+
+Original exception: exception 'DBQueryError' with message 'A database error
+has occurred
+Query: SELECT value,exptime FROM `objectcache` WHERE
+keyname='Coova_wiki:messages-hash'
+Function: MediaWikiBagOStuff::_doquery
+Error: 1033 Incorrect information in file: './Coova_wiki/objectcache.frm'
+(localhost)
+' in /home/www/websites/coova.org/htdocs/wiki/includes/Database.php:647
+Stack trace:
+#0 /home/www/websites/coova.org/htdocs/wiki/includes/Database.php(604):
+Database->reportQueryError('Incorrect infor...', 1033, 'SELECT value,ex...',
+'MediaWikiBagOSt...', false)
+#1 /home/www/websites/coova.org/htdocs/wiki/includes/BagOStuff.php(380):
+Database->query('SELECT value,ex...', 'MediaWikiBagOSt...')
+#2 /home/www/websites/coova.org/htdocs/wiki/includes/BagOStuff.php(280):
+MediaWikiBagOStuff->_doquery('SELECT value,ex...')
+#3 /home/www/websites/coova.org/htdocs/wiki/includes/BagOStuff.php(227):
+SqlBagOStuff->_query('SELECT value,ex...', 'Coova_wiki:mess...')
+#4 /home/www/websites/coova.org/htdocs/wiki/includes/MessageCache.php(186):
+SqlBagOStuff->get('Coova_wiki:mess...')
+#5 /home/www/websites/coova.org/htdocs/wiki/includes/MessageCache.php(423):
+MessageCache->load()
+#6 /home/www/websites/
+coova.org/htdocs/wiki/includes/GlobalFunctions.php(450):
+MessageCache->get('mainpage', true, true)
+#7 /home/www/websites/
+coova.org/htdocs/wiki/includes/GlobalFunctions.php(409):
+wfMsgGetKey('mainpage', true, true, true)
+#8 /home/www/websites/
+coova.org/htdocs/wiki/includes/GlobalFunctions.php(358):
+wfMsgReal('mainpage', Array, true, true)
+#9 /home/www/websites/coova.org/htdocs/wiki/includes/Wiki.php(74):
+wfMsgForContent('mainpage')
+#10 /home/www/websites/coova.org/htdocs/wiki/index.php(105):
+MediaWiki->checkInitialQueries(NULL, 'view', Object(OutputPage),
+Object(WebRequest), Object(LanguageEn))
+#11 {main}
+
+Exception caught inside exception handler: exception 'DBUnexpectedError'
+with message 'Error in fetchObject(): Incorrect information in file:
+'./Coova_wiki/page.frm'' in /home/www/websites/
+coova.org/htdocs/wiki/includes/Database.php:764
+Stack trace:
+#0 /home/www/websites/coova.org/htdocs/wiki/includes/MessageCache.php(302):
+Database->fetchObject(false)
+#1 /home/www/websites/coova.org/htdocs/wiki/includes/MessageCache.php(226):
+MessageCache->loadFromDB()
+#2 /home/www/websites/coova.org/htdocs/wiki/includes/MessageCache.php(423):
+MessageCache->load()
+#3 /home/www/websites/
+coova.org/htdocs/wiki/includes/GlobalFunctions.php(450):
+MessageCache->get('databaseerror', true, false)
+#4 /home/www/websites/
+coova.org/htdocs/wiki/includes/GlobalFunctions.php(409):
+wfMsgGetKey('databaseerror', true, false, true)
+#5 /home/www/websites/coova.org/htdocs/wiki/includes/Exception.php(17):
+wfMsgReal('databaseerror', Array)
+#6 /home/www/websites/coova.org/htdocs/wiki/includes/Database.php(209):
+MWException->msg('databaseerror', 'Database error')
+#7 /home/www/websites/coova.org/htdocs/wiki/includes/Exception.php(46):
+DBQueryError->getPageTitle()
+#8 /home/www/websites/coova.org/htdocs/wiki/includes/Exception.php(70):
+MWException->reportHTML()
+#9 /home/www/websites/coova.org/htdocs/wiki/includes/Exception.php(145):
+MWException->report()
+#10 /home/www/websites/coova.org/htdocs/wiki/includes/Exception.php(179):
+wfReportException(Object(DBQueryError))
+#11 [internal function]: wfExceptionHandler(Object(DBQueryError))
+#12 {main}
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20080812/d208712e/attachment.htm>
+
+From wlan at mac.com  Wed Aug 13 07:17:20 2008
+From: wlan at mac.com (wlanmac)
+Date: Wed, 13 Aug 2008 09:17:20 +0200
+Subject: Wiki Down
+In-Reply-To: <2587f0780808121517l1663d2b0m4dd692e9c824cfc2@mail.gmail.com>
+References: <2587f0780808121517l1663d2b0m4dd692e9c824cfc2@mail.gmail.com>
+Message-ID: <1218611840.9822.51.camel@david-laptop>
+
+It has returned... 
+
+
+On Tue, 2008-08-12 at 15:17 -0700, Stephen Potter wrote:
+> Hey,
+> 
+> Im not sure if anyone noticed yet but it seems the Wiki is down.
+> 
+> - Steve
+> 
+> 
+> http://coova.org/wiki/ 
+> 
+> MediaWiki internal error.
+> 
+> Original exception: exception 'DBQueryError' with message 'A database
+> error has occurred
+> Query: SELECT value,exptime FROM `objectcache` WHERE
+> keyname='Coova_wiki:messages-hash'
+> Function: MediaWikiBagOStuff::_doquery
+> Error: 1033 Incorrect information in file:
+> './Coova_wiki/objectcache.frm' (localhost)
+> '
+> in /home/www/websites/coova.org/htdocs/wiki/includes/Database.php:647
+> Stack trace:
+> #0 /home/www/websites/coova.org/htdocs/wiki/includes/Database.php(604): Database->reportQueryError('Incorrect infor...', 1033, 'SELECT value,ex...', 'MediaWikiBagOSt...', false)
+> #1 /home/www/websites/coova.org/htdocs/wiki/includes/BagOStuff.php(380): Database->query('SELECT value,ex...', 'MediaWikiBagOSt...')
+> #2 /home/www/websites/coova.org/htdocs/wiki/includes/BagOStuff.php(280): MediaWikiBagOStuff->_doquery('SELECT value,ex...')
+> #3 /home/www/websites/coova.org/htdocs/wiki/includes/BagOStuff.php(227): SqlBagOStuff->_query('SELECT value,ex...', 'Coova_wiki:mess...')
+> #4 /home/www/websites/coova.org/htdocs/wiki/includes/MessageCache.php(186): SqlBagOStuff->get('Coova_wiki:mess...')
+> #5 /home/www/websites/coova.org/htdocs/wiki/includes/MessageCache.php(423): MessageCache->load()
+> #6 /home/www/websites/coova.org/htdocs/wiki/includes/GlobalFunctions.php(450): MessageCache->get('mainpage', true, true)
+> #7 /home/www/websites/coova.org/htdocs/wiki/includes/GlobalFunctions.php(409): wfMsgGetKey('mainpage', true, true, true)
+> #8 /home/www/websites/coova.org/htdocs/wiki/includes/GlobalFunctions.php(358): wfMsgReal('mainpage', Array, true, true)
+> #9 /home/www/websites/coova.org/htdocs/wiki/includes/Wiki.php(74):
+> wfMsgForContent('mainpage')
+> #10 /home/www/websites/coova.org/htdocs/wiki/index.php(105):
+> MediaWiki->checkInitialQueries(NULL, 'view', Object(OutputPage),
+> Object(WebRequest), Object(LanguageEn))
+> #11 {main}
+> 
+> Exception caught inside exception handler: exception
+> 'DBUnexpectedError' with message 'Error in fetchObject(): Incorrect
+> information in file: './Coova_wiki/page.frm''
+> in /home/www/websites/coova.org/htdocs/wiki/includes/Database.php:764
+> Stack trace:
+> #0 /home/www/websites/coova.org/htdocs/wiki/includes/MessageCache.php(302): Database->fetchObject(false)
+> #1 /home/www/websites/coova.org/htdocs/wiki/includes/MessageCache.php(226): MessageCache->loadFromDB()
+> #2 /home/www/websites/coova.org/htdocs/wiki/includes/MessageCache.php(423): MessageCache->load()
+> #3 /home/www/websites/coova.org/htdocs/wiki/includes/GlobalFunctions.php(450): MessageCache->get('databaseerror', true, false)
+> #4 /home/www/websites/coova.org/htdocs/wiki/includes/GlobalFunctions.php(409): wfMsgGetKey('databaseerror', true, false, true)
+> #5 /home/www/websites/coova.org/htdocs/wiki/includes/Exception.php(17): wfMsgReal('databaseerror', Array)
+> #6 /home/www/websites/coova.org/htdocs/wiki/includes/Database.php(209): MWException->msg('databaseerror', 'Database error')
+> #7 /home/www/websites/coova.org/htdocs/wiki/includes/Exception.php(46): DBQueryError->getPageTitle()
+> #8 /home/www/websites/coova.org/htdocs/wiki/includes/Exception.php(70): MWException->reportHTML()
+> #9 /home/www/websites/coova.org/htdocs/wiki/includes/Exception.php(145): MWException->report()
+> #10 /home/www/websites/coova.org/htdocs/wiki/includes/Exception.php(179): wfReportException(Object(DBQueryError))
+> #11 [internal function]: wfExceptionHandler(Object(DBQueryError))
+> #12 {main}
+> 
+> 
+
+
+
+From BrunoRobert.Urech at comfone.com  Wed Aug 13 08:25:09 2008
+From: BrunoRobert.Urech at comfone.com (Urech Bruno)
+Date: Wed, 13 Aug 2008 10:25:09 +0200
+Subject: Wiki Down
+In-Reply-To: <1218611840.9822.51.camel@david-laptop>
+References: <2587f0780808121517l1663d2b0m4dd692e9c824cfc2@mail.gmail.com> <1218611840.9822.51.camel@david-laptop>
+Message-ID: <81B2B4AE03A22D4490CD35A0F20F89E003E26652@thsvml00.togewa.com>
+
+Great, thank U
+
+/br
+
+Bruno
+
+ 
+
+-----Original Message-----
+From: wlanmac [mailto:wlan at mac.com] 
+Sent: Mittwoch, 13. August 2008 09:17
+To: chilli at coova.org
+Subject: Re: Wiki Down
+
+It has returned... 
+
+
+On Tue, 2008-08-12 at 15:17 -0700, Stephen Potter wrote:
+> Hey,
+> 
+> Im not sure if anyone noticed yet but it seems the Wiki is down.
+> 
+> - Steve
+> 
+> 
+> http://coova.org/wiki/
+> 
+> MediaWiki internal error.
+> 
+> Original exception: exception 'DBQueryError' with message 'A database 
+> error has occurred
+> Query: SELECT value,exptime FROM `objectcache` WHERE 
+> keyname='Coova_wiki:messages-hash'
+> Function: MediaWikiBagOStuff::_doquery
+> Error: 1033 Incorrect information in file:
+> './Coova_wiki/objectcache.frm' (localhost) '
+> in /home/www/websites/coova.org/htdocs/wiki/includes/Database.php:647
+> Stack trace:
+> #0 
+> /home/www/websites/coova.org/htdocs/wiki/includes/Database.php(604): 
+> Database->reportQueryError('Incorrect infor...', 1033, 'SELECT 
+> value,ex...', 'MediaWikiBagOSt...', false)
+> #1 
+> /home/www/websites/coova.org/htdocs/wiki/includes/BagOStuff.php(380): 
+> Database->query('SELECT value,ex...', 'MediaWikiBagOSt...')
+> #2 
+> /home/www/websites/coova.org/htdocs/wiki/includes/BagOStuff.php(280): 
+> MediaWikiBagOStuff->_doquery('SELECT value,ex...')
+> #3 
+> /home/www/websites/coova.org/htdocs/wiki/includes/BagOStuff.php(227): 
+> SqlBagOStuff->_query('SELECT value,ex...', 'Coova_wiki:mess...')
+> #4 
+> /home/www/websites/coova.org/htdocs/wiki/includes/MessageCache.php(186
+> ): SqlBagOStuff->get('Coova_wiki:mess...')
+> #5 
+> /home/www/websites/coova.org/htdocs/wiki/includes/MessageCache.php(423
+> ): MessageCache->load()
+> #6 
+> /home/www/websites/coova.org/htdocs/wiki/includes/GlobalFunctions.php(
+> 450): MessageCache->get('mainpage', true, true)
+> #7 
+> /home/www/websites/coova.org/htdocs/wiki/includes/GlobalFunctions.php(
+> 409): wfMsgGetKey('mainpage', true, true, true)
+> #8 
+> /home/www/websites/coova.org/htdocs/wiki/includes/GlobalFunctions.php(
+> 358): wfMsgReal('mainpage', Array, true, true)
+> #9 /home/www/websites/coova.org/htdocs/wiki/includes/Wiki.php(74):
+> wfMsgForContent('mainpage')
+> #10 /home/www/websites/coova.org/htdocs/wiki/index.php(105):
+> MediaWiki->checkInitialQueries(NULL, 'view', Object(OutputPage),
+> Object(WebRequest), Object(LanguageEn))
+> #11 {main}
+> 
+> Exception caught inside exception handler: exception 
+> 'DBUnexpectedError' with message 'Error in fetchObject(): Incorrect 
+> information in file: './Coova_wiki/page.frm''
+> in /home/www/websites/coova.org/htdocs/wiki/includes/Database.php:764
+> Stack trace:
+> #0 
+> /home/www/websites/coova.org/htdocs/wiki/includes/MessageCache.php(302
+> ): Database->fetchObject(false)
+> #1 
+> /home/www/websites/coova.org/htdocs/wiki/includes/MessageCache.php(226
+> ): MessageCache->loadFromDB()
+> #2 
+> /home/www/websites/coova.org/htdocs/wiki/includes/MessageCache.php(423
+> ): MessageCache->load()
+> #3 
+> /home/www/websites/coova.org/htdocs/wiki/includes/GlobalFunctions.php(
+> 450): MessageCache->get('databaseerror', true, false)
+> #4 
+> /home/www/websites/coova.org/htdocs/wiki/includes/GlobalFunctions.php(
+> 409): wfMsgGetKey('databaseerror', true, false, true)
+> #5 
+> /home/www/websites/coova.org/htdocs/wiki/includes/Exception.php(17): 
+> wfMsgReal('databaseerror', Array)
+> #6 
+> /home/www/websites/coova.org/htdocs/wiki/includes/Database.php(209): 
+> MWException->msg('databaseerror', 'Database error')
+> #7 
+> /home/www/websites/coova.org/htdocs/wiki/includes/Exception.php(46): 
+> DBQueryError->getPageTitle()
+> #8 
+> /home/www/websites/coova.org/htdocs/wiki/includes/Exception.php(70): 
+> MWException->reportHTML()
+> #9 
+> /home/www/websites/coova.org/htdocs/wiki/includes/Exception.php(145): 
+> MWException->report() #10 
+> /home/www/websites/coova.org/htdocs/wiki/includes/Exception.php(179): 
+> wfReportException(Object(DBQueryError))
+> #11 [internal function]: wfExceptionHandler(Object(DBQueryError))
+> #12 {main}
+> 
+> 
+
+
+---------------------------------------------------------------------
+To unsubscribe, e-mail: chilli-unsubscribe at coova.org For additional
+commands, e-mail: chilli-help at coova.org
+Wiki: http://coova.org/wiki/index.php/CoovaChilli
+Forum: http://coova.org/phpBB3/viewforum.php?f=4
+
+
+
+From ian.coffey at gmail.com  Fri Aug 15 12:38:58 2008
+From: ian.coffey at gmail.com (IanC)
+Date: Fri, 15 Aug 2008 08:38:58 -0400
+Subject: VPN revisited.
+Message-ID: <3ea93a690808150538h782ca7a5n8aebb17fe60f3919@mail.gmail.com>
+
+I am trying to figure out how I can get PPTP vpn connections to work
+via Chilli. I see there are several posts on the board about this, but
+no real conversation.
+
+I simply can not get a pptp connection to work via the wireless
+hotspots Ive deployed that use Chilli, but via cat5 its quick and
+reliable. I believe it may be related to connection tracking, but am
+unsure.
+
+Can anyone provide some direction for me to continue figuring this one out?
+
+
+From venture37 at hotmail.com  Fri Aug 15 12:44:53 2008
+From: venture37 at hotmail.com (Sevan / Venture37)
+Date: Fri, 15 Aug 2008 13:44:53 +0100
+Subject: VPN revisited.
+In-Reply-To: <3ea93a690808150538h782ca7a5n8aebb17fe60f3919@mail.gmail.com>
+References: <3ea93a690808150538h782ca7a5n8aebb17fe60f3919@mail.gmail.com>
+Message-ID: <BAY138-W363F26937D432A841DA42DA06D0@phx.gbl>
+
+
+have you got GRE passthrough support working on the boxes running coova??
+
+
+Sevan / Venture37
+
+_________________________________________________________________
+Win New York holidays with Kellogg?s & Live Search
+http://clk.atdmt.com/UKM/go/107571440/direct/01/
+
+From ian.coffey at gmail.com  Fri Aug 15 14:25:59 2008
+From: ian.coffey at gmail.com (IanC)
+Date: Fri, 15 Aug 2008 10:25:59 -0400
+Subject: VPN revisited.
+In-Reply-To: <BAY138-W363F26937D432A841DA42DA06D0@phx.gbl>
+References: <3ea93a690808150538h782ca7a5n8aebb17fe60f3919@mail.gmail.com>
+	 <BAY138-W363F26937D432A841DA42DA06D0@phx.gbl>
+Message-ID: <3ea93a690808150725g20ae1a64w23f549f98af800d0@mail.gmail.com>
+
+I've done research on GRE and pass through and tried several things
+but no dice yet, could you possibly explain what you are referring to
+with GRE pass-through?
+
+It would be much appreciated.
+
+--Ian
+
+
+On Fri, Aug 15, 2008 at 8:44 AM, Sevan / Venture37
+<venture37 at hotmail.com> wrote:
+>
+> have you got GRE passthrough support working on the boxes running coova??
+>
+>
+> Sevan / Venture37
+>
+> _________________________________________________________________
+> Win New York holidays with Kellogg's & Live Search
+> http://clk.atdmt.com/UKM/go/107571440/direct/01/
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>
+>
+
+
+From venture37 at hotmail.com  Fri Aug 15 14:27:29 2008
+From: venture37 at hotmail.com (Sevan / Venture37)
+Date: Fri, 15 Aug 2008 15:27:29 +0100
+Subject: VPN revisited.
+In-Reply-To: <3ea93a690808150725g20ae1a64w23f549f98af800d0@mail.gmail.com>
+References: <3ea93a690808150538h782ca7a5n8aebb17fe60f3919@mail.gmail.com>
+	 <BAY138-W363F26937D432A841DA42DA06D0@phx.gbl> 
+ <3ea93a690808150725g20ae1a64w23f549f98af800d0@mail.gmail.com>
+Message-ID: <BAY138-W436F63BBADCCF5416D80D3A06D0@phx.gbl>
+
+
+1st of all are you running linux??
+_________________________________________________________________
+Get Hotmail on your mobile from Vodafone 
+http://clk.atdmt.com/UKM/go/107571435/direct/01/
+
+From ian.coffey at gmail.com  Fri Aug 15 14:45:39 2008
+From: ian.coffey at gmail.com (IanC)
+Date: Fri, 15 Aug 2008 10:45:39 -0400
+Subject: VPN revisited.
+In-Reply-To: <BAY138-W436F63BBADCCF5416D80D3A06D0@phx.gbl>
+References: <3ea93a690808150538h782ca7a5n8aebb17fe60f3919@mail.gmail.com>
+	 <BAY138-W363F26937D432A841DA42DA06D0@phx.gbl>
+	 <3ea93a690808150725g20ae1a64w23f549f98af800d0@mail.gmail.com>
+	 <BAY138-W436F63BBADCCF5416D80D3A06D0@phx.gbl>
+Message-ID: <3ea93a690808150745v2e3cf451y7f83e6ef10258567@mail.gmail.com>
+
+Yes, server is CentOS 5.2 running coovachilli 1.0.12 . Dual nics, eth1
+from the radios, eth0 to public space.
+
+
+On Fri, Aug 15, 2008 at 10:27 AM, Sevan / Venture37
+<venture37 at hotmail.com> wrote:
+>
+> 1st of all are you running linux??
+> _________________________________________________________________
+> Get Hotmail on your mobile from Vodafone
+> http://clk.atdmt.com/UKM/go/107571435/direct/01/
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>
+>
+
+
+From venture37 at hotmail.com  Fri Aug 15 14:54:18 2008
+From: venture37 at hotmail.com (Sevan / Venture37)
+Date: Fri, 15 Aug 2008 15:54:18 +0100
+Subject: VPN revisited.
+In-Reply-To: <3ea93a690808150745v2e3cf451y7f83e6ef10258567@mail.gmail.com>
+References: <3ea93a690808150538h782ca7a5n8aebb17fe60f3919@mail.gmail.com>
+	 <BAY138-W363F26937D432A841DA42DA06D0@phx.gbl>
+ 	 <3ea93a690808150725g20ae1a64w23f549f98af800d0@mail.gmail.com>
+ 	 <BAY138-W436F63BBADCCF5416D80D3A06D0@phx.gbl> 
+ <3ea93a690808150745v2e3cf451y7f83e6ef10258567@mail.gmail.com>
+Message-ID: <BAY138-W442891AA32B85BD503A947A06D0@phx.gbl>
+
+
+> Yes, server is CentOS 5.2 running coovachilli 1.0.12 . Dual nics, eth1
+> from the radios, eth0 to public space.
+
+PPTP uses the GRE (Geneic Route Encapsulation) protocol which uses port 1723, protocol 47,
+You should have a look at your iptables rules + you used to need some kernel modules loaded aswell but it's been a while since I've needed to address this issue on Linux, it's relatively painless on *BSD to fix.
+
+
+Sevan / Venture37
+_________________________________________________________________
+Get Hotmail on your mobile from Vodafone 
+http://clk.atdmt.com/UKM/go/107571435/direct/01/
+
+From ian.coffey at gmail.com  Fri Aug 15 15:21:19 2008
+From: ian.coffey at gmail.com (IanC)
+Date: Fri, 15 Aug 2008 11:21:19 -0400
+Subject: VPN revisited.
+In-Reply-To: <BAY138-W442891AA32B85BD503A947A06D0@phx.gbl>
+References: <3ea93a690808150538h782ca7a5n8aebb17fe60f3919@mail.gmail.com>
+	 <BAY138-W363F26937D432A841DA42DA06D0@phx.gbl>
+	 <3ea93a690808150725g20ae1a64w23f549f98af800d0@mail.gmail.com>
+	 <BAY138-W436F63BBADCCF5416D80D3A06D0@phx.gbl>
+	 <3ea93a690808150745v2e3cf451y7f83e6ef10258567@mail.gmail.com>
+	 <BAY138-W442891AA32B85BD503A947A06D0@phx.gbl>
+Message-ID: <3ea93a690808150821m37014bfcm5ae62cf1820c854f@mail.gmail.com>
+
+Yes, its those very kernel modules and iptables rules Im currently
+wrestling with, to no avail.
+
+At the moment, Ive loaded ip_conntrack_pptp and reduced my iptables
+rules to the minimum needed to have coovachilli function, plus
+allowing related and established. There is nothing blocking the
+connection and I can telnet to 1723 on the VPN box without issue. The
+issue seems to be pass through or something else but I havent narrowed
+it down farther. It just seems like the communication between pptp
+client and vpn server goes haywire during the transaction. There is no
+one else using VPN through this system right now.
+
+Does anyone have experience with this?
+
+Any help would be mucho appreciated at this point.
+
+--Ian
+
+
+On Fri, Aug 15, 2008 at 10:54 AM, Sevan / Venture37
+<venture37 at hotmail.com> wrote:
+>
+>> Yes, server is CentOS 5.2 running coovachilli 1.0.12 . Dual nics, eth1
+>> from the radios, eth0 to public space.
+>
+> PPTP uses the GRE (Geneic Route Encapsulation) protocol which uses port 1723, protocol 47,
+> You should have a look at your iptables rules + you used to need some kernel modules loaded aswell but it's been a while since I've needed to address this issue on Linux, it's relatively painless on *BSD to fix.
+>
+>
+> Sevan / Venture37
+> _________________________________________________________________
+> Get Hotmail on your mobile from Vodafone
+> http://clk.atdmt.com/UKM/go/107571435/direct/01/
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>
+>
+
+
+From venture37 at hotmail.com  Fri Aug 15 18:46:45 2008
+From: venture37 at hotmail.com (Sevan / Venture37)
+Date: Fri, 15 Aug 2008 19:46:45 +0100
+Subject: VPN revisited.
+In-Reply-To: <3ea93a690808150821m37014bfcm5ae62cf1820c854f@mail.gmail.com>
+References: <3ea93a690808150538h782ca7a5n8aebb17fe60f3919@mail.gmail.com>
+	 <BAY138-W363F26937D432A841DA42DA06D0@phx.gbl>
+ 	 <3ea93a690808150725g20ae1a64w23f549f98af800d0@mail.gmail.com>
+ 	 <BAY138-W436F63BBADCCF5416D80D3A06D0@phx.gbl>
+ 	 <3ea93a690808150745v2e3cf451y7f83e6ef10258567@mail.gmail.com>
+ 	 <BAY138-W442891AA32B85BD503A947A06D0@phx.gbl> 
+ <3ea93a690808150821m37014bfcm5ae62cf1820c854f@mail.gmail.com>
+Message-ID: <BAY138-W56998267C115889A71A68FA06D0@phx.gbl>
+
+
+> Yes, its those very kernel modules and iptables rules Im currently
+> wrestling with, to no avail.
+> 
+> At the moment, Ive loaded ip_conntrack_pptp and reduced my iptables
+> rules to the minimum needed to have coovachilli function, plus
+> allowing related and established. There is nothing blocking the
+> connection and I can telnet to 1723 on the VPN box without issue. The
+> issue seems to be pass through or something else but I havent narrowed
+> it down farther. It just seems like the communication between pptp
+> client and vpn server goes haywire during the transaction. There is no
+> one else using VPN through this system right now.
+> 
+> Does anyone have experience with this?
+> 
+> Any help would be mucho appreciated at this point.
+> 
+> --Ian
+
+It's not only port 1723, you need to pass protocol 47 aswell
+eg
+
+vpnserver="172.16.0.2"
+/sbin/iptables -N pptp
+/sbin/iptables -A pptp -p tcp --destination-port 1723 --dst $vpnserver -j ACCEPT
+/sbin/iptables -A pptp -p 47 --dst $vpnserver -j ACCEPT
+/sbin/iptables -I FORWARD -j pptp
+/sbin/iptables -t nat -N pptp
+/sbin/iptables -t nat -A pptp -i $RED_DEV -p tcp --dport 1723 -j DNAT --to $vpnserver:1723
+/sbin/iptables -t nat -A pptp -i $RED_DEV -p 47 -j DNAT --to $vpnserver
+/sbin/iptables -t nat -A PREROUTING -j pptp
+
+
+_________________________________________________________________
+Win a voice over part with Kung Fu Panda & Live Search?? and?? 100?s of Kung Fu Panda prizes to win with Live Search
+http://clk.atdmt.com/UKM/go/107571439/direct/01/
+
+From ian.coffey at gmail.com  Fri Aug 15 19:37:32 2008
+From: ian.coffey at gmail.com (IanC)
+Date: Fri, 15 Aug 2008 15:37:32 -0400
+Subject: VPN revisited.
+In-Reply-To: <BAY138-W56998267C115889A71A68FA06D0@phx.gbl>
+References: <3ea93a690808150538h782ca7a5n8aebb17fe60f3919@mail.gmail.com>
+	 <BAY138-W363F26937D432A841DA42DA06D0@phx.gbl>
+	 <3ea93a690808150725g20ae1a64w23f549f98af800d0@mail.gmail.com>
+	 <BAY138-W436F63BBADCCF5416D80D3A06D0@phx.gbl>
+	 <3ea93a690808150745v2e3cf451y7f83e6ef10258567@mail.gmail.com>
+	 <BAY138-W442891AA32B85BD503A947A06D0@phx.gbl>
+	 <3ea93a690808150821m37014bfcm5ae62cf1820c854f@mail.gmail.com>
+	 <BAY138-W56998267C115889A71A68FA06D0@phx.gbl>
+Message-ID: <3ea93a690808151237j675d080du86dc9cabcfbc409f@mail.gmail.com>
+
+> /sbin/iptables -t nat -A pptp -i $RED_DEV -p tcp --dport 1723 -j DNAT --to $vpnserver:1723
+> /sbin/iptables -t nat -A pptp -i $RED_DEV -p 47 -j DNAT --to $vpnserver
+> /sbin/iptables -t nat -A PREROUTING -j pptp
+
+What would the $RED_DEV variable signify?
+
+
+
+On Fri, Aug 15, 2008 at 2:46 PM, Sevan / Venture37
+<venture37 at hotmail.com> wrote:
+>
+>> Yes, its those very kernel modules and iptables rules Im currently
+>> wrestling with, to no avail.
+>>
+>> At the moment, Ive loaded ip_conntrack_pptp and reduced my iptables
+>> rules to the minimum needed to have coovachilli function, plus
+>> allowing related and established. There is nothing blocking the
+>> connection and I can telnet to 1723 on the VPN box without issue. The
+>> issue seems to be pass through or something else but I havent narrowed
+>> it down farther. It just seems like the communication between pptp
+>> client and vpn server goes haywire during the transaction. There is no
+>> one else using VPN through this system right now.
+>>
+>> Does anyone have experience with this?
+>>
+>> Any help would be mucho appreciated at this point.
+>>
+>> --Ian
+>
+> It's not only port 1723, you need to pass protocol 47 aswell
+> eg
+>
+> vpnserver="172.16.0.2"
+> /sbin/iptables -N pptp
+> /sbin/iptables -A pptp -p tcp --destination-port 1723 --dst $vpnserver -j ACCEPT
+> /sbin/iptables -A pptp -p 47 --dst $vpnserver -j ACCEPT
+> /sbin/iptables -I FORWARD -j pptp
+> /sbin/iptables -t nat -N pptp
+
+>
+>
+> _________________________________________________________________
+> Win a voice over part with Kung Fu Panda & Live Search   and   100's of Kung Fu Panda prizes to win with Live Search
+> http://clk.atdmt.com/UKM/go/107571439/direct/01/
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>
+>
+
+
+From venture37 at hotmail.com  Fri Aug 15 19:45:55 2008
+From: venture37 at hotmail.com (Sevan / Venture37)
+Date: Fri, 15 Aug 2008 20:45:55 +0100
+Subject: VPN revisited.
+In-Reply-To: <3ea93a690808151237j675d080du86dc9cabcfbc409f@mail.gmail.com>
+References: <3ea93a690808150538h782ca7a5n8aebb17fe60f3919@mail.gmail.com>
+	 <BAY138-W363F26937D432A841DA42DA06D0@phx.gbl>
+ 	 <3ea93a690808150725g20ae1a64w23f549f98af800d0@mail.gmail.com>
+ 	 <BAY138-W436F63BBADCCF5416D80D3A06D0@phx.gbl>
+ 	 <3ea93a690808150745v2e3cf451y7f83e6ef10258567@mail.gmail.com>
+ 	 <BAY138-W442891AA32B85BD503A947A06D0@phx.gbl>
+ 	 <3ea93a690808150821m37014bfcm5ae62cf1820c854f@mail.gmail.com>
+ 	 <BAY138-W56998267C115889A71A68FA06D0@phx.gbl> 
+ <3ea93a690808151237j675d080du86dc9cabcfbc409f@mail.gmail.com>
+Message-ID: <BAY138-W399BA9E05700A2CFB8EAAEA06D0@phx.gbl>
+
+
+> What would the $RED_DEV variable signify?
+
+I took the code from an example, $RED_DEV is the external interface.
+_________________________________________________________________
+Win New York holidays with Kellogg?s & Live Search 
+http://clk.atdmt.com/UKM/go/107571440/direct/01/
+
+From graham-ml at apolix.co.za  Mon Aug 18 06:44:39 2008
+From: graham-ml at apolix.co.za (Graham Beneke)
+Date: Mon, 18 Aug 2008 08:44:39 +0200
+Subject: Cron auto-generate bug
+Message-ID: <48A91A57.4050907@apolix.co.za>
+
+Hi
+
+I have been having problems with various CoovaAP devices locking up and 
+failing to boot after a few months of deployment.
+
+When viewing the syslog i found the following:
+
+user.info : /etc/init.d/S90chilli: 1: cannot create 
+/etc/chilli/main.conf: No space left on device
+user.info : touch: /etc/chilli/local.conf: No space left on device
+kern.crit kernel: mini_fo: create_sto_file: ERROR creating sto file.
+user.info : touch: /etc/chilli/hs.conf: No space left on device
+kern.crit kernel: mini_fo: create_sto_file: ERROR creating sto file.
+user.info : coova-chilli: Error opening configuration file 
+'/etc/chilli/hs.conf'
+
+Further investigation revealed that an extra line that I had added to 
+/etc/crontabs/root had got mangled and duplicated thousands of times but 
+one of the start-up scripts.
+
+This resulted in the flash filling up and the device being unable to start.
+
+How should I be adding cron items to avoid them being mangled?
+
+regards
+-- 
+Graham Beneke
+Apolix Internet Services
+E-Mail/MSN/Jabber: graham at apolix.co.za   Skype: grbeneke
+VoIP: 087-750-5696                       Cell: 082-432-1873
+http://www.apolix.co.za/
+
+
+From krnak.janos at wiera.hu  Mon Aug 18 06:57:46 2008
+From: krnak.janos at wiera.hu (=?ISO-8859-1?Q?Krn=E1k_J=E1nos?=)
+Date: Mon, 18 Aug 2008 08:57:46 +0200
+Subject: Cron auto-generate bug
+In-Reply-To: <48A91A57.4050907@apolix.co.za>
+References: <48A91A57.4050907@apolix.co.za>
+Message-ID: <48A91D6A.9060005@wiera.hu>
+
+hi
+
+do you add this extra line through an init script?
+i had a bug with the method i mentioned, but while looking up other init 
+scripts i found a soltion:
+
+(crontab -l 2>&- | grep -v myscriptname.sh
+  echo "10 * * * * /path/to/myscript/myscriptname.sh 2&>1 > /dev/null"
+) | crontab - 2>&-
+
+this will check your crontab, and only add the line if it not exists, i 
+mean, if no other lines matches the myscriptname.sh
+
+bye
+
+Graham Beneke escribi?:
+> Hi
+>
+> I have been having problems with various CoovaAP devices locking up 
+> and failing to boot after a few months of deployment.
+>
+> When viewing the syslog i found the following:
+>
+> user.info : /etc/init.d/S90chilli: 1: cannot create 
+> /etc/chilli/main.conf: No space left on device
+> user.info : touch: /etc/chilli/local.conf: No space left on device
+> kern.crit kernel: mini_fo: create_sto_file: ERROR creating sto file.
+> user.info : touch: /etc/chilli/hs.conf: No space left on device
+> kern.crit kernel: mini_fo: create_sto_file: ERROR creating sto file.
+> user.info : coova-chilli: Error opening configuration file 
+> '/etc/chilli/hs.conf'
+>
+> Further investigation revealed that an extra line that I had added to 
+> /etc/crontabs/root had got mangled and duplicated thousands of times 
+> but one of the start-up scripts.
+>
+> This resulted in the flash filling up and the device being unable to 
+> start.
+>
+> How should I be adding cron items to avoid them being mangled?
+>
+> regards
+
+-- 
+This message has been scanned for viruses and
+dangerous content by MailScanner, and is
+believed to be clean.
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20080818/9f07ec4b/attachment.htm>
+
+From peter at endian.com  Thu Aug 21 10:57:38 2008
+From: peter at endian.com (Peter Warasin)
+Date: Thu, 21 Aug 2008 12:57:38 +0200
+Subject: VPN revisited.
+In-Reply-To: <BAY138-W56998267C115889A71A68FA06D0@phx.gbl>
+References: <3ea93a690808150538h782ca7a5n8aebb17fe60f3919@mail.gmail.com>	 <BAY138-W363F26937D432A841DA42DA06D0@phx.gbl> 	 <3ea93a690808150725g20ae1a64w23f549f98af800d0@mail.gmail.com> 	 <BAY138-W436F63BBADCCF5416D80D3A06D0@phx.gbl> 	 <3ea93a690808150745v2e3cf451y7f83e6ef10258567@mail.gmail.com> 	 <BAY138-W442891AA32B85BD503A947A06D0@phx.gbl>  <3ea93a690808150821m37014bfcm5ae62cf1820c854f@mail.gmail.com> <BAY138-W56998267C115889A71A68FA06D0@phx.gbl>
+Message-ID: <48AD4A22.2030205@endian.com>
+
+Hi Sevan, hi IanC
+
+Sevan / Venture37 wrote:
+>> Yes, its those very kernel modules and iptables rules Im currently
+>> wrestling with, to no avail.
+
+I have exactly the same problem. I narrowed down the problem to chilli, 
+at least I think so.
+
+(it's a linux kernel 2.6.22, with pptp netfilter helpers loaded and gre 
+and port 1723 allowed)
+
+PPTP is working well passing through the exactly same box when chilli is 
+not running. It takes about 2 seconds to connect. connect, disconnect, 
+reconnecting, that's all working fine, also with multiple clients and 
+different servers.
+
+As soon as i snap in chilli, establishing a PPTP connection takes a very 
+very long time (several minutes).
+Most of the time there is no chance to connect. Only sometimes, after a 
+long handshake period PPTP connects. I think that's pure luck that it 
+connects.
+
+I noticed that chilli somehow seems to send out of order duplicates 
+through the tun device. At least I see (with wireshark) TCP DUP ACK's 
+coming back from the server some packets after the original ACK, which 
+causes the client to resend a SYN, which then confuses the protocol.
+I see then closing the connection (PSH ACK, FIN ACK, ACK, RST) and 
+reconnecting (SYN, SYN ACK, ...).
+
+I am digging deeper into the source code right now in order to debug the 
+problem. If someone has advices, please tell me :)
+
+kind regards,
+
+peter
+
+-- 
+:: e n d i a n
+:: open source - open minds
+
+:: peter warasin
+:: http://www.endian.com   :: peter at endian.com
+
+
+From wlan at mac.com  Thu Aug 21 11:37:03 2008
+From: wlan at mac.com (wlanmac)
+Date: Thu, 21 Aug 2008 13:37:03 +0200
+Subject: VPN revisited.
+In-Reply-To: <48AD4A22.2030205@endian.com>
+References: <3ea93a690808150538h782ca7a5n8aebb17fe60f3919@mail.gmail.com>
+ <BAY138-W363F26937D432A841DA42DA06D0@phx.gbl>
+ <3ea93a690808150725g20ae1a64w23f549f98af800d0@mail.gmail.com>
+ <BAY138-W436F63BBADCCF5416D80D3A06D0@phx.gbl>
+ <3ea93a690808150745v2e3cf451y7f83e6ef10258567@mail.gmail.com>
+ <BAY138-W442891AA32B85BD503A947A06D0@phx.gbl>
+ <3ea93a690808150821m37014bfcm5ae62cf1820c854f@mail.gmail.com>
+ <BAY138-W56998267C115889A71A68FA06D0@phx.gbl> <48AD4A22.2030205@endian.com>
+Message-ID: <1219318623.6838.14.camel@david-laptop>
+
+What do your iptables rules look like when running chilli? 
+
+
+On Thu, 2008-08-21 at 12:57 +0200, Peter Warasin wrote:
+> Hi Sevan, hi IanC
+> 
+> Sevan / Venture37 wrote:
+> >> Yes, its those very kernel modules and iptables rules Im currently
+> >> wrestling with, to no avail.
+> 
+> I have exactly the same problem. I narrowed down the problem to chilli, 
+> at least I think so.
+> 
+> (it's a linux kernel 2.6.22, with pptp netfilter helpers loaded and gre 
+> and port 1723 allowed)
+> 
+> PPTP is working well passing through the exactly same box when chilli is 
+> not running. It takes about 2 seconds to connect. connect, disconnect, 
+> reconnecting, that's all working fine, also with multiple clients and 
+> different servers.
+> 
+> As soon as i snap in chilli, establishing a PPTP connection takes a very 
+> very long time (several minutes).
+> Most of the time there is no chance to connect. Only sometimes, after a 
+> long handshake period PPTP connects. I think that's pure luck that it 
+> connects.
+> 
+> I noticed that chilli somehow seems to send out of order duplicates 
+> through the tun device. At least I see (with wireshark) TCP DUP ACK's 
+> coming back from the server some packets after the original ACK, which 
+> causes the client to resend a SYN, which then confuses the protocol.
+> I see then closing the connection (PSH ACK, FIN ACK, ACK, RST) and 
+> reconnecting (SYN, SYN ACK, ...).
+> 
+> I am digging deeper into the source code right now in order to debug the 
+> problem. If someone has advices, please tell me :)
+> 
+> kind regards,
+> 
+> peter
+> 
+
+
+
+From peter at endian.com  Thu Aug 21 13:07:10 2008
+From: peter at endian.com (Peter Warasin)
+Date: Thu, 21 Aug 2008 15:07:10 +0200
+Subject: VPN revisited.
+In-Reply-To: <1219318623.6838.14.camel@david-laptop>
+References: <3ea93a690808150538h782ca7a5n8aebb17fe60f3919@mail.gmail.com> <BAY138-W363F26937D432A841DA42DA06D0@phx.gbl> <3ea93a690808150725g20ae1a64w23f549f98af800d0@mail.gmail.com> <BAY138-W436F63BBADCCF5416D80D3A06D0@phx.gbl> <3ea93a690808150745v2e3cf451y7f83e6ef10258567@mail.gmail.com> <BAY138-W442891AA32B85BD503A947A06D0@phx.gbl> <3ea93a690808150821m37014bfcm5ae62cf1820c854f@mail.gmail.com> <BAY138-W56998267C115889A71A68FA06D0@phx.gbl> <48AD4A22.2030205@endian.com> <1219318623.6838.14.camel@david-laptop>
+Message-ID: <48AD687E.5040603@endian.com>
+
+wlanmac wrote:
+> What do your iptables rules look like when running chilli? 
+
+the same as without, i simply added the rules for the tun device.
+
+i now managed it to have pptp running through chilli.
+
+for debug purposes i return tun_encaps(tun, pack, len, tun->routeidx); 
+in the first line within cb_dhcp_data_ind(), in order to bypass all the 
+authentication checks. Then PPTP passes through without problems. I now 
+try to narrow down to the lines which cause pptp to stop working.
+
+peter
+
+-- 
+:: e n d i a n
+:: open source - open minds
+
+:: peter warasin
+:: http://www.endian.com   :: peter at endian.com
+
+
+From wlan at mac.com  Thu Aug 21 13:23:47 2008
+From: wlan at mac.com (wlanmac)
+Date: Thu, 21 Aug 2008 15:23:47 +0200
+Subject: VPN revisited.
+In-Reply-To: <48AD687E.5040603@endian.com>
+References: <3ea93a690808150538h782ca7a5n8aebb17fe60f3919@mail.gmail.com>
+ <BAY138-W363F26937D432A841DA42DA06D0@phx.gbl>
+ <3ea93a690808150725g20ae1a64w23f549f98af800d0@mail.gmail.com>
+ <BAY138-W436F63BBADCCF5416D80D3A06D0@phx.gbl>
+ <3ea93a690808150745v2e3cf451y7f83e6ef10258567@mail.gmail.com>
+ <BAY138-W442891AA32B85BD503A947A06D0@phx.gbl>
+ <3ea93a690808150821m37014bfcm5ae62cf1820c854f@mail.gmail.com>
+ <BAY138-W56998267C115889A71A68FA06D0@phx.gbl> <48AD4A22.2030205@endian.com>
+ <1219318623.6838.14.camel@david-laptop> <48AD687E.5040603@endian.com>
+Message-ID: <1219325027.6838.18.camel@david-laptop>
+
+Typically, you'll find the following in iptables when running chilli. In
+this case, chilli is running on ath0:
+
+Chain FORWARD (policy ACCEPT 0 packets, 0 bytes)
+ pkts bytes target     prot opt in     out     source               destination         
+    0     0 ACCEPT     0    --  *      tun0    0.0.0.0/0            0.0.0.0/0           
+    0     0 ACCEPT     0    --  tun0   *       0.0.0.0/0            0.0.0.0/0           
+    0     0 DROP       0    --  *      ath0    0.0.0.0/0            0.0.0.0/0           
+    0     0 DROP       0    --  ath0   *       0.0.0.0/0            0.0.0.0/0       
+
+This should prevent the kernel from picking up the packets which chilli
+is forwarding. You have something similar? 
+
+David
+
+On Thu, 2008-08-21 at 15:07 +0200, Peter Warasin wrote:
+> wlanmac wrote:
+> > What do your iptables rules look like when running chilli? 
+> 
+> the same as without, i simply added the rules for the tun device.
+> 
+> i now managed it to have pptp running through chilli.
+> 
+> for debug purposes i return tun_encaps(tun, pack, len, tun->routeidx); 
+> in the first line within cb_dhcp_data_ind(), in order to bypass all the 
+> authentication checks. Then PPTP passes through without problems. I now 
+> try to narrow down to the lines which cause pptp to stop working.
+> 
+> peter
+> 
+
+
+
+From peter at endian.com  Thu Aug 21 13:26:43 2008
+From: peter at endian.com (Peter Warasin)
+Date: Thu, 21 Aug 2008 15:26:43 +0200
+Subject: VPN revisited.
+In-Reply-To: <1219325027.6838.18.camel@david-laptop>
+References: <3ea93a690808150538h782ca7a5n8aebb17fe60f3919@mail.gmail.com> <BAY138-W363F26937D432A841DA42DA06D0@phx.gbl> <3ea93a690808150725g20ae1a64w23f549f98af800d0@mail.gmail.com> <BAY138-W436F63BBADCCF5416D80D3A06D0@phx.gbl> <3ea93a690808150745v2e3cf451y7f83e6ef10258567@mail.gmail.com> <BAY138-W442891AA32B85BD503A947A06D0@phx.gbl> <3ea93a690808150821m37014bfcm5ae62cf1820c854f@mail.gmail.com> <BAY138-W56998267C115889A71A68FA06D0@phx.gbl> <48AD4A22.2030205@endian.com> <1219318623.6838.14.camel@david-laptop> <48AD687E.5040603@endian.com> <1219325027.6838.18.camel@david-laptop>
+Message-ID: <48AD6D13.5080408@endian.com>
+
+wlanmac wrote:
+> Typically, you'll find the following in iptables when running chilli. In
+> this case, chilli is running on ath0:
+
+> This should prevent the kernel from picking up the packets which chilli
+> is forwarding. You have something similar? 
+
+Aaah. That explains things!
+I have no DROP rules. I will try it configuring them.
+
+Thank you!
+
+peter
+
+-- 
+:: e n d i a n
+:: open source - open minds
+
+:: peter warasin
+:: http://www.endian.com   :: peter at endian.com
+
+
+From ian.coffey at gmail.com  Thu Aug 21 13:34:25 2008
+From: ian.coffey at gmail.com (IanC)
+Date: Thu, 21 Aug 2008 09:34:25 -0400
+Subject: VPN revisited.
+In-Reply-To: <48AD6D13.5080408@endian.com>
+References: <3ea93a690808150538h782ca7a5n8aebb17fe60f3919@mail.gmail.com>
+	 <3ea93a690808150745v2e3cf451y7f83e6ef10258567@mail.gmail.com>
+	 <BAY138-W442891AA32B85BD503A947A06D0@phx.gbl>
+	 <3ea93a690808150821m37014bfcm5ae62cf1820c854f@mail.gmail.com>
+	 <BAY138-W56998267C115889A71A68FA06D0@phx.gbl>
+	 <48AD4A22.2030205@endian.com> <1219318623.6838.14.camel@david-laptop>
+	 <48AD687E.5040603@endian.com> <1219325027.6838.18.camel@david-laptop>
+	 <48AD6D13.5080408@endian.com>
+Message-ID: <3ea93a690808210634pd6803e5wdb4cd338eee4b582@mail.gmail.com>
+
+If that works, any chance you could post your iptables rules?
+
+Thanks!
+
+Ian
+
+On Thu, Aug 21, 2008 at 9:26 AM, Peter Warasin <peter at endian.com> wrote:
+> wlanmac wrote:
+>>
+>> Typically, you'll find the following in iptables when running chilli. In
+>> this case, chilli is running on ath0:
+>
+>> This should prevent the kernel from picking up the packets which chilli
+>> is forwarding. You have something similar?
+>
+> Aaah. That explains things!
+> I have no DROP rules. I will try it configuring them.
+>
+> Thank you!
+>
+> peter
+>
+> --
+> :: e n d i a n
+> :: open source - open minds
+>
+> :: peter warasin
+> :: http://www.endian.com   :: peter at endian.com
+>
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>
+>
+
+
+From peter at endian.com  Thu Aug 21 14:41:16 2008
+From: peter at endian.com (Peter Warasin)
+Date: Thu, 21 Aug 2008 16:41:16 +0200
+Subject: VPN revisited.
+In-Reply-To: <48AD6D13.5080408@endian.com>
+References: <3ea93a690808150538h782ca7a5n8aebb17fe60f3919@mail.gmail.com> <BAY138-W363F26937D432A841DA42DA06D0@phx.gbl> <3ea93a690808150725g20ae1a64w23f549f98af800d0@mail.gmail.com> <BAY138-W436F63BBADCCF5416D80D3A06D0@phx.gbl> <3ea93a690808150745v2e3cf451y7f83e6ef10258567@mail.gmail.com> <BAY138-W442891AA32B85BD503A947A06D0@phx.gbl> <3ea93a690808150821m37014bfcm5ae62cf1820c854f@mail.gmail.com> <BAY138-W56998267C115889A71A68FA06D0@phx.gbl> <48AD4A22.2030205@endian.com> <1219318623.6838.14.camel@david-laptop> <48AD687E.5040603@endian.com> <1219325027.6838.18.camel@david-laptop> <48AD6D13.5080408@endian.com>
+Message-ID: <48AD7E8C.9000504@endian.com>
+
+Hi David
+
+Peter Warasin wrote:
+> Aaah. That explains things!
+> I have no DROP rules. I will try it configuring them.
+
+Same behaviour with added drop rules. all works fine, except PPTP.
+
+@IanC: When I manage to solve the problem i certainly share the solution.
+
+peter
+
+-- 
+:: e n d i a n
+:: open source - open minds
+
+:: peter warasin
+:: http://www.endian.com   :: peter at endian.com
+
+
+From peter at endian.com  Thu Aug 21 18:11:31 2008
+From: peter at endian.com (Peter Warasin)
+Date: Thu, 21 Aug 2008 20:11:31 +0200
+Subject: VPN revisited.
+In-Reply-To: <48AD7E8C.9000504@endian.com>
+References: <3ea93a690808150538h782ca7a5n8aebb17fe60f3919@mail.gmail.com> <BAY138-W363F26937D432A841DA42DA06D0@phx.gbl> <3ea93a690808150725g20ae1a64w23f549f98af800d0@mail.gmail.com> <BAY138-W436F63BBADCCF5416D80D3A06D0@phx.gbl> <3ea93a690808150745v2e3cf451y7f83e6ef10258567@mail.gmail.com> <BAY138-W442891AA32B85BD503A947A06D0@phx.gbl> <3ea93a690808150821m37014bfcm5ae62cf1820c854f@mail.gmail.com> <BAY138-W56998267C115889A71A68FA06D0@phx.gbl> <48AD4A22.2030205@endian.com> <1219318623.6838.14.camel@david-laptop> <48AD687E.5040603@endian.com> <1219325027.6838.18.camel@david-laptop> <48AD6D13.5080408@endian.com> <48AD7E8C.9000504@endian.com>
+Message-ID: <48ADAFD3.6090701@endian.com>
+
+Hi Guys
+
+Peter Warasin wrote:
+>> Aaah. That explains things!
+>> I have no DROP rules. I will try it configuring them.
+> Same behaviour with added drop rules. all works fine, except PPTP.
+
+adding the DROP rules to the INPUT and FORWARD chain is not enough for 
+protocols which need a nat helper module, since the nat tables will also 
+be passed through even if the packet is dropped in the filter table. So 
+packets hit the nat helper modules twice.
+
+here's the solution which worked for me:
+
+(br2 is my chilli device)
+
+iptables -I FORWARD -j DROP -i br2
+iptables -I FORWARD -j DROP -o br2
+# iptables -I INPUT -j DROP -i br2 # not really necessary
+iptables -t raw -I PREROUTING -j NOTARCK -i br2
+iptables -t raw -I OUTPUT -j NOTARCK -o br2
+
+# then, the other accept rules.. for me something like:
+iptables -I FORWARD -j ACCEPT -i tun0 -p gre
+iptables -I FORWARD -j ACCEPT -i tun0 -p tcp --dport 1723
+
+
+# helpers need to be loaded:
+modprobe ip_conntrack_pptp
+modprobe ip_nat_pptp
+modprobe nf_nat_proto_gre
+modprobe nf_conntrack_proto_gre
+
+
+I'm continuing with tests, since my uam login script does not return 
+anymore from the login procedure.. there's something still not 100% ok. 
+but that could be also a problem on another part of my system.
+
+@Ianc: could you try and report back if this is working also for you?
+Not that i have been lucky only today and tomorrow it starts refusing to 
+work :)
+
+peter
+
+-- 
+:: e n d i a n
+:: open source - open minds
+
+:: peter warasin
+:: http://www.endian.com   :: peter at endian.com
+
+
+From wlan at mac.com  Thu Aug 21 18:21:24 2008
+From: wlan at mac.com (wlanmac)
+Date: Thu, 21 Aug 2008 20:21:24 +0200
+Subject: VPN revisited.
+In-Reply-To: <48ADAFD3.6090701@endian.com>
+References: <3ea93a690808150538h782ca7a5n8aebb17fe60f3919@mail.gmail.com>
+ <BAY138-W363F26937D432A841DA42DA06D0@phx.gbl>
+ <3ea93a690808150725g20ae1a64w23f549f98af800d0@mail.gmail.com>
+ <BAY138-W436F63BBADCCF5416D80D3A06D0@phx.gbl>
+ <3ea93a690808150745v2e3cf451y7f83e6ef10258567@mail.gmail.com>
+ <BAY138-W442891AA32B85BD503A947A06D0@phx.gbl>
+ <3ea93a690808150821m37014bfcm5ae62cf1820c854f@mail.gmail.com>
+ <BAY138-W56998267C115889A71A68FA06D0@phx.gbl> <48AD4A22.2030205@endian.com>
+ <1219318623.6838.14.camel@david-laptop> <48AD687E.5040603@endian.com>
+ <1219325027.6838.18.camel@david-laptop> <48AD6D13.5080408@endian.com>
+ <48AD7E8C.9000504@endian.com> <48ADAFD3.6090701@endian.com>
+Message-ID: <1219342884.6838.24.camel@david-laptop>
+
+I had just completed a test connecting Windows Vista PPTP through
+chilli. I had no issues once the required kernel modules were loaded. 
+
+With that said, I have actually long suspected that problems with VPNs
+could be due to connection tracking... I'm guessing those notrack rules
+are keepers. 
+
+I don't think your FORWARD ACCEPT rules on tun0 are necessary... it
+should be forwarding everything from/to tun0. 
+
+David
+
+On Thu, 2008-08-21 at 20:11 +0200, Peter Warasin wrote:
+> Hi Guys
+> 
+> Peter Warasin wrote:
+> >> Aaah. That explains things!
+> >> I have no DROP rules. I will try it configuring them.
+> > Same behaviour with added drop rules. all works fine, except PPTP.
+> 
+> adding the DROP rules to the INPUT and FORWARD chain is not enough for 
+> protocols which need a nat helper module, since the nat tables will also 
+> be passed through even if the packet is dropped in the filter table. So 
+> packets hit the nat helper modules twice.
+> 
+> here's the solution which worked for me:
+> 
+> (br2 is my chilli device)
+> 
+> iptables -I FORWARD -j DROP -i br2
+> iptables -I FORWARD -j DROP -o br2
+> # iptables -I INPUT -j DROP -i br2 # not really necessary
+> iptables -t raw -I PREROUTING -j NOTARCK -i br2
+> iptables -t raw -I OUTPUT -j NOTARCK -o br2
+> 
+> # then, the other accept rules.. for me something like:
+> iptables -I FORWARD -j ACCEPT -i tun0 -p gre
+> iptables -I FORWARD -j ACCEPT -i tun0 -p tcp --dport 1723
+> 
+> 
+> # helpers need to be loaded:
+> modprobe ip_conntrack_pptp
+> modprobe ip_nat_pptp
+> modprobe nf_nat_proto_gre
+> modprobe nf_conntrack_proto_gre
+> 
+> 
+> I'm continuing with tests, since my uam login script does not return 
+> anymore from the login procedure.. there's something still not 100% ok. 
+> but that could be also a problem on another part of my system.
+> 
+> @Ianc: could you try and report back if this is working also for you?
+> Not that i have been lucky only today and tomorrow it starts refusing to 
+> work :)
+> 
+> peter
+> 
+
+
+
+From peter at endian.com  Thu Aug 21 18:39:32 2008
+From: peter at endian.com (Peter Warasin)
+Date: Thu, 21 Aug 2008 20:39:32 +0200
+Subject: VPN revisited.
+In-Reply-To: <1219342884.6838.24.camel@david-laptop>
+References: <3ea93a690808150538h782ca7a5n8aebb17fe60f3919@mail.gmail.com> <BAY138-W363F26937D432A841DA42DA06D0@phx.gbl> <3ea93a690808150725g20ae1a64w23f549f98af800d0@mail.gmail.com> <BAY138-W436F63BBADCCF5416D80D3A06D0@phx.gbl> <3ea93a690808150745v2e3cf451y7f83e6ef10258567@mail.gmail.com> <BAY138-W442891AA32B85BD503A947A06D0@phx.gbl> <3ea93a690808150821m37014bfcm5ae62cf1820c854f@mail.gmail.com> <BAY138-W56998267C115889A71A68FA06D0@phx.gbl> <48AD4A22.2030205@endian.com> <1219318623.6838.14.camel@david-laptop> <48AD687E.5040603@endian.com> <1219325027.6838.18.camel@david-laptop> <48AD6D13.5080408@endian.com> <48AD7E8C.9000504@endian.com> <48ADAFD3.6090701@endian.com> <1219342884.6838.24.camel@david-laptop>
+Message-ID: <48ADB664.1040408@endian.com>
+
+Hi David
+
+wlanmac wrote:
+> I had just completed a test connecting Windows Vista PPTP through
+> chilli. I had no issues once the required kernel modules were loaded. 
+
+That's wired. Maybe it was only luck? Sometimes it works also for me 
+without special iptables rules. But most of the time it doesn't.
+Have you tried to connect/disconnect/connect/disconnect all the time?
+
+Maybe there's also a special combination you need to have (maybe a 
+special service pack on client), because we have this problem only on 
+some installations and in my lab of course. Some other installations 
+never had that problem. Probably nobody tried there..
+
+
+If i unload the helper modules, it also works always, without any 
+problem. It stops working only if i load the helper modules. That makes 
+also perfectly sense, because it does not pass twice the helper modules 
+if they are unloaded.
+But certainly I need the modules, otherwise you could never have 
+multiple connections through the machine.
+
+
+> With that said, I have actually long suspected that problems with VPNs
+> could be due to connection tracking... I'm guessing those notrack rules
+> are keepers.
+
+I really hope that's the solution.
+Next i would like to try is trying only with the notrack rules and 
+removing the drop rules. Only for trying.. Because in theory they should 
+not harm nor help
+
+
+> I don't think your FORWARD ACCEPT rules on tun0 are necessary... it
+> should be forwarding everything from/to tun0. 
+
+Well, surely you don't really need them. I added them because normally a 
+firewall is configured in order to block all traffic and let pass only 
+what you want, as it is in my case.
+But you're right, the accept rules are not necessary when nothing other 
+blocks.
+
+Thank you..
+
+regards,
+
+peter
+
+-- 
+:: e n d i a n
+:: open source - open minds
+
+:: peter warasin
+:: http://www.endian.com   :: peter at endian.com
+
+
+From wlan at mac.com  Fri Aug 22 05:07:02 2008
+From: wlan at mac.com (wlanmac)
+Date: Fri, 22 Aug 2008 07:07:02 +0200
+Subject: VPN revisited.
+In-Reply-To: <48ADB664.1040408@endian.com>
+References: <3ea93a690808150538h782ca7a5n8aebb17fe60f3919@mail.gmail.com>
+ <BAY138-W363F26937D432A841DA42DA06D0@phx.gbl>
+ <3ea93a690808150725g20ae1a64w23f549f98af800d0@mail.gmail.com>
+ <BAY138-W436F63BBADCCF5416D80D3A06D0@phx.gbl>
+ <3ea93a690808150745v2e3cf451y7f83e6ef10258567@mail.gmail.com>
+ <BAY138-W442891AA32B85BD503A947A06D0@phx.gbl>
+ <3ea93a690808150821m37014bfcm5ae62cf1820c854f@mail.gmail.com>
+ <BAY138-W56998267C115889A71A68FA06D0@phx.gbl> <48AD4A22.2030205@endian.com>
+ <1219318623.6838.14.camel@david-laptop> <48AD687E.5040603@endian.com>
+ <1219325027.6838.18.camel@david-laptop> <48AD6D13.5080408@endian.com>
+ <48AD7E8C.9000504@endian.com> <48ADAFD3.6090701@endian.com>
+ <1219342884.6838.24.camel@david-laptop> <48ADB664.1040408@endian.com>
+Message-ID: <1219381622.7029.8.camel@david-laptop>
+
+Hi Peter,
+
+Since you are doing so many tests, it would be great to see your results
+in a spreadsheet noting each test's parameters. 
+
+> That's wired. Maybe it was only luck? Sometimes it works also for me 
+> without special iptables rules. But most of the time it doesn't.
+> Have you tried to connect/disconnect/connect/disconnect all the time?
+> 
+
+I would guess that constantly connecting and disconnecting would
+confused Windows more than the firewall. ;)
+
+> If i unload the helper modules, it also works always, without any 
+> problem. It stops working only if i load the helper modules. That makes 
+> also perfectly sense, because it does not pass twice the helper modules 
+> if they are unloaded.
+> But certainly I need the modules, otherwise you could never have 
+> multiple connections through the machine.
+> 
+
+So, you are saying that you never have trouble with one VPN passing
+through? No matter what modules you use? 
+
+> I really hope that's the solution.
+> Next i would like to try is trying only with the notrack rules and 
+> removing the drop rules. Only for trying.. Because in theory they should 
+> not harm nor help
+> 
+
+The forwarding drop rules on the dhcpif interface are good to have.
+Chilli would prefer that the kernel not do anything with the packets
+coming in on the dhcpif. Chilli will _always_ see the packets since it's
+raw socket goes lower than even iptables (it will see traffic even if
+you drop the INPUT on that interface). 
+
+The notrack rules for the dhcpif should probably help if the helpers are
+getting confused. I wonder if conntrack sees all packets (unless told to
+not track in the raw table) even if they are DROP'ed during INPUT on the
+device. Can you also DROP from the raw table? hmm.. 
+
+David
+
+
+
+From peter at endian.com  Fri Aug 22 10:33:28 2008
+From: peter at endian.com (Peter Warasin)
+Date: Fri, 22 Aug 2008 12:33:28 +0200
+Subject: VPN revisited.
+In-Reply-To: <1219381622.7029.8.camel@david-laptop>
+References: <3ea93a690808150538h782ca7a5n8aebb17fe60f3919@mail.gmail.com> <BAY138-W363F26937D432A841DA42DA06D0@phx.gbl> <3ea93a690808150725g20ae1a64w23f549f98af800d0@mail.gmail.com> <BAY138-W436F63BBADCCF5416D80D3A06D0@phx.gbl> <3ea93a690808150745v2e3cf451y7f83e6ef10258567@mail.gmail.com> <BAY138-W442891AA32B85BD503A947A06D0@phx.gbl> <3ea93a690808150821m37014bfcm5ae62cf1820c854f@mail.gmail.com> <BAY138-W56998267C115889A71A68FA06D0@phx.gbl> <48AD4A22.2030205@endian.com> <1219318623.6838.14.camel@david-laptop> <48AD687E.5040603@endian.com> <1219325027.6838.18.camel@david-laptop> <48AD6D13.5080408@endian.com> <48AD7E8C.9000504@endian.com> <48ADAFD3.6090701@endian.com> <1219342884.6838.24.camel@david-laptop> <48ADB664.1040408@endian.com> <1219381622.7029.8.camel@david-laptop>
+Message-ID: <48AE95F8.4030605@endian.com>
+
+Hi David
+
+wlanmac wrote:
+> Since you are doing so many tests, it would be great to see your results
+> in a spreadsheet noting each test's parameters. 
+
+Well, had should think about that before :/
+
+
+>> That's wired. Maybe it was only luck? Sometimes it works also for me 
+>> without special iptables rules. But most of the time it doesn't.
+>> Have you tried to connect/disconnect/connect/disconnect all the time?
+> I would guess that constantly connecting and disconnecting would
+> confused Windows more than the firewall. ;)
+
+I guessed that too, but no, without chilli and with the pptp helpers 
+loaded you can connect/disconnect all the time. That's working without 
+problems.
+
+
+> So, you are saying that you never have trouble with one VPN passing
+> through? No matter what modules you use? 
+
+No.
+
+Without pptp modules you can have exactly 1 pptp connection which is 
+working always fine. As soon as you start a second connection it does 
+not work anymore. That's quite normal, with and without chilli.
+
+With chilli pptp most of the time does not work with kernel modules, 
+without kernel modules the first connection works always.
+
+creating that notrack rules all work fine.
+
+
+> The notrack rules for the dhcpif should probably help if the helpers are
+> getting confused. I wonder if conntrack sees all packets (unless told to
+> not track in the raw table) even if they are DROP'ed during INPUT on the
+> device. Can you also DROP from the raw table? hmm.. 
+
+It's not enough to drop only in the filter table in order to hide the 
+packets from netfilter.
+The packets flow through every netfilter "table" (raw, mangle, nat, 
+filter, nat). There are actually way more such tables, which you can't 
+see with iptables.
+The tables in reality are entries in a callback array. A packet goes 
+through a number of callback handlers (14 hardcoded) and other modules 
+may insert their own callback handlers (for example LVS does).
+
+Dropping a packet in one of those callback handlers, the filter table 
+for example does not mean that it does not go through any other callback 
+handler. It means only that it stops going through rules within that 
+callback handler, the filter table in our case.
+
+The filter table can only drop and accept packets, which should not harm 
+nor help chilli, while the mangle and nat table are those which actually 
+can change packets, which can destroy things.
+
+I see no possibility to completely shut down netfilter completely for a 
+specific device, probably that is what should be done in the first place 
+in order to give the packets to chilli in exactly that condition as they 
+arrived.
+
+So I think one need also to manually make rules which make exceptions 
+for the dhcpif in the mangle and nat table whenever one has entries there.
+
+peter
+
+-- 
+:: e n d i a n
+:: open source - open minds
+
+:: peter warasin
+:: http://www.endian.com   :: peter at endian.com
+
+
+From ian.coffey at gmail.com  Mon Aug 25 19:56:55 2008
+From: ian.coffey at gmail.com (IanC)
+Date: Mon, 25 Aug 2008 15:56:55 -0400
+Subject: VPN revisited.
+In-Reply-To: <48AE95F8.4030605@endian.com>
+References: <3ea93a690808150538h782ca7a5n8aebb17fe60f3919@mail.gmail.com>
+	 <48AD687E.5040603@endian.com> <1219325027.6838.18.camel@david-laptop>
+	 <48AD6D13.5080408@endian.com> <48AD7E8C.9000504@endian.com>
+	 <48ADAFD3.6090701@endian.com> <1219342884.6838.24.camel@david-laptop>
+	 <48ADB664.1040408@endian.com> <1219381622.7029.8.camel@david-laptop>
+	 <48AE95F8.4030605@endian.com>
+Message-ID: <3ea93a690808251256g4a3b5cfsa8c81d4421973f68@mail.gmail.com>
+
+> @Ianc: could you try and report back if this is working also for you?
+> Not that i have been lucky only today and tomorrow it starts refusing to work :)
+
+Early indications are that Peters iptables rules have made VPN
+connections function as expected.
+
+My implementation of the rules probably varies from the way others
+would use it as I am not nat'ing users, but still, it works right now
+and hopefully proves reliable.
+
+Thanks to all!
+
+Ian
+
+
+From pablo.martinez at spantel.es  Wed Aug 27 07:03:03 2008
+From: pablo.martinez at spantel.es (=?ISO-8859-1?Q?Pablo_Mart=ED=ADnez_Schroder?=)
+Date: Wed, 27 Aug 2008 09:03:03 +0200
+Subject: Requested IP address when already allocated
+Message-ID: <48B4FC27.1020606@spantel.es>
+
+Hello.
+
+I'm using CoovaChilli 1.0.12 and everytime a computer tries to connect 
+using DHCP CoovaChilli logs.
+
+Aug 27 08:47:36 hostname coova-chilli[20237]: chilli.c: 2694: New DHCP 
+request from MAC=XX-XX-XX-XX-XX-XX
+Aug 27 08:47:39 hostname coova-chilli[20237]: chilli.c: 2645: Requested 
+IP address when already allocated
+Aug 27 08:47:39 hostname coova-chilli[20237]: chilli.c: 2661: Client 
+MAC=XX-XX-XX-XX-XX-XX assigned IP 10.1.1.1
+
+When I restart CoovaChilli I get the same messages, I've tried to loook 
+into chilli.c but I'm not familiar enough with Coova code :-) so I 
+really understand why is saying it.
+
+As far as I know coovachilli DHCP server doesn't use any file to store 
+allocated IP addresses so I really don't know what to look. Any idea?
+
+Thanks.
+
+-- 
+*Pablo Mart?nez Schroder*
+Responsable T?cnico de Sistemas
+Spantel S.A.U.
+pablo.martinez at spantel.es <mailto:pablo.martinez at spantel.es>
+tel. 902 02 02 02 - ext. 3004 - fax. 902 196 127
+www.spantel.es <http://www.spantel.es/>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20080827/f47930b1/attachment.htm>
+

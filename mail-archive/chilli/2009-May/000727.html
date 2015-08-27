@@ -1,0 +1,273 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> Problem with WISPr in release 1.0.13
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20Problem%20with%20WISPr%20in%20release%201.0.13&In-Reply-To=%3C1242158797.7817.27.camel%40david-laptop%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000726.html">
+   <LINK REL="Next"  HREF="000728.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>Problem with WISPr in release 1.0.13</H1>
+    <B>wlanmac</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20Problem%20with%20WISPr%20in%20release%201.0.13&In-Reply-To=%3C1242158797.7817.27.camel%40david-laptop%3E"
+       TITLE="Problem with WISPr in release 1.0.13">wlan at mac.com
+       </A><BR>
+    <I>Tue May 12 20:06:37 UTC 2009</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000726.html">Problem with WISPr in release 1.0.13
+</A></li>
+        <LI>Next message: <A HREF="000728.html">Problem with WISPr in release 1.0.13
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#727">[ date ]</a>
+              <a href="thread.html#727">[ thread ]</a>
+              <a href="subject.html#727">[ subject ]</a>
+              <a href="author.html#727">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Thanks... I committed a similar fix to svn - the difference being an
+option addedd to bstring_buildurl() for what kind of ampersand to use
+&quot;&amp;&quot; vs. &quot;%amp;&quot;. 
+
+David
+
+On Tue, 2009-05-12 at 16:46 -0300, Rodrigo Mart&#237;nez wrote:
+&gt;<i> Hello, 
+</I>&gt;<i>     We are using CoovaChilli release 1.0.13 in a solution for access
+</I>&gt;<i> control system. We have smart clients that authenticate using WISPr
+</I>&gt;<i> protocol to communicate with the CoovaChilli. We start using
+</I>&gt;<i> CoovaChilli release 1.0.12, with this version the WISPr communication
+</I>&gt;<i> worked fine, but when we update to release 1.0.13 the client stop
+</I>&gt;<i> connecting. 
+</I>&gt;<i> 
+</I>&gt;<i>     Analyzing the problem we found that in the new release, when the
+</I>&gt;<i> redirect message is send (302 page was moved), the WISPr message had
+</I>&gt;<i> two tags with the LoginURL. One of the tags had the same value as in
+</I>&gt;<i> release 1.0.12 and the second one has some differences. The main
+</I>&gt;<i> problem of the second tag is that the &quot;&amp;&quot; it is not scaped, so when we
+</I>&gt;<i> check syntax against the xsd, it always fail. Looking around in the
+</I>&gt;<i> code, we found the piece of code that was generating the WISPr message
+</I>&gt;<i> and we modify it to match the WISPr standard. Attached in the mail we
+</I>&gt;<i> are sending the file with the patch that contains the modifications in
+</I>&gt;<i> the redir.c file. We hope this can help developers to fix this problem
+</I>&gt;<i> in next releases.
+</I>&gt;<i> 
+</I>&gt;<i>     Thanks in advance 
+</I>&gt;<i> 
+</I>&gt;<i>     Regards,
+</I>&gt;<i>        Rodrigo
+</I>&gt;<i> 
+</I>&gt;<i> -- 
+</I>&gt;<i> 
+</I>&gt;<i> ______________________________________________________________________
+</I>&gt;<i>      
+</I>&gt;<i> 
+</I>&gt;<i> Ing. Rodrigo Mart&#237;nez
+</I>&gt;<i> Consultor
+</I>&gt;<i> Consultor&#237;a &amp; Desarrollo
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i>      
+</I>&gt;<i> 
+</I>&gt;<i>      
+</I>&gt;<i> Tilsor S.A
+</I>&gt;<i> Pza.
+</I>&gt;<i> Independencia 822
+</I>&gt;<i> Piso 4
+</I>&gt;<i> C.P. 11100 -
+</I>&gt;<i> Montevideo
+</I>&gt;<i> Uruguay
+</I>&gt;<i> Tel Fax: (598 2)
+</I>&gt;<i> 9039313
+</I>&gt;<i> www.tilsor.com.uy 
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> plain text document attachment (chilli-wisprLoginURL.patch)
+</I>&gt;<i> Index: redir.c
+</I>&gt;<i> ===================================================================
+</I>&gt;<i> --- redir.c	(revision 199)
+</I>&gt;<i> +++ redir.c	(working copy)
+</I>&gt;<i> @@ -221,12 +221,12 @@
+</I>&gt;<i>    bstring bt = bfromcstr(&quot;&quot;);
+</I>&gt;<i>    bstring bt2 = bfromcstr(&quot;&quot;);
+</I>&gt;<i>  
+</I>&gt;<i> -  bassignformat(str, &quot;%s%cres=%s&amp;uamip=%s&amp;uamport=%d&quot;, 
+</I>&gt;<i> +  bassignformat(str, &quot;%s%cres=%s&amp;amp;uamip=%s&amp;amp;uamport=%d&quot;, 
+</I>&gt;<i>  		redir_url, strchr(redir_url, '?') ? '&amp;' : '?',
+</I>&gt;<i>  		resp, inet_ntoa(redir-&gt;addr), redir-&gt;port);
+</I>&gt;<i>  
+</I>&gt;<i>    if (hexchal) {
+</I>&gt;<i> -    bassignformat(bt, &quot;&amp;challenge=%s&quot;, hexchal);
+</I>&gt;<i> +    bassignformat(bt, &quot;&amp;amp;challenge=%s&quot;, hexchal);
+</I>&gt;<i>      bconcat(str, bt);
+</I>&gt;<i>      bassigncstr(bt,&quot;&quot;);
+</I>&gt;<i>    }
+</I>&gt;<i> @@ -239,37 +239,37 @@
+</I>&gt;<i>  
+</I>&gt;<i>        sessiontime = timenow - starttime;
+</I>&gt;<i>  
+</I>&gt;<i> -      bassignformat(bt, &quot;&amp;starttime=%ld&quot;, starttime);
+</I>&gt;<i> +      bassignformat(bt, &quot;&amp;amp;starttime=%ld&quot;, starttime);
+</I>&gt;<i>        bconcat(str, bt);
+</I>&gt;<i> -      bassignformat(bt, &quot;&amp;sessiontime=%ld&quot;, sessiontime);
+</I>&gt;<i> +      bassignformat(bt, &quot;&amp;amp;sessiontime=%ld&quot;, sessiontime);
+</I>&gt;<i>        bconcat(str, bt);
+</I>&gt;<i>      }
+</I>&gt;<i>  
+</I>&gt;<i>      if (conn-&gt;s_params.sessiontimeout) {
+</I>&gt;<i> -      bassignformat(bt, &quot;&amp;sessiontimeout=%ld&quot;, conn-&gt;s_params.sessiontimeout);
+</I>&gt;<i> +      bassignformat(bt, &quot;&amp;amp;sessiontimeout=%ld&quot;, conn-&gt;s_params.sessiontimeout);
+</I>&gt;<i>        bconcat(str, bt);
+</I>&gt;<i>      }
+</I>&gt;<i>  
+</I>&gt;<i>      if (conn-&gt;s_params.sessionterminatetime) {
+</I>&gt;<i> -      bassignformat(bt, &quot;&amp;stoptime=%ld&quot;, conn-&gt;s_params.sessionterminatetime);
+</I>&gt;<i> +      bassignformat(bt, &quot;&amp;amp;stoptime=%ld&quot;, conn-&gt;s_params.sessionterminatetime);
+</I>&gt;<i>        bconcat(str, bt);
+</I>&gt;<i>      }
+</I>&gt;<i>    }
+</I>&gt;<i>   
+</I>&gt;<i>    if (uid) {
+</I>&gt;<i> -    bcatcstr(str, &quot;&amp;uid=&quot;);
+</I>&gt;<i> +    bcatcstr(str, &quot;&amp;amp;uid=&quot;);
+</I>&gt;<i>      bassigncstr(bt, uid);
+</I>&gt;<i>      redir_urlencode(bt, bt2);
+</I>&gt;<i>      bconcat(str, bt2);
+</I>&gt;<i>    }
+</I>&gt;<i>  
+</I>&gt;<i>    if (timeleft) {
+</I>&gt;<i> -    bassignformat(bt, &quot;&amp;timeleft=%ld&quot;, timeleft);
+</I>&gt;<i> +    bassignformat(bt, &quot;&amp;amp;timeleft=%ld&quot;, timeleft);
+</I>&gt;<i>      bconcat(str, bt);
+</I>&gt;<i>    }
+</I>&gt;<i>    
+</I>&gt;<i>    if (hismac) {
+</I>&gt;<i> -    bcatcstr(str, &quot;&amp;mac=&quot;);
+</I>&gt;<i> +    bcatcstr(str, &quot;&amp;amp;mac=&quot;);
+</I>&gt;<i>      bassignformat(bt, &quot;%.2X-%.2X-%.2X-%.2X-%.2X-%.2X&quot;,
+</I>&gt;<i>  		  hismac[0], hismac[1], 
+</I>&gt;<i>  		  hismac[2], hismac[3],
+</I>&gt;<i> @@ -279,54 +279,54 @@
+</I>&gt;<i>    }
+</I>&gt;<i>  
+</I>&gt;<i>    if (hisip) {
+</I>&gt;<i> -    bassignformat(bt, &quot;&amp;ip=%s&quot;, inet_ntoa(*hisip));
+</I>&gt;<i> +    bassignformat(bt, &quot;&amp;amp;ip=%s&quot;, inet_ntoa(*hisip));
+</I>&gt;<i>      bconcat(str, bt);
+</I>&gt;<i>    }
+</I>&gt;<i>  
+</I>&gt;<i>    if (reply) {
+</I>&gt;<i> -    bcatcstr(str, &quot;&amp;reply=&quot;);
+</I>&gt;<i> +    bcatcstr(str, &quot;&amp;amp;reply=&quot;);
+</I>&gt;<i>      bassigncstr(bt, reply);
+</I>&gt;<i>      redir_urlencode(bt, bt2);
+</I>&gt;<i>      bconcat(str, bt2);
+</I>&gt;<i>    }
+</I>&gt;<i>  
+</I>&gt;<i>    if (redir-&gt;ssid) {
+</I>&gt;<i> -    bcatcstr(str, &quot;&amp;ssid=&quot;);
+</I>&gt;<i> +    bcatcstr(str, &quot;&amp;amp;ssid=&quot;);
+</I>&gt;<i>      bassigncstr(bt, redir-&gt;ssid);
+</I>&gt;<i>      redir_urlencode(bt, bt2);
+</I>&gt;<i>      bconcat(str, bt2);
+</I>&gt;<i>    }
+</I>&gt;<i>  
+</I>&gt;<i>    if (redir-&gt;nasmac) {
+</I>&gt;<i> -    bcatcstr(str, &quot;&amp;called=&quot;);
+</I>&gt;<i> +    bcatcstr(str, &quot;&amp;amp;called=&quot;);
+</I>&gt;<i>      bassigncstr(bt, redir-&gt;nasmac);
+</I>&gt;<i>      redir_urlencode(bt, bt2);
+</I>&gt;<i>      bconcat(str, bt2);
+</I>&gt;<i>    } 
+</I>&gt;<i>  
+</I>&gt;<i>    if (redir-&gt;radiusnasid) {
+</I>&gt;<i> -    bcatcstr(str, &quot;&amp;nasid=&quot;);
+</I>&gt;<i> +    bcatcstr(str, &quot;&amp;amp;nasid=&quot;);
+</I>&gt;<i>      bassigncstr(bt, redir-&gt;radiusnasid);
+</I>&gt;<i>      redir_urlencode(bt, bt2);
+</I>&gt;<i>      bconcat(str, bt2);
+</I>&gt;<i>    }
+</I>&gt;<i>  
+</I>&gt;<i>    if (conn-&gt;lang[0]) {
+</I>&gt;<i> -    bcatcstr(str, &quot;&amp;lang=&quot;);
+</I>&gt;<i> +    bcatcstr(str, &quot;&amp;amp;lang=&quot;);
+</I>&gt;<i>      bassigncstr(bt, conn-&gt;lang);
+</I>&gt;<i>      redir_urlencode(bt, bt2);
+</I>&gt;<i>      bconcat(str, bt2);
+</I>&gt;<i>    }
+</I>&gt;<i>  
+</I>&gt;<i>    if (redirurl) {
+</I>&gt;<i> -    bcatcstr(str, &quot;&amp;redirurl=&quot;);
+</I>&gt;<i> +    bcatcstr(str, &quot;&amp;amp;redirurl=&quot;);
+</I>&gt;<i>      bassigncstr(bt, redirurl);
+</I>&gt;<i>      redir_urlencode(bt, bt2);
+</I>&gt;<i>      bconcat(str, bt2);
+</I>&gt;<i>    }
+</I>&gt;<i>  
+</I>&gt;<i>    if (userurl) {
+</I>&gt;<i> -    bcatcstr(str, &quot;&amp;userurl=&quot;);
+</I>&gt;<i> +    bcatcstr(str, &quot;&amp;amp;userurl=&quot;);
+</I>&gt;<i>      bassigncstr(bt, userurl);
+</I>&gt;<i>      redir_urlencode(bt, bt2);
+</I>&gt;<i>      bconcat(str, bt2);
+</I>&gt;<i> @@ -347,7 +347,7 @@
+</I>&gt;<i>      for (i=0; i&lt;16; i++)
+</I>&gt;<i>        sprintf(hex+strlen(hex), &quot;%.2X&quot;, cksum[i]);
+</I>&gt;<i>  
+</I>&gt;<i> -    bcatcstr(str, &quot;&amp;md=&quot;);
+</I>&gt;<i> +    bcatcstr(str, &quot;&amp;amp;md=&quot;);
+</I>&gt;<i>      bcatcstr(str, hex);
+</I>&gt;<i>    }
+</I>&gt;<i>  
+</I>&gt;<i> @@ -478,12 +478,14 @@
+</I>&gt;<i>        bconcat(b, bt);
+</I>&gt;<i>  
+</I>&gt;<i>        bcatcstr(b, &quot;&lt;/LoginURL&gt;\r\n&quot;);
+</I>&gt;<i> -      
+</I>&gt;<i> +
+</I>&gt;<i> +/*      
+</I>&gt;<i>        bassignformat(bt, &quot;&lt;LoginURL&gt;%s%cres=smartclient&amp;amp;uamip=%s&amp;amp;uamport=%d&amp;amp;challenge=%s&lt;/LoginURL&gt;\r\n&quot;,
+</I>&gt;<i>  		    options.wisprlogin ? options.wisprlogin : redir-&gt;url, 
+</I>&gt;<i>  		    strchr(options.wisprlogin ? options.wisprlogin : redir-&gt;url, '?') ? '&amp;' : '?',
+</I>&gt;<i>  		    inet_ntoa(redir-&gt;addr), redir-&gt;port, hexchal); 
+</I>&gt;<i>        bconcat(b, bt);
+</I>&gt;<i> +*/
+</I>&gt;<i>        
+</I>&gt;<i>        bassignformat(bt, &quot;&lt;AbortLoginURL&gt;<A HREF="http://%s:%d/abort&lt;/AbortLoginURL">http://%s:%d/abort&lt;/AbortLoginURL</A>&gt;\r\n&quot;,
+</I>&gt;<i>  		    inet_ntoa(redir-&gt;addr), redir-&gt;port);
+</I>&gt;<i> 
+</I>&gt;<i> ---------------------------------------------------------------------
+</I>&gt;<i> To unsubscribe, e-mail: <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli-unsubscribe at coova.org</A>
+</I>&gt;<i> For additional commands, e-mail: <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli-help at coova.org</A>
+</I>&gt;<i> Wiki: <A HREF="http://coova.org/wiki/index.php/CoovaChilli">http://coova.org/wiki/index.php/CoovaChilli</A>
+</I>&gt;<i> Forum: <A HREF="http://coova.org/phpBB3/viewforum.php?f=4">http://coova.org/phpBB3/viewforum.php?f=4</A>
+</I>
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000726.html">Problem with WISPr in release 1.0.13
+</A></li>
+	<LI>Next message: <A HREF="000728.html">Problem with WISPr in release 1.0.13
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#727">[ date ]</a>
+              <a href="thread.html#727">[ thread ]</a>
+              <a href="subject.html#727">[ subject ]</a>
+              <a href="author.html#727">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

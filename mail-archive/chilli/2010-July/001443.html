@@ -1,0 +1,199 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] Almost there :D
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Almost%20there%20%3AD&In-Reply-To=%3CAANLkTikiDACMU-QG75c7Eju1I3K6zczsjBhUT8cPym4N%40mail.gmail.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001448.html">
+   <LINK REL="Next"  HREF="001444.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] Almost there :D</H1>
+    <B>Gergely Kiss</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Almost%20there%20%3AD&In-Reply-To=%3CAANLkTikiDACMU-QG75c7Eju1I3K6zczsjBhUT8cPym4N%40mail.gmail.com%3E"
+       TITLE="[Chilli] Almost there :D">mail.gery at gmail.com
+       </A><BR>
+    <I>Sun Jul 11 21:02:14 UTC 2010</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001448.html">[Chilli] coova-chilli 1.2.3
+</A></li>
+        <LI>Next message: <A HREF="001444.html">[Chilli] Almost there :D
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1443">[ date ]</a>
+              <a href="thread.html#1443">[ thread ]</a>
+              <a href="subject.html#1443">[ subject ]</a>
+              <a href="author.html#1443">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hello there,
+
+I'm back with a brand new version of my web interface bundle, which is more
+clever and fixes some major bugs compared to the initial release.
+
+Let's see what's new in this version:
+
+- Timeouts are set to be more user-friendly, which means the user always has
+the time to read error messages and never has to wait too much if something
+goes wrong. Default timeouts: refresh status page every 5 secs, timeout JSON
+requests after 25 seconds, show error messages for 10 seconds before
+refreshing status.
+- Failed login attempts generate an error message - it's more logical, than
+just redirecting to the login screen without telling the user what happened
+- Redirections work correctly now - in some cases, the OS or the browser
+sends a request to some remote site, before a user-specified site opens in
+the browser, therefore a random site may be loaded after the user logs in. I
+fixed this by reading the &quot;userurl&quot; variable from the request which always
+seems to contain the URL entered by the user (or the browser's home page).
+- When the user disconnects, the wait page appears for half a second to give
+time to the logoff command to finish executing.
+- The bundle has been tested with 4 major browsers (IE6-8, FF2-3, Opera 10,
+Chrome). IE and FF run the code perfectly, while Opera and Chrome may have
+some issues, probably because of their &quot;improved&quot; JavaScript engines. Opera
+seems to silently ignore the URL passed to window.open (it just opens a
+blank browser window). Chrome does the same, except that it loads the URL
+(it's shown in the address bar), but refuses to run any JS code, just a
+plain white page is shown to the user. These issues need to be fixed to make
+the interface more compatible with different browsers.
+
+Probably you could include this in the source bundle to be used as a
+template, I made really easy to customize it. Just modify the placeholders
+in &quot;index.html&quot; and &quot;splash.html&quot; and the interface is ready to be used.
+
+
+Best regards
+Gergely Kiss
+
+On 30 May 2009 09:20, kissg &lt;<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">mail.gery at gmail.com</A>&gt; wrote:
+
+&gt;<i> Hi C&#233;sar,
+</I>&gt;<i>
+</I>&gt;<i> we have customized installations of CoovaChilli at two companies. They use
+</I>&gt;<i> it to provide internet access to guests, without risking the security of
+</I>&gt;<i> their private network. I've slightly modified the login process of
+</I>&gt;<i> CoovaChilli to fit the needs of our customers and to be as user friendly as
+</I>&gt;<i> possible. The process looks like this:
+</I>&gt;<i>
+</I>&gt;<i> 1. The user opens a browser window and tries to browse a website.
+</I>&gt;<i> 2. CoovaChilli redirects the user to the splash page.
+</I>&gt;<i> 3. The splash page contains the logo of the company, some welcome text and
+</I>&gt;<i> a button, which opens a popup window by using some simple JavaScript code.
+</I>&gt;<i> 4. A small window appears on the top right part of the screen, asking for
+</I>&gt;<i> the login credentials.
+</I>&gt;<i> 5. After entering the username and password, the small window gets
+</I>&gt;<i> minimized to the taskbar, and the requested page starts to load in the main
+</I>&gt;<i> browser window.
+</I>&gt;<i> 6. The login window stays opened as long as the connection is alive, so the
+</I>&gt;<i> user can see a lot of useful information (like session time, total data
+</I>&gt;<i> upload/download, idle timeout, session timeout, etc.). There is a button at
+</I>&gt;<i> the bottom of this window, which can be used to disconnect from the network.
+</I>&gt;<i> In case the user tries to close this window, a warning message appears on
+</I>&gt;<i> screen, telling the user that he shouldn't close the window as long as he
+</I>&gt;<i> want to surf the net. I've set idle timeout to 10 minutes, so it's not
+</I>&gt;<i> really an issue if someone closes the window without logging off first.
+</I>&gt;<i>
+</I>&gt;<i> I attached the whole /etc/chilli directory to this message, so you can use
+</I>&gt;<i> it as a template. Download the files and customize them for your liking. The
+</I>&gt;<i> following files needs to be changed:
+</I>&gt;<i>
+</I>&gt;<i> - /etc/chilli/config: go through the options, and modify them as needed
+</I>&gt;<i> - /etc/chilli/ipup.sh: replace ppp0 with the name of the interface your
+</I>&gt;<i> server uses to connect to the internet.
+</I>&gt;<i> - /etc/chilli/www/splash.html: enter your company's name and replace the
+</I>&gt;<i> logo
+</I>&gt;<i>
+</I>&gt;<i> By using these files, you can easily create your own hotspot solution by
+</I>&gt;<i> changing the logo on the splash page and replacing the name and website
+</I>&gt;<i> address of your company (wherever you see &quot;Your company's name&quot; and &quot;
+</I>&gt;<i> www.yourcompanyswebsite.com&quot;).
+</I>&gt;<i>
+</I>&gt;<i> This solution is JavaScript-dependent, but this should not be a problem, as
+</I>&gt;<i> modern systems have JavaScript installed and enabled, by default.
+</I>&gt;<i>
+</I>&gt;<i> I hope this may help you and other people to implement CoovaChilli
+</I>&gt;<i> successfully.
+</I>&gt;<i>
+</I>&gt;<i> Regards
+</I>&gt;<i> Gergely Kiss
+</I>&gt;<i>
+</I>&gt;<i> 2009/5/29 C&#233;sar Araujo &lt;<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">cesarsilvaaraujo at gmail.com</A>&gt;
+</I>&gt;<i>
+</I>&gt;<i> Well i would like first to thank all of you that are helping-me :) cause im
+</I>&gt;&gt;<i> loving coova :D it is very powerfull.
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> My problem now is that i dont have net.
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> Explaining.
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> I type www.google.com and i end on a url from
+</I>&gt;&gt;<i> <A HREF="http://10.1.0.1:3990/www/hotspot/coova.html?loginurl=https%3a%2f%2f10.1.0.1%2fhotspot%2fuam%2f%3fres%3dnotyet%26uamip%3d10.1.0.1%26uamport%3d3990%26challenge%3d88be6699daa6282bb61a2e312f3b1caf%26mac%3d00-1D-60-XX-XX-XX%26ip%3d10.1.0.13%26called%3d00-0C-6E-A3-53-27%26nasid%3dwifi%2540campingave%26userurl%3dhttp%253a%252f%252f10.1.0.1%253a3990%252fwww%252f%26md%3dEF87074574DD3A134A708A36CF65F059">http://10.1.0.1:3990/www/hotspot/coova.html?loginurl=https%3a%2f%2f10.1.0.1%2fhotspot%2fuam%2f%3fres%3dnotyet%26uamip%3d10.1.0.1%26uamport%3d3990%26challenge%3d88be6699daa6282bb61a2e312f3b1caf%26mac%3d00-1D-60-XX-XX-XX%26ip%3d10.1.0.13%26called%3d00-0C-6E-A3-53-27%26nasid%3dwifi%2540campingave%26userurl%3dhttp%253a%252f%252f10.1.0.1%253a3990%252fwww%252f%26md%3dEF87074574DD3A134A708A36CF65F059</A>
+</I>&gt;&gt;<i> &lt;<A HREF="http://10.1.0.1:3990/www/hotspot/coova.html?loginurl=https%3a%2f%2f10.1.0.1%2fhotspot%2fuam%2f%3fres%3dnotyet%26uamip%3d10.1.0.1%26uamport%3d3990%26challenge%3d88be6699daa6282bb61a2e312f3b1caf%26mac%3d00-1D-60-C8-10-E5%26ip%3d10.1.0.13%26called%3d00-0C-6E-A3-53-27%26nasid%3dwifi%2540campingave%26userurl%3dhttp%253a%252f%252f10.1.0.1%253a3990%252fwww%252f%26md%3dEF87074574DD3A134A708A36CF65F059">http://10.1.0.1:3990/www/hotspot/coova.html?loginurl=https%3a%2f%2f10.1.0.1%2fhotspot%2fuam%2f%3fres%3dnotyet%26uamip%3d10.1.0.1%26uamport%3d3990%26challenge%3d88be6699daa6282bb61a2e312f3b1caf%26mac%3d00-1D-60-C8-10-E5%26ip%3d10.1.0.13%26called%3d00-0C-6E-A3-53-27%26nasid%3dwifi%2540campingave%26userurl%3dhttp%253a%252f%252f10.1.0.1%253a3990%252fwww%252f%26md%3dEF87074574DD3A134A708A36CF65F059</A>&gt;
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> Then i should get <A HREF="http://10.1.0.1/portal/?q=hotspot">http://10.1.0.1/portal/?q=hotspot</A> and i end up on
+</I>&gt;&gt;<i> <A HREF="http://10.1.0.1/portal/?q=badquery">http://10.1.0.1/portal/?q=badquery</A> but for now this is not my &quot;major&quot;
+</I>&gt;&gt;<i> problem, so i manualy type <A HREF="http://10.1.0.1/portal/?q=hotspot">http://10.1.0.1/portal/?q=hotspot</A>
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> then i make login using test test and everything goes ok :D
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> then when i type for example www.google.com on a browser i dont get
+</I>&gt;&gt;<i> nothing. i end up on &quot;server is taking to long to respond&quot; and i cant ping
+</I>&gt;&gt;<i> www.google.com
+</I>&gt;&gt;<i> nothing, no internet. :(
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> Any help is always apreciated :D
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> Thanks in advance.
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> --
+</I>&gt;&gt;<i> --------------------------------------------------------------------
+</I>&gt;&gt;<i> Contactem-me para anima&#231;&#227;o musical de eventos!
+</I>&gt;&gt;<i> --------------------------------------------------------------------
+</I>&gt;&gt;<i> AveFm - www.avefm.net
+</I>&gt;&gt;<i> --------------------------------------------------------------------
+</I>&gt;&gt;<i> <A HREF="Http://www.CesarAraujo.Net">Http://www.CesarAraujo.Net</A>
+</I>&gt;&gt;<i> --------------------------------------------------------------------
+</I>&gt;&gt;<i> Msn: <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">messenger at CesarAraujo.net</A>
+</I>&gt;&gt;<i> --------------------------------------------------------------------
+</I>&gt;&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>
+</I>-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: &lt;<A HREF="http://lists.coova.org/pipermail/chilli/attachments/20100711/9ea2eb51/attachment-0001.htm">http://lists.coova.org/pipermail/chilli/attachments/20100711/9ea2eb51/attachment-0001.htm</A>&gt;
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: chilli_web_interface_bundle_v2.zip
+Type: application/zip
+Size: 24978 bytes
+Desc: not available
+URL: &lt;<A HREF="http://lists.coova.org/pipermail/chilli/attachments/20100711/9ea2eb51/attachment-0001.zip">http://lists.coova.org/pipermail/chilli/attachments/20100711/9ea2eb51/attachment-0001.zip</A>&gt;
+</PRE>
+
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001448.html">[Chilli] coova-chilli 1.2.3
+</A></li>
+	<LI>Next message: <A HREF="001444.html">[Chilli] Almost there :D
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1443">[ date ]</a>
+              <a href="thread.html#1443">[ thread ]</a>
+              <a href="subject.html#1443">[ subject ]</a>
+              <a href="author.html#1443">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

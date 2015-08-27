@@ -1,0 +1,135 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] Best way to enforce MTU 1480?
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Best%20way%20to%20enforce%20MTU%201480%3F&In-Reply-To=%3C53349A38.5030205%40hssl.ie%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="002639.html">
+   <LINK REL="Next"  HREF="002647.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] Best way to enforce MTU 1480?</H1>
+    <B>Derek Conniffe</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Best%20way%20to%20enforce%20MTU%201480%3F&In-Reply-To=%3C53349A38.5030205%40hssl.ie%3E"
+       TITLE="[Chilli] Best way to enforce MTU 1480?">derek at hssl.ie
+       </A><BR>
+    <I>Thu Mar 27 21:38:00 UTC 2014</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="002639.html">[Chilli] Best way to enforce MTU 1480?
+</A></li>
+        <LI>Next message: <A HREF="002647.html">[Chilli] Best way to enforce MTU 1480?
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2644">[ date ]</a>
+              <a href="thread.html#2644">[ thread ]</a>
+              <a href="subject.html#2644">[ subject ]</a>
+              <a href="author.html#2644">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hi Ben,
+
+I use a MESH as well (with UBNT M radios &amp; ATH9K with an AdHoc VAP) but 
+what I did was set the MTU of the MESH I/F to something like 1528 so 
+that standard (1500) packets get though OK.  Last year I was trying to 
+clamp MTU on a couple of I/Fs (for a different reason - it was on an EC2 
+instance with VPN &amp; Squid and not MESH related) and it nearly broke my 
+spirit and cost me a couple of days in hair-pulling!
+
+Derek
+
+On 27/03/2014 20:52, David Bird wrote:
+&gt;<i> The MTU option will send the MTU value in DHCP, but doesn't mean it's 
+</I>&gt;<i> always respected. You might refer to 
+</I>&gt;<i> <A HREF="http://lartc.org/howto/lartc.cookbook.mtu-mss.html">http://lartc.org/howto/lartc.cookbook.mtu-mss.html</A>
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> On Thu, Mar 27, 2014 at 12:30 PM, Ben West &lt;<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">ben at gowasabi.net</A> 
+</I>&gt;<i> &lt;mailto:<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">ben at gowasabi.net</A>&gt;&gt; wrote:
+</I>&gt;<i>
+</I>&gt;<i>     I'm running coovachilli v1.3.0 under OpenWRT AA on Ubiquiti
+</I>&gt;<i>     Nanostation gear, with only 32Mbytes of RAM. Since these are nodes
+</I>&gt;<i>     in a mesh managed by OLSR, I need to enforce MTU=1480 for all
+</I>&gt;<i>     client sessions authorized by chilli.
+</I>&gt;<i>
+</I>&gt;<i>     From the online Changlog, it appears I can do this by adding a
+</I>&gt;<i>     parameter to the start-up command in coovachilli's init script:
+</I>&gt;<i>
+</I>&gt;<i>     /usr/sbin/chilli --mtu 1480
+</I>&gt;<i>
+</I>&gt;<i>     However, the tap interface which I believe is what chilli sets up
+</I>&gt;<i>     to manage bandwidth throttling on client sessions still reports
+</I>&gt;<i>     MTU 1500:
+</I>&gt;<i>
+</I>&gt;<i>     tun0      Link encap:UNSPEC  HWaddr
+</I>&gt;<i>     00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00
+</I>&gt;<i>               inet addr:101.232.44.1 P-t-P:101.232.44.1 
+</I>&gt;<i>     Mask:255.255.255.0
+</I>&gt;<i>               UP POINTOPOINT RUNNING  MTU:1500  Metric:1
+</I>&gt;<i>               RX packets:0 errors:0 dropped:0 overruns:0 frame:0
+</I>&gt;<i>               TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
+</I>&gt;<i>               collisions:0 txqueuelen:100
+</I>&gt;<i>               RX bytes:0 (0.0 B)  TX bytes:0 (0.0 B)
+</I>&gt;<i>
+</I>&gt;<i>     ... where 101.232.44.1 is the NAP IP of the device where I quoted
+</I>&gt;<i>     this from.
+</I>&gt;<i>
+</I>&gt;<i>     Is there a way I can ensure proper MTU settings on chilli client
+</I>&gt;<i>     sessions?
+</I>&gt;<i>
+</I>&gt;<i>     -- 
+</I>&gt;<i>     Ben West
+</I>&gt;<i>     <A HREF="http://gowasabi.net">http://gowasabi.net</A>
+</I>&gt;<i>     <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">ben at gowasabi.net</A> &lt;mailto:<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">ben at gowasabi.net</A>&gt;
+</I>&gt;<i>     314-246-9434 &lt;tel:314-246-9434&gt;
+</I>&gt;<i>
+</I>&gt;<i>     _______________________________________________
+</I>&gt;<i>     Chilli mailing list
+</I>&gt;<i>     <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">Chilli at coova.org</A> &lt;mailto:<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">Chilli at coova.org</A>&gt;
+</I>&gt;<i>     <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">http://lists.coova.org/cgi-bin/mailman/listinfo/chilli</A>
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> _______________________________________________
+</I>&gt;<i> Chilli mailing list
+</I>&gt;<i> <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">Chilli at coova.org</A>
+</I>&gt;<i> <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">http://lists.coova.org/cgi-bin/mailman/listinfo/chilli</A>
+</I>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: &lt;<A HREF="http://lists.coova.org/pipermail/chilli/attachments/20140327/f96619e7/attachment.html">http://lists.coova.org/pipermail/chilli/attachments/20140327/f96619e7/attachment.html</A>&gt;
+</PRE>
+
+
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="002639.html">[Chilli] Best way to enforce MTU 1480?
+</A></li>
+	<LI>Next message: <A HREF="002647.html">[Chilli] Best way to enforce MTU 1480?
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2644">[ date ]</a>
+              <a href="thread.html#2644">[ thread ]</a>
+              <a href="subject.html#2644">[ subject ]</a>
+              <a href="author.html#2644">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

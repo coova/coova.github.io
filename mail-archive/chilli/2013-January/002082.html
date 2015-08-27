@@ -1,0 +1,227 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] Proxy and REDIRSSL issues
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Proxy%20and%20REDIRSSL%20issues&In-Reply-To=%3C1357840813.12574.4.camel%40david-laptop%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="002081.html">
+   <LINK REL="Next"  HREF="002084.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] Proxy and REDIRSSL issues</H1>
+    <B>David Bird</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Proxy%20and%20REDIRSSL%20issues&In-Reply-To=%3C1357840813.12574.4.camel%40david-laptop%3E"
+       TITLE="[Chilli] Proxy and REDIRSSL issues">david at coova.com
+       </A><BR>
+    <I>Thu Jan 10 18:00:13 UTC 2013</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="002081.html">[Chilli] Proxy and REDIRSSL issues
+</A></li>
+        <LI>Next message: <A HREF="002084.html">[Chilli] RADIUS based way to set the per session
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2082">[ date ]</a>
+              <a href="thread.html#2082">[ thread ]</a>
+              <a href="subject.html#2082">[ subject ]</a>
+              <a href="author.html#2082">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Perhaps there should be an option postauthproxyssl that defaults to
+false that when enabled means the postauth proxy is used for ssl too.
+
+
+On Sun, 2013-01-06 at 11:55 +0000, James @ ADSL24 wrote:
+&gt;<i> I took a punt and got it working. See below dhcp.c modifications for anyone
+</I>&gt;<i> else who needs postauthproxy support but to send HTTPS direct:
+</I>&gt;<i> 
+</I>&gt;<i> ----------------------------------------------------------------------------
+</I>&gt;<i> if (_options.postauth_proxyport &gt; 0) {
+</I>&gt;<i>     if (is_return) {
+</I>&gt;<i>       if ((iph-&gt;protocol == PKT_IP_PROTO_TCP) &amp;&amp;
+</I>&gt;<i> 	  (iph-&gt;saddr == _options.postauth_proxyip.s_addr) &amp;&amp;
+</I>&gt;<i> 	  (tcph-&gt;src == htons(_options.postauth_proxyport))) {
+</I>&gt;<i> 	
+</I>&gt;<i> 	*do_checksum = 1;
+</I>&gt;<i> 	return dhcp_uam_unnat(conn, ethh, iph, tcph);
+</I>&gt;<i>       }
+</I>&gt;<i>     } else {
+</I>&gt;<i>       if ((iph-&gt;protocol == PKT_IP_PROTO_TCP) &amp;&amp;
+</I>&gt;<i> 	  (tcph-&gt;dst == htons(DHCP_HTTP) )) {
+</I>&gt;<i> 
+</I>&gt;<i> #if(_debug_ &gt; 0)	
+</I>&gt;<i> 	log_dbg(&quot;rewriting packet for post-auth proxy %s:%d&quot;,
+</I>&gt;<i> 		inet_ntoa(_options.postauth_proxyip),
+</I>&gt;<i> 		_options.postauth_proxyport);
+</I>&gt;<i> #endif
+</I>&gt;<i> 	
+</I>&gt;<i> 	*do_checksum = 1;
+</I>&gt;<i> 	return dhcp_uam_nat(conn, ethh, iph, tcph,
+</I>&gt;<i> 			    &amp;_options.postauth_proxyip, 
+</I>&gt;<i> 			    _options.postauth_proxyport);
+</I>&gt;<i>       } elseif (_options.redirssl &amp;&amp; tcph-&gt;dst == htons(DHCP_HTTPS)) {
+</I>&gt;<i> 		#if(_debug_ &gt; 0)	
+</I>&gt;<i> 		log_dbg(&quot;NOT rewriting packet for post-auth proxy %s:%d&quot;,
+</I>&gt;<i> 			inet_ntoa(_options.postauth_proxyip),
+</I>&gt;<i> 			_options.postauth_proxyport);
+</I>&gt;<i> 	#endif
+</I>&gt;<i> 	  }
+</I>&gt;<i>     }
+</I>&gt;<i>   }
+</I>&gt;<i> ----------------------------------------------------------------------------
+</I>&gt;<i> 
+</I>&gt;<i> -----Original Message-----
+</I>&gt;<i> From: <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli-bounces at coova.org</A> [mailto:<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli-bounces at coova.org</A>] On Behalf
+</I>&gt;<i> Of James @ ADSL24
+</I>&gt;<i> Sent: 05 January 2013 23:06
+</I>&gt;<i> To: <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli at coova.org</A>
+</I>&gt;<i> Subject: [Chilli] Proxy and REDIRSSL issues
+</I>&gt;<i> 
+</I>&gt;<i> David,
+</I>&gt;<i> 
+</I>&gt;<i> Hi All,
+</I>&gt;<i> 
+</I>&gt;<i> As you know, it's not really possible to proxy all HTTPS traffic without
+</I>&gt;<i> causing SSL violation/certificate errors to the end users browser. So, is
+</I>&gt;<i> there any way that when the postauthproxy option is used within coova, to
+</I>&gt;<i> send all HTTPS traffic direct and not via the defined proxy?
+</I>&gt;<i> 
+</I>&gt;<i> I must concur, this only happens when we use the HS_REDIRSSL = on setting
+</I>&gt;<i> because we need to redirect the initial end users HTTPS page requests to the
+</I>&gt;<i> captive portal else it does not redirect. If you don't use HS_REDIRSSL then
+</I>&gt;<i> no HTTPs traffic is sent via the proxy - doh!
+</I>&gt;<i> 
+</I>&gt;<i> Any ideas?
+</I>&gt;<i> 
+</I>&gt;<i> Looking at dhcp.c it appears the below code is being used, but I'm not 100%
+</I>&gt;<i> sure on what to modify to send all HTTPS traffic direct and not through the
+</I>&gt;<i> proxy once they are authenticated.
+</I>&gt;<i> 
+</I>&gt;<i> ----------------------------------------------------------------------------
+</I>&gt;<i> ------
+</I>&gt;<i> if (_options.postauth_proxyport &gt; 0) {
+</I>&gt;<i>     if (is_return) {
+</I>&gt;<i>       if ((iph-&gt;protocol == PKT_IP_PROTO_TCP) &amp;&amp;
+</I>&gt;<i> 	  (iph-&gt;saddr == _options.postauth_proxyip.s_addr) &amp;&amp;
+</I>&gt;<i> 	  (tcph-&gt;src == htons(_options.postauth_proxyport))) {
+</I>&gt;<i> 	
+</I>&gt;<i> 	*do_checksum = 1;
+</I>&gt;<i> 	return dhcp_uam_unnat(conn, ethh, iph, tcph);
+</I>&gt;<i>       }
+</I>&gt;<i>     }
+</I>&gt;<i>     else {
+</I>&gt;<i>       if ((iph-&gt;protocol == PKT_IP_PROTO_TCP) &amp;&amp;
+</I>&gt;<i> 	  (tcph-&gt;dst == htons(DHCP_HTTP) 
+</I>&gt;<i> #ifdef HAVE_SSL
+</I>&gt;<i> 	   || (_options.redirssl &amp;&amp; tcph-&gt;dst == htons(DHCP_HTTPS))
+</I>&gt;<i> #endif
+</I>&gt;<i> 	   )) {
+</I>&gt;<i> 
+</I>&gt;<i> #if(_debug_ &gt; 0)	
+</I>&gt;<i> 	log_dbg(&quot;rewriting packet for post-auth proxy %s:%d&quot;,
+</I>&gt;<i> 		inet_ntoa(_options.postauth_proxyip),
+</I>&gt;<i> 		_options.postauth_proxyport);
+</I>&gt;<i> #endif
+</I>&gt;<i> 	
+</I>&gt;<i> 	*do_checksum = 1;
+</I>&gt;<i> 	return dhcp_uam_nat(conn, ethh, iph, tcph,
+</I>&gt;<i> 			    &amp;_options.postauth_proxyip, 
+</I>&gt;<i> 			    _options.postauth_proxyport);
+</I>&gt;<i>       }
+</I>&gt;<i>     }
+</I>&gt;<i>   }
+</I>&gt;<i> ----------------------------------------------------------------------------
+</I>&gt;<i> ------
+</I>&gt;<i> 
+</I>&gt;<i> Thanks in advance.
+</I>&gt;<i> 
+</I>&gt;<i> James 
+</I>&gt;<i> 
+</I>&gt;<i> -----Original Message-----
+</I>&gt;<i> From: <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli-bounces at coova.org</A> [mailto:<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli-bounces at coova.org</A>] On Behalf
+</I>&gt;<i> Of David Bird
+</I>&gt;<i> Sent: 02 January 2013 20:16
+</I>&gt;<i> To: <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli at coova.org</A>
+</I>&gt;<i> Subject: Re: [Chilli] postauthproxy authentication
+</I>&gt;<i> 
+</I>&gt;<i> There is no chilli option for that, though you could just implement that
+</I>&gt;<i> with a local proxy with an up-stream configuration. 
+</I>&gt;<i> 
+</I>&gt;<i> Happy new year!
+</I>&gt;<i> David
+</I>&gt;<i> 
+</I>&gt;<i> On Wed, 2013-01-02 at 11:54 +0000, James @ ADSL24 wrote:
+</I>&gt;<i> &gt; Happy New Year to you all!
+</I>&gt;<i> &gt; 
+</I>&gt;<i> &gt; I'm wondering if anyone can help.
+</I>&gt;<i> &gt; 
+</I>&gt;<i> &gt; We currently have a requirement to use the postauthproxy config option
+</I>&gt;<i> &gt; within coovachilli but I need to know if there is a way to set a
+</I>&gt;<i> &gt; username/password for the HTTP proxy, so we can lock it down on the squid
+</I>&gt;<i> &gt; server to a specified user/pass.
+</I>&gt;<i> &gt; 
+</I>&gt;<i> &gt; We can't just set squid based on specific IPs as a lot of customers are on
+</I>&gt;<i> &gt; dynamic IPs so we can't track them easily.
+</I>&gt;<i> &gt; 
+</I>&gt;<i> &gt; Does postauthproxy allow a username/password for the proxy to be specified
+</I>&gt;<i> &gt; in this way, and if so how?
+</I>&gt;<i> &gt; 
+</I>&gt;<i> &gt; Many thanks
+</I>&gt;<i> &gt; 
+</I>&gt;<i> &gt; James
+</I>&gt;<i> &gt; 
+</I>&gt;<i> &gt; _______________________________________________
+</I>&gt;<i> &gt; Chilli mailing list
+</I>&gt;<i> &gt; <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">Chilli at coova.org</A>
+</I>&gt;<i> &gt; <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">http://lists.coova.org/cgi-bin/mailman/listinfo/chilli</A>
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> _______________________________________________
+</I>&gt;<i> Chilli mailing list
+</I>&gt;<i> <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">Chilli at coova.org</A>
+</I>&gt;<i> <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">http://lists.coova.org/cgi-bin/mailman/listinfo/chilli</A>
+</I>&gt;<i> 
+</I>&gt;<i> _______________________________________________
+</I>&gt;<i> Chilli mailing list
+</I>&gt;<i> <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">Chilli at coova.org</A>
+</I>&gt;<i> <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">http://lists.coova.org/cgi-bin/mailman/listinfo/chilli</A>
+</I>&gt;<i> 
+</I>&gt;<i> _______________________________________________
+</I>&gt;<i> Chilli mailing list
+</I>&gt;<i> <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">Chilli at coova.org</A>
+</I>&gt;<i> <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">http://lists.coova.org/cgi-bin/mailman/listinfo/chilli</A>
+</I>
+
+</PRE>
+
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="002081.html">[Chilli] Proxy and REDIRSSL issues
+</A></li>
+	<LI>Next message: <A HREF="002084.html">[Chilli] RADIUS based way to set the per session
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2082">[ date ]</a>
+              <a href="thread.html#2082">[ thread ]</a>
+              <a href="subject.html#2082">[ subject ]</a>
+              <a href="author.html#2082">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

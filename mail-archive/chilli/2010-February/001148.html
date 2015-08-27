@@ -1,0 +1,95 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] [PATCH] Fix: Compilation fails when HAVE_NETFILTER_QUEUE is not defined
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20%5BPATCH%5D%20Fix%3A%20Compilation%20fails%20when%0A%20HAVE_NETFILTER_QUEUE%20is%20not%20defined&In-Reply-To=%3C4B877817.50108%40ictec.co.jp%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001147.html">
+   <LINK REL="Next"  HREF="001149.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] [PATCH] Fix: Compilation fails when HAVE_NETFILTER_QUEUE is not defined</H1>
+    <B>Masashi Honma</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20%5BPATCH%5D%20Fix%3A%20Compilation%20fails%20when%0A%20HAVE_NETFILTER_QUEUE%20is%20not%20defined&In-Reply-To=%3C4B877817.50108%40ictec.co.jp%3E"
+       TITLE="[Chilli] [PATCH] Fix: Compilation fails when HAVE_NETFILTER_QUEUE is not defined">honma at ictec.co.jp
+       </A><BR>
+    <I>Fri Feb 26 07:28:23 UTC 2010</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001147.html">[Chilli] [PATCH] Fix: Compilation fails when HAVE_NETFILTER_QUEUE is not defined
+</A></li>
+        <LI>Next message: <A HREF="001149.html">[Chilli] [PATCH] Fix: Compilation fails when HAVE_NETFILTER_QUEUE is not defined
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1148">[ date ]</a>
+              <a href="thread.html#1148">[ thread ]</a>
+              <a href="subject.html#1148">[ subject ]</a>
+              <a href="author.html#1148">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>(2010/02/26 16:21), Masashi Honma wrote:
+&gt;<i> Hello.
+</I>&gt;<i>
+</I>&gt;<i> The latest svn tree can't be compiled when HAVE_NETFILTER_QUEUE is
+</I>&gt;<i> not defined. This patch solves this issue.
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> Index: net.c
+</I>&gt;<i> ===================================================================
+</I>&gt;<i> --- net.c	(revision 292)
+</I>&gt;<i> +++ net.c	(working copy)
+</I>&gt;<i> @@ -669,7 +669,7 @@
+</I>&gt;<i>
+</I>&gt;<i>     return 0;
+</I>&gt;<i>   #else
+</I>&gt;<i> -  log_error(0, &quot;Not implemeneted; build with --with-nfqueue&quot;);
+</I>&gt;<i> +  log_err(0, &quot;Not implemeneted; build with --with-nfqueue&quot;);
+</I>&gt;<i>   #endif
+</I>&gt;<i>   }
+</I>
+Oops. I missed to insert return. Discard previous patch.
+
+Index: net.c
+===================================================================
+--- net.c	(revision 292)
++++ net.c	(working copy)
+@@ -669,7 +669,8 @@
+  
+    return 0;
+  #else
+-  log_error(0, &quot;Not implemeneted; build with --with-nfqueue&quot;);
++  log_err(0, &quot;Not implemeneted; build with --with-nfqueue&quot;);
++  return -1;
+  #endif
+  }
+
+Regards,
+Masashi Honma.
+</PRE>
+
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001147.html">[Chilli] [PATCH] Fix: Compilation fails when HAVE_NETFILTER_QUEUE is not defined
+</A></li>
+	<LI>Next message: <A HREF="001149.html">[Chilli] [PATCH] Fix: Compilation fails when HAVE_NETFILTER_QUEUE is not defined
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1148">[ date ]</a>
+              <a href="thread.html#1148">[ thread ]</a>
+              <a href="subject.html#1148">[ subject ]</a>
+              <a href="author.html#1148">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

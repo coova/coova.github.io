@@ -1,0 +1,116 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> /32 subnet
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20/32%20subnet&In-Reply-To=%3CPine.LNX.4.64.0902080950590.10528%40sisyphos.ibh%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000575.html">
+   <LINK REL="Next"  HREF="000561.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>/32 subnet</H1>
+    <B>Thomas Liske</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20/32%20subnet&In-Reply-To=%3CPine.LNX.4.64.0902080950590.10528%40sisyphos.ibh%3E"
+       TITLE="/32 subnet">liske at ibh.de
+       </A><BR>
+    <I>Sun Feb  8 09:06:52 UTC 2009</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000575.html">/32 subnet
+</A></li>
+        <LI>Next message: <A HREF="000561.html">/32 subnet
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#576">[ date ]</a>
+              <a href="thread.html#576">[ thread ]</a>
+              <a href="subject.html#576">[ subject ]</a>
+              <a href="author.html#576">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hi,
+
+On Sat, 7 Feb 2009, Gunther Mayer wrote:
+
+&gt;<i> Damjan wrote:
+</I>&gt;&gt;&gt;&gt;<i> But an iptables rule does the same thing, no?
+</I>&gt;&gt;&gt;&gt;<i> 
+</I>&gt;&gt;&gt;<i> Not exactly: you may need it, but it's not enough. Here's an example:  you 
+</I>&gt;&gt;&gt;<i> have a switched network, without any fancy features on the switch;  some 
+</I>&gt;&gt;&gt;<i> clients; one Linux gateway with iptables and Chillispot, and an  iptables 
+</I>&gt;&gt;&gt;<i> rule dropping client-to-client traffic.
+</I>&gt;&gt;&gt;<i> 
+</I>&gt;&gt;&gt;<i> In a classical setup, each client will get the same subnet. Therefore, 
+</I>&gt;&gt;&gt;<i> when an application tries to reach another client, the IP stack will  not 
+</I>&gt;&gt;&gt;<i> forward the packet to the gateway, but directly to the other  client. 
+</I>&gt;&gt;&gt;<i> Iptables cannot do anything: it is not involved in this  exchange.
+</I>&gt;&gt;&gt;<i> 
+</I>&gt;&gt;<i> 
+</I>&gt;&gt;<i> right, but the /32 trick can be so easilly bypassed it's not real
+</I>&gt;&gt;<i> security at all. If your L2 domain is not separated, you can't do
+</I>&gt;&gt;<i> anything.
+</I>&gt;&gt;<i> 
+</I>&gt;&gt;<i> BTW, at least some Ubuntu versions with Avahi installed, would also add
+</I>&gt;&gt;<i> 169.254.0.0/16 alias address to the interface and announce itself to the
+</I>&gt;&gt;<i> network. Without L2 separation (on APs and switches) the users will
+</I>&gt;&gt;<i> still see each other *automatically* even with that /32 trick.
+</I>&gt;&gt;<i> 
+</I>&gt;<i>
+</I>&gt;<i> After all the discussion I've seen it seems to me that the noc2c option 
+</I>&gt;<i> provides just another layer of security, albeit one that may easily be 
+</I>&gt;<i> circumvented.
+</I>
+Not at all. This depends on the transport layer protocol. You will never 
+be able to establish Tcp connections (if you protect the broadcast domain 
+from arp spoofing at least for the gateway). On the other hand, a firewall 
+would'n protect you from spoofed (Udp based) DNS replies, the nc2c option 
+does neither.
+
+&gt;<i> If you really want *proper* isolation you'll need a layer 2 firewall such as 
+</I>&gt;<i> ebtables on all your switching/bridging equipment behind coova, i.e. all 
+</I>&gt;<i> switches, a/p's etc. that are used to enlarge the coverage of your coova 
+</I>&gt;<i> hotspot. The core rule would drop everything not destined or originating from 
+</I>&gt;<i> the gateway (coova).
+</I>
+I think real L2 isolation is hard to get:
+  - AP isolation feature: what's about clients connected to another AP in
+    the same domain?
+  - Cisco WLC: to expensive for small setups, but provides real (wireless)
+    client isolation with multiple APs
+  - HP Protected Ports: works only per switch -&gt; same problem as
+    with multiple stand alone APs
+  - Cisco Private VLANs: expensive again - all switches need to support
+    it but you get real client isolation
+
+If you have only one switch or one AP for you HotSpot clients, there is no 
+problem to get some low cost L2 isolation. But for larger setup it is not 
+always an option.
+
+
+ 	Thomas
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000575.html">/32 subnet
+</A></li>
+	<LI>Next message: <A HREF="000561.html">/32 subnet
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#576">[ date ]</a>
+              <a href="thread.html#576">[ thread ]</a>
+              <a href="subject.html#576">[ subject ]</a>
+              <a href="author.html#576">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

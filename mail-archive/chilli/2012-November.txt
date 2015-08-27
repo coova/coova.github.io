@@ -1,0 +1,918 @@
+From david at coova.com  Thu Nov  1 18:56:08 2012
+From: david at coova.com (David Bird)
+Date: Thu, 01 Nov 2012 11:56:08 -0700
+Subject: [Chilli] Coova-Chilli JSON login and status pages implementation
+In-Reply-To: <5087B10E.9050700@nethesis.it>
+References: <5087B10E.9050700@nethesis.it>
+Message-ID: <1351796168.6236.7.camel@david-laptop>
+
+Thanks for this... it looks nice!
+
+David
+
+
+On Wed, 2012-10-24 at 11:12 +0200, Giovanni Bezicheri wrote:
+> Hi all.
+> I have worked on a Coova Chilli login page implementation using JSON 
+> controller that i consider simpler than the one included in the original 
+> sources. This implementation would be also more compatible with some old 
+> browser (like IE6 or old version of Safari) because uses the JQuery 
+> library for the purpose of handling events.
+> Download url: http://update.nethesis.it/www-coova-jbez.tar.gz
+> 
+> You need to address uamformat and uamhomepage as following (all in one 
+> login page):
+> 
+> HS_UAMFORMAT=http://\$HS_UAMLISTEN:\$HS_UAMUIPORT/www/login.html
+> HS_UAMHOMEPAGE=http://\$HS_UAMLISTEN:\$HS_UAMUIPORT/www/login.html
+> 
+> Regards.
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+
+
+From jedgainer at gmail.com  Sun Nov  4 01:47:04 2012
+From: jedgainer at gmail.com (Jed Gainer)
+Date: Sat, 3 Nov 2012 18:47:04 -0700
+Subject: [Chilli] 2 questions
+Message-ID: <CAJc1nupYJVc5_7-TK+jfMpk8Px=Fuuw384diMum=p4spMaD5Sw@mail.gmail.com>
+
+HS_NETWORK=10.1.0.0
+HS_NETMASK=255.255.0.0
+
+Will that make the DHCP server hand out 10.1.0.2 - 10.1.254.254? I
+need to be able to handle thousands of clients.
+
+HS_POSTAUTH_PROXY=10.1.0.1
+HS_POSTAUTH_PROXYPORT=8080
+
+I have DansGuardian running on 8080 on all interfaces I have tried
+10.1.0.1 and 127.0.0.1 but after a successful login pages time out. I
+have manually configured the proxy setting in a browser on another
+machine to 10.0.0.131 (the chilli server's WAN) and it works fine
+blocks porn etc.
+
+From david at coova.com  Sun Nov  4 16:07:08 2012
+From: david at coova.com (David Bird)
+Date: Sun, 04 Nov 2012 08:07:08 -0800
+Subject: [Chilli] 2 questions
+In-Reply-To: <CAJc1nupYJVc5_7-TK+jfMpk8Px=Fuuw384diMum=p4spMaD5Sw@mail.gmail.com>
+References: <CAJc1nupYJVc5_7-TK+jfMpk8Px=Fuuw384diMum=p4spMaD5Sw@mail.gmail.com>
+Message-ID: <1352045228.4564.6.camel@david-laptop>
+
+Use --net 10.1.0.0/16
+
+And, make sure your firewall (setup by chilli/up.sh) allows for the
+connection to 10.1.0.1. Or, use the 10.0.0.131 as the proxyauth IP. 
+
+David
+
+
+On Sat, 2012-11-03 at 18:47 -0700, Jed Gainer wrote:
+> HS_NETWORK=10.1.0.0
+> HS_NETMASK=255.255.0.0
+> 
+> Will that make the DHCP server hand out 10.1.0.2 - 10.1.254.254? I
+> need to be able to handle thousands of clients.
+> 
+> HS_POSTAUTH_PROXY=10.1.0.1
+> HS_POSTAUTH_PROXYPORT=8080
+> 
+> I have DansGuardian running on 8080 on all interfaces I have tried
+> 10.1.0.1 and 127.0.0.1 but after a successful login pages time out. I
+> have manually configured the proxy setting in a browser on another
+> machine to 10.0.0.131 (the chilli server's WAN) and it works fine
+> blocks porn etc.
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+
+
+From jedgainer at gmail.com  Tue Nov  6 23:25:30 2012
+From: jedgainer at gmail.com (Jed Gainer)
+Date: Tue, 6 Nov 2012 15:25:30 -0800
+Subject: [Chilli] (no subject)
+Message-ID: <CAJc1nurrk5NsAmD1sprvFjp+aNwwE8VywK8Z53GfiK9ahzAVAA@mail.gmail.com>
+
+I want to setup the DHCP server to leave 10.1.0.1 to 10.1.0.254 for
+static devices (the APs) and hand out IPs in the range 10.1.1.1 to
+10.1.254.254. Or something similar to this anyway whatever is easiest
+to configure...
+
+Is the below correct?
+
+HS_NETWORK=10.1.0.0
+HS_NETMASK=255.255.0.0
+HS_DYNIP=10.1.1.0
+HS_DYNIP_MASK=255.255.254.0
+HS_STATIP=10.1.0.0
+HS_STATIP_MASK=255.255.255.0
+
+From benjo11111 at gmail.com  Wed Nov 21 10:22:05 2012
+From: benjo11111 at gmail.com (Ben)
+Date: Wed, 21 Nov 2012 15:52:05 +0530
+Subject: [Chilli] rpmbuild problem in centos
+Message-ID: <50ACAB4D.3000706@gmail.com>
+
+Hi,
+
+I am trying to build rpm from spec file as per site information. While 
+build i got below error,
+
+/bin/sh ../libtool --tag=CC   --mode=link gcc -D_GNU_SOURCE -Wall 
+-Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer 
+-funroll-loops -pipe -I../bstring -DDEFCHILLICONF='"/etc/chilli.conf"' 
+-DDEFPIDFILE='"/var/run/chilli.pid"' -DDEFSTATEDIR='"/var/run"' 
+-DSBINDIR='"/usr/sbin"'    -O2 -g   -o chilli_radconfig main-radconfig.o 
+libchilli.la  ../bstring/libbstring.la  -lssl -lcrypto      -lrt
+libtool: link: gcc -D_GNU_SOURCE -Wall -Werror -fno-builtin 
+-fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe 
+-I../bstring -DDEFCHILLICONF=\"/etc/chilli.conf\" 
+-DDEFPIDFILE=\"/var/run/chilli.pid\" -DDEFSTATEDIR=\"/var/run\" 
+-DSBINDIR=\"/usr/sbin\" -O2 -g -o .libs/chilli_radconfig 
+main-radconfig.o  ./.libs/libchilli.so ../bstring/.libs/libbstring.so 
+-lssl -lcrypto -lrt -Wl,-rpath -Wl,/usr/lib64
+gcc -DHAVE_CONFIG_H -I. -I..    -D_GNU_SOURCE -Wall -Werror -fno-builtin 
+-fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe 
+-I../bstring -DDEFCHILLICONF='"/etc/chilli.conf"' 
+-DDEFPIDFILE='"/var/run/chilli.pid"' -DDEFSTATEDIR='"/var/run"' 
+-DSBINDIR='"/usr/sbin"'    -O2 -g -MT main-opt.o -MD -MP -MF 
+.deps/main-opt.Tpo -c -o main-opt.o main-opt.c
+cc1: warnings being treated as errors
+main-opt.c: In function 'main':
+main-opt.c:781: error: 'ptr' may be used uninitialized in this function
+make[3]: *** [main-opt.o] Error 1
+make[3]: Leaving directory `/root/rpmbuild/BUILD/coova-chilli-1.3.0/src'
+make[2]: *** [all-recursive] Error 1
+make[2]: Leaving directory `/root/rpmbuild/BUILD/coova-chilli-1.3.0/src'
+make[1]: *** [all-recursive] Error 1
+make[1]: Leaving directory `/root/rpmbuild/BUILD/coova-chilli-1.3.0'
+make: *** [all] Error 2
+error: Bad exit status from /var/tmp/rpm-tmp.KiJKs5 (%build)
+
+
+RPM build errors:
+     Bad exit status from /var/tmp/rpm-tmp.KiJKs5 (%build)
+
+
+Is there any dependency problem here or ?
+
+OS : centos 6.2 64 bit
+coovachilli : 1.3.0
+
+
+BR
+Ben
+
+From giovanni.bezicheri at nethesis.it  Wed Nov 21 11:19:55 2012
+From: giovanni.bezicheri at nethesis.it (Giovanni Bezicheri)
+Date: Wed, 21 Nov 2012 12:19:55 +0100
+Subject: [Chilli] rpmbuild problem in centos
+In-Reply-To: <50ACAB4D.3000706@gmail.com>
+References: <50ACAB4D.3000706@gmail.com>
+Message-ID: <50ACB8DB.60306@nethesis.it>
+
+It depends from the gcc version used to compile the sources..
+try to fix main-opt.c:781 as follows:
+
+char *tok, *str, *ptr = NULL;
+
+On 21/11/2012 11:22, Ben wrote:
+> Hi,
+>
+> I am trying to build rpm from spec file as per site information. While 
+> build i got below error,
+>
+> /bin/sh ../libtool --tag=CC   --mode=link gcc -D_GNU_SOURCE -Wall 
+> -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer 
+> -funroll-loops -pipe -I../bstring -DDEFCHILLICONF='"/etc/chilli.conf"' 
+> -DDEFPIDFILE='"/var/run/chilli.pid"' -DDEFSTATEDIR='"/var/run"' 
+> -DSBINDIR='"/usr/sbin"'    -O2 -g   -o chilli_radconfig 
+> main-radconfig.o libchilli.la  ../bstring/libbstring.la  -lssl 
+> -lcrypto      -lrt
+> libtool: link: gcc -D_GNU_SOURCE -Wall -Werror -fno-builtin 
+> -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe 
+> -I../bstring -DDEFCHILLICONF=\"/etc/chilli.conf\" 
+> -DDEFPIDFILE=\"/var/run/chilli.pid\" -DDEFSTATEDIR=\"/var/run\" 
+> -DSBINDIR=\"/usr/sbin\" -O2 -g -o .libs/chilli_radconfig 
+> main-radconfig.o  ./.libs/libchilli.so ../bstring/.libs/libbstring.so 
+> -lssl -lcrypto -lrt -Wl,-rpath -Wl,/usr/lib64
+> gcc -DHAVE_CONFIG_H -I. -I..    -D_GNU_SOURCE -Wall -Werror 
+> -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer 
+> -funroll-loops -pipe -I../bstring -DDEFCHILLICONF='"/etc/chilli.conf"' 
+> -DDEFPIDFILE='"/var/run/chilli.pid"' -DDEFSTATEDIR='"/var/run"' 
+> -DSBINDIR='"/usr/sbin"'    -O2 -g -MT main-opt.o -MD -MP -MF 
+> .deps/main-opt.Tpo -c -o main-opt.o main-opt.c
+> cc1: warnings being treated as errors
+> main-opt.c: In function 'main':
+> main-opt.c:781: error: 'ptr' may be used uninitialized in this function
+> make[3]: *** [main-opt.o] Error 1
+> make[3]: Leaving directory `/root/rpmbuild/BUILD/coova-chilli-1.3.0/src'
+> make[2]: *** [all-recursive] Error 1
+> make[2]: Leaving directory `/root/rpmbuild/BUILD/coova-chilli-1.3.0/src'
+> make[1]: *** [all-recursive] Error 1
+> make[1]: Leaving directory `/root/rpmbuild/BUILD/coova-chilli-1.3.0'
+> make: *** [all] Error 2
+> error: Bad exit status from /var/tmp/rpm-tmp.KiJKs5 (%build)
+>
+>
+> RPM build errors:
+>     Bad exit status from /var/tmp/rpm-tmp.KiJKs5 (%build)
+>
+>
+> Is there any dependency problem here or ?
+>
+> OS : centos 6.2 64 bit
+> coovachilli : 1.3.0
+>
+>
+> BR
+> Ben
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+
+From jedgainer at gmail.com  Thu Nov 22 02:29:32 2012
+From: jedgainer at gmail.com (Jed Gainer)
+Date: Wed, 21 Nov 2012 18:29:32 -0800
+Subject: [Chilli] Max failed logins?
+Message-ID: <CAJc1nuq6sqWGmaHSxZNaASJKgiQ=5Gg6kqMwKYwfTrN0P4mK3Q@mail.gmail.com>
+
+Hi everyone,
+
+Is there a max failed logins setting somewhere? I have setup a hotspot
+for a hotel and changed the login form to just a password and staticly
+set the username. every once and a while no one can login and I have
+to reboot CoovaChilli.
+
+From jedgainer at gmail.com  Thu Nov 22 02:58:02 2012
+From: jedgainer at gmail.com (Jed Gainer)
+Date: Wed, 21 Nov 2012 18:58:02 -0800
+Subject: [Chilli] stacking CS-Total-Octets and CS-Total-Octets-Daily
+Message-ID: <CAJc1nupc8q8bYztEAbvzzDF4mZhsrZMjmexaKY9-+prrzrn_oQ@mail.gmail.com>
+
+I have built a system that lets people buy bandwidth with PayPal it
+just increases a CS-Total-Octets value in radcheck. Now the client
+wants to give a free daily 100MB allowance before they have to pay.
+How does CoovaChilli handle CS-Total-Octets and CS-Total-Octets-Daily?
+Will they get cut off once one is met or do they both have to be met?
+
+From benjo11111 at gmail.com  Fri Nov 23 06:12:11 2012
+From: benjo11111 at gmail.com (Ben)
+Date: Fri, 23 Nov 2012 11:42:11 +0530
+Subject: [Chilli] rpmbuild problem in centos
+In-Reply-To: <50ACB8DB.60306@nethesis.it>
+References: <50ACAB4D.3000706@gmail.com> <50ACB8DB.60306@nethesis.it>
+Message-ID: <50AF13BB.6010501@gmail.com>
+
+Hi Giovanni,
+
+yes it is working now. Thanks for your kind response.
+
+BR
+Ben
+> It depends from the gcc version used to compile the sources..
+> try to fix main-opt.c:781 as follows:
+>
+> char *tok, *str, *ptr = NULL;
+>
+> On 21/11/2012 11:22, Ben wrote:
+>> Hi,
+>>
+>> I am trying to build rpm from spec file as per site information. 
+>> While build i got below error,
+>>
+>> /bin/sh ../libtool --tag=CC   --mode=link gcc -D_GNU_SOURCE -Wall 
+>> -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer 
+>> -funroll-loops -pipe -I../bstring 
+>> -DDEFCHILLICONF='"/etc/chilli.conf"' 
+>> -DDEFPIDFILE='"/var/run/chilli.pid"' -DDEFSTATEDIR='"/var/run"' 
+>> -DSBINDIR='"/usr/sbin"'    -O2 -g   -o chilli_radconfig 
+>> main-radconfig.o libchilli.la  ../bstring/libbstring.la  -lssl 
+>> -lcrypto      -lrt
+>> libtool: link: gcc -D_GNU_SOURCE -Wall -Werror -fno-builtin 
+>> -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe 
+>> -I../bstring -DDEFCHILLICONF=\"/etc/chilli.conf\" 
+>> -DDEFPIDFILE=\"/var/run/chilli.pid\" -DDEFSTATEDIR=\"/var/run\" 
+>> -DSBINDIR=\"/usr/sbin\" -O2 -g -o .libs/chilli_radconfig 
+>> main-radconfig.o  ./.libs/libchilli.so ../bstring/.libs/libbstring.so 
+>> -lssl -lcrypto -lrt -Wl,-rpath -Wl,/usr/lib64
+>> gcc -DHAVE_CONFIG_H -I. -I..    -D_GNU_SOURCE -Wall -Werror 
+>> -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer 
+>> -funroll-loops -pipe -I../bstring 
+>> -DDEFCHILLICONF='"/etc/chilli.conf"' 
+>> -DDEFPIDFILE='"/var/run/chilli.pid"' -DDEFSTATEDIR='"/var/run"' 
+>> -DSBINDIR='"/usr/sbin"'    -O2 -g -MT main-opt.o -MD -MP -MF 
+>> .deps/main-opt.Tpo -c -o main-opt.o main-opt.c
+>> cc1: warnings being treated as errors
+>> main-opt.c: In function 'main':
+>> main-opt.c:781: error: 'ptr' may be used uninitialized in this function
+>> make[3]: *** [main-opt.o] Error 1
+>> make[3]: Leaving directory `/root/rpmbuild/BUILD/coova-chilli-1.3.0/src'
+>> make[2]: *** [all-recursive] Error 1
+>> make[2]: Leaving directory `/root/rpmbuild/BUILD/coova-chilli-1.3.0/src'
+>> make[1]: *** [all-recursive] Error 1
+>> make[1]: Leaving directory `/root/rpmbuild/BUILD/coova-chilli-1.3.0'
+>> make: *** [all] Error 2
+>> error: Bad exit status from /var/tmp/rpm-tmp.KiJKs5 (%build)
+>>
+>>
+>> RPM build errors:
+>>     Bad exit status from /var/tmp/rpm-tmp.KiJKs5 (%build)
+>>
+>>
+>> Is there any dependency problem here or ?
+>>
+>> OS : centos 6.2 64 bit
+>> coovachilli : 1.3.0
+>>
+>>
+>> BR
+>> Ben
+>> _______________________________________________
+>> Chilli mailing list
+>> Chilli at coova.org
+>> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+
+From jedgainer at gmail.com  Sun Nov 25 00:52:28 2012
+From: jedgainer at gmail.com (Jed Gainer)
+Date: Sat, 24 Nov 2012 16:52:28 -0800
+Subject: [Chilli] HS_POSTAUTH_PROXY
+Message-ID: <CAJc1nupYzkOsLaNQnAYayGviMeZRBemtJFLu+8apnFvjhzhVLw@mail.gmail.com>
+
+I have HS_POSTAUTH_PROXY set so everyone is forced though DansGuardian
+but would like to exempt a few people. I am not very good with
+iptables and I assume it will have to be an iptables command on their
+mac.
+
+From maxxer at ufficyo.com  Mon Nov 26 07:47:49 2012
+From: maxxer at ufficyo.com (Lorenzo Milesi)
+Date: Mon, 26 Nov 2012 08:47:49 +0100 (CET)
+Subject: [Chilli] NAS and NAT
+In-Reply-To: <769250723.69791.1353915704776.JavaMail.root@yetopen.it>
+Message-ID: <1930525168.69983.1353916069796.JavaMail.root@yetopen.it>
+
+Hi.
+
+I'm planning an upgrade from Chillispot+FreeRadius1 to Coova+FreeRadius2.
+I'm doing some testing and sadly found out FR2 doesn't allow having 2 NASes with the same IP address (nasname column in nas table).
+
+Has anyone ran into the same issue? How did you solve?
+
+Also, similar problem happens with dynamic IPs, when the `nas` table is read on FR startup only...
+
+thanks
+-- 
+Lorenzo Milesi - lorenzo.milesi at yetopen.it
+
+GPG/PGP Key-Id: 0xE704E230 - http://keyserver.linux.it
+
+
+
+From benjo11111 at gmail.com  Mon Nov 26 07:57:15 2012
+From: benjo11111 at gmail.com (Ben)
+Date: Mon, 26 Nov 2012 13:27:15 +0530
+Subject: [Chilli] rpmbuild problem in centos
+In-Reply-To: <50AF13BB.6010501@gmail.com>
+References: <50ACAB4D.3000706@gmail.com> <50ACB8DB.60306@nethesis.it>
+ <50AF13BB.6010501@gmail.com>
+Message-ID: <50B320DB.70000@gmail.com>
+
+Hi Giovanni,
+
+compilation is working fine but while doing rpmbulild  we got ,
+
+libtool: relink: gcc -shared  -fPIC -DPIC  .libs/chilli.o .libs/tun.o 
+.libs/ippool.o .libs/radius.o .libs/md5.o .libs/redir.o .libs/dhcp.o 
+.libs/syserr.o .libs/iphash.o .libs/lookup.o .libs/util.o 
+.libs/options.o .libs/statusfile.o .libs/conn.o .libs/sig.o 
+.libs/garden.o .libs/dns.o .libs/session.o .libs/pkt.o .libs/chksum.o 
+.libs/net.o .libs/safe.o .libs/sfhash.o .libs/ssl.o .libs/ms_chap.o 
+.libs/cmdsock.o   -Wl,-rpath -Wl,/usr/local/cova/lib 
+-L/root/rpmbuild/BUILDROOT/coova-chilli-1.3.0-1.x86_64/usr/local/cova/lib -L/usr/local/cova/lib 
+-lbstring -lssl -lcrypto -lrt  -O2 -O2 -m64 -mtune=generic   -Wl,-soname 
+-Wl,libchilli.so.0 -o .libs/libchilli.so.0.0.0
+/usr/bin/ld: cannot find -lbstring
+collect2: ld returned 1 exit status
+libtool: install: error: relink `libchilli.la' with the above command 
+before installing it
+make[3]: *** [install-libLTLIBRARIES] Error 1
+make[3]: Leaving directory `/root/rpmbuild/BUILD/coova-chilli-1.3.0/src'
+make[2]: *** [install-am] Error 2
+make[2]: Leaving directory `/root/rpmbuild/BUILD/coova-chilli-1.3.0/src'
+make[1]: *** [install-recursive] Error 1
+make[1]: Leaving directory `/root/rpmbuild/BUILD/coova-chilli-1.3.0/src'
+make: *** [install-recursive] Error 1
+error: Bad exit status from /var/tmp/rpm-tmp.S5T1pg (%install)
+
+I tried to find package dependencies for lbstrring above error but it 
+same after installing some other packages also.
+
+Is there any package missing here or ?
+
+BR
+Ben
+
+> Hi Giovanni,
+>
+> yes it is working now. Thanks for your kind response.
+>
+> BR
+> Ben
+>> It depends from the gcc version used to compile the sources..
+>> try to fix main-opt.c:781 as follows:
+>>
+>> char *tok, *str, *ptr = NULL;
+>>
+>> On 21/11/2012 11:22, Ben wrote:
+>>> Hi,
+>>>
+>>> I am trying to build rpm from spec file as per site information. 
+>>> While build i got below error,
+>>>
+>>> /bin/sh ../libtool --tag=CC   --mode=link gcc -D_GNU_SOURCE -Wall 
+>>> -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer 
+>>> -funroll-loops -pipe -I../bstring 
+>>> -DDEFCHILLICONF='"/etc/chilli.conf"' 
+>>> -DDEFPIDFILE='"/var/run/chilli.pid"' -DDEFSTATEDIR='"/var/run"' 
+>>> -DSBINDIR='"/usr/sbin"'    -O2 -g -o chilli_radconfig 
+>>> main-radconfig.o libchilli.la ../bstring/libbstring.la  -lssl 
+>>> -lcrypto      -lrt
+>>> libtool: link: gcc -D_GNU_SOURCE -Wall -Werror -fno-builtin 
+>>> -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe 
+>>> -I../bstring -DDEFCHILLICONF=\"/etc/chilli.conf\" 
+>>> -DDEFPIDFILE=\"/var/run/chilli.pid\" -DDEFSTATEDIR=\"/var/run\" 
+>>> -DSBINDIR=\"/usr/sbin\" -O2 -g -o .libs/chilli_radconfig 
+>>> main-radconfig.o  ./.libs/libchilli.so 
+>>> ../bstring/.libs/libbstring.so -lssl -lcrypto -lrt -Wl,-rpath 
+>>> -Wl,/usr/lib64
+>>> gcc -DHAVE_CONFIG_H -I. -I..    -D_GNU_SOURCE -Wall -Werror 
+>>> -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer 
+>>> -funroll-loops -pipe -I../bstring 
+>>> -DDEFCHILLICONF='"/etc/chilli.conf"' 
+>>> -DDEFPIDFILE='"/var/run/chilli.pid"' -DDEFSTATEDIR='"/var/run"' 
+>>> -DSBINDIR='"/usr/sbin"'    -O2 -g -MT main-opt.o -MD -MP -MF 
+>>> .deps/main-opt.Tpo -c -o main-opt.o main-opt.c
+>>> cc1: warnings being treated as errors
+>>> main-opt.c: In function 'main':
+>>> main-opt.c:781: error: 'ptr' may be used uninitialized in this function
+>>> make[3]: *** [main-opt.o] Error 1
+>>> make[3]: Leaving directory 
+>>> `/root/rpmbuild/BUILD/coova-chilli-1.3.0/src'
+>>> make[2]: *** [all-recursive] Error 1
+>>> make[2]: Leaving directory 
+>>> `/root/rpmbuild/BUILD/coova-chilli-1.3.0/src'
+>>> make[1]: *** [all-recursive] Error 1
+>>> make[1]: Leaving directory `/root/rpmbuild/BUILD/coova-chilli-1.3.0'
+>>> make: *** [all] Error 2
+>>> error: Bad exit status from /var/tmp/rpm-tmp.KiJKs5 (%build)
+>>>
+>>>
+>>> RPM build errors:
+>>>     Bad exit status from /var/tmp/rpm-tmp.KiJKs5 (%build)
+>>>
+>>>
+>>> Is there any dependency problem here or ?
+>>>
+>>> OS : centos 6.2 64 bit
+>>> coovachilli : 1.3.0
+>>>
+>>>
+>>> BR
+>>> Ben
+>>> _______________________________________________
+>>> Chilli mailing list
+>>> Chilli at coova.org
+>>> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>>
+>> _______________________________________________
+>> Chilli mailing list
+>> Chilli at coova.org
+>> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+
+
+From giovanni.bezicheri at nethesis.it  Mon Nov 26 09:48:04 2012
+From: giovanni.bezicheri at nethesis.it (Giovanni Bezicheri)
+Date: Mon, 26 Nov 2012 10:48:04 +0100
+Subject: [Chilli] rpmbuild problem in centos
+In-Reply-To: <50B320DB.70000@gmail.com>
+References: <50ACAB4D.3000706@gmail.com> <50ACB8DB.60306@nethesis.it>
+ <50AF13BB.6010501@gmail.com> <50B320DB.70000@gmail.com>
+Message-ID: <50B33AD4.30303@nethesis.it>
+
+I think you are missing libbstring..
+
+On 26/11/2012 08:57, Ben wrote:
+> Hi Giovanni,
+>
+> compilation is working fine but while doing rpmbulild  we got ,
+>
+> libtool: relink: gcc -shared  -fPIC -DPIC  .libs/chilli.o .libs/tun.o 
+> .libs/ippool.o .libs/radius.o .libs/md5.o .libs/redir.o .libs/dhcp.o 
+> .libs/syserr.o .libs/iphash.o .libs/lookup.o .libs/util.o 
+> .libs/options.o .libs/statusfile.o .libs/conn.o .libs/sig.o 
+> .libs/garden.o .libs/dns.o .libs/session.o .libs/pkt.o .libs/chksum.o 
+> .libs/net.o .libs/safe.o .libs/sfhash.o .libs/ssl.o .libs/ms_chap.o 
+> .libs/cmdsock.o   -Wl,-rpath -Wl,/usr/local/cova/lib 
+> -L/root/rpmbuild/BUILDROOT/coova-chilli-1.3.0-1.x86_64/usr/local/cova/lib 
+> -L/usr/local/cova/lib -lbstring -lssl -lcrypto -lrt  -O2 -O2 -m64 
+> -mtune=generic   -Wl,-soname -Wl,libchilli.so.0 -o 
+> .libs/libchilli.so.0.0.0
+> /usr/bin/ld: cannot find -lbstring
+> collect2: ld returned 1 exit status
+> libtool: install: error: relink `libchilli.la' with the above command 
+> before installing it
+> make[3]: *** [install-libLTLIBRARIES] Error 1
+> make[3]: Leaving directory `/root/rpmbuild/BUILD/coova-chilli-1.3.0/src'
+> make[2]: *** [install-am] Error 2
+> make[2]: Leaving directory `/root/rpmbuild/BUILD/coova-chilli-1.3.0/src'
+> make[1]: *** [install-recursive] Error 1
+> make[1]: Leaving directory `/root/rpmbuild/BUILD/coova-chilli-1.3.0/src'
+> make: *** [install-recursive] Error 1
+> error: Bad exit status from /var/tmp/rpm-tmp.S5T1pg (%install)
+>
+> I tried to find package dependencies for lbstrring above error but it 
+> same after installing some other packages also.
+>
+> Is there any package missing here or ?
+>
+> BR
+> Ben
+>
+>> Hi Giovanni,
+>>
+>> yes it is working now. Thanks for your kind response.
+>>
+>> BR
+>> Ben
+>>> It depends from the gcc version used to compile the sources..
+>>> try to fix main-opt.c:781 as follows:
+>>>
+>>> char *tok, *str, *ptr = NULL;
+>>>
+>>> On 21/11/2012 11:22, Ben wrote:
+>>>> Hi,
+>>>>
+>>>> I am trying to build rpm from spec file as per site information. 
+>>>> While build i got below error,
+>>>>
+>>>> /bin/sh ../libtool --tag=CC   --mode=link gcc -D_GNU_SOURCE -Wall 
+>>>> -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer 
+>>>> -funroll-loops -pipe -I../bstring 
+>>>> -DDEFCHILLICONF='"/etc/chilli.conf"' 
+>>>> -DDEFPIDFILE='"/var/run/chilli.pid"' -DDEFSTATEDIR='"/var/run"' 
+>>>> -DSBINDIR='"/usr/sbin"'    -O2 -g -o chilli_radconfig 
+>>>> main-radconfig.o libchilli.la ../bstring/libbstring.la  -lssl 
+>>>> -lcrypto      -lrt
+>>>> libtool: link: gcc -D_GNU_SOURCE -Wall -Werror -fno-builtin 
+>>>> -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe 
+>>>> -I../bstring -DDEFCHILLICONF=\"/etc/chilli.conf\" 
+>>>> -DDEFPIDFILE=\"/var/run/chilli.pid\" -DDEFSTATEDIR=\"/var/run\" 
+>>>> -DSBINDIR=\"/usr/sbin\" -O2 -g -o .libs/chilli_radconfig 
+>>>> main-radconfig.o ./.libs/libchilli.so 
+>>>> ../bstring/.libs/libbstring.so -lssl -lcrypto -lrt -Wl,-rpath 
+>>>> -Wl,/usr/lib64
+>>>> gcc -DHAVE_CONFIG_H -I. -I..    -D_GNU_SOURCE -Wall -Werror 
+>>>> -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer 
+>>>> -funroll-loops -pipe -I../bstring 
+>>>> -DDEFCHILLICONF='"/etc/chilli.conf"' 
+>>>> -DDEFPIDFILE='"/var/run/chilli.pid"' -DDEFSTATEDIR='"/var/run"' 
+>>>> -DSBINDIR='"/usr/sbin"'    -O2 -g -MT main-opt.o -MD -MP -MF 
+>>>> .deps/main-opt.Tpo -c -o main-opt.o main-opt.c
+>>>> cc1: warnings being treated as errors
+>>>> main-opt.c: In function 'main':
+>>>> main-opt.c:781: error: 'ptr' may be used uninitialized in this 
+>>>> function
+>>>> make[3]: *** [main-opt.o] Error 1
+>>>> make[3]: Leaving directory 
+>>>> `/root/rpmbuild/BUILD/coova-chilli-1.3.0/src'
+>>>> make[2]: *** [all-recursive] Error 1
+>>>> make[2]: Leaving directory 
+>>>> `/root/rpmbuild/BUILD/coova-chilli-1.3.0/src'
+>>>> make[1]: *** [all-recursive] Error 1
+>>>> make[1]: Leaving directory `/root/rpmbuild/BUILD/coova-chilli-1.3.0'
+>>>> make: *** [all] Error 2
+>>>> error: Bad exit status from /var/tmp/rpm-tmp.KiJKs5 (%build)
+>>>>
+>>>>
+>>>> RPM build errors:
+>>>>     Bad exit status from /var/tmp/rpm-tmp.KiJKs5 (%build)
+>>>>
+>>>>
+>>>> Is there any dependency problem here or ?
+>>>>
+>>>> OS : centos 6.2 64 bit
+>>>> coovachilli : 1.3.0
+>>>>
+>>>>
+>>>> BR
+>>>> Ben
+>>>> _______________________________________________
+>>>> Chilli mailing list
+>>>> Chilli at coova.org
+>>>> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>>>
+>>> _______________________________________________
+>>> Chilli mailing list
+>>> Chilli at coova.org
+>>> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>>
+>
+
+
+From david at coova.com  Mon Nov 26 17:30:13 2012
+From: david at coova.com (David Bird)
+Date: Mon, 26 Nov 2012 09:30:13 -0800
+Subject: [Chilli] rpmbuild problem in centos
+In-Reply-To: <50B33AD4.30303@nethesis.it>
+References: <50ACAB4D.3000706@gmail.com> <50ACB8DB.60306@nethesis.it>
+ <50AF13BB.6010501@gmail.com> <50B320DB.70000@gmail.com>
+ <50B33AD4.30303@nethesis.it>
+Message-ID: <1353951013.4335.1.camel@david-laptop>
+
+Libbstring is built from within the chilli source. It should be
+installed into the same directory as libchilli and I've never seen that
+to be an issue using the libtool build system.
+
+
+On Mon, 2012-11-26 at 10:48 +0100, Giovanni Bezicheri wrote:
+> I think you are missing libbstring..
+> 
+> On 26/11/2012 08:57, Ben wrote:
+> > Hi Giovanni,
+> >
+> > compilation is working fine but while doing rpmbulild  we got ,
+> >
+> > libtool: relink: gcc -shared  -fPIC -DPIC  .libs/chilli.o .libs/tun.o 
+> > .libs/ippool.o .libs/radius.o .libs/md5.o .libs/redir.o .libs/dhcp.o 
+> > .libs/syserr.o .libs/iphash.o .libs/lookup.o .libs/util.o 
+> > .libs/options.o .libs/statusfile.o .libs/conn.o .libs/sig.o 
+> > .libs/garden.o .libs/dns.o .libs/session.o .libs/pkt.o .libs/chksum.o 
+> > .libs/net.o .libs/safe.o .libs/sfhash.o .libs/ssl.o .libs/ms_chap.o 
+> > .libs/cmdsock.o   -Wl,-rpath -Wl,/usr/local/cova/lib 
+> > -L/root/rpmbuild/BUILDROOT/coova-chilli-1.3.0-1.x86_64/usr/local/cova/lib 
+> > -L/usr/local/cova/lib -lbstring -lssl -lcrypto -lrt  -O2 -O2 -m64 
+> > -mtune=generic   -Wl,-soname -Wl,libchilli.so.0 -o 
+> > .libs/libchilli.so.0.0.0
+> > /usr/bin/ld: cannot find -lbstring
+> > collect2: ld returned 1 exit status
+> > libtool: install: error: relink `libchilli.la' with the above command 
+> > before installing it
+> > make[3]: *** [install-libLTLIBRARIES] Error 1
+> > make[3]: Leaving directory `/root/rpmbuild/BUILD/coova-chilli-1.3.0/src'
+> > make[2]: *** [install-am] Error 2
+> > make[2]: Leaving directory `/root/rpmbuild/BUILD/coova-chilli-1.3.0/src'
+> > make[1]: *** [install-recursive] Error 1
+> > make[1]: Leaving directory `/root/rpmbuild/BUILD/coova-chilli-1.3.0/src'
+> > make: *** [install-recursive] Error 1
+> > error: Bad exit status from /var/tmp/rpm-tmp.S5T1pg (%install)
+> >
+> > I tried to find package dependencies for lbstrring above error but it 
+> > same after installing some other packages also.
+> >
+> > Is there any package missing here or ?
+> >
+> > BR
+> > Ben
+> >
+> >> Hi Giovanni,
+> >>
+> >> yes it is working now. Thanks for your kind response.
+> >>
+> >> BR
+> >> Ben
+> >>> It depends from the gcc version used to compile the sources..
+> >>> try to fix main-opt.c:781 as follows:
+> >>>
+> >>> char *tok, *str, *ptr = NULL;
+> >>>
+> >>> On 21/11/2012 11:22, Ben wrote:
+> >>>> Hi,
+> >>>>
+> >>>> I am trying to build rpm from spec file as per site information. 
+> >>>> While build i got below error,
+> >>>>
+> >>>> /bin/sh ../libtool --tag=CC   --mode=link gcc -D_GNU_SOURCE -Wall 
+> >>>> -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer 
+> >>>> -funroll-loops -pipe -I../bstring 
+> >>>> -DDEFCHILLICONF='"/etc/chilli.conf"' 
+> >>>> -DDEFPIDFILE='"/var/run/chilli.pid"' -DDEFSTATEDIR='"/var/run"' 
+> >>>> -DSBINDIR='"/usr/sbin"'    -O2 -g -o chilli_radconfig 
+> >>>> main-radconfig.o libchilli.la ../bstring/libbstring.la  -lssl 
+> >>>> -lcrypto      -lrt
+> >>>> libtool: link: gcc -D_GNU_SOURCE -Wall -Werror -fno-builtin 
+> >>>> -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe 
+> >>>> -I../bstring -DDEFCHILLICONF=\"/etc/chilli.conf\" 
+> >>>> -DDEFPIDFILE=\"/var/run/chilli.pid\" -DDEFSTATEDIR=\"/var/run\" 
+> >>>> -DSBINDIR=\"/usr/sbin\" -O2 -g -o .libs/chilli_radconfig 
+> >>>> main-radconfig.o ./.libs/libchilli.so 
+> >>>> ../bstring/.libs/libbstring.so -lssl -lcrypto -lrt -Wl,-rpath 
+> >>>> -Wl,/usr/lib64
+> >>>> gcc -DHAVE_CONFIG_H -I. -I..    -D_GNU_SOURCE -Wall -Werror 
+> >>>> -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer 
+> >>>> -funroll-loops -pipe -I../bstring 
+> >>>> -DDEFCHILLICONF='"/etc/chilli.conf"' 
+> >>>> -DDEFPIDFILE='"/var/run/chilli.pid"' -DDEFSTATEDIR='"/var/run"' 
+> >>>> -DSBINDIR='"/usr/sbin"'    -O2 -g -MT main-opt.o -MD -MP -MF 
+> >>>> .deps/main-opt.Tpo -c -o main-opt.o main-opt.c
+> >>>> cc1: warnings being treated as errors
+> >>>> main-opt.c: In function 'main':
+> >>>> main-opt.c:781: error: 'ptr' may be used uninitialized in this 
+> >>>> function
+> >>>> make[3]: *** [main-opt.o] Error 1
+> >>>> make[3]: Leaving directory 
+> >>>> `/root/rpmbuild/BUILD/coova-chilli-1.3.0/src'
+> >>>> make[2]: *** [all-recursive] Error 1
+> >>>> make[2]: Leaving directory 
+> >>>> `/root/rpmbuild/BUILD/coova-chilli-1.3.0/src'
+> >>>> make[1]: *** [all-recursive] Error 1
+> >>>> make[1]: Leaving directory `/root/rpmbuild/BUILD/coova-chilli-1.3.0'
+> >>>> make: *** [all] Error 2
+> >>>> error: Bad exit status from /var/tmp/rpm-tmp.KiJKs5 (%build)
+> >>>>
+> >>>>
+> >>>> RPM build errors:
+> >>>>     Bad exit status from /var/tmp/rpm-tmp.KiJKs5 (%build)
+> >>>>
+> >>>>
+> >>>> Is there any dependency problem here or ?
+> >>>>
+> >>>> OS : centos 6.2 64 bit
+> >>>> coovachilli : 1.3.0
+> >>>>
+> >>>>
+> >>>> BR
+> >>>> Ben
+> >>>> _______________________________________________
+> >>>> Chilli mailing list
+> >>>> Chilli at coova.org
+> >>>> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+> >>>
+> >>> _______________________________________________
+> >>> Chilli mailing list
+> >>> Chilli at coova.org
+> >>> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+> >>
+> >
+> 
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+
+
+From david at coova.com  Mon Nov 26 17:39:33 2012
+From: david at coova.com (David Bird)
+Date: Mon, 26 Nov 2012 09:39:33 -0800
+Subject: [Chilli] NAS and NAT
+In-Reply-To: <1930525168.69983.1353916069796.JavaMail.root@yetopen.it>
+References: <1930525168.69983.1353916069796.JavaMail.root@yetopen.it>
+Message-ID: <1353951573.4335.6.camel@david-laptop>
+
+Hello,
+
+RADIUS RFC 2865 states:
+
+      A RADIUS server MUST use the source IP address of the RADIUS UDP
+      packet to decide which shared secret to use, so that RADIUS
+      requests can be proxied.
+
+So, it is not uncommon for RADIUS servers to associate a "nas" (and
+shared secret) to an IP address. Is this the issue you are having?
+Specifics about the FR database tables you might refer to FR mailing
+list. However, in the past I have used rlm_raw to give FR the ability to
+select a shared secret based on attributes (even if in conflict to
+RFC). 
+
+David
+ 
+
+On Mon, 2012-11-26 at 08:47 +0100, Lorenzo Milesi wrote:
+> Hi.
+> 
+> I'm planning an upgrade from Chillispot+FreeRadius1 to Coova+FreeRadius2.
+> I'm doing some testing and sadly found out FR2 doesn't allow having 2 NASes with the same IP address (nasname column in nas table).
+> 
+> Has anyone ran into the same issue? How did you solve?
+> 
+> Also, similar problem happens with dynamic IPs, when the `nas` table is read on FR startup only...
+> 
+> thanks
+
+
+
+From alberto at web3king.com  Thu Nov 29 09:31:01 2012
+From: alberto at web3king.com (alberto at web3king.com)
+Date: Thu, 29 Nov 2012 10:31:01 +0100
+Subject: [Chilli] Multiple gateway setup
+Message-ID: <e2d83b8c4cb6c3efecf888b47255d5f6@web3king.com>
+
+ Hi everyone I setup a hotspot with chilli+coova but I want to use 
+ multiple gateway for internet access.
+ I've got two type of users: standard and premium, I want to set 
+ different gateway to serve internet access for this two kind of users.
+
+ This is a classic use case: a standard and a premium user see the 
+ access point wifi signal, they connect to the wifi, they see the login 
+ page and they insert their login and password. At this point I want to 
+ set two different gateways, for example: 192.168.182.20 for standard and 
+ 192.168.182.30 for premium. In other words I want to set different SLA 
+ based on different gateway.
+
+ Is this possible with coova+chilli?
+
+ Best Regards,
+ Alberto - Web3king.com
+
+
+ PS: if there is some freelance that can set up this kind of behavior 
+ mail me in private.
+
+From david at coova.com  Thu Nov 29 17:39:23 2012
+From: david at coova.com (David Bird)
+Date: Thu, 29 Nov 2012 09:39:23 -0800
+Subject: [Chilli] Multiple gateway setup
+In-Reply-To: <e2d83b8c4cb6c3efecf888b47255d5f6@web3king.com>
+References: <e2d83b8c4cb6c3efecf888b47255d5f6@web3king.com>
+Message-ID: <1354210763.6232.6.camel@david-laptop>
+
+You can use the conup/condown scripts to setup linux routing tables for
+the users. Google for 'linux multiple default routes' for info on how
+that is done. 
+
+Cheers,
+David
+
+
+On Thu, 2012-11-29 at 10:31 +0100, alberto at web3king.com wrote:
+> Hi everyone I setup a hotspot with chilli+coova but I want to use 
+>  multiple gateway for internet access.
+>  I've got two type of users: standard and premium, I want to set 
+>  different gateway to serve internet access for this two kind of users.
+> 
+>  This is a classic use case: a standard and a premium user see the 
+>  access point wifi signal, they connect to the wifi, they see the login 
+>  page and they insert their login and password. At this point I want to 
+>  set two different gateways, for example: 192.168.182.20 for standard and 
+>  192.168.182.30 for premium. In other words I want to set different SLA 
+>  based on different gateway.
+> 
+>  Is this possible with coova+chilli?
+> 
+>  Best Regards,
+>  Alberto - Web3king.com
+> 
+> 
+>  PS: if there is some freelance that can set up this kind of behavior 
+>  mail me in private.
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+
+
+From david at coova.com  Thu Nov 29 18:47:47 2012
+From: david at coova.com (David Bird)
+Date: Thu, 29 Nov 2012 10:47:47 -0800
+Subject: [Chilli] stacking CS-Total-Octets and CS-Total-Octets-Daily
+In-Reply-To: <CAJc1nupc8q8bYztEAbvzzDF4mZhsrZMjmexaKY9-+prrzrn_oQ@mail.gmail.com>
+References: <CAJc1nupc8q8bYztEAbvzzDF4mZhsrZMjmexaKY9-+prrzrn_oQ@mail.gmail.com>
+Message-ID: <1354214867.6232.17.camel@david-laptop>
+
+Does "CS" mean "ChilliSpot" ? There is no -Daily attribute. It is up to
+your RADIUS server provisioning logic to set the appropriate attributes
+based on the policy and usage. 
+
+Cheers,
+David
+
+
+On Wed, 2012-11-21 at 18:58 -0800, Jed Gainer wrote:
+> I have built a system that lets people buy bandwidth with PayPal it
+> just increases a CS-Total-Octets value in radcheck. Now the client
+> wants to give a free daily 100MB allowance before they have to pay.
+> How does CoovaChilli handle CS-Total-Octets and CS-Total-Octets-Daily?
+> Will they get cut off once one is met or do they both have to be met?
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+
+

@@ -1,0 +1,162 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> dhcp relay
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20dhcp%20relay&In-Reply-To=%3C1255426269.8099.44.camel%40david-laptop%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000925.html">
+   <LINK REL="Next"  HREF="000929.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>dhcp relay</H1>
+    <B>wlanmac</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20dhcp%20relay&In-Reply-To=%3C1255426269.8099.44.camel%40david-laptop%3E"
+       TITLE="dhcp relay">wlan at mac.com
+       </A><BR>
+    <I>Tue Oct 13 09:31:09 UTC 2009</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000925.html">dhcp relay
+</A></li>
+        <LI>Next message: <A HREF="000929.html">[OT] Re: dhcp relay
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#927">[ date ]</a>
+              <a href="thread.html#927">[ thread ]</a>
+              <a href="subject.html#927">[ subject ]</a>
+              <a href="author.html#927">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hi,
+
+As mentioned, you shouldn't have two DHCP servers listening for
+broadcasts, but your dhcp relay configuration is starting to look good.
+Though, do be sure that the real dhcp server isn't also replying
+directly to the same request. 
+
+You might also consider using MAC authentication and Framed-IP-Address
+in an Access-Accept to set &quot;static&quot; IP addresses in your network based
+on MAC address. 
+
+David
+
+On Tue, 2009-10-13 at 11:30 +0300, Oguzhan Kayhan wrote:
+&gt;<i> Last correction
+</I>&gt;<i> dhcpgateway 192.168.1.10
+</I>&gt;<i> dhcpgatewayport 67
+</I>&gt;<i> dhcprelayagent  192.168.255.1
+</I>&gt;<i> usetap
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> with this config, it seems client gets necessary ip address which i set on
+</I>&gt;<i> dhcp server running on 192.168.1.10  but on syslog,
+</I>&gt;<i> i keep on getting
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> Oct 13 11:28:44 gw coova-chilli[13573]: dhcp.c: 2262: received DHCP
+</I>&gt;<i> response from host other than our gateway
+</I>&gt;<i> Oct 13 11:28:44 gw coova-chilli[13573]: chilli.c: 4164:
+</I>&gt;<i> dhcp_relay_decaps() failed!
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> But it seems everything is working..
+</I>&gt;<i> 
+</I>&gt;<i> So is there a real error, or is it just a bug that keeps on giving this
+</I>&gt;<i> msgs..
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> &gt; Anybody??? :)
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; I made a few tests more..
+</I>&gt;<i> &gt; I installed dhcp server to another server.
+</I>&gt;<i> &gt; And i also installed coova.
+</I>&gt;<i> &gt; Lets assume DHCP server is on 192.168.1.10
+</I>&gt;<i> &gt; and coova wan ip is 192.168.1.11
+</I>&gt;<i> &gt; So what i need to enter on coova config i guess is,
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; But when i enter dhcpgateway 192.168.1.10
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; the msg i got on syslog is
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; Oct 13 11:00:04 gw coova-chilli[11812]: dhcp.c: 2262: received DHCP
+</I>&gt;<i> &gt; response from host other than our gateway
+</I>&gt;<i> &gt; Oct 13 11:00:04 gw coova-chilli[11812]: chilli.c: 4164:
+</I>&gt;<i> &gt; dhcp_relay_decaps() failed!
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; if i enter dhcprelayagent 192.168.1.10
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; nothing happens..it still gives the ip addresses from coova.
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; Anybody experienced about that????
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt;&gt; Hello,
+</I>&gt;<i> &gt;&gt; I wonder am i thinking wrong about dhcprelay..
+</I>&gt;<i> &gt;&gt;
+</I>&gt;<i> &gt;&gt; I am planning to run a dhcpserver on same server with coova.
+</I>&gt;<i> &gt;&gt; And i want to disable coova's own dhcp server, so i can give static ip's
+</I>&gt;<i> &gt;&gt; to some of MACID's (like printers etc)
+</I>&gt;<i> &gt;&gt; I dont wanna use anyip and and dynamic-static ip masks.
+</I>&gt;<i> &gt;&gt; Because it creates other problems too.
+</I>&gt;<i> &gt;&gt;
+</I>&gt;<i> &gt;&gt;
+</I>&gt;<i> &gt;&gt; As i see it seems possible  via freeradius+jradius.
+</I>&gt;<i> &gt;&gt; What i wonder how (or can I) can i set coova to use local dhcp server
+</I>&gt;<i> &gt;&gt; instead of its own or freeradius..
+</I>&gt;<i> &gt;&gt;
+</I>&gt;<i> &gt;&gt;
+</I>&gt;<i> &gt;&gt; ---------------------------------------------------------------------
+</I>&gt;<i> &gt;&gt; To unsubscribe, e-mail: <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli-unsubscribe at coova.org</A>
+</I>&gt;<i> &gt;&gt; For additional commands, e-mail: <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli-help at coova.org</A>
+</I>&gt;<i> &gt;&gt; <A HREF="http://www.coova.org/CoovaChilli">http://www.coova.org/CoovaChilli</A>
+</I>&gt;<i> &gt;&gt;
+</I>&gt;<i> &gt;&gt;
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; ---------------------------------------------------------------------
+</I>&gt;<i> &gt; To unsubscribe, e-mail: <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli-unsubscribe at coova.org</A>
+</I>&gt;<i> &gt; For additional commands, e-mail: <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli-help at coova.org</A>
+</I>&gt;<i> &gt; <A HREF="http://www.coova.org/CoovaChilli">http://www.coova.org/CoovaChilli</A>
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt;
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> ---------------------------------------------------------------------
+</I>&gt;<i> To unsubscribe, e-mail: <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli-unsubscribe at coova.org</A>
+</I>&gt;<i> For additional commands, e-mail: <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli-help at coova.org</A>
+</I>&gt;<i> <A HREF="http://www.coova.org/CoovaChilli">http://www.coova.org/CoovaChilli</A>
+</I>&gt;<i> 
+</I>
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000925.html">dhcp relay
+</A></li>
+	<LI>Next message: <A HREF="000929.html">[OT] Re: dhcp relay
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#927">[ date ]</a>
+              <a href="thread.html#927">[ thread ]</a>
+              <a href="subject.html#927">[ subject ]</a>
+              <a href="author.html#927">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

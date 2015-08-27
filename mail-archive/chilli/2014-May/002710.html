@@ -1,0 +1,240 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] Best Coova - Radius centralized setup (at least what	you	think)
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Best%20Coova%20-%20Radius%20centralized%20setup%20%28at%20least%20what%0A%09you%09think%29&In-Reply-To=%3C498A98A0-4BDF-4988-A1AC-EE939D187C62%40dkxl.co.uk%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="002709.html">
+   <LINK REL="Next"  HREF="002712.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] Best Coova - Radius centralized setup (at least what	you	think)</H1>
+    <B>David Harrold</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Best%20Coova%20-%20Radius%20centralized%20setup%20%28at%20least%20what%0A%09you%09think%29&In-Reply-To=%3C498A98A0-4BDF-4988-A1AC-EE939D187C62%40dkxl.co.uk%3E"
+       TITLE="[Chilli] Best Coova - Radius centralized setup (at least what	you	think)">david at dkxl.co.uk
+       </A><BR>
+    <I>Tue May  6 09:03:48 UTC 2014</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="002709.html">[Chilli] Best Coova - Radius centralized setup (at least what you think)
+</A></li>
+        <LI>Next message: <A HREF="002712.html">[Chilli] Best Coova - Radius centralized setup (at least what you	think)
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2710">[ date ]</a>
+              <a href="thread.html#2710">[ thread ]</a>
+              <a href="subject.html#2710">[ subject ]</a>
+              <a href="author.html#2710">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Distributing the Chilli boxes so they are close to your subscribers is fine.
+
+I would centralise your RADIUS servers and keep them close to your SQL DB. Usually people put them on the same subnet in their data centre.
+
+The RADIUS protocol between Chilli and the RADIUS server will in general be able to handle any transient network outages and be more robust than the SQL protocols between RADIUS and the SQL DB.  
+
+If you are able to use DiffServ QoS across the network links between the Chilli boxes and the RADIUS servers, then I would prioritise the RADIUS messages above the subscriber traffic. 
+
+BR
+-David
+
+
+
+&gt;<i> 
+</I>&gt;<i> ----------------------------------------------------------------------
+</I>&gt;<i> 
+</I>&gt;<i> Message: 1
+</I>&gt;<i> Date: Mon, 5 May 2014 09:36:03 -0100
+</I>&gt;<i> From: &quot;Luis Ferreira&quot; &lt;<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">lferreira at cabocom.cv</A>&gt;
+</I>&gt;<i> To: &lt;<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli at coova.org</A>&gt;
+</I>&gt;<i> Subject: [Chilli] Best Coova - Radius centralized setup (at least what
+</I>&gt;<i> 	you	think)
+</I>&gt;<i> Message-ID: &lt;000601cf684d$d205a6f0$7610f4d0$@cabocom.cv&gt;
+</I>&gt;<i> Content-Type: text/plain; charset=&quot;iso-8859-1&quot;
+</I>&gt;<i> 
+</I>&gt;<i> Hi everyone,
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> I would like to have your opinion on the smartest setup that in your opinion
+</I>&gt;<i> is the best chilli ? radius connectivity for centralized NAS.
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> Imagin a scenario where you have several hotspots spread, and you want to
+</I>&gt;<i> interconnect them.
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> For instance, I?ve tried the following:
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i>               +------------------+
+</I>&gt;<i> +---------------------------+
+</I>&gt;<i> 
+</I>&gt;<i>               |   Location 1     |             | Remote Centralized Server
+</I>&gt;<i> |
+</I>&gt;<i> 
+</I>&gt;<i>               +------------------+
+</I>&gt;<i> +---------------------------+
+</I>&gt;<i> 
+</I>&gt;<i>               |                  |             |
+</I>&gt;<i> |
+</I>&gt;<i> 
+</I>&gt;<i> Subscribers &lt;&gt; | CoovaChilli box  |  &lt;=======&gt;  |  Free Radius + MySQL DB
+</I>&gt;<i> |
+</I>&gt;<i> 
+</I>&gt;<i>               |                  |             |
+</I>&gt;<i> |
+</I>&gt;<i> 
+</I>&gt;<i>               +------------------+
+</I>&gt;<i> +---------------------------+
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> Pros:     Fast Radius response
+</I>&gt;<i> 
+</I>&gt;<i> Easy configuration in case of Radius changes (centralized)
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> Cons:    Some ?stalled? accounts, where the radius sends a disconnect packet
+</I>&gt;<i> to Location, but due to network problems it does not arrive on chilli CoA
+</I>&gt;<i> port, for instance. 
+</I>&gt;<i> 
+</I>&gt;<i> Due to radius server communication that might fail some time, due to line
+</I>&gt;<i> blackouts, it enter in a state where users cannot make login and then, when
+</I>&gt;<i> they can, radius or chilli does not allow
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i>               +--------------------------------+
+</I>&gt;<i> +---------------------------+
+</I>&gt;<i> 
+</I>&gt;<i>               |   Location 1                   |             | Remote
+</I>&gt;<i> Centralized Server |
+</I>&gt;<i> 
+</I>&gt;<i>               +--------------------------------+
+</I>&gt;<i> +---------------------------+
+</I>&gt;<i> 
+</I>&gt;<i>               |                                |             |
+</I>&gt;<i> |
+</I>&gt;<i> 
+</I>&gt;<i> Subscribers &lt;&gt; | CoovaChilli box + Free Radius  |  &lt;=======&gt;  |
+</I>&gt;<i> MySQL DB          |
+</I>&gt;<i> 
+</I>&gt;<i>               |                                |             |
+</I>&gt;<i> |
+</I>&gt;<i> 
+</I>&gt;<i>               +--------------------------------+
+</I>&gt;<i> +---------------------------+
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> Pros:     When losing connection to MySQL DB, radius fails to authenticate,
+</I>&gt;<i> and so does chilli, preventing creating those communication issues between
+</I>&gt;<i> Chilli and Radius
+</I>&gt;<i> 
+</I>&gt;<i>                When loosing connectivity, system still works, and when it
+</I>&gt;<i> returns, it is able to resume it?s normal process, not leaving ?Stalled?
+</I>&gt;<i> Accounts
+</I>&gt;<i> 
+</I>&gt;<i> In the event of potential ?Stalled? Accounts, it would be easy to wipe them
+</I>&gt;<i> out, since radius and chilli would always be in sync
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> Cons:    Slow in getting a response from MySQL DB, due to connection speed
+</I>&gt;<i> (creating a socket or waiting for timeout to create a new one).
+</I>&gt;<i> 
+</I>&gt;<i>                Hard configuration changes (have to change in all locations
+</I>&gt;<i> radius config file.
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> What other setup?s do you know or what in your opinion are the better ones
+</I>&gt;<i> (if possible, telling good things and bad things).
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> Atentamente,
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> Descri??o: Descri??o: Descri??o: C:\CABOCOM\CABOCOM WORK\logo-e-mail.gif
+</I>&gt;<i> 
+</I>&gt;<i> Luis Ferreira
+</I>&gt;<i> 
+</I>&gt;<i> CTO
+</I>&gt;<i> 
+</I>&gt;<i> Cabocom S.A.
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> -------------- next part --------------
+</I>&gt;<i> An HTML attachment was scrubbed...
+</I>&gt;<i> URL: &lt;<A HREF="http://lists.coova.org/pipermail/chilli/attachments/20140505/69e7ac89/attachment-0001.html">http://lists.coova.org/pipermail/chilli/attachments/20140505/69e7ac89/attachment-0001.html</A>&gt;
+</I>&gt;<i> -------------- next part --------------
+</I>&gt;<i> A non-text attachment was scrubbed...
+</I>&gt;<i> Name: image001.png
+</I>&gt;<i> Type: image/png
+</I>&gt;<i> Size: 3526 bytes
+</I>&gt;<i> Desc: not available
+</I>&gt;<i> URL: &lt;<A HREF="http://lists.coova.org/pipermail/chilli/attachments/20140505/69e7ac89/attachment-0001.png">http://lists.coova.org/pipermail/chilli/attachments/20140505/69e7ac89/attachment-0001.png</A>&gt;
+</I>&gt;<i> 
+</I>&gt;<i> ------------------------------
+</I>&gt;<i> 
+</I>&gt;<i> _______________________________________________
+</I>&gt;<i> Chilli mailing list
+</I>&gt;<i> <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">Chilli at coova.org</A>
+</I>&gt;<i> <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">http://lists.coova.org/cgi-bin/mailman/listinfo/chilli</A>
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> End of Chilli Digest, Vol 54, Issue 4
+</I>&gt;<i> *************************************
+</I>
+</PRE>
+
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="002709.html">[Chilli] Best Coova - Radius centralized setup (at least what you think)
+</A></li>
+	<LI>Next message: <A HREF="002712.html">[Chilli] Best Coova - Radius centralized setup (at least what you	think)
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2710">[ date ]</a>
+              <a href="thread.html#2710">[ thread ]</a>
+              <a href="subject.html#2710">[ subject ]</a>
+              <a href="author.html#2710">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

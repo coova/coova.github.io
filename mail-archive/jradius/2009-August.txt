@@ -1,0 +1,82 @@
+From wlan at mac.com  Tue Aug 25 09:13:14 2009
+From: wlan at mac.com (wlanmac)
+Date: Tue, 25 Aug 2009 11:13:14 +0200
+Subject: RadSec
+Message-ID: <1251191594.8114.14.camel@david-laptop>
+
+Hello all,
+
+I've implemented a first version of RadSec support in JRadius, an
+open-source Java client and server framework. Details are at:
+
+http://www.coova.org/JRadius/RadSec
+
+Highlights:
+- Uses standard JCE and also Bouncy Castle.
+- Uses standard Java KeyManager and TrustManager.
+- RadSec support in general RadiusClient.
+- RadSec support in JRadiusSimulator for testing!
+- RadSec support in JRadius server with a simple proxy handler provided.
+
+This is all new to JRadius, and is only in the subversion version. To
+make it easier, here is a snapshot build of the current full release:
+
+http://dev.coova.org/jradius/jradius-svn-116.zip
+
+If interested only in using the simulator/client GUI, you can launch
+on-line at:
+
+http://dev.coova.org/jnlp/JRadiusSimulator.jnlp
+
+(note: webstart will download the java jars once (unless updated), the
+initial download is rather large because of the jradius-dictionary).
+
+Enjoy,
+David
+
+
+
+From afsalopes at gmail.com  Mon Aug 31 10:21:13 2009
+From: afsalopes at gmail.com (=?ISO-8859-1?Q?Andr=E9_Lopes?=)
+Date: Mon, 31 Aug 2009 11:21:13 +0100
+Subject: Question about port 1812
+Message-ID: <ca5a3f590908310321pb3d977ehdf8d6a6dd62da709@mail.gmail.com>
+
+Hi all,
+
+I'm new on JRadius and my knowledge on RADIUS and FreeRadius is very limited
+as well. My question is about the use of port 1812 by FreeRadius and by the
+JRadius.
+
+1. In the FreeRadius log file we can see that it uses the port 1812 for
+authentication:*
+"Listening on authentication *:1812"*
+
+2. In the JRadius configuration file(jradius-config.xml) we can see that
+this port is also used by the the GenericWebServices listener:
+*        <listener name="GenericWebSerices">
+            <description>JRadius WebServices Listener</description>
+            <class>net.sf.jradius.webservice.WebServiceListener</class>
+
+<processor-class>net.sf.jradius.webservice.WebServiceProcessor</processor-class>
+            <processor-threads>2</processor-threads>
+            <property name="port" value="1812"/>
+            <property name="backlog" value="1024"/>
+            <property name="useSSL" value="false"/>
+            <packet-handler name="SSOProxy">
+                <description>SSO Proxy Redirector</description>
+                <class>net.sf.jradius.webservice.SSOProxyService</class>
+            </packet-handler>
+        </listener>*
+
+Could this situation cause any sort of conflict? both applications are
+trying to use the same port to listen for requests?
+
+-- 
+Andr? Lopes
+Charles de Gaulle<http://www.brainyquote.com/quotes/authors/c/charles_de_gaulle.html>
+- "The better I get to know men, the more I find myself loving dogs."
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/jradius/attachments/20090831/8379dd27/attachment.htm>
+

@@ -1,0 +1,147 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] higher data volume support
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20higher%20data%20volume%20support&In-Reply-To=%3CCADao4Covzi4vPs5kq%2BZnDc9m-f-84PE7p%3Dzj8CVVXvKm%2BxzT9w%40mail.gmail.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="002405.html">
+   <LINK REL="Next"  HREF="002412.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] higher data volume support</H1>
+    <B>Russell Mike</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20higher%20data%20volume%20support&In-Reply-To=%3CCADao4Covzi4vPs5kq%2BZnDc9m-f-84PE7p%3Dzj8CVVXvKm%2BxzT9w%40mail.gmail.com%3E"
+       TITLE="[Chilli] higher data volume support">radius.sir at gmail.com
+       </A><BR>
+    <I>Mon Oct 21 08:58:30 UTC 2013</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="002405.html">[Chilli] Change coova-chilli log file
+</A></li>
+        <LI>Next message: <A HREF="002412.html">[Chilli] Backup the firmware of a Coova-Chilli custom-builded AP and upload to new AP of same brand
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2411">[ date ]</a>
+              <a href="thread.html#2411">[ thread ]</a>
+              <a href="subject.html#2411">[ subject ]</a>
+              <a href="author.html#2411">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Dear Chilli List
+
+After working for many weeks, still unable to use gigawords attributes to
+control more than 4GB, moreover, i am unable to understand the problem.
+here is what i did, someone please help to detect the error.
+
+*Current Status:* it is woking setup up to 3.9GB
+*Problem:* Counter Rolls on 4GB, need higher data volume support
+
+
+*1.) COUNTERS:*
+
+sqlcounter    lower32_bitcounter {
+              counter-name = Total-Max-Octets
+              check-name = ChilliSpot-Max-Total-Octets
+              reply-name = ChilliSpot-Max-Total-Octets
+              sqlmod-inst = sql
+              key = User-Name
+              reset = never
+              cache-size = 5000
+              query = &quot;SELECT (SUM(AcctInputOctets) +
+SUM(AcctOutputOctets)) FROM radacct WHERE UserName='%{%k}'&quot;
+
+
+sqlcounter    uper32_bitcounter {
+              counter-name = Total-Max-Octets
+              check-name = ChilliSpot-Max-Total-Gigawords
+              reply-name = ChilliSpot-Max-Total-Gigawords
+              sqlmod-inst = sql
+              key = User-Name
+              reset = never
+              cache-size = 5000
+              query = &quot;SELECT (SUM(AcctInputOctets) +
+SUM(AcctOutputOctets)) FROM radacct WHERE UserName='%{%k}'&quot;
+
+
+
+*2.)  AcctInputOctects &amp; AcctOutputOctects colons are &quot;bigint&quot; (64bit)*
+
+
+mysql&gt; desc radacct;
++----------------------+-------------+------+-----+---------------------+----------------+
+|<i> Field                | Type        | Null | Key | Default             |
+</I>Extra          |
++----------------------+-------------+------+-----+---------------------+----------------+
+
+|<i> AcctInputOctets      | *bigint(20)*  | YES  |     | NULL                |
+</I>              |
+|<i> AcctOutputOctets    | *bigint(20*)  | YES  |     | NULL                |
+</I>              |
+
+
+
+
+*3.) Radius is alright configured for lower32_bitcounter
+&amp; uper32_bitcounter in following section*
+
+authorize {
+
+instantiate {
+
+
+*Check Items*
+ChilliSpot-Max-Total-Octets = 1073741824          (Bytes)
+ChilliSpot-Max-Total-Gigawords = 8589934592    (Bits)
+
+
+*Reply Items:*
+Acct-Interim-Interval
+ChilliSpot-Max-Total-Octets = 1073741824          (Bytes)
+ChilliSpot-Max-Total-Gigawords = 8589934592     (Bits)
+
+
+5.) I start radius in debug mode and when a user attempts login. The max
+number counter read is 4187593113 (3.9GB) where i have defined the
+following &quot;8589934592&quot; (8GB in bits) in the profile attribute as above.
+
+
+i need help to define check &amp; reply items.
+
+
+Thanks everyone !
+RM --
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: &lt;<A HREF="http://lists.coova.org/pipermail/chilli/attachments/20131021/b6e0ad3e/attachment.html">http://lists.coova.org/pipermail/chilli/attachments/20131021/b6e0ad3e/attachment.html</A>&gt;
+</PRE>
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="002405.html">[Chilli] Change coova-chilli log file
+</A></li>
+	<LI>Next message: <A HREF="002412.html">[Chilli] Backup the firmware of a Coova-Chilli custom-builded AP and upload to new AP of same brand
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2411">[ date ]</a>
+              <a href="thread.html#2411">[ thread ]</a>
+              <a href="subject.html#2411">[ subject ]</a>
+              <a href="author.html#2411">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

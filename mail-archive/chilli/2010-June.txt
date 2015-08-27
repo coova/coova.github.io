@@ -1,0 +1,2076 @@
+From xserverlinux at gmail.com  Wed Jun  2 18:05:24 2010
+From: xserverlinux at gmail.com (troxlinux)
+Date: Wed, 2 Jun 2010 12:05:24 -0600
+Subject: [Chilli] problem con coova and daloradius
+Message-ID: <AANLkTimmHE4aEIULyUmbt9hUsCOI09jZE2leIX4ZH6Bp@mail.gmail.com>
+
+     Hi list , I am trying to mount coova-chilli the last version
+with daloradius, but I don't still get it, I have working the
+freeradius with daloradius and mysql for authentication MAC and it
+works perfectly, but when I try to run the coova, it doesn't work me.
+
+I will ask some questions I wait they can help me
+
+I have installed coova-chilli in a server with opensuse 11.2, this
+server has two interfaz of net wan and the other lan
+
+eth0 LAN
+eth2 WAN
+
+eth0      Link encap:Ethernet  HWaddr 00:19:DB:66:08:13
+         inet6 addr: fe80::219:dbff:fe66:813/64 Scope:Link
+         UP BROADCAST RUNNING PROMISC MULTICAST  MTU:1500  Metric:1
+         RX packets:7477 errors:0 dropped:0 overruns:0 frame:0
+         TX packets:7665 errors:0 dropped:0 overruns:0 carrier:0
+         collisions:0 txqueuelen:1000
+         RX bytes:1306134 (1.2 Mb)  TX bytes:5784368 (5.5 Mb)
+         Interrupt:30 Base address:0x2000
+
+tun0      Link encap:UNSPEC  HWaddr
+00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00
+         inet addr:192.168.10.1  P-t-P:192.168.10.1  Mask:255.255.255.0
+         UP POINTOPOINT RUNNING  MTU:1500  Metric:1
+         RX packets:120 errors:0 dropped:0 overruns:0 frame:0
+         TX packets:184 errors:0 dropped:0 overruns:0 carrier:0
+         collisions:0 txqueuelen:100
+         RX bytes:12393 (12.1 Kb)  TX bytes:73220 (71.5 Kb)
+
+
+
+tha lan is 192.168.10.1 , when I start coova-chilli the interfaz lan
+it erases the ip and make a tun0 with the ip of the interfaz lan
+192.168.10.1 , now when an user opens the browser this he gets up the
+it pages of the coova-chilli, but it never arrives to the
+authentication interfaz
+
+this is normal the one erases the ip of the interfaz LAN?
+
+I configure the portal2 of the daloradius package together with Apache
+and ssl, but the coova non redirect to the him
+
+he stays waiting the it pages
+
+http://192.168.10.1:3990/www/coova.html?loginurl=https%3a%2f%2f192.168.10.1%2fhotspotlogin%2fhotspotlogin.php%3fres%3dnotyet%26uamip%3d192.168.10.1%26uamport%3d3990%26challenge%3d82162b4cebc8c0de4030282a684d60d4%26called%3d00-19-DB-66-08-13%26mac%3d00-25-11-40-CA-21%26ip%3d192.168.10.2%26nasid%3dnas01%26sessionid%3d4c05bc8100000002%26userurl%3dhttp%253a%252f%252fwww.howtoforge.com%252fauthentication-authorization-and-accounting-with-freeradius-and-mysql-backend-and-webbased-management-with-daloradius%26md%3dC2EDB8FDE3332E39EA1A9423EC352357
+
+I believe that I have some error inside the coova-chilli configuration
+
+
+-- 
+rickygm
+
+http://gnuforever.homelinux.com
+
+From outbackdingo at gmail.com  Wed Jun  2 18:32:25 2010
+From: outbackdingo at gmail.com (Outback Dingo)
+Date: Wed, 2 Jun 2010 14:32:25 -0400
+Subject: [Chilli] problem con coova and daloradius
+In-Reply-To: <AANLkTimmHE4aEIULyUmbt9hUsCOI09jZE2leIX4ZH6Bp@mail.gmail.com>
+References: <AANLkTimmHE4aEIULyUmbt9hUsCOI09jZE2leIX4ZH6Bp@mail.gmail.com>
+Message-ID: <AANLkTimD-EPASzlw2Ir1ya3aQ-311rf6WPojrwQNT-bw@mail.gmail.com>
+
+yes it will overwrite the ip as chilli provides its own ip space for client,
+and this uam url you posted is not valid
+
+whats your chilli config look like
+
+
+On Wed, Jun 2, 2010 at 2:05 PM, troxlinux <xserverlinux at gmail.com> wrote:
+
+>     Hi list , I am trying to mount coova-chilli the last version
+> with daloradius, but I don't still get it, I have working the
+> freeradius with daloradius and mysql for authentication MAC and it
+> works perfectly, but when I try to run the coova, it doesn't work me.
+>
+> I will ask some questions I wait they can help me
+>
+> I have installed coova-chilli in a server with opensuse 11.2, this
+> server has two interfaz of net wan and the other lan
+>
+> eth0 LAN
+> eth2 WAN
+>
+> eth0      Link encap:Ethernet  HWaddr 00:19:DB:66:08:13
+>         inet6 addr: fe80::219:dbff:fe66:813/64 Scope:Link
+>         UP BROADCAST RUNNING PROMISC MULTICAST  MTU:1500  Metric:1
+>         RX packets:7477 errors:0 dropped:0 overruns:0 frame:0
+>         TX packets:7665 errors:0 dropped:0 overruns:0 carrier:0
+>         collisions:0 txqueuelen:1000
+>         RX bytes:1306134 (1.2 Mb)  TX bytes:5784368 (5.5 Mb)
+>         Interrupt:30 Base address:0x2000
+>
+> tun0      Link encap:UNSPEC  HWaddr
+> 00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00
+>         inet addr:192.168.10.1  P-t-P:192.168.10.1  Mask:255.255.255.0
+>         UP POINTOPOINT RUNNING  MTU:1500  Metric:1
+>         RX packets:120 errors:0 dropped:0 overruns:0 frame:0
+>         TX packets:184 errors:0 dropped:0 overruns:0 carrier:0
+>         collisions:0 txqueuelen:100
+>         RX bytes:12393 (12.1 Kb)  TX bytes:73220 (71.5 Kb)
+>
+>
+>
+> tha lan is 192.168.10.1 , when I start coova-chilli the interfaz lan
+> it erases the ip and make a tun0 with the ip of the interfaz lan
+> 192.168.10.1 , now when an user opens the browser this he gets up the
+> it pages of the coova-chilli, but it never arrives to the
+> authentication interfaz
+>
+> this is normal the one erases the ip of the interfaz LAN?
+>
+> I configure the portal2 of the daloradius package together with Apache
+> and ssl, but the coova non redirect to the him
+>
+> he stays waiting the it pages
+>
+>
+> http://192.168.10.1:3990/www/coova.html?loginurl=https%3a%2f%2f192.168.10.1%2fhotspotlogin%2fhotspotlogin.php%3fres%3dnotyet%26uamip%3d192.168.10.1%26uamport%3d3990%26challenge%3d82162b4cebc8c0de4030282a684d60d4%26called%3d00-19-DB-66-08-13%26mac%3d00-25-11-40-CA-21%26ip%3d192.168.10.2%26nasid%3dnas01%26sessionid%3d4c05bc8100000002%26userurl%3dhttp%253a%252f%252fwww.howtoforge.com%252fauthentication-authorization-and-accounting-with-freeradius-and-mysql-backend-and-webbased-management-with-daloradius%26md%3dC2EDB8FDE3332E39EA1A9423EC352357
+>
+> I believe that I have some error inside the coova-chilli configuration
+>
+>
+> --
+> rickygm
+>
+> http://gnuforever.homelinux.com
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20100602/abc58151/attachment.htm>
+
+From xserverlinux at gmail.com  Wed Jun  2 19:29:37 2010
+From: xserverlinux at gmail.com (troxlinux)
+Date: Wed, 2 Jun 2010 13:29:37 -0600
+Subject: [Chilli] problem con coova and daloradius
+In-Reply-To: <AANLkTimD-EPASzlw2Ir1ya3aQ-311rf6WPojrwQNT-bw@mail.gmail.com>
+References: <AANLkTimmHE4aEIULyUmbt9hUsCOI09jZE2leIX4ZH6Bp@mail.gmail.com> 
+	<AANLkTimD-EPASzlw2Ir1ya3aQ-311rf6WPojrwQNT-bw@mail.gmail.com>
+Message-ID: <AANLkTinc4nU-nB_A6qk_UMTd5PdIMlHIHx5mFgyeJnWB@mail.gmail.com>
+
+2010/6/2 Outback Dingo <outbackdingo at gmail.com>:
+> yes it will overwrite the ip as chilli provides its own ip space for client,
+> and this uam url you posted is not valid
+> whats your chilli config look like
+
+ok now understands, I show you my coova-chilli configuration  ,  I
+have test with several examples but it always fails me
+
+HS_LANIF=eth0              # Subscriber Interface for client devices
+HS_NETWORK=192.168.10.0    # HotSpot Network (must include HS_UAMLISTEN)
+HS_NETMASK=255.255.255.0   # HotSpot Network Netmask
+HS_UAMLISTEN=192.168.10.1          # HotSpot IP Address (on subscriber network)
+HS_UAMPORT=3990            # HotSpot UAM Port (on subscriber network)
+HS_UAMUIPORT=4990
+
+
+HS_DNS1=192.168.10.1
+
+###
+#   HotSpot settings for simple Captive Portal
+#
+HS_NASID=nas01
+HS_RADIUS=127.0.0.1
+HS_RADIUS2=127.0.0.1
+HS_UAMALLOW=www.google.com
+HS_RADSECRET=vavava    # Set to be your RADIUS shared secret
+HS_UAMSECRET=tetete     # Set to be your UAM secret
+#HS_UAMALIASNAME=chilli
+
+HS_UAMSERVER=https://shark.netsoluciones-red/hotspotlogin/hotspotlogin.php
+
+HS_UAMFORMAT=https://\$HS_UAMLISTEN/hotspotlogin/hotspotlogin.php
+
+HS_UAMHOMEPAGE=http://\$HS_UAMLISTEN:\$HS_UAMPORT/www/coova.html
+
+HS_UAMSERVICE=https://shark.netsoluciones-red/hotspotlogin/hotspotlogin.php
+
+thnkk
+
+
+-- 
+rickygm
+
+http://gnuforever.homelinux.com
+
+From outbackdingo at gmail.com  Wed Jun  2 19:49:17 2010
+From: outbackdingo at gmail.com (Outback Dingo)
+Date: Wed, 2 Jun 2010 15:49:17 -0400
+Subject: [Chilli] problem con coova and daloradius
+In-Reply-To: <AANLkTinc4nU-nB_A6qk_UMTd5PdIMlHIHx5mFgyeJnWB@mail.gmail.com>
+References: <AANLkTimmHE4aEIULyUmbt9hUsCOI09jZE2leIX4ZH6Bp@mail.gmail.com>
+	<AANLkTimD-EPASzlw2Ir1ya3aQ-311rf6WPojrwQNT-bw@mail.gmail.com>
+	<AANLkTinc4nU-nB_A6qk_UMTd5PdIMlHIHx5mFgyeJnWB@mail.gmail.com>
+Message-ID: <AANLkTimG2H27iSzVMpJjcPkDpG-9YElZczZpGrTz_tgk@mail.gmail.com>
+
+First these are all wrong and shark.netsoluciones-red isnt even a valid
+domain name, unless your all using local hosts files
+
+HS_UAMSERVER=https://shark.netsoluciones-red/hotspotlogin/hotspotlogin.php
+
+HS_UAMFORMAT=https://\$HS_UAMLISTEN/hotspotlogin/hotspotlogin.php
+
+HS_UAMHOMEPAGE=http://\$HS_UAMLISTEN:\$HS_UAMPORT/www/coova.html
+
+HS_UAMSERVICE=https://shark.netsoluciones-red/hotspotlogin/hotspotlogin.php
+
+
+UAMSERVER should be resolvable, so shark.netsoluciones-red needs to resolve
+to clients, and it only needs to be the domain name, not the uam URL
+
+you should really read the howto again its pretty straight forward
+
+
+
+On Wed, Jun 2, 2010 at 3:29 PM, troxlinux <xserverlinux at gmail.com> wrote:
+
+> 2010/6/2 Outback Dingo <outbackdingo at gmail.com>:
+> > yes it will overwrite the ip as chilli provides its own ip space for
+> client,
+> > and this uam url you posted is not valid
+> > whats your chilli config look like
+>
+> ok now understands, I show you my coova-chilli configuration  ,  I
+> have test with several examples but it always fails me
+>
+> HS_LANIF=eth0              # Subscriber Interface for client devices
+> HS_NETWORK=192.168.10.0    # HotSpot Network (must include HS_UAMLISTEN)
+> HS_NETMASK=255.255.255.0   # HotSpot Network Netmask
+> HS_UAMLISTEN=192.168.10.1          # HotSpot IP Address (on subscriber
+> network)
+> HS_UAMPORT=3990            # HotSpot UAM Port (on subscriber network)
+> HS_UAMUIPORT=4990
+>
+>
+> HS_DNS1=192.168.10.1
+>
+> ###
+> #   HotSpot settings for simple Captive Portal
+> #
+> HS_NASID=nas01
+> HS_RADIUS=127.0.0.1
+> HS_RADIUS2=127.0.0.1
+> HS_UAMALLOW=www.google.com
+> HS_RADSECRET=vavava    # Set to be your RADIUS shared secret
+> HS_UAMSECRET=tetete     # Set to be your UAM secret
+> #HS_UAMALIASNAME=chilli
+>
+> HS_UAMSERVER=https://shark.netsoluciones-red/hotspotlogin/hotspotlogin.php
+>
+> HS_UAMFORMAT=https://\$HS_UAMLISTEN/hotspotlogin/hotspotlogin.php
+>
+> HS_UAMHOMEPAGE=http://\$HS_UAMLISTEN:\$HS_UAMPORT/www/coova.html
+>
+> HS_UAMSERVICE=
+> https://shark.netsoluciones-red/hotspotlogin/hotspotlogin.php
+>
+> thnkk
+>
+>
+> --
+> rickygm
+>
+> http://gnuforever.homelinux.com
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20100602/1e58de21/attachment.htm>
+
+From wichert at wiggy.net  Wed Jun  2 19:53:17 2010
+From: wichert at wiggy.net (Wichert Akkerman)
+Date: Wed, 02 Jun 2010 21:53:17 +0200
+Subject: [Chilli] chilli issues
+Message-ID: <4C06B6AD.6070303@wiggy.net>
+
+Disclaimer: I'm not quite happy with chilli at the moment, so I may 
+sound a bit grumpy. We've had some nasty stability problems with it 
+lately and I'm having a hard time to get things to stabilize. This is my 
+current list of things-I-think-need-to-be-fixed:
+
+* if you run multiple instance of chilli they happily all use the same
+   ipc file without giving any warning, with bad results
+* if you configure the ipc filename with a full path, like you do for
+   all other filename options, the option is silently ignored
+* if the ethers file contains a comment or anything else the parser does
+   not like you get a single message in the debug output and the file is
+   otherwise silently ignored
+* I thought there was an option to use an ethers file and automatically
+   authenticate all MAC addresses in it. Currently you have to fake this
+   by listing the MAC address in macallowed and in a users file with a
+   dummy password (and in ethers as well if you want a static IP). This
+   is awkward
+* I have been completely unable to get MAC auth working using
+   macallowed and a users file and had to resorting to a script to run
+   a bunch of chilli_query commands on startup.
+* if you do "chilli_query list -s <socket>" you get the output from all
+   chilli instances on a server without any kind of warning or header
+   indicating you are looking at multiple servers at once. This had me
+   extremely confused for a while.
+
+I suspect most if not all of these are easy to fix. I've already taken a 
+stab at handling comments in the ethers file (commited, but untested 
+since I ran out of time). I'm hoping David can follow up on the others.
+
+Wichert.
+
+
+-- 
+Wichert Akkerman <wichert at wiggy.net>   It is simple to make things.
+http://www.wiggy.net/                  It is hard to make things simple.
+
+From david at coova.com  Thu Jun  3 04:36:20 2010
+From: david at coova.com (David Bird)
+Date: Thu, 03 Jun 2010 06:36:20 +0200
+Subject: [Chilli] chilli issues
+In-Reply-To: <4C06B6AD.6070303@wiggy.net>
+References: <4C06B6AD.6070303@wiggy.net>
+Message-ID: <1275539780.18557.11.camel@david-laptop>
+
+
+> * if you run multiple instance of chilli they happily all use the same
+>    ipc file without giving any warning, with bad results
+
+Don't do that..
+
+> * if you configure the ipc filename with a full path, like you do for
+>    all other filename options, the option is silently ignored
+
+Then fix the config...
+
+> * if the ethers file contains a comment or anything else the parser does
+>    not like you get a single message in the debug output and the file is
+>    otherwise silently ignored
+
+Thanks for the patch.
+
+> * I thought there was an option to use an ethers file and automatically
+>    authenticate all MAC addresses in it. Currently you have to fake this
+>    by listing the MAC address in macallowed and in a users file with a
+>    dummy password (and in ethers as well if you want a static IP). This
+>    is awkward
+
+Not a feature, use MAC authentication. 
+
+> * I have been completely unable to get MAC auth working using
+>    macallowed and a users file and had to resorting to a script to run
+>    a bunch of chilli_query commands on startup.
+
+Use RADIUS (though the users file should work too).
+
+> * if you do "chilli_query list -s <socket>" you get the output from all
+>    chilli instances on a server without any kind of warning or header
+>    indicating you are looking at multiple servers at once. This had me
+>    extremely confused for a while.
+> 
+
+The socket option has to come first, in fact it can optionally be the
+first argument too (as in "chilli_query /path/to/socket list"
+
+> I suspect most if not all of these are easy to fix. I've already taken a 
+> stab at handling comments in the ethers file (commited, but untested 
+> since I ran out of time). I'm hoping David can follow up on the others.
+
+I'm busy too, but will review your changes. Patches are welcome,
+especially the tested kind. 
+
+Thanks,
+David
+
+
+From wichert at wiggy.net  Thu Jun  3 09:20:25 2010
+From: wichert at wiggy.net (Wichert Akkerman)
+Date: Thu, 03 Jun 2010 11:20:25 +0200
+Subject: [Chilli] chilli issues
+In-Reply-To: <4C06B6AD.6070303@wiggy.net>
+References: <4C06B6AD.6070303@wiggy.net>
+Message-ID: <4C0773D8.7070001@wiggy.net>
+
+I've commited changes to fix these:
+
+* if you configure the ipc filename with a full path, like you do for
+   all other filename options, the option is silently ignored
+* if the ethers file contains a comment or anything else the parser does
+   not give you get a single message in the debug output and the file is
+   silently ignored
+* if you do "chilli_query list -s <socket>" you get the output from all
+   chilli instances on a server without any kind of warning or header
+   indicating you are looking at multiple servers at once. This had me
+   extremely confused for a while.
+
+My test environment is not working for some reason, so I haven't been 
+able to test the changes. They are simple enough that they should be 
+correct though :)
+
+Wichert.
+
+From david at coova.com  Thu Jun  3 10:16:37 2010
+From: david at coova.com (David Bird)
+Date: Thu, 03 Jun 2010 12:16:37 +0200
+Subject: [Chilli] chilli issues
+In-Reply-To: <4C0773D8.7070001@wiggy.net>
+References: <4C06B6AD.6070303@wiggy.net>  <4C0773D8.7070001@wiggy.net>
+Message-ID: <1275560197.18557.24.camel@david-laptop>
+
+The changes to cmdline.c will get lost when cmdline.ggo is updated. You
+also had a missing sizeof(header) in your snprintf(), preventing
+compiling (as with an warning in cmdline.c which got removed anyway). 
+
+
+On Thu, 2010-06-03 at 11:20 +0200, Wichert Akkerman wrote:
+> I've commited changes to fix these:
+> 
+> * if you configure the ipc filename with a full path, like you do for
+>    all other filename options, the option is silently ignored
+> * if the ethers file contains a comment or anything else the parser does
+>    not give you get a single message in the debug output and the file is
+>    silently ignored
+> * if you do "chilli_query list -s <socket>" you get the output from all
+>    chilli instances on a server without any kind of warning or header
+>    indicating you are looking at multiple servers at once. This had me
+>    extremely confused for a while.
+> 
+> My test environment is not working for some reason, so I haven't been 
+> able to test the changes. They are simple enough that they should be 
+> correct though :)
+> 
+> Wichert.
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+
+
+From wichert at wiggy.net  Thu Jun  3 10:29:55 2010
+From: wichert at wiggy.net (Wichert Akkerman)
+Date: Thu, 03 Jun 2010 12:29:55 +0200
+Subject: [Chilli] chilli issues
+In-Reply-To: <1275560197.18557.24.camel@david-laptop>
+References: <4C06B6AD.6070303@wiggy.net> <4C0773D8.7070001@wiggy.net>
+	<1275560197.18557.24.camel@david-laptop>
+Message-ID: <4C078423.6010508@wiggy.net>
+
+On 6/3/10 12:16 , David Bird wrote:
+> The changes to cmdline.c will get lost when cmdline.ggo is updated.
+
+Hm, I indeed missed the warning indicating that that file is generated. 
+Can you think of another way to accomplish the same thing? The goal is 
+to report this to the user when parsing the configfile and not have to 
+duplicate that check at every point where the filename is generated.
+
+Wichert.
+
+From david at coova.com  Thu Jun  3 10:35:16 2010
+From: david at coova.com (David Bird)
+Date: Thu, 03 Jun 2010 12:35:16 +0200
+Subject: [Chilli] chilli issues
+In-Reply-To: <4C078423.6010508@wiggy.net>
+References: <4C06B6AD.6070303@wiggy.net>  <4C0773D8.7070001@wiggy.net>
+	<1275560197.18557.24.camel@david-laptop> <4C078423.6010508@wiggy.net>
+Message-ID: <1275561316.18557.29.camel@david-laptop>
+
+Well, for important changes to cmdline.c, I've started a patch file (see
+Makefile for more info). I did that to make the parser a bit more
+forgiving for repeated parameters (instead of fail, just take the most
+recent). Instead of changing the config, I think what you want is to
+change the actual file path formatting to not prefix statedir if
+path[0]=='/'.
+
+On Thu, 2010-06-03 at 12:29 +0200, Wichert Akkerman wrote:
+> On 6/3/10 12:16 , David Bird wrote:
+> > The changes to cmdline.c will get lost when cmdline.ggo is updated.
+> 
+> Hm, I indeed missed the warning indicating that that file is generated. 
+> Can you think of another way to accomplish the same thing? The goal is 
+> to report this to the user when parsing the configfile and not have to 
+> duplicate that check at every point where the filename is generated.
+> 
+> Wichert.
+
+
+
+From wichert at wiggy.net  Sat Jun  5 11:57:17 2010
+From: wichert at wiggy.net (Wichert Akkerman)
+Date: Sat, 05 Jun 2010 13:57:17 +0200
+Subject: [Chilli] chilli_redir hung on reading from unavailable socket
+Message-ID: <4C0A3B9D.6000903@wiggy.net>
+
+We had another instance of chilli_redir stopping to respond today. An 
+strace showed the same output we've seen earlier: a busy loop trying to 
+read from an unavailable filedescriptor:
+
+time(NULL)                              = 1275738485
+read(25, 0x897e468, 11)                 = -1 EAGAIN (Resource 
+temporarily unavailable)
+time(NULL)                              = 1275738485
+read(25, 0x897e468, 11)                 = -1 EAGAIN (Resource 
+temporarily unavailable)
+time(NULL)                              = 1275738485
+
+This is the list of open filedescriptors for the chilli_redir process:
+
+lr-x------ 1 root root 64 2010-06-05 13:48 0 -> pipe:[37194254]
+l-wx------ 1 root root 64 2010-06-05 13:48 1 -> pipe:[37194255]
+lrwx------ 1 root root 64 2010-06-05 13:48 10 -> socket:[37194893]
+lrwx------ 1 root root 64 2010-06-05 13:48 11 -> anon_inode:[eventpoll]
+lrwx------ 1 root root 64 2010-06-05 13:48 12 -> socket:[2343658067]
+lrwx------ 1 root root 64 2010-06-05 13:48 13 -> socket:[2342518623]
+lrwx------ 1 root root 64 2010-06-05 13:48 14 -> socket:[2343704926]
+lrwx------ 1 root root 64 2010-06-05 13:48 15 -> socket:[2343205790]
+lrwx------ 1 root root 64 2010-06-05 13:48 16 -> socket:[2343240766]
+lrwx------ 1 root root 64 2010-06-05 13:48 17 -> socket:[2343733035]
+lrwx------ 1 root root 64 2010-06-05 13:48 18 -> socket:[2343871860]
+lrwx------ 1 root root 64 2010-06-05 13:48 19 -> socket:[2343872794]
+l-wx------ 1 root root 64 2010-06-05 13:48 2 -> pipe:[37194256]
+lrwx------ 1 root root 64 2010-06-05 13:48 20 -> socket:[2343899518]
+lrwx------ 1 root root 64 2010-06-05 13:48 21 -> socket:[2344155630]
+lrwx------ 1 root root 64 2010-06-05 13:48 22 -> socket:[101733818]
+lrwx------ 1 root root 64 2010-06-05 13:48 23 -> socket:[2344215297]
+lrwx------ 1 root root 64 2010-06-05 13:48 24 -> socket:[2344292072]
+lrwx------ 1 root root 64 2010-06-05 13:48 25 -> socket:[2344474331]
+lrwx------ 1 root root 64 2010-06-05 13:48 3 -> socket:[37194892]
+lrwx------ 1 root root 64 2010-06-05 13:48 30 -> socket:[2342619478]
+lrwx------ 1 root root 64 2010-06-05 13:48 31 -> socket:[2342619647]
+lrwx------ 1 root root 64 2010-06-05 13:48 32 -> socket:[2342630816]
+lrwx------ 1 root root 64 2010-06-05 13:48 33 -> socket:[2342673196]
+lrwx------ 1 root root 64 2010-06-05 13:48 37 -> socket:[2342750246]
+lrwx------ 1 root root 64 2010-06-05 13:48 38 -> socket:[2342819623]
+lrwx------ 1 root root 64 2010-06-05 13:48 39 -> socket:[2343164358]
+lrwx------ 1 root root 64 2010-06-05 13:48 4 -> /dev/net/tun
+lrwx------ 1 root root 64 2010-06-05 13:48 40 -> socket:[2343173350]
+lrwx------ 1 root root 64 2010-06-05 13:48 5 -> socket:[37194878]
+lr-x------ 1 root root 64 2010-06-05 13:48 6 -> /dev/urandom
+lrwx------ 1 root root 64 2010-06-05 13:48 7 -> socket:[37194881]
+lrwx------ 1 root root 64 2010-06-05 13:48 8 -> socket:[37194883]
+lrwx------ 1 root root 64 2010-06-05 13:48 9 -> socket:[37194885]
+
+So filedescriptor 25 is one of the sockets. Looking at the open files 
+for the chilli process I do not see the same socket in the list:
+
+lr-x------ 1 root root 64 2010-06-05 13:49 0 -> pipe:[37194254]
+l-wx------ 1 root root 64 2010-06-05 13:49 1 -> pipe:[37194255]
+lrwx------ 1 root root 64 2010-06-05 13:49 10 -> anon_inode:[eventpoll]
+l-wx------ 1 root root 64 2010-06-05 13:49 2 -> pipe:[37194256]
+lrwx------ 1 root root 64 2010-06-05 13:49 3 -> socket:[37194871]
+lrwx------ 1 root root 64 2010-06-05 13:49 4 -> /dev/net/tun
+lrwx------ 1 root root 64 2010-06-05 13:49 5 -> socket:[37194878]
+lr-x------ 1 root root 64 2010-06-05 13:49 6 -> /dev/urandom
+lrwx------ 1 root root 64 2010-06-05 13:49 7 -> socket:[37194881]
+lrwx------ 1 root root 64 2010-06-05 13:49 8 -> socket:[37194883]
+lrwx------ 1 root root 64 2010-06-05 13:49 9 -> socket:[37194885]
+
+I'm not sure what socket 25 should be.
+
+Wichert.
+
+
+From david at coova.com  Mon Jun  7 10:19:08 2010
+From: david at coova.com (David Bird)
+Date: Mon, 07 Jun 2010 12:19:08 +0200
+Subject: [Chilli] chilli_redir hung on reading from unavailable socket
+In-Reply-To: <4C0A3B9D.6000903@wiggy.net>
+References: <4C0A3B9D.6000903@wiggy.net>
+Message-ID: <1275905948.18557.113.camel@david-laptop>
+
+See revision 345. There was an issue when using chilli_redir and openssl
+and looping instead of returning during ssl accept. chilli_redir handles
+UAM connections asynchronously, whereas when you don't compile with
+--enable-chilliredir connections are handled by a forked process (and
+hence will block on accept/read/write). 
+
+On Sat, 2010-06-05 at 13:57 +0200, Wichert Akkerman wrote:
+> We had another instance of chilli_redir stopping to respond today. An 
+> strace showed the same output we've seen earlier: a busy loop trying to 
+> read from an unavailable filedescriptor:
+> 
+> time(NULL)                              = 1275738485
+> read(25, 0x897e468, 11)                 = -1 EAGAIN (Resource 
+> temporarily unavailable)
+> time(NULL)                              = 1275738485
+> read(25, 0x897e468, 11)                 = -1 EAGAIN (Resource 
+> temporarily unavailable)
+> time(NULL)                              = 1275738485
+> 
+> This is the list of open filedescriptors for the chilli_redir process:
+> 
+> lr-x------ 1 root root 64 2010-06-05 13:48 0 -> pipe:[37194254]
+> l-wx------ 1 root root 64 2010-06-05 13:48 1 -> pipe:[37194255]
+> lrwx------ 1 root root 64 2010-06-05 13:48 10 -> socket:[37194893]
+> lrwx------ 1 root root 64 2010-06-05 13:48 11 -> anon_inode:[eventpoll]
+> lrwx------ 1 root root 64 2010-06-05 13:48 12 -> socket:[2343658067]
+> lrwx------ 1 root root 64 2010-06-05 13:48 13 -> socket:[2342518623]
+> lrwx------ 1 root root 64 2010-06-05 13:48 14 -> socket:[2343704926]
+> lrwx------ 1 root root 64 2010-06-05 13:48 15 -> socket:[2343205790]
+> lrwx------ 1 root root 64 2010-06-05 13:48 16 -> socket:[2343240766]
+> lrwx------ 1 root root 64 2010-06-05 13:48 17 -> socket:[2343733035]
+> lrwx------ 1 root root 64 2010-06-05 13:48 18 -> socket:[2343871860]
+> lrwx------ 1 root root 64 2010-06-05 13:48 19 -> socket:[2343872794]
+> l-wx------ 1 root root 64 2010-06-05 13:48 2 -> pipe:[37194256]
+> lrwx------ 1 root root 64 2010-06-05 13:48 20 -> socket:[2343899518]
+> lrwx------ 1 root root 64 2010-06-05 13:48 21 -> socket:[2344155630]
+> lrwx------ 1 root root 64 2010-06-05 13:48 22 -> socket:[101733818]
+> lrwx------ 1 root root 64 2010-06-05 13:48 23 -> socket:[2344215297]
+> lrwx------ 1 root root 64 2010-06-05 13:48 24 -> socket:[2344292072]
+> lrwx------ 1 root root 64 2010-06-05 13:48 25 -> socket:[2344474331]
+> lrwx------ 1 root root 64 2010-06-05 13:48 3 -> socket:[37194892]
+> lrwx------ 1 root root 64 2010-06-05 13:48 30 -> socket:[2342619478]
+> lrwx------ 1 root root 64 2010-06-05 13:48 31 -> socket:[2342619647]
+> lrwx------ 1 root root 64 2010-06-05 13:48 32 -> socket:[2342630816]
+> lrwx------ 1 root root 64 2010-06-05 13:48 33 -> socket:[2342673196]
+> lrwx------ 1 root root 64 2010-06-05 13:48 37 -> socket:[2342750246]
+> lrwx------ 1 root root 64 2010-06-05 13:48 38 -> socket:[2342819623]
+> lrwx------ 1 root root 64 2010-06-05 13:48 39 -> socket:[2343164358]
+> lrwx------ 1 root root 64 2010-06-05 13:48 4 -> /dev/net/tun
+> lrwx------ 1 root root 64 2010-06-05 13:48 40 -> socket:[2343173350]
+> lrwx------ 1 root root 64 2010-06-05 13:48 5 -> socket:[37194878]
+> lr-x------ 1 root root 64 2010-06-05 13:48 6 -> /dev/urandom
+> lrwx------ 1 root root 64 2010-06-05 13:48 7 -> socket:[37194881]
+> lrwx------ 1 root root 64 2010-06-05 13:48 8 -> socket:[37194883]
+> lrwx------ 1 root root 64 2010-06-05 13:48 9 -> socket:[37194885]
+> 
+> So filedescriptor 25 is one of the sockets. Looking at the open files 
+> for the chilli process I do not see the same socket in the list:
+> 
+> lr-x------ 1 root root 64 2010-06-05 13:49 0 -> pipe:[37194254]
+> l-wx------ 1 root root 64 2010-06-05 13:49 1 -> pipe:[37194255]
+> lrwx------ 1 root root 64 2010-06-05 13:49 10 -> anon_inode:[eventpoll]
+> l-wx------ 1 root root 64 2010-06-05 13:49 2 -> pipe:[37194256]
+> lrwx------ 1 root root 64 2010-06-05 13:49 3 -> socket:[37194871]
+> lrwx------ 1 root root 64 2010-06-05 13:49 4 -> /dev/net/tun
+> lrwx------ 1 root root 64 2010-06-05 13:49 5 -> socket:[37194878]
+> lr-x------ 1 root root 64 2010-06-05 13:49 6 -> /dev/urandom
+> lrwx------ 1 root root 64 2010-06-05 13:49 7 -> socket:[37194881]
+> lrwx------ 1 root root 64 2010-06-05 13:49 8 -> socket:[37194883]
+> lrwx------ 1 root root 64 2010-06-05 13:49 9 -> socket:[37194885]
+> 
+> I'm not sure what socket 25 should be.
+> 
+> Wichert.
+> 
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+
+
+From xserverlinux at gmail.com  Tue Jun  8 04:22:07 2010
+From: xserverlinux at gmail.com (troxlinux)
+Date: Mon, 7 Jun 2010 22:22:07 -0600
+Subject: [Chilli] problem con coova and daloradius
+In-Reply-To: <AANLkTimG2H27iSzVMpJjcPkDpG-9YElZczZpGrTz_tgk@mail.gmail.com>
+References: <AANLkTimmHE4aEIULyUmbt9hUsCOI09jZE2leIX4ZH6Bp@mail.gmail.com> 
+	<AANLkTimD-EPASzlw2Ir1ya3aQ-311rf6WPojrwQNT-bw@mail.gmail.com> 
+	<AANLkTinc4nU-nB_A6qk_UMTd5PdIMlHIHx5mFgyeJnWB@mail.gmail.com> 
+	<AANLkTimG2H27iSzVMpJjcPkDpG-9YElZczZpGrTz_tgk@mail.gmail.com>
+Message-ID: <AANLkTimRlsc4byVh8_WDSW4I-Al12WP78OVXIQcxbMqT@mail.gmail.com>
+
+2010/6/2 Outback Dingo <outbackdingo at gmail.com>:
+>
+> UAMSERVER should be resolvable, so?shark.netsoluciones-red needs to resolve
+> to clients, and it only needs to be the domain name, not the uam URL
+> you should really read the howto again its pretty straight forward
+>
+
+Hi, here again, my server is resolvable now, but the coova doesn't still work ..
+
+
+https://192.168.10.1/hotspotlogin/hotspotlogin.php?res=notyet&uamip=192.168.10.1&uamport=3990&challenge=68b27a851d19212643ee27833f4e80da&called=00-19-DB-66-08-13&mac=00-25-11-40-CA-21&ip=192.168.10.2&nasid=nas01&sessionid=4c0dc49d00000001&userurl=http%3a%2f%2fwww.ecualug.org%2f&md=6D092FC1026C5E090026BABA99DF6666
+
+I have open the ports 3390 in my firewall and add the interfaz tun0
+
+I also want to comment that I have installed coova in OpenSuse 11.2
+and when I restart the coova he throws me these messages:
+
+/etc/init.d/chilli: line 20: .: /etc/sysconfig/network: is a directory
+/etc/init.d/chilli: line 21: [: =: unary operator expected
+/etc/init.d/chilli: line 20: .: /etc/sysconfig/network: is a directory
+/etc/init.d/chilli: line 21: [: =: unary operator expected
+Shutting down chilli:
+/etc/init.d/chilli: line 20: .: /etc/sysconfig/network: is a directory
+/etc/init.d/chilli: line 21: [: =: unary operator expected
+Starting chilli:
+
+
+any idea , i need a big help list?
+
+regardss
+
+
+
+
+-- 
+rickygm
+
+http://gnuforever.homelinux.com
+
+From wichert at wiggy.net  Tue Jun  8 07:06:13 2010
+From: wichert at wiggy.net (Wichert Akkerman)
+Date: Tue, 08 Jun 2010 09:06:13 +0200
+Subject: [Chilli] chilli issues
+In-Reply-To: <1275561316.18557.29.camel@david-laptop>
+References: <4C06B6AD.6070303@wiggy.net> <4C0773D8.7070001@wiggy.net>	
+	<1275560197.18557.24.camel@david-laptop>
+	<4C078423.6010508@wiggy.net>
+	<1275561316.18557.29.camel@david-laptop>
+Message-ID: <4C0DEBE5.9050605@wiggy.net>
+
+On 6/3/10 12:35 , David Bird wrote:
+> Well, for important changes to cmdline.c, I've started a patch file (see
+> Makefile for more info). I did that to make the parser a bit more
+> forgiving for repeated parameters (instead of fail, just take the most
+> recent). Instead of changing the config, I think what you want is to
+> change the actual file path formatting to not prefix statedir if
+> path[0]=='/'.
+
+That's indeed a better suggestion. I've updated the code to do that.
+
+Wichert.
+
+
+From wichert at wiggy.net  Tue Jun  8 07:13:37 2010
+From: wichert at wiggy.net (Wichert Akkerman)
+Date: Tue, 08 Jun 2010 09:13:37 +0200
+Subject: [Chilli] chilli_redir hung on reading from unavailable socket
+In-Reply-To: <1275905948.18557.113.camel@david-laptop>
+References: <4C0A3B9D.6000903@wiggy.net>
+	<1275905948.18557.113.camel@david-laptop>
+Message-ID: <4C0DEDA1.6050103@wiggy.net>
+
+On 6/7/10 12:19 , David Bird wrote:
+> See revision 345. There was an issue when using chilli_redir and openssl
+> and looping instead of returning during ssl accept. chilli_redir handles
+> UAM connections asynchronously, whereas when you don't compile with
+> --enable-chilliredir connections are handled by a forked process (and
+> hence will block on accept/read/write).
+
+Great! I've deployed r345 last night so I should know within 2-3 days of 
+this helped.
+
+Wichert.
+
+From david at coova.com  Wed Jun  9 13:09:21 2010
+From: david at coova.com (David Bird)
+Date: Wed, 09 Jun 2010 15:09:21 +0200
+Subject: [Chilli] chilli issues
+In-Reply-To: <4C0DEBE5.9050605@wiggy.net>
+References: <4C06B6AD.6070303@wiggy.net>  <4C0773D8.7070001@wiggy.net>
+	<1275560197.18557.24.camel@david-laptop> <4C078423.6010508@wiggy.net>
+	<1275561316.18557.29.camel@david-laptop> <4C0DEBE5.9050605@wiggy.net>
+Message-ID: <1276088961.18557.215.camel@david-laptop>
+
+Thanks, though be careful with that snprintf(b, sizeof(b), variable) as
+it will cause you problems if you have variable == "has %s in it" (my
+compiler complained too). 
+
+I've also committed some changes to the RADIUS attribute handling in
+order to "normalize" all RADIUS coming out of chilli. so, for all kinds
+of RADIUS such as uam login, mac auth, eap, etc, you should have some
+consistency now with nas-id, wispr attributes, etc. 
+
+David
+
+
+
+On Tue, 2010-06-08 at 09:06 +0200, Wichert Akkerman wrote:
+> On 6/3/10 12:35 , David Bird wrote:
+> > Well, for important changes to cmdline.c, I've started a patch file (see
+> > Makefile for more info). I did that to make the parser a bit more
+> > forgiving for repeated parameters (instead of fail, just take the most
+> > recent). Instead of changing the config, I think what you want is to
+> > change the actual file path formatting to not prefix statedir if
+> > path[0]=='/'.
+> 
+> That's indeed a better suggestion. I've updated the code to do that.
+> 
+> Wichert.
+> 
+
+
+
+From cesarsilvaaraujo at gmail.com  Thu Jun 10 16:03:55 2010
+From: cesarsilvaaraujo at gmail.com (=?ISO-8859-1?Q?C=E9sar_Silva_Ara=FAjo?=)
+Date: Thu, 10 Jun 2010 17:03:55 +0100
+Subject: [Chilli] Problem starting chilli on ubuntu.
+Message-ID: <AANLkTinoKXJDVxbHhb7HT_5Ng-hmp1JAmyJvr6vng2Nz@mail.gmail.com>
+
+Hello i have setted up ubuntu 10.4, and installed coova but when i start
+coova i get these:
+
+coova-chilli: Error opening configuration file '/etc/chilli/main.conf'
+coova-chilli: Error opening configuration file '/etc/chilli/hs.conf'
+coova-chilli: Error opening configuration file '/etc/chilli/local.conf'
+coova-chilli[2115]: options.c: 174: could not generate configuration
+(/tmp/chilli-2115/config.bin), sleeping one second
+
+
+I believe the nain,conf, hs and local.conf are automaticaly generated so i
+dont know why it does that, and also the same with the tmp folder.
+
+
+-- 
+-------------------------------------------------------------------
+Web Design solu??es criativas para si
+Software a sua medida
+Anima??o Musical de eventos
+-------------------------------------------------------------------
+Http://www.CesarAraujo.Net
+-------------------------------------------------------------------
+Msn: messenger at CesarAraujo.net
+--------------------------------------------------------------------
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20100610/ae5b4bcf/attachment.htm>
+
+From wichert at wiggy.net  Sun Jun 13 12:17:46 2010
+From: wichert at wiggy.net (Wichert Akkerman)
+Date: Sun, 13 Jun 2010 14:17:46 +0200
+Subject: [Chilli] chilli_redir hung on reading from unavailable socket
+In-Reply-To: <1275981445.18557.149.camel@david-laptop>
+References: <4C0A3B9D.6000903@wiggy.net>
+	<1275905948.18557.113.camel@david-laptop>
+	<4C0DEDA1.6050103@wiggy.net>
+	<1275981445.18557.149.camel@david-laptop>
+Message-ID: <4C14CC6A.4010403@wiggy.net>
+
+r345 worked flawlessly for 4 days, but unfortunately showed the same 
+symptom today:
+
+read(12, 0x8e31350, 5)                  = -1 EAGAIN (Resource 
+temporarily unavailable)
+read(12, 0x8e31350, 5)                  = -1 EAGAIN (Resource 
+temporarily unavailable)
+read(12, 0x8e31350, 5)                  = -1 EAGAIN (Resource 
+temporarily unavailable)
+read(12, 0x8e31350, 5)                  = -1 EAGAIN (Resource 
+temporarily unavailable)
+read(12, 0x8e31350, 5)                  = -1 EAGAIN (Resource 
+temporarily unavailable)
+read(12, 0x8e31350, 5)                  = -1 EAGAIN (Resource 
+temporarily unavailable)
+read(12, 0x8e31350, 5)                  = -1 EAGAIN (Resource 
+temporarily unavailable)
+read(12, 0x8e31350, 5)                  = -1 EAGAIN (Resource 
+temporarily unavailable)
+
+as you can see the strace is very similar, but has two differences: 
+there is no time(NULL) call in between the read() calls, and this is a 
+different fd (12, while I was seeing 25 before).
+
+
+On 2010-6-8 09:17, David Bird wrote:
+> Btw, the problem was reproducible (without waiting) by telneting to
+> https://uamasliasip/ and just hit<enter>. Previously, this would start
+> the looping on read() as it attempts ssl negotiation.
+>
+> On Tue, 2010-06-08 at 09:13 +0200, Wichert Akkerman wrote:
+>> On 6/7/10 12:19 , David Bird wrote:
+>>> See revision 345. There was an issue when using chilli_redir and openssl
+>>> and looping instead of returning during ssl accept. chilli_redir handles
+>>> UAM connections asynchronously, whereas when you don't compile with
+>>> --enable-chilliredir connections are handled by a forked process (and
+>>> hence will block on accept/read/write).
+>>
+>> Great! I've deployed r345 last night so I should know within 2-3 days of
+>> this helped.
+>>
+>> Wichert.
+>> _______________________________________________
+>> Chilli mailing list
+>> Chilli at coova.org
+>> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+>
+
+
+-- 
+Wichert Akkerman <wichert at wiggy.net>   It is simple to make things.
+http://www.wiggy.net/                  It is hard to make things simple.
+
+From wichert at wiggy.net  Sun Jun 13 13:00:44 2010
+From: wichert at wiggy.net (Wichert Akkerman)
+Date: Sun, 13 Jun 2010 15:00:44 +0200
+Subject: [Chilli] chilli_redir hung on reading from unavailable socket
+In-Reply-To: <4C14CC6A.4010403@wiggy.net>
+References: <4C0A3B9D.6000903@wiggy.net>
+	<1275905948.18557.113.camel@david-laptop>
+	<4C0DEDA1.6050103@wiggy.net>
+	<1275981445.18557.149.camel@david-laptop>
+	<4C14CC6A.4010403@wiggy.net>
+Message-ID: <4C14D67C.1020505@wiggy.net>
+
+Almost forgot I extracted a backtrace by attaching gdb to the spinning 
+chilli_redir process:
+
+#0  0xb7f1a424 in __kernel_vsyscall ()
+#1  0xb7c8d1e3 in read () from /lib/i686/cmov/libc.so.6
+#2  0xb7dcb257 in ?? () from /usr/lib/i686/cmov/libcrypto.so.0.9.8
+#3  0x0000000c in ?? ()
+#4  0x08e31350 in ?? ()
+#5  0x00000005 in ?? ()
+#6  0xb7e62124 in ?? () from /usr/lib/i686/cmov/libcrypto.so.0.9.8
+#7  0x08dab308 in ?? ()
+#8  0x00000000 in ?? ()
+
+
+On 2010-6-13 14:17, Wichert Akkerman wrote:
+> r345 worked flawlessly for 4 days, but unfortunately showed the same
+> symptom today:
+>
+> read(12, 0x8e31350, 5) = -1 EAGAIN (Resource temporarily unavailable)
+> read(12, 0x8e31350, 5) = -1 EAGAIN (Resource temporarily unavailable)
+> read(12, 0x8e31350, 5) = -1 EAGAIN (Resource temporarily unavailable)
+> read(12, 0x8e31350, 5) = -1 EAGAIN (Resource temporarily unavailable)
+> read(12, 0x8e31350, 5) = -1 EAGAIN (Resource temporarily unavailable)
+> read(12, 0x8e31350, 5) = -1 EAGAIN (Resource temporarily unavailable)
+> read(12, 0x8e31350, 5) = -1 EAGAIN (Resource temporarily unavailable)
+> read(12, 0x8e31350, 5) = -1 EAGAIN (Resource temporarily unavailable)
+>
+> as you can see the strace is very similar, but has two differences:
+> there is no time(NULL) call in between the read() calls, and this is a
+> different fd (12, while I was seeing 25 before).
+>
+>
+> On 2010-6-8 09:17, David Bird wrote:
+>> Btw, the problem was reproducible (without waiting) by telneting to
+>> https://uamasliasip/ and just hit<enter>. Previously, this would start
+>> the looping on read() as it attempts ssl negotiation.
+>>
+>> On Tue, 2010-06-08 at 09:13 +0200, Wichert Akkerman wrote:
+>>> On 6/7/10 12:19 , David Bird wrote:
+>>>> See revision 345. There was an issue when using chilli_redir and
+>>>> openssl
+>>>> and looping instead of returning during ssl accept. chilli_redir
+>>>> handles
+>>>> UAM connections asynchronously, whereas when you don't compile with
+>>>> --enable-chilliredir connections are handled by a forked process (and
+>>>> hence will block on accept/read/write).
+>>>
+>>> Great! I've deployed r345 last night so I should know within 2-3 days of
+>>> this helped.
+>>>
+>>> Wichert.
+>>> _______________________________________________
+>>> Chilli mailing list
+>>> Chilli at coova.org
+>>> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>>
+>>
+>
+>
+
+
+-- 
+Wichert Akkerman <wichert at wiggy.net>   It is simple to make things.
+http://www.wiggy.net/                  It is hard to make things simple.
+
+From david at coova.com  Sun Jun 13 13:03:21 2010
+From: david at coova.com (David Bird)
+Date: Sun, 13 Jun 2010 15:03:21 +0200
+Subject: [Chilli] chilli_redir hung on reading from unavailable socket
+In-Reply-To: <4C14D67C.1020505@wiggy.net>
+References: <4C0A3B9D.6000903@wiggy.net>
+	<1275905948.18557.113.camel@david-laptop>
+	<4C0DEDA1.6050103@wiggy.net>
+	<1275981445.18557.149.camel@david-laptop>
+	<4C14CC6A.4010403@wiggy.net> <4C14D67C.1020505@wiggy.net>
+Message-ID: <851916FE-E08F-4682-A657-028492834DA7@coova.com>
+
+You could also maybe get more info by stepping forward to see where  
+the loop is occuring around ssl_read...
+
+Sent from my iPod
+
+On Jun 13, 2010, at 3:00 PM, Wichert Akkerman <wichert at wiggy.net> wrote:
+
+> Almost forgot I extracted a backtrace by attaching gdb to the  
+> spinning chilli_redir process:
+>
+> #0  0xb7f1a424 in __kernel_vsyscall ()
+> #1  0xb7c8d1e3 in read () from /lib/i686/cmov/libc.so.6
+> #2  0xb7dcb257 in ?? () from /usr/lib/i686/cmov/libcrypto.so.0.9.8
+> #3  0x0000000c in ?? ()
+> #4  0x08e31350 in ?? ()
+> #5  0x00000005 in ?? ()
+> #6  0xb7e62124 in ?? () from /usr/lib/i686/cmov/libcrypto.so.0.9.8
+> #7  0x08dab308 in ?? ()
+> #8  0x00000000 in ?? ()
+>
+>
+> On 2010-6-13 14:17, Wichert Akkerman wrote:
+>> r345 worked flawlessly for 4 days, but unfortunately showed the same
+>> symptom today:
+>>
+>> read(12, 0x8e31350, 5) = -1 EAGAIN (Resource temporarily unavailable)
+>> read(12, 0x8e31350, 5) = -1 EAGAIN (Resource temporarily unavailable)
+>> read(12, 0x8e31350, 5) = -1 EAGAIN (Resource temporarily unavailable)
+>> read(12, 0x8e31350, 5) = -1 EAGAIN (Resource temporarily unavailable)
+>> read(12, 0x8e31350, 5) = -1 EAGAIN (Resource temporarily unavailable)
+>> read(12, 0x8e31350, 5) = -1 EAGAIN (Resource temporarily unavailable)
+>> read(12, 0x8e31350, 5) = -1 EAGAIN (Resource temporarily unavailable)
+>> read(12, 0x8e31350, 5) = -1 EAGAIN (Resource temporarily unavailable)
+>>
+>> as you can see the strace is very similar, but has two differences:
+>> there is no time(NULL) call in between the read() calls, and this  
+>> is a
+>> different fd (12, while I was seeing 25 before).
+>>
+>>
+>> On 2010-6-8 09:17, David Bird wrote:
+>>> Btw, the problem was reproducible (without waiting) by telneting to
+>>> https://uamasliasip/ and just hit<enter>. Previously, this would  
+>>> start
+>>> the looping on read() as it attempts ssl negotiation.
+>>>
+>>> On Tue, 2010-06-08 at 09:13 +0200, Wichert Akkerman wrote:
+>>>> On 6/7/10 12:19 , David Bird wrote:
+>>>>> See revision 345. There was an issue when using chilli_redir and
+>>>>> openssl
+>>>>> and looping instead of returning during ssl accept. chilli_redir
+>>>>> handles
+>>>>> UAM connections asynchronously, whereas when you don't compile  
+>>>>> with
+>>>>> --enable-chilliredir connections are handled by a forked process  
+>>>>> (and
+>>>>> hence will block on accept/read/write).
+>>>>
+>>>> Great! I've deployed r345 last night so I should know within 2-3  
+>>>> days of
+>>>> this helped.
+>>>>
+>>>> Wichert.
+>>>> _______________________________________________
+>>>> Chilli mailing list
+>>>> Chilli at coova.org
+>>>> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>>>
+>>>
+>>
+>>
+>
+>
+> -- 
+> Wichert Akkerman <wichert at wiggy.net>   It is simple to make things.
+> http://www.wiggy.net/                  It is hard to make things  
+> simple.
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+From liran.tal at gmail.com  Sun Jun 13 13:37:50 2010
+From: liran.tal at gmail.com (Liran Tal)
+Date: Sun, 13 Jun 2010 16:37:50 +0300
+Subject: [Chilli] chilli_redir hung on reading from unavailable socket
+In-Reply-To: <4C14D67C.1020505@wiggy.net>
+References: <4C0A3B9D.6000903@wiggy.net>
+	<1275905948.18557.113.camel@david-laptop> 
+	<4C0DEDA1.6050103@wiggy.net> <1275981445.18557.149.camel@david-laptop> 
+	<4C14CC6A.4010403@wiggy.net> <4C14D67C.1020505@wiggy.net>
+Message-ID: <AANLkTimzvjNPifksZwa7rrBxQocpb5liR9I0B2Jbyofl@mail.gmail.com>
+
+Hey,
+
+On what kind of system is this running?
+
+Makes sense that the file descriptor varies in different runs.
+Also, since it's saying resource temporarily unavailable maybe it's reaching
+it's limit to create
+file descriptors, this is a configuration in the OS and while this is
+usually very high I'm not
+sure what kind of system you're running so maybe check that first.
+
+Also, maybe you should wait a second, then re-read().
+And another option, I'm not familiar with the code (just replying with some
+ideas that might help) but is
+the socket set to non-blocking mode?
+
+
+Regards,
+Liran.
+
+
+On Sun, Jun 13, 2010 at 4:00 PM, Wichert Akkerman <wichert at wiggy.net> wrote:
+
+> Almost forgot I extracted a backtrace by attaching gdb to the spinning
+> chilli_redir process:
+>
+> #0  0xb7f1a424 in __kernel_vsyscall ()
+> #1  0xb7c8d1e3 in read () from /lib/i686/cmov/libc.so.6
+> #2  0xb7dcb257 in ?? () from /usr/lib/i686/cmov/libcrypto.so.0.9.8
+> #3  0x0000000c in ?? ()
+> #4  0x08e31350 in ?? ()
+> #5  0x00000005 in ?? ()
+> #6  0xb7e62124 in ?? () from /usr/lib/i686/cmov/libcrypto.so.0.9.8
+> #7  0x08dab308 in ?? ()
+> #8  0x00000000 in ?? ()
+>
+>
+>
+> On 2010-6-13 14:17, Wichert Akkerman wrote:
+>
+>> r345 worked flawlessly for 4 days, but unfortunately showed the same
+>> symptom today:
+>>
+>> read(12, 0x8e31350, 5) = -1 EAGAIN (Resource temporarily unavailable)
+>> read(12, 0x8e31350, 5) = -1 EAGAIN (Resource temporarily unavailable)
+>> read(12, 0x8e31350, 5) = -1 EAGAIN (Resource temporarily unavailable)
+>> read(12, 0x8e31350, 5) = -1 EAGAIN (Resource temporarily unavailable)
+>> read(12, 0x8e31350, 5) = -1 EAGAIN (Resource temporarily unavailable)
+>> read(12, 0x8e31350, 5) = -1 EAGAIN (Resource temporarily unavailable)
+>> read(12, 0x8e31350, 5) = -1 EAGAIN (Resource temporarily unavailable)
+>> read(12, 0x8e31350, 5) = -1 EAGAIN (Resource temporarily unavailable)
+>>
+>> as you can see the strace is very similar, but has two differences:
+>> there is no time(NULL) call in between the read() calls, and this is a
+>> different fd (12, while I was seeing 25 before).
+>>
+>>
+>> On 2010-6-8 09:17, David Bird wrote:
+>>
+>>> Btw, the problem was reproducible (without waiting) by telneting to
+>>> https://uamasliasip/ and just hit<enter>. Previously, this would start
+>>> the looping on read() as it attempts ssl negotiation.
+>>>
+>>> On Tue, 2010-06-08 at 09:13 +0200, Wichert Akkerman wrote:
+>>>
+>>>> On 6/7/10 12:19 , David Bird wrote:
+>>>>
+>>>>> See revision 345. There was an issue when using chilli_redir and
+>>>>> openssl
+>>>>> and looping instead of returning during ssl accept. chilli_redir
+>>>>> handles
+>>>>> UAM connections asynchronously, whereas when you don't compile with
+>>>>> --enable-chilliredir connections are handled by a forked process (and
+>>>>> hence will block on accept/read/write).
+>>>>>
+>>>>
+>>>> Great! I've deployed r345 last night so I should know within 2-3 days of
+>>>> this helped.
+>>>>
+>>>> Wichert.
+>>>> _______________________________________________
+>>>> Chilli mailing list
+>>>> Chilli at coova.org
+>>>> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>>>>
+>>>
+>>>
+>>>
+>>
+>>
+>
+> --
+> Wichert Akkerman <wichert at wiggy.net>   It is simple to make things.
+> http://www.wiggy.net/                  It is hard to make things simple.
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+
+
+
+-- 
+-- 
+Sincerely, Liran Tal
+
+Founder and CTO
+Linux and Open Source
+Enginx - http://enginx.com
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20100613/3dfca3f7/attachment.htm>
+
+From fmacedo at cpd.ufrgs.br  Mon Jun 14 16:50:38 2010
+From: fmacedo at cpd.ufrgs.br (Fernando Dutra Fagundes Macedo)
+Date: Mon, 14 Jun 2010 13:50:38 -0300
+Subject: [Chilli] Compile error
+Message-ID: <1276534238.2720.11.camel@fernandonio>
+
+Hi, I've downloaded the latest coova-chilli version(1.2.3-rc1) on svn
+and got this error compiling it:
+
+main-redir.c:555: error: ?select_ctx? has no member named ?events?
+
+How I've configured it:
+
+./configure --prefix=/usr/local --enable-chilliredir --enable-miniportal
+--with-openssl
+
+Thanks in advance,
+Fernando Macedo
+
+From stelio at skyrove.com  Fri Jun 18 08:28:27 2010
+From: stelio at skyrove.com (Stelio Gouveia)
+Date: Fri, 18 Jun 2010 10:28:27 +0200
+Subject: [Chilli] CoovaChilli and RadSec
+Message-ID: <AANLkTilZdzhfaPhw1Mff5WZcTyQOPKPnd-w7MaXW-zMa@mail.gmail.com>
+
+Hi Folks
+
+I'm trying to get CoovaChilli (v1.2.3) to encrypt it's packets using RadSec
+and forward them on to RadSecProxy 1.4
+
+On my RadSecProxy side, i get the following:
+Jun 17 15:30:54 2010: tlsservernew: incoming TLS connection from 10.0.0.44
+Jun 17 15:30:54 2010: tlsservernew: SSL: error:1408F10B:SSL
+routines:SSL3_GET_RECORD:wrong version number
+Jun 17 15:30:54 2010: tlsservernew: SSL_accept failed
+
+Some posts i've read suggest this could be down to using the wrong
+TLS_PROTOCOL version on either the client or server. Which version does
+CoovaChilli use?
+
+Has anyone else tried to marry these two pieces of software?
+
+- Stelio
+
+--
+Skyrove Software Engineer,
+Skyrove (Pty) Ltd
+Technology Top 100 Award Winner (2006)
+Mobile: +27 82 34 09 120
+Tel: +27 861 ROVERS (0861 768 377)
+Fax: +27 86 6204077
+Email & Gtalk: stelio at skyrove.com
+Web:   www.skyrove.com
+
+This message contains confidential information. If you are not the intended
+recipient you are notified that disclosing, copying, distributing or taking
+any action in reliance on the contents of this information is strictly
+prohibited. E-mail transmission cannot be guaranteed to be secure or
+error-free as information could be intercepted, corrupted, lost, destroyed,
+arrive late or incomplete, or contain viruses. The sender therefore does not
+accept liability for any errors or omissions in the contents of this
+message.
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20100618/f41024ab/attachment.htm>
+
+From xserverlinux at gmail.com  Tue Jun 22 04:49:22 2010
+From: xserverlinux at gmail.com (troxlinux)
+Date: Mon, 21 Jun 2010 22:49:22 -0600
+Subject: [Chilli] chilli restart twice and work
+Message-ID: <AANLkTik48ICHKzFmg6olvAUZm_dBmL-ZM3UZapEE6CMa@mail.gmail.com>
+
+Hi, something stranger passes with the coova, when I restart my
+network cards and I restart the chilli, and I open the browser, it
+shows me the authentication window..
+
+
+ but I comment the lines 20 and 21 and it no longer shows me the error,
+
+error when I reboot the chilli
+
+/etc/init.d/chilli start
+/etc/init.d/chilli: line 20: .: /etc/sysconfig/network: is a directory
+/etc/init.d/chilli: line 21: [: =: unary operator expected
+
+lines commeted
+
+#[ -e /etc/sysconfig/network ] && {
+#    . /etc/sysconfig/network
+#    [ ${NETWORKING} = "no" ] && exit 0
+#}
+
+
+
+now so that it shows me in the browser the authentication screen I
+have to make the following steps in opensuse:
+
+1 - /etc/init.d/chilli restart
+
+2 - rcnetwork restart
+
+3 - /etc/init.d/chilli restart
+
+
+some idea like I can solve this problem, some idea for where to guide me?
+
+
+when I try to authenticate myself with user created with daloradius,
+it shows me this error in freeradius log:
+
+Mon Jun 21 22:30:31 2010 : Auth: Login incorrect (rlm_pap: CLEAR TEXT
+password check failed): [ricardo] (from client localhost port 2 cli
+00-25-11-40-CA-21)
+
+
+I make several users with different authentication types, clear text,
+md5, but it doesn't allow me log in
+
+
+regards list ..
+
+
+
+-- 
+rickygm
+
+http://gnuforever.homelinux.com
+
+From david at coova.com  Tue Jun 22 15:25:59 2010
+From: david at coova.com (David Bird)
+Date: Tue, 22 Jun 2010 17:25:59 +0200
+Subject: [Chilli] chilli restart twice and work
+In-Reply-To: <AANLkTik48ICHKzFmg6olvAUZm_dBmL-ZM3UZapEE6CMa@mail.gmail.com>
+References: <AANLkTik48ICHKzFmg6olvAUZm_dBmL-ZM3UZapEE6CMa@mail.gmail.com>
+Message-ID: <1277220359.23467.13.camel@david-laptop>
+
+Are you doing a 'make install' from source on Ubuntu? If so, don't. You
+probably are better off building it into a debian package to use the
+correct init script. 
+
+On Mon, 2010-06-21 at 22:49 -0600, troxlinux wrote:
+> Hi, something stranger passes with the coova, when I restart my
+> network cards and I restart the chilli, and I open the browser, it
+> shows me the authentication window..
+> 
+> 
+>  but I comment the lines 20 and 21 and it no longer shows me the error,
+> 
+> error when I reboot the chilli
+> 
+> /etc/init.d/chilli start
+> /etc/init.d/chilli: line 20: .: /etc/sysconfig/network: is a directory
+> /etc/init.d/chilli: line 21: [: =: unary operator expected
+> 
+> lines commeted
+> 
+> #[ -e /etc/sysconfig/network ] && {
+> #    . /etc/sysconfig/network
+> #    [ ${NETWORKING} = "no" ] && exit 0
+> #}
+> 
+> 
+> 
+> now so that it shows me in the browser the authentication screen I
+> have to make the following steps in opensuse:
+> 
+> 1 - /etc/init.d/chilli restart
+> 
+> 2 - rcnetwork restart
+> 
+> 3 - /etc/init.d/chilli restart
+> 
+> 
+> some idea like I can solve this problem, some idea for where to guide me?
+> 
+> 
+> when I try to authenticate myself with user created with daloradius,
+> it shows me this error in freeradius log:
+> 
+> Mon Jun 21 22:30:31 2010 : Auth: Login incorrect (rlm_pap: CLEAR TEXT
+> password check failed): [ricardo] (from client localhost port 2 cli
+> 00-25-11-40-CA-21)
+> 
+> 
+> I make several users with different authentication types, clear text,
+> md5, but it doesn't allow me log in
+> 
+> 
+> regards list ..
+> 
+> 
+> 
+
+
+
+From xserverlinux at gmail.com  Tue Jun 22 16:46:53 2010
+From: xserverlinux at gmail.com (troxlinux)
+Date: Tue, 22 Jun 2010 10:46:53 -0600
+Subject: [Chilli] chilli restart twice and work
+In-Reply-To: <1277220359.23467.13.camel@david-laptop>
+References: <AANLkTik48ICHKzFmg6olvAUZm_dBmL-ZM3UZapEE6CMa@mail.gmail.com> 
+	<1277220359.23467.13.camel@david-laptop>
+Message-ID: <AANLkTim85APqTFdCAdDfHXN986Ps3vSYt5xSofSp4KkT@mail.gmail.com>
+
+2010/6/22 David Bird <david at coova.com>:
+> Are you doing a 'make install' from source on Ubuntu? If so, don't. You
+> probably are better off building it into a debian package to use the
+> correct init script.
+
+Hi David , I installed from rpm in OpenSuSE 11.2 , I build the rpm
+
+-- 
+rickygm
+
+http://gnuforever.homelinux.com
+
+From stelio at skyrove.com  Wed Jun 23 08:32:02 2010
+From: stelio at skyrove.com (Stelio Gouveia)
+Date: Wed, 23 Jun 2010 10:32:02 +0200
+Subject: [Chilli] CoovaChilli and RadSec
+In-Reply-To: <AANLkTilZdzhfaPhw1Mff5WZcTyQOPKPnd-w7MaXW-zMa@mail.gmail.com>
+References: <AANLkTilZdzhfaPhw1Mff5WZcTyQOPKPnd-w7MaXW-zMa@mail.gmail.com>
+Message-ID: <AANLkTimbVIKdOKBs7XK7_AqccGtp8PFI2nEHF8CLxGpU@mail.gmail.com>
+
+The problem it seems is when Coova-Chilli sends a SSLv2 CLIENT-HELLO
+message. RadSecProxy doesn't know what to do with it and fails to establish
+a SSL connection as it's listening for TLSv1 CLIENT-HELLO messages.
+
+Now if we replace the SSLv23_client_method with the TLSv1_client_method,
+then we can get Coova-Chilli and RadSecProxy sending encrypted packets.
+
+Are there any objections to doing this? Other than the fact that SSLv23
+method is no longer supported
+
+See the patch bellow:
+
+--- ssl.c.orginal 2010-06-23 09:53:51.406061947 +0200
++++ ssl.c 2010-06-23 09:54:05.966062034 +0200
+@@ -182,7 +182,7 @@
+   if (server) {
+     env->meth = SSLv23_server_method();
+   } else {
+-    env->meth = SSLv23_client_method();
++    env->meth = TLSv1_client_method();
+   }
+   env->ctx = SSL_CTX_new(env->meth);
+   SSL_CTX_set_options(env->ctx, SSL_OP_ALL);
+
+- Stelio
+
+On Fri, Jun 18, 2010 at 10:28 AM, Stelio Gouveia <stelio at skyrove.com> wrote:
+
+> Hi Folks
+>
+> I'm trying to get CoovaChilli (v1.2.3) to encrypt it's packets using RadSec
+> and forward them on to RadSecProxy 1.4
+>
+> On my RadSecProxy side, i get the following:
+> Jun 17 15:30:54 2010: tlsservernew: incoming TLS connection from 10.0.0.44
+> Jun 17 15:30:54 2010: tlsservernew: SSL: error:1408F10B:SSL
+> routines:SSL3_GET_RECORD:wrong version number
+> Jun 17 15:30:54 2010: tlsservernew: SSL_accept failed
+>
+> Some posts i've read suggest this could be down to using the wrong
+> TLS_PROTOCOL version on either the client or server. Which version does
+> CoovaChilli use?
+>
+> Has anyone else tried to marry these two pieces of software?
+>
+> - Stelio
+>
+> --
+> Skyrove Software Engineer,
+> Skyrove (Pty) Ltd
+> Technology Top 100 Award Winner (2006)
+> Mobile: +27 82 34 09 120
+> Tel: +27 861 ROVERS (0861 768 377)
+> Fax: +27 86 6204077
+> Email & Gtalk: stelio at skyrove.com
+> Web:   www.skyrove.com
+>
+> This message contains confidential information. If you are not the intended
+> recipient you are notified that disclosing, copying, distributing or taking
+> any action in reliance on the contents of this information is strictly
+> prohibited. E-mail transmission cannot be guaranteed to be secure or
+> error-free as information could be intercepted, corrupted, lost, destroyed,
+> arrive late or incomplete, or contain viruses. The sender therefore does not
+> accept liability for any errors or omissions in the contents of this
+> message.
+>
+
+
+
+-- 
+Regards
+Stelio Gouveia
+--
+Skyrove Software Engineer,
+Skyrove (Pty) Ltd
+Technology Top 100 Award Winner (2006)
+Mobile: +27 82 34 09 120
+Tel: +27 861 ROVERS (0861 768 377)
+Fax: +27 86 6204077
+Email & Gtalk: stelio at skyrove.com
+Web:   www.skyrove.com
+
+This message contains confidential information. If you are not the intended
+recipient you are notified that disclosing, copying, distributing or taking
+any action in reliance on the contents of this information is strictly
+prohibited. E-mail transmission cannot be guaranteed to be secure or
+error-free as information could be intercepted, corrupted, lost, destroyed,
+arrive late or incomplete, or contain viruses. The sender therefore does not
+accept liability for any errors or omissions in the contents of this
+message.
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20100623/95ed5c52/attachment.htm>
+
+From david at coova.com  Wed Jun 23 11:16:40 2010
+From: david at coova.com (David Bird)
+Date: Wed, 23 Jun 2010 13:16:40 +0200
+Subject: [Chilli] CoovaChilli and RadSec
+In-Reply-To: <AANLkTimbVIKdOKBs7XK7_AqccGtp8PFI2nEHF8CLxGpU@mail.gmail.com>
+References: <AANLkTilZdzhfaPhw1Mff5WZcTyQOPKPnd-w7MaXW-zMa@mail.gmail.com>
+	<AANLkTimbVIKdOKBs7XK7_AqccGtp8PFI2nEHF8CLxGpU@mail.gmail.com>
+Message-ID: <1277291800.23467.28.camel@david-laptop>
+
+Hi Stelio,
+
+Thanks... will commit to subversion.
+
+David
+
+
+On Wed, 2010-06-23 at 10:32 +0200, Stelio Gouveia wrote:
+> The problem it seems is when Coova-Chilli sends a SSLv2 CLIENT-HELLO
+> message. RadSecProxy doesn't know what to do with it and fails to
+> establish a SSL connection as it's listening for TLSv1 CLIENT-HELLO
+> messages.
+> 
+> 
+> Now if we replace the SSLv23_client_method with the
+> TLSv1_client_method, then we can get Coova-Chilli and RadSecProxy
+> sending encrypted packets.
+> 
+> 
+> Are there any objections to doing this? Other than the fact that
+> SSLv23 method is no longer supported
+> 
+> 
+> See the patch bellow:
+> 
+> 
+> --- ssl.c.orginal 2010-06-23 09:53:51.406061947 +0200
+> +++ ssl.c 2010-06-23 09:54:05.966062034 +0200
+> @@ -182,7 +182,7 @@
+>    if (server) {
+>      env->meth = SSLv23_server_method();
+>    } else {
+> -    env->meth = SSLv23_client_method();
+> +    env->meth = TLSv1_client_method();
+>    }
+>    env->ctx = SSL_CTX_new(env->meth);
+>    SSL_CTX_set_options(env->ctx, SSL_OP_ALL);
+> 
+> 
+> - Stelio
+> 
+> On Fri, Jun 18, 2010 at 10:28 AM, Stelio Gouveia <stelio at skyrove.com>
+> wrote:
+>         Hi Folks
+>         
+>         
+>         I'm trying to get CoovaChilli (v1.2.3) to encrypt it's packets
+>         using RadSec and forward them on to RadSecProxy 1.4
+>         
+>         
+>         On my RadSecProxy side, i get the following:
+>         Jun 17 15:30:54 2010: tlsservernew: incoming TLS connection
+>         from 10.0.0.44
+>         Jun 17 15:30:54 2010: tlsservernew: SSL: error:1408F10B:SSL
+>         routines:SSL3_GET_RECORD:wrong version number
+>         Jun 17 15:30:54 2010: tlsservernew: SSL_accept failed
+>         
+>         
+>         Some posts i've read suggest this could be down to using the
+>         wrong TLS_PROTOCOL version on either the client or
+>         server. Which version does CoovaChilli use?
+>         
+>         
+>         Has anyone else tried to marry these two pieces of software?
+>         
+>         
+>         - Stelio
+>         
+>         
+>         --
+>         Skyrove Software Engineer,
+>         Skyrove (Pty) Ltd
+>         Technology Top 100 Award Winner (2006)
+>         Mobile: +27 82 34 09 120
+>         Tel: +27 861 ROVERS (0861 768 377)
+>         Fax: +27 86 6204077
+>         Email & Gtalk: stelio at skyrove.com
+>         Web:   www.skyrove.com
+>         
+>         This message contains confidential information. If you are not
+>         the intended recipient you are notified that disclosing,
+>         copying, distributing or taking any action in reliance on the
+>         contents of this information is strictly prohibited. E-mail
+>         transmission cannot be guaranteed to be secure or error-free
+>         as information could be intercepted, corrupted, lost,
+>         destroyed, arrive late or incomplete, or contain viruses. The
+>         sender therefore does not accept liability for any errors or
+>         omissions in the contents of this message.
+>         
+> 
+> 
+> 
+> -- 
+> Regards
+> Stelio Gouveia
+> --
+> Skyrove Software Engineer,
+> Skyrove (Pty) Ltd
+> Technology Top 100 Award Winner (2006)
+> Mobile: +27 82 34 09 120
+> Tel: +27 861 ROVERS (0861 768 377)
+> Fax: +27 86 6204077
+> Email & Gtalk: stelio at skyrove.com
+> Web:   www.skyrove.com
+> 
+> This message contains confidential information. If you are not the
+> intended recipient you are notified that disclosing, copying,
+> distributing or taking any action in reliance on the contents of this
+> information is strictly prohibited. E-mail transmission cannot be
+> guaranteed to be secure or error-free as information could be
+> intercepted, corrupted, lost, destroyed, arrive late or incomplete, or
+> contain viruses. The sender therefore does not accept liability for
+> any errors or omissions in the contents of this message.
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+
+
+From derekchilli at hssl.ie  Thu Jun 24 23:23:57 2010
+From: derekchilli at hssl.ie (Derek C)
+Date: Fri, 25 Jun 2010 00:23:57 +0100 (IST)
+Subject: [Chilli] DHCP hostname via Radius - howto?
+Message-ID: <64019.172.16.15.248.1277421837.squirrel@www.rivertowermail.com>
+
+Hi all,
+
+Does anyone know how to retrieve (and store) an associating computer's
+hostname when using macauth with [free]radius and Coova Chilli?
+
+thanks for any information
+
+Derek
+
+
+-- 
+Derek C
+In Ireland
+
+
+From tim at skyrove.com  Mon Jun 28 13:03:55 2010
+From: tim at skyrove.com (Tim Long)
+Date: Mon, 28 Jun 2010 15:03:55 +0200
+Subject: [Chilli] Hardcoded radsec secret
+Message-ID: <AANLkTin6Yvxj7lRBgab06LMXU6YgXE4OcgJENIc94Z9r@mail.gmail.com>
+
+Hi All,
+
+We have trying to get coova-chilli communicate with radsecproxy over TLS.
+
+We finally appear to have succeeded, but only discovering that the shared
+secret is always "radsec". As in, it is hardcoded that way.
+
+So even though the radsec page (http://coova.org/CoovaChilli/RadSec) says
+that the radiussecret should always be radsec, this is misleading as it
+implies you can change the secret if you want to. But you can't.
+
+Perhaps the wording could be changed to "When radsec is enabled, the
+radiussecret attribute is ignored and 'radsec' is used", or similar.
+
+Many thanks,
+
+Tim Long
+Skyrove (Pty) Ltd
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20100628/f85d1eca/attachment.htm>
+
+From xserverlinux at gmail.com  Mon Jun 28 16:15:17 2010
+From: xserverlinux at gmail.com (troxlinux)
+Date: Mon, 28 Jun 2010 10:15:17 -0600
+Subject: [Chilli] [Daloradius-users] log in failed
+In-Reply-To: <AANLkTikMZMZQwY440PZQjKE3RPMW9RA3PKe6iiDARQxI@mail.gmail.com>
+References: <AANLkTimeX0z5qwFErfm_T6peM8DLResJNrjk1kYYtpax@mail.gmail.com> 
+	<AANLkTikMZMZQwY440PZQjKE3RPMW9RA3PKe6iiDARQxI@mail.gmail.com>
+Message-ID: <AANLkTimKIWHfEiOcL7iN7wjYp_WDngkg4cD3W9JRpDUV@mail.gmail.com>
+
+2010/6/28 Liran Tal <liran.tal at gmail.com>:
+>
+> Can you please provide more background information and the full log of
+> radius when authentication from dalo and
+> from your NAS?
+>
+
+Hi liran, I when I create a pair of users, I use two types of
+authentication md5 and cleartext
+
+un Jun 27 19:17:06 2010 : Info: rlm_sql_mysql: Starting connect to
+MySQL server for #4
+Sun Jun 27 19:17:06 2010 : Info: Loaded virtual server <default>
+Sun Jun 27 19:17:06 2010 : Info: Ready to process requests.
+Sun Jun 27 19:18:40 2010 : Auth: Login OK: [00:03:1b:5b:94:49] (from
+client  port 1)
+Sun Jun 27 19:21:30 2010 : Info: rlm_radutmp: NAS 192.168.10.1
+restarted (Accounting-On packet seen)
+Sun Jun 27 19:25:00 2010 : Auth: Login incorrect (rlm_pap: CLEAR TEXT
+password check failed): [ricardo] (from client localhost port
+ 1 cli 00-25-11-40-CA-21)
+Sun Jun 27 19:26:02 2010 : Auth: Login OK: [ricardo] (from client
+localhost port 0)
+Sun Jun 27 19:28:42 2010 : Auth: Login OK: [00:03:1b:5b:94:49] (from
+client  port 1)
+Sun Jun 27 19:29:51 2010 : Auth: Login OK: [70:1a:04:73:75:b5] (from
+client  port 1)
+Sun Jun 27 19:33:43 2010 : Auth: Login OK: [00:03:1b:5b:94:49] (from
+client  port 1)
+Sun Jun 27 19:34:52 2010 : Auth: Login OK: [70:1a:04:73:75:b5] (from
+client  port 1)
+Sun Jun 27 19:38:44 2010 : Auth: Login OK: [00:03:1b:5b:94:49] (from
+client  port 1)
+Sun Jun 27 19:39:53 2010 : Auth: Login OK: [70:1a:04:73:75:b5] (from
+client  port 1)
+Sun Jun 27 19:42:08 2010 : Info: rlm_radutmp: NAS 192.168.10.1
+rebooted (Accounting-Off packet seen)
+Sun Jun 27 19:42:08 2010 : Info: rlm_radutmp: NAS 192.168.10.1
+restarted (Accounting-On packet seen)
+Sun Jun 27 19:43:44 2010 : Info: Exiting normally.
+Sun Jun 27 19:45:13 2010 : Info: Loaded virtual server inner-tunnel
+Sun Jun 27 19:45:13 2010 : Info: rlm_sql (sql): Driver rlm_sql_mysql
+(module rlm_sql_mysql) loaded and linked
+
+Mon Jun 28 10:18:16 2010 : Auth: Login incorrect (rlm_pap: CLEAR TEXT
+password check failed): [rgm] (from client localhost port 1 c
+li 00-1C-10-86-DD-DD)
+Mon Jun 28 10:18:29 2010 : Auth: Login incorrect (rlm_pap: CLEAR TEXT
+password check failed): [ricardo] (from client localhost port
+ 1 cli 00-1C-10-86-DD-DD)
+
+
+
+I send a screenshot
+
+regardss , t
+
+
+-- 
+rickygm
+
+http://gnuforever.homelinux.com
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: daloauten.png
+Type: image/png
+Size: 22991 bytes
+Desc: not available
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20100628/a0e3cf0c/attachment-0001.png>
+
+From liran.tal at gmail.com  Mon Jun 28 22:45:41 2010
+From: liran.tal at gmail.com (Liran Tal)
+Date: Tue, 29 Jun 2010 01:45:41 +0300
+Subject: [Chilli] [Daloradius-users] log in failed
+In-Reply-To: <AANLkTimKIWHfEiOcL7iN7wjYp_WDngkg4cD3W9JRpDUV@mail.gmail.com>
+References: <AANLkTimeX0z5qwFErfm_T6peM8DLResJNrjk1kYYtpax@mail.gmail.com> 
+	<AANLkTikMZMZQwY440PZQjKE3RPMW9RA3PKe6iiDARQxI@mail.gmail.com> 
+	<AANLkTimKIWHfEiOcL7iN7wjYp_WDngkg4cD3W9JRpDUV@mail.gmail.com>
+Message-ID: <AANLkTill23b5h2xQXUGmksfg914_eS_bCSKVhD8b00gX@mail.gmail.com>
+
+When you created the rgm user, did you also specify that it's an
+MD5-Password type?
+
+
+Regards,
+Liran.
+
+
+On Mon, Jun 28, 2010 at 7:15 PM, troxlinux <xserverlinux at gmail.com> wrote:
+
+> 2010/6/28 Liran Tal <liran.tal at gmail.com>:
+> >
+> > Can you please provide more background information and the full log of
+> > radius when authentication from dalo and
+> > from your NAS?
+> >
+>
+> Hi liran, I when I create a pair of users, I use two types of
+> authentication md5 and cleartext
+>
+> un Jun 27 19:17:06 2010 : Info: rlm_sql_mysql: Starting connect to
+> MySQL server for #4
+> Sun Jun 27 19:17:06 2010 : Info: Loaded virtual server <default>
+> Sun Jun 27 19:17:06 2010 : Info: Ready to process requests.
+> Sun Jun 27 19:18:40 2010 : Auth: Login OK: [00:03:1b:5b:94:49] (from
+> client  port 1)
+> Sun Jun 27 19:21:30 2010 : Info: rlm_radutmp: NAS 192.168.10.1
+> restarted (Accounting-On packet seen)
+> Sun Jun 27 19:25:00 2010 : Auth: Login incorrect (rlm_pap: CLEAR TEXT
+> password check failed): [ricardo] (from client localhost port
+>  1 cli 00-25-11-40-CA-21)
+> Sun Jun 27 19:26:02 2010 : Auth: Login OK: [ricardo] (from client
+> localhost port 0)
+> Sun Jun 27 19:28:42 2010 : Auth: Login OK: [00:03:1b:5b:94:49] (from
+> client  port 1)
+> Sun Jun 27 19:29:51 2010 : Auth: Login OK: [70:1a:04:73:75:b5] (from
+> client  port 1)
+> Sun Jun 27 19:33:43 2010 : Auth: Login OK: [00:03:1b:5b:94:49] (from
+> client  port 1)
+> Sun Jun 27 19:34:52 2010 : Auth: Login OK: [70:1a:04:73:75:b5] (from
+> client  port 1)
+> Sun Jun 27 19:38:44 2010 : Auth: Login OK: [00:03:1b:5b:94:49] (from
+> client  port 1)
+> Sun Jun 27 19:39:53 2010 : Auth: Login OK: [70:1a:04:73:75:b5] (from
+> client  port 1)
+> Sun Jun 27 19:42:08 2010 : Info: rlm_radutmp: NAS 192.168.10.1
+> rebooted (Accounting-Off packet seen)
+> Sun Jun 27 19:42:08 2010 : Info: rlm_radutmp: NAS 192.168.10.1
+> restarted (Accounting-On packet seen)
+> Sun Jun 27 19:43:44 2010 : Info: Exiting normally.
+> Sun Jun 27 19:45:13 2010 : Info: Loaded virtual server inner-tunnel
+> Sun Jun 27 19:45:13 2010 : Info: rlm_sql (sql): Driver rlm_sql_mysql
+> (module rlm_sql_mysql) loaded and linked
+>
+> Mon Jun 28 10:18:16 2010 : Auth: Login incorrect (rlm_pap: CLEAR TEXT
+> password check failed): [rgm] (from client localhost port 1 c
+> li 00-1C-10-86-DD-DD)
+> Mon Jun 28 10:18:29 2010 : Auth: Login incorrect (rlm_pap: CLEAR TEXT
+> password check failed): [ricardo] (from client localhost port
+>  1 cli 00-1C-10-86-DD-DD)
+>
+>
+>
+> I send a screenshot
+>
+> regardss , t
+>
+>
+> --
+> rickygm
+>
+> http://gnuforever.homelinux.com
+>
+
+
+
+-- 
+-- 
+Sincerely, Liran Tal
+
+Founder and CTO
+Linux and Open Source
+Enginx - http://enginx.com
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20100629/0a62d82d/attachment.htm>
+
+From xserverlinux at gmail.com  Tue Jun 29 03:14:21 2010
+From: xserverlinux at gmail.com (troxlinux)
+Date: Mon, 28 Jun 2010 21:14:21 -0600
+Subject: [Chilli] [Daloradius-users] log in failed
+In-Reply-To: <AANLkTill23b5h2xQXUGmksfg914_eS_bCSKVhD8b00gX@mail.gmail.com>
+References: <AANLkTimeX0z5qwFErfm_T6peM8DLResJNrjk1kYYtpax@mail.gmail.com> 
+	<AANLkTikMZMZQwY440PZQjKE3RPMW9RA3PKe6iiDARQxI@mail.gmail.com> 
+	<AANLkTimKIWHfEiOcL7iN7wjYp_WDngkg4cD3W9JRpDUV@mail.gmail.com> 
+	<AANLkTill23b5h2xQXUGmksfg914_eS_bCSKVhD8b00gX@mail.gmail.com>
+Message-ID: <AANLkTik1yuw_BVWldnrekdjWt3mpy8Y_eVsWlGb9sGvC@mail.gmail.com>
+
+2010/6/28 Liran Tal <liran.tal at gmail.com>:
+>
+> When you created the rgm user, did you also specify that it's an
+> MD5-Password type?
+
+yes the user rgm have a password with md5 , but when I test the
+connectivity its failed
+
+check this:
+
+Mon Jun 28 21:14:24 2010 : Auth: Login incorrect (rlm_pap: CLEAR TEXT
+password check failed): [rgm] (from client localhost port
+
+and inside of file eap.conf  , I difined
+
+default_eap_type = md5
+
+
+-- 
+rickygm
+
+http://gnuforever.homelinux.com
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: testuser.jpg
+Type: image/jpeg
+Size: 59960 bytes
+Desc: not available
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20100628/b854b2ff/attachment-0001.jpg>
+
+From liran.tal at gmail.com  Tue Jun 29 09:00:33 2010
+From: liran.tal at gmail.com (Liran Tal)
+Date: Tue, 29 Jun 2010 12:00:33 +0300
+Subject: [Chilli] [Daloradius-users] log in failed
+In-Reply-To: <AANLkTik1yuw_BVWldnrekdjWt3mpy8Y_eVsWlGb9sGvC@mail.gmail.com>
+References: <AANLkTimeX0z5qwFErfm_T6peM8DLResJNrjk1kYYtpax@mail.gmail.com> 
+	<AANLkTikMZMZQwY440PZQjKE3RPMW9RA3PKe6iiDARQxI@mail.gmail.com> 
+	<AANLkTimKIWHfEiOcL7iN7wjYp_WDngkg4cD3W9JRpDUV@mail.gmail.com> 
+	<AANLkTill23b5h2xQXUGmksfg914_eS_bCSKVhD8b00gX@mail.gmail.com> 
+	<AANLkTik1yuw_BVWldnrekdjWt3mpy8Y_eVsWlGb9sGvC@mail.gmail.com>
+Message-ID: <AANLkTilq3x716SlsU5mghZh5MnFLWqyDeWoSSOSGdnsb@mail.gmail.com>
+
+In the user attributes, does it have an MD5-Password attribute set to it?
+
+
+Regards,
+Liran.
+
+
+
+On Tue, Jun 29, 2010 at 6:14 AM, troxlinux <xserverlinux at gmail.com> wrote:
+
+> 2010/6/28 Liran Tal <liran.tal at gmail.com>:
+> >
+> > When you created the rgm user, did you also specify that it's an
+> > MD5-Password type?
+>
+> yes the user rgm have a password with md5 , but when I test the
+> connectivity its failed
+>
+> check this:
+>
+> Mon Jun 28 21:14:24 2010 : Auth: Login incorrect (rlm_pap: CLEAR TEXT
+> password check failed): [rgm] (from client localhost port
+>
+> and inside of file eap.conf  , I difined
+>
+> default_eap_type = md5
+>
+>
+> --
+> rickygm
+>
+> http://gnuforever.homelinux.com
+>
+
+
+
+-- 
+-- 
+Sincerely, Liran Tal
+
+Founder and CTO
+Linux and Open Source
+Enginx - http://enginx.com
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20100629/74255d05/attachment.htm>
+
+From xserverlinux at gmail.com  Tue Jun 29 22:29:34 2010
+From: xserverlinux at gmail.com (troxlinux)
+Date: Tue, 29 Jun 2010 16:29:34 -0600
+Subject: [Chilli] [Daloradius-users] log in failed
+In-Reply-To: <AANLkTilq3x716SlsU5mghZh5MnFLWqyDeWoSSOSGdnsb@mail.gmail.com>
+References: <AANLkTimeX0z5qwFErfm_T6peM8DLResJNrjk1kYYtpax@mail.gmail.com> 
+	<AANLkTikMZMZQwY440PZQjKE3RPMW9RA3PKe6iiDARQxI@mail.gmail.com> 
+	<AANLkTimKIWHfEiOcL7iN7wjYp_WDngkg4cD3W9JRpDUV@mail.gmail.com> 
+	<AANLkTill23b5h2xQXUGmksfg914_eS_bCSKVhD8b00gX@mail.gmail.com> 
+	<AANLkTik1yuw_BVWldnrekdjWt3mpy8Y_eVsWlGb9sGvC@mail.gmail.com> 
+	<AANLkTilq3x716SlsU5mghZh5MnFLWqyDeWoSSOSGdnsb@mail.gmail.com>
+Message-ID: <AANLkTilQqXNeVWVrccxcJv3tpFnJNOFOSX4NOkgkcylb@mail.gmail.com>
+
+2010/6/29 Liran Tal <liran.tal at gmail.com>:
+>
+> In the user attributes, does it have an MD5-Password attribute set to it?
+>
+
+but I have a doubt why the coova-chilli when I log in with user that
+has the password in clear text  not log in?
+
+
+Auth: Login incorrect (rlm_pap: CLEAR TEXT password check failed):
+[rgm] (from client localhost port 0)
+Tue Jun 29 16:32:30 2010 : Auth: Login incorrect (rlm_pap: CLEAR TEXT
+password check failed): [rgm] (from client localhost port 0)
+Tue Jun 29 16:32:53 2010 : Auth: Login incorrect (rlm_pap: CLEAR TEXT
+password check failed): [rgm] (from client localhost port 0)
+
+regardss
+
+-- 
+rickygm
+
+http://gnuforever.homelinux.com
+
+From xserverlinux at gmail.com  Tue Jun 29 22:23:58 2010
+From: xserverlinux at gmail.com (troxlinux)
+Date: Tue, 29 Jun 2010 16:23:58 -0600
+Subject: [Chilli] [Daloradius-users] log in failed
+In-Reply-To: <AANLkTilq3x716SlsU5mghZh5MnFLWqyDeWoSSOSGdnsb@mail.gmail.com>
+References: <AANLkTimeX0z5qwFErfm_T6peM8DLResJNrjk1kYYtpax@mail.gmail.com> 
+	<AANLkTikMZMZQwY440PZQjKE3RPMW9RA3PKe6iiDARQxI@mail.gmail.com> 
+	<AANLkTimKIWHfEiOcL7iN7wjYp_WDngkg4cD3W9JRpDUV@mail.gmail.com> 
+	<AANLkTill23b5h2xQXUGmksfg914_eS_bCSKVhD8b00gX@mail.gmail.com> 
+	<AANLkTik1yuw_BVWldnrekdjWt3mpy8Y_eVsWlGb9sGvC@mail.gmail.com> 
+	<AANLkTilq3x716SlsU5mghZh5MnFLWqyDeWoSSOSGdnsb@mail.gmail.com>
+Message-ID: <AANLkTikb6SWW2xFkRDwaRIqQoqAFXIEDlpQJleFLtuhh@mail.gmail.com>
+
+2010/6/29 Liran Tal <liran.tal at gmail.com>:
+>
+> In the user attributes, does it have an MD5-Password attribute set to it?
+>
+
+Hi liran, but I don't find in the attributes the equivalent one at MD5
+, I have to add it manual, daloradius supports it if I make it manual?
+
+regardss
+
+
+-- 
+rickygm
+
+http://gnuforever.homelinux.com
+
+From liran.tal at gmail.com  Wed Jun 30 09:07:48 2010
+From: liran.tal at gmail.com (Liran Tal)
+Date: Wed, 30 Jun 2010 12:07:48 +0300
+Subject: [Chilli] [Daloradius-users] log in failed
+In-Reply-To: <AANLkTikb6SWW2xFkRDwaRIqQoqAFXIEDlpQJleFLtuhh@mail.gmail.com>
+References: <AANLkTimeX0z5qwFErfm_T6peM8DLResJNrjk1kYYtpax@mail.gmail.com> 
+	<AANLkTikMZMZQwY440PZQjKE3RPMW9RA3PKe6iiDARQxI@mail.gmail.com> 
+	<AANLkTimKIWHfEiOcL7iN7wjYp_WDngkg4cD3W9JRpDUV@mail.gmail.com> 
+	<AANLkTill23b5h2xQXUGmksfg914_eS_bCSKVhD8b00gX@mail.gmail.com> 
+	<AANLkTik1yuw_BVWldnrekdjWt3mpy8Y_eVsWlGb9sGvC@mail.gmail.com> 
+	<AANLkTilq3x716SlsU5mghZh5MnFLWqyDeWoSSOSGdnsb@mail.gmail.com> 
+	<AANLkTikb6SWW2xFkRDwaRIqQoqAFXIEDlpQJleFLtuhh@mail.gmail.com>
+Message-ID: <AANLkTimxjSBzQxkgx2MPSfoVvqyngNiH_iSEH-TG3ub6@mail.gmail.com>
+
+Yes, daloRADIUS supports it.
+
+
+On Wed, Jun 30, 2010 at 1:23 AM, troxlinux <xserverlinux at gmail.com> wrote:
+
+> 2010/6/29 Liran Tal <liran.tal at gmail.com>:
+> >
+> > In the user attributes, does it have an MD5-Password attribute set to it?
+> >
+>
+> Hi liran, but I don't find in the attributes the equivalent one at MD5
+> , I have to add it manual, daloradius supports it if I make it manual?
+>
+> regardss
+>
+>
+> --
+> rickygm
+>
+> http://gnuforever.homelinux.com
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+
+
+
+-- 
+-- 
+Sincerely, Liran Tal
+
+Founder and CTO
+Linux and Open Source
+Enginx - http://enginx.com
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20100630/47324d21/attachment.htm>
+

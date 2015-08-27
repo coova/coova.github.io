@@ -1,0 +1,126 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> Making an svn binary for openwrt
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20Making%20an%20svn%20binary%20for%20openwrt&In-Reply-To=%3C49BDFA18.3030209%40amobia.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000627.html">
+   <LINK REL="Next"  HREF="000634.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>Making an svn binary for openwrt</H1>
+    <B>Johan Meiring</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20Making%20an%20svn%20binary%20for%20openwrt&In-Reply-To=%3C49BDFA18.3030209%40amobia.com%3E"
+       TITLE="Making an svn binary for openwrt">jmeiring at amobia.com
+       </A><BR>
+    <I>Mon Mar 16 07:04:56 UTC 2009</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000627.html">Random session drops with Coova-Chilli 1.0.12
+</A></li>
+        <LI>Next message: <A HREF="000634.html">Does freeradius-client library support CHAP protocol?
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#633">[ date ]</a>
+              <a href="thread.html#633">[ thread ]</a>
+              <a href="subject.html#633">[ subject ]</a>
+              <a href="author.html#633">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hi all,
+
+Following are instructions for making an svn binary for openwrt.
+
+I am sure this is not the most efficient way to build it, but it worked
+for me.
+
+1) Get yourself a copy of coova-chilli svn
+svn checkout <A HREF="http://dev.coova.org/svn/coova-chilli/">http://dev.coova.org/svn/coova-chilli/</A>
+
+2) Build configure
+cd coova-chilli
+sh bootstrap
+
+3) Rename folder and make a tar.gz file of it
+cd ..
+mv coova-chilli coova-chilli-1.0.13-svn
+tar -zcvf coova-chilli-1.0.13-svn.tar.gz coova-chilli-1.0.13-svn
+
+4) Get the md5sum of the tar file
+md5sum coova-chilli-1.0.13-svn.tar.gz
+
+5) Upload the file to a web server, anywhere.
+I simply use the apache server on my local machine
+
+6) Download the kamikaze build environment
+svn checkout <A HREF="https://svn.openwrt.org/openwrt/tags/8.09">https://svn.openwrt.org/openwrt/tags/8.09</A>
+
+7) Download the coova-chilli &quot;package headers&quot;
+cd 8.09/package
+svn co <A HREF="http://dev.coova.org/svn/coova-ap/packages/kamikaze/coova-chilli">http://dev.coova.org/svn/coova-ap/packages/kamikaze/coova-chilli</A>
+
+8) Modify Makefile
+cd coova-chilli
+vi Makefile (change the following lines)
+PKG_VERSION:=1.0.13-svn
+PKG_SOURCE_URL:=<A HREF="http://localhost/">http://localhost/</A>
+PKG_MD5SUM:=1605d4af9cb9d544e44d520de6016951
+
+9) Make sure the package is set to modular.
+cd ../..
+make menuconfig
+Under Network/Captive portals set coova to modular
+(Set Target System/Profile on main menu as well)
+
+10) Make Openwrt
+make
+
+11) You will find your coova ipk file under bin/packages/&quot;architecture&quot;
+
+
+
+These instructions were written from memory and might need to be
+modified slightly, but gives a good indication of what needs to be done.
+
+
+wlanmac,
+
+Could you maybe upload this to the wiki ???
+
+
+
+-- 
+
+
+Johan Meiring
+Amobia Communications
+Tel: (0861) AMOBIA / (0861) 266242
+Fax: (0861) AMOFAX / (0861) 266329
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000627.html">Random session drops with Coova-Chilli 1.0.12
+</A></li>
+	<LI>Next message: <A HREF="000634.html">Does freeradius-client library support CHAP protocol?
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#633">[ date ]</a>
+              <a href="thread.html#633">[ thread ]</a>
+              <a href="subject.html#633">[ subject ]</a>
+              <a href="author.html#633">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,1304 @@
+From timwhite88 at gmail.com  Sun Oct  9 08:53:47 2011
+From: timwhite88 at gmail.com (Timothy White)
+Date: Sun, 9 Oct 2011 18:53:47 +1000
+Subject: [Chilli] RADCONF Options - Need better documentation?
+Message-ID: <CAESLx0Jyo5a1+FOJBVT9jkU_ZHJ7XZyVuPA8MZ8cwU57Gz10qw@mail.gmail.com>
+
+Hi Everyone.
+
+I've been using the HS_ADMUSR and HS_ADMPWD options for some time now
+to add extra options to the chilli config based on a user in the
+radius database. However it seems the time has come to look at the
+radconf option in more detail.
+
+Basically I need the ability to change more options than ADMUSR is
+letting me. Using adminuser and adminpasswd is great for adding things
+like uamallow as it just adds to the uamallow already defined in
+main.conf. (adminuser is putting the values returned by radius in
+/etc/chilli/local.conf which is included last by /etc/chilli.conf ).
+
+However, trying to change things like uamlisten don't work as then
+chilli complains about duplicate config options. I easily worked
+around this when I was trying to set the macpasswd from radius, but
+disabling the macpassword in /etc/chilli/config, however
+/etc/chilli/functions has defaults for things like uamlisten, so that
+trick doesn't work.
+
+>From my play with HS_RADCONF, it appears that with HS_RADCONF=on, the
+difference for chilli_radconfig (probably the difference is more in
+/etc/chilli/functions) is that it gets the options from radius and now
+stores them in /etc/chilli/hs.conf instead of /etc/chilli/local.conf.
+However, this still doesn't work as /etc/chilli/functions still writes
+the main.conf and now we again have values in main.conf that are in
+hs.conf.
+
+So it would appear that my only option is to edit /etc/chilli.conf to
+exclude main.conf, and then duplicate everything that is normally in
+main.conf, in radius so that hs.conf contains everything. This would
+also mean that NOTHING can be set in /etc/chilli/config except radius
+settings.
+
+Is there no other easy way to "override" values via radius?
+
+I think my only solution is to store the values in another db, and in
+/etc/chilli/config dynamically set the values with scripts. I
+understand that it can be hard to get everything from radius, as
+things like HS_LANIF are used very early on in /etc/chilli/functions
+and so changing that part way through would be difficult, as would
+trying to get it from radius at the start so that it can be set from
+as early as possible.
+
+Any other thoughts on the best way to do this? And can someone who
+understands HS_RADCONF better write some documentation for it?
+
+Thanks
+
+Tim
+
+From fmacedo at cpd.ufrgs.br  Tue Oct 11 17:16:48 2011
+From: fmacedo at cpd.ufrgs.br (Fernando Macedo)
+Date: Tue, 11 Oct 2011 14:16:48 -0300
+Subject: [Chilli] Coova Chilli Segfault
+Message-ID: <4E947A00.9090000@cpd.ufrgs.br>
+
+We are experiencing some crashes on coova chilli. I didn't find any 
+correlation between the crash events. Did anyone have the same problem?
+
+Our syslog:
+
+kernel: [154460.073417] chilli[18049]: segfault at 38 ip 
+00007f99e97253bd sp 00007fff6f213c90 error 4 in 
+libchilli.so.0.0.0[7f99e96fa000+45000]
+kernel: [104423.380721] chilli[792]: segfault at 7fffda1e5062 ip 
+00007f469ae436c4 sp 00007fffda1dfe28 error 4 in 
+libchilli.so.0.0.0[7f469ae1b000+45000]
+kernel: [13823.422991] chilli[793]: segfault at 7fff6b963058 ip 
+00007fa5c5ac76c4 sp 00007fff6b95d3f8 error 4 in 
+libchilli.so.0.0.0[7fa5c5a9f000+45000]
+kernel: [17138.563771] chilli[7862]: segfault at 7fff16433037 ip 
+00007fae155ed6c4 sp 00007fff1642cd08 error 4 in 
+libchilli.so.0.0.0[7fae155c5000+45000]
+kernel: [17150.545563] chilli[21835]: segfault at 7fffdba48037 ip 
+00007f0db1e266c4 sp 00007fffdba414e8 error 4 in 
+libchilli.so.0.0.0[7f0db1dfe000+45000]
+kernel: [17201.093552] chilli[22029]: segfault at 7ffff6907037 ip 
+00007fa7b1c126c4 sp 00007ffff6901c98 error 4 in 
+libchilli.so.0.0.0[7fa7b1bea000+45000]
+kernel: [17283.470389] chilli[22915]: segfault at 7fff92078037 ip 
+00007f51839ec6c4 sp 00007fff920729b8 error 4 in 
+libchilli.so.0.0.0[7f51839c4000+45000]
+kernel: [17334.851539] chilli[23295]: segfault at 7fff435bc037 ip 
+00007fad5a9ef6c4 sp 00007fff435b6278 error 4 in 
+libchilli.so.0.0.0[7fad5a9c7000+45000]
+kernel: [24120.260653] chilli[22772]: segfault at 7fffc1a3a000 ip 
+00007f4c62e406c4 sp 00007fffc1a34118 error 4 in 
+libchilli.so.0.0.0[7f4c62e18000+45000]
+kernel: [24152.370272] chilli[22929]: segfault at 7fff43092032 ip 
+00007f689fb7a6c4 sp 00007fff4308c358 error 4 in 
+libchilli.so.0.0.0[7f689fb52000+45000]
+kernel: [24172.696487] chilli[23538]: segfault at 7fffc41c5032 ip 
+00007f96c2c466c4 sp 00007fffc41be738 error 4 in 
+libchilli.so.0.0.0[7f96c2c1e000+45000]
+kernel: [28556.950073] chilli[24260]: segfault at 7fffb4bd8000 ip 
+00007f88f98d06c4 sp 00007fffb4bd1ae8 error 4 in 
+libchilli.so.0.0.0[7f88f98a8000+45000]
+kernel: [107284.692415] chilli[23896]: segfault at 7ffff8a9f031 ip 
+00007fcf7c6736d4 sp 00007ffff8a6d728 error 4 in 
+libchilli.so.0.0.0[7fcf7c64b000+45000]
+kernel: [107516.030891] chilli[5675]: segfault at 7fff5dfd8037 ip 
+00007f60a63596d4 sp 00007fff5dfa5708 error 4 in 
+libchilli.so.0.0.0[7f60a6331000+45000]
+kernel: [107535.218667] chilli[20990]: segfault at 7fff903d4037 ip 
+00007f251824d6d4 sp 00007fff903a2378 error 4 in 
+libchilli.so.0.0.0[7f2518225000+45000]
+kernel: [2081068.216835] chilli[21283]: segfault at 7fff7afce037 ip 
+00007f7a817316d4 sp 00007fff7af9be18 error 4 in 
+libchilli.so.0.0.0[7f7a81709000+45000]
+
+Version: coova-chilli 1.2.8
+
+Configure options: enable-dhcpopt, enable-netbios, enable-mdns and 
+enable-largelimits.
+
+Cheers,
+
+Fernando
+
+From fmacedo at cpd.ufrgs.br  Thu Oct 13 17:46:39 2011
+From: fmacedo at cpd.ufrgs.br (Fernando Macedo)
+Date: Thu, 13 Oct 2011 14:46:39 -0300
+Subject: [Chilli] Coova Chilli Segfault
+In-Reply-To: <4E947A00.9090000@cpd.ufrgs.br>
+References: <4E947A00.9090000@cpd.ufrgs.br>
+Message-ID: <4E9723FF.9030300@cpd.ufrgs.br>
+
+
+We are experiencing some crashes on coova chilli. I didn't find any
+correlation between the crash events. Did anyone have the same problem?
+
+Our syslog:
+
+kernel: [154460.073417] chilli[18049]: segfault at 38 ip
+00007f99e97253bd sp 00007fff6f213c90 error 4 in
+libchilli.so.0.0.0[7f99e96fa000+45000]
+kernel: [104423.380721] chilli[792]: segfault at 7fffda1e5062 ip
+00007f469ae436c4 sp 00007fffda1dfe28 error 4 in
+libchilli.so.0.0.0[7f469ae1b000+45000]
+kernel: [13823.422991] chilli[793]: segfault at 7fff6b963058 ip
+00007fa5c5ac76c4 sp 00007fff6b95d3f8 error 4 in
+libchilli.so.0.0.0[7fa5c5a9f000+45000]
+kernel: [17138.563771] chilli[7862]: segfault at 7fff16433037 ip
+00007fae155ed6c4 sp 00007fff1642cd08 error 4 in
+libchilli.so.0.0.0[7fae155c5000+45000]
+kernel: [17150.545563] chilli[21835]: segfault at 7fffdba48037 ip
+00007f0db1e266c4 sp 00007fffdba414e8 error 4 in
+libchilli.so.0.0.0[7f0db1dfe000+45000]
+kernel: [17201.093552] chilli[22029]: segfault at 7ffff6907037 ip
+00007fa7b1c126c4 sp 00007ffff6901c98 error 4 in
+libchilli.so.0.0.0[7fa7b1bea000+45000]
+kernel: [17283.470389] chilli[22915]: segfault at 7fff92078037 ip
+00007f51839ec6c4 sp 00007fff920729b8 error 4 in
+libchilli.so.0.0.0[7f51839c4000+45000]
+kernel: [17334.851539] chilli[23295]: segfault at 7fff435bc037 ip
+00007fad5a9ef6c4 sp 00007fff435b6278 error 4 in
+libchilli.so.0.0.0[7fad5a9c7000+45000]
+kernel: [24120.260653] chilli[22772]: segfault at 7fffc1a3a000 ip
+00007f4c62e406c4 sp 00007fffc1a34118 error 4 in
+libchilli.so.0.0.0[7f4c62e18000+45000]
+kernel: [24152.370272] chilli[22929]: segfault at 7fff43092032 ip
+00007f689fb7a6c4 sp 00007fff4308c358 error 4 in
+libchilli.so.0.0.0[7f689fb52000+45000]
+kernel: [24172.696487] chilli[23538]: segfault at 7fffc41c5032 ip
+00007f96c2c466c4 sp 00007fffc41be738 error 4 in
+libchilli.so.0.0.0[7f96c2c1e000+45000]
+kernel: [28556.950073] chilli[24260]: segfault at 7fffb4bd8000 ip
+00007f88f98d06c4 sp 00007fffb4bd1ae8 error 4 in
+libchilli.so.0.0.0[7f88f98a8000+45000]
+kernel: [107284.692415] chilli[23896]: segfault at 7ffff8a9f031 ip
+00007fcf7c6736d4 sp 00007ffff8a6d728 error 4 in
+libchilli.so.0.0.0[7fcf7c64b000+45000]
+kernel: [107516.030891] chilli[5675]: segfault at 7fff5dfd8037 ip
+00007f60a63596d4 sp 00007fff5dfa5708 error 4 in
+libchilli.so.0.0.0[7f60a6331000+45000]
+kernel: [107535.218667] chilli[20990]: segfault at 7fff903d4037 ip
+00007f251824d6d4 sp 00007fff903a2378 error 4 in
+libchilli.so.0.0.0[7f2518225000+45000]
+kernel: [2081068.216835] chilli[21283]: segfault at 7fff7afce037 ip
+00007f7a817316d4 sp 00007fff7af9be18 error 4 in
+libchilli.so.0.0.0[7f7a81709000+45000]
+
+Version: coova-chilli 1.2.8
+
+Configure options: enable-dhcpopt, enable-netbios, enable-mdns and
+enable-largelimits.
+
+Cheers,
+
+Fernando
+
+
+From david at coova.com  Fri Oct 14 07:24:48 2011
+From: david at coova.com (David Bird)
+Date: Fri, 14 Oct 2011 09:24:48 +0200
+Subject: [Chilli] accounting for walled garden
+Message-ID: <1318577088.4434.15.camel@david-laptop>
+
+A new feature is coming to chilli which will allow for splitting the
+walled garden accounting (bytes up/down) from other internet traffic.
+This will have several options to control it's behaviour. Basically, it
+will allow for a secondary RADIUS accounting stream with garden only
+data usage. This RADIUS acct session will span the life cycle of the IP
+allocation in chilli (so, it's not linked to a user login). When a user
+logs in, an option will allow you to either count garden traffic as
+"user traffic" or as "garden traffic" (which will impact any data usage
+limits, of course).
+
+I've started a discussion here http://lnkd.in/DDTQTj
+
+David
+
+
+From miguel.lopes at cabocom.cv  Fri Oct 14 08:47:16 2011
+From: miguel.lopes at cabocom.cv (Miguel Lopes - Cabocom)
+Date: Fri, 14 Oct 2011 07:47:16 -0100
+Subject: [Chilli] Coova Chilli Segfault
+In-Reply-To: <4E9723FF.9030300@cpd.ufrgs.br>
+References: <4E947A00.9090000@cpd.ufrgs.br> <4E9723FF.9030300@cpd.ufrgs.br>
+Message-ID: <002101cc8a4d$e1094de0$a31be9a0$@lopes@cabocom.cv>
+
+Hi,
+
+We are having the exact same problem:
+
+chilli[775]: segfault at 5 ip b7807108 sp bfd0268c error 4 in
+libchilli.so.0.0.0[b77d3000+44000]
+
+Kind Regards / Atentamente,
+
+Miguel Lopes
+CEO - Director
+Web - www.cabocom.cv
+Facebook - facebook.cabocom.cv
+
+-----Mensagem original-----
+De: chilli-bounces at coova.org [mailto:chilli-bounces at coova.org] Em nome de
+Fernando Macedo
+Enviada: quinta-feira, 13 de Outubro de 2011 16:47
+Para: chilli at coova.org
+Assunto: [Chilli] Coova Chilli Segfault
+
+
+We are experiencing some crashes on coova chilli. I didn't find any
+correlation between the crash events. Did anyone have the same problem?
+
+Our syslog:
+
+kernel: [154460.073417] chilli[18049]: segfault at 38 ip
+00007f99e97253bd sp 00007fff6f213c90 error 4 in
+libchilli.so.0.0.0[7f99e96fa000+45000]
+kernel: [104423.380721] chilli[792]: segfault at 7fffda1e5062 ip
+00007f469ae436c4 sp 00007fffda1dfe28 error 4 in
+libchilli.so.0.0.0[7f469ae1b000+45000]
+kernel: [13823.422991] chilli[793]: segfault at 7fff6b963058 ip
+00007fa5c5ac76c4 sp 00007fff6b95d3f8 error 4 in
+libchilli.so.0.0.0[7fa5c5a9f000+45000]
+kernel: [17138.563771] chilli[7862]: segfault at 7fff16433037 ip
+00007fae155ed6c4 sp 00007fff1642cd08 error 4 in
+libchilli.so.0.0.0[7fae155c5000+45000]
+kernel: [17150.545563] chilli[21835]: segfault at 7fffdba48037 ip
+00007f0db1e266c4 sp 00007fffdba414e8 error 4 in
+libchilli.so.0.0.0[7f0db1dfe000+45000]
+kernel: [17201.093552] chilli[22029]: segfault at 7ffff6907037 ip
+00007fa7b1c126c4 sp 00007ffff6901c98 error 4 in
+libchilli.so.0.0.0[7fa7b1bea000+45000]
+kernel: [17283.470389] chilli[22915]: segfault at 7fff92078037 ip
+00007f51839ec6c4 sp 00007fff920729b8 error 4 in
+libchilli.so.0.0.0[7f51839c4000+45000]
+kernel: [17334.851539] chilli[23295]: segfault at 7fff435bc037 ip
+00007fad5a9ef6c4 sp 00007fff435b6278 error 4 in
+libchilli.so.0.0.0[7fad5a9c7000+45000]
+kernel: [24120.260653] chilli[22772]: segfault at 7fffc1a3a000 ip
+00007f4c62e406c4 sp 00007fffc1a34118 error 4 in
+libchilli.so.0.0.0[7f4c62e18000+45000]
+kernel: [24152.370272] chilli[22929]: segfault at 7fff43092032 ip
+00007f689fb7a6c4 sp 00007fff4308c358 error 4 in
+libchilli.so.0.0.0[7f689fb52000+45000]
+kernel: [24172.696487] chilli[23538]: segfault at 7fffc41c5032 ip
+00007f96c2c466c4 sp 00007fffc41be738 error 4 in
+libchilli.so.0.0.0[7f96c2c1e000+45000]
+kernel: [28556.950073] chilli[24260]: segfault at 7fffb4bd8000 ip
+00007f88f98d06c4 sp 00007fffb4bd1ae8 error 4 in
+libchilli.so.0.0.0[7f88f98a8000+45000]
+kernel: [107284.692415] chilli[23896]: segfault at 7ffff8a9f031 ip
+00007fcf7c6736d4 sp 00007ffff8a6d728 error 4 in
+libchilli.so.0.0.0[7fcf7c64b000+45000]
+kernel: [107516.030891] chilli[5675]: segfault at 7fff5dfd8037 ip
+00007f60a63596d4 sp 00007fff5dfa5708 error 4 in
+libchilli.so.0.0.0[7f60a6331000+45000]
+kernel: [107535.218667] chilli[20990]: segfault at 7fff903d4037 ip
+00007f251824d6d4 sp 00007fff903a2378 error 4 in
+libchilli.so.0.0.0[7f2518225000+45000]
+kernel: [2081068.216835] chilli[21283]: segfault at 7fff7afce037 ip
+00007f7a817316d4 sp 00007fff7af9be18 error 4 in
+libchilli.so.0.0.0[7f7a81709000+45000]
+
+Version: coova-chilli 1.2.8
+
+Configure options: enable-dhcpopt, enable-netbios, enable-mdns and
+enable-largelimits.
+
+Cheers,
+
+Fernando
+
+_______________________________________________
+Chilli mailing list
+Chilli at coova.org
+http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+__________ Information from ESET NOD32 Antivirus, version of virus signature
+database 6541 (20111013) __________
+
+The message was checked by ESET NOD32 Antivirus.
+
+http://www.eset.com
+
+
+ 
+
+__________ Information from ESET NOD32 Antivirus, version of virus signature
+database 6541 (20111013) __________
+
+The message was checked by ESET NOD32 Antivirus.
+
+http://www.eset.com
+ 
+
+
+From stelio at skyrove.com  Fri Oct 14 14:52:56 2011
+From: stelio at skyrove.com (Stelio Gouveia)
+Date: Fri, 14 Oct 2011 16:52:56 +0200
+Subject: [Chilli] accounting for walled garden
+In-Reply-To: <1318577088.4434.15.camel@david-laptop>
+References: <1318577088.4434.15.camel@david-laptop>
+Message-ID: <CAPE=KSgsH4FFyw7BKwW3e51n8+TrF0m+7zSAbuNWKhABup7wFA@mail.gmail.com>
+
+Hi David
+
+Would be useful if you where able to measure data usage per walled garden
+entry as well, but i suppose increasingly more complex to develop.
+
+- Stelio
+
+On Fri, Oct 14, 2011 at 9:24 AM, David Bird <david at coova.com> wrote:
+
+> A new feature is coming to chilli which will allow for splitting the
+> walled garden accounting (bytes up/down) from other internet traffic.
+> This will have several options to control it's behaviour. Basically, it
+> will allow for a secondary RADIUS accounting stream with garden only
+> data usage. This RADIUS acct session will span the life cycle of the IP
+> allocation in chilli (so, it's not linked to a user login). When a user
+> logs in, an option will allow you to either count garden traffic as
+> "user traffic" or as "garden traffic" (which will impact any data usage
+> limits, of course).
+>
+> I've started a discussion here http://lnkd.in/DDTQTj
+>
+> David
+>
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+
+
+
+-- 
+Regards
+Stelio Gouveia
+--
+Skyrove Software Engineer,
+Skyrove (Pty) Ltd
+Technology Top 100 Award Winner (2006)
+Mobile: +27 82 34 09 120
+Tel: +27 861 ROVERS (0861 768 377)
+Fax: +27 86 6204077
+Email & Gtalk: stelio at skyrove.com
+Web:   www.skyrove.com
+
+This message contains confidential information. If you are not the intended
+recipient you are notified that disclosing, copying, distributing or taking
+any action in reliance on the contents of this information is strictly
+prohibited. E-mail transmission cannot be guaranteed to be secure or
+error-free as information could be intercepted, corrupted, lost, destroyed,
+arrive late or incomplete, or contain viruses. The sender therefore does not
+accept liability for any errors or omissions in the contents of this
+message.
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20111014/0217d0bd/attachment.html>
+
+From timwhite88 at gmail.com  Sat Oct 15 11:47:13 2011
+From: timwhite88 at gmail.com (Timothy White)
+Date: Sat, 15 Oct 2011 21:47:13 +1000
+Subject: [Chilli] accounting for walled garden
+In-Reply-To: <1318577088.4434.15.camel@david-laptop>
+References: <1318577088.4434.15.camel@david-laptop>
+Message-ID: <CAESLx0+yAx3TxmmOfvAMABKr6q5vwZjkMLxVFjacnNN9Oa+S5Q@mail.gmail.com>
+
+Awesome!
+
+Thanks for this. I've been intending to write a patch for some time to
+exclude walled garden data from accounting (currently have a patch
+that I posted some time ago that excludes the server's traffic from
+the accounting).
+
+I've looked at the code a few times, but wouldn't have made it as good
+as it sounds like you are going to do. How far through the coding have
+you gotten? Is it going to need RADIUS to reply to control the
+behaviour, or are there going to be chilli options that define what
+the default is and RADIUS to change from the default?
+
+Thanks
+
+Tim
+
+On Fri, Oct 14, 2011 at 5:24 PM, David Bird <david at coova.com> wrote:
+> A new feature is coming to chilli which will allow for splitting the
+> walled garden accounting (bytes up/down) from other internet traffic.
+> This will have several options to control it's behaviour. Basically, it
+> will allow for a secondary RADIUS accounting stream with garden only
+> data usage. This RADIUS acct session will span the life cycle of the IP
+> allocation in chilli (so, it's not linked to a user login). When a user
+> logs in, an option will allow you to either count garden traffic as
+> "user traffic" or as "garden traffic" (which will impact any data usage
+> limits, of course).
+>
+> I've started a discussion here http://lnkd.in/DDTQTj
+>
+> David
+>
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+
+From timwhite88 at gmail.com  Sat Oct 15 11:57:42 2011
+From: timwhite88 at gmail.com (Timothy White)
+Date: Sat, 15 Oct 2011 21:57:42 +1000
+Subject: [Chilli] Radius Queue Full
+In-Reply-To: <CAODoKgA+2vOUtfDGBnLOsy822rq5-WvKA8rAm7VnjvW8XZuhPA@mail.gmail.com>
+References: <CAODoKgA+2vOUtfDGBnLOsy822rq5-WvKA8rAm7VnjvW8XZuhPA@mail.gmail.com>
+Message-ID: <CAESLx0KAULJyAkjRBxf+rcuLv7x1SBZUihrr02FJd+URUb3XCA@mail.gmail.com>
+
+I'm guessing this was stuck in a moderation queue for a few months.
+
+My understanding is that the radius queue is used so that if the
+RADIUS server doesn't respond for a little while, accounting packets
+aren't lost. Ether, your RADIUS server isn't letting Chilli know that
+it's received those packets (or the network is congested so the
+messages don't get back), or the RADIUS server is overlaoded.
+What is your accounting interval set at? If you are experiencing
+higher "loads" (just think, if you set your interval at 10s, with 200
+users that's 200 accounting packets every 10 seconds, which the RADIUS
+server has to do database updates on) then setting a longer accounting
+interval would help. I know in Cisco routers that the accounting
+interval is a number of hours!! Generally for a Captive Portal Hotspot
+though, you want a smaller interval. I currently use about 2.5
+minutes, in particular so that if no accounting packets are seen in 2
+intervals (5 minutes) we assume the session to be stale and disconnect
+it (as we limit connections to 1 per user).
+
+Have you managed to fix it or are you still having problems?
+
+Tim
+
+On Mon, Aug 1, 2011 at 11:54 AM, Robert White <rwhite at globalgossip.net> wrote:
+> Hello there,
+> Has any one seen this message before?
+> ~# tail messages -n 50
+> Jul 31 18:56:26 pxe coova-chilli[29486]: radius.c: 218: radius queue is
+> full!
+> Jul 31 18:56:26 pxe last message repeated 255 times
+> Jul 31 18:56:26 pxe coova-chilli[29486]: radius.c: 1403: could not put in
+> queue
+> Jul 31 18:56:26 pxe coova-chilli[29486]: radius.c: 218: radius queue is
+> full!
+> Jul 31 18:56:26 pxe last message repeated 255 times
+> Jul 31 18:56:26 pxe coova-chilli[29486]: radius.c: 1403: could not put in
+> queue
+> Jul 31 18:56:29 pxe coova-chilli[29486]: radius.c: 218: radius queue is
+> full!
+> Jul 31 18:56:29 pxe last message repeated 255 times
+>
+> The message is obviously quite self explanatory but I'm wondering exactly
+> why this queue would fill up. ?What is the Radius queue actually for?
+> ?Waiting for replies from a Radius server? ?Can i set the queue to a bigger
+> size? ?is there a way of clearing the queue without restarting chilli. ?I
+> run chilli across lots of different sites. ?I only see this message at some
+> of my busier sites. 150~200 users and tbh i thought chilli could easily cope
+> with more than a few 100 users. ?Is this a problem with my Radius setup do
+> you think?
+> I'd be grateful if anyone could shed some more light on this log message.
+> Thanks,
+>
+> Rob White
+>
+> -------------------------------------------------
+>
+> IMPORTANT NOTICE : The information in this email is confidential and may
+> also be privileged.
+> If you are not the intended recipient, any use or dissemination of the
+> information and any
+> disclosure or copying of this email is unauthorised and strictly prohibited.
+> If you have received
+> this email in error, please promptly inform us by reply email or telephone.
+> You should also delete
+> this email and destroy any hard copies produced.
+>
+>
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+>
+
+From auerswald at fg-networking.de  Sat Oct 15 13:36:54 2011
+From: auerswald at fg-networking.de (Erik Auerswald)
+Date: Sat, 15 Oct 2011 15:36:54 +0200
+Subject: [Chilli] accounting for walled garden
+In-Reply-To: <CAESLx0+yAx3TxmmOfvAMABKr6q5vwZjkMLxVFjacnNN9Oa+S5Q@mail.gmail.com>
+References: <1318577088.4434.15.camel@david-laptop>
+	<CAESLx0+yAx3TxmmOfvAMABKr6q5vwZjkMLxVFjacnNN9Oa+S5Q@mail.gmail.com>
+Message-ID: <20111015133654.GA20268@fgnfs.fg-networking.de>
+
+Hi,
+
+On Sat, Oct 15, 2011 at 09:47:13PM +1000, Timothy White wrote:
+> (currently have a patch
+> that I posted some time ago that excludes the server's traffic from
+> the accounting).
+
+That's a feature we would really like to have.
+
+Thanks,
+Erik
+-- 
+Dipl.-Inform. Erik Auerswald         http://www.fg-networking.de/
+auerswald at fg-networking.de T:+49-631-4149988-0 M:+49-176-64228513
+
+Gesellschaft f?r Fundamental Generic Networking mbH
+Gesch?ftsf?hrung: Volker Bauer, J?rg Mayer
+Gerichtsstand: Amtsgericht Kaiserslautern - HRB: 3630
+
+From david at coova.com  Sat Oct 15 17:31:49 2011
+From: david at coova.com (David Bird)
+Date: Sat, 15 Oct 2011 19:31:49 +0200
+Subject: [Chilli] Radius Queue Full
+In-Reply-To: <CAESLx0KAULJyAkjRBxf+rcuLv7x1SBZUihrr02FJd+URUb3XCA@mail.gmail.com>
+References: <CAODoKgA+2vOUtfDGBnLOsy822rq5-WvKA8rAm7VnjvW8XZuhPA@mail.gmail.com>
+	<CAESLx0KAULJyAkjRBxf+rcuLv7x1SBZUihrr02FJd+URUb3XCA@mail.gmail.com>
+Message-ID: <1318699909.5098.1.camel@david-laptop>
+
+Hello,
+
+The RADIUS queue issue is fixed in the next release. So is a segfault
+which occurs under certain conditions....
+
+David
+
+On Sat, 2011-10-15 at 21:57 +1000, Timothy White wrote:
+> I'm guessing this was stuck in a moderation queue for a few months.
+> 
+> My understanding is that the radius queue is used so that if the
+> RADIUS server doesn't respond for a little while, accounting packets
+> aren't lost. Ether, your RADIUS server isn't letting Chilli know that
+> it's received those packets (or the network is congested so the
+> messages don't get back), or the RADIUS server is overlaoded.
+> What is your accounting interval set at? If you are experiencing
+> higher "loads" (just think, if you set your interval at 10s, with 200
+> users that's 200 accounting packets every 10 seconds, which the RADIUS
+> server has to do database updates on) then setting a longer accounting
+> interval would help. I know in Cisco routers that the accounting
+> interval is a number of hours!! Generally for a Captive Portal Hotspot
+> though, you want a smaller interval. I currently use about 2.5
+> minutes, in particular so that if no accounting packets are seen in 2
+> intervals (5 minutes) we assume the session to be stale and disconnect
+> it (as we limit connections to 1 per user).
+> 
+> Have you managed to fix it or are you still having problems?
+> 
+> Tim
+> 
+> On Mon, Aug 1, 2011 at 11:54 AM, Robert White <rwhite at globalgossip.net> wrote:
+> > Hello there,
+> > Has any one seen this message before?
+> > ~# tail messages -n 50
+> > Jul 31 18:56:26 pxe coova-chilli[29486]: radius.c: 218: radius queue is
+> > full!
+> > Jul 31 18:56:26 pxe last message repeated 255 times
+> > Jul 31 18:56:26 pxe coova-chilli[29486]: radius.c: 1403: could not put in
+> > queue
+> > Jul 31 18:56:26 pxe coova-chilli[29486]: radius.c: 218: radius queue is
+> > full!
+> > Jul 31 18:56:26 pxe last message repeated 255 times
+> > Jul 31 18:56:26 pxe coova-chilli[29486]: radius.c: 1403: could not put in
+> > queue
+> > Jul 31 18:56:29 pxe coova-chilli[29486]: radius.c: 218: radius queue is
+> > full!
+> > Jul 31 18:56:29 pxe last message repeated 255 times
+> >
+> > The message is obviously quite self explanatory but I'm wondering exactly
+> > why this queue would fill up.  What is the Radius queue actually for?
+> >  Waiting for replies from a Radius server?  Can i set the queue to a bigger
+> > size?  is there a way of clearing the queue without restarting chilli.  I
+> > run chilli across lots of different sites.  I only see this message at some
+> > of my busier sites. 150~200 users and tbh i thought chilli could easily cope
+> > with more than a few 100 users.  Is this a problem with my Radius setup do
+> > you think?
+> > I'd be grateful if anyone could shed some more light on this log message.
+> > Thanks,
+> >
+> > Rob White
+> >
+> > -------------------------------------------------
+> >
+> > IMPORTANT NOTICE : The information in this email is confidential and may
+> > also be privileged.
+> > If you are not the intended recipient, any use or dissemination of the
+> > information and any
+> > disclosure or copying of this email is unauthorised and strictly prohibited.
+> > If you have received
+> > this email in error, please promptly inform us by reply email or telephone.
+> > You should also delete
+> > this email and destroy any hard copies produced.
+> >
+> >
+> > _______________________________________________
+> > Chilli mailing list
+> > Chilli at coova.org
+> > http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+> >
+> >
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+
+
+From david at coova.com  Sat Oct 15 17:33:08 2011
+From: david at coova.com (David Bird)
+Date: Sat, 15 Oct 2011 19:33:08 +0200
+Subject: [Chilli] [PATCH] adds possibility to disable creation of arp
+ table entries when usetap is used
+In-Reply-To: <4E6A28A2.4090801@endian.com>
+References: <4E6A28A2.4090801@endian.com>
+Message-ID: <1318699988.5098.2.camel@david-laptop>
+
+Thanks... I'll add the option to the next version.
+
+(a lot of patch for a one line fix ;) 
+
+On Fri, 2011-09-09 at 16:54 +0200, Peter Warasin wrote:
+> hi guys
+> 
+> The attached patch adds the "noarpentries" option, which disables
+> creation of arp table entries when "usetap" is enabled.
+> 
+> If you put your hotspot tap device within a bridge, you do not want to
+> have these arp table entries created, because then they should be
+> created on the bridge, which does the kernel then by using normal arp
+> protocol.
+> 
+> Patch is against 2.1.6. If rebase is needed, just ask and I will do it.
+> 
+> peter
+> 
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+
+
+From david at coova.com  Sat Oct 15 17:36:34 2011
+From: david at coova.com (David Bird)
+Date: Sat, 15 Oct 2011 19:36:34 +0200
+Subject: [Chilli] VLAN based routing
+In-Reply-To: <1311751446.62740.YahooMailClassic@web161425.mail.bf1.yahoo.com>
+References: <1311751446.62740.YahooMailClassic@web161425.mail.bf1.yahoo.com>
+Message-ID: <1318700194.5098.4.camel@david-laptop>
+
+Hi,
+
+Linux routing tables + iptables can be used to selectively route users
+to different WANs. The concept of carrying forward the VLAN is
+interesting, but not currently possible. Yes, everything on the tun
+device isn't VLAN (in fact, tap is of course limited to IP). It could be
+possible to pass forward VLAN tagged frames to the tap interface,
+however. 
+
+David
+
+On Wed, 2011-07-27 at 00:24 -0700, Ming-Ching Tiew wrote:
+> Assuming coova chilli has 8021q enabled and it is happily managing traffic coming in from a few VLANs. Based on the VLAN input traffic, I would like to route it to different gateways.
+> 
+> Assuming the dhcp interface is eth0 and the tunnel interface is tun0. Now when the 8021q VLAN traffic comes in, is it appearing in tun0.VLAN_ID or
+> it is still just appearing in tun0 ? If I want to route them separately, I need to have a way to identify the traffic. How could this be accomplished ?
+> 
+> Regards
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+
+
+From david at coova.com  Sat Oct 15 17:42:12 2011
+From: david at coova.com (David Bird)
+Date: Sat, 15 Oct 2011 19:42:12 +0200
+Subject: [Chilli] Mailing list
+Message-ID: <58fnh6t3k29cdk51w3umocl8.1318700446994@email.android.com>
+
+Sorry for the mailing list outage. I didn't realize until I sent something :)
+
+David
+
+From miguel.lopes at cabocom.cv  Sun Oct 16 09:11:18 2011
+From: miguel.lopes at cabocom.cv (Miguel Lopes - Cabocom)
+Date: Sun, 16 Oct 2011 08:11:18 -0100
+Subject: [Chilli]  Radius Queue Full
+In-Reply-To: <1318699909.5098.1.camel@david-laptop>
+References: <CAODoKgA+2vOUtfDGBnLOsy822rq5-WvKA8rAm7VnjvW8XZuhPA@mail.gmail.com>	<CAESLx0KAULJyAkjRBxf+rcuLv7x1SBZUihrr02FJd+URUb3XCA@mail.gmail.com>
+	<1318699909.5098.1.camel@david-laptop>
+Message-ID: <000901cc8be3$91455960$b3d00c20$@lopes@cabocom.cv>
+
+Hi,
+
+Do you know the conditions that cause the segfault, we have been having some
+issues with that. Glad to know it is going to be fixed.
+
+Kind Regards / Atentamente,
+
+Miguel Lopes
+
+Web - www.cabocom.cv
+Facebook - facebook.cabocom.cv
+
+-----Mensagem original-----
+De: chilli-bounces at coova.org [mailto:chilli-bounces at coova.org] Em nome de
+David Bird
+Enviada: s?bado, 15 de Outubro de 2011 16:32
+Para: chilli at coova.org
+Assunto: Re: [Chilli] Radius Queue Full
+
+Hello,
+
+The RADIUS queue issue is fixed in the next release. So is a segfault
+which occurs under certain conditions....
+
+David
+
+On Sat, 2011-10-15 at 21:57 +1000, Timothy White wrote:
+> I'm guessing this was stuck in a moderation queue for a few months.
+> 
+> My understanding is that the radius queue is used so that if the
+> RADIUS server doesn't respond for a little while, accounting packets
+> aren't lost. Ether, your RADIUS server isn't letting Chilli know that
+> it's received those packets (or the network is congested so the
+> messages don't get back), or the RADIUS server is overlaoded.
+> What is your accounting interval set at? If you are experiencing
+> higher "loads" (just think, if you set your interval at 10s, with 200
+> users that's 200 accounting packets every 10 seconds, which the RADIUS
+> server has to do database updates on) then setting a longer accounting
+> interval would help. I know in Cisco routers that the accounting
+> interval is a number of hours!! Generally for a Captive Portal Hotspot
+> though, you want a smaller interval. I currently use about 2.5
+> minutes, in particular so that if no accounting packets are seen in 2
+> intervals (5 minutes) we assume the session to be stale and disconnect
+> it (as we limit connections to 1 per user).
+> 
+> Have you managed to fix it or are you still having problems?
+> 
+> Tim
+> 
+> On Mon, Aug 1, 2011 at 11:54 AM, Robert White <rwhite at globalgossip.net>
+wrote:
+> > Hello there,
+> > Has any one seen this message before?
+> > ~# tail messages -n 50
+> > Jul 31 18:56:26 pxe coova-chilli[29486]: radius.c: 218: radius queue is
+> > full!
+> > Jul 31 18:56:26 pxe last message repeated 255 times
+> > Jul 31 18:56:26 pxe coova-chilli[29486]: radius.c: 1403: could not put
+in
+> > queue
+> > Jul 31 18:56:26 pxe coova-chilli[29486]: radius.c: 218: radius queue is
+> > full!
+> > Jul 31 18:56:26 pxe last message repeated 255 times
+> > Jul 31 18:56:26 pxe coova-chilli[29486]: radius.c: 1403: could not put
+in
+> > queue
+> > Jul 31 18:56:29 pxe coova-chilli[29486]: radius.c: 218: radius queue is
+> > full!
+> > Jul 31 18:56:29 pxe last message repeated 255 times
+> >
+> > The message is obviously quite self explanatory but I'm wondering
+exactly
+> > why this queue would fill up.  What is the Radius queue actually for?
+> >  Waiting for replies from a Radius server?  Can i set the queue to a
+bigger
+> > size?  is there a way of clearing the queue without restarting chilli.
+I
+> > run chilli across lots of different sites.  I only see this message at
+some
+> > of my busier sites. 150~200 users and tbh i thought chilli could easily
+cope
+> > with more than a few 100 users.  Is this a problem with my Radius setup
+do
+> > you think?
+> > I'd be grateful if anyone could shed some more light on this log
+message.
+> > Thanks,
+> >
+> > Rob White
+> >
+> > -------------------------------------------------
+> >
+> > IMPORTANT NOTICE : The information in this email is confidential and may
+> > also be privileged.
+> > If you are not the intended recipient, any use or dissemination of the
+> > information and any
+> > disclosure or copying of this email is unauthorised and strictly
+prohibited.
+> > If you have received
+> > this email in error, please promptly inform us by reply email or
+telephone.
+> > You should also delete
+> > this email and destroy any hard copies produced.
+> >
+> >
+> > _______________________________________________
+> > Chilli mailing list
+> > Chilli at coova.org
+> > http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+> >
+> >
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+
+_______________________________________________
+Chilli mailing list
+Chilli at coova.org
+http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+__________ Information from ESET NOD32 Antivirus, version of virus signature
+database 6546 (20111015) __________
+
+The message was checked by ESET NOD32 Antivirus.
+
+http://www.eset.com
+
+
+ 
+
+__________ Information from ESET NOD32 Antivirus, version of virus signature
+database 6546 (20111015) __________
+
+The message was checked by ESET NOD32 Antivirus.
+
+http://www.eset.com
+ 
+
+
+From david at coova.com  Mon Oct 17 17:04:29 2011
+From: david at coova.com (David Bird)
+Date: Mon, 17 Oct 2011 19:04:29 +0200
+Subject: [Chilli] accounting for walled garden
+In-Reply-To: <20111015133654.GA20268@fgnfs.fg-networking.de>
+References: <1318577088.4434.15.camel@david-laptop>
+	<CAESLx0+yAx3TxmmOfvAMABKr6q5vwZjkMLxVFjacnNN9Oa+S5Q@mail.gmail.com>
+	<20111015133654.GA20268@fgnfs.fg-networking.de>
+Message-ID: <1318871069.28682.9.camel@david-laptop>
+
+Excluding the uamserver only is also an interesting option. However,
+this option extends to the entire walled garden. And, the accounting
+isn't just ignored, it is put into other, walled garden only, counters
+associated with the IP/session. 
+
+Thanks to www.unwired.at for sponsoring this and the recent
+location-awareness features! 
+
+Cheers,
+David
+
+On Sat, 2011-10-15 at 15:36 +0200, Erik Auerswald wrote:
+> Hi,
+> 
+> On Sat, Oct 15, 2011 at 09:47:13PM +1000, Timothy White wrote:
+> > (currently have a patch
+> > that I posted some time ago that excludes the server's traffic from
+> > the accounting).
+> 
+> That's a feature we would really like to have.
+> 
+> Thanks,
+> Erik
+
+
+
+From peter at endian.com  Tue Oct 18 09:41:38 2011
+From: peter at endian.com (Peter Warasin)
+Date: Tue, 18 Oct 2011 11:41:38 +0200
+Subject: [Chilli] [PATCH] adds possibility to disable creation of arp
+ table entries when usetap is used
+In-Reply-To: <1318699988.5098.2.camel@david-laptop>
+References: <4E6A28A2.4090801@endian.com>
+	<1318699988.5098.2.camel@david-laptop>
+Message-ID: <4E9D49D2.4060105@endian.com>
+
+hi david
+
+On 15/10/11 19:33, David Bird wrote:
+> Thanks... I'll add the option to the next version.
+
+great. thank you
+
+
+> (a lot of patch for a one line fix ;) 
+
+haha, yeah.
+well. i noticed it now. most of it is generated by gengetopt and would
+not have been really necessary.
+
+peter
+
+-- 
+:: e n d i a n
+:: security with passion
+
+:: peter warasin
+:: http://www.endian.com   :: peter at endian.com
+
+From jmayer at loplof.de  Tue Oct 18 13:48:16 2011
+From: jmayer at loplof.de (Joerg Mayer)
+Date: Tue, 18 Oct 2011 15:48:16 +0200
+Subject: [Chilli] Patch to not account broadcast and multicast traffic
+Message-ID: <20111018134816.GH27906@thot.informatik.uni-kl.de>
+
+Hello,
+
+I noticed that ip broadcast and multicast traffic gets accounted in case
+the user is logged on (think of a user running windows and windows sending
+nbns packets). Feedback is welcome, applying it is even more welcome ;-)
+
+Thanks
+    J??rg
+-- 
+Joerg Mayer                                           <jmayer at loplof.de>
+We are stuck with technology when what we really want is just stuff that
+works. Some say that should read Microsoft instead of technology.
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: broadcast-accounting.patch
+Type: text/x-diff
+Size: 2040 bytes
+Desc: not available
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20111018/a2218374/attachment.patch>
+
+From jmayer at loplof.de  Tue Oct 18 14:08:06 2011
+From: jmayer at loplof.de (Joerg Mayer)
+Date: Tue, 18 Oct 2011 16:08:06 +0200
+Subject: [Chilli] Patch to not account broadcast and multicast traffic
+In-Reply-To: <20111018134816.GH27906@thot.informatik.uni-kl.de>
+References: <20111018134816.GH27906@thot.informatik.uni-kl.de>
+Message-ID: <20111018140806.GI27906@thot.informatik.uni-kl.de>
+
+On Tue, Oct 18, 2011 at 03:48:16PM +0200, Joerg Mayer wrote:
+Please ignore the part in chilli.c, it's not related to the problem.
+Only the change to src/dhcp.c is relevant.
+
+Sorry
+   J??rg
+
+> Index: src/dhcp.c
+> ===================================================================
+> --- src/dhcp.c	(revision 452)
+> +++ src/dhcp.c	(working copy)
+> @@ -3087,6 +3087,7 @@
+>    char allowed = 0;
+>    char has_ip = 0;
+>    char is_dhcp = 0;
+> +  char not_valid_unicast = 0;
+>  
+>    int authstate = 0;
+>  
+> @@ -3183,8 +3184,22 @@
+>      log_dbg("dhcp/bootps request being processed");
+>      return dhcp_getreq(this, pack, len);
+>    }
+> -  
+> -  /* 
+> +  not_valid_unicast =
+> +       /* Multicast */
+> +       (pack_iph->daddr & 0xf0000000) == 0xe0000000 ||
+> +       /* All 0s broadcast */
+> +       pack_iph->daddr == 0 ||
+> +       /* All 1s broadcast */
+> +       pack_iph->daddr == 0xffffffff ||
+> +       /* Net directed broadcast */
+> +       pack_iph->daddr == (_options.net.s_addr  | ~_options.mask.s_addr);
+> +
+> +  if (not_valid_unicast) {
+> +    log_dbg("dropping packet; no valid unicast destination");
+> +    return 0;
+> +  }
+> +
+> +  /*
+>     *  Check to see if we know MAC address
+>     */
+>    if (!dhcp_hashget(this, &conn, pack_ethh->src)) {
+> Index: src/chilli.c
+> ===================================================================
+> --- src/chilli.c	(revision 452)
+> +++ src/chilli.c	(working copy)
+> @@ -5052,10 +5047,13 @@
+>      if (_options.layer3) {
+>        struct ippoolm_t *ipm = 0;
+>        struct in_addr addr;
+> +      struct in_addr daddr;
+>  
+>        addr.s_addr = ipph->saddr;
+> +      daddr.s_addr = ipph->daddr;
+>  
+>        if (!addr.s_addr) {
+> +printf("from: %s to %s\n", inet_ntoa(addr), inet_ntoa(daddr));
+>  	return tun_encaps(tun, pack, len, 0);
+>        }
+>  
+> @@ -5123,6 +5121,16 @@
+>         ))
+>      return tun_encaps(tun, pack, len, 0);
+>    
+> +  /*
+> +   * Drop if destination is some private IP address - this is to avoid this
+> +   * traffic to be accounted - it would get dropped in our FORWARD filter
+> +   * anyway.
+> +   */
+> +  if ((ipph->daddr & 0xff000000) == 0x0a000000 ||
+> +      (ipph->daddr & 0xfff00000) == 0xac100000 ||
+> +      (ipph->daddr & 0xffff0000) == 0xc0a80000)
+> +    return 0;
+> +
+>    if (appconn->s_state.authenticated == 1) {
+>      if (chilli_acct_fromsub(appconn, len))
+>        return 0;
+
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+
+-- 
+Joerg Mayer                                           <jmayer at loplof.de>
+We are stuck with technology when what we really want is just stuff that
+works. Some say that should read Microsoft instead of technology.
+
+From kg6hum at gmail.com  Wed Oct 26 00:43:17 2011
+From: kg6hum at gmail.com (Rob Campbell)
+Date: Tue, 25 Oct 2011 17:43:17 -0700
+Subject: [Chilli] Coova Chilli Layer 3
+Message-ID: <CAJ7j0csstPOaC5gZL-+qC2o6G5E+4iB0f+4KzG05XtT3H+g--g@mail.gmail.com>
+
+Hello,
+
+I have been using coova-chilli 1.2.2 for about a year and a half now.
+It is on a network with about 1000-1300 customers all going through a
+single router running coova-chilli.  This is using the traditional
+layer 2 setup.
+
+While I was setting up this network, I ran into a problem with using
+more than one block of IPs.  Since coova-chilli only has one
+HS_NETWORK field, I was unable to use multiple small blocks of IPs and
+ended up having to use a full /21 for the coova-chilli side of the
+router.  This wasted a lot of IPs, and it cannot scale unless I can
+get a /20 to assign to it next.
+
+Now that coova-chilli support a layer 3 mode, does it still have a
+limitation of only allowing a single HS_NETWORK IP block?  I would
+need to be able to use IP blocks like 192.168.10.0/24, 172.16.0.0/22,
+and 10.10.0.0/23.  It is my understanding that a Mikrotik Hotspot will
+support this.  If coova-chilli cannot do this, is there another open
+source project that does support it?
+
+Thank you.
+
+--
+Rob Campbell
+
+From kg6hum at gmail.com  Fri Oct 28 21:39:30 2011
+From: kg6hum at gmail.com (Rob Campbell)
+Date: Fri, 28 Oct 2011 14:39:30 -0700
+Subject: [Chilli] Mailing list
+In-Reply-To: <58fnh6t3k29cdk51w3umocl8.1318700446994@email.android.com>
+References: <58fnh6t3k29cdk51w3umocl8.1318700446994@email.android.com>
+Message-ID: <CAJ7j0cvxao3Ciq4nP0Rj7iAtt9PZ1ZCgPdhR-4N14D24escQ0w@mail.gmail.com>
+
+Is the list still alive?  I haven't seen any messages since I asked
+about layer 3 and multiple IP blocks.
+
+--
+Rob Campbell
+
+On Sat, Oct 15, 2011 at 10:42 AM, David Bird <david at coova.com> wrote:
+> Sorry for the mailing list outage. I didn't realize until I sent something :)
+>
+> David
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+
+From david at coova.com  Sat Oct 29 07:31:35 2011
+From: david at coova.com (David Bird)
+Date: Sat, 29 Oct 2011 09:31:35 +0200
+Subject: [Chilli] Mailing list
+Message-ID: <ge72d0qvobkg7rytv8kt8sl6.1319873495362@email.android.com>
+
+Chilli can only have one main network, which is used by (and routed to by kernel) the tun/tap interface. You can have chilli allow for 'any ip' where it can use addresses outside it's main network. Those addresses must be routed in your network, or also use the 'Nat any ip' option to have the foreign IP natted with one taken from the dynamic pool.
+
+Rob Campbell <kg6hum at gmail.com> wrote:
+
+>Is the list still alive?  I haven't seen any messages since I asked
+>about layer 3 and multiple IP blocks.
+>
+>--
+>Rob Campbell
+>
+>On Sat, Oct 15, 2011 at 10:42 AM, David Bird <david at coova.com> wrote:
+>> Sorry for the mailing list outage. I didn't realize until I sent something :)
+>>
+>> David
+>> _______________________________________________
+>> Chilli mailing list
+>> Chilli at coova.org
+>> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>>
+
+From felipe.wiel at hpp.org.br  Sat Oct 29 11:14:44 2011
+From: felipe.wiel at hpp.org.br (Felipe Augusto van de Wiel)
+Date: Sat, 29 Oct 2011 09:14:44 -0200
+Subject: [Chilli] Mailing list
+In-Reply-To: <CAJ7j0cvxao3Ciq4nP0Rj7iAtt9PZ1ZCgPdhR-4N14D24escQ0w@mail.gmail.com>
+References: <58fnh6t3k29cdk51w3umocl8.1318700446994@email.android.com>
+	<CAJ7j0cvxao3Ciq4nP0Rj7iAtt9PZ1ZCgPdhR-4N14D24escQ0w@mail.gmail.com>
+Message-ID: <4EABE024.6030301@hpp.org.br>
+
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA512
+
+On 28-10-2011 19:39, Rob Campbell wrote:
+> Is the list still alive?  I haven't seen any messages since I asked
+> about layer 3 and multiple IP blocks.
+
+It's still alive, sometime it goes calmer/quieter. :)
+
+Kind regards,
+- -- 
+Felipe Augusto van de Wiel <felipe.wiel at hpp.org.br>
+Tecnologia da Informa??o (TI) - Complexo Pequeno Pr?ncipe
+http://www.pequenoprincipe.org.br/    T: +55 41 3310 1747
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.11 (GNU/Linux)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
+
+iQIcBAEBCgAGBQJOq+AkAAoJECCPPxLgxLxPBXgQAINabkloUzG9SvLFOvv45Wt7
+cGxdv0O2focrbTJkCrpFiwGGzebz46bLYw4IW+vJ7pPPjJetw0lA1Lv0qvGaoRdu
+OxtZ0sRQLMs9LolqB+OQjUocLjQt9639w0ja7FXao20w+bBjvD3IOl7ps9Ru1ise
+2dIkI44LcwWcrnoLVnCZeDlIykA0RvY5PP3EoE/ywKvfmA6cKpm8uOdckGJXTOxx
+MylVYrKA79uuBZx1jnUS5iymKD0VYMFa374alXvp2gfybwtL4+z0I8xsF4vPnwbr
+FKzwotpK70fMp4jYuIDrgBzoH6ASgz4ZRWTjsrZkQHXVQZDFdP0vWc6iLuozhUo+
+zayB8A9pkV0caxKIxooEmXG32YVIOsVA9x1RlqvefoqpOOOQqP0ArE082ArH5SI5
+jgXnP9ruvwemgPpN9x+dwWUdIhKQ9PHF89QsMd/mnDI+MImYmxAcOgsfuZxkR+aE
+GEcO/Fq/mImkI4RnDGSHJ0g1mkIRjVU+CTl1VKOsJvR1usZefmf8A1rF9F74gDke
+f6cKW5OnbtS9aC5v5J6Fl91LBf2c7cUyquWtik6p7kw8T7GKLmzp4svvYuAzhMIg
+/C4DwmWpN3Gcun8rVcXgOxMIwGviulpj+XX5XG+Iyi3mb+dms/KBD5aTGiOS/2oS
+qFmX8JvX8GeaNOmmM7Ql
+=HWK2
+-----END PGP SIGNATURE-----
+
+From fmacedo at cpd.ufrgs.br  Mon Oct 31 12:36:11 2011
+From: fmacedo at cpd.ufrgs.br (Fernando Macedo)
+Date: Mon, 31 Oct 2011 10:36:11 -0200
+Subject: [Chilli] Radius Queue Full
+In-Reply-To: <1318699909.5098.1.camel@david-laptop>
+References: <CAODoKgA+2vOUtfDGBnLOsy822rq5-WvKA8rAm7VnjvW8XZuhPA@mail.gmail.com>
+	<CAESLx0KAULJyAkjRBxf+rcuLv7x1SBZUihrr02FJd+URUb3XCA@mail.gmail.com>
+	<1318699909.5098.1.camel@david-laptop>
+Message-ID: <4EAE963B.1080709@cpd.ufrgs.br>
+
+Hi, David. Do you have any ideawhen will it be released?
+
+Fernando
+
+Em 15/10/2011 14:31, David Bird escreveu:
+> Hello,
+>
+> The RADIUS queue issue is fixed in the next release. So is a segfault
+> which occurs under certain conditions....
+>
+> David
+>
+> On Sat, 2011-10-15 at 21:57 +1000, Timothy White wrote:
+>> I'm guessing this was stuck in a moderation queue for a few months.
+>>
+>> My understanding is that the radius queue is used so that if the
+>> RADIUS server doesn't respond for a little while, accounting packets
+>> aren't lost. Ether, your RADIUS server isn't letting Chilli know that
+>> it's received those packets (or the network is congested so the
+>> messages don't get back), or the RADIUS server is overlaoded.
+>> What is your accounting interval set at? If you are experiencing
+>> higher "loads" (just think, if you set your interval at 10s, with 200
+>> users that's 200 accounting packets every 10 seconds, which the RADIUS
+>> server has to do database updates on) then setting a longer accounting
+>> interval would help. I know in Cisco routers that the accounting
+>> interval is a number of hours!! Generally for a Captive Portal Hotspot
+>> though, you want a smaller interval. I currently use about 2.5
+>> minutes, in particular so that if no accounting packets are seen in 2
+>> intervals (5 minutes) we assume the session to be stale and disconnect
+>> it (as we limit connections to 1 per user).
+>>
+>> Have you managed to fix it or are you still having problems?
+>>
+>> Tim
+>>
+>> On Mon, Aug 1, 2011 at 11:54 AM, Robert White<rwhite at globalgossip.net>  wrote:
+>>> Hello there,
+>>> Has any one seen this message before?
+>>> ~# tail messages -n 50
+>>> Jul 31 18:56:26 pxe coova-chilli[29486]: radius.c: 218: radius queue is
+>>> full!
+>>> Jul 31 18:56:26 pxe last message repeated 255 times
+>>> Jul 31 18:56:26 pxe coova-chilli[29486]: radius.c: 1403: could not put in
+>>> queue
+>>> Jul 31 18:56:26 pxe coova-chilli[29486]: radius.c: 218: radius queue is
+>>> full!
+>>> Jul 31 18:56:26 pxe last message repeated 255 times
+>>> Jul 31 18:56:26 pxe coova-chilli[29486]: radius.c: 1403: could not put in
+>>> queue
+>>> Jul 31 18:56:29 pxe coova-chilli[29486]: radius.c: 218: radius queue is
+>>> full!
+>>> Jul 31 18:56:29 pxe last message repeated 255 times
+>>>
+>>> The message is obviously quite self explanatory but I'm wondering exactly
+>>> why this queue would fill up.  What is the Radius queue actually for?
+>>>   Waiting for replies from a Radius server?  Can i set the queue to a bigger
+>>> size?  is there a way of clearing the queue without restarting chilli.  I
+>>> run chilli across lots of different sites.  I only see this message at some
+>>> of my busier sites. 150~200 users and tbh i thought chilli could easily cope
+>>> with more than a few 100 users.  Is this a problem with my Radius setup do
+>>> you think?
+>>> I'd be grateful if anyone could shed some more light on this log message.
+>>> Thanks,
+>>>
+>>> Rob White
+>>>
+>>> -------------------------------------------------
+>>>
+>>> IMPORTANT NOTICE : The information in this email is confidential and may
+>>> also be privileged.
+>>> If you are not the intended recipient, any use or dissemination of the
+>>> information and any
+>>> disclosure or copying of this email is unauthorised and strictly prohibited.
+>>> If you have received
+>>> this email in error, please promptly inform us by reply email or telephone.
+>>> You should also delete
+>>> this email and destroy any hard copies produced.
+>>>
+>>>
+>>> _______________________________________________
+>>> Chilli mailing list
+>>> Chilli at coova.org
+>>> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>>>
+>>>
+>> _______________________________________________
+>> Chilli mailing list
+>> Chilli at coova.org
+>> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+

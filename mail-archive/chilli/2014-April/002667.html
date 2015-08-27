@@ -1,0 +1,107 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] CoovaChilli Kernel Mode issue
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20CoovaChilli%20Kernel%20Mode%20issue&In-Reply-To=%3Cd3e6d76ab1534774bd1fbdac3bca9161%40AMSPR05MB328.eurprd05.prod.outlook.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="002666.html">
+   <LINK REL="Next"  HREF="002668.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] CoovaChilli Kernel Mode issue</H1>
+    <B>Steffen Dettmer</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20CoovaChilli%20Kernel%20Mode%20issue&In-Reply-To=%3Cd3e6d76ab1534774bd1fbdac3bca9161%40AMSPR05MB328.eurprd05.prod.outlook.com%3E"
+       TITLE="[Chilli] CoovaChilli Kernel Mode issue">steffen.dettmer at nomadrail.com
+       </A><BR>
+    <I>Wed Apr  9 10:12:36 UTC 2014</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="002666.html">[Chilli] CoovaChilli Kernel Mode issue
+</A></li>
+        <LI>Next message: <A HREF="002668.html">[Chilli] CoovaChilli Kernel Mode issue
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2667">[ date ]</a>
+              <a href="thread.html#2667">[ thread ]</a>
+              <a href="subject.html#2667">[ subject ]</a>
+              <a href="author.html#2667">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>* Phyo Wai Soe [mailto:<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">phyo.w.soe at frontiir.net</A>]:
+&gt;<i> Hi Steffen,
+</I>&gt;<i>
+</I>&gt;<i> We did tcpdumps on the Coova's tunnel interface and on clients. We found many duplicate acknowledgements and &quot;TCP Previous segment lost&quot; messages before the server sent reset packets to the client.
+</I>
+Hi,
+
+thanks for the information! I don't understand the traces, same
+packets look really strange, don't they?
+
+&gt;<i> 20:50:26.524474 IP 192.168.99.2.34415 &gt; 192.168.99.1.3990: Flags [S], seq 2120304631, win 14600, options [mss 1460,sackOK,TS val 14568535 ecr 0,nop,wscale 3], length 0
+</I>&gt;<i> 20:50:26.524499 IP 192.168.99.1.3990 &gt; 192.168.99.2.34415: Flags [S.], seq 3365942092, ack 2120304632, win 14480, options [mss 1460,sackOK,TS val 3557659 ecr 14568535,nop,wscale 3], length 0
+</I>&gt;<i> 20:50:26.529791 IP 192.168.99.2.34415 &gt; 192.168.99.1.3990: Flags [.], ack 1, win 1825, options [nop,nop,TS val 14568535 ecr 3557659], length 0
+</I>&gt;<i> 20:50:26.530550 IP 192.168.99.2.34415 &gt; 192.168.99.1.3990: Flags [.], ack 1, win 1825, options [nop,nop,TS val 14568535 ecr 3557659], length 0
+</I>
+Yeah, this looks like a duplication... The timing is interesting, 0.7 ms.
+In order of magnitude of a LAN, seems to bit too long for a local
+package duplication effect.
+
+looks like a working connection without any data (yet).
+The ack of #3 and #4 are adjusted by tcpdump and look good.
+
+Then the second connection on the new port:
+
+&gt;<i> 20:50:26.531265 IP 192.168.99.2.34416 &gt; 192.168.99.1.3990: Flags [S], seq 2564554410, win 14600, options [mss 1460,sackOK,TS val 14568536 ecr 0,nop,wscale 3], length 0
+</I>&gt;<i> 20:50:26.531286 IP 192.168.99.1.3990 &gt; 192.168.99.2.34416: Flags [S.], seq 1593443429, ack 2564554411, win 14480, options [mss 1460,sackOK,TS val 3557661 ecr 14568536,nop,wscale 3], length 0
+</I>&gt;<i> 20:50:26.531548 IP 192.168.99.2.34416 &gt; 192.168.99.1.3990: Flags [.], ack 933068581, win 1825, options [nop,nop,TS val 14568536 ecr 3557660], length 0
+</I>
+this looks odd, the ack number seems not to match anything, from
+the client, 0.26ms (half the time as before) after the SYNACK.
+
+&gt;<i> 20:50:26.531563 IP 192.168.99.1.3990 &gt; 192.168.99.2.34416: Flags [R], seq 2526512010, win 0, length 0
+</I>
+This sequence number also is out of order (out of any receive
+window we saw) but has no ACK set, as it is not part of an
+established connection. Strange.
+
+&gt;<i> 20:50:26.532146 IP 192.168.99.2.34416 &gt; 192.168.99.1.3990: Flags [P.], seq 1:683, ack 933068581, win 1825, options [nop,nop,TS val 14568537 ecr 3557660], length 682
+</I>&gt;<i> 20:50:26.532158 IP 192.168.99.1.3990 &gt; 192.168.99.2.34416: Flags [R], seq 2526512010, win 0, length 0
+</I>
+Interesting timing, 0.02ms, or maybe duplication after 0.59ms.
+
+Do you know an explanation for all that?
+
+Steffen
+
+</PRE>
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="002666.html">[Chilli] CoovaChilli Kernel Mode issue
+</A></li>
+	<LI>Next message: <A HREF="002668.html">[Chilli] CoovaChilli Kernel Mode issue
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2667">[ date ]</a>
+              <a href="thread.html#2667">[ thread ]</a>
+              <a href="subject.html#2667">[ subject ]</a>
+              <a href="author.html#2667">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

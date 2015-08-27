@@ -1,0 +1,139 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> Does freeradius-client library support CHAP protocol?
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20Does%20freeradius-client%20library%20support%20CHAP%20protocol%3F&In-Reply-To=%3CD646C89E10CD42D2839E83E91E87E8E5%40DELLTM%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000634.html">
+   <LINK REL="Next"  HREF="000636.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>Does freeradius-client library support CHAP protocol?</H1>
+    <B>Thierry MUSEUX - www.fwt.fr -</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20Does%20freeradius-client%20library%20support%20CHAP%20protocol%3F&In-Reply-To=%3CD646C89E10CD42D2839E83E91E87E8E5%40DELLTM%3E"
+       TITLE="Does freeradius-client library support CHAP protocol?">tm at fwt.fr
+       </A><BR>
+    <I>Thu Mar 19 11:01:19 UTC 2009</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000634.html">Does freeradius-client library support CHAP protocol?
+</A></li>
+        <LI>Next message: <A HREF="000636.html">config.in
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#635">[ date ]</a>
+              <a href="thread.html#635">[ thread ]</a>
+              <a href="subject.html#635">[ subject ]</a>
+              <a href="author.html#635">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>
+With svn 195 i have this error with make or with dpkg-buildpackage
+-rfakeroot:
+
+
+In file included from ippool.c:17:
+md5.h:29: error: conflicting types for 'MD5_CTX'
+/usr/include/openssl/md5.h:106: error: previous declaration of 'MD5_CTX' was
+here
+
+Thierry Museux
+
+
+-----Message d'origine-----
+De&#160;: wlanmac [mailto:<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">wlan at mac.com</A>] 
+Envoy&#233;&#160;: mercredi 18 mars 2009 17:44
+&#192;&#160;: FreeRadius developers mailing list
+Cc&#160;: <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli at coova.org</A>
+Objet&#160;: Re: Does freeradius-client library support CHAP protocol?
+
+It might be good timing then, for CoovaChilli to start expanding beyond
+PAP and CHAP. To that end, I added some MS-CHAPv2 features into the SVN
+version. Support for MS-CHAPv2 comes in two flavors:
+
+- In the chilli logon URL, it already looks for a 'password' (encoded
+p/w for PAP) or a 'response' (for CHAP), and now accepts
+'ntresponse' (for MS-CHAPv2). This will allow the portal to format a
+MS-CHAPv2 Response to have chilli send through. 
+
+- An option 'mschapv2' which will use MS-CHAPv2 instead of PAP for
+authentication where the logon URL is sent a 'password'. For the
+additional crypto, started to use OpenSSL (optional during configure) -
+which might allow for additional features too. 
+
+Question, comments, or bug reports please reply to chilli's list. 
+
+cheers, 
+
+
+On Wed, 2009-03-18 at 08:12 +0100, Alan DeKok wrote:
+&gt;<i> wlanmac wrote:
+</I>&gt;<i> &gt; I disagree that CHAP is without use. In fact, it could even be one of
+</I>&gt;<i> &gt; the most used protocols, at least for hotspot (captive portal)
+</I>&gt;<i> &gt; authentication, second to only PAP.
+</I>&gt;<i> 
+</I>&gt;<i>   It is one of the most used protocols after PAP, especially for hotspot
+</I>&gt;<i> logins.  That doesn't make it a good idea.
+</I>&gt;<i> 
+</I>&gt;<i>   Most captive portals use CHAP because they were designed a long time
+</I>&gt;<i> ago, and CHAP was more widely used then.
+</I>&gt;<i> 
+</I>&gt;<i> &gt; I think you want to pick your
+</I>&gt;<i> &gt; protocol carefully, depending on the application and other requirements.
+</I>&gt;<i> &gt; PAP, for instance, is a bad choice if your shared secret isn't all that
+</I>&gt;<i> &gt; secret (like with FON, for instance).
+</I>&gt;<i> 
+</I>&gt;<i>   Yes.  But that doesn't mean CHAP is the best choice.
+</I>&gt;<i> 
+</I>&gt;<i>   I've seen switches that do CHAP for wired &quot;captive portals&quot;.  This is
+</I>&gt;<i> *crazy*, because most companies that can afford $5K for a switch use
+</I>&gt;<i> Active Directory... which is incompatible with CHAP.
+</I>&gt;<i> 
+</I>&gt;<i> &gt; In all, I think each protocol has
+</I>&gt;<i> &gt; it's place and use. In some situations, protocols might be useless or
+</I>&gt;<i> &gt; unavailable. But, in another networks and environments, the same
+</I>&gt;<i> &gt; protocol might be very suitable or the only option available. 
+</I>&gt;<i> 
+</I>&gt;<i>   There are very, very, few places where CHAP is suitable.  They mostly
+</I>&gt;<i> are situations like &quot;I want to use CHAP, because I want to use CHAP.&quot;
+</I>&gt;<i> 
+</I>&gt;<i>   Alan DeKok.
+</I>&gt;<i> -
+</I>&gt;<i> List info/subscribe/unsubscribe? See
+</I><A HREF="http://www.freeradius.org/list/devel.html">http://www.freeradius.org/list/devel.html</A>
+
+
+---------------------------------------------------------------------
+To unsubscribe, e-mail: <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli-unsubscribe at coova.org</A>
+For additional commands, e-mail: <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli-help at coova.org</A>
+Wiki: <A HREF="http://coova.org/wiki/index.php/CoovaChilli">http://coova.org/wiki/index.php/CoovaChilli</A>
+Forum: <A HREF="http://coova.org/phpBB3/viewforum.php?f=4">http://coova.org/phpBB3/viewforum.php?f=4</A>
+
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000634.html">Does freeradius-client library support CHAP protocol?
+</A></li>
+	<LI>Next message: <A HREF="000636.html">config.in
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#635">[ date ]</a>
+              <a href="thread.html#635">[ thread ]</a>
+              <a href="subject.html#635">[ subject ]</a>
+              <a href="author.html#635">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

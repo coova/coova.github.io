@@ -1,0 +1,141 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] Running with kmod
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Running%20with%20kmod&In-Reply-To=%3C1396875235.50368.YahooMailNeo%40web161702.mail.bf1.yahoo.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="002656.html">
+   <LINK REL="Next"  HREF="002662.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] Running with kmod</H1>
+    <B>Tariq Ramadan</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Running%20with%20kmod&In-Reply-To=%3C1396875235.50368.YahooMailNeo%40web161702.mail.bf1.yahoo.com%3E"
+       TITLE="[Chilli] Running with kmod">tr23101 at yahoo.com
+       </A><BR>
+    <I>Mon Apr  7 12:53:55 UTC 2014</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="002656.html">[Chilli] COA Support
+</A></li>
+        <LI>Next message: <A HREF="002662.html">[Chilli] Running with kmod
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2657">[ date ]</a>
+              <a href="thread.html#2657">[ thread ]</a>
+              <a href="subject.html#2657">[ subject ]</a>
+              <a href="author.html#2657">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hello
+
+I've compiled and set up coovachilli --with-nfcoova on ubuntu successfully. But I can not run properly. I think there's a kind of routing problem with the interfaces. I tried to set up as David described here: <A HREF="http://lists.coova.org/pipermail/chilli/2010-April/001239.html&#160;">http://lists.coova.org/pipermail/chilli/2010-April/001239.html&#160;</A>
+
+At this configuration client is getting IP, then trying to resolve and getting dns request result, and redirecting the browser to the uamurl, but page is not displaying properly(getting connection reset response)
+If I remove the network route of tun0(11.1.0.0/24) here, the client can continue to reach and display the uampage, then login and access to the internet. But this time dns resolving and redirection doesn't work.
+
+My configuration:
+
+cmdsocket &#160; &#160; &#160; /var/run/chilli.eth1.sock
+unixipc &#160; &#160; &#160; &#160; chilli.eth1.ipc
+pidfile &#160; &#160; &#160; &#160; /var/run/chilli.eth1.pid
+net10.1.0.0/255.255.255.0
+uamlisten11.1.0.1
+uamport &#160; &#160; &#160; &#160; 3100
+dhcpifeth1
+uamallowed&quot;10.0.0.0/8,11.0.0.0/8&quot;
+uamanydns
+kname &quot;chilli&quot;
+dhcplisten &quot;10.1.0.1&quot;
+domain &quot;lan&quot;
+dns1 &quot;208.67.222.222&quot;
+dns2 &quot;8.8.8.8&quot;
+
+radiusserver1&quot;localhost&quot;
+radiusserver2&quot;localhost&quot;
+radiussecret&quot;testing123&quot;
+radiusauthport&#160; 1812
+radiusacctport&#160; 1813
+uamserver&quot;<A HREF="http://11.1.0.1/login/login.php">http://11.1.0.1/login/login.php</A>&quot;
+radiusnasid&quot;nas-10&quot;
+papalwaysok
+macauth
+usestatusfile &quot;/etc/chilli/eth1/status.dat&quot;
+uamaliasname &quot;chilli&quot;
+adminupdatefile &quot;/etc/chilli/eth1/local.conf&quot;
+uamsecret &quot;testing123&quot;
+
+dhcpstart 10
+dhcpend 239
+lease 3600
+dhcpnotidle
+seskeepalive
+logfacility 22
+
+WAN side - eth0 : 192.168.0.88 (def gw:192.168.0.1)
+LAN side - eth1 : 10.1.0.1
+tun0: 11.1.0.1
+
+iptables output:
+Chain INPUT (policy ACCEPT)
+
+target &#160; &#160; prot opt source &#160; &#160; &#160; &#160; &#160; &#160; &#160; destination&#160; &#160; &#160; &#160; &#160;
+
+Chain FORWARD (policy DROP)
+target &#160; &#160; prot opt source &#160; &#160; &#160; &#160; &#160; &#160; &#160; destination&#160; &#160; &#160; &#160; &#160;
+ACCEPT &#160; &#160; all&#160; --&#160; 0.0.0.0/0&#160; &#160; &#160; &#160; &#160; &#160; 0.0.0.0/0&#160; &#160; &#160; &#160; &#160; &#160;
+ACCEPT &#160; &#160; all&#160; --&#160; 0.0.0.0/0&#160; &#160; &#160; &#160; &#160; &#160; 0.0.0.0/0&#160; &#160; &#160; &#160; &#160; &#160;
+ACCEPT &#160; &#160; all&#160; --&#160; 0.0.0.0/0&#160; &#160; &#160; &#160; &#160; &#160; 0.0.0.0/0 &#160; &#160; &#160; &#160; &#160; coova: name: chilli side: dest
+ACCEPT &#160; &#160; all&#160; --&#160; 0.0.0.0/0&#160; &#160; &#160; &#160; &#160; &#160; 0.0.0.0/0 &#160; &#160; &#160; &#160; &#160; coova: name: chilli side: source&#160;
+
+Chain OUTPUT (policy ACCEPT)
+target &#160; &#160; prot opt source &#160; &#160; &#160; &#160; &#160; &#160; &#160; destination
+
+
+route -n output:
+
+Kernel IP routing table
+Destination &#160; &#160; Gateway &#160; &#160; &#160; &#160; Genmask &#160; &#160; &#160; &#160; Flags Metric Ref&#160; &#160; Use Iface
+0.0.0.0 &#160; &#160; &#160; &#160; 192.168.0.1 &#160; &#160; 0.0.0.0 &#160; &#160; &#160; &#160; UG&#160; &#160; 100&#160; &#160; 0&#160; &#160; &#160; &#160; 0 eth0
+10.0.0.0&#160; &#160; &#160; &#160; 0.0.0.0 &#160; &#160; &#160; &#160; 255.0.0.0 &#160; &#160; &#160; U &#160; &#160; 0&#160; &#160; &#160; 0&#160; &#160; &#160; &#160; 0 eth1
+11.1.0.0&#160; &#160; &#160; &#160; 0.0.0.0 &#160; &#160; &#160; &#160; 255.255.255.0 &#160; U &#160; &#160; 0&#160; &#160; &#160; 0&#160; &#160; &#160; &#160; 0 tun0
+192.168.0.0 &#160; &#160; 0.0.0.0 &#160; &#160; &#160; &#160; 255.255.255.0 &#160; U &#160; &#160; 0&#160; &#160; &#160; 0&#160; &#160; &#160; &#160; 0 eth0
+
+
+Can anyone help me?
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: &lt;<A HREF="http://lists.coova.org/pipermail/chilli/attachments/20140407/1064e280/attachment.html">http://lists.coova.org/pipermail/chilli/attachments/20140407/1064e280/attachment.html</A>&gt;
+</PRE>
+
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="002656.html">[Chilli] COA Support
+</A></li>
+	<LI>Next message: <A HREF="002662.html">[Chilli] Running with kmod
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2657">[ date ]</a>
+              <a href="thread.html#2657">[ thread ]</a>
+              <a href="subject.html#2657">[ subject ]</a>
+              <a href="author.html#2657">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

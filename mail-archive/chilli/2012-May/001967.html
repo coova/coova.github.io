@@ -1,0 +1,125 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] Coovachilli and Squid Transparent on the same host
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Coovachilli%20and%20Squid%20Transparent%20on%20the%20same%20host&In-Reply-To=%3CCAE%3D_RaX1brXrimcWOCotZ-8EiUa0eXyTwZv87%2BTUNSBAVoDGQg%40mail.gmail.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001966.html">
+   <LINK REL="Next"  HREF="001968.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] Coovachilli and Squid Transparent on the same host</H1>
+    <B>Venkatesh K</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Coovachilli%20and%20Squid%20Transparent%20on%20the%20same%20host&In-Reply-To=%3CCAE%3D_RaX1brXrimcWOCotZ-8EiUa0eXyTwZv87%2BTUNSBAVoDGQg%40mail.gmail.com%3E"
+       TITLE="[Chilli] Coovachilli and Squid Transparent on the same host">kaevee at gmail.com
+       </A><BR>
+    <I>Sun May 20 11:47:27 UTC 2012</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001966.html">[Chilli] Coovachilli and Squid Transparent on the same host
+</A></li>
+        <LI>Next message: <A HREF="001968.html">[Chilli] Coovachilli and Squid Transparent on the same host
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1967">[ date ]</a>
+              <a href="thread.html#1967">[ thread ]</a>
+              <a href="subject.html#1967">[ subject ]</a>
+              <a href="author.html#1967">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Why don't you revisit the postauthproxy use 127.0.0.1/3128. Make sure your
+firewall rules don't block input traffic from/to lo0.
+
+Thanks,
+
+Venkatesh. K
+
+
+On Sun, May 20, 2012 at 3:52 PM, Germano Paciocco &lt;
+<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">germano.paciocco at gmail.com</A>&gt; wrote:
+
+&gt;<i> David Bird wrote:
+</I>&gt;<i>
+</I>&gt;<i> &gt; A couple things to try:
+</I>&gt;<i>
+</I>&gt;<i> &gt; - Try either the postauthproxy or the iptables REDIRECT, both shouldn't
+</I>&gt;<i> &gt; be needed.
+</I>&gt;<i>
+</I>&gt;<i> &gt; - Try using 10.0.0.1 instead of 127.0.0.1 for the squid listen and for
+</I>&gt;<i> the
+</I>&gt;<i> &gt; postauthproxy.
+</I>&gt;<i>
+</I>&gt;<i> Thank you for interesting.
+</I>&gt;<i>
+</I>&gt;<i> Maybe I'm close to the goal:  if I use postauthproxy rather than redirect
+</I>&gt;<i> iptables rules, and I set 10.0.0.1 in the config file instead of 127.0.0.1
+</I>&gt;<i> as
+</I>&gt;<i> you suggested, my traffic is dropped by the rule #8 in the INPUT chain
+</I>&gt;<i> in  filter table!
+</I>&gt;<i>
+</I>&gt;<i> Chain INPUT (policy ACCEPT 77 packets, 5364 bytes)
+</I>&gt;<i> num pkts bytes target prot opt in out source destination
+</I>&gt;<i> 1 139 19658 DROP all -- eth0 * 0.0.0.0/0 0.0.0.0/0
+</I>&gt;<i> 2 0 0 ACCEPT icmp -- tun0 * 0.0.0.0/0 10.0.0.1
+</I>&gt;<i> 3 1 82 ACCEPT udp -- tun0 * 0.0.0.0/0 10.0.0.1 udp dpt:53
+</I>&gt;<i> 4 0 0 ACCEPT udp -- tun0 * 0.0.0.0/0 10.0.0.1 udp dpts:67:68
+</I>&gt;<i> 5 0 0 ACCEPT udp -- tun0 * 0.0.0.0/0 255.255.255.255 udp dpts:67:68
+</I>&gt;<i> 6 77 9558 ACCEPT tcp -- tun0 * 0.0.0.0/0 10.0.0.1 tcp dpt:4990
+</I>&gt;<i> 7 80 11894 ACCEPT tcp -- tun0 * 0.0.0.0/0 10.0.0.1 tcp dpt:3990
+</I>&gt;<i> 8 14 896 DROP all -- tun0 * 0.0.0.0/0 10.0.0.1 &lt;&lt;&lt; THIS ONE DROPS SQUID!
+</I>&gt;<i>
+</I>&gt;<i> If I add this rule
+</I>&gt;<i> iptables -I INPUT 8 -i tun0 -p tcp -m tcp --dport 3128 -j ACCEPT
+</I>&gt;<i>
+</I>&gt;<i> all works fine, but users will be able to surf setting explicit proxy,
+</I>&gt;<i> bypassing authentication!!!!!
+</I>&gt;<i>
+</I>&gt;<i> This is the reason why I find more logic to set postauthproxy to 127.0.0.1,
+</I>&gt;<i> but doing this, i can't get any way traffic processed by Squid...
+</I>&gt;<i>
+</I>&gt;<i> Any idea?
+</I>&gt;<i>
+</I>&gt;<i> Kind regards.
+</I>&gt;<i>
+</I>&gt;<i> --
+</I>&gt;<i> GP
+</I>&gt;<i> _______________________________________________
+</I>&gt;<i> Chilli mailing list
+</I>&gt;<i> <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">Chilli at coova.org</A>
+</I>&gt;<i> <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">http://lists.coova.org/cgi-bin/mailman/listinfo/chilli</A>
+</I>&gt;<i>
+</I>-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: &lt;<A HREF="http://lists.coova.org/pipermail/chilli/attachments/20120520/ff610520/attachment.html">http://lists.coova.org/pipermail/chilli/attachments/20120520/ff610520/attachment.html</A>&gt;
+</PRE>
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001966.html">[Chilli] Coovachilli and Squid Transparent on the same host
+</A></li>
+	<LI>Next message: <A HREF="001968.html">[Chilli] Coovachilli and Squid Transparent on the same host
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1967">[ date ]</a>
+              <a href="thread.html#1967">[ thread ]</a>
+              <a href="subject.html#1967">[ subject ]</a>
+              <a href="author.html#1967">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,380 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> Problem with WISPr in release 1.0.13
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20Problem%20with%20WISPr%20in%20release%201.0.13&In-Reply-To=%3C499281BD8A3946B0B0DA36BBA9A1A0F8%40DELLTM%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000728.html">
+   <LINK REL="Next"  HREF="000730.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>Problem with WISPr in release 1.0.13</H1>
+    <B>Thierry MUSEUX - www.fwt.fr -</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20Problem%20with%20WISPr%20in%20release%201.0.13&In-Reply-To=%3C499281BD8A3946B0B0DA36BBA9A1A0F8%40DELLTM%3E"
+       TITLE="Problem with WISPr in release 1.0.13">tm at fwt.fr
+       </A><BR>
+    <I>Tue May 12 22:20:17 UTC 2009</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000728.html">Problem with WISPr in release 1.0.13
+</A></li>
+        <LI>Next message: <A HREF="000730.html">Problem with WISPr in release 1.0.13
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#729">[ date ]</a>
+              <a href="thread.html#729">[ thread ]</a>
+              <a href="subject.html#729">[ subject ]</a>
+              <a href="author.html#729">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Limit.h
+
+#define RADIUS_PASSWORD_LEN               16
+
+ 
+
+ 
+
+Thierry Museux
+
+
+
+  _____  
+
+De : Rodrigo Mart&#237;nez [mailto:<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">rmartinez at tilsor.com.uy</A>] 
+Envoy&#233; : mardi 12 mai 2009 22:51
+&#192; : <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli at coova.org</A>
+Objet : Re: Problem with WISPr in release 1.0.13
+
+ 
+
+David, 
+    thanks for the quick response and for committing the changes to the svn.
+
+
+    In our solution the smart clients use usernames and passwords that are
+40 bytes long. When we try to login using these password, CoovaChilli send
+to RADIUS the password truncated to 16 bytes. We just found this problem and
+we are looking for a solution in the code, any advice would be very helpful.
+
+    Rodrigo
+
+
+wlanmac wrote: 
+
+Thanks... I committed a similar fix to svn - the difference being an
+option addedd to bstring_buildurl() for what kind of ampersand to use
+&quot;&amp;&quot; vs. &quot;%amp;&quot;. 
+ 
+David
+ 
+On Tue, 2009-05-12 at 16:46 -0300, Rodrigo Mart&#237;nez wrote:
+  
+
+Hello, 
+    We are using CoovaChilli release 1.0.13 in a solution for access
+control system. We have smart clients that authenticate using WISPr
+protocol to communicate with the CoovaChilli. We start using
+CoovaChilli release 1.0.12, with this version the WISPr communication
+worked fine, but when we update to release 1.0.13 the client stop
+connecting. 
+ 
+    Analyzing the problem we found that in the new release, when the
+redirect message is send (302 page was moved), the WISPr message had
+two tags with the LoginURL. One of the tags had the same value as in
+release 1.0.12 and the second one has some differences. The main
+problem of the second tag is that the &quot;&amp;&quot; it is not scaped, so when we
+check syntax against the xsd, it always fail. Looking around in the
+code, we found the piece of code that was generating the WISPr message
+and we modify it to match the WISPr standard. Attached in the mail we
+are sending the file with the patch that contains the modifications in
+the redir.c file. We hope this can help developers to fix this problem
+in next releases.
+ 
+    Thanks in advance 
+ 
+    Regards,
+       Rodrigo
+ 
+-- 
+ 
+______________________________________________________________________
+     
+ 
+Ing. Rodrigo Mart&#237;nez
+Consultor
+Consultor&#237;a &amp; Desarrollo
+ 
+ 
+     
+ 
+     
+Tilsor S.A
+Pza.
+Independencia 822
+Piso 4
+C.P. 11100 -
+Montevideo
+Uruguay
+Tel Fax: (598 2)
+9039313
+www.tilsor.com.uy 
+ 
+ 
+plain text document attachment (chilli-wisprLoginURL.patch)
+Index: redir.c
+===================================================================
+--- redir.c      (revision 199)
++++ redir.c      (working copy)
+@@ -221,12 +221,12 @@
+   bstring bt = bfromcstr(&quot;&quot;);
+   bstring bt2 = bfromcstr(&quot;&quot;);
+ 
+-  bassignformat(str, &quot;%s%cres=%s&amp;uamip=%s&amp;uamport=%d&quot;, 
++  bassignformat(str, &quot;%s%cres=%s&amp;amp;uamip=%s&amp;amp;uamport=%d&quot;, 
+         redir_url, strchr(redir_url, '?') ? '&amp;' : '?',
+         resp, inet_ntoa(redir-&gt;addr), redir-&gt;port);
+ 
+   if (hexchal) {
+-    bassignformat(bt, &quot;&amp;challenge=%s&quot;, hexchal);
++    bassignformat(bt, &quot;&amp;amp;challenge=%s&quot;, hexchal);
+     bconcat(str, bt);
+     bassigncstr(bt,&quot;&quot;);
+   }
+@@ -239,37 +239,37 @@
+ 
+       sessiontime = timenow - starttime;
+ 
+-      bassignformat(bt, &quot;&amp;starttime=%ld&quot;, starttime);
++      bassignformat(bt, &quot;&amp;amp;starttime=%ld&quot;, starttime);
+       bconcat(str, bt);
+-      bassignformat(bt, &quot;&amp;sessiontime=%ld&quot;, sessiontime);
++      bassignformat(bt, &quot;&amp;amp;sessiontime=%ld&quot;, sessiontime);
+       bconcat(str, bt);
+     }
+ 
+     if (conn-&gt;s_params.sessiontimeout) {
+-      bassignformat(bt, &quot;&amp;sessiontimeout=%ld&quot;,
+conn-&gt;s_params.sessiontimeout);
++      bassignformat(bt, &quot;&amp;amp;sessiontimeout=%ld&quot;,
+conn-&gt;s_params.sessiontimeout);
+       bconcat(str, bt);
+     }
+ 
+     if (conn-&gt;s_params.sessionterminatetime) {
+-      bassignformat(bt, &quot;&amp;stoptime=%ld&quot;,
+conn-&gt;s_params.sessionterminatetime);
++      bassignformat(bt, &quot;&amp;amp;stoptime=%ld&quot;,
+conn-&gt;s_params.sessionterminatetime);
+       bconcat(str, bt);
+     }
+   }
+  
+   if (uid) {
+-    bcatcstr(str, &quot;&amp;uid=&quot;);
++    bcatcstr(str, &quot;&amp;amp;uid=&quot;);
+     bassigncstr(bt, uid);
+     redir_urlencode(bt, bt2);
+     bconcat(str, bt2);
+   }
+ 
+   if (timeleft) {
+-    bassignformat(bt, &quot;&amp;timeleft=%ld&quot;, timeleft);
++    bassignformat(bt, &quot;&amp;amp;timeleft=%ld&quot;, timeleft);
+     bconcat(str, bt);
+   }
+   
+   if (hismac) {
+-    bcatcstr(str, &quot;&amp;mac=&quot;);
++    bcatcstr(str, &quot;&amp;amp;mac=&quot;);
+     bassignformat(bt, &quot;%.2X-%.2X-%.2X-%.2X-%.2X-%.2X&quot;,
+           hismac[0], hismac[1], 
+           hismac[2], hismac[3],
+@@ -279,54 +279,54 @@
+   }
+ 
+   if (hisip) {
+-    bassignformat(bt, &quot;&amp;ip=%s&quot;, inet_ntoa(*hisip));
++    bassignformat(bt, &quot;&amp;amp;ip=%s&quot;, inet_ntoa(*hisip));
+     bconcat(str, bt);
+   }
+ 
+   if (reply) {
+-    bcatcstr(str, &quot;&amp;reply=&quot;);
++    bcatcstr(str, &quot;&amp;amp;reply=&quot;);
+     bassigncstr(bt, reply);
+     redir_urlencode(bt, bt2);
+     bconcat(str, bt2);
+   }
+ 
+   if (redir-&gt;ssid) {
+-    bcatcstr(str, &quot;&amp;ssid=&quot;);
++    bcatcstr(str, &quot;&amp;amp;ssid=&quot;);
+     bassigncstr(bt, redir-&gt;ssid);
+     redir_urlencode(bt, bt2);
+     bconcat(str, bt2);
+   }
+ 
+   if (redir-&gt;nasmac) {
+-    bcatcstr(str, &quot;&amp;called=&quot;);
++    bcatcstr(str, &quot;&amp;amp;called=&quot;);
+     bassigncstr(bt, redir-&gt;nasmac);
+     redir_urlencode(bt, bt2);
+     bconcat(str, bt2);
+   } 
+ 
+   if (redir-&gt;radiusnasid) {
+-    bcatcstr(str, &quot;&amp;nasid=&quot;);
++    bcatcstr(str, &quot;&amp;amp;nasid=&quot;);
+     bassigncstr(bt, redir-&gt;radiusnasid);
+     redir_urlencode(bt, bt2);
+     bconcat(str, bt2);
+   }
+ 
+   if (conn-&gt;lang[0]) {
+-    bcatcstr(str, &quot;&amp;lang=&quot;);
++    bcatcstr(str, &quot;&amp;amp;lang=&quot;);
+     bassigncstr(bt, conn-&gt;lang);
+     redir_urlencode(bt, bt2);
+     bconcat(str, bt2);
+   }
+ 
+   if (redirurl) {
+-    bcatcstr(str, &quot;&amp;redirurl=&quot;);
++    bcatcstr(str, &quot;&amp;amp;redirurl=&quot;);
+     bassigncstr(bt, redirurl);
+     redir_urlencode(bt, bt2);
+     bconcat(str, bt2);
+   }
+ 
+   if (userurl) {
+-    bcatcstr(str, &quot;&amp;userurl=&quot;);
++    bcatcstr(str, &quot;&amp;amp;userurl=&quot;);
+     bassigncstr(bt, userurl);
+     redir_urlencode(bt, bt2);
+     bconcat(str, bt2);
+@@ -347,7 +347,7 @@
+     for (i=0; i&lt;16; i++)
+       sprintf(hex+strlen(hex), &quot;%.2X&quot;, cksum[i]);
+ 
+-    bcatcstr(str, &quot;&amp;md=&quot;);
++    bcatcstr(str, &quot;&amp;amp;md=&quot;);
+     bcatcstr(str, hex);
+   }
+ 
+@@ -478,12 +478,14 @@
+       bconcat(b, bt);
+ 
+       bcatcstr(b, &quot;&lt;/LoginURL&gt;\r\n&quot;);
+-      
++
++/*      
+       bassignformat(bt,
+&quot;&lt;LoginURL&gt;%s%cres=smartclient&amp;amp;uamip=%s&amp;amp;uamport=%d&amp;amp;challenge=%s&lt;
+/LoginURL&gt;\r\n&quot;,
+             options.wisprlogin ? options.wisprlogin : redir-&gt;url, 
+             strchr(options.wisprlogin ? options.wisprlogin : redir-&gt;url,
+'?') ? '&amp;' : '?',
+             inet_ntoa(redir-&gt;addr), redir-&gt;port, hexchal); 
+       bconcat(b, bt);
++*/
+       
+       bassignformat(bt, &quot;&lt;AbortLoginURL&gt;<A HREF="http://%s:%d/abort">http://%s:%d/abort</A>
+&lt;<A HREF="http://%25s:%25d/abort">http://%25s:%25d/abort</A>&gt; &lt;/AbortLoginURL&gt;\r\n&quot;,
+             inet_ntoa(redir-&gt;addr), redir-&gt;port);
+ 
+---------------------------------------------------------------------
+To unsubscribe, e-mail: <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli-unsubscribe at coova.org</A>
+For additional commands, e-mail: <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli-help at coova.org</A>
+Wiki: <A HREF="http://coova.org/wiki/index.php/CoovaChilli">http://coova.org/wiki/index.php/CoovaChilli</A>
+Forum: <A HREF="http://coova.org/phpBB3/viewforum.php?f=4">http://coova.org/phpBB3/viewforum.php?f=4</A>
+    
+
+ 
+ 
+---------------------------------------------------------------------
+To unsubscribe, e-mail: <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli-unsubscribe at coova.org</A>
+For additional commands, e-mail: <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli-help at coova.org</A>
+Wiki: <A HREF="http://coova.org/wiki/index.php/CoovaChilli">http://coova.org/wiki/index.php/CoovaChilli</A>
+Forum: <A HREF="http://coova.org/phpBB3/viewforum.php?f=4">http://coova.org/phpBB3/viewforum.php?f=4</A>
+  
+
+ 
+
+-- 
+
+  _____  
+
+
+     
+
+
+Ing. Rodrigo Mart&#237;nez
+Consultor
+Consultor&#237;a &amp; Desarrollo
+
+ 
+
+
+     
+
+
+
+     
+
+Tilsor S.A
+Pza. Independencia 822 Piso 4
+C.P. 11100 - Montevideo Uruguay
+Tel Fax: (598 2) 9039313
+ &lt;<A HREF="http://www.tilsor.com.uy">http://www.tilsor.com.uy</A>&gt; www.tilsor.com.uy 
+
+ 
+
+
+
+
+ 
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: &lt;<A HREF="http://lists.coova.org/pipermail/chilli/attachments/20090513/d3292b3c/attachment.htm">http://lists.coova.org/pipermail/chilli/attachments/20090513/d3292b3c/attachment.htm</A>&gt;
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: not available
+Type: image/jpeg
+Size: 17463 bytes
+Desc: not available
+URL: &lt;<A HREF="http://lists.coova.org/pipermail/chilli/attachments/20090513/d3292b3c/attachment.jpeg">http://lists.coova.org/pipermail/chilli/attachments/20090513/d3292b3c/attachment.jpeg</A>&gt;
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: not available
+Type: image/gif
+Size: 2119 bytes
+Desc: not available
+URL: &lt;<A HREF="http://lists.coova.org/pipermail/chilli/attachments/20090513/d3292b3c/attachment.gif">http://lists.coova.org/pipermail/chilli/attachments/20090513/d3292b3c/attachment.gif</A>&gt;
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000728.html">Problem with WISPr in release 1.0.13
+</A></li>
+	<LI>Next message: <A HREF="000730.html">Problem with WISPr in release 1.0.13
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#729">[ date ]</a>
+              <a href="thread.html#729">[ thread ]</a>
+              <a href="subject.html#729">[ subject ]</a>
+              <a href="author.html#729">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,112 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> Problem with WISPr in release 1.0.13
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20Problem%20with%20WISPr%20in%20release%201.0.13&In-Reply-To=%3C4A09D231.7090401%40tilsor.com.uy%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000725.html">
+   <LINK REL="Next"  HREF="000727.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>Problem with WISPr in release 1.0.13</H1>
+    <B>Rodrigo Mart&#237;nez</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20Problem%20with%20WISPr%20in%20release%201.0.13&In-Reply-To=%3C4A09D231.7090401%40tilsor.com.uy%3E"
+       TITLE="Problem with WISPr in release 1.0.13">rmartinez at tilsor.com.uy
+       </A><BR>
+    <I>Tue May 12 19:46:57 UTC 2009</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000725.html">Problem with 'uamanyip'.
+</A></li>
+        <LI>Next message: <A HREF="000727.html">Problem with WISPr in release 1.0.13
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#726">[ date ]</a>
+              <a href="thread.html#726">[ thread ]</a>
+              <a href="subject.html#726">[ subject ]</a>
+              <a href="author.html#726">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hello,
+    We are using CoovaChilli release 1.0.13 in a solution for access 
+control system. We have smart clients that authenticate using WISPr 
+protocol to communicate with the CoovaChilli. We start using CoovaChilli 
+release 1.0.12, with this version the WISPr communication worked fine, 
+but when we update to release 1.0.13 the client stop connecting.
+
+    Analyzing the problem we found that in the new release, when the 
+redirect message is send (302 page was moved), the WISPr message had two 
+tags with the LoginURL. One of the tags had the same value as in release 
+1.0.12 and the second one has some differences. The main problem of the 
+second tag is that the &quot;&amp;&quot; it is not scaped, so when we check syntax 
+against the xsd, it always fail. Looking around in the code, we found 
+the piece of code that was generating the WISPr message and we modify it 
+to match the WISPr standard. Attached in the mail we are sending the 
+file with the patch that contains the modifications in the redir.c file. 
+We hope this can help developers to fix this problem in next releases.
+
+    Thanks in advance
+
+    Regards,
+       Rodrigo
+
+-- 
+------------------------------------------------------------------------
+      	
+Ing. Rodrigo Mart&#237;nez
+Consultor
+Consultor&#237;a &amp; Desarrollo
+
+      		      	Tilsor S.A
+Pza. Independencia 822 Piso 4
+C.P. 11100 - Montevideo Uruguay
+Tel Fax: (598 2) 9039313
+www.tilsor.com.uy &lt;<A HREF="http://www.tilsor.com.uy">http://www.tilsor.com.uy</A>&gt;
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: &lt;<A HREF="http://lists.coova.org/pipermail/chilli/attachments/20090512/d49f087e/attachment.htm">http://lists.coova.org/pipermail/chilli/attachments/20090512/d49f087e/attachment.htm</A>&gt;
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: tilsor_logo_nuevo.jpg
+Type: image/jpeg
+Size: 17463 bytes
+Desc: not available
+URL: &lt;<A HREF="http://lists.coova.org/pipermail/chilli/attachments/20090512/d49f087e/attachment.jpg">http://lists.coova.org/pipermail/chilli/attachments/20090512/d49f087e/attachment.jpg</A>&gt;
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: tilsor_logo_nuevo.gif
+Type: image/gif
+Size: 2119 bytes
+Desc: not available
+URL: &lt;<A HREF="http://lists.coova.org/pipermail/chilli/attachments/20090512/d49f087e/attachment.gif">http://lists.coova.org/pipermail/chilli/attachments/20090512/d49f087e/attachment.gif</A>&gt;
+-------------- next part --------------
+An embedded and charset-unspecified text was scrubbed...
+Name: chilli-wisprLoginURL.patch
+URL: &lt;<A HREF="http://lists.coova.org/pipermail/chilli/attachments/20090512/d49f087e/attachment.txt">http://lists.coova.org/pipermail/chilli/attachments/20090512/d49f087e/attachment.txt</A>&gt;
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000725.html">Problem with 'uamanyip'.
+</A></li>
+	<LI>Next message: <A HREF="000727.html">Problem with WISPr in release 1.0.13
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#726">[ date ]</a>
+              <a href="thread.html#726">[ thread ]</a>
+              <a href="subject.html#726">[ subject ]</a>
+              <a href="author.html#726">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,162 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> Addressing APIPA/IPv4LL issues with uamanyip
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20Addressing%20APIPA/IPv4LL%20issues%20with%20uamanyip&In-Reply-To=%3C14137EDD-6CC2-4313-A822-15EC10C6CECF%40mac.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000238.html">
+   <LINK REL="Next"  HREF="000252.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>Addressing APIPA/IPv4LL issues with uamanyip</H1>
+    <B>wlan at mac.com</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20Addressing%20APIPA/IPv4LL%20issues%20with%20uamanyip&In-Reply-To=%3C14137EDD-6CC2-4313-A822-15EC10C6CECF%40mac.com%3E"
+       TITLE="Addressing APIPA/IPv4LL issues with uamanyip">wlan at mac.com
+       </A><BR>
+    <I>Mon May  5 08:57:14 UTC 2008</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000238.html">Addressing APIPA/IPv4LL issues with uamanyip
+</A></li>
+        <LI>Next message: <A HREF="000252.html">Addressing APIPA/IPv4LL issues with uamanyip
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#242">[ date ]</a>
+              <a href="thread.html#242">[ thread ]</a>
+              <a href="subject.html#242">[ subject ]</a>
+              <a href="author.html#242">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hi Gunther,
+
+This is a great fix -- cheers!
+
+I agree that chilli shouldn't be considering these addresses as  
+'configured'...
+
+David
+
+
+On May 3, 2008, at 9:24 PM, Gunther Mayer wrote:
+
+&gt;<i> Hi guys,
+</I>&gt;<i>
+</I>&gt;<i> In my quest to test and improve uamanyip even more I discovered  
+</I>&gt;<i> another quirk: Clients who are using APIPA/IPv4LL addresses (in  
+</I>&gt;<i> 169.254.0.0/16) such as all MAC's, Windows PC's, ubuntu etc. who  
+</I>&gt;<i> were forced to use one through some sort of temporary LAN/WLAN  
+</I>&gt;<i> failure or nas reboot, will not be able to connect at all through  
+</I>&gt;<i> chilli.
+</I>&gt;<i>
+</I>&gt;<i> Reason: such clients typically have no default gateway set (if  
+</I>&gt;<i> their IPv4LL implementation is rfc 3927 compliant, Windows XP at  
+</I>&gt;<i> least is) which would render uamanyip useless. Even worse, when  
+</I>&gt;<i> they do request a dynamic ip via dhcp which they do periodically in  
+</I>&gt;<i> the background, chilli would just reassign them the same defunct  
+</I>&gt;<i> IPv4LL address that they had before until chilli restarts or the  
+</I>&gt;<i> nas reboots.
+</I>&gt;<i>
+</I>&gt;<i> I've addressed this with a very simple patch below that refuses all  
+</I>&gt;<i> &quot;dhcp&quot; requests in the 196.254.0.0/16 subnet. I have tested it and  
+</I>&gt;<i> it does work (no connections allocated for such a client,  
+</I>&gt;<i> subsequent dhcp request works properly), however I thought I'd run  
+</I>&gt;<i> it by this list first.
+</I>&gt;<i>
+</I>&gt;<i> Gunther
+</I>&gt;<i>
+</I>&gt;<i> P.S.: There's also an unrelated bit in there addressing the logging  
+</I>&gt;<i> of macallowlocal clients which I think improves record keeping
+</I>&gt;<i>
+</I>&gt;<i> Index: chilli.c
+</I>&gt;<i> ===================================================================
+</I>&gt;<i> --- chilli.c    (revision 168)
+</I>&gt;<i> +++ chilli.c    (working copy)
+</I>&gt;<i> @@ -49,6 +49,10 @@
+</I>&gt;<i> /*static int do_timeouts = 1;*/
+</I>&gt;<i> static int do_sighup = 0;
+</I>&gt;<i>
+</I>&gt;<i> +/* some IPv4LL/APIPA(rfc 3927) specific stuff for uamanyip */
+</I>&gt;<i> +struct in_addr ipv4ll_ip;
+</I>&gt;<i> +struct in_addr ipv4ll_mask;
+</I>&gt;<i> +
+</I>&gt;<i> /* Forward declarations */
+</I>&gt;<i> static int acct_req(struct app_conn_t *conn, uint8_t status_type);
+</I>&gt;<i>
+</I>&gt;<i> @@ -2573,6 +2577,16 @@
+</I>&gt;<i>     return -1;
+</I>&gt;<i>   }
+</I>&gt;<i>
+</I>&gt;<i> +  /* if uamanyip is on we have to filter out which ip's are  
+</I>&gt;<i> allowed */
+</I>&gt;<i> +  if (options.uamanyip &amp;&amp; addr &amp;&amp; addr-&gt;s_addr) {
+</I>&gt;<i> +    if ((addr-&gt;s_addr &amp; ipv4ll_mask.s_addr) == ipv4ll_ip.s_addr) {
+</I>&gt;<i> +      /* clients with an IPv4LL ip normally have no default gw  
+</I>&gt;<i> assigned, rendering uamanyip useless
+</I>&gt;<i> +      They must rather get a proper dynamic ip via dhcp */
+</I>&gt;<i> +      log_dbg(&quot;IPv4LL/APIPA address requested, ignoring&quot;);
+</I>&gt;<i> +      return -1;
+</I>&gt;<i> +    }
+</I>&gt;<i> +  }
+</I>&gt;<i> +
+</I>&gt;<i>   appconn-&gt;reqip.s_addr = addr-&gt;s_addr; /* Save for MAC auth later */
+</I>&gt;<i>
+</I>&gt;<i>   /* If IP address is allready allocated: Fill it in */
+</I>&gt;<i> @@ -2598,6 +2612,11 @@
+</I>&gt;<i>     if (options.macallowlocal) {
+</I>&gt;<i>       upprot_getip(appconn, &amp;appconn-&gt;reqip, 0);/**/
+</I>&gt;<i>       dnprot_accept(appconn);
+</I>&gt;<i> +      log_info(&quot;Granted MAC=%.2X-%.2X-%.2X-%.2X-%.2X-%.2X with IP=% 
+</I>&gt;<i> s access without radius auth&quot; ,
+</I>&gt;<i> +                    conn-&gt;hismac[0], conn-&gt;hismac[1],
+</I>&gt;<i> +                    conn-&gt;hismac[2], conn-&gt;hismac[3],
+</I>&gt;<i> +                    conn-&gt;hismac[4], conn-&gt;hismac[5],
+</I>&gt;<i> +                    inet_ntoa(appconn-&gt;hisip));
+</I>&gt;<i>     } else {
+</I>&gt;<i>       macauth_radius(appconn, dhcp_pkt, dhcp_len);
+</I>&gt;<i>     }
+</I>&gt;<i> @@ -3521,6 +3540,10 @@
+</I>&gt;<i>   }
+</I>&gt;<i>   */
+</I>&gt;<i>
+</I>&gt;<i> +  /* setup IPv4LL/APIPA network ip and mask for uamanyip exception */
+</I>&gt;<i> +  inet_aton(&quot;169.254.0.0&quot;, &amp;ipv4ll_ip);
+</I>&gt;<i> +  inet_aton(&quot;255.255.0.0&quot;, &amp;ipv4ll_mask);
+</I>&gt;<i> +
+</I>&gt;<i>   if (options.debug)
+</I>&gt;<i>     log_dbg(&quot;Waiting for client request...&quot;);
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> ---------------------------------------------------------------------
+</I>&gt;<i> To unsubscribe, e-mail: <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli-unsubscribe at coova.org</A>
+</I>&gt;<i> For additional commands, e-mail: <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli-help at coova.org</A>
+</I>&gt;<i> Wiki: <A HREF="http://coova.org/wiki/index.php/CoovaChilli">http://coova.org/wiki/index.php/CoovaChilli</A>
+</I>&gt;<i> Forum: <A HREF="http://coova.org/phpBB3/viewforum.php?f=4">http://coova.org/phpBB3/viewforum.php?f=4</A>
+</I>&gt;<i>
+</I>
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000238.html">Addressing APIPA/IPv4LL issues with uamanyip
+</A></li>
+	<LI>Next message: <A HREF="000252.html">Addressing APIPA/IPv4LL issues with uamanyip
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#242">[ date ]</a>
+              <a href="thread.html#242">[ thread ]</a>
+              <a href="subject.html#242">[ subject ]</a>
+              <a href="author.html#242">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,171 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] chilli as proxy for 802.1X
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20chilli%20as%20proxy%20for%20802.1X&In-Reply-To=%3C1270543095.18129.79.camel%40david-laptop%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001235.html">
+   <LINK REL="Next"  HREF="001252.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] chilli as proxy for 802.1X</H1>
+    <B>David Bird</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20chilli%20as%20proxy%20for%20802.1X&In-Reply-To=%3C1270543095.18129.79.camel%40david-laptop%3E"
+       TITLE="[Chilli] chilli as proxy for 802.1X">david at coova.com
+       </A><BR>
+    <I>Tue Apr  6 08:38:15 UTC 2010</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001235.html">[Chilli] chilli as proxy for 802.1X
+</A></li>
+        <LI>Next message: <A HREF="001252.html">[Chilli] chilli as proxy for 802.1X
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1236">[ date ]</a>
+              <a href="thread.html#1236">[ thread ]</a>
+              <a href="subject.html#1236">[ subject ]</a>
+              <a href="author.html#1236">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>The chilli log suggests a bad shared secret. Of course, the auth success
+doesn't. Though, you would have seen more than just one packet to
+accomplish the EAP success, so the secret must be correct (and working).
+Run chilli and FreeRADIUS in debug mode for additional debugging. 
+
+
+On Mon, 2010-04-05 at 18:29 +0400, Anatoly Oreshkin wrote:
+&gt;<i> Hello,
+</I>&gt;<i> 
+</I>&gt;<i> I would like to use chilli as proxy between Access Point (AP) and
+</I>&gt;<i> Radius server.
+</I>&gt;<i> AP (not CoovaAP) is configured for WPA2/AES security with
+</I>&gt;<i> 802.1X/EAP/PEAP/MSCHAPv2
+</I>&gt;<i> authentication. Chilli address is specified as radius server in AP.
+</I>&gt;<i> 
+</I>&gt;<i> Coovachilli is configured as follows.
+</I>&gt;<i> 
+</I>&gt;<i> /usr/local/etc/chilli/config have the lines:
+</I>&gt;<i> 
+</I>&gt;<i> HS_WANIF=eth0     # has 195.19.214.216 address
+</I>&gt;<i> HS_LANIF=eth1
+</I>&gt;<i> HS_NETWORK=10.2.3.0
+</I>&gt;<i> HS_NETMASK=255.255.255.0
+</I>&gt;<i> HS_UAMLISTEN=10.2.3.1
+</I>&gt;<i> HS_UAMPORT=3990
+</I>&gt;<i> HS_UAMUIPORT=4990
+</I>&gt;<i> HS_DNS_DOMAIN=&lt;my domain&gt;
+</I>&gt;<i> HS_DNS1=ipaddress1
+</I>&gt;<i> HS_DNS2=ipaddress2
+</I>&gt;<i> HS_RADIUS=&lt;radius server address&gt;
+</I>&gt;<i> HS_RADIUS2=&lt;radius server address&gt;
+</I>&gt;<i> HS_UAMALLOW=&quot;10.2.3.1/24,195.19.214.216&quot;
+</I>&gt;<i> HS_RADSECRET=&lt;radius secret&gt;
+</I>&gt;<i> HS_UAMSECRET=&lt;uam secret&gt;
+</I>&gt;<i> HS_UAMALIASNAME=chilli
+</I>&gt;<i> HS_UAMSERVER=&lt;uam server&gt;
+</I>&gt;<i> HS_UAMFORMAT=<A HREF="https://\$HS_UAMSERVER/cgi-bin/hotspotlogin.cgi">https://\$HS_UAMSERVER/cgi-bin/hotspotlogin.cgi</A>
+</I>&gt;<i> HS_TCP_PORTS=&quot;80 443&quot;
+</I>&gt;<i> HS_MODE=hotspot
+</I>&gt;<i> HS_TYPE=chillispot
+</I>&gt;<i> HS_WWWDIR=/usr/local/etc/chilli/www
+</I>&gt;<i> HS_WWWBIN=/usr/local/etc/chilli/wwwsh
+</I>&gt;<i> HS_PROVIDER=Coova
+</I>&gt;<i> HS_PROVIDER_LINK=<A HREF="http://www.coova.org/">http://www.coova.org/</A>
+</I>&gt;<i> HS_LOC_NAME=&quot;My HotSpot&quot;
+</I>&gt;<i> 
+</I>&gt;<i> /usr/local/etc/chilli/local.conf:
+</I>&gt;<i> 
+</I>&gt;<i> proxylisten=195.19.214.216     # eth0 address
+</I>&gt;<i> proxyport=1812
+</I>&gt;<i> proxyclient=192.168.14.242    #  AP address
+</I>&gt;<i> proxysecret=&lt;proxy secret&gt;
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> Radius configuration.
+</I>&gt;<i> --------------------
+</I>&gt;<i> 
+</I>&gt;<i> /usr/local/etc/raddb/clients.conf:
+</I>&gt;<i> 
+</I>&gt;<i> # chilli hotspot
+</I>&gt;<i> client 195.19.214.216 {
+</I>&gt;<i>         secret      = &lt;chilli secret&gt;
+</I>&gt;<i>         shortname   = Chilli
+</I>&gt;<i>         nastype     = other
+</I>&gt;<i> }
+</I>&gt;<i> 
+</I>&gt;<i> /usr/local/etc/raddb/users:
+</I>&gt;<i> 
+</I>&gt;<i> oreshkin Cleartext-Password := &quot;client password&quot;, Calling-Station-Id ==
+</I>&gt;<i> &quot;00-16-EA-8A-DE-38&quot;
+</I>&gt;<i> 
+</I>&gt;<i> When a client is trying to authenticate through chilli I see on chilli
+</I>&gt;<i> server in /var/log/messages:
+</I>&gt;<i> 
+</I>&gt;<i> chilli.c: 3274: New DHCP request from MAC=00-16-EA-8A-DE-38
+</I>&gt;<i> radius.c: 1703: Authenticator does not match request!
+</I>&gt;<i> radius.c: 337: No such id in radius queue: id=12!
+</I>&gt;<i> radius.c: 1698: Matching request was not found in queue: 12!
+</I>&gt;<i> radius.c: 337: No such id in radius queue: id=12!
+</I>&gt;<i> ....
+</I>&gt;<i> 
+</I>&gt;<i> What do these messages mean ?
+</I>&gt;<i> 
+</I>&gt;<i> On radius server in /usr/local/var/log/radius/radius.log I see
+</I>&gt;<i> 
+</I>&gt;<i>  Auth: Login OK: [csd-notebook\\oreshkin] (from client Chilli port 15 cli
+</I>&gt;<i> 00-16-EA-8A-DE-38 via TLS tunnel)
+</I>&gt;<i> Auth: Login OK: [csd-notebook\\oreshkin] (from client Chilli port 15 cli
+</I>&gt;<i> 00-16-EA-8A-DE-38)
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> That is the radius server authenticates the client successfully however
+</I>&gt;<i> chilli does not.
+</I>&gt;<i> 
+</I>&gt;<i> Coovachilli is taken from SVN and installed with the options:
+</I>&gt;<i> 
+</I>&gt;<i> ./configure --enable-chilliproxy --with-curl
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> Also I've tried with additional parameter &quot;eapolenable&quot;  in local.conf but
+</I>&gt;<i> with no difference.
+</I>&gt;<i> 
+</I>&gt;<i> What might be wrong ? What more parameters should I specify ?
+</I>&gt;<i> 
+</I>&gt;<i> Thanks.
+</I>&gt;<i> 
+</I>&gt;<i> _______________________________________________
+</I>&gt;<i> Chilli mailing list
+</I>&gt;<i> <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">Chilli at coova.org</A>
+</I>&gt;<i> <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">http://lists.coova.org/cgi-bin/mailman/listinfo/chilli</A>
+</I>
+
+</PRE>
+
+
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001235.html">[Chilli] chilli as proxy for 802.1X
+</A></li>
+	<LI>Next message: <A HREF="001252.html">[Chilli] chilli as proxy for 802.1X
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1236">[ date ]</a>
+              <a href="thread.html#1236">[ thread ]</a>
+              <a href="subject.html#1236">[ subject ]</a>
+              <a href="author.html#1236">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

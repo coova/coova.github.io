@@ -1,0 +1,98 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] [PATCH] do not set bucket*size to BUCKET_SIZE_MIN if bandwithmax* is disabled
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20%5BPATCH%5D%20do%20not%20set%20bucket%2Asize%20to%20BUCKET_SIZE_MIN%20if%0A%20bandwithmax%2A%20is%20disabled&In-Reply-To=%3C4DE8B76C.7020105%40endian.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   
+   <LINK REL="Next"  HREF="001673.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] [PATCH] do not set bucket*size to BUCKET_SIZE_MIN if bandwithmax* is disabled</H1>
+    <B>Peter Warasin</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20%5BPATCH%5D%20do%20not%20set%20bucket%2Asize%20to%20BUCKET_SIZE_MIN%20if%0A%20bandwithmax%2A%20is%20disabled&In-Reply-To=%3C4DE8B76C.7020105%40endian.com%3E"
+       TITLE="[Chilli] [PATCH] do not set bucket*size to BUCKET_SIZE_MIN if bandwithmax* is disabled">peter at endian.com
+       </A><BR>
+    <I>Fri Jun  3 10:29:00 UTC 2011</I>
+    <P><UL>
+        
+        <LI>Next message: <A HREF="001673.html">[Chilli] stresstest coova chilli
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1672">[ date ]</a>
+              <a href="thread.html#1672">[ thread ]</a>
+              <a href="subject.html#1672">[ subject ]</a>
+              <a href="author.html#1672">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hi David
+
+Sorry for the delay.
+
+On 18/05/11 10:25, David Bird wrote:
+&gt;<i> But, there is:
+</I>&gt;<i>     if (!conn-&gt;s_state.bucketupsize) {
+</I>&gt;<i>       leaky_bucket_init(conn);
+</I>&gt;<i>     } 
+</I>&gt;<i> which if we allow bucketupsize to remain zero will keep being called. 
+</I>
+yeah.
+probably we should have some variable which stores if
+leaky_bucket_init() was already called, or set it to -1 instead of 0 if
+limitation should be disabled.
+
+right now leaky_bucket_init() will be called all the time when
+bucketupsize is 0 (if disabled), which is not efficient, but would be ok
+from view of functionality.
+
+Problem however is, that it will be set to BUCKET_SIZE_MIN when in fact
+you chose to have it disabled (0). That limits to a small bandwidth when
+you selected to have no limitation at all.
+
+What happened to me is setting a download bandwidth limit and no upload
+bandwidth limit, and in the end i had a correct download limitation but
+a wrong (instead of no) upload limitation of BUCKET_SIZE_MIN.
+
+
+peter
+
+
+
+-- 
+::<i> e n d i a n
+</I>::<i> open source - open minds
+</I>
+::<i> peter warasin
+</I>::<i> <A HREF="http://www.endian.com">http://www.endian.com</A>   :: <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">peter at endian.com</A>
+</I></PRE>
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	
+	<LI>Next message: <A HREF="001673.html">[Chilli] stresstest coova chilli
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1672">[ date ]</a>
+              <a href="thread.html#1672">[ thread ]</a>
+              <a href="subject.html#1672">[ subject ]</a>
+              <a href="author.html#1672">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

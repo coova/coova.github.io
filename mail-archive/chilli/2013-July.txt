@@ -1,0 +1,3023 @@
+From maxxer at ufficyo.com  Thu Jul  4 13:57:12 2013
+From: maxxer at ufficyo.com (Lorenzo Milesi)
+Date: Thu, 4 Jul 2013 15:57:12 +0200 (CEST)
+Subject: [Chilli] Radius stale sessions
+In-Reply-To: <1096542934.67580.1372946139495.JavaMail.zimbra@yetopen.it>
+Message-ID: <1759686516.67584.1372946232820.JavaMail.zimbra@yetopen.it>
+
+Hi.
+I'm using chilli talking to radius thru a vpn.
+I just noticed when the VPN is terminated, if some users are still connected their session will remain open on the freeradius server, remaining there forever.
+
+Is there any option to terminate those stale sessions?
+
+thanks
+-- 
+Lorenzo Milesi - lorenzo.milesi at yetopen.it
+
+YetOpen S.r.l. - http://www.yetopen.it/
+
+
+From david at coova.com  Fri Jul  5 16:09:45 2013
+From: david at coova.com (David Bird)
+Date: Fri, 05 Jul 2013 09:09:45 -0700
+Subject: [Chilli] Radius stale sessions
+In-Reply-To: <1759686516.67584.1372946232820.JavaMail.zimbra@yetopen.it>
+References: <1759686516.67584.1372946232820.JavaMail.zimbra@yetopen.it>
+Message-ID: <1373040585.2973.6.camel@david-XPS>
+
+You can add logic to your radius server that will close out sessions
+that haven't seen accounting in some time... 
+
+
+
+On Thu, 2013-07-04 at 15:57 +0200, Lorenzo Milesi wrote:
+> Hi.
+> I'm using chilli talking to radius thru a vpn.
+> I just noticed when the VPN is terminated, if some users are still connected their session will remain open on the freeradius server, remaining there forever.
+> 
+> Is there any option to terminate those stale sessions?
+> 
+> thanks
+
+
+
+From derek at hssl.ie  Sun Jul 14 14:48:21 2013
+From: derek at hssl.ie (Derek Conniffe)
+Date: Sun, 14 Jul 2013 15:48:21 +0100
+Subject: [Chilli] Content-injection
+Message-ID: <04D5D258-BEB3-4667-9178-F5E91C796DFB@hssl.ie>
+
+Hi Jed,
+
+Did you get Content-Injection working with Coova Chilli?
+
+A long time ago I tried this with various proxies (Tinyproxy, Privoxy, Squid with content adaption) but I do remember reading David Bird's blog post about content injection natively in Coova Chilli which sounds much neater if its now part of Coova Chilli (I didn't think it was yet?)
+
+thanks,
+
+Derek
+
+
+
+From derek at hssl.ie  Sun Jul 14 14:33:19 2013
+From: derek at hssl.ie (Derek Conniffe)
+Date: Sun, 14 Jul 2013 15:33:19 +0100
+Subject: [Chilli] Captive portal "looping" problem - maybe radius /
+	radius-proxy timeout problem ?
+Message-ID: <B85120C0-55ED-4E4F-824D-3CB07CE274DD@hssl.ie>
+
+Hi everyone,
+
+I've been playing with coova chilli for years and its feature set is great and I really love new features (especially chilli_proxy that appeared in 1.2.9)!.
+
+I'm having a problem and I think I've also seen this problem over the years too.
+
+I'm using coova chilli 1.2.9 and right now I'm using chilli-proxy with HTTP authentication (so no radius server at all) and I'm using mac authentication.
+
+The problem is that for some reason coova chilli thinks the user isn't authorised so it sends the user to the login page (uamhomepage) *but* I have checking in my home page to see if the user is actually authenticated (in the DB) or not and, if they are, I try to redirect them to www.google.com - I'd hope this situation wouldn't happen but it does regularly.  Its worse actually because I can sometimes see devices looping through my uamhomepage page over and over again and then, maybe, eventually getting Google.  (coova chilli keeps thinking the client isn't authenticated - when this happens I can see that my web server handling the chilli proxy requests as per the uamaaaurl directive is *NOT* getting the coova chilli request at all!).
+
+I see this problem more if the internet connection to the coova chilli enabled AP is slow.  This makes me think its some kind of radius timeout issue.  I did add the line "radiustimeout=90" to my chilli conf file (I think that sets the radius timeout to 90 seconds) but this didn't appear to have any effect.
+
+I haven't seen anything in the chilli log output yet but mostly this is because I haven't been getting detailed logs in my APs.  Now I'm trying to use remote syslog to a dedicated server so this might help.
+
+The issue could be in chilli_proxy.  If so I might have to go back to having a freeradius server but I'd hate to do that.
+
+Has anyone else seen this type of problem before?
+
+thanks for any info!
+
+Derek
+
+From derek at hssl.ie  Sun Jul 14 15:24:28 2013
+From: derek at hssl.ie (Derek Conniffe)
+Date: Sun, 14 Jul 2013 16:24:28 +0100
+Subject: [Chilli] Captive portal "looping" problem - maybe radius /
+	radius-proxy timeout problem ?
+In-Reply-To: <B85120C0-55ED-4E4F-824D-3CB07CE274DD@hssl.ie>
+References: <B85120C0-55ED-4E4F-824D-3CB07CE274DD@hssl.ie>
+Message-ID: <38272CD1-794D-495B-9E23-16B417AEE822@hssl.ie>
+
+Ok - an update.
+
+Adding in syslog-ng and remote logging *was* a good idea for sure!
+
+This is the error that seems to be related to my problem: -
+
+Jul 14 15:16:17 5.54.29.155 syslog: main-proxy.c: 142: out of connections
+
+I wonder is there somehow a connect leak?
+
+This AP would not be that busy.  I see that in the source code there is a max number of requests set to 16 and I would think that this should be perfectly good so I wonder is there some kind of connection leak?
+
+Derek
+
+Log file output: -
+
+Jul 14 15:20:46 5.54.29.155 syslog: main-proxy.c: 142: out of connections
+Jul 14 15:20:46 5.54.29.155 syslog: main-proxy.c: 102: 000. inuse=1 prev=-001 next=-001 url=http://MY-UAM-AAA-URL?stage=counters&status=update&user=AC-3C-0B-30-XX-XX&ap=02-DB-36-1D-XX-XX&mac=AC-3C-0B-30-XX-XX&ip=10.0.0.54&sessionid=51e075db00000009&nasid=dc9fdb3xxxx&duration=241&bytes_down=0&pkts_down=0&bytes_up=0&pkts_up=0 fd=29
+
+
+
+
+
+On 14 Jul 2013, at 15:33, Derek Conniffe <derek at hssl.ie> wrote:
+
+> Hi everyone,
+> 
+> I've been playing with coova chilli for years and its feature set is great and I really love new features (especially chilli_proxy that appeared in 1.2.9)!.
+> 
+> I'm having a problem and I think I've also seen this problem over the years too.
+> 
+> I'm using coova chilli 1.2.9 and right now I'm using chilli-proxy with HTTP authentication (so no radius server at all) and I'm using mac authentication.
+> 
+> The problem is that for some reason coova chilli thinks the user isn't authorised so it sends the user to the login page (uamhomepage) *but* I have checking in my home page to see if the user is actually authenticated (in the DB) or not and, if they are, I try to redirect them to www.google.com - I'd hope this situation wouldn't happen but it does regularly.  Its worse actually because I can sometimes see devices looping through my uamhomepage page over and over again and then, maybe, eventually getting Google.  (coova chilli keeps thinking the client isn't authenticated - when this happens I can see that my web server handling the chilli proxy requests as per the uamaaaurl directive is *NOT* getting the coova chilli request at all!).
+> 
+> I see this problem more if the internet connection to the coova chilli enabled AP is slow.  This makes me think its some kind of radius timeout issue.  I did add the line "radiustimeout=90" to my chilli conf file (I think that sets the radius timeout to 90 seconds) but this didn't appear to have any effect.
+> 
+> I haven't seen anything in the chilli log output yet but mostly this is because I haven't been getting detailed logs in my APs.  Now I'm trying to use remote syslog to a dedicated server so this might help.
+> 
+> The issue could be in chilli_proxy.  If so I might have to go back to having a freeradius server but I'd hate to do that.
+> 
+> Has anyone else seen this type of problem before?
+> 
+> thanks for any info!
+> 
+> Derek
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+
+From derek at hssl.ie  Thu Jul 18 14:44:41 2013
+From: derek at hssl.ie (Derek Conniffe)
+Date: Thu, 18 Jul 2013 15:44:41 +0100
+Subject: [Chilli] Suspected chilli_query (main-proxy.c) "requests" leak
+In-Reply-To: <E42B80C0-E225-4B3B-B5FB-E99B2DC7EEA1@hssl.ie>
+References: <B85120C0-55ED-4E4F-824D-3CB07CE274DD@hssl.ie>
+ <38272CD1-794D-495B-9E23-16B417AEE822@hssl.ie>
+ <E42B80C0-E225-4B3B-B5FB-E99B2DC7EEA1@hssl.ie>
+Message-ID: <607B714C-55CD-4D7F-82C7-609B7906B82A@hssl.ie>
+
+Hi,
+
+I think that there is a requests leak in main-proxy.c.  I increased the max_requests from 16 to 256 and then left a bunch of APs running for a good few days.  Looking today and I can see that some APs have under 200 requests free and another AP has no requests free and its spitting out the "out of connections" debug message.  I added in some more debug messages to constantly print how many requests are available.
+
+It means that the  num_requests_free is sometimes not getting incremented so sometimes close_request() mustn't be getting called for some reason?
+
+Sample output with my extra debugging below (outputting when num_requests_free-- and num_requests_free++) .  You'll see that the free requests is hanging around 214.  When chilli_proxy is started the free requests are 256 but here they've leaked down to 214.
+
+Derek
+
+Jul 18 07:23:11 5.92.132.69 syslog: main-proxy.c: 226: *** Note: HTTP Request closed.  Number of free requests is now 214
+Jul 18 07:23:13 5.92.132.69 syslog: main-proxy.c: 137: *** Allocated a new HTTP request - now 213 free request slots
+Jul 18 07:23:15 5.92.132.69 syslog: main-proxy.c: 226: *** Note: HTTP Request closed.  Number of free requests is now 214
+Jul 18 07:23:28 5.92.132.69 syslog: main-proxy.c: 137: *** Allocated a new HTTP request - now 213 free request slots
+Jul 18 07:23:30 5.92.132.69 syslog: main-proxy.c: 226: *** Note: HTTP Request closed.  Number of free requests is now 214
+Jul 18 07:23:33 5.92.132.69 syslog: main-proxy.c: 137: *** Allocated a new HTTP request - now 213 free request slots
+Jul 18 07:23:34 5.92.132.69 syslog: main-proxy.c: 137: *** Allocated a new HTTP request - now 212 free request slots
+Jul 18 07:23:36 5.92.132.69 syslog: main-proxy.c: 226: *** Note: HTTP Request closed.  Number of free requests is now 213
+Jul 18 07:23:42 5.92.132.69 syslog: main-proxy.c: 226: *** Note: HTTP Request closed.  Number of free requests is now 214
+
+On 14 Jul 2013, at 22:03, Derek Conniffe <derek at hssl.ie> wrote:
+
+> Look at the logs more: 
+> 
+> Right now I have an AP on a pretty poor ADSL connection.  pings between the AP and the [AWS] cloud controller are up to 1,000ms.  
+> 
+> I killed the chilli_proxy daemon and then, shortly afterwards, I see this in the log file: -
+> 
+> Jul 14 20:59:27 5.2.151.100 coova-chilli[951]: chilli.c: 319: Having to re-launch chilli_proxy... PID 952 exited
+> Jul 14 20:59:29 5.2.151.100 coova-chilli[951]: chilli.c: 4370: RADIUS request id=105 timed out for session 51e30e3000000001
+> Jul 14 20:59:36 5.2.151.100 coova-chilli[951]: chilli.c: 4370: RADIUS request id=106 timed out for session 51e2e35d00000004
+> Jul 14 20:59:41 5.2.151.100 coova-chilli[951]: chilli.c: 4370: RADIUS request id=107 timed out for session 51e307160000000c
+> Jul 14 20:59:43 5.2.151.100 coova-chilli[951]: chilli.c: 5101: New DHCP request from MAC=28-6A-BA-18-D8-1B
+> Jul 14 20:59:43 5.2.151.100 coova-chilli[951]: chilli.c: 4989: Client MAC=28-6A-BA-18-D8-1B assigned IP 10.0.0.68
+> Jul 14 20:59:59 5.2.151.100 syslog: main-proxy.c: 142: out of connections
+> 
+> I wo
+> 
+> On 14 Jul 2013, at 16:24, Derek Conniffe <derek at hssl.ie> wrote:
+> 
+>> Ok - an update.
+>> 
+>> Adding in syslog-ng and remote logging *was* a good idea for sure!
+>> 
+>> This is the error that seems to be related to my problem: -
+>> 
+>> Jul 14 15:16:17 5.54.29.155 syslog: main-proxy.c: 142: out of connections
+>> 
+>> I wonder is there somehow a connect leak?
+>> 
+>> This AP would not be that busy.  I see that in the source code there is a max number of requests set to 16 and I would think that this should be perfectly good so I wonder is there some kind of connection leak?
+>> 
+>> Derek
+>> 
+>> Log file output: -
+>> 
+>> Jul 14 15:20:46 5.54.29.155 syslog: main-proxy.c: 142: out of connections
+>> Jul 14 15:20:46 5.54.29.155 syslog: main-proxy.c: 102: 000. inuse=1 prev=-001 next=-001 url=http://MY-UAM-AAA-URL?stage=counters&status=update&user=AC-3C-0B-30-XX-XX&ap=02-DB-36-1D-XX-XX&mac=AC-3C-0B-30-XX-XX&ip=10.0.0.54&sessionid=51e075db00000009&nasid=dc9fdb3xxxx&duration=241&bytes_down=0&pkts_down=0&bytes_up=0&pkts_up=0 fd=29
+>> 
+>> 
+>> 
+>> 
+>> 
+>> On 14 Jul 2013, at 15:33, Derek Conniffe <derek at hssl.ie> wrote:
+>> 
+>>> Hi everyone,
+>>> 
+>>> I've been playing with coova chilli for years and its feature set is great and I really love new features (especially chilli_proxy that appeared in 1.2.9)!.
+>>> 
+>>> I'm having a problem and I think I've also seen this problem over the years too.
+>>> 
+>>> I'm using coova chilli 1.2.9 and right now I'm using chilli-proxy with HTTP authentication (so no radius server at all) and I'm using mac authentication.
+>>> 
+>>> The problem is that for some reason coova chilli thinks the user isn't authorised so it sends the user to the login page (uamhomepage) *but* I have checking in my home page to see if the user is actually authenticated (in the DB) or not and, if they are, I try to redirect them to www.google.com - I'd hope this situation wouldn't happen but it does regularly.  Its worse actually because I can sometimes see devices looping through my uamhomepage page over and over again and then, maybe, eventually getting Google.  (coova chilli keeps thinking the client isn't authenticated - when this happens I can see that my web server handling the chilli proxy requests as per the uamaaaurl directive is *NOT* getting the coova chilli request at all!).
+>>> 
+>>> I see this problem more if the internet connection to the coova chilli enabled AP is slow.  This makes me think its some kind of radius timeout issue.  I did add the line "radiustimeout=90" to my chilli conf file (I think that sets the radius timeout to 90 seconds) but this didn't appear to have any effect.
+>>> 
+>>> I haven't seen anything in the chilli log output yet but mostly this is because I haven't been getting detailed logs in my APs.  Now I'm trying to use remote syslog to a dedicated server so this might help.
+>>> 
+>>> The issue could be in chilli_proxy.  If so I might have to go back to having a freeradius server but I'd hate to do that.
+>>> 
+>>> Has anyone else seen this type of problem before?
+>>> 
+>>> thanks for any info!
+>>> 
+>>> Derek
+>>> _______________________________________________
+>>> Chilli mailing list
+>>> Chilli at coova.org
+>>> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>> 
+>> _______________________________________________
+>> Chilli mailing list
+>> Chilli at coova.org
+>> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+> 
+
+
+From radius.sir at gmail.com  Thu Jul 18 15:30:53 2013
+From: radius.sir at gmail.com (Russell Mike)
+Date: Thu, 18 Jul 2013 15:30:53 +0000
+Subject: [Chilli] Disable CoovaChilli DHCP Server
+Message-ID: <CADao4CqpxVvuGCoRwRVx=0prKEUSEYwJfxNSp2pvdn+S5wOoRw@mail.gmail.com>
+
+Hi List,
+
+What does this directive means when using with layer 2 setup? Disable
+builtin CoovaChilli DHCP?
+
+HS_NODYNIP=on
+
+i need to disabling internal DHCP server and use "isc-dhcp-server"
+
+Thanks/ --RM
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130718/80eda95f/attachment.html>
+
+From derek at hssl.ie  Fri Jul 19 08:00:09 2013
+From: derek at hssl.ie (Derek Conniffe)
+Date: Fri, 19 Jul 2013 09:00:09 +0100
+Subject: [Chilli] Macreauth question
+In-Reply-To: <607B714C-55CD-4D7F-82C7-609B7906B82A@hssl.ie>
+References: <B85120C0-55ED-4E4F-824D-3CB07CE274DD@hssl.ie>
+ <38272CD1-794D-495B-9E23-16B417AEE822@hssl.ie>
+ <E42B80C0-E225-4B3B-B5FB-E99B2DC7EEA1@hssl.ie>
+ <607B714C-55CD-4D7F-82C7-609B7906B82A@hssl.ie>
+Message-ID: <E1E8E36F-D036-45CF-9589-511FED73E41B@hssl.ie>
+
+Hi everyone,
+
+I want to double-check something:
+
+With macauth set & macreauth set does this mean that its fine to re-direct a user to a non-UAMALLOWED server/URL *after* their MAC has been added to the radius server?  I.E. Will Coova Chilli *always* do a new radius check if 1) CoovaChilli thinks (via last radius check) that the user is not authed and the user is directed to a non-UAMALLOWED URL ?
+
+Is it important, or even necessary, to redirect the user to a Coova Chilli internal web server URL to force a radius re-check ?   (and if this *is* actually necessary what is the exact URL when using macauth anyway?)
+
+thanks for any info!
+
+Derek
+
+From derek at hssl.ie  Fri Jul 19 08:29:35 2013
+From: derek at hssl.ie (Derek Conniffe)
+Date: Fri, 19 Jul 2013 09:29:35 +0100
+Subject: [Chilli] macauth / macreauth question
+Message-ID: <A61A7D47-8331-4967-886A-CE33779E2755@hssl.ie>
+
+Hi everyone,
+
+I want to double-check something:
+
+With macauth set & macreauth set does this mean that its fine to re-direct a user to a non-UAMALLOWED server/URL *after* their MAC has been added to the radius server?  I.E. Will Coova Chilli *always* do a new radius check if 1) CoovaChilli thinks (via last radius check) that the user is not authed and the user is directed to a non-UAMALLOWED URL ?
+
+Is it important, or even necessary, to redirect the user to a Coova Chilli internal web server URL to force a radius re-check ?   (and if this *is* actually necessary what is the exact URL when using macauth anyway?)
+
+thanks for any info!
+
+Derek
+
+From lnx.consultant at gmail.com  Fri Jul 19 08:26:01 2013
+From: lnx.consultant at gmail.com (lnx consultant)
+Date: Fri, 19 Jul 2013 16:26:01 +0800
+Subject: [Chilli] redir.c: 1990: Too much data in http request! -47
+Message-ID: <CAELbO68XxW9XUPOy14GxKp6Sjq9SGQeKzw-=awrtnwD2sif89w@mail.gmail.com>
+
+Hi,
+
+How can i fix the error redir.c: 1990: Too much data in http request! -47.
+i already search the internet but i could not find a concrete answer as to
+why it is giving that error or how to fix it.
+
+Thank you
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130719/15577dac/attachment.html>
+
+From radius.sir at gmail.com  Fri Jul 19 15:51:46 2013
+From: radius.sir at gmail.com (Russell Mike)
+Date: Fri, 19 Jul 2013 15:51:46 +0000
+Subject: [Chilli] Disable CoovaChilli DHCP Server
+In-Reply-To: <CADao4CqpxVvuGCoRwRVx=0prKEUSEYwJfxNSp2pvdn+S5wOoRw@mail.gmail.com>
+References: <CADao4CqpxVvuGCoRwRVx=0prKEUSEYwJfxNSp2pvdn+S5wOoRw@mail.gmail.com>
+Message-ID: <CADao4CpVAq5iwcJDEEEMLqgLSMwybMcU2GbejSOsW5i9+z-HGA@mail.gmail.com>
+
+Anyone ??
+
+
+On Thu, Jul 18, 2013 at 3:30 PM, Russell Mike <radius.sir at gmail.com> wrote:
+
+> Hi List,
+>
+> What does this directive means when using with layer 2 setup? Disable
+> builtin CoovaChilli DHCP?
+>
+> HS_NODYNIP=on
+>
+> i need to disable coovachilli internal DHCP server and use
+> "isc-dhcp-server"
+>
+> Thanks/ --RM
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130719/8b9dbd51/attachment.html>
+
+From david at coova.com  Fri Jul 19 19:06:51 2013
+From: david at coova.com (David Bird)
+Date: Fri, 19 Jul 2013 12:06:51 -0700
+Subject: [Chilli] Macreauth question
+In-Reply-To: <E1E8E36F-D036-45CF-9589-511FED73E41B@hssl.ie>
+References: <B85120C0-55ED-4E4F-824D-3CB07CE274DD@hssl.ie>
+ <38272CD1-794D-495B-9E23-16B417AEE822@hssl.ie>
+ <E42B80C0-E225-4B3B-B5FB-E99B2DC7EEA1@hssl.ie>
+ <607B714C-55CD-4D7F-82C7-609B7906B82A@hssl.ie>
+ <E1E8E36F-D036-45CF-9589-511FED73E41B@hssl.ie>
+Message-ID: <1374260811.2945.17.camel@david-XPS>
+
+Macreauth can be used that way, but will also generate a huge number of
+RADIUS requests, which can quickly become a problem. You can instead
+redirect to chilli url uamlisten:uamport/macreauth do specifically have
+it re-do macauth.
+
+Cheers,
+David
+
+
+On Fri, 2013-07-19 at 09:00 +0100, Derek Conniffe wrote:
+> Hi everyone,
+> 
+> I want to double-check something:
+> 
+> With macauth set & macreauth set does this mean that its fine to re-direct a user to a non-UAMALLOWED server/URL *after* their MAC has been added to the radius server?  I.E. Will Coova Chilli *always* do a new radius check if 1) CoovaChilli thinks (via last radius check) that the user is not authed and the user is directed to a non-UAMALLOWED URL ?
+> 
+> Is it important, or even necessary, to redirect the user to a Coova Chilli internal web server URL to force a radius re-check ?   (and if this *is* actually necessary what is the exact URL when using macauth anyway?)
+> 
+> thanks for any info!
+> 
+> Derek
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+
+
+From david at coova.com  Fri Jul 19 21:46:23 2013
+From: david at coova.com (David Bird)
+Date: Fri, 19 Jul 2013 14:46:23 -0700
+Subject: [Chilli] Disable CoovaChilli DHCP Server
+In-Reply-To: <CADao4CqpxVvuGCoRwRVx=0prKEUSEYwJfxNSp2pvdn+S5wOoRw@mail.gmail.com>
+References: <CADao4CqpxVvuGCoRwRVx=0prKEUSEYwJfxNSp2pvdn+S5wOoRw@mail.gmail.com>
+Message-ID: <1374270383.2945.18.camel@david-XPS>
+
+Better would be to use DHCP relay options, 
+
+      --dhcpgateway=STRING      DHCP gateway addresss for relay
+      --dhcpgatewayport=INT     DHCP gateway port for relay
+(default=`67')
+      --dhcprelayagent=STRING   DHCP relay agent IP addresss (default 
+
+So that chilli can learn the IPs as they are assigned...
+
+
+
+On Thu, 2013-07-18 at 15:30 +0000, Russell Mike wrote:
+> Hi List,
+> 
+> 
+> What does this directive means when using with layer 2 setup? Disable
+> builtin CoovaChilli DHCP? 
+> 
+> 
+> HS_NODYNIP=on
+> 
+> 
+> 
+> i need to disabling internal DHCP server and use "isc-dhcp-server"
+> 
+> 
+> Thanks/ --RM
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+
+
+From adamanov at gmail.com  Sat Jul 20 06:18:57 2013
+From: adamanov at gmail.com (=?UTF-8?B?0JLRj9GH0LXRgdC70LDQsiDQkNC00LDQvNCw0L3QvtCy?=)
+Date: Sat, 20 Jul 2013 09:18:57 +0300
+Subject: [Chilli] Disable CoovaChilli DHCP Server
+In-Reply-To: <1374270383.2945.18.camel@david-XPS>
+References: <CADao4CqpxVvuGCoRwRVx=0prKEUSEYwJfxNSp2pvdn+S5wOoRw@mail.gmail.com>
+ <1374270383.2945.18.camel@david-XPS>
+Message-ID: <CAGyKKC+yO5iCdoL6VgYK6vwt1Hw4JVf_OuTYdrzFms-=riRyRQ@mail.gmail.com>
+
+Hi, at one time tried dhtsprelay, if you specify dhcppgatewayport, chilli
+uses that port for communicate with dhcp server and same port for
+subscribers and they don't receive configuration.
+
+
+2013/7/20 David Bird <david at coova.com>
+
+> Better would be to use DHCP relay options,
+>
+>       --dhcpgateway=STRING      DHCP gateway addresss for relay
+>       --dhcpgatewayport=INT     DHCP gateway port for relay
+> (default=`67')
+>       --dhcprelayagent=STRING   DHCP relay agent IP addresss (default
+>
+> So that chilli can learn the IPs as they are assigned...
+>
+>
+>
+> On Thu, 2013-07-18 at 15:30 +0000, Russell Mike wrote:
+> > Hi List,
+> >
+> >
+> > What does this directive means when using with layer 2 setup? Disable
+> > builtin CoovaChilli DHCP?
+> >
+> >
+> > HS_NODYNIP=on
+> >
+> >
+> >
+> > i need to disabling internal DHCP server and use "isc-dhcp-server"
+> >
+> >
+> > Thanks/ --RM
+> > _______________________________________________
+> > Chilli mailing list
+> > Chilli at coova.org
+> > http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+>
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+
+
+
+-- 
+__________________________
+Vyacheslav Adamanov
+87500, Ukraine, Mariupol,
+mob: +38 (067) 621 32 61
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130720/d51a2722/attachment.html>
+
+From radius.sir at gmail.com  Sat Jul 20 13:35:08 2013
+From: radius.sir at gmail.com (Russell Mike)
+Date: Sat, 20 Jul 2013 13:35:08 +0000
+Subject: [Chilli] Disable CoovaChilli DHCP Server
+In-Reply-To: <CAGyKKC+yO5iCdoL6VgYK6vwt1Hw4JVf_OuTYdrzFms-=riRyRQ@mail.gmail.com>
+References: <CADao4CqpxVvuGCoRwRVx=0prKEUSEYwJfxNSp2pvdn+S5wOoRw@mail.gmail.com>
+ <1374270383.2945.18.camel@david-XPS>
+ <CAGyKKC+yO5iCdoL6VgYK6vwt1Hw4JVf_OuTYdrzFms-=riRyRQ@mail.gmail.com>
+Message-ID: <CADao4CoH-oXJKb7LWMAHEMBmcSvW0p53ENnjnJQgP8ODm1cZNQ@mail.gmail.com>
+
+Hi thanks for sharing experience. Appreciated. Thanks
+
+On Saturday, July 20, 2013, ???????? ???????? <adamanov at gmail.com> wrote:
+> Hi, at one time tried dhtsprelay, if you specify dhcppgatewayport, chilli
+uses that port for communicate with dhcp server and same port for
+subscribers and they don't receive configuration.
+>
+>
+> 2013/7/20 David Bird <david at coova.com>
+>>
+>> Better would be to use DHCP relay options,
+>>
+>>       --dhcpgateway=STRING      DHCP gateway addresss for relay
+>>       --dhcpgatewayport=INT     DHCP gateway port for relay
+>> (default=`67')
+>>       --dhcprelayagent=STRING   DHCP relay agent IP addresss (default
+>>
+>> So that chilli can learn the IPs as they are assigned...
+>>
+>>
+>>
+>> On Thu, 2013-07-18 at 15:30 +0000, Russell Mike wrote:
+>> > Hi List,
+>> >
+>> >
+>> > What does this directive means when using with layer 2 setup? Disable
+>> > builtin CoovaChilli DHCP?
+>> >
+>> >
+>> > HS_NODYNIP=on
+>> >
+>> >
+>> >
+>> > i need to disabling internal DHCP server and use "isc-dhcp-server"
+>> >
+>> >
+>> > Thanks/ --RM
+>> > _______________________________________________
+>> > Chilli mailing list
+>> > Chilli at coova.org
+>> > http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>>
+>>
+>> _______________________________________________
+>> Chilli mailing list
+>> Chilli at coova.org
+>> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+>
+>
+> --
+> __________________________
+> Vyacheslav Adamanov
+> 87500, Ukraine, Mariupol,
+> mob: +38 (067) 621 32 61
+>
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130720/d594a8fe/attachment.html>
+
+From radius.sir at gmail.com  Sat Jul 20 13:32:56 2013
+From: radius.sir at gmail.com (Russell Mike)
+Date: Sat, 20 Jul 2013 13:32:56 +0000
+Subject: [Chilli] Disable CoovaChilli DHCP Server
+In-Reply-To: <1374270383.2945.18.camel@david-XPS>
+References: <CADao4CqpxVvuGCoRwRVx=0prKEUSEYwJfxNSp2pvdn+S5wOoRw@mail.gmail.com>
+ <1374270383.2945.18.camel@david-XPS>
+Message-ID: <CADao4CpO9+4aqwuEu=Bz6FzhGTCqVhkpBptdJz4Lec8MOuDHig@mail.gmail.com>
+
+Thank you David, understood! will do. This is how it should be to maintain
+client relationships. Thanks once again.
+RM --
+
+On Friday, July 19, 2013, David Bird <david at coova.com> wrote:
+> Better would be to use DHCP relay options,
+>
+>       --dhcpgateway=STRING      DHCP gateway addresss for relay
+>       --dhcpgatewayport=INT     DHCP gateway port for relay
+> (default=`67')
+>       --dhcprelayagent=STRING   DHCP relay agent IP addresss (default
+>
+> So that chilli can learn the IPs as they are assigned...
+>
+>
+>
+> On Thu, 2013-07-18 at 15:30 +0000, Russell Mike wrote:
+>> Hi List,
+>>
+>>
+>> What does this directive means when using with layer 2 setup? Disable
+>> builtin CoovaChilli DHCP?
+>>
+>>
+>> HS_NODYNIP=on
+>>
+>>
+>>
+>> i need to disabling internal DHCP server and use "isc-dhcp-server"
+>>
+>>
+>> Thanks/ --RM
+>> _______________________________________________
+>> Chilli mailing list
+>> Chilli at coova.org
+>> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+>
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130720/0a82cc1f/attachment.html>
+
+From lnx.consultant at gmail.com  Mon Jul 22 00:57:49 2013
+From: lnx.consultant at gmail.com (Lnx)
+Date: Mon, 22 Jul 2013 08:57:49 +0800
+Subject: [Chilli] Coovachilli + squid
+Message-ID: <9B8A77D6-95EF-4744-95D7-F923655AA06B@gmail.com>
+
+Hi list,
+
+Has anyone successfully configured coovachilli with squid? 
+I'm trying to run coovachilli to run transparent proxy but internet isn't working whenever i run squid. 
+
+Can someone please share their success. 
+
+
+Thank you
+
+From crox53 at gmail.com  Mon Jul 22 06:17:05 2013
+From: crox53 at gmail.com (crox53)
+Date: Mon, 22 Jul 2013 08:17:05 +0200
+Subject: [Chilli] Coovachilli + squid
+In-Reply-To: <9B8A77D6-95EF-4744-95D7-F923655AA06B@gmail.com>
+References: <9B8A77D6-95EF-4744-95D7-F923655AA06B@gmail.com>
+Message-ID: <CAHs_NPHUKQuoCs9=UekJAtBdkczVHeam-GMVGQOWAKDcYME_NQ@mail.gmail.com>
+
+Hi,
+
+I done this on my captive portal project, and it works perfectly. Currently
+I m in professionnal travel until next saturday. So I contact you next
+week...
+
+Cheers.
+
+Crox
+Le 22 juil. 2013 02:58, "Lnx" <lnx.consultant at gmail.com> a ?crit :
+
+> Hi list,
+>
+> Has anyone successfully configured coovachilli with squid?
+> I'm trying to run coovachilli to run transparent proxy but internet isn't
+> working whenever i run squid.
+>
+> Can someone please share their success.
+>
+>
+> Thank you
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130722/7c149852/attachment.html>
+
+From sijisunny at gmail.com  Mon Jul 22 08:26:54 2013
+From: sijisunny at gmail.com (Siji Sunny)
+Date: Mon, 22 Jul 2013 13:56:54 +0530
+Subject: [Chilli] Coovachilli + squid
+In-Reply-To: <CAHs_NPHUKQuoCs9=UekJAtBdkczVHeam-GMVGQOWAKDcYME_NQ@mail.gmail.com>
+References: <9B8A77D6-95EF-4744-95D7-F923655AA06B@gmail.com>
+ <CAHs_NPHUKQuoCs9=UekJAtBdkczVHeam-GMVGQOWAKDcYME_NQ@mail.gmail.com>
+Message-ID: <CADtvZWDp9hnB6zkRE3eeo7vbkTPZZN6upFrE2hJjn_gOuv9c7A@mail.gmail.com>
+
+Hi,
+>
+> I done this on my captive portal project, and it works perfectly.
+> Currently I m in professionnal travel until next saturday. So I contact you
+> next week...
+>
+> Cheers.
+>
+> Crox
+> Le 22 juil. 2013 02:58, "Lnx" <lnx.consultant at gmail.com> a ?crit :
+>
+> Hi list,
+>>
+>> Has anyone successfully configured coovachilli with squid?
+>> I'm trying to run coovachilli to run transparent proxy but internet isn't
+>> working whenever i run squid.
+>>
+>> Can someone please share their success.
+>>
+>
+It may vary with your set-up.Below the steps which we enabled CoovaChilli
+with Squid.
+
+Add Post-auth proxy settings in chilli config file
+
+#   Post-Auth proxy settings
+HS_POSTAUTH_PROXY=192.168.1.150
+HS_POSTAUTH_PROXYPORT=3128
+
+Add the below parameter in squid.conf file -
+
+# Squid normally listens to port 3128
+#http_port 3128
+
+http_port 192.168.1.150:3128 transparent
+
+And define the proper IP table entry.Below my IP table entry for chilli and
+squid
+
+#basic
+iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
+iptables -A FORWARD -i eth0 -j ACCEPT
+echo 1 > /proc/sys/net/ipv4/ip_forward
+sysctl -p
+#Squid
+iptables -t nat -A PREROUTING -i eth1 -p tcp --dport 80 -j DNAT --to
+192.168.1.150:3128
+iptables -t nat -A PREROUTING -i eth0 -p tcp --dport 80 -j REDIRECT
+--to-port 3128
+
+
+
+
+
+>>
+>> Thank you
+>> _______________________________________________
+>> Chilli mailing list
+>> Chilli at coova.org
+>> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>>
+>
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+>
+
+
+-- 
+Siji Sunny
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130722/563cc097/attachment.html>
+
+From tbsprasad9 at gmail.com  Tue Jul 23 06:07:07 2013
+From: tbsprasad9 at gmail.com (prasad tbs)
+Date: Tue, 23 Jul 2013 11:37:07 +0530
+Subject: [Chilli] New Post: Need help on Coova-chilli compilation with uclibc
+Message-ID: <CAJ-C0qcEXK1ADHNoSGe+QUXyaOgGxPS_Bekh0GPMea1_jKFDDw@mail.gmail.com>
+
+Hi,
+
+I am new user working on coova-chilli.
+I would like to compile the Coova-chilli source code with uclibc toolchain.
+But, i am facing errors while doing "make".
+
+See error logs below:
+
+prasad at Desktop:~/Desktop/capitol_dvlp/coova_chilli$ make
+-------------------------------------------------------------------
+-------------------------------------------------------------------
+mv -f .deps/chksum.Tpo .deps/chksum.Plo
+/bin/sh ../libtool --tag=CC --mode=compile
+/opt/toolchains/uclibc-crosstools-gcc-4.4.2-1/usr/bin/mips-linux-gcc
+-DHAVE_CONFIG_H -I. -I.. -D_GNU_SOURCE -Wall -Werror -fno-builtin
+-fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe
+-I../bstring -DDEFCHILLICONF='"/usr/local/etc/chilli.conf"'
+-DDEFPIDFILE='"/usr/local/var/run/chilli.pid"'
+-DDEFSTATEDIR='"/usr/local/var/run"' -DSBINDIR='"/usr/local/sbin"' -g -O2
+-MT net.lo -MD -MP -MF .deps/net.Tpo -c -o net.lo net.c
+libtool: compile:
+/opt/toolchains/uclibc-crosstools-gcc-4.4.2-1/usr/bin/mips-linux-gcc
+-DHAVE_CONFIG_H -I. -I.. -D_GNU_SOURCE -Wall -Werror -fno-builtin
+-fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe
+-I../bstring -DDEFCHILLICONF=\"/usr/local/etc/chilli.conf\"
+-DDEFPIDFILE=\"/usr/local/var/run/chilli.pid\"
+-DDEFSTATEDIR=\"/usr/local/var/run\" -DSBINDIR=\"/usr/local/sbin\" -g -O2
+-MT net.lo -MD -MP -MF .deps/net.Tpo -c net.c -fPIC -DPIC -o .libs/net.o
+cc1: warnings being treated as errors
+net.c: In function 'net_getip6':
+net.c:1104: error: implicit declaration of function 'getifaddrs'
+net.c:1105: error: dereferencing pointer to incomplete type
+net.c:1106: error: dereferencing pointer to incomplete type
+net.c:1107: error: dereferencing pointer to incomplete type
+net.c:1108: error: dereferencing pointer to incomplete type
+net.c:1109: error: dereferencing pointer to incomplete type
+net.c:1116: error: implicit declaration of function 'freeifaddrs'
+net.c: In function 'net_open_eth':
+net.c:1303: error: dereferencing pointer to incomplete type
+net.c:1304: error: dereferencing pointer to incomplete type
+net.c:1305: error: dereferencing pointer to incomplete type
+net.c:1307: error: dereferencing pointer to incomplete type
+net.c:1314: error: dereferencing pointer to incomplete type
+net.c:1315: error: dereferencing pointer to incomplete type
+net.c:1318: error: dereferencing pointer to incomplete type
+make[3]: *** [net.lo] Error 1
+make[3]: Leaving directory `/home/sai/Desktop/capitol_dvlp/coova_chilli/src'
+make[2]: *** [all-recursive] Error 1
+make[2]: Leaving directory `/home/sai/Desktop/capitol_dvlp/coova_chilli/src'
+make[1]: *** [all-recursive] Error 1
+make[1]: Leaving directory `/home/sai/Desktop/capitol_dvlp/coova_chilli'
+make: *** [all] Error 2
+prasad at Desktop:~/Desktop/capitol_dvlp/coova_chilli$
+
+
+So, anyone can help me to sort out the issue at earliest possible.
+
+Thanks,
+Prasad
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130723/94bbc002/attachment.html>
+
+From tek.david at gmail.com  Wed Jul 24 17:41:31 2013
+From: tek.david at gmail.com (=?UTF-8?B?VGVrw6FuIETDoXZpZA==?=)
+Date: Wed, 24 Jul 2013 19:41:31 +0200
+Subject: [Chilli] using coovachilli with wpa
+Message-ID: <CAGdcU6oF0_-fOjvqGr0Ev_AVU+N705bHHvVeWYqfp6=H_NzOew@mail.gmail.com>
+
+Hi all!
+
+I set up a coovachilli + freeradius + mysql combo at my dorm. It's
+working great with the wired network. Now we want to extend it to the
+wireless as well. Installed an access point configured to wpa2
+enterprise (with the same radius server) and connected to the
+coovachillis's lan side. It can authenticate users and do the process
+fine, but when i want to connect to the internet, i get redirected to
+the coovachilli's captive portal.
+I've read about the wpa guest config parameter, but i don't want to
+let users without sufficient credentials to connect, and reach any of
+my device (neither the captive portal nor the webpages which I allowed
+with uam_allow).
+
+So is there a way, that the users, who authenticated successfully
+through wpa2 (peap + mschapv2) do not need to reauthenticate at the
+captive portal page (and not let users who failed at wpa2 to try to
+authenticate themselves on the captive portal).
+
+Thanks for all the reply, all the best
+
+D?vid
+
+From lferreira at cabocom.cv  Wed Jul 24 20:13:08 2013
+From: lferreira at cabocom.cv (Luis Ferreira)
+Date: Wed, 24 Jul 2013 19:13:08 -0100
+Subject: [Chilli] Chilli_Query login issue
+Message-ID: <00cf01ce88aa$38f08df0$aad1a9d0$@cabocom.cv>
+
+Hi everyone,
+
+ 
+
+I've got a very strange problem.
+
+ 
+
+Setup:
+
+ 
+
+Chilli 1.2.9 Running with Layer3
+
+ 
+
+Client with static IP provided by isc-dhcp running on VLAN ID 40
+
+ 
+
+ 
+
+If I make the login normally (open browser, type user and password) the
+internet works great.
+
+ 
+
+If I do the login on the chillibox with:
+/usr/local/sbin/chilli_query -s /usr/local/var/run/chilli.vlan40.sock login
+ip 10.1.1.xx username <username> password <password>
+
+ 
+
+The login is performed good (show the session on radius) and internet start
+working, but the speed is terribly slow.
+
+ 
+
+If I logout and do the login via web browser on client, the speed is good
+again.
+
+ 
+
+To help, if I do the login via chilli_query, I get this on chilli_query
+list:
+
+10.1.40.19 51f031c700000004 1 <USERNAME> 57/0 11/1800 33542/0 11791/0
+1392508928 0 0%/1024000 0%/3072000
+
+ 
+
+If I do it via web browser:
+
+ 
+
+10.1.40.19 51f032b400000004 1 <USERNAME> 11/0 0/1800 129190/0 40875/0
+1392508928 0 0%/1024000 0%/3072000 http://www.google.com/
+
+ 
+
+As you can see, the download speed is the same (3Mb) and Upload speed also
+(1Mb)
+
+ 
+
+Is there any way that chilli_query if failing on the login process?
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130724/31d28216/attachment.html>
+
+From david at coova.com  Wed Jul 24 20:40:44 2013
+From: david at coova.com (David Bird)
+Date: Wed, 24 Jul 2013 13:40:44 -0700
+Subject: [Chilli] using coovachilli with wpa
+In-Reply-To: <CAGdcU6oF0_-fOjvqGr0Ev_AVU+N705bHHvVeWYqfp6=H_NzOew@mail.gmail.com>
+References: <CAGdcU6oF0_-fOjvqGr0Ev_AVU+N705bHHvVeWYqfp6=H_NzOew@mail.gmail.com>
+Message-ID: <1374698444.6120.13.camel@david-XPS>
+
+Hi,
+
+First, you can send the RADIUS from the WPA2 Enterprise AP/Authenticator
+to chilli after configuring the following:
+
+      --proxylisten=STRING      Proxy IP address to listen on
+      --proxyport=INT           Proxy UDP port to listen on (0 is off)  
+      --proxyclient=STRING      IP address of proxy client(s)
+      --proxysecret=STRING      Radius proxy shared secret
+
+These settings control what IP and port chilli will listen for RADIUS on
+and who can send to it. Chilli will then proxy this RADIUS through to
+it's configured RADIUS servers. When clients are authenticated for
+802.1x, that is then known to chilli and they are authenticated in
+chilli. The "WPA Guests" feature allows you do program your RADIUS
+server such that it will return Access-Accept even for client stations
+that did not successfully authenticate. The Access-Accept is needed for
+them to pass the 802.1x/EAP phase and to be able to interact with chilli
+and the captive portal. Adding the RADIUS attribute:
+
+ChilliSpotConfig=require-uam-auth
+
+to the Access-Accept which didn't really succeed will prompt chilli to
+treat the client as unauthorized and sent to the captive portal. 
+
+See
+http://coova.org/CoovaChilli/WPACaptivePortal
+
+David
+
+
+
+On Wed, 2013-07-24 at 19:41 +0200, Tek?n D?vid wrote:
+> Hi all!
+> 
+> I set up a coovachilli + freeradius + mysql combo at my dorm. It's
+> working great with the wired network. Now we want to extend it to the
+> wireless as well. Installed an access point configured to wpa2
+> enterprise (with the same radius server) and connected to the
+> coovachillis's lan side. It can authenticate users and do the process
+> fine, but when i want to connect to the internet, i get redirected to
+> the coovachilli's captive portal.
+> I've read about the wpa guest config parameter, but i don't want to
+> let users without sufficient credentials to connect, and reach any of
+> my device (neither the captive portal nor the webpages which I allowed
+> with uam_allow).
+> 
+> So is there a way, that the users, who authenticated successfully
+> through wpa2 (peap + mschapv2) do not need to reauthenticate at the
+> captive portal page (and not let users who failed at wpa2 to try to
+> authenticate themselves on the captive portal).
+> 
+> Thanks for all the reply, all the best
+> 
+> D?vid
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+-- 
+--
+David Bird
+http://www.linkedin.com/in/dwbird/
+
+
+From david at coova.com  Wed Jul 24 20:46:40 2013
+From: david at coova.com (David Bird)
+Date: Wed, 24 Jul 2013 13:46:40 -0700
+Subject: [Chilli] Chilli_Query login issue
+In-Reply-To: <00cf01ce88aa$38f08df0$aad1a9d0$@cabocom.cv>
+References: <00cf01ce88aa$38f08df0$aad1a9d0$@cabocom.cv>
+Message-ID: <1374698800.6120.16.camel@david-XPS>
+
+There shouldn't be a difference. You get this result consistently? 
+
+
+On Wed, 2013-07-24 at 19:13 -0100, Luis Ferreira wrote:
+> Hi everyone,
+> 
+>  
+> 
+> I?ve got a very strange problem.
+> 
+>  
+> 
+> Setup:
+> 
+>  
+> 
+> Chilli 1.2.9 Running with Layer3
+> 
+>  
+> 
+> Client with static IP provided by isc-dhcp running on VLAN ID 40
+> 
+>  
+> 
+>  
+> 
+> If I make the login normally (open browser, type user and password)
+> the internet works great.
+> 
+>  
+> 
+> If I do the login on the chillibox with:
+> /usr/local/sbin/chilli_query -s /usr/local/var/run/chilli.vlan40.sock
+> login ip 10.1.1.xx username <username> password <password>
+> 
+>  
+> 
+> The login is performed good (show the session on radius) and internet
+> start working, but the speed is terribly slow.
+> 
+>  
+> 
+> If I logout and do the login via web browser on client, the speed is
+> good again.
+> 
+>  
+> 
+> To help, if I do the login via chilli_query, I get this on
+> chilli_query list:
+> 
+> 10.1.40.19 51f031c700000004 1 <USERNAME> 57/0 11/1800 33542/0 11791/0
+> 1392508928 0 0%/1024000 0%/3072000
+> 
+>  
+> 
+> If I do it via web browser:
+> 
+>  
+> 
+> 10.1.40.19 51f032b400000004 1 <USERNAME> 11/0 0/1800 129190/0 40875/0
+> 1392508928 0 0%/1024000 0%/3072000 http://www.google.com/
+> 
+>  
+> 
+> As you can see, the download speed is the same (3Mb) and Upload speed
+> also (1Mb)
+> 
+>  
+> 
+> Is there any way that chilli_query if failing on the login process?
+> 
+> 
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+-- 
+--
+David Bird
+http://www.linkedin.com/in/dwbird/
+
+
+From bojan at gajba.net  Wed Jul 24 20:53:33 2013
+From: bojan at gajba.net (Bojan Pogacar)
+Date: Wed, 24 Jul 2013 22:53:33 +0200
+Subject: [Chilli] Chilli_Query login issue
+In-Reply-To: <00cf01ce88aa$38f08df0$aad1a9d0$@cabocom.cv>
+References: <00cf01ce88aa$38f08df0$aad1a9d0$@cabocom.cv>
+Message-ID: <51F03ECD.3090505@gajba.net>
+
+Hi!
+
+I've experienced similar problem when I've been changing user's speed on 
+the fly. I think I've solved the problem by also insering mac directive 
+and using authorize insted of update or smth like that. I don't remember 
+very well.
+
+Best regards, Bojan
+
+
+
+
+Dne 24.7.2013 22:13, pi?e Luis Ferreira:
+> Hi everyone,
+>
+> I?ve got a very strange problem.
+>
+> Setup:
+>
+> Chilli 1.2.9 Running with Layer3
+>
+> Client with static IP provided by isc-dhcp running on VLAN ID 40
+>
+> If I make the login normally (open browser, type user and password) the
+> internet works great.
+>
+> If I do the login on the chillibox with:
+> /usr/local/sbin/chilli_query -s /usr/local/var/run/chilli.vlan40.sock
+> login ip 10.1.1.xx username <username> password <password>
+>
+> The login is performed good (show the session on radius) and internet
+> start working, but the speed is terribly slow.
+>
+> If I logout and do the login via web browser on client, the speed is
+> good again.
+>
+> To help, if I do the login via chilli_query, I get this on chilli_query
+> list:
+>
+> 10.1.40.19 51f031c700000004 1 *<USERNAME>* 57/0 11/1800 33542/0 11791/0
+> 1392508928 0 _0%/1024000 0%/3072000_
+>
+> If I do it via web browser:
+>
+> 10.1.40.19 51f032b400000004 1 *<USERNAME>* 11/0 0/1800 129190/0 40875/0
+> 1392508928 0 0%/1024000 0%/3072000 http://www.google.com/
+>
+> As you can see, the download speed is the same (3Mb) and Upload speed
+> also (1Mb)
+>
+> Is there any way that chilli_query if failing on the login process?
+>
+>
+>
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+
+From lferreira at cabocom.cv  Wed Jul 24 23:15:24 2013
+From: lferreira at cabocom.cv (Luis Ferreira)
+Date: Wed, 24 Jul 2013 22:15:24 -0100
+Subject: [Chilli] Chilli_Query login issue
+In-Reply-To: <1374698800.6120.16.camel@david-XPS>
+References: <00cf01ce88aa$38f08df0$aad1a9d0$@cabocom.cv>
+ <1374698800.6120.16.camel@david-XPS>
+Message-ID: <010701ce88c3$b06ce590$1146b0b0$@cabocom.cv>
+
+Hi David,
+
+Yes, this is not the first time that this happen to me. But for the other times, I would just change the IP on ISC-DHCP to a new one, and Chilli would start working properly on that different IP.
+Also, other thing that would help would be to kill Chilli process and restart it. That Way it would work correctly the command. But now it does not work in any way.
+Is there another way of doing a remote login of an account?
+
+From: David Bird [mailto:david at coova.com] 
+
+There shouldn't be a difference. You get this result consistently? 
+
+
+====================================================================================
+
+Hi, the problem is that I'm making this setup for a client, so this has to trigger the account for traffic and BW management.
+
+
+From: Bojan
+
+I've experienced similar problem when I've been changing user's speed on the fly. I think I've solved the problem by also insering mac directive and using authorize insted of update or smth like that. I don't remember very well.
+
+Best regards, Bojan
+
+
+
+On Wed, 2013-07-24 at 19:13 -0100, Luis Ferreira wrote:
+> Hi everyone,
+> 
+>  
+> 
+> I?ve got a very strange problem.
+> 
+>  
+> 
+> Setup:
+> 
+>  
+> 
+> Chilli 1.2.9 Running with Layer3
+> 
+>  
+> 
+> Client with static IP provided by isc-dhcp running on VLAN ID 40
+> 
+>  
+> 
+>  
+> 
+> If I make the login normally (open browser, type user and password) 
+> the internet works great.
+> 
+>  
+> 
+> If I do the login on the chillibox with:
+> /usr/local/sbin/chilli_query -s /usr/local/var/run/chilli.vlan40.sock
+> login ip 10.1.1.xx username <username> password <password>
+> 
+>  
+> 
+> The login is performed good (show the session on radius) and internet 
+> start working, but the speed is terribly slow.
+> 
+>  
+> 
+> If I logout and do the login via web browser on client, the speed is 
+> good again.
+> 
+>  
+> 
+> To help, if I do the login via chilli_query, I get this on 
+> chilli_query list:
+> 
+> 10.1.40.19 51f031c700000004 1 <USERNAME> 57/0 11/1800 33542/0 11791/0
+> 1392508928 0 0%/1024000 0%/3072000
+> 
+>  
+> 
+> If I do it via web browser:
+> 
+>  
+> 
+> 10.1.40.19 51f032b400000004 1 <USERNAME> 11/0 0/1800 129190/0 40875/0
+> 1392508928 0 0%/1024000 0%/3072000 http://www.google.com/
+> 
+>  
+> 
+> As you can see, the download speed is the same (3Mb) and Upload speed 
+> also (1Mb)
+> 
+>  
+> 
+> Is there any way that chilli_query if failing on the login process?
+> 
+> 
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+--
+--
+David Bird
+http://www.linkedin.com/in/dwbird/
+
+
+From gaurav.kansal at nic.in  Thu Jul 25 04:41:00 2013
+From: gaurav.kansal at nic.in (Gaurav Kansal)
+Date: Thu, 25 Jul 2013 10:11:00 +0530
+Subject: [Chilli] Getting an error while making CoovaChilli Package
+Message-ID: <006301ce88f1$298e71a0$7cab54e0$@nic.in>
+
+Dear Team,
+
+ 
+
+I am trying to installing CoovaChilli in CentOS-6.
+
+While running ?make? command, I am getting the following error message.
+
+ 
+
+Pl. help me out.
+
+ 
+
+[root at CentOS-6 coova-chilli-1.3.0]# make
+
+make  all-recursive
+
+make[1]: Entering directory `/home/CoovaChilli/coova-chilli-1.3.0'
+
+Making all in bstring
+
+make[2]: Entering directory `/home/CoovaChilli/coova-chilli-1.3.0/bstring'
+
+make[2]: Nothing to be done for `all'.
+
+make[2]: Leaving directory `/home/CoovaChilli/coova-chilli-1.3.0/bstring'
+
+Making all in src
+
+make[2]: Entering directory `/home/CoovaChilli/coova-chilli-1.3.0/src'
+
+make[3]: Entering directory `/home/CoovaChilli/coova-chilli-1.3.0/src'
+
+gcc -DHAVE_CONFIG_H -I. -I..    -D_GNU_SOURCE -Wall -Werror -fno-builtin
+-fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe
+-I../bstring -DDEFCHILLICONF='"/usr/local/etc/chilli.conf"'
+-DDEFPIDFILE='"/usr/local/var/run/chilli.pid"'
+-DDEFSTATEDIR='"/usr/local/var/run"' -DSBINDIR='"/usr/local/sbin"'    -g -O2
+-MT main-opt.o -MD -MP -MF .deps/main-opt.Tpo -c -o main-opt.o main-opt.c
+
+cc1: warnings being treated as errors
+
+main-opt.c: In function ?main?:
+
+main-opt.c:781: error: ?ptr? may be used uninitialized in this function
+
+make[3]: *** [main-opt.o] Error 1
+
+make[3]: Leaving directory `/home/CoovaChilli/coova-chilli-1.3.0/src'
+
+make[2]: *** [all-recursive] Error 1
+
+make[2]: Leaving directory `/home/CoovaChilli/coova-chilli-1.3.0/src'
+
+make[1]: *** [all-recursive] Error 1
+
+make[1]: Leaving directory `/home/CoovaChilli/coova-chilli-1.3.0'
+
+make: *** [all] Error 2
+
+[root at CentOS-6 coova-chilli-1.3.0]#
+
+ 
+
+ 
+
+ 
+
+Thanks and Regards,
+
+Gaurav Kansal
+
+Emp Code - 6274
+
+Mob ? 9910118448
+
+Intercom ? 65031/5091
+
+ 
+
+Have you enabled IPv6 on something today...?
+
+ 
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130725/d80fb2a4/attachment-0001.html>
+
+From lnx.consultant at gmail.com  Thu Jul 25 08:05:44 2013
+From: lnx.consultant at gmail.com (Lnx)
+Date: Thu, 25 Jul 2013 16:05:44 +0800
+Subject: [Chilli] redir.c: 1990: Too much data in http request! -47
+In-Reply-To: <CADao4CqbyxYT_p8CHOosq2Ljn_jZ5iKUFPTJHVN3DTjNNkFBpw@mail.gmail.com>
+References: <CAELbO68XxW9XUPOy14GxKp6Sjq9SGQeKzw-=awrtnwD2sif89w@mail.gmail.com>
+ <CADao4CoRaDrvdMTBb-3g9vUZQCpVGZos_mmnKWFg1Wjnj19KkA@mail.gmail.com>
+ <8C4AFA95-8D9B-4944-A6C0-D28FE367DBBF@gmail.com>
+ <CADao4Cq9+v4+XGQMg+aYugA11a=7G21_7Fd3HbBQEV7BHyiyMQ@mail.gmail.com>
+ <CAELbO6-cHot9-qm1Dpvq-6hCGRLovVpUNKTRZoBM2YWd89O31A@mail.gmail.com>
+ <CADao4CqAUHvzhVQSKMbOLzKyv=LVUSN+JyExLSyp3aX0dJt7sw@mail.gmail.com>
+ <1B2001D7-750D-41B1-BE7E-C6F286E9EB45@gmail.com>
+ <CADao4CqbyxYT_p8CHOosq2Ljn_jZ5iKUFPTJHVN3DTjNNkFBpw@mail.gmail.com>
+Message-ID: <C9359576-544A-489F-B476-DBE79AC5B76B@gmail.com>
+
+Hi list,
+
+This might help someone in configuring chilli's dchp setting. 
+
+I had a problem in setting up dhcp to give a range of /16 ip addresses. 
+
+Please read below if you are also facing the same problems.
+
+
+
+
+On Jul 25, 2013, at 3:18 PM, Russell Mike <radius.sir at gmail.com> wrote:
+
+> Please never mind. Glad that it worked for you !!
+> 
+> Regards / --RM
+> 
+> 
+> On Thu, Jul 25, 2013 at 5:18 AM, Lnx <lnx.consultant at gmail.com> wrote:
+>> Hi sir, 
+>> 
+>> Thank you very much for your reply. 
+>> Dhcp setting worked perfectly!
+>> 
+>> 
+>> Regards,
+>> 
+>> 
+>> On Jul 24, 2013, at 4:15 PM, Russell Mike <radius.sir at gmail.com> wrote:
+>> 
+>>> Hi Sir,
+>>> 
+>>> define "net" option in "chilli.conf" and define dhcp ip range in "local.conf". i remember, i wrote about it for list archives, for new implementations. i still found in my sent items. Kindly read following carefully. if any difficulty, please feel free to ask again. 
+>>> 
+>>> you need to configure two files. local.conf & chilli.conf
+>>> 
+>>> nano "/usr/local/etc/chilli.conf" 
+>>> net=192.168.8.0/255.255.255.0
+>>> 
+>>> OR
+>>> 
+>>> net=192.168.8.0/24
+>>> 
+>>> nano "/usr/local/etc/chilli/local.conf"
+>>> # Starting issue from 55 (first address) to 155 (last address)
+>>> 
+>>> dhcpstart=55
+>>> 
+>>> dhcpend=155
+>>> 
+>>> 
+>>> 
+>>> NOTE: it is different technique to manage classless ranges, understand the difference from below writing. 
+>>>  
+>>> 
+>>> Thanks / Regards
+>>> RM --
+>>> Configuring CoovaChilli (I used v1.3.0) For DHCP Pool Range Classless & Class-full Ranges VLMS How To ??
+>>> 
+>>> Scenario: I have a network of 192.168.8.0 255.255.255.0 (24). i am using some static ip address for my server from the range 192.168.8.1 - 192.168.8.34. I do not want CoovaChilli to issue these ip address. Saying other way, i want to specify a dhcp pool range, therefore CoovaChilli can use a ip from the pool to issue the ip address for incoming dhcp requests. 
+>>> 
+>>> How do i do that? 
+>>> 
+>>> nano "/usr/local/etc/chilli.conf" (These are two different ways of writing the directive, use one only)
+>>> 
+>>> net=192.168.8.0/255.255.255.0
+>>> 
+>>> OR
+>>> 
+>>> net=192.168.8.0/24
+>>> 
+>>> nano "/usr/local/etc/chilli/local.conf"
+>>> 
+>>> dhcpstart=35
+>>> 
+>>> dhcpend=254
+>>> 
+>>> save the files and it is done. Coova will now issue the ip address from this range (192.168.8.35 - 192.168.8.254). make sure your entires are not in conflict with previous configuration otherwise it would just work. configured so many times. 
+>>> BUT when it comes to variable length subnet mask (VLMS) - (sub-netting braking ip address, hosts & networks in small/big partitions as needed)  i found it bit tricky to configure and understand DHCP pool range directive when using VLMS, to help new comers and those may attempt in future, i wish to share my opinion that may helpful for them to understand easily. 
+>>> 
+>>> 
+>>> My Network: 10.130.8.160
+>>> 
+>>> My Subnet Mask: 255.255.255.224
+>>> 
+>>> (- IP sub netting example copied from online subnet calculator)
+>>> 
+>>> Network:   10.130.8.160/27       00001010.10000010.00001000.101 00000 (Class A)
+>>> 
+>>> Broadcast: 10.130.8.191          00001010.10000010.00001000.101 11111
+>>> 
+>>> HostMin:   10.130.8.161          00001010.10000010.00001000.101 00001
+>>> 
+>>> HostMax:   10.130.8.190          00001010.10000010.00001000.101 11110
+>>> Hosts/Net: 30
+>>> Assuming that 10.130.8.161 is CoovaChilli Box. Coova dhcp must issue from 10.130.8.162 - 10.130.8.190.  What would you expect to write in to "local.conf" & "chilli.conf" when reading above example.
+>>> dhcpstart=162
+>>> 
+>>> dhcpend=190
+>>> 
+>>> IT IS WRONG !!!! WOULD NOT WORK. HERE IT IS BIT TICKY
+>>> 
+>>> CORRECT VERSION:
+>>> 
+>>> nano "/usr/local/etc/chilli.conf" (These are two different ways of writing the directive, use one only)
+>>> 
+>>> net=10.130.8.160/255.255.255.224
+>>> 
+>>> OR
+>>> 
+>>> net=192.168.8.0/27
+>>> 
+>>> nano "/usr/local/etc/chilli/local.conf"
+>>> 
+>>> dhcpstart=2
+>>> 
+>>> dhcpend=29
+>>> 
+>>> The correct dhcpstart should be 2 and dhcpend should be 29
+>>> 
+>>> I hope this would helps someone..
+>>> 
+>>> Thanks / Regards 
+>>> 
+>>> 
+>>> 
+>>> 
+>>> 
+>>> On Tue, Jul 23, 2013 at 3:25 AM, lnx consultant <lnx.consultant at gmail.com> wrote:
+>>>> Hi Russel,
+>>>> 
+>>>> Thanks again for your reply.
+>>>> 
+>>>> Yes, it is a layer 2 setup with chilli acting as the dhcp server.
+>>>> I'm trying to have chilli distribute a max of /16 ip addresses, I have the following defined in /etc/chilli/config. Is there a proper way
+>>>> to set the dhcp range that chilli is distributing? or the config below will do? notice i set the subnet mask as 255.255.0.0 (/16) 
+>>>> 
+>>>> HS_LANIF=eth1              # Subscriber Interface for client devices
+>>>> HS_NETWORK=10.1.0.0        # HotSpot Network (must include HS_UAMLISTEN)
+>>>> HS_NETMASK=255.255.0.0   # HotSpot Network Netmask
+>>>> 
+>>>> 
+>>>> 
+>>>> 
+>>>> On Mon, Jul 22, 2013 at 6:22 PM, Russell Mike <radius.sir at gmail.com> wrote:
+>>>>> Okay, 
+>>>>> 
+>>>>> 1.) I trust it is layer 2 setup, because coovachilli internal DHCP do not work in layer3 mode when enable. 
+>>>>> 2.) A client, to obtain IP address do not use http=80 rather udp=67. please ignore the error, not related with your problem. 
+>>>>> 3.) This error (Too much data in http request!) is also logged by windows update. if a client is doing windows security upgrade. 
+>>>>> 
+>>>>> check tail -35f /var/log/message for Redhat/CentOS
+>>>>> check tail -35f /var/log/syslog for Ubuntu / Debian
+>>>>> 
+>>>>> 
+>>>>> i doubt you have run short of IPs in your pool. please let me know if any thing i can help further. 
+>>>>> 
+>>>>> Thanks / Regards
+>>>>> 
+>>>>> 
+>>>>> 
+>>>>> On Fri, Jul 19, 2013 at 9:05 PM, Lnx <lnx.consultant at gmail.com> wrote:
+>>>>>> Hi Russel,
+>>>>>> 
+>>>>>> Thank you very much for you reply.
+>>>>>> I'm not sure if it's related to this error but sometimes users are reporting that they are not getting any ip address.
+>>>>>> 
+>>>>>> 
+>>>>>> 
+>>>>>> 
+>>>>>> 
+>>>>>> On Jul 19, 2013, at 8:11 PM, Russell Mike <radius.sir at gmail.com> wrote:
+>>>>>> 
+>>>>>>> Hi
+>>>>>>> 
+>>>>>>> Are you experiencing problems or is it just the occasional log entry? Typically, this happens when the browser (or headless process) is doing something like a POST or GET with a large
+>>>>>>> query string, not your typical first page in a browser. This warning is normal, do not modify if users are not reporting problem. i also have the same warning in log but no user one reports problem. 
+>>>>>>> 
+>>>>>>> you can increase limits here:  
+>>>>>>> nano /usr/local/include/chilli/chilli_limits.h 
+>>>>>>> 
+>>>>>>> Look for this entry:
+>>>>>>> #define REDIR_MAXBUFFER                 7125 /* DEFAULT WAS --> #define REDIR_MAXBUFFER 5125  */
+>>>>>>> 
+>>>>>>> Thanks / Regards
+>>>>>>> RM --
+>>>>>>> 
+>>>>>>> 
+>>>>>>> 
+>>>>>>> On Fri, Jul 19, 2013 at 8:26 AM, lnx consultant <lnx.consultant at gmail.com> wrote:
+>>>>>>>> Hi,
+>>>>>>>> 
+>>>>>>>> How can i fix the error redir.c: 1990: Too much data in http request! -47.
+>>>>>>>> i already search the internet but i could not find a concrete answer as to why it is giving that error or how to fix it.
+>>>>>>>> 
+>>>>>>>> Thank you
+>>>>>>>> 
+>>>>>>>> _______________________________________________
+>>>>>>>> Chilli mailing list
+>>>>>>>> Chilli at coova.org
+>>>>>>>> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+> 
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130725/3f1968b7/attachment-0001.html>
+
+From tek.david at gmail.com  Thu Jul 25 11:06:38 2013
+From: tek.david at gmail.com (=?UTF-8?B?VGVrw6FuIETDoXZpZA==?=)
+Date: Thu, 25 Jul 2013 13:06:38 +0200
+Subject: [Chilli] using coovachilli with wpa
+In-Reply-To: <1374698444.6120.13.camel@david-XPS>
+References: <CAGdcU6oF0_-fOjvqGr0Ev_AVU+N705bHHvVeWYqfp6=H_NzOew@mail.gmail.com>
+ <1374698444.6120.13.camel@david-XPS>
+Message-ID: <CAGdcU6qwKrm0+hgi29DnzJw1wNj28JRcna9WRiLo7_rc=SN08w@mail.gmail.com>
+
+Hi David!
+
+Thanks for the solution, it works, i should've thought about it by myself.
+
+If i understand correctly i can not use different radius secret on
+each and every access points. If is the situation, is there any way to
+get to know, which session is through which access point (the initial
+access point is enough, if there is roaming between the aps).
+
+Thanks again
+
+D?vid
+
+
+On Wed, Jul 24, 2013 at 10:40 PM, David Bird <david at coova.com> wrote:
+> Hi,
+>
+> First, you can send the RADIUS from the WPA2 Enterprise AP/Authenticator
+> to chilli after configuring the following:
+>
+>       --proxylisten=STRING      Proxy IP address to listen on
+>       --proxyport=INT           Proxy UDP port to listen on (0 is off)
+>       --proxyclient=STRING      IP address of proxy client(s)
+>       --proxysecret=STRING      Radius proxy shared secret
+>
+> These settings control what IP and port chilli will listen for RADIUS on
+> and who can send to it. Chilli will then proxy this RADIUS through to
+> it's configured RADIUS servers. When clients are authenticated for
+> 802.1x, that is then known to chilli and they are authenticated in
+> chilli. The "WPA Guests" feature allows you do program your RADIUS
+> server such that it will return Access-Accept even for client stations
+> that did not successfully authenticate. The Access-Accept is needed for
+> them to pass the 802.1x/EAP phase and to be able to interact with chilli
+> and the captive portal. Adding the RADIUS attribute:
+>
+> ChilliSpotConfig=require-uam-auth
+>
+> to the Access-Accept which didn't really succeed will prompt chilli to
+> treat the client as unauthorized and sent to the captive portal.
+>
+> See
+> http://coova.org/CoovaChilli/WPACaptivePortal
+>
+> David
+>
+>
+>
+> On Wed, 2013-07-24 at 19:41 +0200, Tek?n D?vid wrote:
+>> Hi all!
+>>
+>> I set up a coovachilli + freeradius + mysql combo at my dorm. It's
+>> working great with the wired network. Now we want to extend it to the
+>> wireless as well. Installed an access point configured to wpa2
+>> enterprise (with the same radius server) and connected to the
+>> coovachillis's lan side. It can authenticate users and do the process
+>> fine, but when i want to connect to the internet, i get redirected to
+>> the coovachilli's captive portal.
+>> I've read about the wpa guest config parameter, but i don't want to
+>> let users without sufficient credentials to connect, and reach any of
+>> my device (neither the captive portal nor the webpages which I allowed
+>> with uam_allow).
+>>
+>> So is there a way, that the users, who authenticated successfully
+>> through wpa2 (peap + mschapv2) do not need to reauthenticate at the
+>> captive portal page (and not let users who failed at wpa2 to try to
+>> authenticate themselves on the captive portal).
+>>
+>> Thanks for all the reply, all the best
+>>
+>> D?vid
+>> _______________________________________________
+>> Chilli mailing list
+>> Chilli at coova.org
+>> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+> --
+> --
+> David Bird
+> http://www.linkedin.com/in/dwbird/
+>
+
+From maltara86 at gmail.com  Thu Jul 25 12:17:44 2013
+From: maltara86 at gmail.com (=?ISO-8859-1?Q?Maria_Ang=E9lica_Lizarazo?=)
+Date: Thu, 25 Jul 2013 07:17:44 -0500
+Subject: [Chilli] Captive portal "looping" problem - maybe radius /
+ radius-proxy timeout problem ?
+In-Reply-To: <CABTDJHC=s-fNR7-E_SFiORnhhwjk_WYtv=m_CduFzKijjwsYcA@mail.gmail.com>
+References: <CABTDJHC=s-fNR7-E_SFiORnhhwjk_WYtv=m_CduFzKijjwsYcA@mail.gmail.com>
+Message-ID: <CABTDJHCcGB88cvjbeJj0vFbqq4wtb8x5u0zaRgeNW=FHAAXLZw@mail.gmail.com>
+
+Hi Derek. You should check the date format that you're using. I have the
+same problem but it is because the date that radius use is like this:
+YYYY:MM:DD-hh:mm:ss:ss. In numbers, the date is set like
+2013:05:03-00:00:00. So radius gets caught in a loop because the date is
+still valid but the hours are not.  Unfortunately , in my case I have to
+use that format but maybe you can change the one that you use.
+Could you tell me how are you using the chilli_proxy feature? Is it to
+intercept the borwser request to a proxy server
+2013/7/15 <chilli-request at coova.org>
+
+> Send Chilli mailing list submissions to
+>         chilli at coova.org
+>
+> To subscribe or unsubscribe via the World Wide Web, visit
+>         http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+> or, via email, send a message with subject or body 'help' to
+>         chilli-request at coova.org
+>
+> You can reach the person managing the list at
+>         chilli-owner at coova.org
+>
+> When replying, please edit your Subject line so it is more specific
+> than "Re: Contents of Chilli digest..."
+>
+>
+> Today's Topics:
+>
+>    1. Content-injection (Derek Conniffe)
+>    2. Captive portal "looping" problem - maybe radius /
+>       radius-proxy timeout problem ? (Derek Conniffe)
+>    3. Re: Captive portal "looping" problem - maybe radius /
+>       radius-proxy timeout problem ? (Derek Conniffe)
+>
+>
+> ----------------------------------------------------------------------
+>
+> Message: 1
+> Date: Sun, 14 Jul 2013 15:48:21 +0100
+> From: Derek Conniffe <derek at hssl.ie>
+> To: "chilli at coova.org" <chilli at coova.org>
+> Subject: [Chilli] Content-injection
+> Message-ID: <04D5D258-BEB3-4667-9178-F5E91C796DFB at hssl.ie>
+> Content-Type: text/plain; charset=us-ascii
+>
+> Hi Jed,
+>
+> Did you get Content-Injection working with Coova Chilli?
+>
+> A long time ago I tried this with various proxies (Tinyproxy, Privoxy,
+> Squid with content adaption) but I do remember reading David Bird's blog
+> post about content injection natively in Coova Chilli which sounds much
+> neater if its now part of Coova Chilli (I didn't think it was yet?)
+>
+> thanks,
+>
+> Derek
+>
+>
+>
+>
+> ------------------------------
+>
+> Message: 2
+> Date: Sun, 14 Jul 2013 15:33:19 +0100
+> From: Derek Conniffe <derek at hssl.ie>
+> To: chilli at coova.org
+> Subject: [Chilli] Captive portal "looping" problem - maybe radius /
+>         radius-proxy timeout problem ?
+> Message-ID: <B85120C0-55ED-4E4F-824D-3CB07CE274DD at hssl.ie>
+> Content-Type: text/plain; charset=us-ascii
+>
+> Hi everyone,
+>
+> I've been playing with coova chilli for years and its feature set is great
+> and I really love new features (especially chilli_proxy that appeared in
+> 1.2.9)!.
+>
+> I'm having a problem and I think I've also seen this problem over the
+> years too.
+>
+> I'm using coova chilli 1.2.9 and right now I'm using chilli-proxy with
+> HTTP authentication (so no radius server at all) and I'm using mac
+> authentication.
+>
+> The problem is that for some reason coova chilli thinks the user isn't
+> authorised so it sends the user to the login page (uamhomepage) *but* I
+> have checking in my home page to see if the user is actually authenticated
+> (in the DB) or not and, if they are, I try to redirect them to
+> www.google.com - I'd hope this situation wouldn't happen but it does
+> regularly.  Its worse actually because I can sometimes see devices looping
+> through my uamhomepage page over and over again and then, maybe, eventually
+> getting Google.  (coova chilli keeps thinking the client isn't
+> authenticated - when this happens I can see that my web server handling the
+> chilli proxy requests as per the uamaaaurl directive is *NOT* getting the
+> coova chilli request at all!).
+>
+> I see this problem more if the internet connection to the coova chilli
+> enabled AP is slow.  This makes me think its some kind of radius timeout
+> issue.  I did add the line "radiustimeout=90" to my chilli conf file (I
+> think that sets the radius timeout to 90 seconds) but this didn't appear to
+> have any effect.
+>
+> I haven't seen anything in the chilli log output yet but mostly this is
+> because I haven't been getting detailed logs in my APs.  Now I'm trying to
+> use remote syslog to a dedicated server so this might help.
+>
+> The issue could be in chilli_proxy.  If so I might have to go back to
+> having a freeradius server but I'd hate to do that.
+>
+> Has anyone else seen this type of problem before?
+>
+> thanks for any info!
+>
+> Derek
+>
+> ------------------------------
+>
+> Message: 3
+> Date: Sun, 14 Jul 2013 16:24:28 +0100
+> From: Derek Conniffe <derek at hssl.ie>
+> To: chilli at coova.org
+> Subject: Re: [Chilli] Captive portal "looping" problem - maybe radius
+>         /       radius-proxy timeout problem ?
+> Message-ID: <38272CD1-794D-495B-9E23-16B417AEE822 at hssl.ie>
+> Content-Type: text/plain; charset=us-ascii
+>
+> Ok - an update.
+>
+> Adding in syslog-ng and remote logging *was* a good idea for sure!
+>
+> This is the error that seems to be related to my problem: -
+>
+> Jul 14 15:16:17 5.54.29.155 syslog: main-proxy.c: 142: out of connections
+>
+> I wonder is there somehow a connect leak?
+>
+> This AP would not be that busy.  I see that in the source code there is a
+> max number of requests set to 16 and I would think that this should be
+> perfectly good so I wonder is there some kind of connection leak?
+>
+> Derek
+>
+> Log file output: -
+>
+> Jul 14 15:20:46 5.54.29.155 syslog: main-proxy.c: 142: out of connections
+> Jul 14 15:20:46 5.54.29.155 syslog: main-proxy.c: 102: 000. inuse=1
+> prev=-001 next=-001 url=
+> http://MY-UAM-AAA-URL?stage=counters&status=update&user=AC-3C-0B-30-XX-XX&ap=02-DB-36-1D-XX-XX&mac=AC-3C-0B-30-XX-XX&ip=10.0.0.54&sessionid=51e075db00000009&nasid=dc9fdb3xxxx&duration=241&bytes_down=0&pkts_down=0&bytes_up=0&pkts_up=0fd=29
+>
+>
+>
+>
+>
+> On 14 Jul 2013, at 15:33, Derek Conniffe <derek at hssl.ie> wrote:
+>
+> > Hi everyone,
+> >
+> > I've been playing with coova chilli for years and its feature set is
+> great and I really love new features (especially chilli_proxy that appeared
+> in 1.2.9)!.
+> >
+> > I'm having a problem and I think I've also seen this problem over the
+> years too.
+> >
+> > I'm using coova chilli 1.2.9 and right now I'm using chilli-proxy with
+> HTTP authentication (so no radius server at all) and I'm using mac
+> authentication.
+> >
+> > The problem is that for some reason coova chilli thinks the user isn't
+> authorised so it sends the user to the login page (uamhomepage) *but* I
+> have checking in my home page to see if the user is actually authenticated
+> (in the DB) or not and, if they are, I try to redirect them to
+> www.google.com - I'd hope this situation wouldn't happen but it does
+> regularly.  Its worse actually because I can sometimes see devices looping
+> through my uamhomepage page over and over again and then, maybe, eventually
+> getting Google.  (coova chilli keeps thinking the client isn't
+> authenticated - when this happens I can see that my web server handling the
+> chilli proxy requests as per the uamaaaurl directive is *NOT* getting the
+> coova chilli request at all!).
+> >
+> > I see this problem more if the internet connection to the coova chilli
+> enabled AP is slow.  This makes me think its some kind of radius timeout
+> issue.  I did add the line "radiustimeout=90" to my chilli conf file (I
+> think that sets the radius timeout to 90 seconds) but this didn't appear to
+> have any effect.
+> >
+> > I haven't seen anything in the chilli log output yet but mostly this is
+> because I haven't been getting detailed logs in my APs.  Now I'm trying to
+> use remote syslog to a dedicated server so this might help.
+> >
+> > The issue could be in chilli_proxy.  If so I might have to go back to
+> having a freeradius server but I'd hate to do that.
+> >
+> > Has anyone else seen this type of problem before?
+> >
+> > thanks for any info!
+> >
+> > Derek
+> > _______________________________________________
+> > Chilli mailing list
+> > Chilli at coova.org
+> > http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+>
+>
+> ------------------------------
+>
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+>
+> End of Chilli Digest, Vol 44, Issue 3
+> *************************************
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130725/3de61266/attachment.html>
+
+From radius.sir at gmail.com  Thu Jul 25 16:08:59 2013
+From: radius.sir at gmail.com (Russell Mike)
+Date: Thu, 25 Jul 2013 16:08:59 +0000
+Subject: [Chilli] separate landing page for each customer coovachilli
+Message-ID: <CADao4Cq1AgMa5U_BvAxCvHQYErG2h7BYuE930ZR4aNzo_pNG9w@mail.gmail.com>
+
+Hi CoovaChilli List,
+
+i have coovachilli_1.3.0 running as central server in multi
+tenancy environment (ISP Data Center). CoocaChilli is serving about 50
+hotspots across the city using VLANs. All instances work normal, no issue.
+But i have asked to provide separate landing page for each customer with
+their company logo.
+
+i have:
+
+*nano /usr/local/etc/chilli/coova-vlan10/config*
+*
+*
+HS_WWWDIR=/usr/local/etc/chilli/uploads/www-cafeclub
+HS_WWWBIN=/usr/local/etc/chilli/upload/wwwsh
+
+HS_UAMFORMAT=http://
+\$HS_UAMLISTEN:\$HS_UAMUIPORT/uploads/www-cafeclub/login.chi
+HS_UAMHOMEPAGE=http://
+\$HS_UAMLISTEN:\$HS_UAMPORT/uploads/www-cafeclub/coova.html
+
+
+*nano /usr/local/etc/chilli/coova-vlan20/config*
+
+HS_WWWDIR=/usr/local/etc/chilli/uploads/www-yzone
+HS_WWWBIN=/usr/local/etc/chilli/upload/wwwsh
+
+HS_UAMFORMAT=http://
+\$HS_UAMLISTEN:\$HS_UAMUIPORT/uploads/www-yzone/login.chi
+HS_UAMHOMEPAGE=http://
+\$HS_UAMLISTEN:\$HS_UAMPORT/uploads/www-yzone/coova.html
+
+
+Firefox & IE reports: Firefox has detected that the server is redirecting
+the request for this address in a way that will never complete.
+
+Thanks / Regards
+RM --
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130725/5384bf4c/attachment.html>
+
+From lferreira at cabocom.cv  Thu Jul 25 16:27:51 2013
+From: lferreira at cabocom.cv (Luis Ferreira)
+Date: Thu, 25 Jul 2013 15:27:51 -0100
+Subject: [Chilli] Chilli_Query login issue
+In-Reply-To: <010701ce88c3$b06ce590$1146b0b0$@cabocom.cv>
+References: <00cf01ce88aa$38f08df0$aad1a9d0$@cabocom.cv>
+ <1374698800.6120.16.camel@david-XPS>
+ <010701ce88c3$b06ce590$1146b0b0$@cabocom.cv>
+Message-ID: <016501ce8953$e9c44cd0$bd4ce670$@cabocom.cv>
+
+Hi everyone,
+
+New updates on the issue
+
+I was looking it to it, and I realize that the ping was working fine.
+I then start increase the packet size, and found out that it happen when I try to send more than 1485 bytes (MTU limit?!?!)
+
+Since I got and WRT54GL router in client mode as the test subject, I thought that it could be the firmware on it causing this. So I replace this with a laptop, and the problem kept going, so it is not a router problem.
+
+I'm inclined to believe that this problem could be something related to chilli_query not fully performing a login on a client and chilli is not making the split of the information on several packets.
+
+The fun thing is that other instances of chilli have a couple of them working, and somehow, changing IP's and rebooting the instances, they start working, except this.
+By the way, I've already confirmed all the setting, and tacking the vlan setting all are the same, as they always were.
+
+
+=============================================
+Hi David,
+
+Yes, this is not the first time that this happen to me. But for the other times, I would just change the IP on ISC-DHCP to a new one, and Chilli would start working properly on that different IP.
+Also, other thing that would help would be to kill Chilli process and restart it. That Way it would work correctly the command. But now it does not work in any way.
+Is there another way of doing a remote login of an account?
+
+From: David Bird [mailto:david at coova.com] 
+
+There shouldn't be a difference. You get this result consistently? 
+
+
+====================================================================================
+
+Hi, the problem is that I'm making this setup for a client, so this has to trigger the account for traffic and BW management.
+
+
+From: Bojan
+
+I've experienced similar problem when I've been changing user's speed on the fly. I think I've solved the problem by also insering mac directive and using authorize insted of update or smth like that. I don't remember very well.
+
+Best regards, Bojan
+
+
+
+On Wed, 2013-07-24 at 19:13 -0100, Luis Ferreira wrote:
+> Hi everyone,
+> 
+>  
+> 
+> I?ve got a very strange problem.
+> 
+>  
+> 
+> Setup:
+> 
+>  
+> 
+> Chilli 1.2.9 Running with Layer3
+> 
+>  
+> 
+> Client with static IP provided by isc-dhcp running on VLAN ID 40
+> 
+>  
+> 
+>  
+> 
+> If I make the login normally (open browser, type user and password) 
+> the internet works great.
+> 
+>  
+> 
+> If I do the login on the chillibox with:
+> /usr/local/sbin/chilli_query -s /usr/local/var/run/chilli.vlan40.sock
+> login ip 10.1.1.xx username <username> password <password>
+> 
+>  
+> 
+> The login is performed good (show the session on radius) and internet 
+> start working, but the speed is terribly slow.
+> 
+>  
+> 
+> If I logout and do the login via web browser on client, the speed is 
+> good again.
+> 
+>  
+> 
+> To help, if I do the login via chilli_query, I get this on 
+> chilli_query list:
+> 
+> 10.1.40.19 51f031c700000004 1 <USERNAME> 57/0 11/1800 33542/0 11791/0
+> 1392508928 0 0%/1024000 0%/3072000
+> 
+>  
+> 
+> If I do it via web browser:
+> 
+>  
+> 
+> 10.1.40.19 51f032b400000004 1 <USERNAME> 11/0 0/1800 129190/0 40875/0
+> 1392508928 0 0%/1024000 0%/3072000 http://www.google.com/
+> 
+>  
+> 
+> As you can see, the download speed is the same (3Mb) and Upload speed 
+> also (1Mb)
+> 
+>  
+> 
+> Is there any way that chilli_query if failing on the login process?
+> 
+> 
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+--
+--
+David Bird
+http://www.linkedin.com/in/dwbird/
+
+_______________________________________________
+Chilli mailing list
+Chilli at coova.org
+http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+
+From david at coova.com  Thu Jul 25 17:14:33 2013
+From: david at coova.com (David Bird)
+Date: Thu, 25 Jul 2013 10:14:33 -0700
+Subject: [Chilli] Getting an error while making CoovaChilli Package
+In-Reply-To: <006301ce88f1$298e71a0$7cab54e0$@nic.in>
+References: <006301ce88f1$298e71a0$7cab54e0$@nic.in>
+Message-ID: <1374772473.3039.2.camel@david-XPS>
+
+Checkout the code from subversion or edit main-opt.c:781 making ptr=0.
+
+
+On Thu, 2013-07-25 at 10:11 +0530, Gaurav Kansal wrote:
+> Dear Team,
+> 
+>  
+> 
+> I am trying to installing CoovaChilli in CentOS-6.
+> 
+> While running ?make? command, I am getting the following error
+> message.
+> 
+>  
+> 
+> Pl. help me out.
+> 
+>  
+> 
+> [root at CentOS-6 coova-chilli-1.3.0]# make
+> 
+> make  all-recursive
+> 
+> make[1]: Entering directory `/home/CoovaChilli/coova-chilli-1.3.0'
+> 
+> Making all in bstring
+> 
+> make[2]: Entering directory
+> `/home/CoovaChilli/coova-chilli-1.3.0/bstring'
+> 
+> make[2]: Nothing to be done for `all'.
+> 
+> make[2]: Leaving directory
+> `/home/CoovaChilli/coova-chilli-1.3.0/bstring'
+> 
+> Making all in src
+> 
+> make[2]: Entering directory `/home/CoovaChilli/coova-chilli-1.3.0/src'
+> 
+> make[3]: Entering directory `/home/CoovaChilli/coova-chilli-1.3.0/src'
+> 
+> gcc -DHAVE_CONFIG_H -I. -I..    -D_GNU_SOURCE -Wall -Werror
+> -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer
+> -funroll-loops -pipe -I../bstring
+> -DDEFCHILLICONF='"/usr/local/etc/chilli.conf"'
+> -DDEFPIDFILE='"/usr/local/var/run/chilli.pid"'
+> -DDEFSTATEDIR='"/usr/local/var/run"' -DSBINDIR='"/usr/local/sbin"'
+> -g -O2 -MT main-opt.o -MD -MP -MF .deps/main-opt.Tpo -c -o main-opt.o
+> main-opt.c
+> 
+> cc1: warnings being treated as errors
+> 
+> main-opt.c: In function ?main?:
+> 
+> main-opt.c:781: error: ?ptr? may be used uninitialized in this
+> function
+> 
+> make[3]: *** [main-opt.o] Error 1
+> 
+> make[3]: Leaving directory `/home/CoovaChilli/coova-chilli-1.3.0/src'
+> 
+> make[2]: *** [all-recursive] Error 1
+> 
+> make[2]: Leaving directory `/home/CoovaChilli/coova-chilli-1.3.0/src'
+> 
+> make[1]: *** [all-recursive] Error 1
+> 
+> make[1]: Leaving directory `/home/CoovaChilli/coova-chilli-1.3.0'
+> 
+> make: *** [all] Error 2
+> 
+> [root at CentOS-6 coova-chilli-1.3.0]#
+> 
+>  
+> 
+>  
+> 
+>  
+> 
+> Thanks and Regards,
+> 
+> Gaurav Kansal
+> 
+> Emp Code - 6274
+> 
+> Mob ? 9910118448
+> 
+> Intercom ? 65031/5091
+> 
+>  
+> 
+> Have you enabled IPv6 on something today...?
+> 
+>  
+> 
+> 
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+-- 
+--
+David Bird
+http://www.linkedin.com/in/dwbird/
+
+
+From david at coova.com  Thu Jul 25 17:34:20 2013
+From: david at coova.com (David Bird)
+Date: Thu, 25 Jul 2013 10:34:20 -0700
+Subject: [Chilli] using coovachilli with wpa
+In-Reply-To: <CAGdcU6qwKrm0+hgi29DnzJw1wNj28JRcna9WRiLo7_rc=SN08w@mail.gmail.com>
+References: <CAGdcU6oF0_-fOjvqGr0Ev_AVU+N705bHHvVeWYqfp6=H_NzOew@mail.gmail.com>
+ <1374698444.6120.13.camel@david-XPS>
+ <CAGdcU6qwKrm0+hgi29DnzJw1wNj28JRcna9WRiLo7_rc=SN08w@mail.gmail.com>
+Message-ID: <1374773660.3039.7.camel@david-XPS>
+
+There are several ways...
+
+Enable the compile time option --enable-location and also
+--enable-proxyvsa
+
+Then I think what you want is to use runtime option --locationcopycalled
+
+Or, --proxylocattr=# where you can define the RADIUS attribute code (#)
+of the attribute from hostapd that you want to use as "location" to be
+sent in attribute ChilliSpot-Location.
+
+
+
+On Thu, 2013-07-25 at 13:06 +0200, Tek?n D?vid wrote:
+> Hi David!
+> 
+> Thanks for the solution, it works, i should've thought about it by myself.
+> 
+> If i understand correctly i can not use different radius secret on
+> each and every access points. If is the situation, is there any way to
+> get to know, which session is through which access point (the initial
+> access point is enough, if there is roaming between the aps).
+> 
+> Thanks again
+> 
+> D?vid
+> 
+> 
+> On Wed, Jul 24, 2013 at 10:40 PM, David Bird <david at coova.com> wrote:
+> > Hi,
+> >
+> > First, you can send the RADIUS from the WPA2 Enterprise AP/Authenticator
+> > to chilli after configuring the following:
+> >
+> >       --proxylisten=STRING      Proxy IP address to listen on
+> >       --proxyport=INT           Proxy UDP port to listen on (0 is off)
+> >       --proxyclient=STRING      IP address of proxy client(s)
+> >       --proxysecret=STRING      Radius proxy shared secret
+> >
+> > These settings control what IP and port chilli will listen for RADIUS on
+> > and who can send to it. Chilli will then proxy this RADIUS through to
+> > it's configured RADIUS servers. When clients are authenticated for
+> > 802.1x, that is then known to chilli and they are authenticated in
+> > chilli. The "WPA Guests" feature allows you do program your RADIUS
+> > server such that it will return Access-Accept even for client stations
+> > that did not successfully authenticate. The Access-Accept is needed for
+> > them to pass the 802.1x/EAP phase and to be able to interact with chilli
+> > and the captive portal. Adding the RADIUS attribute:
+> >
+> > ChilliSpotConfig=require-uam-auth
+> >
+> > to the Access-Accept which didn't really succeed will prompt chilli to
+> > treat the client as unauthorized and sent to the captive portal.
+> >
+> > See
+> > http://coova.org/CoovaChilli/WPACaptivePortal
+> >
+> > David
+> >
+> >
+> >
+> > On Wed, 2013-07-24 at 19:41 +0200, Tek?n D?vid wrote:
+> >> Hi all!
+> >>
+> >> I set up a coovachilli + freeradius + mysql combo at my dorm. It's
+> >> working great with the wired network. Now we want to extend it to the
+> >> wireless as well. Installed an access point configured to wpa2
+> >> enterprise (with the same radius server) and connected to the
+> >> coovachillis's lan side. It can authenticate users and do the process
+> >> fine, but when i want to connect to the internet, i get redirected to
+> >> the coovachilli's captive portal.
+> >> I've read about the wpa guest config parameter, but i don't want to
+> >> let users without sufficient credentials to connect, and reach any of
+> >> my device (neither the captive portal nor the webpages which I allowed
+> >> with uam_allow).
+> >>
+> >> So is there a way, that the users, who authenticated successfully
+> >> through wpa2 (peap + mschapv2) do not need to reauthenticate at the
+> >> captive portal page (and not let users who failed at wpa2 to try to
+> >> authenticate themselves on the captive portal).
+> >>
+> >> Thanks for all the reply, all the best
+> >>
+> >> D?vid
+> >> _______________________________________________
+> >> Chilli mailing list
+> >> Chilli at coova.org
+> >> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+> >
+> > --
+> > --
+> > David Bird
+> > http://www.linkedin.com/in/dwbird/
+> >
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+-- 
+--
+David Bird
+http://www.linkedin.com/in/dwbird/
+
+
+From andrew at polkaspots.com  Fri Jul 26 10:03:32 2013
+From: andrew at polkaspots.com (Andrew Margarit | PolkaSpots)
+Date: Fri, 26 Jul 2013 11:03:32 +0100
+Subject: [Chilli] Prevent start of double instances.
+Message-ID: <51F24974.1020003@polkaspots.com>
+
+Hi guys,
+
+Is there any build in feature to prevent chilli starting multiple instances?
+Something like a lock file ?
+
+Regards,
+Andrew
+---------------------------------------------------------------------------------------
+
+The information contained in this email and its attachments is confidential and may be the subject of legal, professional or other privilege. It is intended only for the named addressees and may not be disclosed to anyone else without consent from PolkaSpots Limited. If you are not the named addressee you must not use, disclose, distribute, copy, print or rely on the contents of this email and should destroy it immediately. Whilst PolkaSpots Limited takes care to protect its systems from electronic virus attack or other harmful event, the firm gives no warranty that this email message (including any attachments to it) is free of any virus or other harmful matter and accepts no responsibility for any loss or damage resulting from the recipient receiving, opening or using it. If you need any further information, please contact the originator of this message on +44 (0)20 7183 1471.
+
+PolkaSpots is a limited company registered in the UK (registered number 05508105). Registered Office: 204 Buspace Studios, Conlan Street, London W10 5AP
+
+Website: www.polkaspots.com
+WiFi Hotspot Blog: www.polkaspots.com/blog
+
+---------------------------------------------------------------------------------------
+
+
+
+From xoneca at gmail.com  Fri Jul 26 14:58:42 2013
+From: xoneca at gmail.com (Xabier Oneca -- xOneca)
+Date: Fri, 26 Jul 2013 16:58:42 +0200
+Subject: [Chilli] Prevent start of double instances.
+In-Reply-To: <CACkgH73NjJNzoSbpSSLWkoWtNA448qOud+ZramugE1dgB-pQPA@mail.gmail.com>
+References: <51F24974.1020003@polkaspots.com>
+ <CACkgH73NjJNzoSbpSSLWkoWtNA448qOud+ZramugE1dgB-pQPA@mail.gmail.com>
+Message-ID: <CACkgH70-a5jYH1jXofOh+fLwF1SE0QXxwAmVXiFW+Da4LT8Gbg@mail.gmail.com>
+
+Hello,
+
+I just use:
+
+ pidof chilli && killall -TERM chilli
+
+And then start chilli as usual.
+
+But you can use:
+
+  pidof chilli || start_chilli_as_usual
+
+El 26/07/2013 12:10, "Andrew Margarit | PolkaSpots" <andrew at polkaspots.com>
+escribi?:
+
+> Hi guys,
+>
+> Is there any build in feature to prevent chilli starting multiple
+instances?
+>> Something like a lock file ?
+>>
+>> Regards,
+>> Andrew
+>>
+---------------------------------------------------------------------------------------
+>>
+>> The information contained in this email and its attachments is
+confidential and may be the subject of legal, professional or other
+privilege. It is intended only for the named addressees and may not be
+disclosed to anyone else without consent from PolkaSpots Limited. If you
+are not the named addressee you must not use, disclose, distribute, copy,
+print or rely on the contents of this email and should destroy it
+immediately. Whilst PolkaSpots Limited takes care to protect its systems
+from electronic virus attack or other harmful event, the firm gives no
+warranty that this email message (including any attachments to it) is free
+of any virus or other harmful matter and accepts no responsibility for any
+loss or damage resulting from the recipient receiving, opening or using it.
+If you need any further information, please contact the originator of this
+message on +44 (0)20 7183 1471.
+>>
+>> PolkaSpots is a limited company registered in the UK (registered number
+05508105). Registered Office: 204 Buspace Studios, Conlan Street, London
+W10 5AP
+>>
+>> Website: www.polkaspots.com
+>> WiFi Hotspot Blog: www.polkaspots.com/blog
+>>
+>>
+---------------------------------------------------------------------------------------
+>>
+>>
+>> _______________________________________________
+>> Chilli mailing list
+>> Chilli at coova.org
+>> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130726/5c2436da/attachment.html>
+
+From radius.sir at gmail.com  Sat Jul 27 14:26:51 2013
+From: radius.sir at gmail.com (Russell Mike)
+Date: Sat, 27 Jul 2013 14:26:51 +0000
+Subject: [Chilli] separate landing page for each customer coovachilli
+In-Reply-To: <CADao4Cq1AgMa5U_BvAxCvHQYErG2h7BYuE930ZR4aNzo_pNG9w@mail.gmail.com>
+References: <CADao4Cq1AgMa5U_BvAxCvHQYErG2h7BYuE930ZR4aNzo_pNG9w@mail.gmail.com>
+Message-ID: <CADao4Cq18Y3poVyFU2oAKuCH=HxEYsnS2jP-XbHMauefTqPQJQ@mail.gmail.com>
+
+Someone please help. I have been searching google since, without success.
+
+Many thanks.
+RM --
+
+On Thursday, July 25, 2013, Russell Mike wrote:
+
+> Hi CoovaChilli List,
+>
+> i have coovachilli_1.3.0 running as central server in multi
+> tenancy environment (ISP Data Center). CoocaChilli is serving about 50
+> hotspots across the city using VLANs. All instances work normal, no
+> issue. But i have asked to provide separate landing page for each
+> customer with their company logo.
+>
+> i have:
+>
+> *nano /usr/local/etc/chilli/coova-vlan10/config*
+> *
+> *
+> HS_WWWDIR=/usr/local/etc/chilli/uploads/www-cafeclub
+> HS_WWWBIN=/usr/local/etc/chilli/upload/wwwsh
+>
+> HS_UAMFORMAT=http://
+> \$HS_UAMLISTEN:\$HS_UAMUIPORT/uploads/www-cafeclub/login.chi
+> HS_UAMHOMEPAGE=http://
+> \$HS_UAMLISTEN:\$HS_UAMPORT/uploads/www-cafeclub/coova.html
+>
+>
+> *nano /usr/local/etc/chilli/coova-vlan20/config*
+>
+> HS_WWWDIR=/usr/local/etc/chilli/uploads/www-yzone
+> HS_WWWBIN=/usr/local/etc/chilli/upload/wwwsh
+>
+> HS_UAMFORMAT=http://
+> \$HS_UAMLISTEN:\$HS_UAMUIPORT/uploads/www-yzone/login.chi
+> HS_UAMHOMEPAGE=http://
+> \$HS_UAMLISTEN:\$HS_UAMPORT/uploads/www-yzone/coova.html
+>
+>
+> Firefox & IE reports: Firefox has detected that the server is redirecting
+> the request for this address in a way that will never complete.
+>
+> Thanks / Regards
+> RM --
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130727/8cb97dee/attachment.html>
+
+From info at easyhorpak.com  Sun Jul 28 02:19:45 2013
+From: info at easyhorpak.com (EasyHorpak.com)
+Date: Sun, 28 Jul 2013 09:19:45 +0700
+Subject: [Chilli] separate landing page for each customer coovachilli
+In-Reply-To: <CADao4Cq18Y3poVyFU2oAKuCH=HxEYsnS2jP-XbHMauefTqPQJQ@mail.gmail.com>
+References: <CADao4Cq1AgMa5U_BvAxCvHQYErG2h7BYuE930ZR4aNzo_pNG9w@mail.gmail.com>
+ <CADao4Cq18Y3poVyFU2oAKuCH=HxEYsnS2jP-XbHMauefTqPQJQ@mail.gmail.com>
+Message-ID: <51F47FC1.5040501@easyhorpak.com>
+
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130728/05585d73/attachment.html>
+
+From xoneca at gmail.com  Sun Jul 28 09:48:11 2013
+From: xoneca at gmail.com (Xabier Oneca -- xOneca)
+Date: Sun, 28 Jul 2013 11:48:11 +0200
+Subject: [Chilli] separate landing page for each customer coovachilli
+In-Reply-To: <51F47FC1.5040501@easyhorpak.com>
+References: <CADao4Cq1AgMa5U_BvAxCvHQYErG2h7BYuE930ZR4aNzo_pNG9w@mail.gmail.com>
+ <CADao4Cq18Y3poVyFU2oAKuCH=HxEYsnS2jP-XbHMauefTqPQJQ@mail.gmail.com>
+ <51F47FC1.5040501@easyhorpak.com>
+Message-ID: <CACkgH72ZAoV+A4EEnL09sfck3zjH3kXRUPq1myX9=kA5GEc1FA@mail.gmail.com>
+
+You can associate NAS-ID with accounts in a DB and check in the UAM to
+display one or another.
+El 28/07/2013 04:43, "EasyHorpak.com" <info at easyhorpak.com> escribi?:
+
+>  On 27/07/2556 21:26, Russell Mike wrote:
+>
+> Someone please help. I have been searching google since, without
+> success.
+>
+>  Many thanks.
+> RM --
+>
+> On Thursday, July 25, 2013, Russell Mike wrote:
+>
+>> Hi CoovaChilli List,
+>>
+>>  i have coovachilli_1.3.0 running as central server in multi
+>> tenancy environment (ISP Data Center). CoocaChilli is serving about 50
+>> hotspots across the city using VLANs. All instances work normal, no
+>> issue. But i have asked to provide separate landing page for each
+>> customer with their company logo.
+>>
+>>  i have:
+>>
+>>  *nano /usr/local/etc/chilli/coova-vlan10/config*
+>>  *
+>> *
+>>  HS_WWWDIR=/usr/local/etc/chilli/uploads/www-cafeclub
+>>  HS_WWWBIN=/usr/local/etc/chilli/upload/wwwsh
+>>
+>>  HS_UAMFORMAT=http://
+>> \$HS_UAMLISTEN:\$HS_UAMUIPORT/uploads/www-cafeclub/login.chi
+>>  HS_UAMHOMEPAGE=http://
+>> \$HS_UAMLISTEN:\$HS_UAMPORT/uploads/www-cafeclub/coova.html
+>>
+>>
+>>  *nano /usr/local/etc/chilli/coova-vlan20/config*
+>>
+>>  HS_WWWDIR=/usr/local/etc/chilli/uploads/www-yzone
+>>  HS_WWWBIN=/usr/local/etc/chilli/upload/wwwsh
+>>
+>>  HS_UAMFORMAT=http://
+>> \$HS_UAMLISTEN:\$HS_UAMUIPORT/uploads/www-yzone/login.chi
+>>  HS_UAMHOMEPAGE=http://
+>> \$HS_UAMLISTEN:\$HS_UAMPORT/uploads/www-yzone/coova.html
+>>
+>>
+>>   Firefox & IE reports: Firefox has detected that the server is
+>> redirecting the request for this address in a way that will never complete
+>> .
+>>
+>>  Thanks / Regards
+>>  RM --
+>>
+>
+>
+> _______________________________________________
+> Chilli mailing listChilli at coova.orghttp://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+>  You can only set landing page per NAS.
+> How you can set landing page per user?
+> How you know who the same user or new user?
+>
+> --
+> *EasyZone Mikrotik Billing v3.0<http://www.easyzonecorp.net/product_detail.php?id=47>
+> * - Radius Billing for Mikrotik Devices
+> *EasyZone xHotspot Billing v3.2 ADDS<http://www.easyzonecorp.net/product_detail.php?id=13>
+> * - supports ADDS/IAS/LDAP ,Vmware, VLAN, Landing Page,Multi Hotspot,
+> Cisco WLC,PPPoE-Server
+> *EasyZone ISP Billing
+> <http://www.easyzonecorp.net/product_detail.php?id=35>* - Billing for
+> Wireless ISP, Local ISP.
+> http://www.easyzonecorp.net
+>
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130728/3054b8c2/attachment.html>
+
+From radius.sir at gmail.com  Mon Jul 29 17:04:54 2013
+From: radius.sir at gmail.com (Russell Mike)
+Date: Mon, 29 Jul 2013 17:04:54 +0000
+Subject: [Chilli] Multiple Login Pages With CoovaChilli_1.3.0 [SOLVED
+	!!!!!!]
+Message-ID: <CADao4CqZi3TeGzv4CB16gV45rji4OoLM+H9BpDyagkkwuaetZA@mail.gmail.com>
+
+Hi CoovaChilli List,
+
+i have coovachilli_1.3.0 running as central server in multi
+tenancy environment (ISP Data Center) using VLANs. CoocaChilli is serving
+about 50 hotspots across the city. A separate CoovaChilli instance is
+running on each VLAN. All instances work normal, without any issue. But i
+have asked to provide separate landing page for each customer with their
+company logo on the login page.
+
+i have the following setup:
+
+root at captive:/usr/local/etc/chilli# ls -l uploads/
+
+drwxr-xr-x  7 www-data www-data 4096 Jul 29 16:04 ./
+drwxr-xr-x 10 root     root     4096 Jul 25 15:06 ../
+drwxrwxr-x  5 chilli   www-data 4096 Jul 29 15:24 www-cafeclub/
+drwxrwxr-x  4 chilli   www-data 4096 Jul 29 16:17 www-yzone/
+
+*nano /usr/local/etc/chilli/coova-vlan10/config*
+
+HS_WWWDIR=/usr/local/etc/chilli/uploads/www-cafeclub
+HS_WWWBIN=/usr/local/etc/chilli/upload/wwwsh
+HS_UAMFORMAT=http://
+\$HS_UAMLISTEN:\$HS_UAMUIPORT/uploads/www-cafeclub/login.chi
+HS_UAMHOMEPAGE=http://
+\$HS_UAMLISTEN:\$HS_UAMPORT/uploads/www-cafeclub/coova.html
+*nano /usr/local/etc/chilli/coova-vlan20/config*
+
+HS_WWWDIR=/usr/local/etc/chilli/uploads/www-yzone
+HS_WWWBIN=/usr/local/etc/chilli/upload/wwwsh
+HS_UAMFORMAT=http://
+\$HS_UAMLISTEN:\$HS_UAMUIPORT/uploads/www-yzone/login.chi
+HS_UAMHOMEPAGE=http://
+\$HS_UAMLISTEN:\$HS_UAMPORT/uploads/www-yzone/coova.html
+Firefox Reports: Firefox has detected that the server is redirecting the
+request for this address in a way that will never complete.
+
+*SOLUTION: *
+i wish to reply my own post because i am able to solve the problem. Here is
+the solution for following requirement.
+
+# Phrase Included For Google Search From Archives
+CoovaChilli Multi-Tenancy Running Multiple VLANs, Separate Login Page For
+Each Customer / Client. Different Landing Page For Each Client / Customer,
+Multiple Login Pages CoovaChilli
+
+*root at captive:/usr/local/etc/chilli# ls -l uploads/*
+drwxr-xr-x  7 www-data www-data 4096 Jul 29 16:04 ./
+drwxr-xr-x 10 root     root     4096 Jul 25 15:06 ../
+drwxrwxr-x  5 chilli   www-data 4096 Jul 29 15:24 www-cafeclub/
+drwxrwxr-x  4 chilli   www-data 4096 Jul 29 16:17 www-yzone/
+
+*nano /usr/local/etc/chilli/coova-vlan10/config*
+HS_WWWDIR=/usr/local/etc/chilli/uploads/www-cafeclub
+HS_WWWBIN=/usr/local/etc/chilli/wwwsh
+HS_UAMFORMAT=http://\$HS_UAMLISTEN:\$HS_UAMUIPORT/www/login.chi
+HS_UAMHOMEPAGE=http://\$HS_UAMLISTEN:\$HS_UAMPORT/www/coova.html
+*
+*
+*nano /usr/local/etc/chilli/coova-vlan20/config*
+HS_WWWDIR=/usr/local/etc/chilli/uploads/www-yzone
+HS_WWWBIN=/usr/local/etc/chilli/wwwsh
+HS_UAMFORMAT=http://\$HS_UAMLISTEN:\$HS_UAMUIPORT/www/login.chi
+HS_UAMHOMEPAGE=http://\$HS_UAMLISTEN:\$HS_UAMPORT/www/coova.html
+
+restart chilli daemon(s)
+Please do not forget to check the permissions etc... on the "www"
+directories
+
+
+Thanks / Regards
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130729/e39e1791/attachment.html>
+
+From sijisunny at gmail.com  Tue Jul 30 17:31:24 2013
+From: sijisunny at gmail.com (Siji Sunny)
+Date: Tue, 30 Jul 2013 23:01:24 +0530
+Subject: [Chilli] Content Injection Failed
+Message-ID: <CADtvZWCvbyd0io2FN1oXfyu_6un+3EHeqkB79fC0+xhU=rgkgA@mail.gmail.com>
+
+Hello All,
+
+After starting Chilli with Content injection runtime parameters,chilli is
+not redirecting to login page, giving access to users without
+authentication.And failed to inject java-script too.
+
+Using CoovaChilli 1.3.0  compiled with ---enable-chilliredir
+--enable-redirinject
+
+Pls guide me.
+
+
+-- 
+Siji Sunny
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130730/432ba522/attachment.html>
+
+From jpereiran at gmail.com  Tue Jul 30 21:39:48 2013
+From: jpereiran at gmail.com (Jorge Pereira)
+Date: Tue, 30 Jul 2013 18:39:48 -0300
+Subject: [Chilli] Problems with SVN/HEAD + deb package
+Message-ID: <CABvP5W21RiyhVO6yqDYQJTjZxH9DNRm57B1jLgWZBWcY5-kD9w@mail.gmail.com>
+
+Hi folks,
+
+i'm trying to build a deb package using the latest revision 485, but get
+only error!
+so, have someone with same problems?
+
+--
+Jorge Pereira
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130730/a4261775/attachment.html>
+
+From chuckd at kooked.co.uk  Wed Jul 31 06:30:02 2013
+From: chuckd at kooked.co.uk (Chuck Dand)
+Date: Wed, 31 Jul 2013 14:30:02 +0800
+Subject: [Chilli] Problems with SVN/HEAD + deb package
+In-Reply-To: <CABvP5W21RiyhVO6yqDYQJTjZxH9DNRm57B1jLgWZBWcY5-kD9w@mail.gmail.com>
+References: <CABvP5W21RiyhVO6yqDYQJTjZxH9DNRm57B1jLgWZBWcY5-kD9w@mail.gmail.com>
+Message-ID: <51F8AEEA.1090201@kooked.co.uk>
+
+On 31/07/13 05:39, Jorge Pereira wrote:
+>
+> i'm trying to build a deb package using the latest revision 485, but get
+> only error!
+> so, have someone with same problems?
+
+It might possibly help if you can provide details of the error that 
+you're getting when you try to build.
+
+-- 
+Chuck Dand
+
+From francesc at socialandbeyond.com  Wed Jul 31 08:06:54 2013
+From: francesc at socialandbeyond.com (=?ISO-8859-1?Q?Francesc_Rom=E0_i_Frigol=E9?=)
+Date: Wed, 31 Jul 2013 10:06:54 +0200
+Subject: [Chilli] Multiple Login Pages With CoovaChilli_1.3.0 [SOLVED
+	!!!!!!]
+In-Reply-To: <CADao4CqZi3TeGzv4CB16gV45rji4OoLM+H9BpDyagkkwuaetZA@mail.gmail.com>
+References: <CADao4CqZi3TeGzv4CB16gV45rji4OoLM+H9BpDyagkkwuaetZA@mail.gmail.com>
+Message-ID: <CAJaV1AwZKHP1TMT0sEpyDk-r3j0m0Kq-uhAkYL4GT-f+8GLwYw@mail.gmail.com>
+
+Thanks Russel for updating us on this issue. Very informative!
+
+
+Francesc Rom? i Frigol?
+
+CTO Social & Beyond
+
++34 93.1234.962
+
+Torre Telef?nica Diagonal 00, planta 11, Wayra
+
+Pla?a Ernest Lluch i Mart?n, 5
+
+08019 Barcelona
+
+
+On Mon, Jul 29, 2013 at 7:04 PM, Russell Mike <radius.sir at gmail.com> wrote:
+
+> Hi CoovaChilli List,
+>
+> i have coovachilli_1.3.0 running as central server in multi
+> tenancy environment (ISP Data Center) using VLANs. CoocaChilli is serving
+> about 50 hotspots across the city. A separate CoovaChilli instance is
+> running on each VLAN. All instances work normal, without any issue. But i
+> have asked to provide separate landing page for each customer with their
+> company logo on the login page.
+>
+> i have the following setup:
+>
+> root at captive:/usr/local/etc/chilli# ls -l uploads/
+>
+> drwxr-xr-x  7 www-data www-data 4096 Jul 29 16:04 ./
+> drwxr-xr-x 10 root     root     4096 Jul 25 15:06 ../
+> drwxrwxr-x  5 chilli   www-data 4096 Jul 29 15:24 www-cafeclub/
+> drwxrwxr-x  4 chilli   www-data 4096 Jul 29 16:17 www-yzone/
+>
+> *nano /usr/local/etc/chilli/coova-vlan10/config*
+>
+> HS_WWWDIR=/usr/local/etc/chilli/uploads/www-cafeclub
+> HS_WWWBIN=/usr/local/etc/chilli/upload/wwwsh
+> HS_UAMFORMAT=http://
+> \$HS_UAMLISTEN:\$HS_UAMUIPORT/uploads/www-cafeclub/login.chi
+> HS_UAMHOMEPAGE=http://
+> \$HS_UAMLISTEN:\$HS_UAMPORT/uploads/www-cafeclub/coova.html
+> *nano /usr/local/etc/chilli/coova-vlan20/config*
+>
+> HS_WWWDIR=/usr/local/etc/chilli/uploads/www-yzone
+> HS_WWWBIN=/usr/local/etc/chilli/upload/wwwsh
+> HS_UAMFORMAT=http://
+> \$HS_UAMLISTEN:\$HS_UAMUIPORT/uploads/www-yzone/login.chi
+> HS_UAMHOMEPAGE=http://
+> \$HS_UAMLISTEN:\$HS_UAMPORT/uploads/www-yzone/coova.html
+> Firefox Reports: Firefox has detected that the server is redirecting the
+> request for this address in a way that will never complete.
+>
+> *SOLUTION: *
+> i wish to reply my own post because i am able to solve the problem. Here
+> is the solution for following requirement.
+>
+> # Phrase Included For Google Search From Archives
+> CoovaChilli Multi-Tenancy Running Multiple VLANs, Separate Login Page For
+> Each Customer / Client. Different Landing Page For Each Client / Customer,
+> Multiple Login Pages CoovaChilli
+>
+> *root at captive:/usr/local/etc/chilli# ls -l uploads/*
+> drwxr-xr-x  7 www-data www-data 4096 Jul 29 16:04 ./
+> drwxr-xr-x 10 root     root     4096 Jul 25 15:06 ../
+> drwxrwxr-x  5 chilli   www-data 4096 Jul 29 15:24 www-cafeclub/
+> drwxrwxr-x  4 chilli   www-data 4096 Jul 29 16:17 www-yzone/
+>
+> *nano /usr/local/etc/chilli/coova-vlan10/config*
+> HS_WWWDIR=/usr/local/etc/chilli/uploads/www-cafeclub
+> HS_WWWBIN=/usr/local/etc/chilli/wwwsh
+> HS_UAMFORMAT=http://\$HS_UAMLISTEN:\$HS_UAMUIPORT/www/login.chi
+> HS_UAMHOMEPAGE=http://\$HS_UAMLISTEN:\$HS_UAMPORT/www/coova.html
+> *
+> *
+> *nano /usr/local/etc/chilli/coova-vlan20/config*
+> HS_WWWDIR=/usr/local/etc/chilli/uploads/www-yzone
+>  HS_WWWBIN=/usr/local/etc/chilli/wwwsh
+> HS_UAMFORMAT=http://\$HS_UAMLISTEN:\$HS_UAMUIPORT/www/login.chi
+> HS_UAMHOMEPAGE=http://\$HS_UAMLISTEN:\$HS_UAMPORT/www/coova.html
+>
+> restart chilli daemon(s)
+> Please do not forget to check the permissions etc... on the "www"
+> directories
+>
+>
+> Thanks / Regards
+>
+>
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130731/aae1c1a8/attachment.html>
+
+From jpereiran at gmail.com  Wed Jul 31 19:14:28 2013
+From: jpereiran at gmail.com (Jorge Pereira)
+Date: Wed, 31 Jul 2013 16:14:28 -0300
+Subject: [Chilli] patch to improve the initialization scheme (Debian based).
+In-Reply-To: <CABvP5W1A322MOhrqygVaZB-j6Ay+oxVhx74QS94z1yZ8zXMJaQ@mail.gmail.com>
+References: <CABvP5W1A322MOhrqygVaZB-j6Ay+oxVhx74QS94z1yZ8zXMJaQ@mail.gmail.com>
+Message-ID: <CABvP5W2KJAOv5qTbXuv2PkfFXpPW-x4=ZAjRZeWJy3c-_YBgKA@mail.gmail.com>
+
+Hi folks,
+
+below, follow two patch to improve the initialization scheme (Debian based).
+
+http://blog.jorgepereira.com.br/jorge/patchs/001-coova-chilli-removing-unused-default-set.patch
+http://blog.jorgepereira.com.br/jorge/patchs/002-coova-chilli-adding-DAEMON_OPTS-in-etc-defaults-chilli.patch
+
+Best regards,
+--
++----------------------------------------------------+
+ Jorge Pereira,
+ Blog: http://blog.jorgepereira.com.br/
++----------------------------------------------------+
+
+From jpereiran at gmail.com  Wed Jul 31 21:21:09 2013
+From: jpereiran at gmail.com (Jorge Pereira)
+Date: Wed, 31 Jul 2013 18:21:09 -0300
+Subject: [Chilli] Problems with SVN/HEAD + deb package
+In-Reply-To: <51F8AEEA.1090201@kooked.co.uk>
+References: <CABvP5W21RiyhVO6yqDYQJTjZxH9DNRm57B1jLgWZBWcY5-kD9w@mail.gmail.com>
+ <51F8AEEA.1090201@kooked.co.uk>
+Message-ID: <CABvP5W21QP29C3cAxm-3mnoCrS+Ejgfgu0WXGk7ibMK9ygG6QA@mail.gmail.com>
+
+Hi Chuck, how u doin?
+
+actually, isn't a mistake. sorry for my last message, the problems is
+that after following steps by [1] using "dhbuild -b". the package *.deb
+missing some files! look the size.
+
+[root at wifi coova-chilli.svn]# dhbuild -b
+...............
+[root at wifi coova-chilli.svn]# ls -lh ../
+total 52K
+drwxr-xr-x  4 root root 4.0K Jul 31 18:14 .
+drwxr-xr-x  4 root root 4.0K Jul 30 20:17 ..
+-rw-r--r--  1 root root  34K Jul 31 18:14 coova-chilli_1.3.0_amd64.deb
+[root at wifi coova-chilli.svn]#
+
+after trying using debin/rules directly, have same problem.
+
+[root at wifi coova-chilli.svn]#fakeroot ./debian/rules clean binary
+[root at wifi coova-chilli.svn]#
+drwxr-xr-x  4 root root 4.0K Jul 31 18:14 .
+drwxr-xr-x  4 root root 4.0K Jul 30 20:17 ..
+-rw-r--r--  1 root root  34K Jul 31 18:14 coova-chilli_1.3.0_amd64.deb
+[root at wifi coova-chilli.svn]#
+
+if anyone have some idea, tell us! :)
+
+[1] http://coova.org/CoovaChilli/DistroBuilding
+
+-- Jorge Pereira
+
+On Wed, Jul 31, 2013 at 3:30 AM, Chuck Dand <chuckd at kooked.co.uk> wrote:
+>
+> On 31/07/13 05:39, Jorge Pereira wrote:
+>>
+>>
+>> i'm trying to build a deb package using the latest revision 485, but get
+>> only error!
+>> so, have someone with same problems?
+>
+>
+> It might possibly help if you can provide details of the error that you're getting when you try to build.
+>
+> --
+> Chuck Dand
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+From jpereiran at gmail.com  Wed Jul 31 22:55:59 2013
+From: jpereiran at gmail.com (Jorge Pereira)
+Date: Wed, 31 Jul 2013 19:55:59 -0300
+Subject: [Chilli] Problems with SVN/HEAD + deb package (SOLVED)
+Message-ID: <CABvP5W3i6HyDbd3q7g7GsO-PVJ3GD+WRUpTvDQ_Y8s3mKNo5nQ@mail.gmail.com>
+
+Chuck,
+
+  after investigation, i've compared the root directory from
+daloradius-0.9-9.tar.gz/debian/*.* with latest
+revision found in svn/debian/*.* and found this file debian/compat[1],
+my simple change was to update
+the compatibility level of debhelper like [1]
+
+my workstation is:
+
+[root at wifi svn]# lsb_release -a
+No LSB modules are available.
+Distributor ID: Debian
+Description:    Debian GNU/Linux 7.1 (wheezy)
+Release:        7.1
+Codename:       wheezy
+[root at wifi svn]#
+
+and my debhelper
+
+[root at wifi svn]# dpkg -s debhelper | grep ^Version
+Version: 9.20120909
+[root at wifi svn]#
+
+[1] http://www.debian.org/doc/manuals/maint-guide/dother.en.html#compat
+
+--
+Jorge Pereira
+
+On Wed, Jul 31, 2013 at 6:21 PM, Jorge Pereira <jpereiran at gmail.com> wrote:
+> Hi Chuck, how u doin?
+>
+> actually, isn't a mistake. sorry for my last message, the problems is
+> that after following steps by [1] using "dhbuild -b". the package *.deb
+> missing some files! look the size.
+>
+> [root at wifi coova-chilli.svn]# dhbuild -b
+> ...............
+> [root at wifi coova-chilli.svn]# ls -lh ../
+> total 52K
+> drwxr-xr-x  4 root root 4.0K Jul 31 18:14 .
+> drwxr-xr-x  4 root root 4.0K Jul 30 20:17 ..
+> -rw-r--r--  1 root root  34K Jul 31 18:14 coova-chilli_1.3.0_amd64.deb
+> [root at wifi coova-chilli.svn]#
+>
+> after trying using debin/rules directly, have same problem.
+>
+> [root at wifi coova-chilli.svn]#fakeroot ./debian/rules clean binary
+> [root at wifi coova-chilli.svn]#
+> drwxr-xr-x  4 root root 4.0K Jul 31 18:14 .
+> drwxr-xr-x  4 root root 4.0K Jul 30 20:17 ..
+> -rw-r--r--  1 root root  34K Jul 31 18:14 coova-chilli_1.3.0_amd64.deb
+> [root at wifi coova-chilli.svn]#
+>
+> if anyone have some idea, tell us! :)
+>
+> [1] http://coova.org/CoovaChilli/DistroBuilding
+>
+> -- Jorge Pereira
+>
+> On Wed, Jul 31, 2013 at 3:30 AM, Chuck Dand <chuckd at kooked.co.uk> wrote:
+>>
+>> On 31/07/13 05:39, Jorge Pereira wrote:
+>>>
+>>>
+>>> i'm trying to build a deb package using the latest revision 485, but get
+>>> only error!
+>>> so, have someone with same problems?
+>>
+>>
+>> It might possibly help if you can provide details of the error that you're getting when you try to build.
+>>
+>> --
+>> Chuck Dand
+>> _______________________________________________
+>> Chilli mailing list
+>> Chilli at coova.org
+>> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+

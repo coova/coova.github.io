@@ -1,0 +1,95 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> UAM web server failover
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20UAM%20web%20server%20failover&In-Reply-To=%3C479B2D5E.9030705%40zizi.ath.cx%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000118.html">
+   <LINK REL="Next"  HREF="000114.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>UAM web server failover</H1>
+    <B>sophana</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20UAM%20web%20server%20failover&In-Reply-To=%3C479B2D5E.9030705%40zizi.ath.cx%3E"
+       TITLE="UAM web server failover">sophana at zizi.ath.cx
+       </A><BR>
+    <I>Sat Jan 26 12:53:50 UTC 2008</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000118.html">admin session on radius
+</A></li>
+        <LI>Next message: <A HREF="000114.html">UAM web server failover
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#113">[ date ]</a>
+              <a href="thread.html#113">[ thread ]</a>
+              <a href="subject.html#113">[ subject ]</a>
+              <a href="author.html#113">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hi
+
+Lot of people would like the UAM webserver failover feature in coova 
+chilli or coovaAP.
+I'd like to help implementing this.
+
+Maybe the first step would be to agree on a spec?
+So here's a simple proposition:
+
+Add an optionnal alternate uam server parameter (or uamserver2)
+Another would be the monitoring period.
+
+Every 15-30 minutes (the monitoring period), an http request is 
+alternatively sent to one of the uam urls with 
+&quot;?ping=1&amp;nasId=xx&amp;calledMac=xx&amp;md5=xx&quot; added to the url.
+The http response should be a text response: Ok
+If current uam response if not Ok:
+  if last resonse from other uam server was Ok: set to other uam server 
+(if not already).
+  else: switch to not available service internal page.
+else if current is OK and state was not available: set to current
+
+If main uam server is ok and currently selecting the alternate, then 
+switch back to the main uam server.
+
+Note that the monitoring process must not be launched by cron because 
+all hotspot may try to send a monitoring request at the same time.
+About some more alternatives, there could be also more than 1 alternate 
+server, and maybe it could be possible to use inexpensive ping requests 
+in addition to http requests.
+
+Now, about the implementation, I don't know if it would be better/easier 
+to do this inside coova chilli, or in a monitoring script.
+
+
+What do you think about all this?
+
+Regards
+Sophana
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000118.html">admin session on radius
+</A></li>
+	<LI>Next message: <A HREF="000114.html">UAM web server failover
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#113">[ date ]</a>
+              <a href="thread.html#113">[ thread ]</a>
+              <a href="subject.html#113">[ subject ]</a>
+              <a href="author.html#113">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

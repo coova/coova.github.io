@@ -1,0 +1,116 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] MacAuth failing after wireless drop
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20MacAuth%20failing%20after%20wireless%20drop&In-Reply-To=%3C1272516909.4496.813.camel%40david-laptop%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001338.html">
+   <LINK REL="Next"  HREF="001318.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] MacAuth failing after wireless drop</H1>
+    <B>David Bird</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20MacAuth%20failing%20after%20wireless%20drop&In-Reply-To=%3C1272516909.4496.813.camel%40david-laptop%3E"
+       TITLE="[Chilli] MacAuth failing after wireless drop">david at coova.com
+       </A><BR>
+    <I>Thu Apr 29 04:55:09 UTC 2010</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001338.html">[Chilli] MacAuth failing after wireless drop
+</A></li>
+        <LI>Next message: <A HREF="001318.html">[Chilli] sarah bachir
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1341">[ date ]</a>
+              <a href="thread.html#1341">[ thread ]</a>
+              <a href="subject.html#1341">[ subject ]</a>
+              <a href="author.html#1341">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hmm.. Well, specifically, there are DHCP-Discover and DHCP-Request. A
+Discover is usually the first packet sent my the subscriber, to which
+the DHCP server replies to with an Offer. Then the client will confirm
+with the Request which should be replied to with an Ack. Yes, some
+client devices will start out with a Request (even noting their previous
+IP address) and that can be Ack'ed or Nak'ed depending on the DHCP
+server. (Note that if Ack'ed here, then there wasn't a Discover packet
+that &quot;allocated&quot; the IP). Thus, just doing Mac auth for the Discover
+might not be sufficient. Indeed, doing RADIUS for every DHCP request
+will mean more RADIUS.. though, I don't think it'll be a problem unless
+a machine is going crazy with DHCP from a virus or something. 
+
+
+On Thu, 2010-04-29 at 10:28 +1000, Jason Allen wrote:
+&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> On 29 April 2010 03:33, Timothy &lt;<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">nzkbuk at gmail.com</A>&gt; wrote:
+</I>&gt;<i>         
+</I>&gt;<i>         
+</I>&gt;<i>         From my experiance a DHCP lease is renewed 1/2 way through the
+</I>&gt;<i>         lease. So if you have a 60 min lease then it would be renewed
+</I>&gt;<i>         every 30 mins.
+</I>&gt;<i>         I'm not sure of the exact state machine of most devices but I
+</I>&gt;<i>         do know from logs that most laptop's try to renew an existing
+</I>&gt;<i>         (or previous) ip address. I don't know what embedded devices
+</I>&gt;<i>         (such as iphones etc) do.
+</I>&gt;<i>         
+</I>&gt;<i> 
+</I>&gt;<i> Reallocation and renewal are different types of requests in a dhcp
+</I>&gt;<i> lease lifecycle. A renewal request would not require macauth
+</I>&gt;<i> processing, whereas - like initial allocation - a reallocation does
+</I>&gt;<i> and should.
+</I>&gt;<i>  
+</I>&gt;<i>         What is the network topoligy, is coova-chilli running on an
+</I>&gt;<i>         access point (such as with openwrt) or have you got a server
+</I>&gt;<i>         with 1 or more AP's / devices connected via a switch?
+</I>&gt;<i>         
+</I>&gt;<i> 
+</I>&gt;<i> Chilli on a Ubuntu server (VM'd) with 94 AP's (DHCP forwarding active)
+</I>&gt;<i> across many switches.
+</I>&gt;<i>  
+</I>&gt;<i>         As for re-authing a session if that would be implemented I
+</I>&gt;<i>         know I would prefer it to be a configurable option (or at
+</I>&gt;<i>         worse a compile time option). Having EVERY DHCP request turn
+</I>&gt;<i>         into a radius request could cause a significant volume of
+</I>&gt;<i>         traffic.
+</I>&gt;<i>         
+</I>&gt;<i> 
+</I>&gt;<i> The reauth should only need to be additionally added to the
+</I>&gt;<i> reallocation dhcp lease request, which would be a small percentage of
+</I>&gt;<i> total dhcp requests.
+</I>&gt;<i> 
+</I>&gt;<i> -- 
+</I>&gt;<i> Cheers,
+</I>&gt;<i> Jason
+</I>&gt;<i> _______________________________________________
+</I>&gt;<i> Chilli mailing list
+</I>&gt;<i> <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">Chilli at coova.org</A>
+</I>&gt;<i> <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">http://lists.coova.org/cgi-bin/mailman/listinfo/chilli</A>
+</I>
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001338.html">[Chilli] MacAuth failing after wireless drop
+</A></li>
+	<LI>Next message: <A HREF="001318.html">[Chilli] sarah bachir
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1341">[ date ]</a>
+              <a href="thread.html#1341">[ thread ]</a>
+              <a href="subject.html#1341">[ subject ]</a>
+              <a href="author.html#1341">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

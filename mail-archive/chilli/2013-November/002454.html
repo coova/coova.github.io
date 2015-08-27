@@ -1,0 +1,150 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] Dynamic VLAN and 8021x
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Dynamic%20VLAN%20and%208021x&In-Reply-To=%3C5284EEDB.4030300%40gmail.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="002453.html">
+   <LINK REL="Next"  HREF="002455.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] Dynamic VLAN and 8021x</H1>
+    <B>Fernando Pizarro</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Dynamic%20VLAN%20and%208021x&In-Reply-To=%3C5284EEDB.4030300%40gmail.com%3E"
+       TITLE="[Chilli] Dynamic VLAN and 8021x">feanpg at gmail.com
+       </A><BR>
+    <I>Thu Nov 14 15:40:11 UTC 2013</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="002453.html">[Chilli] Dynamic VLAN and 8021x
+</A></li>
+        <LI>Next message: <A HREF="002455.html">[Chilli] Dynamic VLAN and 8021x
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2454">[ date ]</a>
+              <a href="thread.html#2454">[ thread ]</a>
+              <a href="subject.html#2454">[ subject ]</a>
+              <a href="author.html#2454">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hi Russel,
+
+I have configured hostapd with dynamic VLAN (8021x) and Coovachilli give 
+me IP address of this VLAN using Tunnel-Type, Tunnel-Medium-Type and 
+Tunnel-Private-Group-Id attributes. But in captive portal I can't 
+autheticated with the same user and password, sure I misconfigured 
+something.
+
+By default, Freeradius 2.1.10 doesn't contains all attributes of 
+ChilliSpot (ChilliSpot-VLAN-Id for example) so I copy update dictionary 
+[1] in /usr/share/freeradius/dictionay.chillispot. If the 
+ChilliSpot-VLAN-Id attribute exist, Radius reply that but I want my 
+clients reconfiguring their DHCP address with this VLAN. I don't know if 
+possible to do.
+
+Now I'm trying to use Coovachilli to proxy request of hostapd and use 
+ChilliSpot VSA attributes, but still I can't do work it.
+
+Thanks for reply.
+Regards. Fernando.
+
+[1] - 
+&lt;<A HREF="https://dev.coova.org/svn/cjradius/tags/jradius-1.1.4/freeradius/dict/dictionary.chillispot">https://dev.coova.org/svn/cjradius/tags/jradius-1.1.4/freeradius/dict/dictionary.chillispot</A>&gt;<A HREF="http://dev.coova.org/svn/coova-chilli/doc/dictionary.chillispot">http://dev.coova.org/svn/coova-chilli/doc/dictionary.chillispot</A>
+
+El 14/11/13 15:52, Russell Mike escribi&#243;:
+&gt;<i> Hi Femando
+</I>&gt;<i>
+</I>&gt;<i> i am also looking for same setup. i will share if i got something 
+</I>&gt;<i> working. But i have asked list members for their ideas but did not 
+</I>&gt;<i> receive any response. i am just asking for their idea not 
+</I>&gt;<i> configuration model. I do not mind if the idea did not work. i am 
+</I>&gt;<i> ready to give attempt. Also, can anyone please tell me what is the use 
+</I>&gt;<i> for ChilliSpot-Vlan-ID ? in which case it can be used ?
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> &lt;&gt;&lt;&gt;&lt;&gt;&lt;&gt;&lt;&gt;&lt;&gt;&lt;&gt;&lt;&gt;&lt;&gt; My Setup &lt;&gt;&lt;&gt;&lt;&gt;&lt;&gt;&lt;&gt;&lt;&gt;&lt;&gt;&lt;&gt;&lt;&gt;
+</I>&gt;<i>
+</I>&gt;<i> We wish to use web content filtering for sales department. Asking 
+</I>&gt;<i> advice if this do able like such.
+</I>&gt;<i>
+</I>&gt;<i> 1.) i have chili running in multi tenancy mode using VLANs. 
+</I>&gt;<i>  VLAN10, VLAN20, VLAN30, VLAN40, VLAN50 - Working !!
+</I>&gt;<i>
+</I>&gt;<i> 2.) VLAN30 CoovaChilli Instance is using parent proxy as Dansgurdian 
+</I>&gt;<i> For Filtering - Working!!
+</I>&gt;<i>
+</I>&gt;<i> 3.) I am thinking to create a radius group &quot;Content-Filtered-Users&quot; 
+</I>&gt;<i>  which has following attribute.
+</I>&gt;<i>
+</I>&gt;<i> Reply-Item: ChilliSpot-Vlan-ID := 30&quot;
+</I>&gt;<i> Check-Item: As_Need
+</I>&gt;<i>
+</I>&gt;<i> 4.) Sales users are part of &quot;Content-Filtered-Users&quot; group
+</I>&gt;<i>
+</I>&gt;<i> 5.) When a user tries to authenticate which is part of 
+</I>&gt;<i> &quot;Content-Filtered-Users&quot; group. Chilli should put || provide access to 
+</I>&gt;<i> those use through VLAN30 so that their traffic is filtered.
+</I>&gt;<i>
+</I>&gt;<i> Have anyone done such or similar for content filtering? i would very 
+</I>&gt;<i> grateful for sharing idea one has done so.
+</I>&gt;<i> &lt;&gt;&lt;&gt;&lt;&gt;&lt;&gt;&lt;&gt;&lt;&gt;&lt;&gt;&lt;&gt;&lt;&gt;
+</I>&gt;<i>
+</I>&gt;<i> Regards / RM--
+</I>&gt;<i>
+</I>&gt;<i> On Thu, Nov 14, 2013 at 8:41 AM, Fernando Pizarro &lt;<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">feanpg at gmail.com</A> 
+</I>&gt;<i> &lt;mailto:<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">feanpg at gmail.com</A>&gt;&gt; wrote:
+</I>&gt;<i>
+</I>&gt;<i>     Hi all!
+</I>&gt;<i>
+</I>&gt;<i>     I'm trying to create captive portal with dynamic VLAN and 8021x. I
+</I>&gt;<i>     found this post of 2010 [1].
+</I>&gt;<i>
+</I>&gt;<i>     - It's possible to do this configuration?
+</I>&gt;<i>     - Coova is able to send DHCP Nack request?
+</I>&gt;<i>
+</I>&gt;<i>     Thanks for all.
+</I>&gt;<i>     Regards. Fernando.
+</I>&gt;<i>
+</I>&gt;<i>     [1] - <A HREF="http://lists.coova.org/pipermail/chilli/2010-April/001231.html">http://lists.coova.org/pipermail/chilli/2010-April/001231.html</A>
+</I>&gt;<i>     _______________________________________________
+</I>&gt;<i>     Chilli mailing list
+</I>&gt;<i>     <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">Chilli at coova.org</A> &lt;mailto:<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">Chilli at coova.org</A>&gt;
+</I>&gt;<i>     <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">http://lists.coova.org/cgi-bin/mailman/listinfo/chilli</A>
+</I>&gt;<i>
+</I>&gt;<i>
+</I>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: &lt;<A HREF="http://lists.coova.org/pipermail/chilli/attachments/20131114/69af743a/attachment-0001.html">http://lists.coova.org/pipermail/chilli/attachments/20131114/69af743a/attachment-0001.html</A>&gt;
+</PRE>
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="002453.html">[Chilli] Dynamic VLAN and 8021x
+</A></li>
+	<LI>Next message: <A HREF="002455.html">[Chilli] Dynamic VLAN and 8021x
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2454">[ date ]</a>
+              <a href="thread.html#2454">[ thread ]</a>
+              <a href="subject.html#2454">[ subject ]</a>
+              <a href="author.html#2454">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

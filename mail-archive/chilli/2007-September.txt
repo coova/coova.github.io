@@ -1,0 +1,3914 @@
+From cfalconer at totalteam.co.nz  Mon Sep  3 02:28:08 2007
+From: cfalconer at totalteam.co.nz (Craig Falconer)
+Date: Mon, 03 Sep 2007 14:28:08 +1200
+Subject: Installation problems
+Message-ID: <1188786489.22418.110.camel@ttt07.totalteam.co.nz>
+
+Hi all
+
+I've got coova 1.0.7 installed from RPM, and having an issue getting the
+login screen to work.
+
+I can go to a web site in the client browser and then get redirected to
+https://cp.domainname:3990/cgi-bin/hotspotlogin.cgi.....etc
+but then firefox says "The connection was interrupted" and "The
+connection to cp.domainname:3990 was interrupted while the page was
+loading"
+
+Manually connecting with "telnet 10.1.0.1 3990" returns this
+[root at test cgi-bin]# telnet 10.1.0.1 3990
+Trying 10.1.0.1...
+Connected to cp.domainname (10.1.0.1).
+Escape character is '^]'.
+         about half a second pause then
+Connection closed by foreign host.
+
+
+What is going on here?  
+
+-- 
+Craig Falconer
+  The Total Team - Managed Systems
+  Office: 0800 888 326 / +643 377 9050
+  Email: worksorder at totalteam.co.nz
+  Web: http://www.totalteam.co.nz/
+
+
+
+
+From lzs at pobox.com  Tue Sep  4 14:54:58 2007
+From: lzs at pobox.com (Lai Zit Seng)
+Date: Tue, 04 Sep 2007 22:54:58 +0800
+Subject: Problem with chillispot and dhcp relay
+Message-ID: <46DD71C2.8050101@pobox.com>
+
+Hi,
+
+I am trying out chillispot-1.0-coova.7. It works great with my wired 
+network clients. But when I start to move on to wireless, I have a problem.
+
+Although the chillispot logs say addresses are being assigned to 
+clients, the client never get any IP address. E.g. I see in my log:
+
+Sep  4 13:58:55 faber chillispot[26842]: chilli.c: 2620: Client 
+MAC=00-13-CE-8B-21-9C assigned IP 172.18.183.12
+
+But actually the client didn't get any IP. From tcpdumping on the 
+chillispot machine, I realize that there is a dhcp relay agent making 
+forwarding DHCP for the actual wireless clients. The dhcp relay unicasts 
+the DHCP packets to chillispot, but chillispot replies to the broadcast 
+IP. Perhaps something has gone wrong here?
+
+Ok, why is there a dhcp relay agent? My wireless network makes use of 
+Cisco Wireless LAN Controller. The controller insists on relaying all 
+DHCP on behalf of the clients, I suppose in order to keep track of DHCP 
+requests and IP assignments, to make sure clients don't "cheat".
+
+Anything I can do with chillispot to accommodate the dhcp relay agent?
+
+Regards,
+
+.lzs
+
+
+From giosue.pacifico at gmail.com  Tue Sep  4 20:02:26 2007
+From: giosue.pacifico at gmail.com (Giosue Pacifico)
+Date: Tue, 4 Sep 2007 22:02:26 +0200
+Subject: Problem with chillispot and dhcp relay
+In-Reply-To: <46DD71C2.8050101@pobox.com>
+References: <46DD71C2.8050101@pobox.com>
+Message-ID: <f9ccc70f0709041302i62ff4a27od7c033018558de1@mail.gmail.com>
+
+Hi,
+with Cisco WLC controller the dynamic interface bound to CoovaChilli
+vlan is the real destination for client dhcp discovery and dhcp relay
+agent as it acts as a L2 filter. If you use chilli as "Primary DHCP
+Server" [read ip helper-address] it won't work because chilli doesn't
+understand unicast request. You ought to setup an external DHCP server
+with scope = "dynip net" & "statip net" in chilli.conf and allow
+communication toward this server with "allowed udp:[external dhcp
+server IP or fqdn]:67" in the same file.
+To reach the dhcp server assign an IP outside the scope to "dhcpif"
+(usually eth1).
+
+client--[dhcp discovery]--->WLC-DYN-IF 172.18.183.3--->(bypasses)
+CHILLI tun0 172.18.183.1/ eth1 172.18.183.2 --->ext DHCP Server
+x.y.w.z
+
+Hope I've been useful,
+ciao
+Giosu?
+
+On 9/4/07, Lai Zit Seng <lzs at pobox.com> wrote:
+> Hi,
+>
+> I am trying out chillispot-1.0-coova.7. It works great with my wired
+> network clients. But when I start to move on to wireless, I have a problem.
+>
+> Although the chillispot logs say addresses are being assigned to
+> clients, the client never get any IP address. E.g. I see in my log:
+>
+> Sep  4 13:58:55 faber chillispot[26842]: chilli.c: 2620: Client
+> MAC=00-13-CE-8B-21-9C assigned IP 172.18.183.12
+>
+> But actually the client didn't get any IP. From tcpdumping on the
+> chillispot machine, I realize that there is a dhcp relay agent making
+> forwarding DHCP for the actual wireless clients. The dhcp relay unicasts
+> the DHCP packets to chillispot, but chillispot replies to the broadcast
+> IP. Perhaps something has gone wrong here?
+>
+> Ok, why is there a dhcp relay agent? My wireless network makes use of
+> Cisco Wireless LAN Controller. The controller insists on relaying all
+> DHCP on behalf of the clients, I suppose in order to keep track of DHCP
+> requests and IP assignments, to make sure clients don't "cheat".
+>
+> Anything I can do with chillispot to accommodate the dhcp relay agent?
+>
+> Regards,
+>
+> .lzs
+>
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>
+>
+
+
+From mem.corruption at gmail.com  Wed Sep  5 15:12:21 2007
+From: mem.corruption at gmail.com (David Bird)
+Date: Wed, 5 Sep 2007 17:12:21 +0200
+Subject: Problem with chillispot and dhcp relay
+In-Reply-To: <46DD71C2.8050101@pobox.com>
+References: <46DD71C2.8050101@pobox.com>
+Message-ID: <ef21d1850709050812qc19e3c6l8d96607a4eb54c73@mail.gmail.com>
+
+I keep forgetting to hit reply-all for the new mailing lists. But,
+ultimately, probably better that people don't mistakenly mail the entire
+list when replying to someone. Anyways, there is a possible fix in svn - but
+testing it is not convenient for me right now ;) It is a simple change -- to
+send unicast when Relay Agent IP is set.
+
+Cheers,
+David
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20070905/9b33ea82/attachment.htm>
+
+From sophana at zizi.ath.cx  Wed Sep  5 22:09:44 2007
+From: sophana at zizi.ath.cx (sophana)
+Date: Thu, 06 Sep 2007 00:09:44 +0200
+Subject: Problems compiling coova-chilli svn
+Message-ID: <46DF2928.7010904@zizi.ath.cx>
+
+Hi
+
+I'm trying to compile coova-chilli svn with centos4 (redhat el4)
+
+running bootstrap, I'm getting this warning:
+
+aclocal:configure.in:17: warning: macro `AM_PROG_LIBTOOL' not found in 
+library
+bstring/Makefile.am:1: Libtool library used but `LIBTOOL' is undefined
+bstring/Makefile.am:1:
+bstring/Makefile.am:1: The usual way to define `LIBTOOL' is to add 
+`AC_PROG_LIBTOOL'
+bstring/Makefile.am:1: to `configure.in' and run `aclocal' and 
+`autoconf' again.
+
+then configure starts, and I get
+...
+configure: creating ./config.status
+config.status: creating Makefile
+config.status: error: cannot find input file: Makefile.in
+make: *** No rule to make target `clean'.  Stop.
+rm: cannot remove `libtool': No such file or directory
+
+I would also like to compile the coova openwrt (coovaAP) ipk file.
+If you have a pointer to a howto, it would be nice.
+
+Thanks
+
+
+From sophana at zizi.ath.cx  Wed Sep  5 22:21:11 2007
+From: sophana at zizi.ath.cx (sophana)
+Date: Thu, 06 Sep 2007 00:21:11 +0200
+Subject: Problems compiling coova-chilli svn
+In-Reply-To: <46DF2928.7010904@zizi.ath.cx>
+References: <46DF2928.7010904@zizi.ath.cx>
+Message-ID: <46DF2BD7.50004@zizi.ath.cx>
+
+Sorry, I just had to install libtool...
+It now compiles, but I can't test it as I don't have the right ethernet 
+interfaces.
+I will now try to follow the instructions here:
+http://wiki.openwrt.org/BuildingPackagesHowTo
+
+sophana a ?crit :
+> Hi
+>
+> I'm trying to compile coova-chilli svn with centos4 (redhat el4)
+>
+> running bootstrap, I'm getting this warning:
+>
+> aclocal:configure.in:17: warning: macro `AM_PROG_LIBTOOL' not found in 
+> library
+> bstring/Makefile.am:1: Libtool library used but `LIBTOOL' is undefined
+> bstring/Makefile.am:1:
+> bstring/Makefile.am:1: The usual way to define `LIBTOOL' is to add 
+> `AC_PROG_LIBTOOL'
+> bstring/Makefile.am:1: to `configure.in' and run `aclocal' and 
+> `autoconf' again.
+>
+> then configure starts, and I get
+> ...
+> configure: creating ./config.status
+> config.status: creating Makefile
+> config.status: error: cannot find input file: Makefile.in
+> make: *** No rule to make target `clean'.  Stop.
+> rm: cannot remove `libtool': No such file or directory
+>
+> I would also like to compile the coova openwrt (coovaAP) ipk file.
+> If you have a pointer to a howto, it would be nice.
+>
+> Thanks
+>
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>
+>
+
+
+
+From mem.corruption at gmail.com  Thu Sep  6 06:05:45 2007
+From: mem.corruption at gmail.com (David Bird)
+Date: Thu, 6 Sep 2007 08:05:45 +0200
+Subject: Problems compiling coova-chilli svn
+In-Reply-To: <46DF2BD7.50004@zizi.ath.cx>
+References: <46DF2928.7010904@zizi.ath.cx> <46DF2BD7.50004@zizi.ath.cx>
+Message-ID: <ef21d1850709052305xd9bfd95nbe549ac3f8deed16@mail.gmail.com>
+
+Hi Sophana,
+
+I will build you a ipk this evening... you need it for
+whiterussian/CoovaAP right? I'm changing things in the coova-chilli
+ipk to make it more generic for possible inclusion in OpenWrt proper.
+So, the ipk might not work with the current CoovaAP webif - is that a
+problem? Maybe instead I'll just tgz up the replacement binaries.
+
+Cheers,
+David
+
+On 9/6/07, sophana <sophana at zizi.ath.cx> wrote:
+> Sorry, I just had to install libtool...
+> It now compiles, but I can't test it as I don't have the right ethernet
+> interfaces.
+> I will now try to follow the instructions here:
+> http://wiki.openwrt.org/BuildingPackagesHowTo
+>
+> sophana a ?crit :
+> > Hi
+> >
+> > I'm trying to compile coova-chilli svn with centos4 (redhat el4)
+> >
+> > running bootstrap, I'm getting this warning:
+> >
+> > aclocal:configure.in:17: warning: macro `AM_PROG_LIBTOOL' not found in
+> > library
+> > bstring/Makefile.am:1: Libtool library used but `LIBTOOL' is undefined
+> > bstring/Makefile.am:1:
+> > bstring/Makefile.am:1: The usual way to define `LIBTOOL' is to add
+> > `AC_PROG_LIBTOOL'
+> > bstring/Makefile.am:1: to `configure.in' and run `aclocal' and
+> > `autoconf' again.
+> >
+> > then configure starts, and I get
+> > ...
+> > configure: creating ./config.status
+> > config.status: creating Makefile
+> > config.status: error: cannot find input file: Makefile.in
+> > make: *** No rule to make target `clean'.  Stop.
+> > rm: cannot remove `libtool': No such file or directory
+> >
+> > I would also like to compile the coova openwrt (coovaAP) ipk file.
+> > If you have a pointer to a howto, it would be nice.
+> >
+> > Thanks
+> >
+> > ---------------------------------------------------------------------
+> > To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> > For additional commands, e-mail: chilli-help at coova.org
+> > Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> > Forum: http://coova.org/phpBB3/viewforum.php?f=4
+> >
+> >
+>
+>
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>
+>
+
+
+From sophana at zizi.ath.cx  Thu Sep  6 07:10:40 2007
+From: sophana at zizi.ath.cx (sophana)
+Date: Thu, 06 Sep 2007 09:10:40 +0200
+Subject: Problems compiling coova-chilli svn
+In-Reply-To: <ef21d1850709052305xd9bfd95nbe549ac3f8deed16@mail.gmail.com>
+References: <46DF2928.7010904@zizi.ath.cx> <46DF2BD7.50004@zizi.ath.cx> <ef21d1850709052305xd9bfd95nbe549ac3f8deed16@mail.gmail.com>
+Message-ID: <46DFA7F0.1030304@zizi.ath.cx>
+
+David Bird a ?crit :
+> Hi Sophana,
+>
+> I will build you a ipk this evening... you need it for
+> whiterussian/CoovaAP right? I'm changing things in the coova-chilli
+> ipk to make it more generic for possible inclusion in OpenWrt proper.
+> So, the ipk might not work with the current CoovaAP webif - is that a
+> problem? Maybe instead I'll just tgz up the replacement binaries.
+>
+> Cheers,
+> David
+>   
+I could make a dirty hack compiling chillispot 1.1 with the sdk with the 
+chillispot ipk package.
+Then I simply replaced the chillispot build tree in build_mipsel by the 
+coova-chilli svn
+and it compiled.
+But I haven't tried the resulting ipk yet.
+I will have to rework the makefile.
+
+Could publish a coova-chilli package directory into the svn tree? 
+(patch, makefile and files)
+
+What I'm trying to do is to integrate my future uam failover script into 
+coova-chilli and coovaAP/whiterussian/dd-wrt/...
+
+Thanks
+
+
+
+
+From mem.corruption at gmail.com  Thu Sep  6 09:47:58 2007
+From: mem.corruption at gmail.com (David Bird)
+Date: Thu, 6 Sep 2007 11:47:58 +0200
+Subject: dns tunnels a threat?
+Message-ID: <ef21d1850709060247v2456aa3dud45905c90d051bf8@mail.gmail.com>
+
+Hello,
+
+How many people consider dns tunneling a real concern? Just curious...
+
+Never heard of it? see http://dnstunnel.de/
+
+It could be a simple matter of dropping DNS packets with TXT records before
+authentication. No?
+
+David
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20070906/d9db421b/attachment.htm>
+
+From gunther.mayer at googlemail.com  Thu Sep  6 13:42:33 2007
+From: gunther.mayer at googlemail.com (Gunther Mayer)
+Date: Thu, 06 Sep 2007 15:42:33 +0200
+Subject: dns tunnels a threat?
+In-Reply-To: <ef21d1850709060247v2456aa3dud45905c90d051bf8@mail.gmail.com>
+References: <ef21d1850709060247v2456aa3dud45905c90d051bf8@mail.gmail.com>
+Message-ID: <46E003C9.5020604@gmail.com>
+
+David Bird wrote:
+> Hello,
+>
+> How many people consider dns tunneling a real concern? Just curious...
+>
+> Never heard of it? see http://dnstunnel.de/
+>
+> It could be a simple matter of dropping DNS packets with TXT records 
+> before authentication. No?
+Wow, I always knew this was possible in theory but for the lack of 
+practical solutions I heard of I never paid too much attention to it. 
+Guess I'll now definitely chuck in that iptables dns redirect rule when 
+I get around to enabling anydns...
+
+
+From nextime at nexlab.it  Thu Sep  6 14:47:00 2007
+From: nextime at nexlab.it (nextime at nexlab.it)
+Date: Thu, 6 Sep 2007 16:47:00 +0200
+Subject: dns tunnels a threat?
+In-Reply-To: <ef21d1850709060247v2456aa3dud45905c90d051bf8@mail.gmail.com>
+References: <ef21d1850709060247v2456aa3dud45905c90d051bf8@mail.gmail.com>
+Message-ID: <20070906144700.GA21023@dedalo.nexlab.it>
+
+> Hello,
+> 
+> How many people consider dns tunneling a real concern? Just curious...
+
+For me is a real issue as the italian laws say that anyone setup a free
+or pay hot-spot need to register personal data ( document ) and to trace
+the logs of connection/disconnection time for any user.
+ 
+> Never heard of it? see http://dnstunnel.de/
+>
+
+This is one "public", but ther's many software that permit to setup a
+"personal" and more advanced tunnel.
+
+> 
+> It could be a simple matter of dropping DNS packets with TXT records before
+> authentication. No?
+
+No, in theory ( and even in reality ) it is possible to make a dns
+tunnel even on other query type, like NS, MX, A, CNAME and so on.
+
+Dropping TXT request block *some* of the dnstunnel software, but not
+all, and for the "cracker" prospective is only a way to make the tunnel
+more slow, but not blocked.
+
+I use a different approach:
+
+All dns request are permitted only to a my dns server over ( so, i have
+only one dns server centralized for many hot-spots ).
+
+I've written a little udp relayer that get all udp request on a specific
+port ( of course 53 ) on the "user" side, ad redirect all the packets to
+two different ip/port, one by default, and the other one if the source
+ip of the request is in a list ( in a simple file text list ).
+
+
+The daemon refresh the "alternative ip" list by a SIGUSR1 signal.
+
+Now, on the conup and condown script of coova-chilli, i put some lines
+of shell script that get the list of already authenticated users by
+perform a chilli_query <socket> dhcp-list | grep pass | awk awk -F ' ' '{print $2}' > /tmp/listfile
+and then send a SIGUSR1 signal to my daemon refreshing the "internal" list.
+
+By default i send all packets to a "fake" dns server that manage *only* A, CNAME and AAAA records, 
+and where i use iptables to setup a very restrictive policy about how many packets
+can comein ( i permit only 2 packets/second, not more that 100 packets in 5 minutes ).
+
+When a client is authenticated, all the dns request are redirected to a "real and normal" bind server, no more 
+restricted.
+
+In this way i block *any* dns tunnel.
+
+> David
+
+-- 
+
+Franco (nextime) Lanza
+Busto Arsizio - Italy
+SIP://casa at casa.nexlab.it
+
+NO TCPA: http://www.no1984.org
+you can download my public key at:
+http://danex.nexlab.it/nextime.asc || Key Servers
+Key ID = D6132D50
+Key fingerprint = 66ED 5211 9D59 DA53 1DF7  4189 DFED F580 D613 2D50
+-----------------------------------
+echo 16i[q]sa[ln0=aln100%Pln100/snlbx]sbA0D212153574F444E49572045535520454D20454B414D204F54204847554F4E452059415020544F4E4E4143205345544147204C4C4942snlbxq | dc
+-----------------------------------
+
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: not available
+Type: application/pgp-signature
+Size: 189 bytes
+Desc: not available
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20070906/4ffe9ffa/attachment.pgp>
+
+From deltroo at gmail.com  Thu Sep  6 18:01:06 2007
+From: deltroo at gmail.com (Yannick Deltroo)
+Date: Thu, 6 Sep 2007 20:01:06 +0200
+Subject: dns tunnels a threat?
+In-Reply-To: <20070906144700.GA21023@dedalo.nexlab.it>
+References: <ef21d1850709060247v2456aa3dud45905c90d051bf8@mail.gmail.com>
+	 <20070906144700.GA21023@dedalo.nexlab.it>
+Message-ID: <96b73a1a0709061101l46154560m6badd2742fd559c8@mail.gmail.com>
+
+A robust way of blocking DNS tunneling would be to add simple DNS
+server functionalities inside coova. This internal DNS server ("coova
+IDNS") would have the following properties:
+1 - all non authorized DNS clients have their requests redirected to coova IDNS
+2 - coova IDNS resolves all the hosts given in the white list to their
+IPs (using upstream DNS)
+3 - coova IDNS resolves any other hostname to the uamhomepage IP (with
+no-cache/ 1 second TTL).
+4 - authorized clients can use their own DNS
+
+This should contain any DNS tunneling attempt (unless you put a DNS
+tunnel endpoint on one of the whitelisted hosts!)
+
+To answer David's initial question...
+... I think DNS tunneling is a significant threat. Not an immediate
+threat. But definitely as soon as someone writes an easy to
+use/install DNS tunnel client/server. That may happen any time.
+
+DNS tunneling payload is rather small, but it's enough to check
+e-mails (as long as there's no IPower Point attachments!)
+
+On 9/6/07, nextime at nexlab.it <nextime at nexlab.it> wrote:
+> > Hello,
+> >
+> > How many people consider dns tunneling a real concern? Just curious...
+>
+> For me is a real issue as the italian laws say that anyone setup a free
+> or pay hot-spot need to register personal data ( document ) and to trace
+> the logs of connection/disconnection time for any user.
+>
+> > Never heard of it? see http://dnstunnel.de/
+> >
+>
+> This is one "public", but ther's many software that permit to setup a
+> "personal" and more advanced tunnel.
+>
+> >
+> > It could be a simple matter of dropping DNS packets with TXT records before
+> > authentication. No?
+>
+> No, in theory ( and even in reality ) it is possible to make a dns
+> tunnel even on other query type, like NS, MX, A, CNAME and so on.
+>
+> Dropping TXT request block *some* of the dnstunnel software, but not
+> all, and for the "cracker" prospective is only a way to make the tunnel
+> more slow, but not blocked.
+>
+> I use a different approach:
+>
+> All dns request are permitted only to a my dns server over ( so, i have
+> only one dns server centralized for many hot-spots ).
+>
+> I've written a little udp relayer that get all udp request on a specific
+> port ( of course 53 ) on the "user" side, ad redirect all the packets to
+> two different ip/port, one by default, and the other one if the source
+> ip of the request is in a list ( in a simple file text list ).
+>
+>
+> The daemon refresh the "alternative ip" list by a SIGUSR1 signal.
+>
+> Now, on the conup and condown script of coova-chilli, i put some lines
+> of shell script that get the list of already authenticated users by
+> perform a chilli_query <socket> dhcp-list | grep pass | awk awk -F ' ' '{print $2}' > /tmp/listfile
+> and then send a SIGUSR1 signal to my daemon refreshing the "internal" list.
+>
+> By default i send all packets to a "fake" dns server that manage *only* A, CNAME and AAAA records,
+> and where i use iptables to setup a very restrictive policy about how many packets
+> can comein ( i permit only 2 packets/second, not more that 100 packets in 5 minutes ).
+>
+> When a client is authenticated, all the dns request are redirected to a "real and normal" bind server, no more
+> restricted.
+>
+> In this way i block *any* dns tunnel.
+>
+> > David
+>
+> --
+>
+> Franco (nextime) Lanza
+> Busto Arsizio - Italy
+> SIP://casa at casa.nexlab.it
+>
+> NO TCPA: http://www.no1984.org
+> you can download my public key at:
+> http://danex.nexlab.it/nextime.asc || Key Servers
+> Key ID = D6132D50
+> Key fingerprint = 66ED 5211 9D59 DA53 1DF7  4189 DFED F580 D613 2D50
+> -----------------------------------
+> echo 16i[q]sa[ln0=aln100%Pln100/snlbx]sbA0D212153574F444E49572045535520454D20454B414D204F54204847554F4E452059415020544F4E4E4143205345544147204C4C4942snlbxq | dc
+> -----------------------------------
+>
+>
+> -----BEGIN PGP SIGNATURE-----
+> Version: GnuPG v1.4.5 (GNU/Linux)
+>
+> iD8DBQFG4BLk3+31gNYTLVARArH8AKCugNQY0+NGRJ9nQ/q8Y1I1ANzKogCgrOfn
+> lXOnEsR62gjlEF3vMf/wwUM=
+> =DjpK
+> -----END PGP SIGNATURE-----
+>
+>
+
+
+From m.simioni at gmail.com  Thu Sep  6 19:38:19 2007
+From: m.simioni at gmail.com (Marco Simioni)
+Date: Thu, 6 Sep 2007 21:38:19 +0200
+Subject: dns tunnels a threat?
+In-Reply-To: <96b73a1a0709061101l46154560m6badd2742fd559c8@mail.gmail.com>
+References: <ef21d1850709060247v2456aa3dud45905c90d051bf8@mail.gmail.com>
+	 <20070906144700.GA21023@dedalo.nexlab.it>
+	 <96b73a1a0709061101l46154560m6badd2742fd559c8@mail.gmail.com>
+Message-ID: <f71cb680709061238s391192c9xd02d2faf2ecc67ba@mail.gmail.com>
+
+I agree with Franco, because i live in Italy too.
+
+Also, in this tool there's an interesting and useful implementation of
+DNS tunneling :
+
+http://sqlninja.sourceforge.net/
+
+"DNS-tunneled pseudo-shell, when no TCP/UDP ports are available for a
+direct/reverse shell, but the DB server can resolve external hostnames
+(check the documentation for details about how this works)"
+
+2007/9/6, Yannick Deltroo <deltroo at gmail.com>:
+> A robust way of blocking DNS tunneling would be to add simple DNS
+> server functionalities inside coova. This internal DNS server ("coova
+> IDNS") would have the following properties:
+> 1 - all non authorized DNS clients have their requests redirected to coova IDNS
+> 2 - coova IDNS resolves all the hosts given in the white list to their
+> IPs (using upstream DNS)
+> 3 - coova IDNS resolves any other hostname to the uamhomepage IP (with
+> no-cache/ 1 second TTL).
+> 4 - authorized clients can use their own DNS
+>
+> This should contain any DNS tunneling attempt (unless you put a DNS
+> tunnel endpoint on one of the whitelisted hosts!)
+>
+> To answer David's initial question...
+> ... I think DNS tunneling is a significant threat. Not an immediate
+> threat. But definitely as soon as someone writes an easy to
+> use/install DNS tunnel client/server. That may happen any time.
+>
+> DNS tunneling payload is rather small, but it's enough to check
+> e-mails (as long as there's no IPower Point attachments!)
+>
+> On 9/6/07, nextime at nexlab.it <nextime at nexlab.it> wrote:
+> > > Hello,
+> > >
+> > > How many people consider dns tunneling a real concern? Just curious...
+> >
+> > For me is a real issue as the italian laws say that anyone setup a free
+> > or pay hot-spot need to register personal data ( document ) and to trace
+> > the logs of connection/disconnection time for any user.
+> >
+> > > Never heard of it? see http://dnstunnel.de/
+> > >
+> >
+> > This is one "public", but ther's many software that permit to setup a
+> > "personal" and more advanced tunnel.
+> >
+> > >
+> > > It could be a simple matter of dropping DNS packets with TXT records before
+> > > authentication. No?
+> >
+> > No, in theory ( and even in reality ) it is possible to make a dns
+> > tunnel even on other query type, like NS, MX, A, CNAME and so on.
+> >
+> > Dropping TXT request block *some* of the dnstunnel software, but not
+> > all, and for the "cracker" prospective is only a way to make the tunnel
+> > more slow, but not blocked.
+> >
+> > I use a different approach:
+> >
+> > All dns request are permitted only to a my dns server over ( so, i have
+> > only one dns server centralized for many hot-spots ).
+> >
+> > I've written a little udp relayer that get all udp request on a specific
+> > port ( of course 53 ) on the "user" side, ad redirect all the packets to
+> > two different ip/port, one by default, and the other one if the source
+> > ip of the request is in a list ( in a simple file text list ).
+> >
+> >
+> > The daemon refresh the "alternative ip" list by a SIGUSR1 signal.
+> >
+> > Now, on the conup and condown script of coova-chilli, i put some lines
+> > of shell script that get the list of already authenticated users by
+> > perform a chilli_query <socket> dhcp-list | grep pass | awk awk -F ' ' '{print $2}' > /tmp/listfile
+> > and then send a SIGUSR1 signal to my daemon refreshing the "internal" list.
+> >
+> > By default i send all packets to a "fake" dns server that manage *only* A, CNAME and AAAA records,
+> > and where i use iptables to setup a very restrictive policy about how many packets
+> > can comein ( i permit only 2 packets/second, not more that 100 packets in 5 minutes ).
+> >
+> > When a client is authenticated, all the dns request are redirected to a "real and normal" bind server, no more
+> > restricted.
+> >
+> > In this way i block *any* dns tunnel.
+> >
+> > > David
+> >
+> > --
+> >
+> > Franco (nextime) Lanza
+> > Busto Arsizio - Italy
+> > SIP://casa at casa.nexlab.it
+> >
+> > NO TCPA: http://www.no1984.org
+> > you can download my public key at:
+> > http://danex.nexlab.it/nextime.asc || Key Servers
+> > Key ID = D6132D50
+> > Key fingerprint = 66ED 5211 9D59 DA53 1DF7  4189 DFED F580 D613 2D50
+> > -----------------------------------
+> > echo 16i[q]sa[ln0=aln100%Pln100/snlbx]sbA0D212153574F444E49572045535520454D20454B414D204F54204847554F4E452059415020544F4E4E4143205345544147204C4C4942snlbxq | dc
+> > -----------------------------------
+> >
+> >
+> > -----BEGIN PGP SIGNATURE-----
+> > Version: GnuPG v1.4.5 (GNU/Linux)
+> >
+> > iD8DBQFG4BLk3+31gNYTLVARArH8AKCugNQY0+NGRJ9nQ/q8Y1I1ANzKogCgrOfn
+> > lXOnEsR62gjlEF3vMf/wwUM=
+> > =DjpK
+> > -----END PGP SIGNATURE-----
+> >
+> >
+>
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>
+>
+
+
+From nextime at nexlab.it  Thu Sep  6 20:30:47 2007
+From: nextime at nexlab.it (nextime at nexlab.it)
+Date: Thu, 6 Sep 2007 22:30:47 +0200
+Subject: dns tunnels a threat?
+In-Reply-To: <96b73a1a0709061101l46154560m6badd2742fd559c8@mail.gmail.com>
+References: <ef21d1850709060247v2456aa3dud45905c90d051bf8@mail.gmail.com> <20070906144700.GA21023@dedalo.nexlab.it> <96b73a1a0709061101l46154560m6badd2742fd559c8@mail.gmail.com>
+Message-ID: <20070906203047.GA3728@dedalo.nexlab.it>
+
+> A robust way of blocking DNS tunneling would be to add simple DNS
+> server functionalities inside coova. This internal DNS server ("coova
+> IDNS") would have the following properties:
+> 1 - all non authorized DNS clients have their requests redirected to coova IDNS
+
+Like my solution, the only one difference is that my solution isn't
+integrated in coova.
+
+> 2 - coova IDNS resolves all the hosts given in the white list to their
+> IPs (using upstream DNS)
+> 3 - coova IDNS resolves any other hostname to the uamhomepage IP (with
+> no-cache/ 1 second TTL).
+
+This won't work.
+TTL and cache are in the rfc of dns. But the majority of the browsers,
+expecially for Internet Explorer but also for many others, and many
+resolvers don't implement a cache system based on TTL.
+
+They simply have an internal cache.
+
+For example in IE/Windows ther's an internal resolver cache with
+3600 seconds ( yes, 1 hour) of timeout by default. You can change
+the timeout *only* by changing some key with regedit.
+
+So, the TTL/no_cache solution simply won't work.
+
+This is why i've choosed to use a "fake" dns that respond with 
+*real* resolved records, but with strong limits.
+
+
+> 4 - authorized clients can use their own DNS
+
+No problem on this.
+
+
+ 
+> This should contain any DNS tunneling attempt (unless you put a DNS
+> tunnel endpoint on one of the whitelisted hosts!)
+> 
+> To answer David's initial question...
+> ... I think DNS tunneling is a significant threat. Not an immediate
+> threat. But definitely as soon as someone writes an easy to
+> use/install DNS tunnel client/server. That may happen any time.
+
+Ther's already many different "easy" and "monkeys approved" tools.
+
+With a simple apt-get for debian linux, setup.exe click with windows,
+rpm-uri something with red-hattians linux distros you can have a dns
+tunnel working in about 5 minutes having a zone delegated ( even a 
+free one ) and a server with a public ip to use as end-point.
+
+> DNS tunneling payload is rather small, but it's enough to check
+> e-mails (as long as there's no IPower Point attachments!)
+
+And enough to do something you don't want to be done like some
+defacement, cracking, or even simply send something appearing as you
+by ip address.
+
+This is why in italy ther's a law ( the "Pisanu" law from the name of
+the ex-minister Pisanu ) against terrorism that want all logs to permit
+the association "user/ip/time -> name, surname".
+ 
+I don't want to be incrimined for terrorism  because of a dns tunnel :).
+
+ 
+> On 9/6/07, nextime at nexlab.it <nextime at nexlab.it> wrote:
+> > > Hello,
+> > >
+> > > How many people consider dns tunneling a real concern? Just curious...
+> >
+> > For me is a real issue as the italian laws say that anyone setup a free
+> > or pay hot-spot need to register personal data ( document ) and to trace
+> > the logs of connection/disconnection time for any user.
+> >
+> > > Never heard of it? see http://dnstunnel.de/
+> > >
+> >
+> > This is one "public", but ther's many software that permit to setup a
+> > "personal" and more advanced tunnel.
+> >
+> > >
+> > > It could be a simple matter of dropping DNS packets with TXT records before
+> > > authentication. No?
+> >
+> > No, in theory ( and even in reality ) it is possible to make a dns
+> > tunnel even on other query type, like NS, MX, A, CNAME and so on.
+> >
+> > Dropping TXT request block *some* of the dnstunnel software, but not
+> > all, and for the "cracker" prospective is only a way to make the tunnel
+> > more slow, but not blocked.
+> >
+> > I use a different approach:
+> >
+> > All dns request are permitted only to a my dns server over ( so, i have
+> > only one dns server centralized for many hot-spots ).
+> >
+> > I've written a little udp relayer that get all udp request on a specific
+> > port ( of course 53 ) on the "user" side, ad redirect all the packets to
+> > two different ip/port, one by default, and the other one if the source
+> > ip of the request is in a list ( in a simple file text list ).
+> >
+> >
+> > The daemon refresh the "alternative ip" list by a SIGUSR1 signal.
+> >
+> > Now, on the conup and condown script of coova-chilli, i put some lines
+> > of shell script that get the list of already authenticated users by
+> > perform a chilli_query <socket> dhcp-list | grep pass | awk awk -F ' ' '{print $2}' > /tmp/listfile
+> > and then send a SIGUSR1 signal to my daemon refreshing the "internal" list.
+> >
+> > By default i send all packets to a "fake" dns server that manage *only* A, CNAME and AAAA records,
+> > and where i use iptables to setup a very restrictive policy about how many packets
+> > can comein ( i permit only 2 packets/second, not more that 100 packets in 5 minutes ).
+> >
+> > When a client is authenticated, all the dns request are redirected to a "real and normal" bind server, no more
+> > restricted.
+> >
+> > In this way i block *any* dns tunnel.
+> >
+> > > David
+> >
+> > --
+> >
+> > Franco (nextime) Lanza
+> > Busto Arsizio - Italy
+> > SIP://casa at casa.nexlab.it
+> >
+> > NO TCPA: http://www.no1984.org
+> > you can download my public key at:
+> > http://danex.nexlab.it/nextime.asc || Key Servers
+> > Key ID = D6132D50
+> > Key fingerprint = 66ED 5211 9D59 DA53 1DF7  4189 DFED F580 D613 2D50
+> > -----------------------------------
+> > echo 16i[q]sa[ln0=aln100%Pln100/snlbx]sbA0D212153574F444E49572045535520454D20454B414D204F54204847554F4E452059415020544F4E4E4143205345544147204C4C4942snlbxq | dc
+> > -----------------------------------
+> >
+> >
+> > -----BEGIN PGP SIGNATURE-----
+> > Version: GnuPG v1.4.5 (GNU/Linux)
+> >
+> > iD8DBQFG4BLk3+31gNYTLVARArH8AKCugNQY0+NGRJ9nQ/q8Y1I1ANzKogCgrOfn
+> > lXOnEsR62gjlEF3vMf/wwUM=
+> > =DjpK
+> > -----END PGP SIGNATURE-----
+> >
+> >
+> 
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+
+-- 
+
+Franco (nextime) Lanza
+Busto Arsizio - Italy
+SIP://casa at casa.nexlab.it
+
+NO TCPA: http://www.no1984.org
+you can download my public key at:
+http://danex.nexlab.it/nextime.asc || Key Servers
+Key ID = D6132D50
+Key fingerprint = 66ED 5211 9D59 DA53 1DF7  4189 DFED F580 D613 2D50
+-----------------------------------
+echo 16i[q]sa[ln0=aln100%Pln100/snlbx]sbA0D212153574F444E49572045535520454D20454B414D204F54204847554F4E452059415020544F4E4E4143205345544147204C4C4942snlbxq | dc
+-----------------------------------
+
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: not available
+Type: application/pgp-signature
+Size: 189 bytes
+Desc: not available
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20070906/2f63cfd5/attachment.pgp>
+
+From sophana at zizi.ath.cx  Thu Sep  6 21:31:55 2007
+From: sophana at zizi.ath.cx (sophana)
+Date: Thu, 06 Sep 2007 23:31:55 +0200
+Subject: dns tunnels a threat?
+In-Reply-To: <20070906144700.GA21023@dedalo.nexlab.it>
+References: <ef21d1850709060247v2456aa3dud45905c90d051bf8@mail.gmail.com> <20070906144700.GA21023@dedalo.nexlab.it>
+Message-ID: <46E071CB.8050400@zizi.ath.cx>
+
+nextime at nexlab.it a ?crit :
+>> Hello,
+>>
+>> How many people consider dns tunneling a real concern? Just curious...
+>>     
+>
+> For me is a real issue as the italian laws say that anyone setup a free
+> or pay hot-spot need to register personal data ( document ) and to trace
+> the logs of connection/disconnection time for any user.
+>  
+>   
+>> Never heard of it? see http://dnstunnel.de/
+>>
+>>     
+>
+> This is one "public", but ther's many software that permit to setup a
+> "personal" and more advanced tunnel.
+>
+>   
+>> It could be a simple matter of dropping DNS packets with TXT records before
+>> authentication. No?
+>>     
+>
+> No, in theory ( and even in reality ) it is possible to make a dns
+> tunnel even on other query type, like NS, MX, A, CNAME and so on.
+>
+> Dropping TXT request block *some* of the dnstunnel software, but not
+> all, and for the "cracker" prospective is only a way to make the tunnel
+> more slow, but not blocked.
+>
+> I use a different approach:
+>
+> All dns request are permitted only to a my dns server over ( so, i have
+> only one dns server centralized for many hot-spots ).
+>
+> I've written a little udp relayer that get all udp request on a specific
+> port ( of course 53 ) on the "user" side, ad redirect all the packets to
+> two different ip/port, one by default, and the other one if the source
+> ip of the request is in a list ( in a simple file text list ).
+>
+>
+> The daemon refresh the "alternative ip" list by a SIGUSR1 signal.
+>
+> Now, on the conup and condown script of coova-chilli, i put some lines
+> of shell script that get the list of already authenticated users by
+> perform a chilli_query <socket> dhcp-list | grep pass | awk awk -F ' ' '{print $2}' > /tmp/listfile
+> and then send a SIGUSR1 signal to my daemon refreshing the "internal" list.
+>
+> By default i send all packets to a "fake" dns server that manage *only* A, CNAME and AAAA records, 
+> and where i use iptables to setup a very restrictive policy about how many packets
+> can comein ( i permit only 2 packets/second, not more that 100 packets in 5 minutes ).
+>
+> When a client is authenticated, all the dns request are redirected to a "real and normal" bind server, no more 
+> restricted.
+>
+> In this way i block *any* dns tunnel.
+>
+>   
+This looks complicated.
+Using a bad QoS for dns (no more than 10 requests/response in 5 second) 
++ dropping TXT records seem sufficient.
+I don'see why you need an intermediate dns.
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20070906/f7726d51/attachment.htm>
+
+From nextime at nexlab.it  Fri Sep  7 06:36:52 2007
+From: nextime at nexlab.it (nextime at nexlab.it)
+Date: Fri, 7 Sep 2007 08:36:52 +0200
+Subject: dns tunnels a threat?
+In-Reply-To: <46E071CB.8050400@zizi.ath.cx>
+References: <ef21d1850709060247v2456aa3dud45905c90d051bf8@mail.gmail.com> <20070906144700.GA21023@dedalo.nexlab.it> <46E071CB.8050400@zizi.ath.cx>
+Message-ID: <20070907063651.GA31253@dedalo.nexlab.it>
+
+> This looks complicated.
+> Using a bad QoS for dns (no more than 10 requests/response in 5 second) 
+> + dropping TXT records seem sufficient.
+> I don'see why you need an intermediate dns.
+> 
+
+It isn't so complicated, it seem more complicated to explain that to
+have it.
+
+I need 2 dns cause we want to have auth users permission to use a dns
+without any restriction, but we want to have unauth users very
+restricted. 
+
+dropping txt isn't enough, adding a bad qos shuld work, but we have to 
+work on adding and deleting qos rules when a user login/logout, and 
+we don't want to put this work on a wrt54gl, expecially cause on those 
+hw we can use only 2.4 kernel for the brcm driver issue with 2.6, and on
+2.4 kernel we can't manipulate the conntrack table, so, make
+conntracked rules change in semi-realtime isn't doable.
+
+The simple thing to do to solve all those issue is to setup two dns, one
+very limited ( only some query permitted, bad qos ) and one very "open"
+( no qos, no query dropped/ignore ).
+
+Our little daemon switch between those two dns transparently for the
+user.
+
+
+
+-- 
+
+Franco (nextime) Lanza
+Busto Arsizio - Italy
+SIP://casa at casa.nexlab.it
+
+NO TCPA: http://www.no1984.org
+you can download my public key at:
+http://danex.nexlab.it/nextime.asc || Key Servers
+Key ID = D6132D50
+Key fingerprint = 66ED 5211 9D59 DA53 1DF7  4189 DFED F580 D613 2D50
+-----------------------------------
+echo 16i[q]sa[ln0=aln100%Pln100/snlbx]sbA0D212153574F444E49572045535520454D20454B414D204F54204847554F4E452059415020544F4E4E4143205345544147204C4C4942snlbxq | dc
+-----------------------------------
+
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: not available
+Type: application/pgp-signature
+Size: 189 bytes
+Desc: not available
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20070907/4d47ee40/attachment.pgp>
+
+From mem.corruption at gmail.com  Fri Sep  7 11:05:44 2007
+From: mem.corruption at gmail.com (David Bird)
+Date: Fri, 7 Sep 2007 13:05:44 +0200
+Subject: dns tunnels a threat?
+In-Reply-To: <20070907063651.GA31253@dedalo.nexlab.it>
+References: <ef21d1850709060247v2456aa3dud45905c90d051bf8@mail.gmail.com>
+	 <20070906144700.GA21023@dedalo.nexlab.it>
+	 <46E071CB.8050400@zizi.ath.cx>
+	 <20070907063651.GA31253@dedalo.nexlab.it>
+Message-ID: <ef21d1850709070405k295b75b7h99fba6388ab5710a@mail.gmail.com>
+
+For anyone interested, you can test the 'dnsparanoid' option now in SVN -
+right now, it just drops DNS with non- A, CNAME, SOA, or MX records (hmm,
+maybe also drop SOA and MX?).
+
+I like the idea of embedding more DNS features in chilli, but think it could
+be kept simpler than that. If you want to get really fancy with DNS, then
+forcing the user of your own is probably best. Otherwise, there are some
+simple measures do-able in chilli without too much cost on performance or
+size...
+
+Right now, DNS is "inspected" in chilli when using either uamdomain or
+dnsparanoid (two new features). uamdomain checks to see if an "allowed
+domain" IP should be added to the walled garden. dnsparanoid will drop
+packets as mentioned above. So, it currently doesn't rewrite any DNS... It
+would, I think, be pretty easy to also truncate responses to a single A
+record. I mean, if anyone is tunneling over DNS with just a 4 byte payload,
+that is one shitty connection (not to mention having to overcome
+retransmissions since the tunnel probably expected multiple A records to
+deliver payload) :)
+
+David
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20070907/ad77e83a/attachment.htm>
+
+From deltroo at gmail.com  Fri Sep  7 11:26:08 2007
+From: deltroo at gmail.com (Yannick Deltroo)
+Date: Fri, 7 Sep 2007 13:26:08 +0200
+Subject: dns tunnels a threat?
+In-Reply-To: <20070906203047.GA3728@dedalo.nexlab.it>
+References: <ef21d1850709060247v2456aa3dud45905c90d051bf8@mail.gmail.com>
+	 <20070906144700.GA21023@dedalo.nexlab.it>
+	 <96b73a1a0709061101l46154560m6badd2742fd559c8@mail.gmail.com>
+	 <20070906203047.GA3728@dedalo.nexlab.it>
+Message-ID: <96b73a1a0709070426r3c7e6bb1w3390abc30e9a0625@mail.gmail.com>
+
+> > 3 - coova IDNS resolves any other hostname to the uamhomepage IP (with
+> > no-cache/ 1 second TTL).
+>
+> This won't work.
+> TTL and cache are in the rfc of dns. But the majority of the browsers,
+> expecially for Internet Explorer but also for many others, and many
+> resolvers don't implement a cache system based on TTL.
+>
+> They simply have an internal cache.
+>
+> For example in IE/Windows there's an internal resolver cache with
+> 3600 seconds ( yes, 1 hour) of timeout by default. You can change
+> the timeout *only* by changing some key with regedit.
+>
+You're right. I did some quick research, it seems like the default DNS
+caching for IE is 30 minutes:
+http://support.microsoft.com/default.aspx?scid=KB;en-us;263558
+
+A coova internal DNS server would then have to parse DNS responses
+from upstream servers to extract the IP... and maybe remove (modify?)
+all (some?) DNS fields that may be used for the payload.
+
+Removing TXT fields as David initially proposed should break existing
+DNS tunnels.
+As fas I know it's only used by spam filers (SPF) and should not be a problem.
+
+Have you experienced unwanted side effects when filtering DNS
+responses in your set-up?
+
+
+From nextime at nexlab.it  Fri Sep  7 11:44:36 2007
+From: nextime at nexlab.it (nextime at nexlab.it)
+Date: Fri, 7 Sep 2007 13:44:36 +0200
+Subject: dns tunnels a threat?
+In-Reply-To: <ef21d1850709070405k295b75b7h99fba6388ab5710a@mail.gmail.com>
+References: <ef21d1850709060247v2456aa3dud45905c90d051bf8@mail.gmail.com> <20070906144700.GA21023@dedalo.nexlab.it> <46E071CB.8050400@zizi.ath.cx> <20070907063651.GA31253@dedalo.nexlab.it> <ef21d1850709070405k295b75b7h99fba6388ab5710a@mail.gmail.com>
+Message-ID: <20070907114436.GA3289@dedalo.nexlab.it>
+
+> For anyone interested, you can test the 'dnsparanoid' option now in SVN -
+> right now, it just drops DNS with non- A, CNAME, SOA, or MX records (hmm,
+> maybe also drop SOA and MX?).
+
+SOA and MX shuld be dropped imho.
+Maybe AAAA shuld be added for future improvements with ipv6.
+
+Of course, this is a good starting point, but isn't enough to block all 
+dns tunnels, we need also a sort of rate limit on unauth dns request.
+
+One question:
+
+is "dnsparanoid" filtering applied only to unauth users?
+
+> So, it currently doesn't rewrite any DNS... 
+
+i don't think we need to rewrite anything, just permit something and
+drop the rest.
+
+> would, I think, be pretty easy to also truncate responses to a single A
+> record. I mean, if anyone is tunneling over DNS with just a 4 byte payload,
+> that is one shitty connection (not to mention having to overcome
+> retransmissions since the tunnel probably expected multiple A records to
+> deliver payload) :)
+
+Maybe this is too many restrictive, i think that a rate limiting for
+something like 4 A/CNAME request, with maybe also not more than
+100/minute or not more than 10 for the same second level domain every
+minute shuld work.
+
+Last but not least, as usual, thanks for your work David.
+
+
+-- 
+
+Franco (nextime) Lanza
+Busto Arsizio - Italy
+SIP://casa at casa.nexlab.it
+
+NO TCPA: http://www.no1984.org
+you can download my public key at:
+http://danex.nexlab.it/nextime.asc || Key Servers
+Key ID = D6132D50
+Key fingerprint = 66ED 5211 9D59 DA53 1DF7  4189 DFED F580 D613 2D50
+-----------------------------------
+echo 16i[q]sa[ln0=aln100%Pln100/snlbx]sbA0D212153574F444E49572045535520454D20454B414D204F54204847554F4E452059415020544F4E4E4143205345544147204C4C4942snlbxq | dc
+-----------------------------------
+
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: not available
+Type: application/pgp-signature
+Size: 189 bytes
+Desc: not available
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20070907/110c0ac8/attachment.pgp>
+
+From mem.corruption at gmail.com  Fri Sep  7 11:50:54 2007
+From: mem.corruption at gmail.com (David Bird)
+Date: Fri, 7 Sep 2007 13:50:54 +0200
+Subject: dns tunnels a threat?
+In-Reply-To: <20070907114436.GA3289@dedalo.nexlab.it>
+References: <ef21d1850709060247v2456aa3dud45905c90d051bf8@mail.gmail.com>
+	 <20070906144700.GA21023@dedalo.nexlab.it>
+	 <46E071CB.8050400@zizi.ath.cx>
+	 <20070907063651.GA31253@dedalo.nexlab.it>
+	 <ef21d1850709070405k295b75b7h99fba6388ab5710a@mail.gmail.com>
+	 <20070907114436.GA3289@dedalo.nexlab.it>
+Message-ID: <ef21d1850709070450w7d8decf6i1419403a0d5c4ad6@mail.gmail.com>
+
+On 9/7/07, nextime at nexlab.it <nextime at nexlab.it> wrote:
+>
+> SOA and MX shuld be dropped imho.
+> Maybe AAAA shuld be added for future improvements with ipv6.
+
+
+yeah, i think so too...
+
+
+> is "dnsparanoid" filtering applied only to unauth users?
+
+
+Oops, actually I named it dnsparanoia -- yes, only for unauth'ed clients.
+
+
+Maybe this is too many restrictive, i think that a rate limiting for
+> something like 4 A/CNAME request, with maybe also not more than
+> 100/minute or not more than 10 for the same second level domain every
+> minute shuld work.
+
+
+The rate limiting is pretty easy to do with iptables for all users. This
+kind of stuff is well suited for the ip-up/down and connection-up/down
+scripts.
+
+David
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20070907/244699e1/attachment.htm>
+
+From contact at sriviere.info  Fri Sep  7 13:15:42 2007
+From: contact at sriviere.info (=?ISO-8859-15?Q?SR_Infosyst=E8mes?=)
+Date: Fri, 07 Sep 2007 15:15:42 +0200
+Subject: dns tunnels a threat?
+In-Reply-To: <20070907063651.GA31253@dedalo.nexlab.it>
+References: <ef21d1850709060247v2456aa3dud45905c90d051bf8@mail.gmail.com> <20070906144700.GA21023@dedalo.nexlab.it> <46E071CB.8050400@zizi.ath.cx> <20070907063651.GA31253@dedalo.nexlab.it>
+Message-ID: <46E14EFE.2040203@sriviere.info>
+
+> It isn't so complicated, it seem more complicated to explain that to
+> have it.
+
+Hi Franco,
+
+I like the way you fix this problem, but I'm not an experienced DNS 
+user, specially with two DNS in a single host.
+
+Do you have some samples confs files, eventually with more detailed 
+advices ?
+
+It would be very appreciated.
+
+All the best from Oleron Island
+
+St?phane Rivi?re
+
+-- 
+LA SOLUTION ? vos probl?mes INFORMATIQUES
+
+SR Infosyst?mes
+15, rue du Temple
+17310 St Pierre d'Ol?ron
+Ile d'Ol?ron - France
+
+Mobile : 06 89 29 88 44
+Fixe :   09 54 10 55 60 (appel local)
+Fax :    05 46 36 30 59
+Site :   www.sriviere.info
+Email :  contact at sriviere.info
+Skype :  stephane.riviere
+
+Certificat X509 : disponible sur le site
+
+
+From nextime at nexlab.it  Fri Sep  7 13:32:34 2007
+From: nextime at nexlab.it (nextime at nexlab.it)
+Date: Fri, 7 Sep 2007 15:32:34 +0200
+Subject: dns tunnels a threat?
+In-Reply-To: <96b73a1a0709070426r3c7e6bb1w3390abc30e9a0625@mail.gmail.com>
+References: <ef21d1850709060247v2456aa3dud45905c90d051bf8@mail.gmail.com> <20070906144700.GA21023@dedalo.nexlab.it> <96b73a1a0709061101l46154560m6badd2742fd559c8@mail.gmail.com> <20070906203047.GA3728@dedalo.nexlab.it> <96b73a1a0709070426r3c7e6bb1w3390abc30e9a0625@mail.gmail.com>
+Message-ID: <20070907133234.GA5399@dedalo.nexlab.it>
+
+> Removing TXT fields as David initially proposed should break existing
+> DNS tunnels.
+
+Sad but true, this isn't true.
+
+DNSCat can work on other query type. And i think that isn't the only
+one.
+
+> As fas I know it's only used by spam filers (SPF) and should not be a problem.
+
+Agree.
+ 
+> Have you experienced unwanted side effects when filtering DNS
+> responses in your set-up?
+> 
+
+No side effects at all, of course, the filtering is used only for unauth
+users, so, they need just to resolve the dns query to permit captive
+portal to work.
+
+-- 
+
+Franco (nextime) Lanza
+Busto Arsizio - Italy
+SIP://casa at casa.nexlab.it
+
+NO TCPA: http://www.no1984.org
+you can download my public key at:
+http://danex.nexlab.it/nextime.asc || Key Servers
+Key ID = D6132D50
+Key fingerprint = 66ED 5211 9D59 DA53 1DF7  4189 DFED F580 D613 2D50
+-----------------------------------
+echo 16i[q]sa[ln0=aln100%Pln100/snlbx]sbA0D212153574F444E49572045535520454D20454B414D204F54204847554F4E452059415020544F4E4E4143205345544147204C4C4942snlbxq | dc
+-----------------------------------
+
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: not available
+Type: application/pgp-signature
+Size: 189 bytes
+Desc: not available
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20070907/83d945be/attachment.pgp>
+
+From nextime at nexlab.it  Fri Sep  7 13:37:53 2007
+From: nextime at nexlab.it (nextime at nexlab.it)
+Date: Fri, 7 Sep 2007 15:37:53 +0200
+Subject: dns tunnels a threat?
+In-Reply-To: <ef21d1850709070450w7d8decf6i1419403a0d5c4ad6@mail.gmail.com>
+References: <ef21d1850709060247v2456aa3dud45905c90d051bf8@mail.gmail.com> <20070906144700.GA21023@dedalo.nexlab.it> <46E071CB.8050400@zizi.ath.cx> <20070907063651.GA31253@dedalo.nexlab.it> <ef21d1850709070405k295b75b7h99fba6388ab5710a@mail.gmail.com> <20070907114436.GA3289@dedalo.nexlab.it> <ef21d1850709070450w7d8decf6i1419403a0d5c4ad6@mail.gmail.com>
+Message-ID: <20070907133752.GB5399@dedalo.nexlab.it>
+
+> The rate limiting is pretty easy to do with iptables for all users. This
+> kind of stuff is well suited for the ip-up/down and connection-up/down
+> scripts.
+
+Generally speacking i agree with you. I'm only concerned with the 
+connection tracking issue, but this maybe need to be tested before to
+say anything.
+
+I don't really know how a connection rate limited by default that is in
+the conntrack table react when you remove the rate limit rule. Is the
+change immediatly applied or you need to wait for the conntrack timeout
+to expire?
+
+If the second option is the right one, using iptables can be a problem
+on old kernels like < 2.6.10 where you can't
+maipulate the connection tracking table dinamically
+with the "conntrack" command, so, maybe hw like wrt54gl where you can't
+use (yet) a 2.6 kernel because of the broadcom wifi driver can do it
+with iptables.
+
+This is basically why i was start to use my udp relayer instead of doing
+the work by DNATting the packets with iptables.
+-- 
+
+Franco (nextime) Lanza
+Busto Arsizio - Italy
+SIP://casa at casa.nexlab.it
+
+NO TCPA: http://www.no1984.org
+you can download my public key at:
+http://danex.nexlab.it/nextime.asc || Key Servers
+Key ID = D6132D50
+Key fingerprint = 66ED 5211 9D59 DA53 1DF7  4189 DFED F580 D613 2D50
+-----------------------------------
+echo 16i[q]sa[ln0=aln100%Pln100/snlbx]sbA0D212153574F444E49572045535520454D20454B414D204F54204847554F4E452059415020544F4E4E4143205345544147204C4C4942snlbxq | dc
+-----------------------------------
+
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: not available
+Type: application/pgp-signature
+Size: 189 bytes
+Desc: not available
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20070907/271d7e0e/attachment.pgp>
+
+From nextime at nexlab.it  Fri Sep  7 13:49:24 2007
+From: nextime at nexlab.it (nextime at nexlab.it)
+Date: Fri, 7 Sep 2007 15:49:24 +0200
+Subject: dns tunnels a threat?
+In-Reply-To: <46E14EFE.2040203@sriviere.info>
+References: <ef21d1850709060247v2456aa3dud45905c90d051bf8@mail.gmail.com> <20070906144700.GA21023@dedalo.nexlab.it> <46E071CB.8050400@zizi.ath.cx> <20070907063651.GA31253@dedalo.nexlab.it> <46E14EFE.2040203@sriviere.info>
+Message-ID: <20070907134923.GA5707@dedalo.nexlab.it>
+
+> >It isn't so complicated, it seem more complicated to explain that to
+> >have it.
+> 
+> Hi Franco,
+> 
+> I like the way you fix this problem, but I'm not an experienced DNS 
+> user, specially with two DNS in a single host.
+
+You don't really need to have the two dns on a single host.
+In my actual config, you simply need to point the dns records of the
+clients to your chilli ip address, where you have the "upd relayer"
+daemon listen on udp 53.
+
+The two dns where the packets are relayed are two different and remote
+servers, and you can put the dns daemon both on different or on the same
+server. In the second way, two dns on a single host, you simply need to
+make those two listen on different port.
+
+So, for example in my actual config i have this:
+
+192.168.182.2 ( client ) --- DNS REQUEST --> 192.168.182.1:53 (chilli/udprelay)
+                                                                 |
+                                                                 |
+                                                           Is use authenticated?
+                                                           |                   |
+                                                           |                   |
+                                                          YES                  NO
+                                                           |                   |
+                                                           |                   |_ Query go to 172.18.254.1:65353
+                                                        query go to               Where a fake python daemon
+                                                        172.18.254.1:53           act as limited DNS server is running
+                                                        Via VPN, where a          and some iptables rule do
+                                                        "Real" bind               rate limiting.
+                                                        is running.
+
+
+I have the two daemons on the same machine on different ports, but 
+if you put the two daemons on different ip is the same.
+
+
+The udp relayer that i'm using is:
+
+svn-> https://svn.nexlab.it/medianix/packages/main/udsrelay/trunk/
+trac-> http://trac.medianix.org/browser/packages/main/udsrelay/trunk/
+
+debian package ( for sid ):
+ deb http://packages.medianix.net/mercury main 
+
+opwnwrt package ( whiterussian ):
+ http://packages.medianix.net/medianixwrt/whiterussian/mercury/udsrelay_0.1.mercury-7_mipsel.ipk
+
+
+
+-- 
+
+Franco (nextime) Lanza
+Busto Arsizio - Italy
+SIP://casa at casa.nexlab.it
+
+NO TCPA: http://www.no1984.org
+you can download my public key at:
+http://danex.nexlab.it/nextime.asc || Key Servers
+Key ID = D6132D50
+Key fingerprint = 66ED 5211 9D59 DA53 1DF7  4189 DFED F580 D613 2D50
+-----------------------------------
+echo 16i[q]sa[ln0=aln100%Pln100/snlbx]sbA0D212153574F444E49572045535520454D20454B414D204F54204847554F4E452059415020544F4E4E4143205345544147204C4C4942snlbxq | dc
+-----------------------------------
+
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: not available
+Type: application/pgp-signature
+Size: 189 bytes
+Desc: not available
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20070907/cc599ac4/attachment.pgp>
+
+From contact at sriviere.info  Fri Sep  7 17:37:41 2007
+From: contact at sriviere.info (=?ISO-8859-15?Q?SR_Infosyst=E8mes?=)
+Date: Fri, 07 Sep 2007 19:37:41 +0200
+Subject: dns tunnels a threat?
+In-Reply-To: <20070907134923.GA5707@dedalo.nexlab.it>
+References: <ef21d1850709060247v2456aa3dud45905c90d051bf8@mail.gmail.com> <20070906144700.GA21023@dedalo.nexlab.it> <46E071CB.8050400@zizi.ath.cx> <20070907063651.GA31253@dedalo.nexlab.it> <46E14EFE.2040203@sriviere.info> <20070907134923.GA5707@dedalo.nexlab.it>
+Message-ID: <46E18C65.60108@sriviere.info>
+
+Many thanks Franco !
+
+I've print your message and I'll study it tomorrow morning.
+
+Have a good evening.
+
+St?phane Rivi?re
+
+-- 
+LA SOLUTION ? vos probl?mes INFORMATIQUES
+
+SR Infosyst?mes
+15, rue du Temple
+17310 St Pierre d'Ol?ron
+Ile d'Ol?ron - France
+
+Mobile : 06 89 29 88 44
+Fixe :   09 54 10 55 60 (appel local)
+Fax :    05 46 36 30 59
+Site :   www.sriviere.info
+Email :  contact at sriviere.info
+Skype :  stephane.riviere
+
+Certificat X509 : disponible sur le site
+
+
+From lzs at pobox.com  Sat Sep  8 02:15:24 2007
+From: lzs at pobox.com (Lai Zit Seng)
+Date: Sat, 08 Sep 2007 10:15:24 +0800
+Subject: Problem with chillispot and dhcp relay
+In-Reply-To: <ef21d1850709071030n348bf810h962d333960167c3d@mail.gmail.com>
+References: <46DD71C2.8050101@pobox.com> <46DEA81A.2060906@pobox.com> <ef21d1850709050724g56447ed4h244842dd6aad5aae@mail.gmail.com> <46E0C8B9.8010209@pobox.com> <46E0CC07.9060707@pobox.com> <ef21d1850709070354y7a5c6486va34a4f6acb4bcc1c@mail.gmail.com> <46E1565B.1040908@pobox.com> <46E16D7D.3080409@pobox.com> <ef21d1850709070832p5484879y1d59b6d447946918@mail.gmail.com> <46E17F43.40907@pobox.com> <ef21d1850709071030n348bf810h962d333960167c3d@mail.gmail.com>
+Message-ID: <46E205BC.5070504@pobox.com>
+
+Ok, was too eager to try the svn update so I came back to test anyway. 
+Your latest update works great! Thanks. Especially since I imagine my 
+DHCP relay configuration is rather unusual :)
+
+May I bug you with one more item. This is not show stopper but 
+nevertheless something that bothers me. I can ping across chillispot 
+just fine. But if the clients ping chillispot IP itself, they get 
+duplicate replies. I.e. 1 echo-request, 2 echo-replies come back. This 
+is the case for both wired and wireless clients (so it is not a 
+quirkness of the WLC in my environment).
+
+The tcpdump at the client, chillispot's tun interface and chillispot's 
+dhcpif interface shows the duplicate echo-replies. The tun interface 
+capture does show something odd: There is actually an echo-reply going 
+out first, then the echo-request in, then echo-reply out. I can send the
+
+I can send you the tcpdump if needed :)
+
+Regards,
+
+.lzs
+
+ps: Copying back to mailing list.
+
+On 9/8/07 1:30 AM, David Bird wrote:
+> Thanks,
+> 
+>  From a quick review, I think my (and the current svn) version does 
+> roughly the same thing. Though, I think mine is a little cleaner in that 
+> I moved the call to dhcp_getreq() up above the newconn() in the 
+> receive_ip method. And, it returns out of receive_ip -- since the 
+> request has actually already been replied to. The newconn() method is 
+> also called from within dhcp_getreq() - and I instantiate the connection 
+> with the chaddr in the event of a relay. I look forward to hearing how 
+> the current snapshot does in your environment.
+> 
+> David
+
+
+From mem.corruption at gmail.com  Sat Sep  8 06:09:01 2007
+From: mem.corruption at gmail.com (David Bird)
+Date: Sat, 8 Sep 2007 08:09:01 +0200
+Subject: Problem with chillispot and dhcp relay
+In-Reply-To: <46E205BC.5070504@pobox.com>
+References: <46DD71C2.8050101@pobox.com> <46E0C8B9.8010209@pobox.com>
+	 <46E0CC07.9060707@pobox.com>
+	 <ef21d1850709070354y7a5c6486va34a4f6acb4bcc1c@mail.gmail.com>
+	 <46E1565B.1040908@pobox.com> <46E16D7D.3080409@pobox.com>
+	 <ef21d1850709070832p5484879y1d59b6d447946918@mail.gmail.com>
+	 <46E17F43.40907@pobox.com>
+	 <ef21d1850709071030n348bf810h962d333960167c3d@mail.gmail.com>
+	 <46E205BC.5070504@pobox.com>
+Message-ID: <ef21d1850709072309k6db69ea2h699d9ac82039b9fd@mail.gmail.com>
+
+That's great. Thanks for testing! I'm happy to have chilli work with
+more environments and now supports a DHCP relay. With regard to the
+ICMP duplicate packets... I think it could be the fact that the OS is
+replying to the ping from both the dhcpif _and_ the tun interfaces.
+With your installation, are you running the supplied configuration
+with the ip up/down scripts (which setup your firewall for chilli)?
+I'll try to reproduce the problem...
+
+Thanks again.
+David
+
+On 9/8/07, Lai Zit Seng <lzs at pobox.com> wrote:
+> Ok, was too eager to try the svn update so I came back to test anyway.
+> Your latest update works great! Thanks. Especially since I imagine my
+> DHCP relay configuration is rather unusual :)
+>
+> May I bug you with one more item. This is not show stopper but
+> nevertheless something that bothers me. I can ping across chillispot
+> just fine. But if the clients ping chillispot IP itself, they get
+> duplicate replies. I.e. 1 echo-request, 2 echo-replies come back. This
+> is the case for both wired and wireless clients (so it is not a
+> quirkness of the WLC in my environment).
+>
+> The tcpdump at the client, chillispot's tun interface and chillispot's
+> dhcpif interface shows the duplicate echo-replies. The tun interface
+> capture does show something odd: There is actually an echo-reply going
+> out first, then the echo-request in, then echo-reply out. I can send the
+>
+> I can send you the tcpdump if needed :)
+>
+> Regards,
+>
+> .lzs
+>
+> ps: Copying back to mailing list.
+>
+> On 9/8/07 1:30 AM, David Bird wrote:
+> > Thanks,
+> >
+> >  From a quick review, I think my (and the current svn) version does
+> > roughly the same thing. Though, I think mine is a little cleaner in that
+> > I moved the call to dhcp_getreq() up above the newconn() in the
+> > receive_ip method. And, it returns out of receive_ip -- since the
+> > request has actually already been replied to. The newconn() method is
+> > also called from within dhcp_getreq() - and I instantiate the connection
+> > with the chaddr in the event of a relay. I look forward to hearing how
+> > the current snapshot does in your environment.
+> >
+> > David
+>
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>
+>
+
+
+From chilli at silverserver.at  Sat Sep  8 07:20:08 2007
+From: chilli at silverserver.at (lc)
+Date: Sat, 8 Sep 2007 09:20:08 +0200
+Subject: DHCP - WLAN behaviour of Windows Notebooks
+In-Reply-To: <ef21d1850709072309k6db69ea2h699d9ac82039b9fd@mail.gmail.com>
+References: <46DD71C2.8050101@pobox.com> <46E0C8B9.8010209@pobox.com> <46E0CC07.9060707@pobox.com> <ef21d1850709070354y7a5c6486va34a4f6acb4bcc1c@mail.gmail.com> <46E1565B.1040908@pobox.com> <46E16D7D.3080409@pobox.com> <ef21d1850709070832p5484879y1d59b6d447946918@mail.gmail.com> <46E17F43.40907@pobox.com> <ef21d1850709071030n348bf810h962d333960167c3d@mail.gmail.com> <46E205BC.5070504@pobox.com> <ef21d1850709072309k6db69ea2h699d9ac82039b9fd@mail.gmail.com>
+Message-ID: <ED4FDED4-4188-41AD-BAD1-9EA0F5354F59@silverserver.at>
+
+
+I had also a small e-mail conversation about the following with David  
+(thanks for keeping chilli alive!) - but I still do not know how this  
+"problem" can be dealt with.
+
+
+It seems that there are machines that - for no obvious reason -  
+disassociate and reassociate to the AP even when they signal quality  
+is excellent and no other disturbing radio exists. This seems to  
+happen intentionally because the client seems to release the DHCP  
+address before disassociating. And this is why chilli releases the  
+address and closes the session. If the client would just lose the  
+connection and reassociate, chilli wouldn't know about it unless the  
+DHCP lease time has been reached (=no problem).
+
+After such a client re-associates, chilli hands out a new IP address  
+and the user has to log-in again. While the re-login could be handled  
+automatically (so the user won't notice it) the new IP address is a  
+problem - existing connections (e.g. google mail etc) get interrupted.
+
+I have noticed this behaviour on Windows notebooks. The user can also  
+see it because at the Windows task bar a message pops up telling the  
+user that he is now connected to the WLAN xyz although this is the  
+very same WLAN he has been already using.
+
+I see this behaviour on many locations, and I also see that it does  
+not happen with all clients. e.g. on the same location at the same  
+time one client behaves like in the log below while others stay  
+connected for hours without any interruption. This is why I believe  
+the client's machine is the cause.
+
+Here is a log showing that there are only a few seconds between the  
+releasing of the address and handing out a new address for the same  
+client.
+
+Chilli-Log:
+Jul 26 14:29:20 OpenWRT kern.notice chillispot[841]: chilli.c: 2905:  
+Successful UAM login from username=00-18-DE-77-9B-43 IP=192.168.100.25
+Jul 26 14:33:09 OpenWRT kern.info chillispot[841]: chilli.c: 2690:  
+DHCP addr released by MAC=00-18-DE-77-9B-43 IP=192.168.100.25
+
+Jul 26 14:33:12 OpenWRT kern.notice chillispot[841]: chilli.c: 2608:  
+New DHCP request from MAC=00-18-DE-77-9B-43
+Jul 26 14:33:12 OpenWRT kern.notice chillispot[841]: chilli.c: 2570:  
+Client MAC=00-18-DE-77-9B-43 assigned IP 192.168.100.27
+Jul 26 14:35:42 OpenWRT kern.notice chillispot[841]: chilli.c: 2905:  
+Successful UAM login from username=00-18-DE-77-9B-43 IP=192.168.100.27
+Jul 26 15:03:30 OpenWRT kern.info chillispot[841]: chilli.c: 2690:  
+DHCP addr released by MAC=00-18-DE-77-9B-43 IP=192.168.100.27
+
+Jul 26 15:06:36 OpenWRT kern.notice chillispot[841]: chilli.c: 2608:  
+New DHCP request from MAC=00-18-DE-77-9B-43
+Jul 26 15:06:36 OpenWRT kern.notice chillispot[841]: chilli.c: 2570:  
+Client MAC=00-18-DE-77-9B-43 assigned IP 192.168.100.30
+Jul 26 15:12:55 OpenWRT kern.info chillispot[841]: chilli.c: 2690:  
+DHCP addr released by MAC=00-18-DE-77-9B-43 IP=192.168.100.30
+
+Jul 26 15:13:30 OpenWRT kern.notice chillispot[841]: chilli.c: 2608:  
+New DHCP request from MAC=00-18-DE-77-9B-43
+Jul 26 15:13:30 OpenWRT kern.notice chillispot[841]: chilli.c: 2570:  
+Client MAC=00-18-DE-77-9B-43 assigned IP 192.168.100.31
+Jul 26 15:14:41 OpenWRT kern.notice chillispot[841]: chilli.c: 2905:  
+Successful UAM login from username=00-18-DE-77-9B-43 IP=192.168.100.31
+Jul 26 15:19:49 OpenWRT kern.info chillispot[841]: chilli.c: 2690:  
+DHCP addr released by MAC=00-18-DE-77-9B-43 IP=192.168.100.31
+
+Jul 26 15:23:22 OpenWRT kern.notice chillispot[841]: chilli.c: 2608:  
+New DHCP request from MAC=00-18-DE-77-9B-43
+Jul 26 15:23:22 OpenWRT kern.notice chillispot[841]: chilli.c: 2570:  
+Client MAC=00-18-DE-77-9B-43 assigned IP 192.168.100.33
+Jul 26 15:28:24 OpenWRT kern.info chillispot[841]: chilli.c: 2690:  
+DHCP addr released by MAC=00-18-DE-77-9B-43 IP=192.168.100.33
+
+Jul 26 15:30:42 OpenWRT kern.notice chillispot[841]: chilli.c: 2608:  
+New DHCP request from MAC=00-18-DE-77-9B-43
+Jul 26 15:30:42 OpenWRT kern.notice chillispot[841]: chilli.c: 2570:  
+Client MAC=00-18-DE-77-9B-43 assigned IP 192.168.100.34
+Jul 26 15:32:54 OpenWRT kern.notice chillispot[841]: chilli.c: 2905:  
+Successful UAM login from username=00-18-DE-77-9B-43 IP=192.168.100.34
+Jul 26 15:42:15 OpenWRT kern.info chillispot[841]: chilli.c: 2690:  
+DHCP addr released by MAC=00-18-DE-77-9B-43 IP=192.168.100.34
+
+Jul 26 15:42:17 OpenWRT kern.notice chillispot[841]: chilli.c: 2608:  
+New DHCP request from MAC=00-18-DE-77-9B-43
+Jul 26 15:42:17 OpenWRT kern.notice chillispot[841]: chilli.c: 2570:  
+Client MAC=00-18-DE-77-9B-43 assigned IP 192.168.100.36
+Jul 26 15:44:28 OpenWRT kern.notice chillispot[841]: chilli.c: 2905:  
+Successful UAM login from username=00-18-DE-77-9B-43 IP=192.168.100.36
+Jul 26 15:49:39 OpenWRT kern.info chillispot[841]: chilli.c: 2690:  
+DHCP addr released by MAC=00-18-DE-77-9B-43 IP=192.168.100.36
+
+Jul 26 15:50:00 OpenWRT kern.notice chillispot[841]: chilli.c: 2608:  
+New DHCP request from MAC=00-18-DE-77-9B-43
+Jul 26 15:50:00 OpenWRT kern.notice chillispot[841]: chilli.c: 2570:  
+Client MAC=00-18-DE-77-9B-43 assigned IP 192.168.100.37
+Jul 26 15:52:07 OpenWRT kern.notice chillispot[841]: chilli.c: 2905:  
+Successful UAM login from username=00-18-DE-77-9B-43 IP=192.168.100.37
+Jul 26 16:29:56 OpenWRT kern.info chillispot[841]: chilli.c: 2690:  
+DHCP addr released by MAC=00-18-DE-77-9B-43 IP=192.168.100.37
+
+Jul 26 16:30:18 OpenWRT kern.notice chillispot[841]: chilli.c: 2608:  
+New DHCP request from MAC=00-18-DE-77-9B-43
+Jul 26 16:30:18 OpenWRT kern.notice chillispot[841]: chilli.c: 2570:  
+Client MAC=00-18-DE-77-9B-43 assigned IP 192.168.100.40
+Jul 26 16:36:48 OpenWRT kern.notice chillispot[841]: chilli.c: 2905:  
+Successful UAM login from username=00-18-DE-77-9B-43 IP=192.168.100.40
+Jul 26 16:50:15 OpenWRT kern.info chillispot[841]: chilli.c: 2690:  
+DHCP addr released by MAC=00-18-DE-77-9B-43 IP=192.168.100.40
+
+Jul 26 16:51:42 OpenWRT kern.notice chillispot[841]: chilli.c: 2608:  
+New DHCP request from MAC=00-18-DE-77-9B-43
+Jul 26 16:51:42 OpenWRT kern.notice chillispot[841]: chilli.c: 2570:  
+Client MAC=00-18-DE-77-9B-43 assigned IP 192.168.100.41
+Jul 26 16:55:22 OpenWRT kern.notice chillispot[841]: chilli.c: 2905:  
+Successful UAM login from username=00-18-DE-77-9B-43 IP=192.168.100.41
+
+So the question is:
+
+Does anybody know what triggers this behaviour of Windows (maybe some  
+energy saving issue which works in a weird way)?
+Is there a way to make chilli temporarily bind an IP address to a mac  
+address so that it would re-assign the same IP to the same client MAC  
+within a certain timeframe?
+
+Thanks,
+
+lc
+
+
+Am 15.08.2007 um 10:20 schrieb Yannick Deltroo:
+
+
+> Alex,
+>
+> I've seen that you've changed the DHCP range of IPs from the default.
+> Check that the three parameters net/dynip/statip are correctly set (in
+> particular the netmask part).
+>
+> Also check that the lease parameter is not too short for the client
+> operating system to accept the DHCP lease returned by Chilli.
+>
+> By the way, Chillispot is going to NAT your public addresses in the
+> default configuration.
+> For more info, see this thread,
+> http://coova.org/phpBB3/viewtopic.php? 
+> f=4&t=157&sid=6d5907c41c5aa11b528345295892dff9
+>
+> Cheers
+>
+> On 8/15/07, Alex Nderitu <anderitu at africaonline.co.ke> wrote:
+>
+>>
+>>  Hi All,
+>>  I have a problem where wireless clients are not allocated dhcp  
+>> addresses on accessing chillispot. However from the log files I  
+>> can see chillispot is issuing the addresses on accessing the  
+>> wireless network. Has anyone come across this and whats the work  
+>> around.
+>>
+>>  Logs from chilli
+>>  -----------------------
+>>  Aug 14 15:40:03 hotspot chillispot[7333]: chilli.c: 3082: DHCP  
+>> addr released by MAC=00-16-6F-C3-7E-5F IP=41.207.76.34
+>>  Aug 14 15:40:05 hotspot chillispot[7333]: chilli.c: 3041: New  
+>> DHCP request from MAC=00-16-6F-C3-7E-5F
+>>  Aug 14 15:40:05 hotspot chillispot[7333]: chilli.c: 3011: Client  
+>> MAC=00-16-6F-C3-7E-5F assigned IP 41.207.76.35
+>>  Aug 14 15:40:18 hotspot chillispot[7333]: chilli.c: 3082: DHCP  
+>> addr released by MAC=00-16-6F-C3-7E-5F IP=41.207.76.35
+>>  Aug 14 15:40:21 hotspot chillispot[7333]: chilli.c: 3041: New  
+>> DHCP request from MAC=00-16-6F-C3-7E-5F
+>>  Aug 14 15:40:21 hotspot chillispot[7333]: chilli.c: 3011: Client  
+>> MAC=00-16-6F-C3-7E-5F assigned IP 41.207.76.36
+>>  Aug 14 15:41:31 hotspot chillispot[7333]: chilli.c: 3041: New  
+>> DHCP request from MAC=00-19-D2-30-B3-A1
+>>  Aug 14 15:41:31 hotspot chillispot[7333]: chilli.c: 3011: Client  
+>> MAC=00-19-D2-30-B3-A1 assigned IP 41.207.76.37
+>>  Aug 14 15:45:49 hotspot chillispot[7333]: chilli.c: 3082: DHCP  
+>> addr released by MAC=00-16-6F-C3-7E-5F IP=41.207.76.36
+>>  Aug 14 15:45:51 hotspot chillispot[7333]: chilli.c: 3041: New  
+>> DHCP request from MAC=00-16-6F-C3-7E-5F
+>>  Aug 14 15:45:51 hotspot chillispot[7333]: chilli.c: 3011: Client  
+>> MAC=00-16-6F-C3-7E-5F assigned IP 41.207.76.38
+>>  Aug 14 15:48:32 hotspot chillispot[7333]: chilli.c: 3041: New  
+>> DHCP request from MAC=00-16-6F-55-01-21
+>>  Aug 14 15:48:32 hotspot chillispot[7333]: chilli.c: 3011: Client  
+>> MAC=00-16-6F-55-01-21 assigned IP 41.207.76.39
+>>  Aug 14 15:49:10 hotspot chillispot[7333]: chilli.c: 3041: New  
+>> DHCP request from MAC=00-06-F4-0D-4B-DA
+>>  Aug 14 15:49:10 hotspot chillispot[7333]: chilli.c: 3011: Client  
+>> MAC=00-06-F4-0D-4B-DA assigned IP 41.207.76.40
+>>  Aug 14 15:52:12 hotspot chillispot[7333]: chilli.c: 3082: DHCP  
+>> addr released by MAC=00-16-6F-C3-7E-5F IP=41.207.76.38
+>>  Aug 14 15:52:14 hotspot chillispot[7333]: chilli.c: 3041: New  
+>> DHCP request from MAC=00-16-6F-C3-7E-5F
+>>  Aug 14 15:52:14 hotspot chillispot[7333]: chilli.c: 3011: Client  
+>> MAC=00-16-6F-C3-7E-5F assigned IP 41.207.76.41
+>>  Aug 14 15:53:46 hotspot chillispot[7333]: chilli.c: 3082: DHCP  
+>> addr released by MAC=00-16-6F-C3-7E-5F IP=41.207.76.41
+>>  Aug 14 15:53:53 hotspot chillispot[7333]: chilli.c: 3082: DHCP  
+>> addr released by MAC=00-19-D2-30-B3-A1 IP=41.207.76.37
+>>  Aug 14 15:53:59 hotspot chillispot[7333]: chilli.c: 3041: New  
+>> DHCP request from MAC=00-16-6F-C3-7E-5F
+>>  Aug 14 15:53:59 hotspot chillispot[7333]: chilli.c: 3011: Client  
+>> MAC=00-16-6F-C3-7E-5F assigned IP 41.207.76.43
+>>  Aug 14 15:55:04 hotspot chillispot[7333]: chilli.c: 3082: DHCP  
+>> addr released by MAC=00-16-6F-C3-7E-5F IP=41.207.76.43
+>>  Aug 14 15:55:06 hotspot chillispot[7333]: chilli.c: 3041: New  
+>> DHCP request from MAC=00-16-6F-C3-7E-5F
+>>
+>>
+>> --
+>>
+>>  Regards,
+>>
+>>  Alex Nderitu
+>>  Systems Administration
+>>  Africa Online, Kenya
+>>  Tel: +254 (20) 27 92 253
+>>  Fax: +254 (20) 27 100 10
+>>  Email: anderitu at africaonline.co.ke
+>>  AIM: nderitualex
+>>
+>>
+>>    A member of the Telkom South Africa Group
+
+
+From giosue.pacifico at gmail.com  Sat Sep  8 11:09:56 2007
+From: giosue.pacifico at gmail.com (Giosue Pacifico)
+Date: Sat, 8 Sep 2007 13:09:56 +0200
+Subject: Problem with chillispot and dhcp relay
+In-Reply-To: <ef21d1850709072309k6db69ea2h699d9ac82039b9fd@mail.gmail.com>
+References: <46DD71C2.8050101@pobox.com> <46E0CC07.9060707@pobox.com>
+	 <ef21d1850709070354y7a5c6486va34a4f6acb4bcc1c@mail.gmail.com>
+	 <46E1565B.1040908@pobox.com> <46E16D7D.3080409@pobox.com>
+	 <ef21d1850709070832p5484879y1d59b6d447946918@mail.gmail.com>
+	 <46E17F43.40907@pobox.com>
+	 <ef21d1850709071030n348bf810h962d333960167c3d@mail.gmail.com>
+	 <46E205BC.5070504@pobox.com>
+	 <ef21d1850709072309k6db69ea2h699d9ac82039b9fd@mail.gmail.com>
+Message-ID: <f9ccc70f0709080409g76545a2cxc4fcf7a92ebe31f@mail.gmail.com>
+
+Hi,
+I'm missing bites of conversation, is it normal?
+Could the duplicate packet be solved like an arp flux? Something like
+"echo 1 > /proc/sys/net/ipv4/conf/all/arp_filter".
+Ciao
+Giosu?
+
+On 9/8/07, David Bird <mem.corruption at gmail.com> wrote:
+> That's great. Thanks for testing! I'm happy to have chilli work with
+> more environments and now supports a DHCP relay. With regard to the
+> ICMP duplicate packets... I think it could be the fact that the OS is
+> replying to the ping from both the dhcpif _and_ the tun interfaces.
+> With your installation, are you running the supplied configuration
+> with the ip up/down scripts (which setup your firewall for chilli)?
+> I'll try to reproduce the problem...
+>
+> Thanks again.
+> David
+>
+> On 9/8/07, Lai Zit Seng <lzs at pobox.com> wrote:
+> > Ok, was too eager to try the svn update so I came back to test anyway.
+> > Your latest update works great! Thanks. Especially since I imagine my
+> > DHCP relay configuration is rather unusual :)
+> >
+> > May I bug you with one more item. This is not show stopper but
+> > nevertheless something that bothers me. I can ping across chillispot
+> > just fine. But if the clients ping chillispot IP itself, they get
+> > duplicate replies. I.e. 1 echo-request, 2 echo-replies come back. This
+> > is the case for both wired and wireless clients (so it is not a
+> > quirkness of the WLC in my environment).
+> >
+> > The tcpdump at the client, chillispot's tun interface and chillispot's
+> > dhcpif interface shows the duplicate echo-replies. The tun interface
+> > capture does show something odd: There is actually an echo-reply going
+> > out first, then the echo-request in, then echo-reply out. I can send the
+> >
+> > I can send you the tcpdump if needed :)
+> >
+> > Regards,
+> >
+> > .lzs
+> >
+> > ps: Copying back to mailing list.
+> >
+> > On 9/8/07 1:30 AM, David Bird wrote:
+> > > Thanks,
+> > >
+> > >  From a quick review, I think my (and the current svn) version does
+> > > roughly the same thing. Though, I think mine is a little cleaner in that
+> > > I moved the call to dhcp_getreq() up above the newconn() in the
+> > > receive_ip method. And, it returns out of receive_ip -- since the
+> > > request has actually already been replied to. The newconn() method is
+> > > also called from within dhcp_getreq() - and I instantiate the connection
+> > > with the chaddr in the event of a relay. I look forward to hearing how
+> > > the current snapshot does in your environment.
+> > >
+> > > David
+> >
+> > ---------------------------------------------------------------------
+> > To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> > For additional commands, e-mail: chilli-help at coova.org
+> > Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> > Forum: http://coova.org/phpBB3/viewforum.php?f=4
+> >
+> >
+>
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>
+>
+
+
+From mem.corruption at gmail.com  Sat Sep  8 12:37:45 2007
+From: mem.corruption at gmail.com (David Bird)
+Date: Sat, 8 Sep 2007 14:37:45 +0200
+Subject: DHCP - WLAN behaviour of Windows Notebooks
+In-Reply-To: <ED4FDED4-4188-41AD-BAD1-9EA0F5354F59@silverserver.at>
+References: <46DD71C2.8050101@pobox.com>
+	 <ef21d1850709070354y7a5c6486va34a4f6acb4bcc1c@mail.gmail.com>
+	 <46E1565B.1040908@pobox.com> <46E16D7D.3080409@pobox.com>
+	 <ef21d1850709070832p5484879y1d59b6d447946918@mail.gmail.com>
+	 <46E17F43.40907@pobox.com>
+	 <ef21d1850709071030n348bf810h962d333960167c3d@mail.gmail.com>
+	 <46E205BC.5070504@pobox.com>
+	 <ef21d1850709072309k6db69ea2h699d9ac82039b9fd@mail.gmail.com>
+	 <ED4FDED4-4188-41AD-BAD1-9EA0F5354F59@silverserver.at>
+Message-ID: <ef21d1850709080537i3388ff55ha0a22369115fab0f@mail.gmail.com>
+
+Hi,
+
+some questions:
+
+- What version of chilli are you using? Check your root crontab for any
+chilli init script calls with argument "arping" - it's a feature, actually,
+I will completely remove in the next release. If you're using 1.0.7, it
+shouldn't be an issue (the init script no longer has the feature).
+
+- Are your WiFi clients using any client software (a smart-client or that
+sort of thing)? Maybe running something in the background (boingo, whisher,
+whatever)?
+
+- Have you tried using 'uamanyip' to see if that makes any difference?
+
+- Do you do any kind of signal scanning from your AP or dynamic changing of
+settings?
+
+It's an interesting problem - in the client. I think chilli does the right
+thing upon getting a DHCP release... but would be interesting for it to
+reserve the IP for a short time.
+
+David
+
+On 9/8/07, lc <chilli at silverserver.at> wrote:
+>
+>
+> I had also a small e-mail conversation about the following with David
+> (thanks for keeping chilli alive!) - but I still do not know how this
+> "problem" can be dealt with.
+>
+>
+> It seems that there are machines that - for no obvious reason -
+> disassociate and reassociate to the AP even when they signal quality
+> is excellent and no other disturbing radio exists. This seems to
+> happen intentionally because the client seems to release the DHCP
+> address before disassociating. And this is why chilli releases the
+> address and closes the session. If the client would just lose the
+> connection and reassociate, chilli wouldn't know about it unless the
+> DHCP lease time has been reached (=no problem).
+>
+> After such a client re-associates, chilli hands out a new IP address
+> and the user has to log-in again. While the re-login could be handled
+> automatically (so the user won't notice it) the new IP address is a
+> problem - existing connections (e.g. google mail etc) get interrupted.
+>
+> I have noticed this behaviour on Windows notebooks. The user can also
+> see it because at the Windows task bar a message pops up telling the
+> user that he is now connected to the WLAN xyz although this is the
+> very same WLAN he has been already using.
+>
+> I see this behaviour on many locations, and I also see that it does
+> not happen with all clients. e.g. on the same location at the same
+> time one client behaves like in the log below while others stay
+> connected for hours without any interruption. This is why I believe
+> the client's machine is the cause.
+>
+> Here is a log showing that there are only a few seconds between the
+> releasing of the address and handing out a new address for the same
+> client.
+>
+> Chilli-Log:
+> Jul 26 14:29:20 OpenWRT kern.notice chillispot[841]: chilli.c: 2905:
+> Successful UAM login from username=00-18-DE-77-9B-43 IP=192.168.100.25
+> Jul 26 14:33:09 OpenWRT kern.info chillispot[841]: chilli.c: 2690:
+> DHCP addr released by MAC=00-18-DE-77-9B-43 IP=192.168.100.25
+>
+> Jul 26 14:33:12 OpenWRT kern.notice chillispot[841]: chilli.c: 2608:
+> New DHCP request from MAC=00-18-DE-77-9B-43
+> Jul 26 14:33:12 OpenWRT kern.notice chillispot[841]: chilli.c: 2570:
+> Client MAC=00-18-DE-77-9B-43 assigned IP 192.168.100.27
+> Jul 26 14:35:42 OpenWRT kern.notice chillispot[841]: chilli.c: 2905:
+> Successful UAM login from username=00-18-DE-77-9B-43 IP=192.168.100.27
+> Jul 26 15:03:30 OpenWRT kern.info chillispot[841]: chilli.c: 2690:
+> DHCP addr released by MAC=00-18-DE-77-9B-43 IP=192.168.100.27
+>
+> Jul 26 15:06:36 OpenWRT kern.notice chillispot[841]: chilli.c: 2608:
+> New DHCP request from MAC=00-18-DE-77-9B-43
+> Jul 26 15:06:36 OpenWRT kern.notice chillispot[841]: chilli.c: 2570:
+> Client MAC=00-18-DE-77-9B-43 assigned IP 192.168.100.30
+> Jul 26 15:12:55 OpenWRT kern.info chillispot[841]: chilli.c: 2690:
+> DHCP addr released by MAC=00-18-DE-77-9B-43 IP=192.168.100.30
+>
+> Jul 26 15:13:30 OpenWRT kern.notice chillispot[841]: chilli.c: 2608:
+> New DHCP request from MAC=00-18-DE-77-9B-43
+> Jul 26 15:13:30 OpenWRT kern.notice chillispot[841]: chilli.c: 2570:
+> Client MAC=00-18-DE-77-9B-43 assigned IP 192.168.100.31
+> Jul 26 15:14:41 OpenWRT kern.notice chillispot[841]: chilli.c: 2905:
+> Successful UAM login from username=00-18-DE-77-9B-43 IP=192.168.100.31
+> Jul 26 15:19:49 OpenWRT kern.info chillispot[841]: chilli.c: 2690:
+> DHCP addr released by MAC=00-18-DE-77-9B-43 IP=192.168.100.31
+>
+> Jul 26 15:23:22 OpenWRT kern.notice chillispot[841]: chilli.c: 2608:
+> New DHCP request from MAC=00-18-DE-77-9B-43
+> Jul 26 15:23:22 OpenWRT kern.notice chillispot[841]: chilli.c: 2570:
+> Client MAC=00-18-DE-77-9B-43 assigned IP 192.168.100.33
+> Jul 26 15:28:24 OpenWRT kern.info chillispot[841]: chilli.c: 2690:
+> DHCP addr released by MAC=00-18-DE-77-9B-43 IP=192.168.100.33
+>
+> Jul 26 15:30:42 OpenWRT kern.notice chillispot[841]: chilli.c: 2608:
+> New DHCP request from MAC=00-18-DE-77-9B-43
+> Jul 26 15:30:42 OpenWRT kern.notice chillispot[841]: chilli.c: 2570:
+> Client MAC=00-18-DE-77-9B-43 assigned IP 192.168.100.34
+> Jul 26 15:32:54 OpenWRT kern.notice chillispot[841]: chilli.c: 2905:
+> Successful UAM login from username=00-18-DE-77-9B-43 IP=192.168.100.34
+> Jul 26 15:42:15 OpenWRT kern.info chillispot[841]: chilli.c: 2690:
+> DHCP addr released by MAC=00-18-DE-77-9B-43 IP=192.168.100.34
+>
+> Jul 26 15:42:17 OpenWRT kern.notice chillispot[841]: chilli.c: 2608:
+> New DHCP request from MAC=00-18-DE-77-9B-43
+> Jul 26 15:42:17 OpenWRT kern.notice chillispot[841]: chilli.c: 2570:
+> Client MAC=00-18-DE-77-9B-43 assigned IP 192.168.100.36
+> Jul 26 15:44:28 OpenWRT kern.notice chillispot[841]: chilli.c: 2905:
+> Successful UAM login from username=00-18-DE-77-9B-43 IP=192.168.100.36
+> Jul 26 15:49:39 OpenWRT kern.info chillispot[841]: chilli.c: 2690:
+> DHCP addr released by MAC=00-18-DE-77-9B-43 IP=192.168.100.36
+>
+> Jul 26 15:50:00 OpenWRT kern.notice chillispot[841]: chilli.c: 2608:
+> New DHCP request from MAC=00-18-DE-77-9B-43
+> Jul 26 15:50:00 OpenWRT kern.notice chillispot[841]: chilli.c: 2570:
+> Client MAC=00-18-DE-77-9B-43 assigned IP 192.168.100.37
+> Jul 26 15:52:07 OpenWRT kern.notice chillispot[841]: chilli.c: 2905:
+> Successful UAM login from username=00-18-DE-77-9B-43 IP=192.168.100.37
+> Jul 26 16:29:56 OpenWRT kern.info chillispot[841]: chilli.c: 2690:
+> DHCP addr released by MAC=00-18-DE-77-9B-43 IP=192.168.100.37
+>
+> Jul 26 16:30:18 OpenWRT kern.notice chillispot[841]: chilli.c: 2608:
+> New DHCP request from MAC=00-18-DE-77-9B-43
+> Jul 26 16:30:18 OpenWRT kern.notice chillispot[841]: chilli.c: 2570:
+> Client MAC=00-18-DE-77-9B-43 assigned IP 192.168.100.40
+> Jul 26 16:36:48 OpenWRT kern.notice chillispot[841]: chilli.c: 2905:
+> Successful UAM login from username=00-18-DE-77-9B-43 IP=192.168.100.40
+> Jul 26 16:50:15 OpenWRT kern.info chillispot[841]: chilli.c: 2690:
+> DHCP addr released by MAC=00-18-DE-77-9B-43 IP=192.168.100.40
+>
+> Jul 26 16:51:42 OpenWRT kern.notice chillispot[841]: chilli.c: 2608:
+> New DHCP request from MAC=00-18-DE-77-9B-43
+> Jul 26 16:51:42 OpenWRT kern.notice chillispot[841]: chilli.c: 2570:
+> Client MAC=00-18-DE-77-9B-43 assigned IP 192.168.100.41
+> Jul 26 16:55:22 OpenWRT kern.notice chillispot[841]: chilli.c: 2905:
+> Successful UAM login from username=00-18-DE-77-9B-43 IP=192.168.100.41
+>
+> So the question is:
+>
+> Does anybody know what triggers this behaviour of Windows (maybe some
+> energy saving issue which works in a weird way)?
+> Is there a way to make chilli temporarily bind an IP address to a mac
+> address so that it would re-assign the same IP to the same client MAC
+> within a certain timeframe?
+>
+> Thanks,
+>
+> lc
+>
+>
+> Am 15.08.2007 um 10:20 schrieb Yannick Deltroo:
+>
+>
+> > Alex,
+> >
+> > I've seen that you've changed the DHCP range of IPs from the default.
+> > Check that the three parameters net/dynip/statip are correctly set (in
+> > particular the netmask part).
+> >
+> > Also check that the lease parameter is not too short for the client
+> > operating system to accept the DHCP lease returned by Chilli.
+> >
+> > By the way, Chillispot is going to NAT your public addresses in the
+> > default configuration.
+> > For more info, see this thread,
+> > http://coova.org/phpBB3/viewtopic.php?
+> > f=4&t=157&sid=6d5907c41c5aa11b528345295892dff9
+> >
+> > Cheers
+> >
+> > On 8/15/07, Alex Nderitu <anderitu at africaonline.co.ke> wrote:
+> >
+> >>
+> >>  Hi All,
+> >>  I have a problem where wireless clients are not allocated dhcp
+> >> addresses on accessing chillispot. However from the log files I
+> >> can see chillispot is issuing the addresses on accessing the
+> >> wireless network. Has anyone come across this and whats the work
+> >> around.
+> >>
+> >>  Logs from chilli
+> >>  -----------------------
+> >>  Aug 14 15:40:03 hotspot chillispot[7333]: chilli.c: 3082: DHCP
+> >> addr released by MAC=00-16-6F-C3-7E-5F IP=41.207.76.34
+> >>  Aug 14 15:40:05 hotspot chillispot[7333]: chilli.c: 3041: New
+> >> DHCP request from MAC=00-16-6F-C3-7E-5F
+> >>  Aug 14 15:40:05 hotspot chillispot[7333]: chilli.c: 3011: Client
+> >> MAC=00-16-6F-C3-7E-5F assigned IP 41.207.76.35
+> >>  Aug 14 15:40:18 hotspot chillispot[7333]: chilli.c: 3082: DHCP
+> >> addr released by MAC=00-16-6F-C3-7E-5F IP=41.207.76.35
+> >>  Aug 14 15:40:21 hotspot chillispot[7333]: chilli.c: 3041: New
+> >> DHCP request from MAC=00-16-6F-C3-7E-5F
+> >>  Aug 14 15:40:21 hotspot chillispot[7333]: chilli.c: 3011: Client
+> >> MAC=00-16-6F-C3-7E-5F assigned IP 41.207.76.36
+> >>  Aug 14 15:41:31 hotspot chillispot[7333]: chilli.c: 3041: New
+> >> DHCP request from MAC=00-19-D2-30-B3-A1
+> >>  Aug 14 15:41:31 hotspot chillispot[7333]: chilli.c: 3011: Client
+> >> MAC=00-19-D2-30-B3-A1 assigned IP 41.207.76.37
+> >>  Aug 14 15:45:49 hotspot chillispot[7333]: chilli.c: 3082: DHCP
+> >> addr released by MAC=00-16-6F-C3-7E-5F IP=41.207.76.36
+> >>  Aug 14 15:45:51 hotspot chillispot[7333]: chilli.c: 3041: New
+> >> DHCP request from MAC=00-16-6F-C3-7E-5F
+> >>  Aug 14 15:45:51 hotspot chillispot[7333]: chilli.c: 3011: Client
+> >> MAC=00-16-6F-C3-7E-5F assigned IP 41.207.76.38
+> >>  Aug 14 15:48:32 hotspot chillispot[7333]: chilli.c: 3041: New
+> >> DHCP request from MAC=00-16-6F-55-01-21
+> >>  Aug 14 15:48:32 hotspot chillispot[7333]: chilli.c: 3011: Client
+> >> MAC=00-16-6F-55-01-21 assigned IP 41.207.76.39
+> >>  Aug 14 15:49:10 hotspot chillispot[7333]: chilli.c: 3041: New
+> >> DHCP request from MAC=00-06-F4-0D-4B-DA
+> >>  Aug 14 15:49:10 hotspot chillispot[7333]: chilli.c: 3011: Client
+> >> MAC=00-06-F4-0D-4B-DA assigned IP 41.207.76.40
+> >>  Aug 14 15:52:12 hotspot chillispot[7333]: chilli.c: 3082: DHCP
+> >> addr released by MAC=00-16-6F-C3-7E-5F IP=41.207.76.38
+> >>  Aug 14 15:52:14 hotspot chillispot[7333]: chilli.c: 3041: New
+> >> DHCP request from MAC=00-16-6F-C3-7E-5F
+> >>  Aug 14 15:52:14 hotspot chillispot[7333]: chilli.c: 3011: Client
+> >> MAC=00-16-6F-C3-7E-5F assigned IP 41.207.76.41
+> >>  Aug 14 15:53:46 hotspot chillispot[7333]: chilli.c: 3082: DHCP
+> >> addr released by MAC=00-16-6F-C3-7E-5F IP=41.207.76.41
+> >>  Aug 14 15:53:53 hotspot chillispot[7333]: chilli.c: 3082: DHCP
+> >> addr released by MAC=00-19-D2-30-B3-A1 IP=41.207.76.37
+> >>  Aug 14 15:53:59 hotspot chillispot[7333]: chilli.c: 3041: New
+> >> DHCP request from MAC=00-16-6F-C3-7E-5F
+> >>  Aug 14 15:53:59 hotspot chillispot[7333]: chilli.c: 3011: Client
+> >> MAC=00-16-6F-C3-7E-5F assigned IP 41.207.76.43
+> >>  Aug 14 15:55:04 hotspot chillispot[7333]: chilli.c: 3082: DHCP
+> >> addr released by MAC=00-16-6F-C3-7E-5F IP=41.207.76.43
+> >>  Aug 14 15:55:06 hotspot chillispot[7333]: chilli.c: 3041: New
+> >> DHCP request from MAC=00-16-6F-C3-7E-5F
+> >>
+> >>
+> >> --
+> >>
+> >>  Regards,
+> >>
+> >>  Alex Nderitu
+> >>  Systems Administration
+> >>  Africa Online, Kenya
+> >>  Tel: +254 (20) 27 92 253
+> >>  Fax: +254 (20) 27 100 10
+> >>  Email: anderitu at africaonline.co.ke
+> >>  AIM: nderitualex
+> >>
+> >>
+> >>    A member of the Telkom South Africa Group
+>
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20070908/a346d144/attachment.htm>
+
+From contact at sriviere.info  Sat Sep  8 13:13:58 2007
+From: contact at sriviere.info (=?ISO-8859-1?Q?SR_Infosyst=E8mes?=)
+Date: Sat, 08 Sep 2007 15:13:58 +0200
+Subject: DHCP - WLAN behaviour of Windows Notebooks
+In-Reply-To: <ef21d1850709080537i3388ff55ha0a22369115fab0f@mail.gmail.com>
+References: <46DD71C2.8050101@pobox.com>	 <ef21d1850709070354y7a5c6486va34a4f6acb4bcc1c@mail.gmail.com>	 <46E1565B.1040908@pobox.com> <46E16D7D.3080409@pobox.com>	 <ef21d1850709070832p5484879y1d59b6d447946918@mail.gmail.com>	 <46E17F43.40907@pobox.com>	 <ef21d1850709071030n348bf810h962d333960167c3d@mail.gmail.com>	 <46E205BC.5070504@pobox.com>	 <ef21d1850709072309k6db69ea2h699d9ac82039b9fd@mail.gmail.com>	 <ED4FDED4-4188-41AD-BAD1-9EA0F5354F59@silverserver.at> <ef21d1850709080537i3388ff55ha0a22369115fab0f@mail.gmail.com>
+Message-ID: <46E2A016.8020500@sriviere.info>
+
+Hi all,
+
+I'm fairly new around TUN/TAP systems, and experiment some problems.
+
+Setting up a wifi network for tests, I use a single debian server 
+hosting all the stuff (LAMP/RADIUS/COOVA-CHILLI) with two AP used like 
+hubs (ap open-mode, no dhcp, original manufacturer firmware).
+
+This test platform must be unchanged for production : one PC, many AP 
+(with original manufacturer firmware).
+
+            internet
+          192.168.0.x
+               |
+               |
+----------- eth0 -----------
+|                          |
+|Debian server (all in one)|
+|                          |
+------------eth1------------
+               |
+               |
+          192.168.1.x
+               |
+               |
+           --------
+           |switch|
+           --------
+             /  \
+            /    \
+           /      \
+         AP1      AP2
+
+At this stage, after a week of work and tests, all basics function works 
+well (home redirection, user connection, and so on).
+
+It's like magic, I thank warmly all the CoovaChilli maintainers ! Chilli 
+is far more elegant and efficient than stuff like NoCat.
+
+My /etc/network/interface is standard :
+______________________________
+auto eth0
+iface eth0 inet static
+network 192.168.0.0
+netmask 255.255.255.0
+address 192.168.0.251
+gateway 192.168.0.254
+
+auto eth1
+iface eth1 inet static
+address 0.0.0.0
+_______________________________
+
+But I need to maintain my AP via SSH. (change subtles settings not 
+available bySo, I modify eth1 to :
+_______________________________
+
+auto eth1
+iface eth1 inet static
+network 192.168.1.0
+netmask 255.255.255.0
+address 192.168.1.251
+_______________________________
+
+AP connections via SSH works well (ntp, tftp firmwares updates too), but 
+now I lost automatic redirection to "uamhomepage" (when a new wifi 
+client connects it don't get the home page but the web browser page by 
+default is searched until timeout).
+
+I still may connect using http://192.168.1.1:3990/prelogin, but 
+automatic redirection is very useful for users.
+
+In addition CoovaChilli now affects an IP address to the AP via its 
+internal dhcp and there is some ARP problems...
+
+I've read in the old ChilliSpot doc we can set an address to eth1, to 
+maintain AP, but maybe it's a little more difficult :)
+
+I guess I need to exclude AP (by MAC addresses ?) from CoovaChilli 
+processing and make a setup for concurrents access (wifi clients and AP 
+maintenance via SSH).
+
+I'm not familiar with TUN, reading manpages carefully, I noticed some 
+parameters (dhcpmac) which may help, after many tries, I feel I need help...
+
+chilli.conf parameters (all others omitted, values by default) :
+_______________________________
+dhcpif          eth1
+dhcpstart       5
+dhcpend         240
+net             192.168.1.0/24
+dynip           192.168.1.0/24
+uamserver https://192.168.1.1/cake/hotcakes/webroot/welcome/go/
+uamhomepage http://192.168.1.1/cake/hotcakes/welcome/login_page.html
+uamsecret ht2eb8ej6s4et3rg1ulp
+uamlisten 192.168.1.1
+uamallowed 212.27.54.252,212.27.53.252
+radiusserver1 127.0.0.1
+radiusserver2 127.0.0.1
+radiussecret testing123
+_______________________________
+
+AP1 & AP2 settings :
+_______________________________
+
+AP1 ip addr : 192.168.1.241
+AP1 ip mask : 255.255.255.0
+AP1 ip gateway : 192.168.1.1
+AP1 dhcp : disabled
+
+AP2 ip addr : 192.168.1.242
+AP2 ip mask : 255.255.255.0
+AP2 ip gateway : 192.168.1.1
+AP2 dhcp : disabled
+_______________________________
+
+
+I've also tried to set AP ip gateway to eth1 IP address (192.168.1.251) 
+without success.
+
+If you can help me, it would be much appreciated.
+
+
+All the best form Oleron island.
+
+St?phane Rivi?re
+
+
+-- 
+LA SOLUTION ? vos probl?mes INFORMATIQUES
+
+SR Infosyst?mes
+15, rue du Temple
+17310 St Pierre d'Ol?ron
+Ile d'Ol?ron - France
+
+Mobile : 06 89 29 88 44
+Fixe :   09 54 10 55 60 (appel local)
+Fax :    05 46 36 30 59
+Site :   www.sriviere.info
+Email :  contact at sriviere.info
+Skype :  stephane.riviere
+
+Certificat X509 : disponible sur le site
+
+
+From mem.corruption at gmail.com  Sat Sep  8 13:37:18 2007
+From: mem.corruption at gmail.com (David Bird)
+Date: Sat, 8 Sep 2007 15:37:18 +0200
+Subject: DHCP - WLAN behaviour of Windows Notebooks
+In-Reply-To: <46E2A016.8020500@sriviere.info>
+References: <46DD71C2.8050101@pobox.com> <46E16D7D.3080409@pobox.com>
+	 <ef21d1850709070832p5484879y1d59b6d447946918@mail.gmail.com>
+	 <46E17F43.40907@pobox.com>
+	 <ef21d1850709071030n348bf810h962d333960167c3d@mail.gmail.com>
+	 <46E205BC.5070504@pobox.com>
+	 <ef21d1850709072309k6db69ea2h699d9ac82039b9fd@mail.gmail.com>
+	 <ED4FDED4-4188-41AD-BAD1-9EA0F5354F59@silverserver.at>
+	 <ef21d1850709080537i3388ff55ha0a22369115fab0f@mail.gmail.com>
+	 <46E2A016.8020500@sriviere.info>
+Message-ID: <ef21d1850709080637k253336c8wa6c80a1c9ea8fd8e@mail.gmail.com>
+
+I think I must come to your island to help you out! :)
+
+Have you tested authenticating multiple users from the same AP? From
+your network diagram, I wasn't certain if you're APs are bridging the
+192.168.1.0/24 network. If not, you may be authenticating the entire
+AP instead of just one user.
+
+I typically don't assign my dhcpif an IP address, but others do. You
+indeed just need to be a lot more careful with your iptables rules.
+For instance, if someone made the their default gateway that of your
+eth1 instead of the chilli tunnel, are they bypassing authentication?
+You need to be careful what traffic gets picked up and handled by the
+kernel and what gets switched through chilli...
+
+David
+
+
+On 9/8/07, SR Infosyst?mes <contact at sriviere.info> wrote:
+> Hi all,
+>
+> I'm fairly new around TUN/TAP systems, and experiment some problems.
+>
+> Setting up a wifi network for tests, I use a single debian server
+> hosting all the stuff (LAMP/RADIUS/COOVA-CHILLI) with two AP used like
+> hubs (ap open-mode, no dhcp, original manufacturer firmware).
+>
+> This test platform must be unchanged for production : one PC, many AP
+> (with original manufacturer firmware).
+>
+>             internet
+>           192.168.0.x
+>                |
+>                |
+> ----------- eth0 -----------
+> |                          |
+> |Debian server (all in one)|
+> |                          |
+> ------------eth1------------
+>                |
+>                |
+>           192.168.1.x
+>                |
+>                |
+>            --------
+>            |switch|
+>            --------
+>              /  \
+>             /    \
+>            /      \
+>          AP1      AP2
+>
+> At this stage, after a week of work and tests, all basics function works
+> well (home redirection, user connection, and so on).
+>
+> It's like magic, I thank warmly all the CoovaChilli maintainers ! Chilli
+> is far more elegant and efficient than stuff like NoCat.
+>
+> My /etc/network/interface is standard :
+> ______________________________
+> auto eth0
+> iface eth0 inet static
+> network 192.168.0.0
+> netmask 255.255.255.0
+> address 192.168.0.251
+> gateway 192.168.0.254
+>
+> auto eth1
+> iface eth1 inet static
+> address 0.0.0.0
+> _______________________________
+>
+> But I need to maintain my AP via SSH. (change subtles settings not
+> available bySo, I modify eth1 to :
+> _______________________________
+>
+> auto eth1
+> iface eth1 inet static
+> network 192.168.1.0
+> netmask 255.255.255.0
+> address 192.168.1.251
+> _______________________________
+>
+> AP connections via SSH works well (ntp, tftp firmwares updates too), but
+> now I lost automatic redirection to "uamhomepage" (when a new wifi
+> client connects it don't get the home page but the web browser page by
+> default is searched until timeout).
+>
+> I still may connect using http://192.168.1.1:3990/prelogin, but
+> automatic redirection is very useful for users.
+>
+> In addition CoovaChilli now affects an IP address to the AP via its
+> internal dhcp and there is some ARP problems...
+>
+> I've read in the old ChilliSpot doc we can set an address to eth1, to
+> maintain AP, but maybe it's a little more difficult :)
+>
+> I guess I need to exclude AP (by MAC addresses ?) from CoovaChilli
+> processing and make a setup for concurrents access (wifi clients and AP
+> maintenance via SSH).
+>
+> I'm not familiar with TUN, reading manpages carefully, I noticed some
+> parameters (dhcpmac) which may help, after many tries, I feel I need help...
+>
+> chilli.conf parameters (all others omitted, values by default) :
+> _______________________________
+> dhcpif          eth1
+> dhcpstart       5
+> dhcpend         240
+> net             192.168.1.0/24
+> dynip           192.168.1.0/24
+> uamserver https://192.168.1.1/cake/hotcakes/webroot/welcome/go/
+> uamhomepage http://192.168.1.1/cake/hotcakes/welcome/login_page.html
+> uamsecret ht2eb8ej6s4et3rg1ulp
+> uamlisten 192.168.1.1
+> uamallowed 212.27.54.252,212.27.53.252
+> radiusserver1 127.0.0.1
+> radiusserver2 127.0.0.1
+> radiussecret testing123
+> _______________________________
+>
+> AP1 & AP2 settings :
+> _______________________________
+>
+> AP1 ip addr : 192.168.1.241
+> AP1 ip mask : 255.255.255.0
+> AP1 ip gateway : 192.168.1.1
+> AP1 dhcp : disabled
+>
+> AP2 ip addr : 192.168.1.242
+> AP2 ip mask : 255.255.255.0
+> AP2 ip gateway : 192.168.1.1
+> AP2 dhcp : disabled
+> _______________________________
+>
+>
+> I've also tried to set AP ip gateway to eth1 IP address (192.168.1.251)
+> without success.
+>
+> If you can help me, it would be much appreciated.
+>
+>
+> All the best form Oleron island.
+>
+> St?phane Rivi?re
+>
+>
+> --
+> LA SOLUTION ? vos probl?mes INFORMATIQUES
+>
+> SR Infosyst?mes
+> 15, rue du Temple
+> 17310 St Pierre d'Ol?ron
+> Ile d'Ol?ron - France
+>
+> Mobile : 06 89 29 88 44
+> Fixe :   09 54 10 55 60 (appel local)
+> Fax :    05 46 36 30 59
+> Site :   www.sriviere.info
+> Email :  contact at sriviere.info
+> Skype :  stephane.riviere
+>
+> Certificat X509 : disponible sur le site
+>
+
+
+From contact at sriviere.info  Sat Sep  8 15:19:14 2007
+From: contact at sriviere.info (=?ISO-8859-1?Q?SR_Infosyst=E8mes?=)
+Date: Sat, 08 Sep 2007 17:19:14 +0200
+Subject: Accessing AP through eth1 
+In-Reply-To: <ef21d1850709080637k253336c8wa6c80a1c9ea8fd8e@mail.gmail.com>
+References: <46DD71C2.8050101@pobox.com> <46E16D7D.3080409@pobox.com>	 <ef21d1850709070832p5484879y1d59b6d447946918@mail.gmail.com>	 <46E17F43.40907@pobox.com>	 <ef21d1850709071030n348bf810h962d333960167c3d@mail.gmail.com>	 <46E205BC.5070504@pobox.com>	 <ef21d1850709072309k6db69ea2h699d9ac82039b9fd@mail.gmail.com>	 <ED4FDED4-4188-41AD-BAD1-9EA0F5354F59@silverserver.at>	 <ef21d1850709080537i3388ff55ha0a22369115fab0f@mail.gmail.com>	 <46E2A016.8020500@sriviere.info> <ef21d1850709080637k253336c8wa6c80a1c9ea8fd8e@mail.gmail.com>
+Message-ID: <46E2BD72.8010309@sriviere.info>
+
+Hi David,
+
+Thanks for your fast answer !
+
+> I think I must come to your island to help you out! :)
+
+You're welcome ! Sail, wind-surf, surf, dive, kite-surf, plane, see, 
+horses, bicycle, sun... But I'm at work, even week-ends :)))
+
+Since the guy who have to setup the test platform has given up (too 
+difficult, he says, after trying many things around NoCat for weeks. I 
+restart the project from the ground and, after intensive googling, 
+choose CoovaChilli : better design, faster software and alive project. I 
+use hotcake to manage accounts, hotcake is a new project, very promising.
+
+More seriously, I'm basically a software and hardware engineer, 
+definitly not an experienced network engineer. I discover theses days 
+netfilter/iptables and so on. But I'm stubborn, and I want to learn and 
+make things work together, gracefully if possible :)
+
+> Have you tested authenticating multiple users from the same AP? 
+
+I start CoovaChilli
+
+I switch on pc1 wifi card
+log says client mac_wifi_card_pc1 assigned 192.168.1.5
+
+I switch on pc2 wifi card
+log says client mac_wifi_car_pc2 assigned 192.168.1.6
+
+I log test01 user on pc1
+log says Successful UAM login from username=test01 IP=192.168.1.5
+
+I log test01 user on pc2
+log says Successful UAM login from username=test02 IP=192.168.1.6
+
+I know my APs mac adresses and my PC mac adresses : there is no ambiguity.
+
+> I typically don't assign my dhcpif an IP address, but others do. You
+> indeed just need to be a lot more careful with your iptables rules.
+
+> For instance, if someone made the their default gateway that of your
+> eth1 instead of the chilli tunnel, are they bypassing authentication?
+
+Must I give eth1 a real IP OUTSIDE my Chilli network class (192.168.1.x) 
+choosing 192.168.3.x for example ? and affect IP of APs in the same 
+192.168.3 class ?
+
+eth0 : 192.168.0.0/24, ip 192.168.0.251 via /etc/network/interfaces
+
+tun0 : 192.168.1.0/24, ip 192.168.1.1 via chilli.conf
+
+eth1 : 192.168.2.0/24, ip 192.168.2.251 via /etc/network/interfaces
+
+If I setup AP1 like this :
+
+ip : 192.168.2.241
+gateway : 192.168.2.251
+
+May I hope avoiding interference between Chilli and AP maintenance via 
+SSH doing like this  ?
+
+> You need to be careful what traffic gets picked up and handled by the
+> kernel and what gets switched through chilli...
+
+Despite the iptables rules to avoid unauthentication bypassing, why 
+CoovaChilli is confused when I give a real IP to eth1 ?
+
+Because I melt tun0 and eth1 in the same network class (192.168.1.0/24) ?
+
+If I understood well the Chilli design :
+
+1) Chilli listen to DHCP request. At this stage, Chilli don't mind 
+network class or ip of eth1, it just listen eth1 to dhcp request.
+
+2) When it receives a dhcp request, it affects an ip address (inside 
+network class settings in chilli.conf) through its internal dhcp and 
+make a tunnel between the client and Chilli.
+
+Thanks again for your help.
+
+Sorry to disturb you with newbie questions.
+
+Stephane Riviere
+
+-- 
+LA SOLUTION ? vos probl?mes INFORMATIQUES
+
+SR Infosyst?mes
+15, rue du Temple
+17310 St Pierre d'Ol?ron
+Ile d'Ol?ron - France
+
+Mobile : 06 89 29 88 44
+Fixe :   09 54 10 55 60 (appel local)
+Fax :    05 46 36 30 59
+Site :   www.sriviere.info
+Email :  contact at sriviere.info
+Skype :  stephane.riviere
+
+Certificat X509 : disponible sur le site
+
+
+From listuser at peternixon.net  Sat Sep  8 15:36:06 2007
+From: listuser at peternixon.net (Peter Nixon)
+Date: Sat, 8 Sep 2007 18:36:06 +0300
+Subject: CAP upgrades
+Message-ID: <200709081836.06558.listuser@peternixon.net>
+
+David
+
+There seems to be a bug in the way CAP handles firmware upgrades. Basically 
+the box does:
+
+Unlocking linux ...
+Erasing linux ...
+Writing from /tmp/firmware.bin to linux ... 
+
+Then never comes back no matter how long you wait. A power reset of the box 
+leaves it with the power led blinking and the box dead to the world..
+
+OpenWRT images can normally upgrade themselves (including crossgrade to CAP) 
+so I guess you must have broken something in the CAP image to stop this from 
+working. Any ides what? :-(
+
+Note. The only way to recover the box is to go through the tftp client 
+proceedure..
+
+Cheers
+
+-- 
+
+Peter Nixon
+http://peternixon.net/
+
+
+From mem.corruption at gmail.com  Sat Sep  8 15:50:07 2007
+From: mem.corruption at gmail.com (David Bird)
+Date: Sat, 8 Sep 2007 17:50:07 +0200
+Subject: Accessing AP through eth1
+In-Reply-To: <46E2BD72.8010309@sriviere.info>
+References: <46DD71C2.8050101@pobox.com> <46E17F43.40907@pobox.com>
+	 <ef21d1850709071030n348bf810h962d333960167c3d@mail.gmail.com>
+	 <46E205BC.5070504@pobox.com>
+	 <ef21d1850709072309k6db69ea2h699d9ac82039b9fd@mail.gmail.com>
+	 <ED4FDED4-4188-41AD-BAD1-9EA0F5354F59@silverserver.at>
+	 <ef21d1850709080537i3388ff55ha0a22369115fab0f@mail.gmail.com>
+	 <46E2A016.8020500@sriviere.info>
+	 <ef21d1850709080637k253336c8wa6c80a1c9ea8fd8e@mail.gmail.com>
+	 <46E2BD72.8010309@sriviere.info>
+Message-ID: <ef21d1850709080850n3b79e010m10fded9a68b2b189@mail.gmail.com>
+
+First of all, there are many possible configurations with chilli (plus
+iptables, etc) - I can't claim to have tried them all. So, when in doubt,
+give it a try! But, to keep things manageable for any kind of support, there
+are some "best practices" and such. I consider un-setting the dhcpif IP
+address a "best practice". In your configuration, you're essentially
+overlaying two networks on your eth1 network -- which is cool, if you know
+what you're doing. You need to ensure proper access controls on both
+networks - only one of which is utilizing chilli (if done correctly).
+
+The cleanest way for chilli to operate is to completely own the dhcpif, with
+no routing (forwarding in iptables) for the traffic on that interface --
+instead, only for the traffic to/from the chilli tunnel interface. Yet, when
+you assign an IP to dhcpif, you're probably wanting your system to route
+traffic directly to that interface. Now you have an overlay network
+bypassing chilli.
+
+So, it isn't a matter of chilli geting confused. Rather, it becomes
+increasingly possible that traffic is bypassing chilli or even being passed
+through chilli _and_ being picked up by the kernel (like in conn_track or
+even for routing). How all this interacts with iptables and its various
+modules is something to test. Some things to watch out for: DHCP responses
+from something other than chilli on your dhcpif; duplicate packets on your
+dhcpif or WAN; the ability to by-pass chilli altogether; and, proper NAT and
+conn-tracking (for VPNs, etc, if that is of any importance to you) in
+iptables.
+
+David
+
+On 9/8/07, SR Infosyst?mes <contact at sriviere.info> wrote:
+>
+> Hi David,
+>
+> Thanks for your fast answer !
+>
+> > I think I must come to your island to help you out! :)
+>
+> You're welcome ! Sail, wind-surf, surf, dive, kite-surf, plane, see,
+> horses, bicycle, sun... But I'm at work, even week-ends :)))
+>
+> Since the guy who have to setup the test platform has given up (too
+> difficult, he says, after trying many things around NoCat for weeks. I
+> restart the project from the ground and, after intensive googling,
+> choose CoovaChilli : better design, faster software and alive project. I
+> use hotcake to manage accounts, hotcake is a new project, very promising.
+>
+> More seriously, I'm basically a software and hardware engineer,
+> definitly not an experienced network engineer. I discover theses days
+> netfilter/iptables and so on. But I'm stubborn, and I want to learn and
+> make things work together, gracefully if possible :)
+>
+> > Have you tested authenticating multiple users from the same AP?
+>
+> I start CoovaChilli
+>
+> I switch on pc1 wifi card
+> log says client mac_wifi_card_pc1 assigned 192.168.1.5
+>
+> I switch on pc2 wifi card
+> log says client mac_wifi_car_pc2 assigned 192.168.1.6
+>
+> I log test01 user on pc1
+> log says Successful UAM login from username=test01 IP=192.168.1.5
+>
+> I log test01 user on pc2
+> log says Successful UAM login from username=test02 IP=192.168.1.6
+>
+> I know my APs mac adresses and my PC mac adresses : there is no ambiguity.
+>
+> > I typically don't assign my dhcpif an IP address, but others do. You
+> > indeed just need to be a lot more careful with your iptables rules.
+>
+> > For instance, if someone made the their default gateway that of your
+> > eth1 instead of the chilli tunnel, are they bypassing authentication?
+>
+> Must I give eth1 a real IP OUTSIDE my Chilli network class (192.168.1.x)
+> choosing 192.168.3.x for example ? and affect IP of APs in the same
+> 192.168.3 class ?
+>
+> eth0 : 192.168.0.0/24, ip 192.168.0.251 via /etc/network/interfaces
+>
+> tun0 : 192.168.1.0/24, ip 192.168.1.1 via chilli.conf
+>
+> eth1 : 192.168.2.0/24, ip 192.168.2.251 via /etc/network/interfaces
+>
+> If I setup AP1 like this :
+>
+> ip : 192.168.2.241
+> gateway : 192.168.2.251
+>
+> May I hope avoiding interference between Chilli and AP maintenance via
+> SSH doing like this  ?
+>
+> > You need to be careful what traffic gets picked up and handled by the
+> > kernel and what gets switched through chilli...
+>
+> Despite the iptables rules to avoid unauthentication bypassing, why
+> CoovaChilli is confused when I give a real IP to eth1 ?
+>
+> Because I melt tun0 and eth1 in the same network class (192.168.1.0/24) ?
+>
+> If I understood well the Chilli design :
+>
+> 1) Chilli listen to DHCP request. At this stage, Chilli don't mind
+> network class or ip of eth1, it just listen eth1 to dhcp request.
+>
+> 2) When it receives a dhcp request, it affects an ip address (inside
+> network class settings in chilli.conf) through its internal dhcp and
+> make a tunnel between the client and Chilli.
+>
+> Thanks again for your help.
+>
+> Sorry to disturb you with newbie questions.
+>
+> Stephane Riviere
+>
+> --
+> LA SOLUTION ? vos probl?mes INFORMATIQUES
+>
+> SR Infosyst?mes
+> 15, rue du Temple
+> 17310 St Pierre d'Ol?ron
+> Ile d'Ol?ron - France
+>
+> Mobile : 06 89 29 88 44
+> Fixe :   09 54 10 55 60 (appel local)
+> Fax :    05 46 36 30 59
+> Site :   www.sriviere.info
+> Email :  contact at sriviere.info
+> Skype :  stephane.riviere
+>
+> Certificat X509 : disponible sur le site
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20070908/13b46c47/attachment.htm>
+
+From mem.corruption at gmail.com  Sat Sep  8 16:08:34 2007
+From: mem.corruption at gmail.com (David Bird)
+Date: Sat, 8 Sep 2007 18:08:34 +0200
+Subject: CAP upgrades
+In-Reply-To: <200709081836.06558.listuser@peternixon.net>
+References: <200709081836.06558.listuser@peternixon.net>
+Message-ID: <ef21d1850709080908w136bf82dy402b7eeeef1f2d5c@mail.gmail.com>
+
+Hmm... yes, I know the current CoovaAP release has some issues... I have
+been focused more on chilli recently :)
+
+The story is that CoovaAP 1.0-beta.5, trying to resolve some stability
+issues, uses a non-standard OpenWRT whiterussian patch (sourced from the
+OpenWrt forum on the stability issue). This actually has been reported to
+fix the stability issue, but introduced a bunch of other problems. What the
+patch did was to bring some kamikaze drivers into whiterussian. It also made
+it impossible to upgrade the firmware using a .bin file (a change to mtd in
+kamikaze). You should be able to use the .trx file just fine or tftp a .bin.
+I perhaps rushed too quickly into releasing that version of CoovaAP.
+
+The best solution would be to finally get CoovaAP on kamikaze instead of
+spending time fixing whiterussian. But, this also has its issues. For one, I
+wanted to roll out a new web admin interface when porting to kamikaze.
+However, this still requires some work. The next release needs to be a major
+one, with cleaner packaging and keeping with stock OpenWRT kamikaze base...
+it is a work in progress for sure.
+
+David
+
+On 9/8/07, Peter Nixon <listuser at peternixon.net> wrote:
+>
+> David
+>
+> There seems to be a bug in the way CAP handles firmware upgrades.
+> Basically
+> the box does:
+>
+> Unlocking linux ...
+> Erasing linux ...
+> Writing from /tmp/firmware.bin to linux ...
+>
+> Then never comes back no matter how long you wait. A power reset of the
+> box
+> leaves it with the power led blinking and the box dead to the world..
+>
+> OpenWRT images can normally upgrade themselves (including crossgrade to
+> CAP)
+> so I guess you must have broken something in the CAP image to stop this
+> from
+> working. Any ides what? :-(
+>
+> Note. The only way to recover the box is to go through the tftp client
+> proceedure..
+>
+> Cheers
+>
+> --
+>
+> Peter Nixon
+> http://peternixon.net/
+>
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20070908/2af4dfd8/attachment.htm>
+
+From chilli at silverserver.at  Sat Sep  8 16:48:28 2007
+From: chilli at silverserver.at (lc)
+Date: Sat, 8 Sep 2007 18:48:28 +0200
+Subject: DHCP - WLAN behaviour of Windows Notebooks
+In-Reply-To: <ef21d1850709080537i3388ff55ha0a22369115fab0f@mail.gmail.com>
+References: <46DD71C2.8050101@pobox.com> <ef21d1850709070354y7a5c6486va34a4f6acb4bcc1c@mail.gmail.com> <46E1565B.1040908@pobox.com> <46E16D7D.3080409@pobox.com> <ef21d1850709070832p5484879y1d59b6d447946918@mail.gmail.com> <46E17F43.40907@pobox.com> <ef21d1850709071030n348bf810h962d333960167c3d@mail.gmail.com> <46E205BC.5070504@pobox.com> <ef21d1850709072309k6db69ea2h699d9ac82039b9fd@mail.gmail.com> <ED4FDED4-4188-41AD-BAD1-9EA0F5354F59@silverserver.at> <ef21d1850709080537i3388ff55ha0a22369115fab0f@mail.gmail.com>
+Message-ID: <AC9C304F-2003-4423-8E46-66C136CC39E5@silverserver.at>
+
+Hi David,
+
+>
+> some questions:
+>
+> - What version of chilli are you using? Check your root crontab for  
+> any chilli init script calls with argument "arping" - it's a  
+> feature, actually, I will completely remove in the next release. If  
+> you're using 1.0.7, it shouldn't be an issue (the init script no  
+> longer has the feature).
+>
+
+I use 1.0.7 on all systems and no, arping is not used.
+
+> - Are your WiFi clients using any client software (a smart-client  
+> or that sort of thing)? Maybe running something in the background  
+> (boingo, whisher, whatever)?
+
+I have no way to know what the clients use (all public places).  
+However once I had the chance to meet a client on site who had this  
+problem. He was using a Sony notebook. I checked - old drivers. So I  
+updated his wireless drivers (Intel WLAN hardware) to the latest  
+version - it didn't improve the situation. He did not use a smart- 
+client, just the standard one which is built-in Win XP (SP2).
+
+>
+> - Have you tried using 'uamanyip' to see if that makes any difference?
+
+Not yet, I will try it on one heavy-use location.
+
+>
+> - Do you do any kind of signal scanning from your AP or dynamic  
+> changing of settings?
+
+No.
+>
+> It's an interesting problem - in the client. I think chilli does  
+> the right thing upon getting a DHCP release... but would be  
+> interesting for it to reserve the IP for a short time.
+>
+I also think it is the client who triggers this problem and this  
+means there is nothing much we can do on that end. IP reservation for  
+a short time could be a work-around. As an additional option it would  
+be interesting if chilli would delay closing a session for this short  
+time.
+
+FYI: I use the same patched version of OpenWRT WR you are using for  
+Coova AP. As you wrote in another mail this version has some issues,  
+so it is thinkable that it misbehaves on the wireless side in a way  
+that some clients get confused and disassociate. I don't believe this  
+since it is a minority of clients that have this problem but who  
+knows. The reason I still use it is because it uses the stable wl  
+driver (the one in official WR sometimes causes kernel panics).
+
+Does anyone else who is using OpenWRT have noticed this issue?
+
+Thanks,
+lc
+
+
+> David
+>
+> On 9/8/07, lc <chilli at silverserver.at> wrote:
+> I had also a small e-mail conversation about the following with David
+> (thanks for keeping chilli alive!) - but I still do not know how this
+> "problem" can be dealt with.
+>
+>
+> It seems that there are machines that - for no obvious reason -
+> disassociate and reassociate to the AP even when they signal quality
+> is excellent and no other disturbing radio exists. This seems to
+> happen intentionally because the client seems to release the DHCP
+> address before disassociating. And this is why chilli releases the
+> address and closes the session. If the client would just lose the
+> connection and reassociate, chilli wouldn't know about it unless the
+> DHCP lease time has been reached (=no problem).
+>
+> After such a client re-associates, chilli hands out a new IP address
+> and the user has to log-in again. While the re-login could be handled
+> automatically (so the user won't notice it) the new IP address is a
+> problem - existing connections (e.g. google mail etc) get interrupted.
+>
+> I have noticed this behaviour on Windows notebooks. The user can also
+> see it because at the Windows task bar a message pops up telling the
+> user that he is now connected to the WLAN xyz although this is the
+> very same WLAN he has been already using.
+>
+> I see this behaviour on many locations, and I also see that it does
+> not happen with all clients. e.g. on the same location at the same
+> time one client behaves like in the log below while others stay
+> connected for hours without any interruption. This is why I believe
+> the client's machine is the cause.
+>
+> Here is a log showing that there are only a few seconds between the
+> releasing of the address and handing out a new address for the same
+> client.
+>
+> Chilli-Log:
+> Jul 26 14:29:20 OpenWRT kern.notice chillispot[841]: chilli.c: 2905:
+> Successful UAM login from username=00-18-DE-77-9B-43 IP=192.168.100.25
+> Jul 26 14:33:09 OpenWRT kern.info chillispot[841]: chilli.c: 2690:
+> DHCP addr released by MAC=00-18-DE-77-9B-43 IP=192.168.100.25
+>
+> Jul 26 14:33:12 OpenWRT kern.notice chillispot[841]: chilli.c: 2608:
+> New DHCP request from MAC=00-18-DE-77-9B-43
+> Jul 26 14:33:12 OpenWRT kern.notice chillispot[841]: chilli.c: 2570:
+> Client MAC=00-18-DE-77-9B-43 assigned IP 192.168.100.27
+> Jul 26 14:35:42 OpenWRT kern.notice chillispot[841]: chilli.c: 2905:
+> Successful UAM login from username=00-18-DE-77-9B-43 IP=192.168.100.27
+> Jul 26 15:03:30 OpenWRT kern.info chillispot[841]: chilli.c: 2690:
+> DHCP addr released by MAC=00-18-DE-77-9B-43 IP=192.168.100.27
+>
+> Jul 26 15:06:36 OpenWRT kern.notice chillispot[841]: chilli.c: 2608:
+> New DHCP request from MAC=00-18-DE-77-9B-43
+> Jul 26 15:06:36 OpenWRT kern.notice chillispot[841]: chilli.c: 2570:
+> Client MAC=00-18-DE-77-9B-43 assigned IP 192.168.100.30
+> Jul 26 15:12:55 OpenWRT kern.info chillispot[841]: chilli.c: 2690:
+> DHCP addr released by MAC=00-18-DE-77-9B-43 IP=192.168.100.30
+>
+> Jul 26 15:13:30 OpenWRT kern.notice chillispot[841]: chilli.c: 2608:
+> New DHCP request from MAC=00-18-DE-77-9B-43
+> Jul 26 15:13:30 OpenWRT kern.notice chillispot[841]: chilli.c: 2570:
+> Client MAC=00-18-DE-77-9B-43 assigned IP 192.168.100.31
+> Jul 26 15:14:41 OpenWRT kern.notice chillispot[841]: chilli.c: 2905:
+> Successful UAM login from username=00-18-DE-77-9B-43 IP=192.168.100.31
+> Jul 26 15:19:49 OpenWRT kern.info chillispot[841]: chilli.c: 2690:
+> DHCP addr released by MAC=00-18-DE-77-9B-43 IP=192.168.100.31
+>
+> Jul 26 15:23:22 OpenWRT kern.notice chillispot[841]: chilli.c: 2608:
+> New DHCP request from MAC=00-18-DE-77-9B-43
+> Jul 26 15:23:22 OpenWRT kern.notice chillispot[841]: chilli.c: 2570:
+> Client MAC=00-18-DE-77-9B-43 assigned IP 192.168.100.33
+> Jul 26 15:28:24 OpenWRT kern.info chillispot[841]: chilli.c: 2690:
+> DHCP addr released by MAC=00-18-DE-77-9B-43 IP=192.168.100.33
+>
+> Jul 26 15:30:42 OpenWRT kern.notice chillispot[841]: chilli.c: 2608:
+> New DHCP request from MAC=00-18-DE-77-9B-43
+> Jul 26 15:30:42 OpenWRT kern.notice chillispot[841]: chilli.c: 2570:
+> Client MAC=00-18-DE-77-9B-43 assigned IP 192.168.100.34
+> Jul 26 15:32:54 OpenWRT kern.notice chillispot[841]: chilli.c: 2905:
+> Successful UAM login from username=00-18-DE-77-9B-43 IP=192.168.100.34
+> Jul 26 15:42:15 OpenWRT kern.info chillispot[841]: chilli.c: 2690:
+> DHCP addr released by MAC=00-18-DE-77-9B-43 IP=192.168.100.34
+>
+> Jul 26 15:42:17 OpenWRT kern.notice chillispot[841]: chilli.c: 2608:
+> New DHCP request from MAC=00-18-DE-77-9B-43
+> Jul 26 15:42:17 OpenWRT kern.notice chillispot[841]: chilli.c: 2570:
+> Client MAC=00-18-DE-77-9B-43 assigned IP 192.168.100.36
+> Jul 26 15:44:28 OpenWRT kern.notice chillispot[841]: chilli.c: 2905:
+> Successful UAM login from username=00-18-DE-77-9B-43 IP=192.168.100.36
+> Jul 26 15:49:39 OpenWRT kern.info chillispot[841]: chilli.c: 2690:
+> DHCP addr released by MAC=00-18-DE-77-9B-43 IP=192.168.100.36
+>
+> Jul 26 15:50:00 OpenWRT kern.notice chillispot[841]: chilli.c: 2608:
+> New DHCP request from MAC=00-18-DE-77-9B-43
+> Jul 26 15:50:00 OpenWRT kern.notice chillispot[841]: chilli.c: 2570:
+> Client MAC=00-18-DE-77-9B-43 assigned IP 192.168.100.37
+> Jul 26 15:52:07 OpenWRT kern.notice chillispot[841]: chilli.c: 2905:
+> Successful UAM login from username=00-18-DE-77-9B-43 IP=192.168.100.37
+> Jul 26 16:29:56 OpenWRT kern.info chillispot[841]: chilli.c: 2690:
+> DHCP addr released by MAC=00-18-DE-77-9B-43 IP=192.168.100.37
+>
+> Jul 26 16:30:18 OpenWRT kern.notice chillispot[841]: chilli.c: 2608:
+> New DHCP request from MAC=00-18-DE-77-9B-43
+> Jul 26 16:30:18 OpenWRT kern.notice chillispot[841]: chilli.c: 2570:
+> Client MAC=00-18-DE-77-9B-43 assigned IP 192.168.100.40
+> Jul 26 16:36:48 OpenWRT kern.notice chillispot[841]: chilli.c: 2905:
+> Successful UAM login from username=00-18-DE-77-9B-43 IP=192.168.100.40
+> Jul 26 16:50:15 OpenWRT kern.info chillispot[841]: chilli.c: 2690:
+> DHCP addr released by MAC=00-18-DE-77-9B-43 IP=192.168.100.40
+>
+> Jul 26 16:51:42 OpenWRT kern.notice chillispot[841]: chilli.c: 2608:
+> New DHCP request from MAC=00-18-DE-77-9B-43
+> Jul 26 16:51:42 OpenWRT kern.notice chillispot[841]: chilli.c: 2570:
+> Client MAC=00-18-DE-77-9B-43 assigned IP 192.168.100.41
+> Jul 26 16:55:22 OpenWRT kern.notice chillispot[841]: chilli.c: 2905:
+> Successful UAM login from username=00-18-DE-77-9B-43 IP=192.168.100.41
+>
+> So the question is:
+>
+> Does anybody know what triggers this behaviour of Windows (maybe some
+> energy saving issue which works in a weird way)?
+> Is there a way to make chilli temporarily bind an IP address to a mac
+> address so that it would re-assign the same IP to the same client MAC
+> within a certain timeframe?
+>
+> Thanks,
+>
+> lc
+>
+>
+> Am 15.08.2007 um 10:20 schrieb Yannick Deltroo:
+>
+>
+> > Alex,
+> >
+> > I've seen that you've changed the DHCP range of IPs from the  
+> default.
+> > Check that the three parameters net/dynip/statip are correctly  
+> set (in
+> > particular the netmask part).
+> >
+> > Also check that the lease parameter is not too short for the client
+> > operating system to accept the DHCP lease returned by Chilli.
+> >
+> > By the way, Chillispot is going to NAT your public addresses in the
+> > default configuration.
+> > For more info, see this thread,
+> > http://coova.org/phpBB3/viewtopic.php?
+> > f=4&t=157&sid=6d5907c41c5aa11b528345295892dff9
+> >
+> > Cheers
+> >
+> > On 8/15/07, Alex Nderitu <anderitu at africaonline.co.ke> wrote:
+> >
+> >>
+> >>  Hi All,
+> >>  I have a problem where wireless clients are not allocated dhcp
+> >> addresses on accessing chillispot. However from the log files I
+> >> can see chillispot is issuing the addresses on accessing the
+> >> wireless network. Has anyone come across this and whats the work
+> >> around.
+> >>
+> >>  Logs from chilli
+> >>  -----------------------
+> >>  Aug 14 15:40:03 hotspot chillispot[7333]: chilli.c: 3082: DHCP
+> >> addr released by MAC=00-16-6F-C3-7E-5F IP= 41.207.76.34
+> >>  Aug 14 15:40:05 hotspot chillispot[7333]: chilli.c: 3041: New
+> >> DHCP request from MAC=00-16-6F-C3-7E-5F
+> >>  Aug 14 15:40:05 hotspot chillispot[7333]: chilli.c: 3011: Client
+> >> MAC=00-16-6F-C3-7E-5F assigned IP 41.207.76.35
+> >>  Aug 14 15:40:18 hotspot chillispot[7333]: chilli.c: 3082: DHCP
+> >> addr released by MAC=00-16-6F-C3-7E-5F IP= 41.207.76.35
+> >>  Aug 14 15:40:21 hotspot chillispot[7333]: chilli.c: 3041: New
+> >> DHCP request from MAC=00-16-6F-C3-7E-5F
+> >>  Aug 14 15:40:21 hotspot chillispot[7333]: chilli.c: 3011: Client
+> >> MAC=00-16-6F-C3-7E-5F assigned IP 41.207.76.36
+> >>  Aug 14 15:41:31 hotspot chillispot[7333]: chilli.c: 3041: New
+> >> DHCP request from MAC=00-19-D2-30-B3-A1
+> >>  Aug 14 15:41:31 hotspot chillispot[7333]: chilli.c: 3011: Client
+> >> MAC=00-19-D2-30-B3-A1 assigned IP 41.207.76.37
+> >>  Aug 14 15:45:49 hotspot chillispot[7333]: chilli.c: 3082: DHCP
+> >> addr released by MAC=00-16-6F-C3-7E-5F IP=41.207.76.36
+> >>  Aug 14 15:45:51 hotspot chillispot[7333]: chilli.c: 3041: New
+> >> DHCP request from MAC=00-16-6F-C3-7E-5F
+> >>  Aug 14 15:45:51 hotspot chillispot[7333]: chilli.c: 3011: Client
+> >> MAC=00-16-6F-C3-7E-5F assigned IP 41.207.76.38
+> >>  Aug 14 15:48:32 hotspot chillispot[7333]: chilli.c: 3041: New
+> >> DHCP request from MAC=00-16-6F-55-01-21
+> >>  Aug 14 15:48:32 hotspot chillispot[7333]: chilli.c: 3011: Client
+> >> MAC=00-16-6F-55-01-21 assigned IP 41.207.76.39
+> >>  Aug 14 15:49:10 hotspot chillispot[7333]: chilli.c: 3041: New
+> >> DHCP request from MAC=00-06-F4-0D-4B-DA
+> >>  Aug 14 15:49:10 hotspot chillispot[7333]: chilli.c: 3011: Client
+> >> MAC=00-06-F4-0D-4B-DA assigned IP 41.207.76.40
+> >>  Aug 14 15:52:12 hotspot chillispot[7333]: chilli.c: 3082: DHCP
+> >> addr released by MAC=00-16-6F-C3-7E-5F IP= 41.207.76.38
+> >>  Aug 14 15:52:14 hotspot chillispot[7333]: chilli.c: 3041: New
+> >> DHCP request from MAC=00-16-6F-C3-7E-5F
+> >>  Aug 14 15:52:14 hotspot chillispot[7333]: chilli.c: 3011: Client
+> >> MAC=00-16-6F-C3-7E-5F assigned IP 41.207.76.41
+> >>  Aug 14 15:53:46 hotspot chillispot[7333]: chilli.c: 3082: DHCP
+> >> addr released by MAC=00-16-6F-C3-7E-5F IP= 41.207.76.41
+> >>  Aug 14 15:53:53 hotspot chillispot[7333]: chilli.c: 3082: DHCP
+> >> addr released by MAC=00-19-D2-30-B3-A1 IP=41.207.76.37
+> >>  Aug 14 15:53:59 hotspot chillispot[7333]: chilli.c: 3041: New
+> >> DHCP request from MAC=00-16-6F-C3-7E-5F
+> >>  Aug 14 15:53:59 hotspot chillispot[7333]: chilli.c: 3011: Client
+> >> MAC=00-16-6F-C3-7E-5F assigned IP 41.207.76.43
+> >>  Aug 14 15:55:04 hotspot chillispot[7333]: chilli.c: 3082: DHCP
+> >> addr released by MAC=00-16-6F-C3-7E-5F IP=41.207.76.43
+> >>  Aug 14 15:55:06 hotspot chillispot[7333]: chilli.c: 3041: New
+> >> DHCP request from MAC=00-16-6F-C3-7E-5F
+> >>
+> >>
+> >> --
+> >>
+> >>  Regards,
+> >>
+> >>  Alex Nderitu
+> >>  Systems Administration
+> >>  Africa Online, Kenya
+> >>  Tel: +254 (20) 27 92 253
+> >>  Fax: +254 (20) 27 100 10
+> >>  Email: anderitu at africaonline.co.ke
+> >>  AIM: nderitualex
+> >>
+> >>
+> >>    A member of the Telkom South Africa Group
+>
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>
+>
+
+
+
+From contact at sriviere.info  Sat Sep  8 17:04:57 2007
+From: contact at sriviere.info (=?ISO-8859-1?Q?SR_Infosyst=E8mes?=)
+Date: Sat, 08 Sep 2007 19:04:57 +0200
+Subject: Accessing AP through eth1
+In-Reply-To: <ef21d1850709080850n3b79e010m10fded9a68b2b189@mail.gmail.com>
+References: <46DD71C2.8050101@pobox.com> <46E17F43.40907@pobox.com>	 <ef21d1850709071030n348bf810h962d333960167c3d@mail.gmail.com>	 <46E205BC.5070504@pobox.com>	 <ef21d1850709072309k6db69ea2h699d9ac82039b9fd@mail.gmail.com>	 <ED4FDED4-4188-41AD-BAD1-9EA0F5354F59@silverserver.at>	 <ef21d1850709080537i3388ff55ha0a22369115fab0f@mail.gmail.com>	 <46E2A016.8020500@sriviere.info>	 <ef21d1850709080637k253336c8wa6c80a1c9ea8fd8e@mail.gmail.com>	 <46E2BD72.8010309@sriviere.info> <ef21d1850709080850n3b79e010m10fded9a68b2b189@mail.gmail.com>
+Message-ID: <46E2D639.9040401@sriviere.info>
+
+Hi David,
+
+> First of all, there are many possible configurations with chilli (plus 
+> iptables, etc) - I can't claim to have tried them all. So, when in 
+> doubt, give it a try! 
+
+Yes this scheme works : no strange logs from Chilli and SSH access OK.
+
+As a guideline for other readers (chilli net=192.168.1.0/24) :
+
+Network interfaces settings
+-------------------------------
+eth0 : 192.168.0.0/24, ip 192.168.0.251 via /etc/network/interfaces
+tun0 : 192.168.1.0/24, ip 192.168.1.1 via chilli.conf
+eth1 : 192.168.2.0/24, ip 192.168.2.251 via /etc/network/interfaces
+-------------------------------
+
+generic ap1/ap2/apx config
+-------------------------------
+ip : 192.168.2.241/242/24x
+mask : 255.255.255.0
+gateway : 192.168.1.1
+-------------------------------
+
+> essentially overlaying two networks on your eth1 network -- which is 
+> cool, if you know what you're doing. 
+
+Good understatement :) I don't know what I'm doing. But I know I don't 
+know, so I'll learn :) And -FIRST OF ALL- follow your advices.
+
+> The cleanest way for chilli to operate is to completely own the dhcpif, 
+> with no routing (forwarding in iptables) for the traffic on that 
+> interface 
+
+OK
+
+ > Some things to watch out
+> for: DHCP responses from something other than chilli on your dhcpif; 
+> duplicate packets on your dhcpif or WAN; the ability to by-pass chilli 
+> altogether; and, proper NAT and conn-tracking (for VPNs, etc, if that is 
+> of any importance to you) in iptables.
+
+OK
+
+May be the wise way, at my skill level, is to avoid AP maintenance at 
+the same time Chilli is running. This can be achieved inside the 
+/etc/init.d/chilli script :
+
+When starting Chilli :
+- rewrite /etc/network/interfaces with proper settings for Chilli
+- /etc/init.d/networking restart
+- run Chilli
+
+When stopping Chilli :
+- stop Chilli
+- rewrite /etc/network/interfaces with proper settings for AP access
+- /etc/init.d/networking restart
+
+This is stupid, but secure and give me time to lear how write safe 
+iptables rules script :)
+
+Thanks for your valuable help !
+
+All the best from Oleron island,
+
+Stephane Riviere
+
+-- 
+LA SOLUTION ? vos probl?mes INFORMATIQUES
+
+SR Infosyst?mes
+15, rue du Temple
+17310 St Pierre d'Ol?ron
+Ile d'Ol?ron - France
+
+Mobile : 06 89 29 88 44
+Fixe :   09 54 10 55 60 (appel local)
+Fax :    05 46 36 30 59
+Site :   www.sriviere.info
+Email :  contact at sriviere.info
+Skype :  stephane.riviere
+
+Certificat X509 : disponible sur le site
+
+
+From nextime at nexlab.it  Sat Sep  8 17:33:02 2007
+From: nextime at nexlab.it (nextime at nexlab.it)
+Date: Sat, 8 Sep 2007 19:33:02 +0200
+Subject: DHCP - WLAN behaviour of Windows Notebooks
+In-Reply-To: <46E2A016.8020500@sriviere.info>
+References: <46E1565B.1040908@pobox.com> <46E16D7D.3080409@pobox.com> <ef21d1850709070832p5484879y1d59b6d447946918@mail.gmail.com> <46E17F43.40907@pobox.com> <ef21d1850709071030n348bf810h962d333960167c3d@mail.gmail.com> <46E205BC.5070504@pobox.com> <ef21d1850709072309k6db69ea2h699d9ac82039b9fd@mail.gmail.com> <ED4FDED4-4188-41AD-BAD1-9EA0F5354F59@silverserver.at> <ef21d1850709080537i3388ff55ha0a22369115fab0f@mail.gmail.com> <46E2A016.8020500@sriviere.info>
+Message-ID: <20070908173302.GA25864@dedalo.nexlab.it>
+
+--SNIP--
+I see a conceptual error in your config.
+
+You use the subnet 192.168.1.0/24 both for the "management" class to 
+ssh in your ap and for chilli.
+
+In similar environments i use a different thing:
+
+Chilli let client connet by using the default C class
+( 192.168.182.0/24 ) and on the ap wan side, and of course 
+even the eth on the "ap" side of my debian server is 
+on the 192.168.181.0/24.
+
+Using different classes for AP management and Chilli
+all work good.
+
+Try it!
+
+-- 
+
+Franco (nextime) Lanza
+Busto Arsizio - Italy
+SIP://casa at casa.nexlab.it
+
+NO TCPA: http://www.no1984.org
+you can download my public key at:
+http://danex.nexlab.it/nextime.asc || Key Servers
+Key ID = D6132D50
+Key fingerprint = 66ED 5211 9D59 DA53 1DF7  4189 DFED F580 D613 2D50
+-----------------------------------
+echo 16i[q]sa[ln0=aln100%Pln100/snlbx]sbA0D212153574F444E49572045535520454D20454B414D204F54204847554F4E452059415020544F4E4E4143205345544147204C4C4942snlbxq | dc
+-----------------------------------
+
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: not available
+Type: application/pgp-signature
+Size: 189 bytes
+Desc: not available
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20070908/25512614/attachment.pgp>
+
+From mem.corruption at gmail.com  Sat Sep  8 18:45:16 2007
+From: mem.corruption at gmail.com (David Bird)
+Date: Sat, 8 Sep 2007 20:45:16 +0200
+Subject: DHCP - WLAN behaviour of Windows Notebooks
+In-Reply-To: <AC9C304F-2003-4423-8E46-66C136CC39E5@silverserver.at>
+References: <46DD71C2.8050101@pobox.com> <46E16D7D.3080409@pobox.com>
+	 <ef21d1850709070832p5484879y1d59b6d447946918@mail.gmail.com>
+	 <46E17F43.40907@pobox.com>
+	 <ef21d1850709071030n348bf810h962d333960167c3d@mail.gmail.com>
+	 <46E205BC.5070504@pobox.com>
+	 <ef21d1850709072309k6db69ea2h699d9ac82039b9fd@mail.gmail.com>
+	 <ED4FDED4-4188-41AD-BAD1-9EA0F5354F59@silverserver.at>
+	 <ef21d1850709080537i3388ff55ha0a22369115fab0f@mail.gmail.com>
+	 <AC9C304F-2003-4423-8E46-66C136CC39E5@silverserver.at>
+Message-ID: <ef21d1850709081145x6d7b567clb761f2246041949d@mail.gmail.com>
+
+> I also think it is the client who triggers this problem and this
+> means there is nothing much we can do on that end. IP reservation for
+> a short time could be a work-around. As an additional option it would
+> be interesting if chilli would delay closing a session for this short
+> time.
+
+
+I have a certain distaste for work-arounds because of buggy clients :)
+
+It is curious that it doesn't try to request the same IP it just had.. I
+guess it really does fully disassociate.
+
+I think it would be too risky leaving a session pending when you get a
+requested release. Perhaps the client is a wired PC that reboots after each
+user... hmm.
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20070908/6c83d62d/attachment.htm>
+
+From chilli at silverserver.at  Sun Sep  9 11:59:29 2007
+From: chilli at silverserver.at (lc)
+Date: Sun, 9 Sep 2007 13:59:29 +0200
+Subject: DHCP - WLAN behaviour of Windows Notebooks
+In-Reply-To: <ef21d1850709081145x6d7b567clb761f2246041949d@mail.gmail.com>
+References: <46DD71C2.8050101@pobox.com> <46E16D7D.3080409@pobox.com> <ef21d1850709070832p5484879y1d59b6d447946918@mail.gmail.com> <46E17F43.40907@pobox.com> <ef21d1850709071030n348bf810h962d333960167c3d@mail.gmail.com> <46E205BC.5070504@pobox.com> <ef21d1850709072309k6db69ea2h699d9ac82039b9fd@mail.gmail.com> <ED4FDED4-4188-41AD-BAD1-9EA0F5354F59@silverserver.at> <ef21d1850709080537i3388ff55ha0a22369115fab0f@mail.gmail.com> <AC9C304F-2003-4423-8E46-66C136CC39E5@silverserver.at> <ef21d1850709081145x6d7b567clb761f2246041949d@mail.gmail.com>
+Message-ID: <6C3B3815-C2DC-4F94-827E-EC40C5763B2C@silverserver.at>
+
+
+>
+>> I also think it is the client who triggers this problem and this
+>> means there is nothing much we can do on that end. IP reservation for
+>> a short time could be a work-around. As an additional option it would
+>> be interesting if chilli would delay closing a session for this short
+>> time.
+>
+> I have a certain distaste for work-arounds because of buggy clients :)
+>
+> It is curious that it doesn't try to request the same IP it just  
+> had.. I guess it really does fully disassociate.
+>
+> I think it would be too risky leaving a session pending when you  
+> get a requested release. Perhaps the client is a wired PC that  
+> reboots after each user... hmm.
+>
+>
+Those clients are Notebooks and the time between releasing an address  
+and requesting an address is sometimes very short (4-5 seconds  
+only!). BTW I share your distaste - but because in the end the user  
+always blames the network sometimes there is no other choice (ask GSM  
+operators) ;)
+
+
+
+
+From gunther.mayer at googlemail.com  Tue Sep 11 14:16:09 2007
+From: gunther.mayer at googlemail.com (Gunther Mayer)
+Date: Tue, 11 Sep 2007 16:16:09 +0200
+Subject: IP address conflicts
+Message-ID: <46E6A329.7050109@gmail.com>
+
+Hi guys,
+
+I'm using some test firmware based on coova chilli v1.0.6 and 
+openwrt/kamikaze 7.07 and I'm experiencing some really weird ip address 
+conflicts:
+
+Somebody connects to the hotspot, logs in and happily surfs away while a 
+second person on a different PC associates and via chilli's dhcp gets 
+assigned the *same* ip address as the former. The consequence is that 
+the second person cannot connect to the Internet at all as he/she won't 
+even get to the splash page. I've seen this happen on Windows XP at 
+least but it might happen on other OS's too.
+
+My chilli subnet is defined as "net 172.18.0.0/22" in my chilli config file.
+
+Has anybody seen this happen before? David, were there any changes in 
+dhcp.c in v1.0.7 that might have fixed this ? I can't easily track 
+source changes because of the absence of a web-based svn interface 
+supporting diffs...
+
+Gunther
+
+
+From wlan at mac.com  Wed Sep 12 05:14:39 2007
+From: wlan at mac.com (wlan at mac.com)
+Date: Wed, 12 Sep 2007 07:14:39 +0200
+Subject: IP address conflicts
+In-Reply-To: <46E6A329.7050109@gmail.com>
+References: <46E6A329.7050109@gmail.com>
+Message-ID: <B5DACF57-6117-46E6-A647-8A9AC99EB551@mac.com>
+
+Hmm.. do you have any logs? How busy was the location?
+
+That net for chilli is probably ok, but misleading as chilli does not  
+actually calculate its dhcp range from the CIDR network (like it  
+should).  I don't believe anything relevant was change din 1.0.7, but  
+the current svn version has some more cleanups.
+
+David
+
+On Sep 11, 2007, at 4:16 PM, Gunther Mayer wrote:
+
+> Hi guys,
+>
+> I'm using some test firmware based on coova chilli v1.0.6 and  
+> openwrt/kamikaze 7.07 and I'm experiencing some really weird ip  
+> address conflicts:
+>
+> Somebody connects to the hotspot, logs in and happily surfs away  
+> while a second person on a different PC associates and via chilli's  
+> dhcp gets assigned the *same* ip address as the former. The  
+> consequence is that the second person cannot connect to the  
+> Internet at all as he/she won't even get to the splash page. I've  
+> seen this happen on Windows XP at least but it might happen on  
+> other OS's too.
+>
+> My chilli subnet is defined as "net 172.18.0.0/22" in my chilli  
+> config file.
+>
+> Has anybody seen this happen before? David, were there any changes  
+> in dhcp.c in v1.0.7 that might have fixed this ? I can't easily  
+> track source changes because of the absence of a web-based svn  
+> interface supporting diffs...
+>
+> Gunther
+>
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>
+
+
+
+From wlan at mac.com  Wed Sep 12 11:20:29 2007
+From: wlan at mac.com (David Bird)
+Date: Wed, 12 Sep 2007 13:20:29 +0200
+Subject: IP address conflicts
+In-Reply-To: <46E7A41B.9090409@googlemail.com>
+References: <46E6A329.7050109@gmail.com> <B5DACF57-6117-46E6-A647-8A9AC99EB551@mac.com> <46E7A41B.9090409@googlemail.com>
+Message-ID: <AA22A388-B9AF-4444-8F1C-9F30396D3627@mac.com>
+
+
+On Sep 12, 2007, at 10:32 AM, Gunther Mayer wrote:
+>> That net for chilli is probably ok, but misleading as chilli does  
+>> not actually calculate its dhcp range from the CIDR network (like  
+>> it should).
+> How the heck does chilli calculate its range then if dhcpstart and  
+> dhcpend is not given?
+
+Both the options have defaults.... so, it isn't very optimal. This  
+part of chilli needs more attention as there are numerous places  
+where the uamlisten (or dhcplisten) is assumed to be net + 1  
+(meaning, the first IP in your net range).
+
+I took a closer look at this part of chilli and found a few more  
+places where the wrong assumption (net + 1) is made. I also made some  
+changes in that dhcpstart and dhcpend will default to off (i.e. 0)  
+and the entire net will be used for DHCP otherwise (minus, the  
+_correct_ uamlisten which does not have to be net + 1). The start and  
+end options can then be used together or separately to limit the range.
+
+>> I don't believe anything relevant was change din 1.0.7, but the  
+>> current svn version has some more cleanups.
+> Ok, after some more digging in my logs I think I found the culprit  
+> (not coova's fault). I'm trying to run "repeaters" to extend my  
+> wireless coverage, but they are actually the ones causing all the  
+> havoc. You see, I run my "repeaters" in client/ap mode on a  
+> WRT54GL, that is, one client interface  (wl0) associating with the  
+> uplink(main) a/p, one a/p interface (wl0.1) for distributing the  
+> signal locally, both being attached to the standard br-lan bridge.
+>
+> root at OpenWRT:~# brctl show
+> bridge name     bridge id                STP enabled     interfaces
+> br-lan                8000.001839bc7965       no            eth0.0
+>                                                                        
+>             wl0
+>                                                                        
+>             wl0.1
+>
+> Now here's the problem: One particular such node has a wl0 (or  
+> wl0.1) mac address of 00-18-39-BC-79-82. This is what I see in my  
+> logs on numerous occasions:
+>
+> Sep 12 04:07:12 41.245.146.170 chillispot[566]: chilli.c: 2602: New  
+> DHCP request from MAC=00-18-39-BC-79-82
+> Sep 12 04:07:12 41.245.146.170 chillispot[566]: chilli.c: 2564:  
+> Client MAC=00-18-39-BC-79-82 assigned IP 172.25.0.119
+>
+> followed by successful logins of certain users. Note that the MAC  
+> is of the repeater, not the client. Therefore the first client to  
+> associate to the repeater and request a dhcp lease from the network  
+> gets assigned a correct one by chilli, subsequent clients on that  
+> same repeater get assigned the duplicate one since chilli sees the  
+> same mac. These people then have no way of connecting.
+>
+> To the best of my knowledge a pure bridge just transparently  
+> forwards packets on layer 2 and *does not* mess with mac addresses  
+> of these packets. In this case my bridge does, so I think I found a  
+> bug in kamikaze 7.07.
+>
+> I don't necessarily expect people in this list to help me out here,  
+> perhaps I should rather post this on the OpenWRT forums.
+
+Hmm.. what kind of iptables config do you have (in filter and nat)?
+
+David
+
+
+
+From gunther.mayer at googlemail.com  Wed Sep 12 11:54:09 2007
+From: gunther.mayer at googlemail.com (Gunther Mayer)
+Date: Wed, 12 Sep 2007 13:54:09 +0200
+Subject: IP address conflicts
+In-Reply-To: <AA22A388-B9AF-4444-8F1C-9F30396D3627@mac.com>
+References: <46E6A329.7050109@gmail.com> <B5DACF57-6117-46E6-A647-8A9AC99EB551@mac.com> <46E7A41B.9090409@googlemail.com> <AA22A388-B9AF-4444-8F1C-9F30396D3627@mac.com>
+Message-ID: <46E7D361.9020300@gmail.com>
+
+David Bird wrote:
+>
+> On Sep 12, 2007, at 10:32 AM, Gunther Mayer wrote:
+>>> That net for chilli is probably ok, but misleading as chilli does 
+>>> not actually calculate its dhcp range from the CIDR network (like it 
+>>> should).
+>> How the heck does chilli calculate its range then if dhcpstart and 
+>> dhcpend is not given?
+>
+> Both the options have defaults.... so, it isn't very optimal. This 
+> part of chilli needs more attention as there are numerous places where 
+> the uamlisten (or dhcplisten) is assumed to be net + 1 (meaning, the 
+> first IP in your net range).
+>
+> I took a closer look at this part of chilli and found a few more 
+> places where the wrong assumption (net + 1) is made. I also made some 
+> changes in that dhcpstart and dhcpend will default to off (i.e. 0) and 
+> the entire net will be used for DHCP otherwise (minus, the _correct_ 
+> uamlisten which does not have to be net + 1). The start and end 
+> options can then be used together or separately to limit the range.
+Awesome, that sounds more like the behaviour I would expect. Thanks for 
+making those changes, I will give them a spin in 1.0.8 ;-)
+>
+>>> I don't believe anything relevant was change din 1.0.7, but the 
+>>> current svn version has some more cleanups.
+>> Ok, after some more digging in my logs I think I found the culprit 
+>> (not coova's fault). I'm trying to run "repeaters" to extend my 
+>> wireless coverage, but they are actually the ones causing all the 
+>> havoc. You see, I run my "repeaters" in client/ap mode on a WRT54GL, 
+>> that is, one client interface  (wl0) associating with the 
+>> uplink(main) a/p, one a/p interface (wl0.1) for distributing the 
+>> signal locally, both being attached to the standard br-lan bridge.
+>>
+>> root at OpenWRT:~# brctl show
+>> bridge name     bridge id                STP enabled     interfaces
+>> br-lan                8000.001839bc7965       no            eth0.0
+>>                                                                       
+>>             wl0
+>>                                                                       
+>>             wl0.1
+>>
+>> Now here's the problem: One particular such node has a wl0 (or wl0.1) 
+>> mac address of 00-18-39-BC-79-82. This is what I see in my logs on 
+>> numerous occasions:
+>>
+>> Sep 12 04:07:12 41.245.146.170 chillispot[566]: chilli.c: 2602: New 
+>> DHCP request from MAC=00-18-39-BC-79-82
+>> Sep 12 04:07:12 41.245.146.170 chillispot[566]: chilli.c: 2564: 
+>> Client MAC=00-18-39-BC-79-82 assigned IP 172.25.0.119
+>>
+>> followed by successful logins of certain users. Note that the MAC is 
+>> of the repeater, not the client. Therefore the first client to 
+>> associate to the repeater and request a dhcp lease from the network 
+>> gets assigned a correct one by chilli, subsequent clients on that 
+>> same repeater get assigned the duplicate one since chilli sees the 
+>> same mac. These people then have no way of connecting.
+>>
+>> To the best of my knowledge a pure bridge just transparently forwards 
+>> packets on layer 2 and *does not* mess with mac addresses of these 
+>> packets. In this case my bridge does, so I think I found a bug in 
+>> kamikaze 7.07.
+>>
+>> I don't necessarily expect people in this list to help me out here, 
+>> perhaps I should rather post this on the OpenWRT forums.
+>
+> Hmm.. what kind of iptables config do you have (in filter and nat)?
+Silly me, it isn't a bug but rather comes down to client/ap "repeater" 
+mode not being able to bridge properly because of the very nature of 
+802.11 headers. WDS must be used if correct dhcp operation is required. 
+And I thought I was being clever by using "repeater" mode to get around 
+the chores of setting up WDS on either side... Back to the drawing board 
+for me :-(
+
+More information here: 
+http://forum.openwrt.org/viewtopic.php?pid=53924#p53924
+
+Gunther
+
+
+From wlan at mac.com  Tue Sep 25 15:00:10 2007
+From: wlan at mac.com (wlan at mac.com)
+Date: Tue, 25 Sep 2007 17:00:10 +0200
+Subject: new release coming together soon!
+Message-ID: <120421D5-DA84-4923-A284-D71C45827B73@mac.com>
+
+Hello,
+
+'Last call' for any remaining issues with the current SVN version  
+before it gets rolled up into coova-chilli-1.0.8.
+
+Here are the changes in this version (along with many cleanups in  
+general):
+
+* New option ''uamdomain'' whereby entire domains, one per use of  
+option, can be white-listed into the walled garden (by parsing DNS  
+replies)
+* New option ''dnsparanoia'' to drop DNS responses (pre- 
+authentication) containing any non- A, CNAME, SOA, or MX records
+* New option ''radiusoriginalurl'' to send ChilliSpot VSA ChilliSpot- 
+OriginalURL(9) in Access-Request containing the original URL
+* Fix for when uamlisten is not always ''net'' + 1 (first IP in  
+network range), as previously hardcoded in several places
+* Fix for when ''proxysecret'' and ''radiussecret'' differ in  
+generation of Message-Authenticator
+* Will install and use libchilli and libbstring shared libraries
+* Fix in 64-bit portability - thx ccesario for helping out
+* Fix for use with DHCP Relay clients
+* Other cleanups and minor bug fixes
+
+Cheers,
+David
+
+
+From nextime at nexlab.it  Tue Sep 25 15:15:10 2007
+From: nextime at nexlab.it (nextime at nexlab.it)
+Date: Tue, 25 Sep 2007 17:15:10 +0200
+Subject: new release coming together soon!
+In-Reply-To: <120421D5-DA84-4923-A284-D71C45827B73@mac.com>
+References: <120421D5-DA84-4923-A284-D71C45827B73@mac.com>
+Message-ID: <20070925151510.GA19284@dedalo.nexlab.it>
+
+> * Will install and use libchilli and libbstring shared libraries
+> * Fix in 64-bit portability - thx ccesario for helping out
+
+Hi David,
+i neet to check if debian packaging work well with those two
+things, i will try at least tomorrow morning.
+
+
+
+-- 
+
+Franco (nextime) Lanza
+Busto Arsizio - Italy
+SIP://casa at casa.nexlab.it
+
+NO TCPA: http://www.no1984.org
+you can download my public key at:
+http://danex.nexlab.it/nextime.asc || Key Servers
+Key ID = D6132D50
+Key fingerprint = 66ED 5211 9D59 DA53 1DF7  4189 DFED F580 D613 2D50
+-----------------------------------
+echo 16i[q]sa[ln0=aln100%Pln100/snlbx]sbA0D212153574F444E49572045535520454D20454B414D204F54204847554F4E452059415020544F4E4E4143205345544147204C4C4942snlbxq | dc
+-----------------------------------
+
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: not available
+Type: application/pgp-signature
+Size: 189 bytes
+Desc: not available
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20070925/51272150/attachment.pgp>
+
+From listuser at peternixon.net  Tue Sep 25 15:23:04 2007
+From: listuser at peternixon.net (Peter Nixon)
+Date: Tue, 25 Sep 2007 18:23:04 +0300
+Subject: new release coming together soon!
+In-Reply-To: <120421D5-DA84-4923-A284-D71C45827B73@mac.com>
+References: <120421D5-DA84-4923-A284-D71C45827B73@mac.com>
+Message-ID: <200709251823.04847.listuser@peternixon.net>
+
+Why do you do a prerelease for packagers to test before the final release?
+
+-Peter
+
+On Tue 25 Sep 2007, wlan at mac.com wrote:
+> Hello,
+>
+> 'Last call' for any remaining issues with the current SVN version
+> before it gets rolled up into coova-chilli-1.0.8.
+>
+> Here are the changes in this version (along with many cleanups in
+> general):
+>
+> * New option ''uamdomain'' whereby entire domains, one per use of
+> option, can be white-listed into the walled garden (by parsing DNS
+> replies)
+> * New option ''dnsparanoia'' to drop DNS responses (pre-
+> authentication) containing any non- A, CNAME, SOA, or MX records
+> * New option ''radiusoriginalurl'' to send ChilliSpot VSA ChilliSpot-
+> OriginalURL(9) in Access-Request containing the original URL
+> * Fix for when uamlisten is not always ''net'' + 1 (first IP in
+> network range), as previously hardcoded in several places
+> * Fix for when ''proxysecret'' and ''radiussecret'' differ in
+> generation of Message-Authenticator
+> * Will install and use libchilli and libbstring shared libraries
+> * Fix in 64-bit portability - thx ccesario for helping out
+> * Fix for use with DHCP Relay clients
+> * Other cleanups and minor bug fixes
+>
+> Cheers,
+> David
+>
+> _______________________________________________
+> ChilliSpot mailing list
+> ChilliSpot at chillispot.org
+> http://chillispot.org/mailman/listinfo/chillispot_chillispot.org
+
+
+
+-- 
+
+Peter Nixon
+http://peternixon.net/
+
+
+From wlan at mac.com  Wed Sep 26 11:34:45 2007
+From: wlan at mac.com (David Bird)
+Date: Wed, 26 Sep 2007 13:34:45 +0200
+Subject: new release coming together soon!
+In-Reply-To: <200709251823.04847.listuser@peternixon.net>
+References: <120421D5-DA84-4923-A284-D71C45827B73@mac.com> <200709251823.04847.listuser@peternixon.net>
+Message-ID: <1BB428B1-3CE6-4DD7-A09B-431632065B46@mac.com>
+
+Ok, I will build a source tgz and put it out as a 'pre-1.0.8' and  
+will do the same for CoovaAP 1.0-beta.6 (which will, of course,  
+contain the pre-released coova-chilli). It'll probably be tomorrow,  
+provided I get some time to do it.
+
+David
+
+On Sep 25, 2007, at 5:23 PM, Peter Nixon wrote:
+
+> Why do you do a prerelease for packagers to test before the final  
+> release?
+>
+> -Peter
+>
+> On Tue 25 Sep 2007, wlan at mac.com wrote:
+>> Hello,
+>>
+>> 'Last call' for any remaining issues with the current SVN version
+>> before it gets rolled up into coova-chilli-1.0.8.
+>>
+>> Here are the changes in this version (along with many cleanups in
+>> general):
+>>
+>> * New option ''uamdomain'' whereby entire domains, one per use of
+>> option, can be white-listed into the walled garden (by parsing DNS
+>> replies)
+>> * New option ''dnsparanoia'' to drop DNS responses (pre-
+>> authentication) containing any non- A, CNAME, SOA, or MX records
+>> * New option ''radiusoriginalurl'' to send ChilliSpot VSA ChilliSpot-
+>> OriginalURL(9) in Access-Request containing the original URL
+>> * Fix for when uamlisten is not always ''net'' + 1 (first IP in
+>> network range), as previously hardcoded in several places
+>> * Fix for when ''proxysecret'' and ''radiussecret'' differ in
+>> generation of Message-Authenticator
+>> * Will install and use libchilli and libbstring shared libraries
+>> * Fix in 64-bit portability - thx ccesario for helping out
+>> * Fix for use with DHCP Relay clients
+>> * Other cleanups and minor bug fixes
+>>
+>> Cheers,
+>> David
+>>
+>> _______________________________________________
+>> ChilliSpot mailing list
+>> ChilliSpot at chillispot.org
+>> http://chillispot.org/mailman/listinfo/chillispot_chillispot.org
+>
+>
+>
+> -- 
+>
+> Peter Nixon
+> http://peternixon.net/
+
+
+
+From wlan at mac.com  Wed Sep 26 18:33:13 2007
+From: wlan at mac.com (wlan at mac.com)
+Date: Wed, 26 Sep 2007 20:33:13 +0200
+Subject: svn 121 - 1.0.8 pre release
+Message-ID: <659A0E7E-6F79-45C2-A9CA-BF78E6A80297@mac.com>
+
+
+http://ap.coova.org/snapshot/coova-chilli-r121.tgz
+
+your testing is appreciated. nextime has promised more pre-packaged  
+binaries, which is nice ;)
+
+cheers,
+David
+
+
+From wlan at mac.com  Sun Sep 30 11:37:10 2007
+From: wlan at mac.com (wlan at mac.com)
+Date: Sun, 30 Sep 2007 13:37:10 +0200
+Subject: coova-chilli 1.0.8 released
+Message-ID: <56EB4222-F8B0-4834-BC00-A5B5901BD014@mac.com>
+
+See http://coova.org/wiki/index.php/CoovaChilli
+
+Thanks to all those who have reported bugs and those who helped with  
+patches!
+
+Cheers,
+David
+
+
+

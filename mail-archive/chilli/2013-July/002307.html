@@ -1,0 +1,128 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] using coovachilli with wpa
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20using%20coovachilli%20with%20wpa&In-Reply-To=%3C1374698444.6120.13.camel%40david-XPS%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="002305.html">
+   <LINK REL="Next"  HREF="002313.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] using coovachilli with wpa</H1>
+    <B>David Bird</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20using%20coovachilli%20with%20wpa&In-Reply-To=%3C1374698444.6120.13.camel%40david-XPS%3E"
+       TITLE="[Chilli] using coovachilli with wpa">david at coova.com
+       </A><BR>
+    <I>Wed Jul 24 20:40:44 UTC 2013</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="002305.html">[Chilli] using coovachilli with wpa
+</A></li>
+        <LI>Next message: <A HREF="002313.html">[Chilli] using coovachilli with wpa
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2307">[ date ]</a>
+              <a href="thread.html#2307">[ thread ]</a>
+              <a href="subject.html#2307">[ subject ]</a>
+              <a href="author.html#2307">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hi,
+
+First, you can send the RADIUS from the WPA2 Enterprise AP/Authenticator
+to chilli after configuring the following:
+
+      --proxylisten=STRING      Proxy IP address to listen on
+      --proxyport=INT           Proxy UDP port to listen on (0 is off)  
+      --proxyclient=STRING      IP address of proxy client(s)
+      --proxysecret=STRING      Radius proxy shared secret
+
+These settings control what IP and port chilli will listen for RADIUS on
+and who can send to it. Chilli will then proxy this RADIUS through to
+it's configured RADIUS servers. When clients are authenticated for
+802.1x, that is then known to chilli and they are authenticated in
+chilli. The &quot;WPA Guests&quot; feature allows you do program your RADIUS
+server such that it will return Access-Accept even for client stations
+that did not successfully authenticate. The Access-Accept is needed for
+them to pass the 802.1x/EAP phase and to be able to interact with chilli
+and the captive portal. Adding the RADIUS attribute:
+
+ChilliSpotConfig=require-uam-auth
+
+to the Access-Accept which didn't really succeed will prompt chilli to
+treat the client as unauthorized and sent to the captive portal. 
+
+See
+<A HREF="http://coova.org/CoovaChilli/WPACaptivePortal">http://coova.org/CoovaChilli/WPACaptivePortal</A>
+
+David
+
+
+
+On Wed, 2013-07-24 at 19:41 +0200, Tek&#225;n D&#225;vid wrote:
+&gt;<i> Hi all!
+</I>&gt;<i> 
+</I>&gt;<i> I set up a coovachilli + freeradius + mysql combo at my dorm. It's
+</I>&gt;<i> working great with the wired network. Now we want to extend it to the
+</I>&gt;<i> wireless as well. Installed an access point configured to wpa2
+</I>&gt;<i> enterprise (with the same radius server) and connected to the
+</I>&gt;<i> coovachillis's lan side. It can authenticate users and do the process
+</I>&gt;<i> fine, but when i want to connect to the internet, i get redirected to
+</I>&gt;<i> the coovachilli's captive portal.
+</I>&gt;<i> I've read about the wpa guest config parameter, but i don't want to
+</I>&gt;<i> let users without sufficient credentials to connect, and reach any of
+</I>&gt;<i> my device (neither the captive portal nor the webpages which I allowed
+</I>&gt;<i> with uam_allow).
+</I>&gt;<i> 
+</I>&gt;<i> So is there a way, that the users, who authenticated successfully
+</I>&gt;<i> through wpa2 (peap + mschapv2) do not need to reauthenticate at the
+</I>&gt;<i> captive portal page (and not let users who failed at wpa2 to try to
+</I>&gt;<i> authenticate themselves on the captive portal).
+</I>&gt;<i> 
+</I>&gt;<i> Thanks for all the reply, all the best
+</I>&gt;<i> 
+</I>&gt;<i> D&#225;vid
+</I>&gt;<i> _______________________________________________
+</I>&gt;<i> Chilli mailing list
+</I>&gt;<i> <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">Chilli at coova.org</A>
+</I>&gt;<i> <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">http://lists.coova.org/cgi-bin/mailman/listinfo/chilli</A>
+</I>
+-- 
+--
+David Bird
+<A HREF="http://www.linkedin.com/in/dwbird/">http://www.linkedin.com/in/dwbird/</A>
+
+</PRE>
+
+
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="002305.html">[Chilli] using coovachilli with wpa
+</A></li>
+	<LI>Next message: <A HREF="002313.html">[Chilli] using coovachilli with wpa
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2307">[ date ]</a>
+              <a href="thread.html#2307">[ thread ]</a>
+              <a href="subject.html#2307">[ subject ]</a>
+              <a href="author.html#2307">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,181 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] Fixed IP addresses for APs and DHCP for clients
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Fixed%20IP%20addresses%20for%20APs%20and%20DHCP%20for%20clients&In-Reply-To=%3C4B4B90BB.4040200%40hpp.org.br%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001098.html">
+   <LINK REL="Next"  HREF="001109.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] Fixed IP addresses for APs and DHCP for clients</H1>
+    <B>Felipe Augusto van de Wiel</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Fixed%20IP%20addresses%20for%20APs%20and%20DHCP%20for%20clients&In-Reply-To=%3C4B4B90BB.4040200%40hpp.org.br%3E"
+       TITLE="[Chilli] Fixed IP addresses for APs and DHCP for clients">felipe.wiel at hpp.org.br
+       </A><BR>
+    <I>Mon Jan 11 20:57:31 UTC 2010</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001098.html">[Chilli] Fixed IP addresses for APs and DHCP for clients
+</A></li>
+        <LI>Next message: <A HREF="001109.html">[Chilli] Fixed IP addresses for APs and DHCP for clients
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1107">[ date ]</a>
+              <a href="thread.html#1107">[ thread ]</a>
+              <a href="subject.html#1107">[ subject ]</a>
+              <a href="author.html#1107">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA512
+
+Hello! :)
+
+
+On 10-01-2010 04:52, David Bird wrote:
+&gt;<i> On Fri, 2010-01-08 at 19:41 -0200, Felipe van de Wiel wrote:
+</I>&gt;&gt;<i> 	When I first deployed it where I work I was
+</I>&gt;&gt;<i> thinking about using ISC DHCP (at that time, it was not
+</I>&gt;&gt;<i> clear to me how Coova works). The idea was to provide,
+</I>&gt;&gt;<i> from DHCP, the IP address for the APs, that way they
+</I>&gt;&gt;<i> will have a &quot;fixed IP&quot;, but once we need to change the
+</I>&gt;&gt;<i> range we could do it remotely and automatically.
+</I>&gt;&gt;<i> 
+</I>&gt;&gt;<i> 	In other words, I would like to have a static
+</I>&gt;&gt;<i> IP range that DHCP will send to the access points and
+</I>&gt;&gt;<i> a dynamic IP range that DHCP will send to the clients,
+</I>&gt;&gt;<i> but those ranges don't necessarily have to be a full
+</I>&gt;&gt;<i> subnet like /25 or /28. The APs don't necessarily have
+</I>&gt;&gt;<i> to access the Internet, we just need to access them to
+</I>&gt;&gt;<i> check radio settings and config options.
+</I>&gt;&gt;<i> 
+</I>&gt;&gt;<i> 	With this message, I'm searching for some
+</I>&gt;&gt;<i> orientation on the best approach to deal with the IPs.
+</I>&gt;&gt;<i> From the documentation and forums I had the impression
+</I>&gt;&gt;<i> that there are three possible approaches to achieve
+</I>&gt;&gt;<i> the above described scenario.
+</I>&gt;&gt;<i> 
+</I>&gt;&gt;<i>  1) Use dynip and statip config options
+</I>&gt;&gt;<i>  2) Use macallowed and Framed-IP-Address
+</I>&gt;&gt;<i>  3) Use macauth and Framed-IP-Address
+</I>&gt;&gt;<i> 
+</I>&gt;&gt;<i> 	I think (2) would be the easiest to maintain
+</I>&gt;&gt;<i> when we need to add more APs and would not waste IPs
+</I>&gt;&gt;<i> from a subnet, since it is a moderately large change,
+</I>&gt;&gt;<i> I'm checking with the list before trying to deploy it.
+</I>
+&gt;<i> It sounds like your APs will be in bridge mode?
+</I>
+	Not really. :)
+
+	We are using a bunch of 3Com OfficeConnect
+Wireless 54Mbps 11g (Model: WL-524), when we first
+deployed them we were going to use static IPs,
+defining it manually on each AP, the discussion led
+us to the decision of use DHCP and based on the MAC
+addresses give &quot;static IPs&quot;.
+
+	In that sense, APs are not in bridge mode,
+but we don't expect them to navigate or anything
+like that, my plan is jut to have access to their
+management interfaces remotely.
+
+
+&gt;<i> Either way, it isn't obvious really what solution
+</I>&gt;<i> is the &quot;right&quot; one. Changes are, you could have
+</I>&gt;<i> some options how you set it up.
+</I>
+	I was imagining something along those lines.
+
+
+&gt;<i> If you are going to use Framed-IP-Address in MAC
+</I>&gt;<i> auth, then you will also need the option (in
+</I>&gt;<i> chilli 1.2.0) --strictmacauth ... this option was
+</I>&gt;<i> added to keep chilli doing what it does now: when
+</I>&gt;<i> DHCP request comes in, the first one is ignored
+</I>&gt;<i> while RADIUS is performed for MAC authentication.
+</I>&gt;<i> The DHCP is ignored, because chilli *might* learn
+</I>&gt;<i> of the correct IP to return from RADIUS. This,
+</I>&gt;<i> however, makes all clients connect a bit slower...
+</I>&gt;<i> as they all have to reissue a DHCP request after
+</I>&gt;<i> a timeout. Chilli was changed per default to just
+</I>&gt;<i> return the DHCP reply without waiting (MAC auth
+</I>&gt;<i> still happens, just after the client has an IP,
+</I>&gt;<i> which means Framed-IP-Address in MAC auth now
+</I>&gt;<i> requires the new option).
+</I>&gt;<i>
+</I>&gt;<i> I hope this is clear.
+</I>
+	This is clear, but it raises another question. :)
+
+	We have a very particular setting here, we
+provide Free Wi-Fi service to the company area (which,
+BTW, is a hospital) using CoovaChilli, the idea is that
+employees, patients, families and guests can use free
+internet, for that reason we basically have a single
+user and a modified captive portal that just requires a
+click.
+
+	If I understood correctly, when I opt for
+macauth the MAC addresses are used as users for RADIUS
+and that is not what I want based on the previous
+scenario, considering that I didn't like to waste some
+address because of the range allocation (statip/dynip)
+I'm inclined to use macallowed, that will mix the fixed
+IP addresses with the single user web auth, and
+eventually, if the company decides to auth more users
+or limit some of them, the &quot;mixed&quot; solution still work.
+Does it sound like a good plan? (At least until the
+new options similar to ethers come to production).
+
+Kind regards,
+- -- 
+Felipe Augusto van de Wiel &lt;<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">felipe.wiel at hpp.org.br</A>&gt;
+Tecnologia da Informa&#231;&#227;o (TI) - Complexo Pequeno Pr&#237;ncipe
+<A HREF="http://www.pequenoprincipe.org.br/">http://www.pequenoprincipe.org.br/</A>    T: +55 41 3310 1747
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.10 (GNU/Linux)
+Comment: Using GnuPG with Mozilla - <A HREF="http://enigmail.mozdev.org/">http://enigmail.mozdev.org/</A>
+
+iQIcBAEBCgAGBQJLS5C3AAoJECCPPxLgxLxPKIYP/0eXC8wITsyFimYmkLb5M3z9
+IuViTnYv3siKLgEPollQr10og8aS2vMTJcgMmkoFWC3bufxj978OiaaVrnSCOPEJ
+egIF5bLbr6ijU26KVTjpCy+XE6VpzkzNKZf0H8M17/3LkNdG6IXPAJ3KHj+IAhIi
+a9X0HPbu+gh53NkquK+2bxAH50r5JwViya+xYUvvtL9fpUUvqaUJ4HQ7XK9mnH+h
+BkluHyk//MFMkRg848Yw65eWOBGiac16e0Mpt0oQDefidOrS3F1wMJcF4nEzK8UZ
+gRoyhNy/XhlcLrS9A87QdzLlo2Dx7+l/Q0GfxwmpF94AB5DpsKRrWf4x9CCXuISR
+xJQFA3UMqRc/xJtoiFwYagqw61SnSS+J291d2DdnnuGezO2a/HG7fNuEORVt0LUz
+lP/+Adc36wtOX7vcPCaMxkw1a3xgofksEU5mhNCYGQy5r3wUXgF+T5BD9Vsts4RR
+Lk9pu/+PNansTcvXejLIMrQXTD7gp/2ISehNWvZRPi4Mm4vt5neRQjsmxXZ9xC0K
+h2wm90qWVf9bO1Ybf6/YAmyl2F0rrDWkCC0twbFB4Z8HKAXka25IwWd2bvEm4bXv
+8rBCpuor0whATYZtGB5yYLagP0Qx+QeyNRXPTlY7neQ+lxAci4fl/uBmUjdjTLaV
+x1WYG/vxjkZc25knC+3S
+=zJcv
+-----END PGP SIGNATURE-----
+</PRE>
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001098.html">[Chilli] Fixed IP addresses for APs and DHCP for clients
+</A></li>
+	<LI>Next message: <A HREF="001109.html">[Chilli] Fixed IP addresses for APs and DHCP for clients
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1107">[ date ]</a>
+              <a href="thread.html#1107">[ thread ]</a>
+              <a href="subject.html#1107">[ subject ]</a>
+              <a href="author.html#1107">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

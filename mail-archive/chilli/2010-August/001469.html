@@ -1,0 +1,105 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] How can chilli respond dhcp requests in lo interface?
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20How%20can%20chilli%20respond%20dhcp%20requests%20in%20lo%20interface%3F&In-Reply-To=%3CAANLkTi%3DPwCZ-Dtr4L%2BEOYf-szRNMcEzVkTb%3DykK0Opu-%40mail.gmail.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001468.html">
+   <LINK REL="Next"  HREF="001470.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] How can chilli respond dhcp requests in lo interface?</H1>
+    <B>Lulu GO</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20How%20can%20chilli%20respond%20dhcp%20requests%20in%20lo%20interface%3F&In-Reply-To=%3CAANLkTi%3DPwCZ-Dtr4L%2BEOYf-szRNMcEzVkTb%3DykK0Opu-%40mail.gmail.com%3E"
+       TITLE="[Chilli] How can chilli respond dhcp requests in lo interface?">toboganfing at googlegroups.com
+       </A><BR>
+    <I>Sun Aug 15 23:40:08 UTC 2010</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001468.html">[Chilli] WISPr-Redirection-URL not getting redirected
+</A></li>
+        <LI>Next message: <A HREF="001470.html">[Chilli] Receiving customer DHCP hostname - how?
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1469">[ date ]</a>
+              <a href="thread.html#1469">[ thread ]</a>
+              <a href="subject.html#1469">[ subject ]</a>
+              <a href="author.html#1469">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hello, maybe this is a strange question, but I'm trying to get coova chilli
+to respond dhcp discover packets in the loopback interface. The situation is
+this (is for a student project at my university) I made a dhcp relay program
+to listen dhcp discover packets before chilli and then if the network state
+is ok relay the packet to chilli. So I made two tests, I change chilli
+listen port to 5067 and set chilli to reply in 68 port and another one where
+chilli is set to answer in 5068 port and my program relay also that answer
+to the client.
+
+Here are some logs
+
+My program running in 67 port, chilli in 5067 and a laptop asking dhcp to 67
+port, I can see the packets being forward to 5067 port, to coova, but no
+packets after that
+
+19:26:10.458579 IP (tos 0x0, ttl 64, id 0, offset 0, flags [DF], proto UDP
+(17), length 284) 10.20.1.1.bootps &gt; 10.20.1.1.5067: BOOTP/DHCP, Request
+from 00:17:c4:89:db:da (oui Unknown), length 256, xid 0x2fde6c7a, secs 8,
+Flags [none] (0x0000)
+  Client-Ethernet-Address 00:17:c4:89:db:da (oui Unknown) [|bootp]
+19:26:10.458609 IP (tos 0xc0, ttl 64, id 12772, offset 0, flags [none],
+proto ICMP (1), length 312) 10.20.1.1 &gt; 10.20.1.1: ICMP 10.20.1.1 udp port
+5067 unreachable, length 292
+
+there's an ICMP unreachable port but the discover gets to the chilli, I can
+see the new dhcp request in syslog
+
+Aug 15 19:26:10 tobogan coova-chilli[2724]: chilli.c: 2822: New DHCP request
+from MAC=00-17-C4-89-DB-DA
+Aug 15 19:26:53 tobogan coova-chilli[2724]: options.c: 821: Rereading
+configuration file and doing DNS lookup
+Aug 15 19:30:01 tobogan /USR/SBIN/CRON[3725]: (root) CMD (/etc/init.d/chilli
+checkrunning)
+
+Another test I made was changing the unicast flag of the dhcp response to
+broadcast, so chilli would respond broadcast, but the result was the same.
+
+My question is, how can i tell chilli to manage the lo interface? so it can
+respond ok, or, where can I change the dhcp sources in order to achive this?
+
+thank you very much for your time
+
+Luc&#237;a
+Montevideo - Uruguay
+
+ps: sorry for my english!
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: &lt;<A HREF="http://lists.coova.org/pipermail/chilli/attachments/20100815/d491a5c5/attachment.htm">http://lists.coova.org/pipermail/chilli/attachments/20100815/d491a5c5/attachment.htm</A>&gt;
+</PRE>
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001468.html">[Chilli] WISPr-Redirection-URL not getting redirected
+</A></li>
+	<LI>Next message: <A HREF="001470.html">[Chilli] Receiving customer DHCP hostname - how?
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1469">[ date ]</a>
+              <a href="thread.html#1469">[ thread ]</a>
+              <a href="subject.html#1469">[ subject ]</a>
+              <a href="author.html#1469">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,156 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] Transparent proxying and forwarding loop detected
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Transparent%20proxying%20and%20forwarding%20loop%20detected&In-Reply-To=%3C1405088821.43028.YahooMailNeo%40web172702.mail.ir2.yahoo.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="002793.html">
+   <LINK REL="Next"  HREF="002795.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] Transparent proxying and forwarding loop detected</H1>
+    <B>reiner otto</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Transparent%20proxying%20and%20forwarding%20loop%20detected&In-Reply-To=%3C1405088821.43028.YahooMailNeo%40web172702.mail.ir2.yahoo.com%3E"
+       TITLE="[Chilli] Transparent proxying and forwarding loop detected">augustus_meyer at yahoo.de
+       </A><BR>
+    <I>Fri Jul 11 14:27:01 UTC 2014</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="002793.html">[Chilli] Transparent proxying and forwarding loop detected
+</A></li>
+        <LI>Next message: <A HREF="002795.html">[Chilli] level of logs
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2794">[ date ]</a>
+              <a href="thread.html#2794">[ thread ]</a>
+              <a href="subject.html#2794">[ subject ]</a>
+              <a href="author.html#2794">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Addendum: In case, you also consider to add virus-scanning to squid, the sandwich appoach is the better one.
+
+
+
+reiner otto &lt;<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">augustus_meyer at yahoo.de</A>&gt; schrieb am 13:51 Freitag, 11.Juli 2014:
+ 
+
+
+Used DG myself, and AFAIK, DG does not work in transparent mode. Which means, your last working setup (squid only) has to be modified again for explicit proxy usage. Never did this one, so you need somebody else for further help.
+However, you might &quot;sandwich&quot; DG, that's what I usually did: client-transparent_squid_proxy_only-DG-squid_caching.
+Or, just chain DG AFTER the transparent squid, which you already have. Simplest solution. Advantage: Only NON-BLOCKED traffic is cached. So the setup would be client-squid-DG
+
+
+
+
+Peter Smith &lt;<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">pete at linuxbox.co.uk</A>&gt; schrieb am 12:51 Freitag, 11.Juli 2014:
+ 
+
+
+Well it *was* working, anyway. I decided to add dansguardian into the
+equation, so now I
+ need to redirect any port 80 traffic to 8080.
+Dansguardian (listening on 8080) then proxies out through squid on
+3128.
+
+I thought it would be as simple as changing this:
+
+iptables -A PREROUTING -t nat -s 10.0.0.0/8 -p tcp --dport 80 ! -d
+10.0.0.0/8 -j REDIRECT --to-port 3128
+
+, to redirect to 8080.
+
+When I try this, I see hits in the dansguardian log, and in the squid
+log, but then squid complains about 'forwarding loop detected' again.
+
+This is giving me a real headache now. Any ideas please?
+
+
+
+&gt;<i> Hi from babajaga (squid).
+</I>&gt;<i> Three issues:
+</I>&gt;<i> 1) chilli/config: Get rid of these ones, as you want to do use
+</I>&gt;<i> transparent squid (I commented them)
+</I>&gt;<i> #HS_POSTAUTH_PROXY=10.0.0.1
+</I>&gt;<i> #HS_POSTAUTH_PROXYPORT=3128
+</I>&gt;<i> 2)squid.conf: http_port 3128 intercept #changed between squid 2.7
+</I>and
+&gt;<i> 3.x: looks like still tolerated for compatibility
+</I>&gt;<i> 3) iptables. Now the
+</I> question is, where/how NAT to be done.
+&gt;<i> As I have routing, NAT, squid, chilli on same system (WAN interface
+</I>+
+&gt;<i> WLAN with chilli), I do the following
+</I>&gt;<i> /etc/chilli/ipup.sh:
+</I>&gt;<i> # force-add the final rule necessary to fix routing tables
+</I>&gt;<i> iptables -I POSTROUTING -t nat -o $HS_WANIF -j MASQUERADE
+</I>&gt;<i> CLIENT_NET=192.168.182.0/24
+</I>&gt;<i> #Redirect all non-local http traffic to squid
+</I>&gt;<i> iptables -A PREROUTING -t nat -s $CLIENT_NET -p tcp --dport 80 ! -d
+</I>$CLIENT_NET
+
+&gt;<i> -j REDIRECT --to-port 3128
+</I>&gt;<i> #Block direct external access to the internal receiving port. This
+</I>has
+&gt;<i> to be don
+</I>e
+&gt;<i> in the mangle part of iptables
+</I>&gt;<i> #before NAT happens so that intercepted traffic does not get
+</I>dropped.
+&gt;<i> iptables -A PREROUTING -t mangle -p tcp --dport 3128 -j DROP
+</I>&gt;<i> #Only allow client access to the squid intercept port from tun0, ie
+</I>AFTER its be
+
+&gt;<i> en through the chilli
+</I> gatekeeper
+&gt;<i> iptables -I INPUT -i tun0 -p tcp --dport 3128&#160; -j ACCEPT
+</I>
+
+
+
+_______________________________________________
+Chilli mailing list
+<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">Chilli at coova.org</A>
+<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">http://lists.coova.org/cgi-bin/mailman/listinfo/chilli</A>
+
+
+
+
+_______________________________________________
+Chilli mailing list
+<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">Chilli at coova.org</A>
+<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">http://lists.coova.org/cgi-bin/mailman/listinfo/chilli</A>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: &lt;<A HREF="http://lists.coova.org/pipermail/chilli/attachments/20140711/577a5b59/attachment.html">http://lists.coova.org/pipermail/chilli/attachments/20140711/577a5b59/attachment.html</A>&gt;
+</PRE>
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="002793.html">[Chilli] Transparent proxying and forwarding loop detected
+</A></li>
+	<LI>Next message: <A HREF="002795.html">[Chilli] level of logs
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2794">[ date ]</a>
+              <a href="thread.html#2794">[ thread ]</a>
+              <a href="subject.html#2794">[ subject ]</a>
+              <a href="author.html#2794">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

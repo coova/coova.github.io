@@ -1,0 +1,110 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] Coovachilli and Squid Transparent on the same host
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Coovachilli%20and%20Squid%20Transparent%20on%20the%20same%20host&In-Reply-To=%3CCAENMwEBfSx9j6E%2BnjNKBmjnjOGakn%3D3-%3D-CeAQGKHwA%2B6YZbhQ%40mail.gmail.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001969.html">
+   <LINK REL="Next"  HREF="001971.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] Coovachilli and Squid Transparent on the same host</H1>
+    <B>Germano Paciocco</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Coovachilli%20and%20Squid%20Transparent%20on%20the%20same%20host&In-Reply-To=%3CCAENMwEBfSx9j6E%2BnjNKBmjnjOGakn%3D3-%3D-CeAQGKHwA%2B6YZbhQ%40mail.gmail.com%3E"
+       TITLE="[Chilli] Coovachilli and Squid Transparent on the same host">germano.paciocco at gmail.com
+       </A><BR>
+    <I>Sun May 20 18:10:52 UTC 2012</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001969.html">[Chilli] Coovachilli and Squid Transparent on the same host
+</A></li>
+        <LI>Next message: <A HREF="001971.html">[Chilli] Coovachilli and Squid Transparent on the same host
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1970">[ date ]</a>
+              <a href="thread.html#1970">[ thread ]</a>
+              <a href="subject.html#1970">[ subject ]</a>
+              <a href="author.html#1970">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>First, many thanks for your precious support
+
+/*Venkatesh K &lt;kaevee at gmail.com&gt;*/ wrote:
+
+&gt;<i> 1. Setup Postauthproxy to IP address of eth0 and port 3128
+</I>
+You gave me an idea that made me save the day :)
+
+First of all, I noticed that if I set up a IP adress on the physical
+network interface eth0, once coovachilli starts and raises up tun0,
+eth0 becomes unnumbered, so I was using the following interface file
+(debian):
+
+auto lo
+iface lo inet loopback
+
+# LAN
+auto eth0
+
+# WAN
+allow-hotplug eth1
+auto eth1
+iface eth1 inet static
+	address 192.168.196.100
+	netmask 255.255.255.0
+	gateway 192.168.196.1
+
+Now I set an address for the physical interface after having started
+coovachilli:
+
+# /etc/init.d/chilli starts &amp;&amp; ifconfig eth0 172.16.0.1 netmask 255.255.255.0
+
+and set Squid to listen on 172.16.0.1
+
+http_port 172.16.0.1:3128 transparent
+
+now it is working as I wanted... but I have to big doubt:
+
+1) Maybe Squid does not work well when listening on the loopback?
+It is a known issue?
+2) Why coovachilli sets physical HS interface unnumbered?
+Is there a way to avoid this, and so avoid manual set of IP address after
+coovachilli start?
+I think it shouldn't give security problem, because if a client sets an
+eth0's class IP on his NIC (172.16.0.x in my case), he should not be able
+to surf due the #8 rule of INPUT chain (see one of my other message).
+
+-- 
+GP
+</PRE>
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001969.html">[Chilli] Coovachilli and Squid Transparent on the same host
+</A></li>
+	<LI>Next message: <A HREF="001971.html">[Chilli] Coovachilli and Squid Transparent on the same host
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1970">[ date ]</a>
+              <a href="thread.html#1970">[ thread ]</a>
+              <a href="subject.html#1970">[ subject ]</a>
+              <a href="author.html#1970">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

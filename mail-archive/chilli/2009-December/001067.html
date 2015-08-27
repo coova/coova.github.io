@@ -1,0 +1,83 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] [PATCH] Binstatusfile not moved after chilliredir fork -	Rev. 257
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20%5BPATCH%5D%20Binstatusfile%20not%20moved%20after%20chilliredir%20fork%20-%0A%09Rev.%20257&In-Reply-To=%3C1260900811.3837.72.camel%40alberto-laptop%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001066.html">
+   <LINK REL="Next"  HREF="001069.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] [PATCH] Binstatusfile not moved after chilliredir fork -	Rev. 257</H1>
+    <B>Alberto Bellettato</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20%5BPATCH%5D%20Binstatusfile%20not%20moved%20after%20chilliredir%20fork%20-%0A%09Rev.%20257&In-Reply-To=%3C1260900811.3837.72.camel%40alberto-laptop%3E"
+       TITLE="[Chilli] [PATCH] Binstatusfile not moved after chilliredir fork -	Rev. 257">albesvs at yahoo.it
+       </A><BR>
+    <I>Tue Dec 15 18:13:31 UTC 2009</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001066.html">[Chilli] Slow DHCP problem of v. 1.0.14 SOLVED in Rev. 257
+</A></li>
+        <LI>Next message: <A HREF="001069.html">[Chilli] [PATCH] Binstatusfile not moved after chilliredir fork -	Rev. 257
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1067">[ date ]</a>
+              <a href="thread.html#1067">[ thread ]</a>
+              <a href="subject.html#1067">[ subject ]</a>
+              <a href="author.html#1067">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>In rev. 257 there is a problem with the binstatusfile, that issues a message in the log files &quot;(Directory not empty) /tmp/chilli-xxxxx&quot;.
+
+That is caused by the rename(file,file2) not working (not moving the bin file) because file = file2 = file with old PID.
+Infact file2 is set by chilli_binconfig(), that used the &quot;bc = _options.binconfig&quot; value (set to the old PID).
+
+I think the /tmp/chilli-xxxxx dir should be clean when chilli stop too, but it is not a priority since it uses only 16 bytes.
+
+Here is the patch.
+
+Index: src/chilli.c
+===================================================================
+--- src/chilli.c        (revisione 257)
++++ src/chilli.c        (copia locale)
+@@ -4170,9 +4170,9 @@
+        log_err(errno, file2);
+
+       chilli_binconfig(file, sizeof(file), cpid);
+-      chilli_binconfig(file2, sizeof(file2), getpid());
++      snprintf(file2, sizeof(file2), &quot;/tmp/chilli-%d/config.bin&quot;, getpid());
+
+-      rename(file, file2);
++      if (rename(file, file2)) log_err(errno, file);
+
+       umask(process_mask);
+
+
+</PRE>
+
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001066.html">[Chilli] Slow DHCP problem of v. 1.0.14 SOLVED in Rev. 257
+</A></li>
+	<LI>Next message: <A HREF="001069.html">[Chilli] [PATCH] Binstatusfile not moved after chilliredir fork -	Rev. 257
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1067">[ date ]</a>
+              <a href="thread.html#1067">[ thread ]</a>
+              <a href="subject.html#1067">[ subject ]</a>
+              <a href="author.html#1067">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

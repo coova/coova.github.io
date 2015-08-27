@@ -1,0 +1,143 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> Password encoding/decoding
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20Password%20encoding/decoding&In-Reply-To=%3C4A7FE80A.5040005%40wiggy.net%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000838.html">
+   <LINK REL="Next"  HREF="000851.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>Password encoding/decoding</H1>
+    <B>Wichert Akkerman</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20Password%20encoding/decoding&In-Reply-To=%3C4A7FE80A.5040005%40wiggy.net%3E"
+       TITLE="Password encoding/decoding">wichert at wiggy.net
+       </A><BR>
+    <I>Mon Aug 10 09:27:38 UTC 2009</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000838.html">Password encoding/decoding
+</A></li>
+        <LI>Next message: <A HREF="000851.html">Password encoding/decoding
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#850">[ date ]</a>
+              <a href="thread.html#850">[ thread ]</a>
+              <a href="subject.html#850">[ subject ]</a>
+              <a href="author.html#850">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>I have been debugging this a bit further. I have a test run with the 
+following settings:
+
+UAM secret: tushaethaihahqui
+challenge: 10a1803a58fea7778e65935fba955185
+raw password: ABCDEFGHIJKLMNOPQRSTUVWXYZ
+
+The PAP obfuscated password becomes: 
+4a8c7b9f70c02ae48da682f0438969c95a9c6b8f60d03af49db6c9bc0ec72699
+
+chilli decodes that and after passing it on FreeRADIUS reports:
+rlm_pap: login attempt with password &quot;??U?&quot;
+
+if I try to decode using a simple decode.c I extracted from redir.c I 
+get the right password:
+
+[fog;..ldout/devel/decode]-224&gt; ./decode 
+10a1803a58fea7778e65935fba955185 
+4a8c7b9f70c02ae48da682f0438969c95a9c6b8f60d03af49db6c9bc0ec72699 
+tushaethaihahqui
+ABCDEFGHIJKLMNOPQRSTUVWXYZ
+
+as far as I can see my obfuscation code looks correct:
+
+def ObfuscatePassword(challenge, password):
+     xorpad=challenge.decode(&quot;hex&quot;)
+     assert len(xorpad)==16
+     uamsecret=pylons.config.get(&quot;chilli.uamsecret&quot;, None)
+     if uamsecret:
+         xorpad=hashlib.md5(xorpad+uamsecret).digest()
+
+     while len(xorpad)&lt;len(password):
+         xorpad+=xorpad
+     # NUL-pad the password to make it a multiple of the XOR-pad size
+     password+=&quot;\x00&quot;*(len(xorpad)-len(password))
+
+     assert len(password)==len(xorpad)
+
+     result=[]
+     for i in range(len(password)):
+         result.append(chr(ord(password[i]) ^ ord(xorpad[i])))
+     result=&quot;&quot;.join(result)
+     return result.encode(&quot;hex&quot;)
+
+
+Does anyone have an idea why this goes wrong?
+
+
+
+On 8/3/09 14:12 , Wichert Akkerman wrote:
+&gt;<i> I am wondering if something goes wrong in the password handling. I know
+</I>&gt;<i> something goes wrong on my end in the UAM&lt;-&gt;Chilli communication which
+</I>&gt;<i> mangles passwords: if I sent ABCDEFGHIJKLMNOPQRSTUVWXYZ as password
+</I>&gt;<i> chilli decodes that to ABCDEFGHIJKLMNOPK&lt;lots of binary&gt;. But things go
+</I>&gt;<i> wrong on when that is sent to RADIUS as well. Here is the FreeRadius log
+</I>&gt;<i> output for the same request:
+</I>&gt;<i>
+</I>&gt;<i> rad_recv: Access-Request packet from host 127.0.0.1 port 56008, id=2,
+</I>&gt;<i> length=269
+</I>&gt;<i> Vendor-14559-Attr-8 = 0x312e302e3134
+</I>&gt;<i> User-Name = &quot;wichert&quot;
+</I>&gt;<i> User-Password = &quot;U\004j,&quot;
+</I>&gt;<i> NAS-IP-Address = 10.1.0.1
+</I>&gt;<i> Service-Type = Login-User
+</I>&gt;<i> Framed-IP-Address = 10.1.0.3
+</I>&gt;<i> Calling-Station-Id = &quot;00-0C-29-27-79-83&quot;
+</I>&gt;<i> Called-Station-Id = &quot;00-0C-29-6C-0F-92&quot;
+</I>&gt;<i> NAS-Identifier = &quot;nas01&quot;
+</I>&gt;<i> Acct-Session-Id = &quot;4a76d33900000002&quot;
+</I>&gt;<i> NAS-Port-Type = Wireless-802.11
+</I>&gt;<i> NAS-Port = 2
+</I>&gt;<i> WISPr-Location-ID = &quot;isocc=NL,cc=31,ac=020,network=Attingo,KLM_Lounge&quot;
+</I>&gt;<i> WISPr-Location-Name = &quot;KLM_Lounge&quot;
+</I>&gt;<i> WISPr-Logoff-URL = &quot;<A HREF="http://10.1.0.1:3990/logoff&quot;">http://10.1.0.1:3990/logoff&quot;</A>
+</I>&gt;<i> Message-Authenticator = 0x4d6f776979e5711baf9ae428338e9bf7
+</I>&gt;<i> Login incorrect (rlm_pap: CLEAR TEXT password check failed):
+</I>&gt;<i> [wichert/U\004j,] (from client localhost port 2 cli 00-0C-29-27-79-83)
+</I>&gt;<i> WARNING: Unprintable characters in the password. Double-check the shared
+</I>&gt;<i> secret on the server and the NAS!
+</I>&gt;<i>
+</I>&gt;<i> which shows that my bad password has become even more corrupted.
+</I>&gt;<i>
+</I>&gt;<i> Wichert.
+</I>
+-------------- next part --------------
+An embedded and charset-unspecified text was scrubbed...
+Name: decode.c
+URL: &lt;<A HREF="http://lists.coova.org/pipermail/chilli/attachments/20090810/48c67077/attachment.txt">http://lists.coova.org/pipermail/chilli/attachments/20090810/48c67077/attachment.txt</A>&gt;
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000838.html">Password encoding/decoding
+</A></li>
+	<LI>Next message: <A HREF="000851.html">Password encoding/decoding
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#850">[ date ]</a>
+              <a href="thread.html#850">[ thread ]</a>
+              <a href="subject.html#850">[ subject ]</a>
+              <a href="author.html#850">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

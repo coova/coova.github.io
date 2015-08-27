@@ -1,0 +1,204 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] Incorrectly high data usage over a short period of time
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Incorrectly%20high%20data%20usage%20over%20a%20short%20period%20of%20time&In-Reply-To=%3Cd6a9b02c0911090701v34bf3101v398527589ea024a%40mail.gmail.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000974.html">
+   <LINK REL="Next"  HREF="000956.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] Incorrectly high data usage over a short period of time</H1>
+    <B>Jack J Allan</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Incorrectly%20high%20data%20usage%20over%20a%20short%20period%20of%20time&In-Reply-To=%3Cd6a9b02c0911090701v34bf3101v398527589ea024a%40mail.gmail.com%3E"
+       TITLE="[Chilli] Incorrectly high data usage over a short period of time">jack.j.allan at gmail.com
+       </A><BR>
+    <I>Mon Nov  9 15:01:12 UTC 2009</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000974.html">[Chilli] Ippool exhaustion bug?
+</A></li>
+        <LI>Next message: <A HREF="000956.html">[Chilli] Incorrectly high data usage over a short period of time
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#954">[ date ]</a>
+              <a href="thread.html#954">[ thread ]</a>
+              <a href="subject.html#954">[ subject ]</a>
+              <a href="author.html#954">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Dear Coova Chilli Community
+
+Firstly, my setup:
+
+   1. Coova Chilli 1.013
+   2. Freeradius 2.1.5
+
+I am absolutely perplexed by this bug. Not only that, but I cannot think of
+any ways of reproducing it, so I am hoping someone in the community has come
+accross this before. My problem is my NAS is reporting incorrectly high
+usage over a short space of time. Where we are based (South Africa), the
+fastest one's ADSL line speed can be is 4 mega bits per second. This
+translates to about 0.47 megabytes per seconds, and that is if you are
+lucky. We have three such lines multiplexed together, which means we can get
+a throughput of about 0.47*3 = 1.41 megabytes per second. Unfortunately, we
+have received a complaint claiming that chilli has deducted more than what
+was used. Looking at the radius logs, I can ascertain that this is true.
+
+Here is the initial start packet sent by chilli to radius (I have removed
+username and Nas Identifier to protect privacy):
+
+*Tue Oct 27 09:12:57 2009
+        ChilliSpot-Version = &quot;1.0.13&quot;
+        Acct-Status-Type = Start
+        Calling-Station-Id = &quot;00-1F-33-FF-BD-00&quot;
+        NAS-Port-Type = Wireless-802.11
+        NAS-Port = 4
+        NAS-Port-Id = &quot;00000004&quot;
+        Framed-IP-Address = 172.25.0.168
+        Acct-Session-Id = &quot;4ae69d6000000004&quot;
+        NAS-IP-Address = 172.25.0.1
+        Called-Station-Id = &quot;00-16-B6-D9-5A-EB&quot;
+        Acct-Unique-Session-Id = &quot;f3bcc21590c1afd1&quot;
+        Timestamp = 1256627577
+        Request-Authenticator = Verified*
+
+Then about 1 minute later, the following occurs
+*Tue Oct 27 09:13:59 2009
+        ChilliSpot-Version = &quot;1.0.13&quot;
+        Acct-Status-Type = Interim-Update
+        Calling-Station-Id = &quot;00-1F-33-FF-BD-00&quot;
+        NAS-Port-Type = Wireless-802.11
+        NAS-Port = 4
+        NAS-Port-Id = &quot;00000004&quot;
+        Framed-IP-Address = 172.25.0.168
+        Acct-Session-Id = &quot;4ae69d6000000004&quot;
+        NAS-IP-Address = 172.25.0.1
+        Called-Station-Id = &quot;00-16-B6-D9-5A-EB&quot;
+       Acct-Input-Octets = 1178355
+       Acct-Output-Octets = 52201523
+        Acct-Input-Gigawords = 0
+        Acct-Output-Gigawords = 0
+        Acct-Input-Packets = 19170
+        Acct-Output-Packets = 36581
+        Acct-Session-Time = 63
+        Acct-Unique-Session-Id = &quot;f3bcc21590c1afd1&quot;
+        Timestamp = 1256627639
+        Request-Authenticator = Verified*
+
+This is definitely in error (the bold parts), as the backbone line speed
+cannot handle this much traffic in such a short space of time. Another
+minute later:
+Tue Oct 27 09:15:02 2009
+*        ChilliSpot-Version = &quot;1.0.13&quot;
+        Acct-Status-Type = Interim-Update
+        Calling-Station-Id = &quot;00-1F-33-FF-BD-00&quot;
+        NAS-Port-Type = Wireless-802.11
+        NAS-Port = 4
+        NAS-Port-Id = &quot;00000004&quot;
+        Framed-IP-Address = 172.25.0.168
+        Acct-Session-Id = &quot;4ae69d6000000004&quot;
+        NAS-IP-Address = 172.25.0.1
+        Called-Station-Id = &quot;00-16-B6-D9-5A-EB&quot;
+       Acct-Input-Octets = 2132628
+       Acct-Output-Octets = 98448008
+        Acct-Input-Gigawords = 0
+        Acct-Output-Gigawords = 0
+        Acct-Input-Packets = 36067
+        Acct-Output-Packets = 68754
+        Acct-Session-Time = 126
+        Acct-Unique-Session-Id = &quot;f3bcc21590c1afd1&quot;
+        Timestamp = 1256627702
+        Request-Authenticator = Verified*
+
+Again, the amount of data usage is absolutely impossible for the backbone's
+capabaility. Another minute later:
+*Tue Oct 27 09:16:05 2009
+        ChilliSpot-Version = &quot;1.0.13&quot;
+        Acct-Status-Type = Interim-Update
+        Calling-Station-Id = &quot;00-1F-33-FF-BD-00&quot;
+        NAS-Port-Type = Wireless-802.11
+        NAS-Port = 4
+        NAS-Port-Id = &quot;00000004&quot;
+        Framed-IP-Address = 172.25.0.168
+        Acct-Session-Id = &quot;4ae69d6000000004&quot;
+        NAS-IP-Address = 172.25.0.1
+        Called-Station-Id = &quot;00-16-B6-D9-5A-EB&quot;
+       Acct-Input-Octets = 3097259
+       Acct-Output-Octets = 146070592
+        Acct-Input-Gigawords = 0
+        Acct-Output-Gigawords = 0
+        Acct-Input-Packets = 53364
+        Acct-Output-Packets = 101854
+        Acct-Session-Time = 189
+        Acct-Unique-Session-Id = &quot;f3bcc21590c1afd1&quot;
+        Timestamp = 1256627765
+        Request-Authenticator = Verified*
+
+Again, impossibly high. There is just one more account interim update, and
+then the person is logged off due to insufficient credit:
+*Tue Oct 27 09:17:14 2009
+        ChilliSpot-Version = &quot;1.0.13&quot;
+        Acct-Status-Type = Stop
+        Calling-Station-Id = &quot;00-1F-33-FF-BD-00&quot;
+        NAS-Port-Type = Wireless-802.11
+        NAS-Port = 4
+        NAS-Port-Id = &quot;00000004&quot;
+        Framed-IP-Address = 172.25.0.168
+        Acct-Session-Id = &quot;4ae69d6000000004&quot;
+        NAS-IP-Address = 172.25.0.1
+        Called-Station-Id = &quot;00-16-B6-D9-5A-EB&quot;
+       Acct-Input-Octets = 3701744
+       Acct-Output-Octets = 175905676
+        Acct-Input-Gigawords = 0
+        Acct-Output-Gigawords = 0
+        Acct-Input-Packets = 64216
+        Acct-Output-Packets = 122605
+        Acct-Session-Time = 228
+        Acct-Terminate-Cause = Session-Timeout
+        Acct-Unique-Session-Id = &quot;f3bcc21590c1afd1&quot;
+        Timestamp = 1256627834
+        Request-Authenticator = Verified*
+
+All in all, chilli has told radius that the user has used 171.29 megabytes
+in 3.8 minutes. Of that, 167.76 megabytes were in downloads, and 3.53
+megabytes were in uploads. Unfortunately, this is absolutely impossible with
+regards to the backbone speeds in South Africa.
+
+Any help would be greatly appreciated, I have no idea how to solve this.
+
+All the best
+Jack J Allan
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: &lt;<A HREF="http://lists.coova.org/pipermail/chilli/attachments/20091109/d601050d/attachment.htm">http://lists.coova.org/pipermail/chilli/attachments/20091109/d601050d/attachment.htm</A>&gt;
+</PRE>
+
+
+
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000974.html">[Chilli] Ippool exhaustion bug?
+</A></li>
+	<LI>Next message: <A HREF="000956.html">[Chilli] Incorrectly high data usage over a short period of time
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#954">[ date ]</a>
+              <a href="thread.html#954">[ thread ]</a>
+              <a href="subject.html#954">[ subject ]</a>
+              <a href="author.html#954">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

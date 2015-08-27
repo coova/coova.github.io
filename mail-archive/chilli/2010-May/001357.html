@@ -1,0 +1,138 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] [Patch] Fix access_request() to conform with radius pack	ID semantics
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20%5BPatch%5D%20Fix%20access_request%28%29%20to%20conform%20with%20radius%20pack%0A%09ID%20semantics&In-Reply-To=%3C4BEFD4AA.6010604%40hollants.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001356.html">
+   <LINK REL="Next"  HREF="001365.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] [Patch] Fix access_request() to conform with radius pack	ID semantics</H1>
+    <B>IT-Systemmanagement Pieter Hollants</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20%5BPatch%5D%20Fix%20access_request%28%29%20to%20conform%20with%20radius%20pack%0A%09ID%20semantics&In-Reply-To=%3C4BEFD4AA.6010604%40hollants.com%3E"
+       TITLE="[Chilli] [Patch] Fix access_request() to conform with radius pack	ID semantics">pieter at hollants.com
+       </A><BR>
+    <I>Sun May 16 11:19:06 UTC 2010</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001356.html">[Chilli] Multiple VLANs and Subnets
+</A></li>
+        <LI>Next message: <A HREF="001365.html">[Chilli] [Patch] Fix access_request() to conform with radius pack	ID semantics
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1357">[ date ]</a>
+              <a href="thread.html#1357">[ thread ]</a>
+              <a href="subject.html#1357">[ subject ]</a>
+              <a href="author.html#1357">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Short:
+Coova-Chilli 1.2.2 and current SVN have a bug in the radius packet ID
+semantics which (at least for me) prevented WPA-EAP from working.
+
+Long:
+Stemming from ChilliSpot are the structures radius_t, radius_queue_t and
+radius_packet_t for communication with the &quot;upstream&quot; proxy server.
+
+(struct radius_t)-&gt;queue is an array of radius_queue_t structures, each
+of which in turn contains in &quot;p&quot; a struct radius_packet_id, representing
+a single RADIUS packet that is supposed to be sent to the proxy server.
+radius_queue_t contains a timeout and the number of retransmissions so
+far, radius_packet_id contains an &quot;id&quot; field which is of importance here.
+
+In ChilliSpot, the array was of a fixed size, RADIUS_QUEUESIZE which was
+defined as 256. The comment &quot;/* Same size as id address space */&quot;
+already hinted at a simple indexing scheme used for the &quot;queue&quot; array.
+
+Any new packet that was to be stored was prepared with
+radius_default_pack():
+
+ pack-&gt;id = 0;
+
+When a packet was to be sent off with radius_req(), that function called
+radius_queue_in() which did this:
+
+ pack-&gt;id = this-&gt;next;
+ this-&gt;next;
+
+where this is the struct radius_t and &quot;next&quot; the next ID to be assigned.
+The IDs served as indexes into &quot;queue&quot; and since &quot;next&quot; was defined as
+an &quot;int&quot;, it was supposed to magically wrap around to 0, in the event
+that all RADIUS_QUEUESIZE radius_queue_t slots had been used.
+
+Now in CoovaChilli, (struct radius_t)-&gt;queue was instead implemented to
+be optionally of a dynamic size below RADIUS_QUEUESIZE. Modulo operators
+were used to map IDs to actual indexes.
+
+In the process of this implementation, pack-&gt;id assignment was changed.
+radius_default_pack() now does (this-&gt;next was renamed to this-&gt;qnext):
+
+ if (this-&gt;qsize == 0)
+   pack-&gt;id = this-&gt;qnext;
+ else
+   pack-&gt;id = /* special magic */
+
+and radius_queue_in() no longer set pack-&gt;id itself.
+
+This breaks the access_request() function in chilli.c: there, a
+remainder of ChilliSpot origin, we read
+
+ radius_pack.id = pack-&gt;id;
+
+At the end radius_req() is called, which calls radius_queue_in(), which
+does not set radius_pack.id itself because it expects that the value
+chosen by radius_default_pack() is still there. Boom :) This gave nice
+error messages &quot;No such id in radius queue&quot; resp. &quot;Matching request was
+not found in queue&quot;.
+
+Attached patch removes the offending line from access_request() and
+applies to both 1.2.2 and SVN. Actually, the line seems to have served
+no purpose anyway, neither in ChilliSpot nor in CoovaChilli. In
+ChilliSpot, as described, radius_queue_in() overwrote pack-&gt;id anyway.
+In CoovaChilli it caused the erroneous behaviour described above.
+
+The offending line was probably copied from other functions such as
+radius_access_reject(), where it is correct since radius_resp() is
+subsequently called, not radius_req().
+
+Please verify and have a nice Sunday :)
+
+-- 
+Dipl.-Wirtsch.-Inform. Pieter Hollants
+IT-Systemmanagement Pieter Hollants          Tel. : (+49) (0)6192-910717
+Rossertstra&#223;e 80                             Fax  : (+49) (0)6192-910713
+65830 Kriftel                                eMail: <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">pieter at hollants.com</A>
+
+-------------- next part --------------
+An embedded and charset-unspecified text was scrubbed...
+Name: coova-chilli-1.2.2-access_request_radius_pack_id.diff
+URL: &lt;<A HREF="http://lists.coova.org/pipermail/chilli/attachments/20100516/2f5a37a5/attachment.txt">http://lists.coova.org/pipermail/chilli/attachments/20100516/2f5a37a5/attachment.txt</A>&gt;
+</PRE>
+
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001356.html">[Chilli] Multiple VLANs and Subnets
+</A></li>
+	<LI>Next message: <A HREF="001365.html">[Chilli] [Patch] Fix access_request() to conform with radius pack	ID semantics
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1357">[ date ]</a>
+              <a href="thread.html#1357">[ thread ]</a>
+              <a href="subject.html#1357">[ subject ]</a>
+              <a href="author.html#1357">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

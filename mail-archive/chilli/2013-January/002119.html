@@ -1,0 +1,141 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] Bugs and patches
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Bugs%20and%20patches&In-Reply-To=%3C51093C22.6080402%40anduras.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="002116.html">
+   <LINK REL="Next"  HREF="002120.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] Bugs and patches</H1>
+    <B>Sven Anders</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Bugs%20and%20patches&In-Reply-To=%3C51093C22.6080402%40anduras.de%3E"
+       TITLE="[Chilli] Bugs and patches">anders at anduras.de
+       </A><BR>
+    <I>Wed Jan 30 15:28:34 UTC 2013</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="002116.html">[Chilli] user details
+</A></li>
+        <LI>Next message: <A HREF="002120.html">[Chilli] Bugs and patches
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2119">[ date ]</a>
+              <a href="thread.html#2119">[ thread ]</a>
+              <a href="subject.html#2119">[ subject ]</a>
+              <a href="author.html#2119">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Bug reports for &quot;coova-chilli-1.3.0&quot;
+
+I compile with the following options:
+ --with-openssl --with-mmap --with-poll --enable-largelimits --enable-binstatusfile --enable-statusfile \
+ --enable-chilliproxy --enable-chilliradsec --enable-chilliredir --enable-chilliscript --enable-ieee8023 \
+ --enable-multiroute
+
+1) If I try to compile without the &quot;--enable-multiroute&quot; option:
+
+chilli.c: In function 'chilli_main':
+chilli.c:7540:26: error: 'struct tun_t' has no member named '_interface_count'
+chilli.c:7541:16: error: 'struct tun_t' has no member named '_interfaces'
+
+Compiling with this option enabled works fine.
+
+
+2) I get the following warnings, which are treated as errors:
+
+cc1: warnings being treated as errors
+net.c: In function 'net_open_eth':
+net.c:1189:22: error: unused variable 'mr'
+net.c: At top level:
+net.c:1938:13: error: 'setup_filter' defined but not used
+
+I removed the -Werror option from the Makefile.
+
+
+3) If you start chilli without stdin/stdout/stderr, the file descriptor of opened
+   files may be 0.
+
+Patch attached.
+
+4) The default parameters should be initialized right after it's creation.
+   (This solved a problem I did not remember).
+
+Patch attached.
+
+5) It should be possible to use the chilli with its own DNS server settings.
+   Currently the DNS server settings from the host are used, if none are
+   configured.
+   I added a new option &quot;--nosystemdns&quot; for that.
+
+Patch attached.
+
+
+Regards
+ Sven Anders
+
+-- 
+ Sven Anders &lt;<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">anders at anduras.de</A>&gt;                 () UTF-8 Ribbon Campaign
+                                                 /\ Support plain text e-mail
+ ANDURAS intranet security AG
+ Messestrasse 3 - 94036 Passau - Germany
+ Web: www.anduras.de - Tel: +49 (0)851-4 90 50-0 - Fax: +49 (0)851-4 90 50-55
+
+Those who would give up essential Liberty, to purchase a little
+temporary Safety, deserve neither Liberty nor Safety.
+  - Benjamin Franklin
+
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: coova-macallowed.patch
+Type: text/x-diff
+Size: 2080 bytes
+Desc: not available
+URL: &lt;<A HREF="http://lists.coova.org/pipermail/chilli/attachments/20130130/5d7d3b4c/attachment.patch">http://lists.coova.org/pipermail/chilli/attachments/20130130/5d7d3b4c/attachment.patch</A>&gt;
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: coova-nosystemdns.patch
+Type: text/x-diff
+Size: 6205 bytes
+Desc: not available
+URL: &lt;<A HREF="http://lists.coova.org/pipermail/chilli/attachments/20130130/5d7d3b4c/attachment-0001.patch">http://lists.coova.org/pipermail/chilli/attachments/20130130/5d7d3b4c/attachment-0001.patch</A>&gt;
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: coova-options-load.patch
+Type: text/x-diff
+Size: 1254 bytes
+Desc: not available
+URL: &lt;<A HREF="http://lists.coova.org/pipermail/chilli/attachments/20130130/5d7d3b4c/attachment-0002.patch">http://lists.coova.org/pipermail/chilli/attachments/20130130/5d7d3b4c/attachment-0002.patch</A>&gt;
+</PRE>
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="002116.html">[Chilli] user details
+</A></li>
+	<LI>Next message: <A HREF="002120.html">[Chilli] Bugs and patches
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2119">[ date ]</a>
+              <a href="thread.html#2119">[ thread ]</a>
+              <a href="subject.html#2119">[ subject ]</a>
+              <a href="author.html#2119">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

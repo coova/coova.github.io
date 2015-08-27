@@ -1,0 +1,146 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] 1.2.5 build problem on ubuntu 9
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%201.2.5%20build%20problem%20on%20ubuntu%209&In-Reply-To=%3CAANLkTikBvjzEsmaW7K9gXeRAmf8QyKW_LdDJjS9n9caJ%40mail.gmail.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001558.html">
+   <LINK REL="Next"  HREF="001560.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] 1.2.5 build problem on ubuntu 9</H1>
+    <B>Timothy White</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%201.2.5%20build%20problem%20on%20ubuntu%209&In-Reply-To=%3CAANLkTikBvjzEsmaW7K9gXeRAmf8QyKW_LdDJjS9n9caJ%40mail.gmail.com%3E"
+       TITLE="[Chilli] 1.2.5 build problem on ubuntu 9">timwhite88 at gmail.com
+       </A><BR>
+    <I>Tue Dec  7 01:00:30 UTC 2010</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001558.html">[Chilli] chilli-1.2.5 sigsegv at dns.c:102
+</A></li>
+        <LI>Next message: <A HREF="001560.html">[Chilli] Libbstring installation
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1559">[ date ]</a>
+              <a href="thread.html#1559">[ thread ]</a>
+              <a href="subject.html#1559">[ subject ]</a>
+              <a href="author.html#1559">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Apologies Marco, I sent you stuff for the list as I'm not used to this
+lists reply-to methods.
+
+I was having the same issue.
+
+It would appear that in the tarball download for 1.2.5, debian/rules
+has a change that isn't in SVN at the release revision.
+This change of
+$(MAKE) DESTDIR=$(CURDIR)/debian/tmp install
+to
+$(MAKE) DESTDIR=$(CURDIR)/debian/coova-chilli install
+seems to be what is causing the problem.
+
+r323 seems to be where the change was made, but appears to have been
+reversed in 327
+For some reason 1.2.5 which is supposed to be r394 has the incorrect
+file. (Maybe a svn update wasn't performed correctly before
+packaging?)
+
+There are some more differences too. Makes me wonder about the
+packaging process.
+
+Tim
+
+$ svn info coova-chilli-r394/
+Path: coova-chilli-r394
+URL: <A HREF="http://dev.coova.org/svn/coova-chilli">http://dev.coova.org/svn/coova-chilli</A>
+Repository Root: <A HREF="http://dev.coova.org/svn/coova-chilli">http://dev.coova.org/svn/coova-chilli</A>
+Repository UUID: c289a2b3-717e-4f83-9c72-ca9dea9f7ab6
+Revision: 394
+Node Kind: directory
+Schedule: normal
+Last Changed Author: dbird
+Last Changed Rev: 394
+Last Changed Date: 2010-10-21 01:21:16 +1000 (Thu, 21 Oct 2010)
+
+
+$ diff -r coova-chilli-r394 coova-chilli-1.2.5|grep -v svn
+Only in coova-chilli-1.2.5: aclocal.m4
+Only in coova-chilli-r394: bootstrap
+Only in coova-chilli-r394: bootstrap2
+Only in coova-chilli-r394/bstring: bstraux.c
+Only in coova-chilli-r394/bstring: bstraux.h
+Only in coova-chilli-r394/bstring: bstrlib.txt
+Only in coova-chilli-r394/bstring: gpl.txt
+Only in coova-chilli-r394/bstring: license.txt
+Only in coova-chilli-1.2.5/bstring: Makefile.in
+Only in coova-chilli-r394/bstring: porting.txt
+Only in coova-chilli-r394/bstring: security.txt
+Only in coova-chilli-1.2.5/conf: Makefile.in
+Only in coova-chilli-1.2.5: config.guess
+Only in coova-chilli-1.2.5: config.h
+Only in coova-chilli-1.2.5: configure
+Only in coova-chilli-r394: configure.scan
+Only in coova-chilli-r394/debian: compat
+Only in coova-chilli-1.2.5/debian: Makefile.in
+diff -r coova-chilli-r394/debian/rules coova-chilli-1.2.5/debian/rules
+53c53
+&lt;       $(MAKE) DESTDIR=$(CURDIR)/debian/tmp install
+---
+&gt;<i>       $(MAKE) DESTDIR=$(CURDIR)/debian/coova-chilli install
+</I>Only in coova-chilli-1.2.5: depcomp
+Only in coova-chilli-1.2.5/distro: Makefile.in
+Only in coova-chilli-r394/distro: openmoko
+Only in coova-chilli-r394/distro: openwrt
+Only in coova-chilli-1.2.5/distro/redhat: coova-chilli.spec
+Only in coova-chilli-1.2.5/distro/suse: coova-chilli.spec
+Only in coova-chilli-r394/distro: ubnt
+Only in coova-chilli-r394/doc: chilli.conf
+Only in coova-chilli-r394/doc: firewall.iptables
+Only in coova-chilli-r394/doc: firewall.openwrt
+Only in coova-chilli-r394/doc: freeradius.users
+Only in coova-chilli-r394/doc: hotspotlogin.html
+Only in coova-chilli-r394/doc: http-aaa-example.php
+Only in coova-chilli-1.2.5/doc: Makefile.in
+Only in coova-chilli-1.2.5: install-sh
+Only in coova-chilli-1.2.5: m4
+Only in coova-chilli-1.2.5: Makefile.in
+Only in coova-chilli-1.2.5/miniportal: Makefile.in
+Only in coova-chilli-1.2.5: missing
+Only in coova-chilli-r394: scripts
+Only in coova-chilli-r394/src: ifscan.c
+Only in coova-chilli-r394/src: main-rtmon.c
+Only in coova-chilli-1.2.5/src: Makefile.in
+Only in coova-chilli-r394/src: msgstat.c
+Only in coova-chilli-r394/src: run_memdebug
+Only in coova-chilli-r394/src: test-radius.c
+Only in coova-chilli-r394: stamp-h1
+Only in coova-chilli-r394: version
+Only in coova-chilli-1.2.5/www: Makefile.in
+</PRE>
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001558.html">[Chilli] chilli-1.2.5 sigsegv at dns.c:102
+</A></li>
+	<LI>Next message: <A HREF="001560.html">[Chilli] Libbstring installation
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1559">[ date ]</a>
+              <a href="thread.html#1559">[ thread ]</a>
+              <a href="subject.html#1559">[ subject ]</a>
+              <a href="author.html#1559">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

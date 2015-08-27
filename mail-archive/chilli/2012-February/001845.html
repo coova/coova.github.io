@@ -1,0 +1,360 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] CoovaChilli 1.2.9 &amp; AnyIP
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20CoovaChilli%201.2.9%20%26%20AnyIP&In-Reply-To=%3C4F34E926.9020707%40gajba.net%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001844.html">
+   <LINK REL="Next"  HREF="001846.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] CoovaChilli 1.2.9 &amp; AnyIP</H1>
+    <B>Bojan Pogacar</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20CoovaChilli%201.2.9%20%26%20AnyIP&In-Reply-To=%3C4F34E926.9020707%40gajba.net%3E"
+       TITLE="[Chilli] CoovaChilli 1.2.9 &amp; AnyIP">bojan at gajba.net
+       </A><BR>
+    <I>Fri Feb 10 09:53:42 UTC 2012</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001844.html">[Chilli] CoovaChilli 1.2.9 &amp; AnyIP
+</A></li>
+        <LI>Next message: <A HREF="001846.html">[Chilli] Segfault Chilli 1.2.9
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1845">[ date ]</a>
+              <a href="thread.html#1845">[ thread ]</a>
+              <a href="subject.html#1845">[ subject ]</a>
+              <a href="author.html#1845">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hello!
+
+The problem since 1.2.5 is only that web page for login don't load for 
+users that connect to anyip coova chilli and use DHCP (if they have 
+static IP login page shows up and everything is workign fine). Bellow is 
+my wireshark analysis that I posted to the list on 4th of February:
+
+------------
+Hello!
+
+I am still trying to fix anyip feature on my Chilli. I've analized TCP 
+stream when opening captive portal web page and I get:
+
+592    117.787866    10.9.0.4    10.9.0.1    TCP    66    49713 &gt; http 
+[SYN] Seq=0 Win=8192 Len=0 MSS=1460 WS=256 SACK_PERM=1
+593    117.789301    10.9.0.1    10.9.0.4    TCP    66    http &gt; 49713 
+[SYN, ACK] Seq=0 Ack=1 Win=14600 Len=0 MSS=1460 SACK_PERM=1 WS=256
+594    117.789413    10.9.0.4    10.9.0.1    TCP    54 49713 &gt; http 
+[ACK] Seq=1 Ack=1 Win=65536 Len=0
+595    117.789514    10.9.0.1    10.9.0.4    TCP    66    [TCP Previous 
+segment lost] http &gt; 49713 [SYN, ACK] Seq=1237032389 Ack=1 Win=14600 
+Len=0 MSS=1460 SACK_PERM=1 WS=256
+596    117.789533    10.9.0.4    10.9.0.1    TCP    54    [TCP Dup ACK 
+594#1] 49713 &gt; http [ACK] Seq=1 Ack=1 Win=65536 Len=0
+597    117.790578    10.9.0.1    10.9.0.4    TCP    60    http &gt; 49713 
+[RST] Seq=1 Win=0 Len=0
+598    117.790719    10.9.0.1    10.9.0.4    TCP    60    http &gt; 49713 
+[RST] Seq=1 Win=0 Len=0
+
+10.9.0.4 is client IP
+10.9.0.1 is chilli server
+
+I can SSH from client to server without problems, only web pages on 
+10.9.0.1 don't work.
+
+Any idea, why I get &quot;TCP Dup ACK&quot; and then RST ? What am I missing. Any 
+idea?
+
+Could it be realted to this (duplicate entry in Unit 0 and Unit 1), when 
+I execute chilli_query listippool
+
+ &gt; Unit 0 : -inuse- : 10.9.0.2 : mac=02-01-01-05-01-01 ip=10.9.0.2 age=1
+ &gt; Unit 1 : -inuse- : 10.9.0.3 : mac=02-01-01-05-01-01 ip=10.9.0.2 age=1
+
+
+Problem exists only if I enable anyip feature and if I use DHCP on my 
+client. When I use static IP (anyip) on client, it works OK.
+
+
+Thanks, Bye
+
+
+Dne 10.2.2012 9:52, pi&#353;e David Bird:
+&gt;<i> Hi,
+</I>&gt;<i>
+</I>&gt;<i> It has always been the case that statip is required for anyip.
+</I>&gt;<i> Internally, chilli has allocated 'slots' for sessions based on the dynip
+</I>&gt;<i> and statip ranges. The dynip, of course, is where DHCP addresses are
+</I>&gt;<i> pooled (in layer3 mode, this is just the slots for the in-range
+</I>&gt;<i> sessions, there is no DHCP allocation). Static and anyip take a slot out
+</I>&gt;<i> of the statip pool (even if the IP isn't in it's statip range). In the
+</I>&gt;<i> case of natanyip, in addition to holding a slot in the static pool, an
+</I>&gt;<i> NAT IP is reserved out of the dynip and there is a one-to-one NATing.
+</I>&gt;<i>
+</I>&gt;<i> Here is a working example (both clients not having problems) and the
+</I>&gt;<i> output of chilli_query listippool:
+</I>&gt;<i>
+</I>&gt;<i> DHCP lease time 600 sec, grace period 60 sec
+</I>&gt;<i> First available dynamic 2 Last 252
+</I>&gt;<i> First available static 254 Last 508
+</I>&gt;<i> List size 509
+</I>&gt;<i> -- Dynamic Pool
+</I>&gt;<i> ------------------------------------------------------------
+</I>&gt;<i> Unit   0 : -inuse- :        10.1.0.2 : mac=B8-FF-61-XX-XX-XX
+</I>&gt;<i> ip=11.11.11.11 age=172
+</I>&gt;<i> Unit   1 : -inuse- :        10.1.0.3 : mac=78-D6-F0-XX-XX-XX ip=10.1.0.3
+</I>&gt;<i> age=0
+</I>&gt;<i> Unit   2 :  -1/  3 :        10.1.0.4 :
+</I>&gt;<i> Unit   3 :   2/  4 :        10.1.0.5 :
+</I>&gt;<i> Unit   4 :   3/  5 :        10.1.0.6 :
+</I>&gt;<i>
+</I>&gt;<i> ...
+</I>&gt;<i> -- Static Pool
+</I>&gt;<i> ------------------------------------------------------------
+</I>&gt;<i> Unit 253 : -inuse- :     11.11.11.11 : static mac=B8-FF-61-XX-XX-XX
+</I>&gt;<i> ip=11.11.11.11 age=172
+</I>&gt;<i> Unit 254 :  -1/255 :         0.0.0.0 : static
+</I>&gt;<i> Unit 255 : 254/256 :         0.0.0.0 : static
+</I>&gt;<i> ...
+</I>&gt;<i> Dynamic address: free 251, avail 251, used 2, err 0, sum 253/253
+</I>&gt;<i> Static address: free 255, avail 255, used 1, err 0, sum 256/256
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> On Fri, 2012-02-10 at 18:46 +1100, Robert White wrote:
+</I>&gt;&gt;<i> Hi David,
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> We've been using anyip WITHOUT natanyip.
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> The setup we are trying to achieve is as follows, perhaps you could
+</I>&gt;&gt;<i> comment if we're going about this the right way:
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> We have a network where people connect and get an IP via DHCP - all
+</I>&gt;&gt;<i> works well.
+</I>&gt;&gt;<i> On the same network there are people who connect and have a static IP
+</I>&gt;&gt;<i> - anyip is turned on.  Chilli log shows them getting assigned a static
+</I>&gt;&gt;<i> IP but they are never served the captive portal
+</I>&gt;&gt;<i> On the same network there are people who have DHCP turned on and we
+</I>&gt;&gt;<i> are trying to set their IP via RADIUS attributes.  This has two
+</I>&gt;&gt;<i> outcomes depending on whether or not we set HS_STATIP.  If we dont set
+</I>&gt;&gt;<i> it then chilli complains it is unable to assign a static ip.  If we
+</I>&gt;&gt;<i> set HS_STATIP to the subnet that RADIUS is trying to assign an IP from
+</I>&gt;&gt;<i> then the RADIUS attribute for the IP address is assigned properly but
+</I>&gt;&gt;<i> the Subnet mask and DNS server attributes are not.  If someone with a
+</I>&gt;&gt;<i> static IP tries to connect then chilli will seg fault.
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> David, could you clarify the use of HS_DYNIP and HS_STATIP.  If they
+</I>&gt;&gt;<i> are hashed out will anyip work?  We've never used natanyip - does this
+</I>&gt;&gt;<i> NAT a client static IP with an IP from the HS_DYNIP pool?
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> If you could outline the best way to achieve our scenario above we can
+</I>&gt;&gt;<i> do some more testing and email through some debug info.
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> Thanks,
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> Rob White
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> On 10 February 2012 16:36, David Bird&lt;<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">david at coova.com</A>&gt;  wrote:
+</I>&gt;&gt;<i>          How are you using anyip (with natanyip?) And what test are you
+</I>&gt;&gt;<i>          doing that is failing?
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i>          Robert White&lt;<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">rwhite at globalgossip.net</A>&gt;  wrote:
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i>          &gt;Bojan,
+</I>&gt;&gt;<i>          &gt;
+</I>&gt;&gt;<i>          &gt;Did you have any success getting AnyIP feature working?
+</I>&gt;&gt;<i>          &gt;
+</I>&gt;&gt;<i>          &gt;I can confirm it's not working for me in 1.2.8 or 1.2.9.
+</I>&gt;&gt;<i>          &gt;
+</I>&gt;&gt;<i>          &gt;Thanks,
+</I>&gt;&gt;<i>          &gt;
+</I>&gt;&gt;<i>          &gt;Rob
+</I>&gt;&gt;<i>          &gt;
+</I>&gt;&gt;<i>          &gt;On 13 January 2012 23:22, Bojan Pogacar&lt;<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">bojan at gajba.net</A>&gt;
+</I>&gt;&gt;<i>          wrote:
+</I>&gt;&gt;<i>          &gt;
+</I>&gt;&gt;<i>          &gt;&gt;  David, did you have time to take a look at my results?
+</I>&gt;&gt;<i>          &gt;&gt;
+</I>&gt;&gt;<i>          &gt;&gt;  Thank you very much for your help.
+</I>&gt;&gt;<i>          &gt;&gt;
+</I>&gt;&gt;<i>          &gt;&gt;
+</I>&gt;&gt;<i>          &gt;&gt;  Bye
+</I>&gt;&gt;<i>          &gt;&gt;
+</I>&gt;&gt;<i>          &gt;&gt;
+</I>&gt;&gt;<i>          &gt;&gt;
+</I>&gt;&gt;<i>          &gt;&gt;  Dne 11.1.2012 10:29, pi&#353;e Bojan Pogacar:
+</I>&gt;&gt;<i>          &gt;&gt;
+</I>&gt;&gt;<i>          &gt;&gt;&gt;  On chilli 1.2.9 I get:
+</I>&gt;&gt;<i>          &gt;&gt;&gt;
+</I>&gt;&gt;<i>          &gt;&gt;&gt;  Unit 0 : -inuse- : 10.9.0.2 : mac=02-01-01-05-01-01
+</I>&gt;&gt;<i>          ip=10.9.0.2 age=1
+</I>&gt;&gt;<i>          &gt;&gt;&gt;  Unit 1 : -inuse- : 10.9.0.3 : mac=02-01-01-05-01-01
+</I>&gt;&gt;<i>          ip=10.9.0.2 age=1
+</I>&gt;&gt;<i>          &gt;&gt;&gt;  Unit 2 : -1/ 3 : 10.9.0.4 :
+</I>&gt;&gt;<i>          &gt;&gt;&gt;  Unit 3 : 2/ 4 : 10.9.0.5 :
+</I>&gt;&gt;<i>          &gt;&gt;&gt;  Unit 4 : 3/ 5 : 10.9.0.6 :
+</I>&gt;&gt;<i>          &gt;&gt;&gt;  Unit 5 : 4/ 6 : 10.9.0.7 :
+</I>&gt;&gt;<i>          &gt;&gt;&gt;  etc, ..
+</I>&gt;&gt;<i>          &gt;&gt;&gt;
+</I>&gt;&gt;<i>          &gt;&gt;&gt;  On chilli 1.2.5 I get:
+</I>&gt;&gt;<i>          &gt;&gt;&gt;
+</I>&gt;&gt;<i>          &gt;&gt;&gt;  Unit 0 : -inuse- : 10.9.0.2 : mac=02-01-01-05-01-01
+</I>&gt;&gt;<i>          ip=10.9.0.2 age=4
+</I>&gt;&gt;<i>          &gt;&gt;&gt;  Unit 1 : -1/ 2 : 10.9.0.3 :
+</I>&gt;&gt;<i>          &gt;&gt;&gt;  Unit 2 : 1/ 3 : 10.9.0.4 :
+</I>&gt;&gt;<i>          &gt;&gt;&gt;  Unit 3 : 2/ 4 : 10.9.0.5 :
+</I>&gt;&gt;<i>          &gt;&gt;&gt;  Unit 4 : 3/ 5 : 10.9.0.6 :
+</I>&gt;&gt;<i>          &gt;&gt;&gt;  Unit 5 : 4/ 6 : 10.9.0.7 :
+</I>&gt;&gt;<i>          &gt;&gt;&gt;  etc, ...
+</I>&gt;&gt;<i>          &gt;&gt;&gt;
+</I>&gt;&gt;<i>          &gt;&gt;&gt;  Is there OK, that on 1.2.9 I get two IPs listed on same
+</I>&gt;&gt;<i>          MAC. Could this
+</I>&gt;&gt;<i>          &gt;&gt;&gt;  be a problem that web server terminates a connection?
+</I>&gt;&gt;<i>          &gt;&gt;&gt;
+</I>&gt;&gt;<i>          &gt;&gt;&gt;  All IPs are fetch through DHCP. Static IPs are working.
+</I>&gt;&gt;<i>          &gt;&gt;&gt;
+</I>&gt;&gt;<i>          &gt;&gt;&gt;  Thanks, Bojan
+</I>&gt;&gt;<i>          &gt;&gt;&gt;
+</I>&gt;&gt;<i>          &gt;&gt;&gt;
+</I>&gt;&gt;<i>          &gt;&gt;&gt;
+</I>&gt;&gt;<i>          &gt;&gt;&gt;  Dne 11.1.2012 10:20, pi&#353;e David Bird:
+</I>&gt;&gt;<i>          &gt;&gt;&gt;
+</I>&gt;&gt;<i>          &gt;&gt;&gt;&gt;  You can get perhaps a bit more info if you do:
+</I>&gt;&gt;<i>          &gt;&gt;&gt;&gt;
+</I>&gt;&gt;<i>          &gt;&gt;&gt;&gt;  chilli_query listippool
+</I>&gt;&gt;<i>          &gt;&gt;&gt;&gt;  DHCP lease time 600 sec, grace period 60 sec
+</I>&gt;&gt;<i>          &gt;&gt;&gt;&gt;  First available dynamic 3 Last 1
+</I>&gt;&gt;<i>          &gt;&gt;&gt;&gt;  First available static 254 Last 508
+</I>&gt;&gt;<i>          &gt;&gt;&gt;&gt;  List size 509
+</I>&gt;&gt;<i>          &gt;&gt;&gt;&gt;  -- Dynamic Pool
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i>          &gt;&gt;&gt;&gt;
+</I>&gt;&gt;<i>          ------------------------------**------------------------------
+</I>&gt;&gt;<i>          &gt;&gt;&gt;&gt;  Unit 0 : -inuse- : 10.1.0.2 : mac=XX-XX-XX-XX-XX-XX
+</I>&gt;&gt;<i>          &gt;&gt;&gt;&gt;  ip=192.0.0.2 age=2
+</I>&gt;&gt;<i>          &gt;&gt;&gt;&gt;  Unit 1 : 252/ -1 : 10.1.0.3 :
+</I>&gt;&gt;<i>          &gt;&gt;&gt;&gt;  Unit 2 : -inuse- : 10.1.0.4 : mac=YY-YY-YY-YY-YY-YY
+</I>&gt;&gt;<i>          ip=10.1.0.4
+</I>&gt;&gt;<i>          &gt;&gt;&gt;&gt;  age=241
+</I>&gt;&gt;<i>          &gt;&gt;&gt;&gt;  ...
+</I>&gt;&gt;<i>          &gt;&gt;&gt;&gt;
+</I>&gt;&gt;<i>          &gt;&gt;&gt;&gt;  above is a 192.0.0.2 anyip static IP being NATed through
+</I>&gt;&gt;<i>          as 10.1.0.2.
+</I>&gt;&gt;<i>          &gt;&gt;&gt;&gt;
+</I>&gt;&gt;<i>          &gt;&gt;&gt;&gt;
+</I>&gt;&gt;<i>          &gt;&gt;&gt;&gt;  On Tue, 2012-01-10 at 23:21 +0100, Bojan Pogacar wrote:
+</I>&gt;&gt;<i>          &gt;&gt;&gt;&gt;
+</I>&gt;&gt;<i>          &gt;&gt;&gt;&gt;&gt;  Hello!
+</I>&gt;&gt;<i>          &gt;&gt;&gt;&gt;&gt;
+</I>&gt;&gt;<i>          &gt;&gt;&gt;&gt;&gt;  I've tested 1.2.9 and it seems that DHCP is faster and
+</I>&gt;&gt;<i>          is running
+</I>&gt;&gt;<i>          &gt;&gt;&gt;&gt;&gt;  very well.
+</I>&gt;&gt;<i>          &gt;&gt;&gt;&gt;&gt;
+</I>&gt;&gt;<i>          &gt;&gt;&gt;&gt;&gt;  I've also tested anyip feature and it still doesn't work
+</I>&gt;&gt;<i>          for me after
+</I>&gt;&gt;<i>          &gt;&gt;&gt;&gt;&gt;  1.2.5 . Can anyone confirm that this feature wasn't
+</I>&gt;&gt;<i>          broken after 1.2.5.
+</I>&gt;&gt;<i>          &gt;&gt;&gt;&gt;&gt;
+</I>&gt;&gt;<i>          &gt;&gt;&gt;&gt;&gt;  I've also described my problem at
+</I>&gt;&gt;<i>          <A HREF="http://coova.org/node/4888">http://coova.org/node/4888</A> . Can
+</I>&gt;&gt;<i>          &gt;&gt;&gt;&gt;&gt;  please anyone please take a look?
+</I>&gt;&gt;<i>          &gt;&gt;&gt;&gt;&gt;
+</I>&gt;&gt;<i>          &gt;&gt;&gt;&gt;&gt;  Thanks David, thanks everyone!
+</I>&gt;&gt;<i>          &gt;&gt;&gt;&gt;&gt;
+</I>&gt;&gt;<i>          &gt;&gt;&gt;&gt;&gt;  Bojan
+</I>&gt;&gt;<i>          &gt;&gt;&gt;&gt;&gt;
+</I>&gt;&gt;<i>          &gt;&gt;&gt;&gt;&gt;
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i>          &gt;&gt;&gt;&gt;&gt;  ______________________________**_________________
+</I>&gt;&gt;<i>          &gt;&gt;&gt;&gt;&gt;  Chilli mailing list
+</I>&gt;&gt;<i>          &gt;&gt;&gt;&gt;&gt;  <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">Chilli at coova.org</A>
+</I>&gt;&gt;<i>          &gt;&gt;&gt;&gt;&gt;
+</I>&gt;&gt;<i>          <A HREF="http://lists.coova.org/cgi-**bin/mailman/listinfo/chilli&lt;http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">http://lists.coova.org/cgi-**bin/mailman/listinfo/chilli&lt;http://lists.coova.org/cgi-bin/mailman/listinfo/chilli</A>&gt;
+</I>&gt;&gt;<i>          &gt;&gt;&gt;&gt;&gt;
+</I>&gt;&gt;<i>          &gt;&gt;&gt;&gt;
+</I>&gt;&gt;<i>          &gt;&gt;&gt;&gt;
+</I>&gt;&gt;<i>          &gt;&gt;&gt;&gt;   ______________________________**_________________
+</I>&gt;&gt;<i>          &gt;&gt;&gt;  Chilli mailing list
+</I>&gt;&gt;<i>          &gt;&gt;&gt;  <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">Chilli at coova.org</A>
+</I>&gt;&gt;<i>          &gt;&gt;&gt;
+</I>&gt;&gt;<i>          <A HREF="http://lists.coova.org/cgi-**bin/mailman/listinfo/chilli&lt;http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">http://lists.coova.org/cgi-**bin/mailman/listinfo/chilli&lt;http://lists.coova.org/cgi-bin/mailman/listinfo/chilli</A>&gt;
+</I>&gt;&gt;<i>          &gt;&gt;&gt;
+</I>&gt;&gt;<i>          &gt;&gt;&gt;   ______________________________**_________________
+</I>&gt;&gt;<i>          &gt;&gt;  Chilli mailing list
+</I>&gt;&gt;<i>          &gt;&gt;  <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">Chilli at coova.org</A>
+</I>&gt;&gt;<i>          &gt;&gt;
+</I>&gt;&gt;<i>          <A HREF="http://lists.coova.org/cgi-**bin/mailman/listinfo/chilli&lt;http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">http://lists.coova.org/cgi-**bin/mailman/listinfo/chilli&lt;http://lists.coova.org/cgi-bin/mailman/listinfo/chilli</A>&gt;
+</I>&gt;&gt;<i>          &gt;&gt;
+</I>&gt;&gt;<i>          &gt;
+</I>&gt;&gt;<i>          &gt;-------------------------------------------------
+</I>&gt;&gt;<i>          &gt;
+</I>&gt;&gt;<i>          &gt;IMPORTANT NOTICE : The information in this email is
+</I>&gt;&gt;<i>          confidential and may also be privileged.
+</I>&gt;&gt;<i>          &gt;If you are not the intended recipient, any use or
+</I>&gt;&gt;<i>          dissemination of the information and any
+</I>&gt;&gt;<i>          &gt;disclosure or copying of this email is unauthorised and
+</I>&gt;&gt;<i>          strictly prohibited. If you have received
+</I>&gt;&gt;<i>          &gt;this email in error, please promptly inform us by reply email
+</I>&gt;&gt;<i>          or telephone. You should also delete
+</I>&gt;&gt;<i>          &gt;this email and destroy any hard copies produced.
+</I>&gt;&gt;<i>          &gt;
+</I>&gt;&gt;<i>          &gt;_______________________________________________
+</I>&gt;&gt;<i>          &gt;Chilli mailing list
+</I>&gt;&gt;<i>          &gt;<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">Chilli at coova.org</A>
+</I>&gt;&gt;<i>          &gt;<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">http://lists.coova.org/cgi-bin/mailman/listinfo/chilli</A>
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> -------------------------------------------------
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> IMPORTANT NOTICE : The information in this email is confidential and may also be privileged.
+</I>&gt;&gt;<i> If you are not the intended recipient, any use or dissemination of the information and any
+</I>&gt;&gt;<i> disclosure or copying of this email is unauthorised and strictly prohibited. If you have received
+</I>&gt;&gt;<i> this email in error, please promptly inform us by reply email or telephone. You should also delete
+</I>&gt;&gt;<i> this email and destroy any hard copies produced.
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> _______________________________________________
+</I>&gt;<i> Chilli mailing list
+</I>&gt;<i> <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">Chilli at coova.org</A>
+</I>&gt;<i> <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">http://lists.coova.org/cgi-bin/mailman/listinfo/chilli</A>
+</I>&gt;<i>
+</I></PRE>
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001844.html">[Chilli] CoovaChilli 1.2.9 &amp; AnyIP
+</A></li>
+	<LI>Next message: <A HREF="001846.html">[Chilli] Segfault Chilli 1.2.9
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1845">[ date ]</a>
+              <a href="thread.html#1845">[ thread ]</a>
+              <a href="subject.html#1845">[ subject ]</a>
+              <a href="author.html#1845">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

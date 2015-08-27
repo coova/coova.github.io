@@ -1,0 +1,2308 @@
+From mihamina at gulfsat.mg  Fri Jul  3 11:51:30 2009
+From: mihamina at gulfsat.mg (Rakotomandimby Mihamina)
+Date: Fri, 03 Jul 2009 14:51:30 +0300
+Subject: options.c line 689
+Message-ID: <4A4DF0C2.2040402@gulfsat.mg>
+
+hi all,
+I compiled a SVN (I just exported 10 minutes ago) release
+There was a syntax error at options.c , line 698
+
+In the "for(...)" , separators are "," where they should be ";".
+
+-- 
+Architecte Informatique Gulfsat/Blueline:
+Administration Syst?me, Recherche et D?veloppement
+Mob: +261 33 11 207 36
+Penser ? l'environnement avant d'imprimer ce message
+
+
+From cyrill.karczewski at sls.aphp.fr  Mon Jul  6 08:45:30 2009
+From: cyrill.karczewski at sls.aphp.fr (karczewski cyrill)
+Date: Mon, 06 Jul 2009 10:45:30 +0200
+Subject: Cisco WLAN controller 4400 and dhcp relay
+Message-ID: <650911ec69ba3efd.4a51d5ca@aphp.fr>
+
+Hello everyone!! I hope you are fine!!
+
+I have a problem with coova-chilli 1.0.13 and i will be so gratefull for anyone find a solution.
+
+I use a cisco WLAN controller 4400 with vlans configured. in order to transmit dhcp requests in that vlan, cisco has a dhcp relay.
+
+the problem is that before transmit dhcp requests to chilli, the cisco controller does an ARP request to chilli.
+
+Chilli reply, but the cisco controller doesn't like this answer.
+
+In fact, when chilli reply, in the ARP target address field, chilli put 0.0.0.0 instead of the cisco controller ip address. It send the ARP reply in broadcast mode.
+
+So, the cisco controller send an ARP request again and again...
+
+here is the cisco request:
+
+http://picasaweb.google.com/cyrill51/Chillispot#5355257375354395602
+
+here is the reply
+
+http://picasaweb.google.com/cyrill51/Chillispot#5355257377945980914
+
+Anyone has an idea to correct this in chilli or in the cisco controller.
+
+thank you to all of you!!
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: cyrill.karczewski.vcf
+Type: text/x-vcard
+Size: 247 bytes
+Desc: Card for karczewski cyrill <cyrill.karczewski at sls.aphp.fr>
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20090706/4637c05f/attachment.vcf>
+
+From liske at ibh.de  Mon Jul  6 09:38:02 2009
+From: liske at ibh.de (Thomas Liske)
+Date: Mon, 06 Jul 2009 11:38:02 +0200
+Subject: Cisco WLAN controller 4400 and dhcp relay
+In-Reply-To: <650911ec69ba3efd.4a51d5ca@aphp.fr>
+References: <650911ec69ba3efd.4a51d5ca@aphp.fr>
+Message-ID: <4A51C5FA.6030000@ibh.de>
+
+Hi,
+
+karczewski cyrill wrote:
+> Hello everyone!! I hope you are fine!!
+> 
+> I have a problem with coova-chilli 1.0.13 and i will be so gratefull for anyone find a solution.
+> 
+> I use a cisco WLAN controller 4400 with vlans configured. in order to transmit dhcp requests in that vlan, cisco has a dhcp relay.
+> 
+> the problem is that before transmit dhcp requests to chilli, the cisco controller does an ARP request to chilli.
+> 
+> Chilli reply, but the cisco controller doesn't like this answer.
+> 
+> In fact, when chilli reply, in the ARP target address field, chilli put 0.0.0.0 instead of the cisco controller ip address. It send the ARP reply in broadcast mode.
+> 
+> So, the cisco controller send an ARP request again and again...
+> 
+> here is the cisco request:
+> 
+> http://picasaweb.google.com/cyrill51/Chillispot#5355257375354395602
+> 
+> here is the reply
+> 
+> http://picasaweb.google.com/cyrill51/Chillispot#5355257377945980914
+> 
+> Anyone has an idea to correct this in chilli or in the cisco controller.
+> 
+
+it seems to be an issue on the WLC implementation. According to RFC826 
+the WLC should accept the arp reply with an zero target address:
+
+
+==============================[RFC826]==============================
+?Do I have the hardware type in ar$hrd?
+Yes: (almost definitely)
+   [optionally check the hardware length ar$hln]
+   ?Do I speak the protocol in ar$pro?
+   Yes:
+     [optionally check the protocol length ar$pln]
+     Merge_flag := false
+     If the pair <protocol type, sender protocol address> is
+         already in my translation table, update the sender
+	hardware address field of the entry with the new
+	information in the packet and set Merge_flag to true.
+     ?Am I the target protocol address?
+     Yes:
+       If Merge_flag is false, add the triplet <protocol type,
+           sender protocol address, sender hardware address> to
+	  the translation table.
+       ?Is the opcode ares_op$REQUEST?  (NOW look at the opcode!!)
+       Yes:
+	Swap hardware and protocol fields, putting the local
+	    hardware and protocol addresses in the sender fields.
+	Set the ar$op field to ares_op$REPLY
+	Send the packet to the (new) target hardware address on
+	    the same hardware on which the request was received.
+==============================[RFC826]==============================
+
+There are no checks on the target address for ARP replies. The arp reply 
+is btw not send as a broadcast, there is the WLC's ARP address specified 
+as the destination address in the ethernet header.
+
+I'd just checked Linux's implementation on sending ARP replies, it sets 
+the target IP address to the original request source address. Maybe it 
+should be fixed in cc to perform as other common ARP implementations 
+perform.
+
+
+Regards,
+Thomas
+
+-- 
+support at ibh.de                              Tel. +49 351 477 77 30
+www.ibh.de                                  Fax  +49 351 477 77 39
+
+-----------------------------------------------------------------------
+Dipl.-Ing. Thomas Liske
+Netzwerk- und System-Design
+
+
+IBH IT-Service GmbH                         Amtsgericht Dresden
+Gostritzer Str. 61-63                       HRB 13626
+D-01217 Dresden                             GF: Prof. Dr. Thomas Horn
+Germany                                     VAT DE182302907
+-----------------------------------------------------------------------
+Ihr Partner f?r: LAN, WAN IP-Quality, Security, VoIP, SAN, Backup, USV
+-----------------------------------------------------------------------
+        professioneller IT-Service - kompetent und zuverl?ssig
+-----------------------------------------------------------------------
+
+
+From wichert at wiggy.net  Mon Jul  6 11:45:30 2009
+From: wichert at wiggy.net (Wichert Akkerman)
+Date: Mon, 06 Jul 2009 13:45:30 +0200
+Subject: trunk status?
+Message-ID: <4A51E3DA.5080703@wiggy.net>
+
+I would like to deploy a chilli setup this week, including WISPr 
+support. The current release has a small bug in the handling of the 
+LoginURL element, which was fixed back in May in subversion. I'm 
+wondering what the best codebase to use is: the last (1.0.13) release 
+with that changeset backported, or current trunk?
+
+Wichert.
+
+
+
+From wlan at mac.com  Mon Jul  6 17:36:05 2009
+From: wlan at mac.com (wlanmac)
+Date: Mon, 06 Jul 2009 19:36:05 +0200
+Subject: trunk status?
+In-Reply-To: <4A51E3DA.5080703@wiggy.net>
+References: <4A51E3DA.5080703@wiggy.net>
+Message-ID: <1246901765.8091.26.camel@david-laptop>
+
+The trunk will be updated soon with major changes as we gear up for
+1.0.14. Also, the mailing list will likely change to be run by different
+software here soon too, fyi. 
+
+David
+
+
+On Mon, 2009-07-06 at 13:45 +0200, Wichert Akkerman wrote:
+> I would like to deploy a chilli setup this week, including WISPr 
+> support. The current release has a small bug in the handling of the 
+> LoginURL element, which was fixed back in May in subversion. I'm 
+> wondering what the best codebase to use is: the last (1.0.13) release 
+> with that changeset backported, or current trunk?
+> 
+> Wichert.
+> 
+> 
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+> 
+
+
+
+From wlan at mac.com  Mon Jul  6 17:40:47 2009
+From: wlan at mac.com (wlanmac)
+Date: Mon, 06 Jul 2009 19:40:47 +0200
+Subject: Cisco WLAN controller 4400 and dhcp relay
+In-Reply-To: <4A51C5FA.6030000@ibh.de>
+References: <650911ec69ba3efd.4a51d5ca@aphp.fr> <4A51C5FA.6030000@ibh.de>
+Message-ID: <1246902047.8091.29.camel@david-laptop>
+
+> There are no checks on the target address for ARP replies. The arp reply 
+> is btw not send as a broadcast, there is the WLC's ARP address specified 
+> as the destination address in the ethernet header.
+> 
+> I'd just checked Linux's implementation on sending ARP replies, it sets 
+> the target IP address to the original request source address. Maybe it 
+> should be fixed in cc to perform as other common ARP implementations 
+> perform.
+
+Easy enough... care to create a patch?! :)  If not, I'll try to get it
+in there before releasing 1.0.14. 
+
+David
+
+
+
+From cyrill.karczewski at sls.aphp.fr  Tue Jul  7 09:16:03 2009
+From: cyrill.karczewski at sls.aphp.fr (karczewski cyrill)
+Date: Tue, 07 Jul 2009 11:16:03 +0200
+Subject: Cisco WLAN controller 4400 and dhcp relay
+In-Reply-To: <1246902047.8091.29.camel@david-laptop>
+References: <650911ec69ba3efd.4a51d5ca@aphp.fr> <4A51C5FA.6030000@ibh.de>
+ <1246902047.8091.29.camel@david-laptop>
+Message-ID: <2549be1020d8028.4a532e73@aphp.fr>
+
+Hi everyone,
+
+so, I have resolved my problem with my cisco WLAN controller 4400 and his famous dhcp relay.
+
+In order to my cisco understand where chilli is, I had a command in the chilli crontab which is executed every minutes.
+
+In fact, Instead of my cisco controller ask me who chilli is, Chilli ask him before who cisco is.
+
+the command is: arping -b -c 2 -I eth1 -s 192.168.172.1(chilli) 192.168.172.2(cisco)
+
+then, cisco controller had chilli mac adress and ip in his arp table. then, he answers chilli who he is.
+
+When it is done, cisco transmit dhcp requests.
+
+So, I hope that the problem will be resolve in the future chilli 1.0.14, but now we have a solution.
+
+Cyrill KARCZEWSKI
+Service Informatique
+H?pital Saint-Louis
+1 Avenue Claude Vellefaux
+75010 PARIS
+0142499208
+
+----- Message d'origine -----
+De: wlanmac <wlan at mac.com>
+Date: Lundi, Juillet 6, 2009 7:40 pm
+Objet: Re: Cisco WLAN controller 4400 and dhcp relay
+?: chilli at coova.org
+
+
+> > There are no checks on the target address for ARP replies. The arp 
+> reply 
+>  > is btw not send as a broadcast, there is the WLC's ARP address 
+> specified 
+>  > as the destination address in the ethernet header.
+>  > 
+>  > I'd just checked Linux's implementation on sending ARP replies, it 
+> sets 
+>  > the target IP address to the original request source address. Maybe 
+> it 
+>  > should be fixed in cc to perform as other common ARP 
+> implementations 
+>  > perform.
+>  
+>  Easy enough... care to create a patch?! :)  If not, I'll try to get it
+>  in there before releasing 1.0.14. 
+>  
+>  David
+>  
+>  
+>  ---------------------------------------------------------------------
+>  To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+>  For additional commands, e-mail: chilli-help at coova.org
+>  Wiki: http://coova.org/wiki/index.php/CoovaChilli
+>  Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>  
+>  
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: cyrill.karczewski.vcf
+Type: text/x-vcard
+Size: 247 bytes
+Desc: Card for karczewski cyrill <cyrill.karczewski at sls.aphp.fr>
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20090707/dac4625c/attachment.vcf>
+
+From wichert at wiggy.net  Tue Jul  7 14:13:59 2009
+From: wichert at wiggy.net (Wichert Akkerman)
+Date: Tue, 07 Jul 2009 16:13:59 +0200
+Subject: compile error
+Message-ID: <4A535827.8030603@wiggy.net>
+
+Current subversion has a typo, which breaks compilation. The fix is trivial:
+
+Index: src/options.c
+===================================================================
+--- src/options.c       (revision 203)
++++ src/options.c       (working copy)
+@@ -686,7 +686,7 @@
+                    mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
+           }
+
+-         for (i = 0, i < 6, i++)
++         for (i = 0; i < 6; i++)
+             options.macok[options.macoklen][i] = (unsigned char) mac[i];
+
+           options.macoklen++;
+
+
+-- 
+Wichert Akkerman <wichert at wiggy.net>   It is simple to make things.
+http://www.wiggy.net/                  It is hard to make things simple.
+
+
+From wichert at wiggy.net  Tue Jul  7 15:48:41 2009
+From: wichert at wiggy.net (Wichert Akkerman)
+Date: Tue, 07 Jul 2009 17:48:41 +0200
+Subject: sessionid parameter for chilli_query authorize does not work?
+Message-ID: <4A536E59.3040805@wiggy.net>
+
+With current subversion trunk: If I use the sessionid parameter with the 
+chilli_query authorize command nothing seems to happen: no state change 
+happens, and no warning or error is given either.
+
+Wichert.
+
+-- 
+Wichert Akkerman<wichert at wiggy.net>    It is simple to make things.
+http://www.wiggy.net/                  It is hard to make things simple.
+
+
+
+From wichert at wiggy.net  Tue Jul  7 16:07:39 2009
+From: wichert at wiggy.net (Wichert Akkerman)
+Date: Tue, 07 Jul 2009 18:07:39 +0200
+Subject: iptables state file naming
+Message-ID: <4A5372CB.40806@wiggy.net>
+
+Currently the up.sh and down.sh scripts always store the netfilter
+state in /var/run/chilli.iptables . This is not very practical if you 
+need to run multiple chilli instances on the same machine. I was 
+wondering if it makes sense to change use the DHCPIF name in the 
+filename as well, to prevent any conflicts?
+
+Wichert.
+
+-- 
+Wichert Akkerman <wichert at wiggy.net>   It is simple to make things.
+http://www.wiggy.net/                  It is hard to make things simple.
+
+
+From wichert at wiggy.net  Tue Jul  7 16:10:22 2009
+From: wichert at wiggy.net (Wichert Akkerman)
+Date: Tue, 07 Jul 2009 18:10:22 +0200
+Subject: Catching logout pages
+Message-ID: <4A53736E.2010608@wiggy.net>
+
+If I point a browser on a client to http://1.1.1.1 the machine is 
+correctly logout. That request is also used as a normal original request 
+and triggers a redirect to the UAM with res=notyet. This makes it 
+impossible to serve a special logout-page from the UAM site, since you 
+can not distinguish an initial request from a logout request.
+
+Is there another way to do that? Or is this a bug, and should that 
+redirect using a different res= parameter?
+
+Wichert.
+
+
+-- 
+Wichert Akkerman <wichert at wiggy.net>   It is simple to make things.
+http://www.wiggy.net/                  It is hard to make things simple.
+
+
+From wichert at wiggy.net  Tue Jul  7 18:19:25 2009
+From: wichert at wiggy.net (Wichert Akkerman)
+Date: Tue, 07 Jul 2009 20:19:25 +0200
+Subject: Manpage changes
+Message-ID: <4A5391AD.3010307@wiggy.net>
+
+I've attached a patch which documents the DHCP gateway options in the 
+chilli.conf manpage and fixes the description for the conup option. I 
+hope it's helpful.
+
+Wichert.
+
+-- 
+Wichert Akkerman <wichert at wiggy.net>   It is simple to make things.
+http://www.wiggy.net/                  It is hard to make things simple.
+-------------- next part --------------
+An embedded and charset-unspecified text was scrubbed...
+Name: manpage.diff
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20090707/016684b6/attachment.txt>
+
+From wlan at mac.com  Tue Jul  7 19:22:18 2009
+From: wlan at mac.com (wlanmac)
+Date: Tue, 07 Jul 2009 21:22:18 +0200
+Subject: Cisco WLAN controller 4400 and dhcp relay
+In-Reply-To: <4A51C5FA.6030000@ibh.de>
+References: <650911ec69ba3efd.4a51d5ca@aphp.fr> <4A51C5FA.6030000@ibh.de>
+Message-ID: <1246994538.19050.4.camel@david-laptop>
+
+I updated the Subversion with the latest changes.. I checked the ARP
+replies... looks like I already fixed it. 
+
+The new chilli does some things a bit differently. You'll find a new
+utility, called chilli_opt, which is the only binary that is linked with
+the configuration parsing (code generated by gengetopt). chilli server
+will launch this to parse out and build up a binary configuration file.
+chilli server will then re-read this configuration file, loading in the
+new configuration without any delays (no more stalling for DNS
+lookups). 
+
+Enjoy,
+David
+
+
+On Mon, 2009-07-06 at 11:38 +0200, Thomas Liske wrote:
+> Hi,
+> 
+> karczewski cyrill wrote:
+> > Hello everyone!! I hope you are fine!!
+> > 
+> > I have a problem with coova-chilli 1.0.13 and i will be so gratefull for anyone find a solution.
+> > 
+> > I use a cisco WLAN controller 4400 with vlans configured. in order to transmit dhcp requests in that vlan, cisco has a dhcp relay.
+> > 
+> > the problem is that before transmit dhcp requests to chilli, the cisco controller does an ARP request to chilli.
+> > 
+> > Chilli reply, but the cisco controller doesn't like this answer.
+> > 
+> > In fact, when chilli reply, in the ARP target address field, chilli put 0.0.0.0 instead of the cisco controller ip address. It send the ARP reply in broadcast mode.
+> > 
+> > So, the cisco controller send an ARP request again and again...
+> > 
+> > here is the cisco request:
+> > 
+> > http://picasaweb.google.com/cyrill51/Chillispot#5355257375354395602
+> > 
+> > here is the reply
+> > 
+> > http://picasaweb.google.com/cyrill51/Chillispot#5355257377945980914
+> > 
+> > Anyone has an idea to correct this in chilli or in the cisco controller.
+> > 
+> 
+> it seems to be an issue on the WLC implementation. According to RFC826 
+> the WLC should accept the arp reply with an zero target address:
+> 
+> 
+> ==============================[RFC826]==============================
+> ?Do I have the hardware type in ar$hrd?
+> Yes: (almost definitely)
+>    [optionally check the hardware length ar$hln]
+>    ?Do I speak the protocol in ar$pro?
+>    Yes:
+>      [optionally check the protocol length ar$pln]
+>      Merge_flag := false
+>      If the pair <protocol type, sender protocol address> is
+>          already in my translation table, update the sender
+> 	hardware address field of the entry with the new
+> 	information in the packet and set Merge_flag to true.
+>      ?Am I the target protocol address?
+>      Yes:
+>        If Merge_flag is false, add the triplet <protocol type,
+>            sender protocol address, sender hardware address> to
+> 	  the translation table.
+>        ?Is the opcode ares_op$REQUEST?  (NOW look at the opcode!!)
+>        Yes:
+> 	Swap hardware and protocol fields, putting the local
+> 	    hardware and protocol addresses in the sender fields.
+> 	Set the ar$op field to ares_op$REPLY
+> 	Send the packet to the (new) target hardware address on
+> 	    the same hardware on which the request was received.
+> ==============================[RFC826]==============================
+> 
+> There are no checks on the target address for ARP replies. The arp reply 
+> is btw not send as a broadcast, there is the WLC's ARP address specified 
+> as the destination address in the ethernet header.
+> 
+> I'd just checked Linux's implementation on sending ARP replies, it sets 
+> the target IP address to the original request source address. Maybe it 
+> should be fixed in cc to perform as other common ARP implementations 
+> perform.
+> 
+> 
+> Regards,
+> Thomas
+> 
+
+
+
+From derekchilli at hssl.ie  Tue Jul  7 22:43:03 2009
+From: derekchilli at hssl.ie (Derek C)
+Date: Tue, 7 Jul 2009 23:43:03 +0100 (IST)
+Subject: [another] transparent proxy alongside Coova Chilli - possible?
+Message-ID: <55300.149.5.32.200.1247006583.squirrel@www.rivertowermail.com>
+
+Hi all,
+
+I'm wondering if its possible to use squid as a transparent proxy while
+also using Coova Chilli as a captive portal?  (on the same openwrt AP).
+
+I'm mostly interesting in using something like squid or peer guardian to
+block porn and other bad sites on a public AP so I guess it'll need to
+transparently redirect port 80 ?  Is there a way to do this without
+messing up Coova Chilli ?
+
+thanks v much
+
+Derek
+
+
+-- 
+Derek C
+In Ireland
+
+
+
+From info at easyhorpak.com  Wed Jul  8 02:30:38 2009
+From: info at easyhorpak.com (EasyHorpak.com)
+Date: Wed, 8 Jul 2009 09:30:38 +0700
+Subject: [another] transparent proxy alongside Coova Chilli - possible?
+References: <55300.149.5.32.200.1247006583.squirrel@www.rivertowermail.com>
+Message-ID: <002f01c9ff74$173183e0$07b6a8c0@chuan>
+
+$IPTABLES -t nat -A PREROUTING -i tun0 -p tcp -m tcp --dport 80 -j 
+REDIRECT --to-ports 3128
+
+
+??? ????????
+Chuan Chudabut
+66-081-7499093, 66-02-691-6382
+============================================================================================================
+http://www.EasyZoneCorp.net - EasyZone Radius Billing 5.0, EasyZone PPPoE
+Billing 2.5, EasyZone Hotspot Billing 2.7, EasyZone VPN Billing 1.0,
+EasyZone File Server
+
+----- Original Message ----- 
+From: "Derek C" <derekchilli at hssl.ie>
+To: <chilli at coova.org>
+Sent: Wednesday, July 08, 2009 5:43 AM
+Subject: [another] transparent proxy alongside Coova Chilli - possible?
+
+
+> Hi all,
+>
+> I'm wondering if its possible to use squid as a transparent proxy while
+> also using Coova Chilli as a captive portal?  (on the same openwrt AP).
+>
+> I'm mostly interesting in using something like squid or peer guardian to
+> block porn and other bad sites on a public AP so I guess it'll need to
+> transparently redirect port 80 ?  Is there a way to do this without
+> messing up Coova Chilli ?
+>
+> thanks v much
+>
+> Derek
+>
+>
+> -- 
+> Derek C
+> In Ireland
+>
+>
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>
+> 
+
+
+
+From derekchilli at hssl.ie  Wed Jul  8 08:17:00 2009
+From: derekchilli at hssl.ie (Derek C)
+Date: Wed, 8 Jul 2009 09:17:00 +0100 (IST)
+Subject: [another] transparent proxy alongside Coova Chilli - possible?
+In-Reply-To: <002f01c9ff74$173183e0$07b6a8c0@chuan>
+References: <55300.149.5.32.200.1247006583.squirrel@www.rivertowermail.com>
+    <002f01c9ff74$173183e0$07b6a8c0@chuan>
+Message-ID: <58629.149.5.32.200.1247041020.squirrel@www.rivertowermail.com>
+
+
+On Wed, July 8, 2009 3:30 am, EasyHorpak.com wrote:
+> $IPTABLES -t nat -A PREROUTING -i tun0 -p tcp -m tcp --dport 80 -j
+> REDIRECT --to-ports 3128
+
+Hi Chuan,
+
+Yes - this is what I'd do normally as well.  But would there not be an
+issues with this when done in conjunction with Coova Chilli - would Coova
+Chilli need to ALSO redirect port 80 accesses for the splash page ?
+
+thanks,
+
+Derek
+
+
+
+
+From cyrill.karczewski at sls.aphp.fr  Wed Jul  8 08:32:46 2009
+From: cyrill.karczewski at sls.aphp.fr (karczewski cyrill)
+Date: Wed, 08 Jul 2009 10:32:46 +0200
+Subject: Cisco WLAN controller 4400 and dhcp relay
+In-Reply-To: <1246994538.19050.4.camel@david-laptop>
+References: <650911ec69ba3efd.4a51d5ca@aphp.fr> <4A51C5FA.6030000@ibh.de>
+ <1246994538.19050.4.camel@david-laptop>
+Message-ID: <3d1612f61ccf10ea.4a5475ce@aphp.fr>
+
+Hi!!!
+You are a master DAVID!!
+
+Where could i find this version?
+
+Thank you very much.
+
+Cyrill KARCZEWSKI
+Service Informatique
+H?pital Saint-Louis
+1 Avenue Claude Vellefaux
+75010 PARIS
+0142499208
+
+----- Message d'origine -----
+De: wlanmac <wlan at mac.com>
+Date: Mardi, Juillet 7, 2009 9:22 pm
+Objet: Re: Cisco WLAN controller 4400 and dhcp relay
+?: chilli at coova.org
+
+
+> I updated the Subversion with the latest changes.. I checked the ARP
+> replies... looks like I already fixed it. 
+> 
+> The new chilli does some things a bit differently. You'll find a new
+> utility, called chilli_opt, which is the only binary that is linked with
+> the configuration parsing (code generated by gengetopt). chilli server
+> will launch this to parse out and build up a binary configuration file.
+> chilli server will then re-read this configuration file, loading in the
+> new configuration without any delays (no more stalling for DNS
+> lookups). 
+> 
+> Enjoy,
+> David
+> 
+> 
+> On Mon, 2009-07-06 at 11:38 +0200, Thomas Liske wrote:
+> > Hi,
+> > 
+> > karczewski cyrill wrote:
+> > > Hello everyone!! I hope you are fine!!
+> > > 
+> > > I have a problem with coova-chilli 1.0.13 and i will be so 
+> gratefull for anyone find a solution.
+> > > 
+> > > I use a cisco WLAN controller 4400 with vlans configured. in order 
+> to transmit dhcp requests in that vlan, cisco has a dhcp relay.
+> > > 
+> > > the problem is that before transmit dhcp requests to chilli, the 
+> cisco controller does an ARP request to chilli.
+> > > 
+> > > Chilli reply, but the cisco controller doesn't like this answer.
+> > > 
+> > > In fact, when chilli reply, in the ARP target address field, 
+> chilli put 0.0.0.0 instead of the cisco controller ip address. It send 
+> the ARP reply in broadcast mode.
+> > > 
+> > > So, the cisco controller send an ARP request again and again...
+> > > 
+> > > here is the cisco request:
+> > > 
+> > > http://picasaweb.google.com/cyrill51/Chillispot#5355257375354395602
+> > > 
+> > > here is the reply
+> > > 
+> > > http://picasaweb.google.com/cyrill51/Chillispot#5355257377945980914
+> > > 
+> > > Anyone has an idea to correct this in chilli or in the cisco controller.
+> > > 
+> > 
+> > it seems to be an issue on the WLC implementation. According to 
+> RFC826 
+> > the WLC should accept the arp reply with an zero target address:
+> > 
+> > 
+> > ==============================[RFC826]==============================
+> > ?Do I have the hardware type in ar$hrd?
+> > Yes: (almost definitely)
+> >    [optionally check the hardware length ar$hln]
+> >    ?Do I speak the protocol in ar$pro?
+> >    Yes:
+> >      [optionally check the protocol length ar$pln]
+> >      Merge_flag := false
+> >      If the pair <protocol type, sender protocol address> is
+> >          already in my translation table, update the sender
+> > 	hardware address field of the entry with the new
+> > 	information in the packet and set Merge_flag to true.
+> >      ?Am I the target protocol address?
+> >      Yes:
+> >        If Merge_flag is false, add the triplet <protocol type,
+> >            sender protocol address, sender hardware address> to
+> >           the translation table.
+> >        ?Is the opcode ares_op$REQUEST?  (NOW look at the opcode!!)
+> >        Yes:
+> > 	Swap hardware and protocol fields, putting the local
+> >             hardware and protocol addresses in the sender fields.
+> > 	Set the ar$op field to ares_op$REPLY
+> > 	Send the packet to the (new) target hardware address on
+> >             the same hardware on which the request was received.
+> > ==============================[RFC826]==============================
+> > 
+> > There are no checks on the target address for ARP replies. The arp 
+> reply 
+> > is btw not send as a broadcast, there is the WLC's ARP address 
+> specified 
+> > as the destination address in the ethernet header.
+> > 
+> > I'd just checked Linux's implementation on sending ARP replies, it 
+> sets 
+> > the target IP address to the original request source address. Maybe 
+> it 
+> > should be fixed in cc to perform as other common ARP implementations 
+> 
+> > perform.
+> > 
+> > 
+> > Regards,
+> > Thomas
+> > 
+> 
+> 
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+> 
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: cyrill.karczewski.vcf
+Type: text/x-vcard
+Size: 247 bytes
+Desc: Card for karczewski cyrill <cyrill.karczewski at sls.aphp.fr>
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20090708/6839ba3f/attachment.vcf>
+
+From info at easyhorpak.com  Wed Jul  8 09:08:20 2009
+From: info at easyhorpak.com (EasyHorpak.com)
+Date: Wed, 8 Jul 2009 16:08:20 +0700
+Subject: [another] transparent proxy alongside Coova Chilli - possible?
+References: <55300.149.5.32.200.1247006583.squirrel@www.rivertowermail.com>    <002f01c9ff74$173183e0$07b6a8c0@chuan> <58629.149.5.32.200.1247041020.squirrel@www.rivertowermail.com>
+Message-ID: <002c01c9ffab$a521b530$0bb6a8c0@chuan>
+
+you can by pass the gateway ip from proxy by
+
+#DROP on Client setup proxy by hand
+$IPTABLES -t nat -A PREROUTING -i tun0 -p tcp -m tcp --dport 3128 --syn -j 
+DROP
+#by pass server ip , i set on 192.168.182.1
+$IPTABLES -t nat -A PREROUTING -i tun0 -p tcp -m tcp -d 192.168.182.1 -j 
+ACCEPT
+
+
+
+??? ????????
+Chuan Chudabut
+66-081-7499093, 66-02-691-6382
+============================================================================================================
+http://www.EasyZoneCorp.net - EasyZone Radius Billing 5.0, EasyZone PPPoE
+Billing 2.5, EasyZone Hotspot Billing 2.7, EasyZone VPN Billing 1.0,
+EasyZone File Server
+
+----- Original Message ----- 
+From: "Derek C" <derekchilli at hssl.ie>
+To: <chilli at coova.org>
+Cc: <chilli at coova.org>
+Sent: Wednesday, July 08, 2009 3:17 PM
+Subject: Re: [another] transparent proxy alongside Coova Chilli - possible?
+
+
+>
+> On Wed, July 8, 2009 3:30 am, EasyHorpak.com wrote:
+>> $IPTABLES -t nat -A PREROUTING -i tun0 -p tcp -m tcp --dport 80 -j
+>> REDIRECT --to-ports 3128
+>
+> Hi Chuan,
+>
+> Yes - this is what I'd do normally as well.  But would there not be an
+> issues with this when done in conjunction with Coova Chilli - would Coova
+> Chilli need to ALSO redirect port 80 accesses for the splash page ?
+>
+> thanks,
+>
+> Derek
+>
+>
+>
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>
+> 
+
+
+
+From wlan at mac.com  Wed Jul  8 09:17:38 2009
+From: wlan at mac.com (wlanmac)
+Date: Wed, 08 Jul 2009 11:17:38 +0200
+Subject: Cisco WLAN controller 4400 and dhcp relay
+In-Reply-To: <3d1612f61ccf10ea.4a5475ce@aphp.fr>
+References: <650911ec69ba3efd.4a51d5ca@aphp.fr> <4A51C5FA.6030000@ibh.de>
+ <1246994538.19050.4.camel@david-laptop> <3d1612f61ccf10ea.4a5475ce@aphp.fr>
+Message-ID: <1247044658.8119.26.camel@david-laptop>
+
+It's in subversion...
+
+http://www.coova.org/CoovaChilli/Developers
+
+
+On Wed, 2009-07-08 at 10:32 +0200, karczewski cyrill wrote:
+> Hi!!!
+> You are a master DAVID!!
+> 
+> Where could i find this version?
+> 
+> Thank you very much.
+> 
+> Cyrill KARCZEWSKI
+> Service Informatique
+> H?pital Saint-Louis
+> 1 Avenue Claude Vellefaux
+> 75010 PARIS
+> 0142499208
+> 
+> ----- Message d'origine -----
+> De: wlanmac <wlan at mac.com>
+> Date: Mardi, Juillet 7, 2009 9:22 pm
+> Objet: Re: Cisco WLAN controller 4400 and dhcp relay
+> ?: chilli at coova.org
+> 
+> 
+> > I updated the Subversion with the latest changes.. I checked the ARP
+> > replies... looks like I already fixed it. 
+> > 
+> > The new chilli does some things a bit differently. You'll find a new
+> > utility, called chilli_opt, which is the only binary that is linked with
+> > the configuration parsing (code generated by gengetopt). chilli server
+> > will launch this to parse out and build up a binary configuration file.
+> > chilli server will then re-read this configuration file, loading in the
+> > new configuration without any delays (no more stalling for DNS
+> > lookups). 
+> > 
+> > Enjoy,
+> > David
+> > 
+> > 
+> > On Mon, 2009-07-06 at 11:38 +0200, Thomas Liske wrote:
+> > > Hi,
+> > > 
+> > > karczewski cyrill wrote:
+> > > > Hello everyone!! I hope you are fine!!
+> > > > 
+> > > > I have a problem with coova-chilli 1.0.13 and i will be so 
+> > gratefull for anyone find a solution.
+> > > > 
+> > > > I use a cisco WLAN controller 4400 with vlans configured. in order 
+> > to transmit dhcp requests in that vlan, cisco has a dhcp relay.
+> > > > 
+> > > > the problem is that before transmit dhcp requests to chilli, the 
+> > cisco controller does an ARP request to chilli.
+> > > > 
+> > > > Chilli reply, but the cisco controller doesn't like this answer.
+> > > > 
+> > > > In fact, when chilli reply, in the ARP target address field, 
+> > chilli put 0.0.0.0 instead of the cisco controller ip address. It send 
+> > the ARP reply in broadcast mode.
+> > > > 
+> > > > So, the cisco controller send an ARP request again and again...
+> > > > 
+> > > > here is the cisco request:
+> > > > 
+> > > > http://picasaweb.google.com/cyrill51/Chillispot#5355257375354395602
+> > > > 
+> > > > here is the reply
+> > > > 
+> > > > http://picasaweb.google.com/cyrill51/Chillispot#5355257377945980914
+> > > > 
+> > > > Anyone has an idea to correct this in chilli or in the cisco controller.
+> > > > 
+> > > 
+> > > it seems to be an issue on the WLC implementation. According to 
+> > RFC826 
+> > > the WLC should accept the arp reply with an zero target address:
+> > > 
+> > > 
+> > > ==============================[RFC826]==============================
+> > > ?Do I have the hardware type in ar$hrd?
+> > > Yes: (almost definitely)
+> > >    [optionally check the hardware length ar$hln]
+> > >    ?Do I speak the protocol in ar$pro?
+> > >    Yes:
+> > >      [optionally check the protocol length ar$pln]
+> > >      Merge_flag := false
+> > >      If the pair <protocol type, sender protocol address> is
+> > >          already in my translation table, update the sender
+> > > 	hardware address field of the entry with the new
+> > > 	information in the packet and set Merge_flag to true.
+> > >      ?Am I the target protocol address?
+> > >      Yes:
+> > >        If Merge_flag is false, add the triplet <protocol type,
+> > >            sender protocol address, sender hardware address> to
+> > >           the translation table.
+> > >        ?Is the opcode ares_op$REQUEST?  (NOW look at the opcode!!)
+> > >        Yes:
+> > > 	Swap hardware and protocol fields, putting the local
+> > >             hardware and protocol addresses in the sender fields.
+> > > 	Set the ar$op field to ares_op$REPLY
+> > > 	Send the packet to the (new) target hardware address on
+> > >             the same hardware on which the request was received.
+> > > ==============================[RFC826]==============================
+> > > 
+> > > There are no checks on the target address for ARP replies. The arp 
+> > reply 
+> > > is btw not send as a broadcast, there is the WLC's ARP address 
+> > specified 
+> > > as the destination address in the ethernet header.
+> > > 
+> > > I'd just checked Linux's implementation on sending ARP replies, it 
+> > sets 
+> > > the target IP address to the original request source address. Maybe 
+> > it 
+> > > should be fixed in cc to perform as other common ARP implementations 
+> > 
+> > > perform.
+> > > 
+> > > 
+> > > Regards,
+> > > Thomas
+> > > 
+> > 
+> > 
+> > ---------------------------------------------------------------------
+> > To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> > For additional commands, e-mail: chilli-help at coova.org
+> > Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> > Forum: http://coova.org/phpBB3/viewforum.php?f=4
+> > 
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+
+
+
+From derekchilli at hssl.ie  Wed Jul  8 18:12:02 2009
+From: derekchilli at hssl.ie (Derek C)
+Date: Wed, 8 Jul 2009 19:12:02 +0100 (IST)
+Subject: [another] transparent proxy alongside Coova Chilli - possible?
+In-Reply-To: <002c01c9ffab$a521b530$0bb6a8c0@chuan>
+References: <55300.149.5.32.200.1247006583.squirrel@www.rivertowermail.com>  
+     <002f01c9ff74$173183e0$07b6a8c0@chuan>
+    <58629.149.5.32.200.1247041020.squirrel@www.rivertowermail.com>
+    <002c01c9ffab$a521b530$0bb6a8c0@chuan>
+Message-ID: <34639.149.5.32.200.1247076722.squirrel@www.rivertowermail.com>
+
+Hi Chuan,
+
+Does Coova Chilli not always need to be able to redirect dst port 80
+requests in order to be able to do captive portal authentication?  If I
+were to redirect port 80 requests would it not mess up Coova Chilli
+operation?
+
+thanks very much,
+
+Derek
+
+On Wed, July 8, 2009 10:08 am, EasyHorpak.com wrote:
+> you can by pass the gateway ip from proxy by
+>
+> #DROP on Client setup proxy by hand
+> $IPTABLES -t nat -A PREROUTING -i tun0 -p tcp -m tcp --dport 3128 --syn -j
+>  DROP
+> #by pass server ip , i set on 192.168.182.1
+> $IPTABLES -t nat -A PREROUTING -i tun0 -p tcp -m tcp -d 192.168.182.1 -j
+> ACCEPT
+
+
+
+
+From info at easyhorpak.com  Thu Jul  9 01:15:50 2009
+From: info at easyhorpak.com (EasyHorpak.com)
+Date: Thu, 9 Jul 2009 08:15:50 +0700
+Subject: [another] transparent proxy alongside Coova Chilli - possible?
+References: <55300.149.5.32.200.1247006583.squirrel@www.rivertowermail.com>       <002f01c9ff74$173183e0$07b6a8c0@chuan>    <58629.149.5.32.200.1247041020.squirrel@www.rivertowermail.com>    <002c01c9ffab$a521b530$0bb6a8c0@chuan> <34639.149.5.32.200.1247076722.squirrel@www.rivertowermail.com>
+Message-ID: <001c01ca0032$cc5ef360$05b6a8c0@chuan>
+
+Try to test . you don't need to use proxy to go captive, cause the server 
+sit beside you.
+
+
+??? ????????
+Chuan Chudabut
+66-081-7499093, 66-02-691-6382
+============================================================================================================
+http://www.EasyZoneCorp.net - EasyZone Radius Billing 5.0, EasyZone PPPoE
+Billing 2.5, EasyZone Hotspot Billing 2.7, EasyZone VPN Billing 1.0,
+EasyZone File Server
+
+----- Original Message ----- 
+From: "Derek C" <derekchilli at hssl.ie>
+To: <chilli at coova.org>
+Cc: <chilli at coova.org>
+Sent: Thursday, July 09, 2009 1:12 AM
+Subject: Re: [another] transparent proxy alongside Coova Chilli - possible?
+
+
+> Hi Chuan,
+>
+> Does Coova Chilli not always need to be able to redirect dst port 80
+> requests in order to be able to do captive portal authentication?  If I
+> were to redirect port 80 requests would it not mess up Coova Chilli
+> operation?
+>
+> thanks very much,
+>
+> Derek
+>
+> On Wed, July 8, 2009 10:08 am, EasyHorpak.com wrote:
+>> you can by pass the gateway ip from proxy by
+>>
+>> #DROP on Client setup proxy by hand
+>> $IPTABLES -t nat -A PREROUTING -i tun0 -p tcp -m tcp --dport 
+>> 3128 --syn -j
+>>  DROP
+>> #by pass server ip , i set on 192.168.182.1
+>> $IPTABLES -t nat -A PREROUTING -i tun0 -p tcp -m tcp -d 192.168.182.1 -j
+>> ACCEPT
+>
+>
+>
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>
+> 
+
+
+
+From cesarsilvaaraujo at gmail.com  Tue Jul 14 01:57:38 2009
+From: cesarsilvaaraujo at gmail.com (=?ISO-8859-1?Q?C=E9sar_Araujo?=)
+Date: Tue, 14 Jul 2009 02:57:38 +0100
+Subject: help mac & port
+Message-ID: <3b8d169a0907131857m64034d08j3ca43939290ffd08@mail.gmail.com>
+
+hello im loving coova, besides the troubles i had to put it to work.
+
+Now i need to know how can i make a certain pc on my network to not have to
+autenticate all the time, (mac auth how?)
+
+and second how do i port forward 12002 to a specific computer that
+previously is autenticated woth mac auth, will i have to port forward also
+on the router? or just the pc is enought?
+
+im runing coova + freeradius + daloradius all in a single pc with 2 mac
+cards and a router (linksys ddwrt 54gl)
+
+
+Thanks in advance :D
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20090714/77e6e536/attachment.htm>
+
+From wichert at wiggy.net  Tue Jul 14 20:54:26 2009
+From: wichert at wiggy.net (Wichert Akkerman)
+Date: Tue, 14 Jul 2009 22:54:26 +0200
+Subject: iPod Touch with IphoneOS 3.0 does not work
+Message-ID: <4A5CF082.8050701@wiggy.net>
+
+I haven't managed to get a network dump for this, but I noticed that my 
+iPod touch does not work svn revision 205. I do get a DHCP lease, but 
+HTTP traffic does not seem to be working normally.
+
+Wichert.
+
+-- 
+Wichert Akkerman <wichert at wiggy.net>   It is simple to make things.
+http://www.wiggy.net/                  It is hard to make things simple.
+
+
+From wlan at mac.com  Wed Jul 15 08:12:20 2009
+From: wlan at mac.com (wlanmac)
+Date: Wed, 15 Jul 2009 10:12:20 +0200
+Subject: iPod Touch with IphoneOS 3.0 does not work
+In-Reply-To: <4A5CF082.8050701@wiggy.net>
+References: <4A5CF082.8050701@wiggy.net>
+Message-ID: <1247645540.7903.35.camel@david-laptop>
+
+I'm using this version of chilli, on open-mesh routers, with an updated
+iPod touch, without problems. A network trace would help diagnose the
+problem. 
+
+Though, I have noticed that the iPod sometimes has issues when it sees
+multiple nodes with the same SSID. For instance, I'll get a DHCP lease
+from one (further) node, and then it seems the iPod switched to talking
+to the closer node, without doing a new DHCP lease. If you release your
+DHCP lease, does it help?
+
+David
+
+On Tue, 2009-07-14 at 22:54 +0200, Wichert Akkerman wrote:
+> I haven't managed to get a network dump for this, but I noticed that my 
+> iPod touch does not work svn revision 205. I do get a DHCP lease, but 
+> HTTP traffic does not seem to be working normally.
+> 
+> Wichert.
+> 
+
+
+
+From wichert at wiggy.net  Wed Jul 15 08:16:23 2009
+From: wichert at wiggy.net (Wichert Akkerman)
+Date: Wed, 15 Jul 2009 10:16:23 +0200
+Subject: iPod Touch with IphoneOS 3.0 does not work
+In-Reply-To: <1247645540.7903.35.camel@david-laptop>
+References: <4A5CF082.8050701@wiggy.net> <1247645540.7903.35.camel@david-laptop>
+Message-ID: <4A5D9057.3010507@wiggy.net>
+
+What would the best network trace be? a tcpdump for the iPod's mac 
+address on the eth interface, or on the tun interface?
+
+In our environment all APs are on the same VLAN, so it is not necessary 
+go get a new DHCP lease.
+
+Wichert.
+
+
+On 7/15/09 10:12 AM, wlanmac wrote:
+> I'm using this version of chilli, on open-mesh routers, with an updated
+> iPod touch, without problems. A network trace would help diagnose the
+> problem.
+>
+> Though, I have noticed that the iPod sometimes has issues when it sees
+> multiple nodes with the same SSID. For instance, I'll get a DHCP lease
+> from one (further) node, and then it seems the iPod switched to talking
+> to the closer node, without doing a new DHCP lease. If you release your
+> DHCP lease, does it help?
+>
+> David
+>
+> On Tue, 2009-07-14 at 22:54 +0200, Wichert Akkerman wrote:
+>> I haven't managed to get a network dump for this, but I noticed that my
+>> iPod touch does not work svn revision 205. I do get a DHCP lease, but
+>> HTTP traffic does not seem to be working normally.
+>>
+>> Wichert.
+>>
+>
+>
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>
+
+
+
+From liske at ibh.de  Wed Jul 15 08:27:20 2009
+From: liske at ibh.de (Thomas Liske)
+Date: Wed, 15 Jul 2009 10:27:20 +0200
+Subject: iPod Touch with IphoneOS 3.0 does not work
+In-Reply-To: <1247645540.7903.35.camel@david-laptop>
+References: <4A5CF082.8050701@wiggy.net> <1247645540.7903.35.camel@david-laptop>
+Message-ID: <4A5D92E8.8020601@ibh.de>
+
+Hi,
+
+wlanmac wrote:
+> I'm using this version of chilli, on open-mesh routers, with an updated
+> iPod touch, without problems. A network trace would help diagnose the
+> problem. 
+> 
+> Though, I have noticed that the iPod sometimes has issues when it sees
+> multiple nodes with the same SSID. For instance, I'll get a DHCP lease
+> from one (further) node, and then it seems the iPod switched to talking
+> to the closer node, without doing a new DHCP lease. If you release your
+> DHCP lease, does it help?
+
+APs with the same SSID build up an ESSID which has to be one big L2 
+broadcast domain. A STA which roams from one BSSID to another in the 
+same ESSID don't need to do a DHCP request - this would break roaming 
+(doing another DHCP request takes much time and if the STA get's an 
+different IP in the new BSSID it would break any L3 connections).
+
+
+Regards,
+Thomas
+
+-- 
+support at ibh.de                              Tel. +49 351 477 77 30
+www.ibh.de                                  Fax  +49 351 477 77 39
+
+-----------------------------------------------------------------------
+Dipl.-Ing. Thomas Liske
+Netzwerk- und System-Design
+
+
+IBH IT-Service GmbH                         Amtsgericht Dresden
+Gostritzer Str. 61-63                       HRB 13626
+D-01217 Dresden                             GF: Prof. Dr. Thomas Horn
+Germany                                     VAT DE182302907
+-----------------------------------------------------------------------
+Ihr Partner f?r: LAN, WAN IP-Quality, Security, VoIP, SAN, Backup, USV
+-----------------------------------------------------------------------
+        professioneller IT-Service - kompetent und zuverl?ssig
+-----------------------------------------------------------------------
+
+
+From wlan at mac.com  Wed Jul 15 08:27:37 2009
+From: wlan at mac.com (wlanmac)
+Date: Wed, 15 Jul 2009 10:27:37 +0200
+Subject: iPod Touch with IphoneOS 3.0 does not work
+In-Reply-To: <4A5D9057.3010507@wiggy.net>
+References: <4A5CF082.8050701@wiggy.net>
+ <1247645540.7903.35.camel@david-laptop> <4A5D9057.3010507@wiggy.net>
+Message-ID: <1247646457.7903.38.camel@david-laptop>
+
+On the Ether ... the interface you are using the the dhcpif. 
+
+You might try the DHCP lease renewal on the iPod. I had noticed it's a
+recommended solution for problems at public hotspot according to Apple. 
+
+David
+
+
+On Wed, 2009-07-15 at 10:16 +0200, Wichert Akkerman wrote:
+> What would the best network trace be? a tcpdump for the iPod's mac 
+> address on the eth interface, or on the tun interface?
+> 
+> In our environment all APs are on the same VLAN, so it is not necessary 
+> go get a new DHCP lease.
+> 
+> Wichert.
+> 
+> 
+> On 7/15/09 10:12 AM, wlanmac wrote:
+> > I'm using this version of chilli, on open-mesh routers, with an updated
+> > iPod touch, without problems. A network trace would help diagnose the
+> > problem.
+> >
+> > Though, I have noticed that the iPod sometimes has issues when it sees
+> > multiple nodes with the same SSID. For instance, I'll get a DHCP lease
+> > from one (further) node, and then it seems the iPod switched to talking
+> > to the closer node, without doing a new DHCP lease. If you release your
+> > DHCP lease, does it help?
+> >
+> > David
+> >
+> > On Tue, 2009-07-14 at 22:54 +0200, Wichert Akkerman wrote:
+> >> I haven't managed to get a network dump for this, but I noticed that my
+> >> iPod touch does not work svn revision 205. I do get a DHCP lease, but
+> >> HTTP traffic does not seem to be working normally.
+> >>
+> >> Wichert.
+> >>
+> >
+> >
+> > ---------------------------------------------------------------------
+> > To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> > For additional commands, e-mail: chilli-help at coova.org
+> > Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> > Forum: http://coova.org/phpBB3/viewforum.php?f=4
+> >
+> 
+> 
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+> 
+
+
+
+From wlan at mac.com  Wed Jul 15 09:39:20 2009
+From: wlan at mac.com (wlanmac)
+Date: Wed, 15 Jul 2009 11:39:20 +0200
+Subject: iPod Touch with IphoneOS 3.0 does not work
+In-Reply-To: <4A5D92E8.8020601@ibh.de>
+References: <4A5CF082.8050701@wiggy.net>
+ <1247645540.7903.35.camel@david-laptop> <4A5D92E8.8020601@ibh.de>
+Message-ID: <1247650760.7903.51.camel@david-laptop>
+
+My guess is that this is all highly device/driver specific. With a
+little testing with the iPod, I'm seeing
+
+- It associated with AP1/BSSID1 and did DHCP, all is fine
+- I walked (almost) out of range and into range of AP2/BSSID2
+- iPod shows full signal bars, but no connectivity in Safari, it has
+same IP assigned by AP1 (I'm using anyip, so that shouldn't matter
+much).
+- Used the app called "WifiTrak" to show signals (and BSSIDs)
+- WiFiTrak shows my target SSID, BSSID2, and that I'm NOT connected. It
+doesn't list BSSID1 at all (though still thinks it is connected to it).
+
+Interestingly, just running WiFiTrak seems to usually cause the problem
+to resolve as I'm guessing it triggers a re-association (and also a new
+DHCP lease request) on the new AP2/BSSID2. It will also resolve if I
+renew the DHCP lease or just wait enough time. So, I'm thinking that the
+iPod isn't exactly behaving like it should. 
+
+David
+
+On Wed, 2009-07-15 at 10:27 +0200, Thomas Liske wrote:
+> Hi,
+> 
+> wlanmac wrote:
+> > I'm using this version of chilli, on open-mesh routers, with an updated
+> > iPod touch, without problems. A network trace would help diagnose the
+> > problem. 
+> > 
+> > Though, I have noticed that the iPod sometimes has issues when it sees
+> > multiple nodes with the same SSID. For instance, I'll get a DHCP lease
+> > from one (further) node, and then it seems the iPod switched to talking
+> > to the closer node, without doing a new DHCP lease. If you release your
+> > DHCP lease, does it help?
+> 
+> APs with the same SSID build up an ESSID which has to be one big L2 
+> broadcast domain. A STA which roams from one BSSID to another in the 
+> same ESSID don't need to do a DHCP request - this would break roaming 
+> (doing another DHCP request takes much time and if the STA get's an 
+> different IP in the new BSSID it would break any L3 connections).
+> 
+> 
+> Regards,
+> Thomas
+> 
+
+
+
+From cesarsilvaaraujo at gmail.com  Wed Jul 15 22:10:20 2009
+From: cesarsilvaaraujo at gmail.com (=?ISO-8859-1?Q?C=E9sar_Araujo?=)
+Date: Wed, 15 Jul 2009 23:10:20 +0100
+Subject: Error on compile svn
+Message-ID: <3b8d169a0907151510o5e6e2ed1k760b90e60a48d2c4@mail.gmail.com>
+
+I have an error when compiling the svn source, i cant bypass this error,
+done in make.
+Another question can i port forward 13000 from internet to a specific pc on
+the hotspot area, can that pc have static ip addres? the pc has mac
+autentication.
+
+Thanks in advance,
+
+
+Log
+root at campingave:~/coova-chilli#    ./configure --prefix=/usr/local
+checking for a BSD-compatible install... /usr/bin/install -c
+checking whether build environment is sane... yes
+checking for a thread-safe mkdir -p... /bin/mkdir -p
+checking for gawk... gawk
+checking whether make sets $(MAKE)... yes
+checking for gcc... gcc
+checking for C compiler default output file name... a.out
+checking whether the C compiler works... yes
+checking whether we are cross compiling... no
+checking for suffix of executables...
+checking for suffix of object files... o
+checking whether we are using the GNU C compiler... yes
+checking whether gcc accepts -g... yes
+checking for gcc option to accept ISO C89... none needed
+checking for style of include used by make... GNU
+checking dependency style of gcc... gcc3
+checking build system type... i686-pc-linux-gnu
+checking host system type... i686-pc-linux-gnu
+checking for a sed that does not truncate output... /bin/sed
+checking for grep that handles long lines and -e... /bin/grep
+checking for egrep... /bin/grep -E
+checking for fgrep... /bin/grep -F
+checking for ld used by gcc... /usr/bin/ld
+checking if the linker (/usr/bin/ld) is GNU ld... yes
+checking for BSD- or MS-compatible name lister (nm)... /usr/bin/nm -B
+checking the name lister (/usr/bin/nm -B) interface... BSD nm
+checking whether ln -s works... yes
+checking the maximum length of command line arguments... 1572864
+checking whether the shell understands some XSI constructs... yes
+checking whether the shell understands "+="... yes
+checking for /usr/bin/ld option to reload object files... -r
+checking for objdump... objdump
+checking how to recognize dependent libraries... pass_all
+checking for ar... ar
+checking for strip... strip
+checking for ranlib... ranlib
+checking command to parse /usr/bin/nm -B output from gcc object... ok
+checking how to run the C preprocessor... gcc -E
+checking for ANSI C header files... yes
+checking for sys/types.h... yes
+checking for sys/stat.h... yes
+checking for stdlib.h... yes
+checking for string.h... yes
+checking for memory.h... yes
+checking for strings.h... yes
+checking for inttypes.h... yes
+checking for stdint.h... yes
+checking for unistd.h... yes
+checking for dlfcn.h... yes
+checking for objdir... .libs
+checking if gcc supports -fno-rtti -fno-exceptions... no
+checking for gcc option to produce PIC... -fPIC -DPIC
+checking if gcc PIC flag -fPIC -DPIC works... yes
+checking if gcc static flag -static works... yes
+checking if gcc supports -c -o file.o... yes
+checking if gcc supports -c -o file.o... (cached) yes
+checking whether the gcc linker (/usr/bin/ld) supports shared libraries...
+yes
+checking whether -lc should be explicitly linked in... no
+checking dynamic linker characteristics... GNU/Linux ld.so
+checking how to hardcode library paths into programs... immediate
+checking whether stripping libraries is possible... yes
+checking if libtool supports shared libraries... yes
+checking whether to build shared libraries... yes
+checking whether to build static libraries... yes
+checking for ANSI C header files... (cached) yes
+checking arpa/inet.h usability... yes
+checking arpa/inet.h presence... yes
+checking for arpa/inet.h... yes
+checking errno.h usability... yes
+checking errno.h presence... yes
+checking for errno.h... yes
+checking fcntl.h usability... yes
+checking fcntl.h presence... yes
+checking for fcntl.h... yes
+checking netdb.h usability... yes
+checking netdb.h presence... yes
+checking for netdb.h... yes
+checking netinet/in.h usability... yes
+checking netinet/in.h presence... yes
+checking for netinet/in.h... yes
+checking for stdint.h... (cached) yes
+checking for stdlib.h... (cached) yes
+checking for string.h... (cached) yes
+checking sys/ioctl.h usability... yes
+checking sys/ioctl.h presence... yes
+checking for sys/ioctl.h... yes
+checking sys/socket.h usability... yes
+checking sys/socket.h presence... yes
+checking for sys/socket.h... yes
+checking sys/sysinfo.h usability... yes
+checking sys/sysinfo.h presence... yes
+checking for sys/sysinfo.h... yes
+checking sys/param.h usability... yes
+checking sys/param.h presence... yes
+checking for sys/param.h... yes
+checking sys/time.h usability... yes
+checking sys/time.h presence... yes
+checking for sys/time.h... yes
+checking sys/ipc.h usability... yes
+checking sys/ipc.h presence... yes
+checking for sys/ipc.h... yes
+checking sys/msg.h usability... yes
+checking sys/msg.h presence... yes
+checking for sys/msg.h... yes
+checking sys/wait.h usability... yes
+checking sys/wait.h presence... yes
+checking for sys/wait.h... yes
+checking sys/un.h usability... yes
+checking sys/un.h presence... yes
+checking for sys/un.h... yes
+checking for sys/stat.h... (cached) yes
+checking for sys/types.h... (cached) yes
+checking syslog.h usability... yes
+checking syslog.h presence... yes
+checking for syslog.h... yes
+checking resolv.h usability... yes
+checking resolv.h presence... yes
+checking for resolv.h... yes
+checking for unistd.h... (cached) yes
+checking endian.h usability... yes
+checking endian.h presence... yes
+checking for endian.h... yes
+checking net/route.h usability... yes
+checking net/route.h presence... yes
+checking for net/route.h... yes
+checking net/if.h usability... yes
+checking net/if.h presence... yes
+checking for net/if.h... yes
+checking net/ethernet.h usability... yes
+checking net/ethernet.h presence... yes
+checking for net/ethernet.h... yes
+checking asm/types.h usability... yes
+checking asm/types.h presence... yes
+checking for asm/types.h... yes
+checking net/if_arp.h usability... yes
+checking net/if_arp.h presence... yes
+checking for net/if_arp.h... yes
+checking net/if_tun.h usability... no
+checking net/if_tun.h presence... no
+checking for net/if_tun.h... no
+checking for an ANSI C-conforming const... yes
+checking for mode_t... yes
+checking whether time.h and sys/time.h may both be included... yes
+checking for pid_t... yes
+checking vfork.h usability... no
+checking vfork.h presence... no
+checking for vfork.h... no
+checking for fork... yes
+checking for vfork... yes
+checking for working fork... yes
+checking for working vfork... (cached) yes
+checking whether gcc needs -traditional... no
+checking for working memcmp... yes
+checking sys/select.h usability... yes
+checking sys/select.h presence... yes
+checking for sys/select.h... yes
+checking for sys/socket.h... (cached) yes
+checking types of arguments for select... int,fd_set *,struct timeval *
+checking for gethostbyname... yes
+checking for getprotoent... yes
+checking for gettimeofday... yes
+checking for inet_ntoa... yes
+checking for memset... yes
+checking for select... yes
+checking for socket... yes
+checking for strdup... yes
+checking for strerror... yes
+checking for strstr... yes
+checking for strtol... yes
+checking for getline... yes
+checking for res_init in -lresolv... no
+configure: creating ./config.status
+config.status: creating Makefile
+config.status: creating bstring/Makefile
+config.status: creating doc/Makefile
+config.status: creating src/Makefile
+config.status: creating www/Makefile
+config.status: creating conf/Makefile
+config.status: creating debian/Makefile
+config.status: creating coova-chilli.spec
+config.status: creating config.h
+config.status: config.h is unchanged
+config.status: executing depfiles commands
+config.status: executing libtool commands
+root at campingave:~/coova-chilli#    make
+make  all-recursive
+make[1]: Entering directory `/root/coova-chilli'
+Making all in bstring
+make[2]: Entering directory `/root/coova-chilli/bstring'
+/bin/bash ../libtool --tag=CC   --mode=compile gcc -DHAVE_CONFIG_H -I.
+-I..     -g -O2 -MT bstrlib.lo -MD -MP -MF .deps/bstrlib.Tpo -c -o
+bstrlib.lo bstrlib.c
+../libtool: line 827: X--tag=CC: command not found
+../libtool: line 860: libtool: ignoring unknown tag : command not found
+../libtool: line 827: X--mode=compile: command not found
+../libtool: line 994: *** Warning: inferring the mode of operation is
+deprecated.: command not found
+../libtool: line 995: *** Future versions of Libtool will require
+--mode=MODE be specified.: command not found
+../libtool: line 1138: Xgcc: command not found
+../libtool: line 1138: X-DHAVE_CONFIG_H: command not found
+../libtool: line 1138: X-I.: command not found
+../libtool: line 1138: X-I..: command not found
+../libtool: line 1138: X-g: command not found
+../libtool: line 1138: X-O2: command not found
+../libtool: line 1138: X-MT: command not found
+../libtool: line 1138: Xbstrlib.lo: command not found
+../libtool: line 1138: X-MD: command not found
+../libtool: line 1138: X-MP: command not found
+../libtool: line 1138: X-MF: command not found
+../libtool: line 1138: X.deps/bstrlib.Tpo: No such file or directory
+../libtool: line 1138: X-c: command not found
+../libtool: line 1191: Xbstrlib.lo: command not found
+../libtool: line 1196: libtool: compile: cannot determine name of library
+object from `': command not found
+make[2]: *** [bstrlib.lo] Error 1
+make[2]: Leaving directory `/root/coova-chilli/bstring'
+make[1]: *** [all-recursive] Error 1
+make[1]: Leaving directory `/root/coova-chilli'
+make: *** [all] Error 2
+root at campingave:~/coova-chilli#
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20090715/0758cda8/attachment.htm>
+
+From wichert at wiggy.net  Thu Jul 16 06:42:11 2009
+From: wichert at wiggy.net (Wichert Akkerman)
+Date: Thu, 16 Jul 2009 08:42:11 +0200
+Subject: no accounting updates send for chilli_query authorised sessions
+Message-ID: <4A5ECBC3.1090802@wiggy.net>
+
+Hi guys,
+
+A little bugreport: with svn revision 206 of chilli and a configuration 
+which sets definteriminterval to 300 no accounting updates seem to be 
+generated.
+
+Wichert.
+
+-- 
+Wichert Akkerman<wichert at wiggy.net>    It is simple to make things.
+http://www.wiggy.net/                  It is hard to make things simple.
+
+
+
+From wlan at mac.com  Thu Jul 16 07:46:11 2009
+From: wlan at mac.com (wlanmac)
+Date: Thu, 16 Jul 2009 09:46:11 +0200
+Subject: no accounting updates send for chilli_query authorised sessions
+In-Reply-To: <4A5ECBC3.1090802@wiggy.net>
+References: <4A5ECBC3.1090802@wiggy.net>
+Message-ID: <1247730371.8446.41.camel@david-laptop>
+
+Didn't you mention that you aren't using RADIUS for authentication, but
+rather the chilli_query command? This isn't the "recommended" use...
+and, yes, the default interim interval isn't set when used that way (it
+gets configured upon AccessAccept). 
+
+David
+
+
+On Thu, 2009-07-16 at 08:42 +0200, Wichert Akkerman wrote:
+> Hi guys,
+> 
+> A little bugreport: with svn revision 206 of chilli and a configuration 
+> which sets definteriminterval to 300 no accounting updates seem to be 
+> generated.
+> 
+> Wichert.
+> 
+
+
+
+From wichert at wiggy.net  Thu Jul 16 08:27:36 2009
+From: wichert at wiggy.net (Wichert Akkerman)
+Date: Thu, 16 Jul 2009 10:27:36 +0200
+Subject: no accounting updates send for chilli_query authorised sessions
+In-Reply-To: <1247730371.8446.41.camel@david-laptop>
+References: <4A5ECBC3.1090802@wiggy.net> <1247730371.8446.41.camel@david-laptop>
+Message-ID: <4A5EE478.6070502@wiggy.net>
+
+On 7/16/09 9:46 AM, wlanmac wrote:
+> Didn't you mention that you aren't using RADIUS for authentication, but
+> rather the chilli_query command? This isn't the "recommended" use...
+> and, yes, the default interim interval isn't set when used that way (it
+> gets configured upon AccessAccept).
+
+I use a mix of both. The vast majority of my users are anonymous and 
+only have to accept terms and conditions on a simple portal. Using 
+chilli_query to authorize them seemed like the simplest solution. Would 
+it be possible to generate accounting updates for chilli_query 
+authorized users? They do trigger start and stop accounting records, 
+which suggests that this should be a fairly simple change.
+
+All my authenticated users use WISPr and following a different path.
+
+Wichert.
+
+
+From wlan at mac.com  Thu Jul 16 08:47:15 2009
+From: wlan at mac.com (wlanmac)
+Date: Thu, 16 Jul 2009 10:47:15 +0200
+Subject: no accounting updates send for chilli_query authorised sessions
+In-Reply-To: <4A5EE478.6070502@wiggy.net>
+References: <4A5ECBC3.1090802@wiggy.net>
+ <1247730371.8446.41.camel@david-laptop> <4A5EE478.6070502@wiggy.net>
+Message-ID: <1247734035.8446.45.camel@david-laptop>
+
+Hello,
+
+I moved the code that sets the defaults... it will not process them for
+sessions authorized by chilli_query. See rev 207
+
+David
+
+
+On Thu, 2009-07-16 at 10:27 +0200, Wichert Akkerman wrote:
+> On 7/16/09 9:46 AM, wlanmac wrote:
+> > Didn't you mention that you aren't using RADIUS for authentication, but
+> > rather the chilli_query command? This isn't the "recommended" use...
+> > and, yes, the default interim interval isn't set when used that way (it
+> > gets configured upon AccessAccept).
+> 
+> I use a mix of both. The vast majority of my users are anonymous and 
+> only have to accept terms and conditions on a simple portal. Using 
+> chilli_query to authorize them seemed like the simplest solution. Would 
+> it be possible to generate accounting updates for chilli_query 
+> authorized users? They do trigger start and stop accounting records, 
+> which suggests that this should be a fairly simple change.
+> 
+> All my authenticated users use WISPr and following a different path.
+> 
+> Wichert.
+> 
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+> 
+
+
+
+From wichert at wiggy.net  Sat Jul 18 13:59:48 2009
+From: wichert at wiggy.net (Wichert Akkerman)
+Date: Sat, 18 Jul 2009 15:59:48 +0200
+Subject: no accounting updates send for chilli_query authorised sessions
+In-Reply-To: <1247734035.8446.45.camel@david-laptop>
+References: <4A5ECBC3.1090802@wiggy.net> <1247730371.8446.41.camel@david-laptop> <4A5EE478.6070502@wiggy.net> <1247734035.8446.45.camel@david-laptop>
+Message-ID: <4A61D554.1060808@wiggy.net>
+
+Thanks David! I can confirm that this works.
+
+Regards,
+Wichert.
+
+
+On 7/16/09 10:47 AM, wlanmac wrote:
+> Hello,
+>
+> I moved the code that sets the defaults... it will not process them for
+> sessions authorized by chilli_query. See rev 207
+>
+> David
+>
+>
+> On Thu, 2009-07-16 at 10:27 +0200, Wichert Akkerman wrote:
+>> On 7/16/09 9:46 AM, wlanmac wrote:
+>>> Didn't you mention that you aren't using RADIUS for authentication, but
+>>> rather the chilli_query command? This isn't the "recommended" use...
+>>> and, yes, the default interim interval isn't set when used that way (it
+>>> gets configured upon AccessAccept).
+>> I use a mix of both. The vast majority of my users are anonymous and
+>> only have to accept terms and conditions on a simple portal. Using
+>> chilli_query to authorize them seemed like the simplest solution. Would
+>> it be possible to generate accounting updates for chilli_query
+>> authorized users? They do trigger start and stop accounting records,
+>> which suggests that this should be a fairly simple change.
+>>
+>> All my authenticated users use WISPr and following a different path.
+>>
+>> Wichert.
+>>
+>> ---------------------------------------------------------------------
+>> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+>> For additional commands, e-mail: chilli-help at coova.org
+>> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+>> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>>
+>
+>
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>
+
+
+
+From wlan at mac.com  Wed Jul 22 18:29:01 2009
+From: wlan at mac.com (wlanmac)
+Date: Wed, 22 Jul 2009 20:29:01 +0200
+Subject: new chilli 1.0.14
+Message-ID: <1248287341.8603.42.camel@david-laptop>
+
+http://www.coova.org/CoovaChilli
+
+it's official...
+
+Also, a heads up that we'll be moving the mailing list to mailman here
+soon. Just need to figure out how to import everything (except the
+archive, unfortunately). 
+
+
+
+From wichert at wiggy.net  Thu Jul 23 20:57:55 2009
+From: wichert at wiggy.net (Wichert Akkerman)
+Date: Thu, 23 Jul 2009 22:57:55 +0200
+Subject: http header status
+Message-ID: <4A68CED3.4080900@wiggy.net>
+
+After initial success with the latest changes to add Content-Length and 
+Content-Type headers to the initial redirect I am now seeing very 
+strange behaviour: after a recompile of chilli (als with a recompile on 
+on another machine as test) a set of HTTP headers are no missing: the 
+reply starts with the Content-Type header, all previous lines (HTTP 
+status code, location header, content-length header) are skipped.
+
+Another issue I noticed is that the Content-Type: text/html header is 
+required for all WISPr containing responses, which means it needs to be 
+added to the auth status poll response as well.
+
+Regards,
+Wichert.
+
+-- 
+Wichert Akkerman <wichert at wiggy.net>   It is simple to make things.
+http://www.wiggy.net/                  It is hard to make things simple.
+
+
+From wichert at wiggy.net  Thu Jul 23 22:58:31 2009
+From: wichert at wiggy.net (Wichert Akkerman)
+Date: Fri, 24 Jul 2009 00:58:31 +0200
+Subject: http header status
+In-Reply-To: <4A68CED3.4080900@wiggy.net>
+References: <4A68CED3.4080900@wiggy.net>
+Message-ID: <4A68EB17.3050901@wiggy.net>
+
+With current svn (r211) the headers for the initial redirect are working 
+again, but the body is now missing. A WISPr auth poll status request (to 
+http://10.1.0.1:3990/logon) also no longer receives a reply now.
+
+Regards,
+Wichert.
+
+
+On 7/23/09 10:57 PM, Wichert Akkerman wrote:
+> After initial success with the latest changes to add Content-Length and
+> Content-Type headers to the initial redirect I am now seeing very
+> strange behaviour: after a recompile of chilli (als with a recompile on
+> on another machine as test) a set of HTTP headers are no missing: the
+> reply starts with the Content-Type header, all previous lines (HTTP
+> status code, location header, content-length header) are skipped.
+>
+> Another issue I noticed is that the Content-Type: text/html header is
+> required for all WISPr containing responses, which means it needs to be
+> added to the auth status poll response as well.
+>
+> Regards,
+> Wichert.
+>
+
+
+-- 
+Wichert Akkerman <wichert at wiggy.net>   It is simple to make things.
+http://www.wiggy.net/                  It is hard to make things simple.
+
+
+From bnoteris at odbee.com  Fri Jul 24 11:55:09 2009
+From: bnoteris at odbee.com (Benoit noteris)
+Date: Fri, 24 Jul 2009 13:55:09 +0200
+Subject: [mac filter with tap tunnel]
+In-Reply-To: <4A68CED3.4080900@wiggy.net>
+References: <4A68CED3.4080900@wiggy.net>
+Message-ID: <002401ca0c55$98849660$c98dc320$@com>
+
+Hy list,
+
+I'm testing the new release coova-chilli-1.0.14, I still trying to lock mac
+addressee for fixed ip addresses iv'e tested arptable and ebtable and
+iptables filter 
+
+Here are filter I tried.
+--------------------------------------------------
+root at portailtst:~# arptables -L
+Chain INPUT (policy ACCEPT)
+-j DROP --src-mac 00:40:63:d8:42:70
+
+Chain OUTPUT (policy ACCEPT)
+
+Chain FORWARD (policy ACCEPT)
+root at portailtst:~# ebtables -L
+Bridge table: filter
+
+Bridge chain: INPUT, entries: 1, policy: ACCEPT
+-s 0:40:63:d8:42:70 -j DROP
+
+Bridge chain: FORWARD, entries: 0, policy: ACCEPT
+
+Bridge chain: OUTPUT, entries: 0, policy: ACCEPT
+---------------------------------------
+The client is authentificated in the chilli without problem and not blocked
+at all .. 
+
+root at portailtst:~# arp -a
+? (172.1.2.3) at 00:40:63:D8:42:70 [ether] PERM on tap0
+
+With the arp -a we can see it now and tap tunnel working very well in this
+version.
+So I realy don't understand why my filter does'nt work properly.
+
+If anyone had an idea, I'm wide open.
+
+Chears.
+
+
+Benoit noteris
+
+
+
+From bnoteris at odbee.com  Fri Jul 24 12:57:07 2009
+From: bnoteris at odbee.com (Benoit noteris)
+Date: Fri, 24 Jul 2009 14:57:07 +0200
+Subject: [mac filter with tap tunnel]
+In-Reply-To: <002401ca0c55$98849660$c98dc320$@com>
+References: <4A68CED3.4080900@wiggy.net> <002401ca0c55$98849660$c98dc320$@com>
+Message-ID: <002501ca0c5e$407837c0$c168a740$@com>
+
+It works i've talk to fast :) 
+The blocked mac addresse owner can't log but he is still able to get the
+coova.jpg in browser that strange but he can't go after that what I'm
+looking for.
+
+chears
+
+-----Message d'origine-----
+De?: Benoit noteris [mailto:bnoteris at odbee.com] 
+Envoy??: vendredi 24 juillet 2009 13:55
+??: chilli at coova.org
+Objet?: [mac filter with tap tunnel]
+
+Hy list,
+
+I'm testing the new release coova-chilli-1.0.14, I still trying to lock mac
+addressee for fixed ip addresses iv'e tested arptable and ebtable and
+iptables filter 
+
+Here are filter I tried.
+--------------------------------------------------
+root at portailtst:~# arptables -L
+Chain INPUT (policy ACCEPT)
+-j DROP --src-mac 00:40:63:d8:42:70
+
+Chain OUTPUT (policy ACCEPT)
+
+Chain FORWARD (policy ACCEPT)
+root at portailtst:~# ebtables -L
+Bridge table: filter
+
+Bridge chain: INPUT, entries: 1, policy: ACCEPT
+-s 0:40:63:d8:42:70 -j DROP
+
+Bridge chain: FORWARD, entries: 0, policy: ACCEPT
+
+Bridge chain: OUTPUT, entries: 0, policy: ACCEPT
+---------------------------------------
+The client is authentificated in the chilli without problem and not blocked
+at all .. 
+
+root at portailtst:~# arp -a
+? (172.1.2.3) at 00:40:63:D8:42:70 [ether] PERM on tap0
+
+With the arp -a we can see it now and tap tunnel working very well in this
+version.
+So I realy don't understand why my filter does'nt work properly.
+
+If anyone had an idea, I'm wide open.
+
+Chears.
+
+
+Benoit noteris
+
+
+---------------------------------------------------------------------
+To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+For additional commands, e-mail: chilli-help at coova.org
+Wiki: http://coova.org/wiki/index.php/CoovaChilli
+Forum: http://coova.org/phpBB3/viewforum.php?f=4
+
+
+
+From skreech2 at gmail.com  Tue Jul 28 08:48:57 2009
+From: skreech2 at gmail.com (Roger Pixley)
+Date: Tue, 28 Jul 2009 03:48:57 -0500
+Subject: Safari breaks Coova?
+Message-ID: <3246ed240907280148o1ea108a6s605640870b893610@mail.gmail.com>
+
+I'm having multiple instances of People using Safari 4 not being able
+to authenticate. Is this a known problem? Also can I set the default
+expiry time period for batch creation of users in the RADIUS database?
+
+
+From cesarsilvaaraujo at gmail.com  Tue Jul 28 09:58:06 2009
+From: cesarsilvaaraujo at gmail.com (=?ISO-8859-1?Q?C=E9sar_Araujo?=)
+Date: Tue, 28 Jul 2009 10:58:06 +0100
+Subject: Safari breaks Coova?
+In-Reply-To: <3246ed240907280148o1ea108a6s605640870b893610@mail.gmail.com>
+References: <3246ed240907280148o1ea108a6s605640870b893610@mail.gmail.com>
+Message-ID: <3b8d169a0907280258k267c6113y57b9cdd4d01e7923@mail.gmail.com>
+
+use a debug function to view ere the javascripts gives error!
+That is a problem in code that safari gives an error and stops the script.
+
+I solved using html debuger :)
+
+Hope i could help
+
+
+--------------------------------------------------------------------
+Contactem-me para anima??o musical de eventos!
+--------------------------------------------------------------------
+AveFm - www.avefm.net
+--------------------------------------------------------------------
+Http://www.CesarAraujo.Net
+--------------------------------------------------------------------
+Msn: messenger at CesarAraujo.net
+--------------------------------------------------------------------
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20090728/3687c8e5/attachment.htm>
+
+From wichert at wiggy.net  Tue Jul 28 15:28:55 2009
+From: wichert at wiggy.net (Wichert Akkerman)
+Date: Tue, 28 Jul 2009 17:28:55 +0200
+Subject: ipass succes
+Message-ID: <4A6F1937.2040504@wiggy.net>
+
+I'm happy to be able to report that after the last changes David made on 
+Friday morning the official iPASS client now works correctly with 
+CoovaChilli.
+
+Regards,
+Wichert.
+
+-- 
+Wichert Akkerman<wichert at wiggy.net>    It is simple to make things.
+http://www.wiggy.net/                  It is hard to make things simple.
+
+
+
+From derekchilli at hssl.ie  Wed Jul 29 10:53:34 2009
+From: derekchilli at hssl.ie (Derek C)
+Date: Wed, 29 Jul 2009 11:53:34 +0100 (IST)
+Subject: CoovaChilli on Multiple Interfaces
+Message-ID: <45525.149.5.32.200.1248864814.squirrel@www.rivertowermail.com>
+
+Hi all,
+
+I'd like to have Coova Chilli running on two interfaces (two radio cards).
+ It doesn't seem to work when I start Chilli twice with two difference
+configuration files.
+
+Should I be trying to start two instances of Coova Chilli or should I try
+to bridge the Interfaces together and give Coova Chilli the bridge NIC ?
+
+thanks very much as always !!!!
+
+Derek
+
+
+-- 
+Derek C
+In Ireland
+
+
+
+From wichert at wiggy.net  Wed Jul 29 10:55:12 2009
+From: wichert at wiggy.net (Wichert Akkerman)
+Date: Wed, 29 Jul 2009 12:55:12 +0200
+Subject: CoovaChilli on Multiple Interfaces
+In-Reply-To: <45525.149.5.32.200.1248864814.squirrel@www.rivertowermail.com>
+References: <45525.149.5.32.200.1248864814.squirrel@www.rivertowermail.com>
+Message-ID: <4A702A90.5040107@wiggy.net>
+
+On 7/29/09 12:53 PM, Derek C wrote:
+> Hi all,
+>
+> I'd like to have Coova Chilli running on two interfaces (two radio cards).
+>   It doesn't seem to work when I start Chilli twice with two difference
+> configuration files.
+
+You can do that as long as you make sure the uamuiport is configured to 
+different values. I run 4 chilli instances on a single box without problems.
+
+Wichert.
+
+
+From derekchilli at hssl.ie  Wed Jul 29 11:21:10 2009
+From: derekchilli at hssl.ie (Derek C)
+Date: Wed, 29 Jul 2009 12:21:10 +0100 (IST)
+Subject: CoovaChilli on Multiple Interfaces
+In-Reply-To: <4A702A90.5040107@wiggy.net>
+References: <45525.149.5.32.200.1248864814.squirrel@www.rivertowermail.com>
+    <4A702A90.5040107@wiggy.net>
+Message-ID: <35173.149.5.32.200.1248866470.squirrel@www.rivertowermail.com>
+
+Hi Wichert,
+
+That's great - I didn't trying changing this port option before - I'll try
+this out
+
+thanks very much
+
+Derek
+
+On Wed, July 29, 2009 11:55 am, Wichert Akkerman wrote:
+> On 7/29/09 12:53 PM, Derek C wrote:
+>
+>> Hi all,
+>>
+>>
+>> I'd like to have Coova Chilli running on two interfaces (two radio
+>> cards). It doesn't seem to work when I start Chilli twice with two
+>> difference configuration files.
+>
+> You can do that as long as you make sure the uamuiport is configured to
+> different values. I run 4 chilli instances on a single box without
+> problems.
+>
+> Wichert.
+>
+>
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>
+>
+>
+
+
+-- 
+Derek C
+In Ireland
+
+
+
+From derekchilli at hssl.ie  Wed Jul 29 16:02:58 2009
+From: derekchilli at hssl.ie (Derek C)
+Date: Wed, 29 Jul 2009 17:02:58 +0100 (IST)
+Subject: DHCP client problem when no default route
+Message-ID: <42415.149.5.32.200.1248883378.squirrel@www.rivertowermail.com>
+
+Hi all,
+
+I've noticed a problem for a while now - its not major but it can be
+bothersome: -
+
+When an OpenWRT AP doesn't have a default route Coova Chilli doesn't
+appear to hand out an IP through its internal DHCP server.
+
+I'm able to get Coova Chilli running without a default route by having the
+UAMserver and radius server(s) in /etc/hosts (otherwise Coova Chilli exits
+at startup) - I do this anyway in case the default route hasn't come up
+with the AP boots.
+
+So currently, if an AP doesn't have a default route the notebooks trying
+to connect just fail with no DHCP assigned IP and it's kind of hard to
+diagnose.
+
+Has anyone else come across this?  I'm running Coova Chilli 1.0.13
+
+thanks!
+
+Derek
+
+
+-- 
+Derek C
+In Ireland
+
+
+
+From oguzhank at bilkent.edu.tr  Thu Jul 30 08:52:27 2009
+From: oguzhank at bilkent.edu.tr (Oguzhan Kayhan)
+Date: Thu, 30 Jul 2009 11:52:27 +0300 (EEST)
+Subject: Received radius reply from wrong address
+Message-ID: <43529.139.179.14.250.1248943947.squirrel@webmail.bilkent.edu.tr>
+
+Hi,
+I am using 2 coova services on one computer..
+on two different ethernet interfaces.
+And this 2 coova authenticates from different radius servers.
+On freeradius i have 2 interfaces also..
+so with virtual server, if request comes from 1st interface it uses
+config1 for radius  and if from second it uses config2.
+
+The problem is, sometimes i saw on th elogs as
+Jul 30 11:51:12 galata coova-chilli[8277]: radius.c: 1488: Received radius
+reply from wrong address d20eb38b!
+Jul 30 11:51:12 galata coova-chilli[8277]: chilli.c: 3680: radius_ind()
+failed!  msgs..
+
+So, how can i fix this..
+
+
+
+
+From oguzhank at bilkent.edu.tr  Thu Jul 30 09:44:30 2009
+From: oguzhank at bilkent.edu.tr (Oguzhan Kayhan)
+Date: Thu, 30 Jul 2009 12:44:30 +0300 (EEST)
+Subject: redirect to original url
+Message-ID: <33649.139.179.14.250.1248947070.squirrel@webmail.bilkent.edu.tr>
+
+Hello,
+After my clients logged in..they forwarded to a "successfully logged on"
+page.
+
+How can i make users to go on the original url??
+
+
+
+
+
+
+From oguzhank at bilkent.edu.tr  Thu Jul 30 10:03:28 2009
+From: oguzhank at bilkent.edu.tr (Oguzhan Kayhan)
+Date: Thu, 30 Jul 2009 13:03:28 +0300 (EEST)
+Subject: redirect to original url
+In-Reply-To: 
+     <33649.139.179.14.250.1248947070.squirrel@webmail.bilkent.edu.tr>
+References: 
+    <33649.139.179.14.250.1248947070.squirrel@webmail.bilkent.edu.tr>
+Message-ID: <47462.139.179.14.250.1248948208.squirrel@webmail.bilkent.edu.tr>
+
+> Hello,
+> After my clients logged in..they forwarded to a "successfully logged on"
+> page.
+>
+> How can i make users to go on the original url??
+>
+
+Ok figured out..
+nouamsuccess parameter needed for that i think.
+
+
+
+>
+>
+>
+>
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>
+>
+
+
+
+
+From wichert at wiggy.net  Thu Jul 30 14:33:54 2009
+From: wichert at wiggy.net (Wichert Akkerman)
+Date: Thu, 30 Jul 2009 16:33:54 +0200
+Subject: idle timeout handling
+Message-ID: <4A71AF52.8030009@wiggy.net>
+
+I've found some odd behaviour that is a painful for paid hotspots: 
+chillie checks both outgoing and incoming traffic to monitor idle 
+timeout. That means that if you shutdown your laptop or disable the wifi 
+interface while you have a single open TCP connection pending ACKs from 
+the remote site can keep resetting the idle timer for a very long time. 
+For hotspots where customers pay per used time that can become very 
+expensive.
+
+ From my experience all other systems only use outgoing traffic to reset 
+the idle timer. I think coova chilli should do the same thing.
+
+Wichert.
+
+-- 
+Wichert Akkerman <wichert at wiggy.net>   It is simple to make things.
+http://www.wiggy.net/                  It is hard to make things simple.
+
+
+From oguzhank at bilkent.edu.tr  Fri Jul 31 07:03:50 2009
+From: oguzhank at bilkent.edu.tr (Oguzhan Kayhan)
+Date: Fri, 31 Jul 2009 10:03:50 +0300 (EEST)
+Subject: idle timeout??
+Message-ID: <38840.139.179.14.250.1249023830.squirrel@webmail.bilkent.edu.tr>
+
+Hello,
+Is there a default idle timeout for coova?
+I didnt set any idletimeout on radius nor in coova configuration.
+I just have an acct-interim interval by 60 secs.
+One of my client is complaining about after reading some documents on the
+net without any activity he needs to log on again. And according to the
+logs it seems he also got new ip addresses everytime he logges in.
+
+That problem seems like a client issue to me but i wanted to ask again.
+As i know client asks for dhcp every 10 mins.(is there any parameter i can
+set this too??) So how coova decides if user is idle or if user lost
+connection???
+
+So if it is not a client problem,
+How can i check if a user is still online even if he is idle for a long
+time..
+
+
+
+
+

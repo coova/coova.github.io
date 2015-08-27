@@ -1,0 +1,200 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] Data Volume Control Quota Coova-Chilli
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Data%20Volume%20Control%20Quota%20Coova-Chilli&In-Reply-To=%3CCADao4CoFKRn9p2TDbH7SODoAdysXtW8-MEsrPBzO04%2Bs8%2B-v1g%40mail.gmail.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="002151.html">
+   <LINK REL="Next"  HREF="002152.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] Data Volume Control Quota Coova-Chilli</H1>
+    <B>Russell Mike</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Data%20Volume%20Control%20Quota%20Coova-Chilli&In-Reply-To=%3CCADao4CoFKRn9p2TDbH7SODoAdysXtW8-MEsrPBzO04%2Bs8%2B-v1g%40mail.gmail.com%3E"
+       TITLE="[Chilli] Data Volume Control Quota Coova-Chilli">radius.sir at gmail.com
+       </A><BR>
+    <I>Fri Feb 15 12:14:45 UTC 2013</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="002151.html">[Chilli] Data Volume Control Quota Coova-Chilli
+</A></li>
+        <LI>Next message: <A HREF="002152.html">[Chilli] SOLVED !! Authentication Control Between Multiple Coova-Chilli v1.3.0 Instances
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2155">[ date ]</a>
+              <a href="thread.html#2155">[ thread ]</a>
+              <a href="subject.html#2155">[ subject ]</a>
+              <a href="author.html#2155">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>&gt;<i> Dear David B. List Members,
+</I>&gt;<i>
+</I>&gt;<i> i want to implement quota based vouchers, i know how that works but need
+</I>&gt;<i> little help.
+</I>&gt;<i>
+</I>&gt;<i> 1.) i need to create Freeradius RLM SQL_Counter module. *DONE !*
+</I>&gt;<i> 2.) Include &amp; load module using &quot;radiusd.conf&quot; in module section &amp;
+</I>&gt;<i> authorize section of sites-available/default *DONE !*
+</I>&gt;<i>
+</I>&gt;<i> *3.) *Accounting already been done by SQL
+</I>&gt;<i> *
+</I>&gt;<i> *
+</I>&gt;<i> i am looking for check &amp; reply items for Freeraiuds &amp; Coova those can
+</I>&gt;<i> control quota/volume.
+</I>&gt;<i> *
+</I>&gt;<i> *
+</I>&gt;<i> i am trying like this but not working:
+</I>&gt;<i> *
+</I>&gt;<i> *
+</I>&gt;<i> check: no attribute
+</I>&gt;<i> reply: Chillispot-Max-Total-Octets := 5000000 (5MB)
+</I>&gt;<i> *
+</I>&gt;<i> *
+</I>&gt;<i> Thanks / Regards
+</I>&gt;<i> RM --
+</I>&gt;<i> *
+</I>&gt;<i> *
+</I>&gt;<i> *
+</I>&gt;<i> *
+</I>&gt;<i> **
+</I>&gt;<i>
+</I>
+*Hi, *Since no one responded, I am going to reply my own post. Because i am
+able to solve the problem. i assume that you want quota based vouchers. For
+example, BOB has a voucher that should allows him to download 5mb of data
+and disconnect from the CoovaChilli after words. if he attempted to re
+login, he must be get rejected and get  *&quot;Your maximum never usage time has
+been reached&quot; *
+
+CoovaChilli v1.3.0 Freeradius v2.2
+
+1.) Create SQL Counter, here is working one.
+
+sqlcounter foreverbitscounter {
+              counter-name = Total-Max-Octets
+              check-name = ChilliSpot-Max-Total-Octets
+              reply-name = ChilliSpot-Max-Total-Octets
+              sqlmod-inst = sql
+              key = User-Name
+              reset = never
+query = &quot;SELECT (SUM(AcctInputOctets)+-SUM(AcctOutputOctets)) FROM radacct
+WHERE UserName='%{%k}'&quot;
+}
+
+
+2.) Let Freeradius read counter module before loading, many of you already
+know, this is for new admins.
+
+Type this under instantiate section of &quot;radiusd.conf&quot;
+
+instantiate {
+
+some other entries..
+
+foreverbitscounter
+
+}
+
+
+3.) Finally Load The Module by listing under &quot;authorize&quot; section of default
+file, located on the following location
+
+RH &amp; CentOS:
+&quot;/etc/raddb/sites-available/default
+
+Ubuntu:
+&quot;/etc/freeradius/sites-available/default
+
+authorize {
+
+some other entries
+foreverbitscounter
+}
+
+start Freeradius in debug mode.
+Ubuntu: freeradius -XXX
+CentOS: radiusd -XXX
+
+
+Attach this attributes to radius group/profile
+
+Check Item:
+ChilliSpot-Max-Total-Octets := 5000000 (5mb)
+
+Reply Item:
+ChilliSpot-Max-Total-Octets := 5000000  (5mb)
+
+Enjoy, this is all you need for voucher quotas system, of course working
+rlm_sql driver.
+
+NOTE: Accounting must be done by SQL else it would not work
+
+Enable Accounting:
+
+RH &amp; CentOS:
+&quot;/etc/raddb/sites-available/default
+
+Ubuntu:
+&quot;/etc/freeradius/sites-available/default
+
+accounting {
+some other entries
+sql
+}
+
+
+Thanks
+RM --
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+You need the following attribute in radgroupcheck &amp; radgroupreply table.
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: &lt;<A HREF="http://lists.coova.org/pipermail/chilli/attachments/20130215/fa957fbc/attachment.html">http://lists.coova.org/pipermail/chilli/attachments/20130215/fa957fbc/attachment.html</A>&gt;
+</PRE>
+
+
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="002151.html">[Chilli] Data Volume Control Quota Coova-Chilli
+</A></li>
+	<LI>Next message: <A HREF="002152.html">[Chilli] SOLVED !! Authentication Control Between Multiple Coova-Chilli v1.3.0 Instances
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2155">[ date ]</a>
+              <a href="thread.html#2155">[ thread ]</a>
+              <a href="subject.html#2155">[ subject ]</a>
+              <a href="author.html#2155">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

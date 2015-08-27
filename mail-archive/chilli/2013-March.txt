@@ -1,0 +1,2069 @@
+From daniel at collier.io  Fri Mar  1 09:07:37 2013
+From: daniel at collier.io (Daniel Collier)
+Date: Fri, 1 Mar 2013 20:07:37 +1100
+Subject: [Chilli] daily reset changes counter behaviour
+Message-ID: <CAMooC-qHh9TtDbCmRRJYfpXPogpARPFchszZwGaAG5sfX=Lsrg@mail.gmail.com>
+
+Hi all,
+
+coovachilli version 1.3, freeradius version 2.1, OS ubuntu 12.04
+
+I'm not sure if this is the right place to bring this up, it may be better
+with the freeradius people, please let me know if so.
+
+I am using sql accounting and i have defined a custom counter called
+input-octets in counter.conf, it works nicely when the reset value is set
+to never but changing reset to daily changes its behaviour in a way that i
+find difficult to understand. The counter is based on the
+ChilliSpot-Max-Input-Octets value and in the radgroupcheck table i have
+ChilliSpot-Max-Input-Octets := 10000000.
+
+debug output should tell the story;
+
+with 'reset' set to never
+Fri Mar  1 19:54:11 2013 : Info: [input-octets] expand: %{sql:SELECT
+SUM(AcctInputOctets) FROM radacct WHERE UserName='alice' AND acctstarttime
+> CURDATE()} -> 354144
+Fri Mar  1 19:54:11 2013 : Debug: rlm_sqlcounter: Check item is greater
+than query result
+Fri Mar  1 19:54:11 2013 : Debug: rlm_sqlcounter: Authorized user alice,
+check_item=10000000, counter=354144
+Fri Mar  1 19:54:11 2013 : Debug: rlm_sqlcounter: Sent Reply-Item for user
+alice, Type=ChilliSpot-Max-Input-Octets, value=9645856
+
+with 'reset' set to daily
+Fri Mar  1 19:57:03 2013 : Info: [input-octets] expand: %{sql:SELECT
+SUM(AcctInputOctets) FROM radacct WHERE UserName='alice' AND acctstarttime
+> CURDATE()} -> 365632
+Fri Mar  1 19:57:03 2013 : Debug: rlm_sqlcounter: Check item is greater
+than query result
+Fri Mar  1 19:57:03 2013 : Debug: rlm_sqlcounter: Authorized user alice,
+check_item=10000000, counter=365632
+Fri Mar  1 19:57:03 2013 : Debug: rlm_sqlcounter: Sent Reply-Item for user
+alice, Type=ChilliSpot-Max-Input-Octets, value=10014577
+
+If you look at the value sent as the reply item in the first instance the
+result pulled from the radacct table is subtracted from the check value, in
+the second instance it is... weird.
+
+Obviously i do not need to use the daily reset as i have worked around it
+bysubstituting the unlang version of the date variable for the mysql one,
+but still it would be nice to know what is going on here for future
+reference.
+
+regards
+
+Daniel
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130301/7eb316ce/attachment.html>
+
+From radius.sir at gmail.com  Tue Mar  5 17:00:58 2013
+From: radius.sir at gmail.com (Russell Mike)
+Date: Tue, 5 Mar 2013 17:00:58 +0000
+Subject: [Chilli] CoovaChilli 1.3.0 for MAC authentication on Freeradius
+Message-ID: <CADao4Cp7VdO1p6+Tv8OWx7AR-Dhao8G+WXFas+Vc09=Tp3=B_A@mail.gmail.com>
+
+Dear List,
+
+i want to configure coovachilli 1.3.0 for MAC authentication on Freeradius,
+NOT on CoovaChilli it self.
+
+1.) i want CoovaChilli to send username as MAC address but NOT password as
+MAC address.
+2.) because i will do the following in MySQL DB for Freeradius.
+
+*username="<mac address>";attribute="Auth-Type";op=":=";value="Accept"*
+
+at this point i just wish to know if anyone using this technique and working
+
+Thanks / Regards
+RM --
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130305/477cea10/attachment.html>
+
+From radius.sir at gmail.com  Wed Mar  6 08:54:39 2013
+From: radius.sir at gmail.com (Russell Mike)
+Date: Wed, 6 Mar 2013 08:54:39 +0000
+Subject: [Chilli] CoovaChilli Dansguardian
+Message-ID: <CADao4CpPBdSoSw3cpP7cJ6yNtEc_jb9PaSiNq3sZSCRRhdiFvA@mail.gmail.com>
+
+Hi Coova List Friends,
+
+Is it possible to use Dansguardian with CoovaChilli ?
+Thanks
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130306/638eb4ba/attachment.html>
+
+From radius.sir at gmail.com  Wed Mar  6 10:38:34 2013
+From: radius.sir at gmail.com (Russell Mike)
+Date: Wed, 6 Mar 2013 10:38:34 +0000
+Subject: [Chilli] CoovaChilli MAC Address Auth With Freeradius
+Message-ID: <CADao4CoWOTLBThteVA_BXTHG9rRGvjs3LCJE6eFjLLBw0EH+cQ@mail.gmail.com>
+
+Dear List Friends,
+
+please help, i wish to configure Coova for MAC address auth with
+Freeradius. (Actually, authentication would be on Freeradius) i want to
+configure CoovaChilli 1.3.0 to send mac address as username to Freeradius
+for authentication. i know what to do AAA (Freeradius) side, i will handle
+that. i am seeking the help to configuring coova for above behavior
+
+i enabled this switch in "*config"* file but still getting the login page.
+HS_MACAUTH=on
+
+i also read about "macauth" in "chilli.conf" but i am not sure how to use.
+http://coova.org/CoovaChilli/chilli.conf
+
+Someone please help..
+
+Thanks / RM --
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130306/2522b005/attachment.html>
+
+From david at coova.com  Thu Mar  7 03:20:41 2013
+From: david at coova.com (David Bird)
+Date: Wed, 06 Mar 2013 19:20:41 -0800
+Subject: [Chilli] CoovaChilli Dansguardian
+Message-ID: <aqiniv8qes3p52s0y063ln7s.1362626441150@email.android.com>
+
+It works very well with the postauthproxy options...
+
+Russell Mike <radius.sir at gmail.com> wrote:
+
+>_______________________________________________
+>Chilli mailing list
+>Chilli at coova.org
+>http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130306/62d08af7/attachment.html>
+
+From giovanni.bezicheri at nethesis.it  Thu Mar  7 08:14:13 2013
+From: giovanni.bezicheri at nethesis.it (Giovanni Bezicheri)
+Date: Thu, 07 Mar 2013 09:14:13 +0100
+Subject: [Chilli] CoovaChilli MAC Address Auth With Freeradius
+In-Reply-To: <CADao4CoWOTLBThteVA_BXTHG9rRGvjs3LCJE6eFjLLBw0EH+cQ@mail.gmail.com>
+References: <CADao4CoWOTLBThteVA_BXTHG9rRGvjs3LCJE6eFjLLBw0EH+cQ@mail.gmail.com>
+Message-ID: <51384C55.5050202@nethesis.it>
+
+Hello,
+
+you need to specify the macauth and macpasswd (e.g. macpasswd passwd) 
+option in /etc/chilli.conf.
+When these options is given Coova will first try to authenticate user 
+based on her MAC address. For this the radius access-request will use 
+the MAC address as username, and the password specified with macpasswd 
+option as password. If mac authentication fails, the user will be 
+redirected to the normal web login page.
+
+regards
+
+Giovanni
+
+On 06/03/2013 11:38, Russell Mike wrote:
+> Dear List Friends,
+>
+> please help, i wish to configure Coova for MAC address auth with 
+> Freeradius. (Actually, authentication would be on Freeradius) i want 
+> to configure CoovaChilli 1.3.0 to send mac address as username to 
+> Freeradius for authentication. i know what to do AAA (Freeradius) 
+> side, i will handle that. i am seeking the help to configuring coova 
+> for above behavior
+>
+> i enabled this switch in "*config"* file but still getting the login page.
+> HS_MACAUTH=on
+>
+> i also read about "macauth" in "chilli.conf" but i am not sure how to 
+> use. http://coova.org/CoovaChilli/chilli.conf
+>
+> Someone please help..
+>
+> Thanks / RM --
+>
+>
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130307/ff363da1/attachment.html>
+
+From radius.sir at gmail.com  Thu Mar  7 17:00:46 2013
+From: radius.sir at gmail.com (Russell Mike)
+Date: Thu, 7 Mar 2013 17:00:46 +0000
+Subject: [Chilli] Changing Gateway in CoovaChilli 1.3 DHCP Lease
+Message-ID: <CADao4CqGZiucrskDW+SztNPs_P2powoZroONKpnZkyE4C0iDiw@mail.gmail.com>
+
+Hi Everyone,
+
+CoovaChilli 1.3.0 UB_12.4LTS
+
+Is it possible to configure CoovaChilli inbuilt DHCP server to issue
+certain gateway than it's own ip address as gateway. has anyone done that
+way? Is it even possible?
+
+More Information:
+
+CoovaChilli Box: 192.168.137.30
+Cisco Router: 192.168.137.20
+
+CoovaChilli should be DHCP but issue 192.168.137.20 as gateway.
+
+Thanks / Regards
+RM --
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130307/1b24868e/attachment.html>
+
+From david at coova.com  Thu Mar  7 23:42:56 2013
+From: david at coova.com (David Bird)
+Date: Thu, 07 Mar 2013 15:42:56 -0800
+Subject: [Chilli] Changing Gateway in CoovaChilli 1.3 DHCP Lease
+In-Reply-To: <CADao4CqGZiucrskDW+SztNPs_P2powoZroONKpnZkyE4C0iDiw@mail.gmail.com>
+References: <CADao4CqGZiucrskDW+SztNPs_P2powoZroONKpnZkyE4C0iDiw@mail.gmail.com>
+Message-ID: <1362699776.4548.3.camel@david-laptop>
+
+If it were to do this, then chilli would no longer be in the position to
+enforce any authentication since the client station is now using a
+different default gateway than the chilli interface. 
+
+On Thu, 2013-03-07 at 17:00 +0000, Russell Mike wrote:
+> Hi Everyone,
+> 
+> 
+> CoovaChilli 1.3.0 UB_12.4LTS
+> 
+> 
+> Is it possible to configure CoovaChilli inbuilt DHCP server to issue
+> certain gateway than it's own ip address as gateway. has anyone done
+> that way? Is it even possible?
+> 
+> 
+> More Information: 
+> 
+> 
+> CoovaChilli Box: 192.168.137.30
+> Cisco Router: 192.168.137.20
+> 
+> 
+> CoovaChilli should be DHCP but issue 192.168.137.20 as gateway. 
+> 
+> 
+> Thanks / Regards
+> RM --
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+-- 
+--
+David Bird
+http://www.linkedin.com/in/dwbird
+https://twitter.com/wlanmac
+
+
+From radius.sir at gmail.com  Fri Mar  8 16:23:16 2013
+From: radius.sir at gmail.com (Russell Mike)
+Date: Fri, 8 Mar 2013 16:23:16 +0000
+Subject: [Chilli] Redirecting Reject Request To Webpage
+Message-ID: <CADao4Co30wh18cz4o47Da3iGMEaBmGAbzXs30GbMCA-AUVNohA@mail.gmail.com>
+
+Hi CoovaChilli List Members,
+
+Thanks for all the support ever. i am having difficulty to understand
+something, i need help. i am able to configure mac authentication base on
+the following logic with FR. it Works !!
+
+username="<mac address>";attribute="Auth-Type";op=":=";value="Accept"
+
+username="<mac address>";attribute="Auth-Type";op=":=";value="Reject"
+
+*Question:* Redirecting Reject Request To Webpage
+
+For example, a customer would get reject from FR due to non payment. but at
+this stage customer do not know, what is happening. Why internet in down.
+We want the request to redirected to a web page that will display the cause
+of disconnection.
+
+Thanks
+
+RM --
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130308/7dac4a13/attachment.html>
+
+From jedgainer at gmail.com  Sat Mar  9 06:40:44 2013
+From: jedgainer at gmail.com (Jed Gainer)
+Date: Fri, 8 Mar 2013 22:40:44 -0800
+Subject: [Chilli] free time
+Message-ID: <CAJc1nuqqb2cQJ4Px5CD3wB3F5CLqStU78V6nxZX4DPYZYZ-wMg@mail.gmail.com>
+
+I would like to ignore bandwidth usage between 2 and 5 am.
+
+        sqlcounter counterChilliSpotMaxTotalOctetsDaily {
+                        counter-name = ChilliSpot-Max-Total-Octets-Daily
+                        check-name = CS-Total-Octets-Daily
+                        counter-type = data
+                        reply-name = ChilliSpot-Max-Total-Octets
+                        sqlmod-inst = sql
+                        key = User-Name
+                        reset = daily
+                        query = "SELECT IFNULL((SUM(AcctInputOctets +
+AcctOutputOctets)),0) FROM radacct WHERE UNIX_TIMESTAMP(AcctStartTime) +
+AcctSessionTime > UNIX_TIMESTAMP(CONCAT(CURDATE(),' ', '00:00:00')) AND
+UNIX_TIMESTAMP(AcctStartTime) + AcctSessionTime NOT BETWEEN
+UNIX_TIMESTAMP(CONCAT(CURDATE(),' ', '02:00:00')) AND
+UNIX_TIMESTAMP(CONCAT(CURDATE(),' ', '05:00:00'))"
+        }
+
+Should I do it all in the SQL like that? or does someone have a better idea.
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130308/4107d5b6/attachment.html>
+
+From radius.sir at gmail.com  Mon Mar 11 15:12:27 2013
+From: radius.sir at gmail.com (Russell Mike)
+Date: Mon, 11 Mar 2013 15:12:27 +0000
+Subject: [Chilli] Reject With Redirection URL CoovaChilli
+Message-ID: <CADao4CpTHjNO2T+o_Eg0qcdDuCXeAHsBWh1KTJe9Wxz+puOpFQ@mail.gmail.com>
+
+Greetings CoovaChilli List,
+
+Can someone take a minute to help me please, if the following concept can
+work, perhaps someone is already making use of.
+
+When FR rejected the user, Can CoovaChilli redirect to a URL? Is there a
+way i can make use of *"WISPr-Redirection-URL"*
+
+More Information: When a client would be rejected after his subscription
+expired. we want to display some information the cause of disconnection.
+
+many thanks
+
+RM --regards
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130311/281340dc/attachment.html>
+
+From radius.sir at gmail.com  Tue Mar 12 08:56:12 2013
+From: radius.sir at gmail.com (Russell Mike)
+Date: Tue, 12 Mar 2013 08:56:12 +0000
+Subject: [Chilli] Unix-Time-Stamp Based Logins Attributes CoovaChilli
+Message-ID: <CADao4Cq6+WFHoozmzYM1dqBEJnmciA19sAWukFkh+F9bquTLpA@mail.gmail.com>
+
+Greetings Dear David B.
+
+Thanks for developing such nice software. Here we are implementing *
+Unix-Time-Stamp* based logins and we are using CoovaChilli as NAS. i need
+your help because i got difficult time to figure out Freeradius attributes
+those Coova would understand. i mean
+
+Start-Time
+End-Time
+Cur-Time
+
+More Information - I am going the following:
+http://www.mentby.com/Group/freeradius-users/unix-timestamp-based-login.html
+
+Thanks
+RM --regards
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130312/5f4fef03/attachment.html>
+
+From alexandre.rubert at gmail.com  Wed Mar 13 14:18:57 2013
+From: alexandre.rubert at gmail.com (Alexandre Rubert)
+Date: Wed, 13 Mar 2013 15:18:57 +0100
+Subject: [Chilli] Coova when no wan
+Message-ID: <51408AD1.6070001@gmail.com>
+
+Hello,
+I try to configure coovachilli to redirect all client to the uamhomepage 
+when there is no internet connection. But actually, it doesn't work. Do 
+you have an example of a kind of configuration ?
+
+Thanks
+
+From david at coova.com  Thu Mar 14 02:39:36 2013
+From: david at coova.com (David Bird)
+Date: Wed, 13 Mar 2013 19:39:36 -0700
+Subject: [Chilli] Coova when no wan
+In-Reply-To: <51408AD1.6070001@gmail.com>
+References: <51408AD1.6070001@gmail.com>
+Message-ID: <1363228776.6420.25.camel@david-laptop>
+
+The problem with there being no WAN is that DNS will not work. Without
+DNS, you do not get a redirect since the browser times out before making
+any HTTP request. However, what you can do is use option
+--domaindnslocal to instruct CoovaChilli to return a 'local' IP for any
+DNS request under the --domain (so, if you have domain=lan, then
+hostname.lan would resolve in chilli to a local IP). Typically, DNS
+systems will attempt the original hostname, then the hostname under the
+DHCP domain, searching for a result. 
+
+
+On Wed, 2013-03-13 at 15:18 +0100, Alexandre Rubert wrote:
+> Hello,
+> I try to configure coovachilli to redirect all client to the uamhomepage 
+> when there is no internet connection. But actually, it doesn't work. Do 
+> you have an example of a kind of configuration ?
+> 
+> Thanks
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+
+
+From alexandre.rubert at gmail.com  Thu Mar 14 07:22:10 2013
+From: alexandre.rubert at gmail.com (Alexandre Rubert)
+Date: Thu, 14 Mar 2013 08:22:10 +0100
+Subject: [Chilli] Coova when no wan
+In-Reply-To: <1363228776.6420.25.camel@david-laptop>
+References: <51408AD1.6070001@gmail.com>
+ <1363228776.6420.25.camel@david-laptop>
+Message-ID: <51417AA2.6010100@gmail.com>
+
+Ok, thank for your answer. I tried with dnsmasq and now all DNS request 
+return an IP which is unauthaurized by coova, in that way client is 
+redirected to uamhomepage. That's what I want but when client try to 
+access to https, he isn't redirected. Wireshark  show that client try to 
+access to https on the redirected IP but there is nothing matching it.
+Le 14/03/2013 03:39, David Bird a ?crit :
+> The problem with there being no WAN is that DNS will not work. Without
+> DNS, you do not get a redirect since the browser times out before making
+> any HTTP request. However, what you can do is use option
+> --domaindnslocal to instruct CoovaChilli to return a 'local' IP for any
+> DNS request under the --domain (so, if you have domain=lan, then
+> hostname.lan would resolve in chilli to a local IP). Typically, DNS
+> systems will attempt the original hostname, then the hostname under the
+> DHCP domain, searching for a result.
+>
+>
+> On Wed, 2013-03-13 at 15:18 +0100, Alexandre Rubert wrote:
+>> Hello,
+>> I try to configure coovachilli to redirect all client to the uamhomepage
+>> when there is no internet connection. But actually, it doesn't work. Do
+>> you have an example of a kind of configuration ?
+>>
+>> Thanks
+>> _______________________________________________
+>> Chilli mailing list
+>> Chilli at coova.org
+>> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+
+
+From xoneca at gmail.com  Thu Mar 14 08:01:25 2013
+From: xoneca at gmail.com (Xabier Oneca -- xOneca)
+Date: Thu, 14 Mar 2013 09:01:25 +0100
+Subject: [Chilli] Coova when no wan
+In-Reply-To: <51417AA2.6010100@gmail.com>
+References: <51408AD1.6070001@gmail.com>
+ <1363228776.6420.25.camel@david-laptop>
+ <51417AA2.6010100@gmail.com>
+Message-ID: <CACkgH724Wx7hDCR2=CyP3NoUuBWSzpuj5k2XXsTG1CY-kgPHFQ@mail.gmail.com>
+
+For HTTPS redirections to work, you need a valid certificate for each
+domain you want to be redirected. It would be a huge security hole, so you
+cannot do a beautiful HTTPS redirect.
+
+If you don't mind that the user gets a security warning in his browser, you
+can use --redirssl with its --ssl* config options to allow CoovaChilli to
+listen to HTTPS requests. Chilli does not do this by default. You will need
+a (self signed) certificate.
+
+HTH.
+
+--
+Xabier Oneca_,,_
+El 14/03/2013 08:50, "Alexandre Rubert" <alexandre.rubert at gmail.com>
+escribi?:
+
+> Ok, thank for your answer. I tried with dnsmasq and now all DNS request
+> return an IP which is unauthaurized by coova, in that way client is
+> redirected to uamhomepage. That's what I want but when client try to access
+> to https, he isn't redirected. Wireshark  show that client try to access to
+> https on the redirected IP but there is nothing matching it.
+> Le 14/03/2013 03:39, David Bird a ?crit :
+>
+>> The problem with there being no WAN is that DNS will not work. Without
+>> DNS, you do not get a redirect since the browser times out before making
+>> any HTTP request. However, what you can do is use option
+>> --domaindnslocal to instruct CoovaChilli to return a 'local' IP for any
+>> DNS request under the --domain (so, if you have domain=lan, then
+>> hostname.lan would resolve in chilli to a local IP). Typically, DNS
+>> systems will attempt the original hostname, then the hostname under the
+>> DHCP domain, searching for a result.
+>>
+>>
+>> On Wed, 2013-03-13 at 15:18 +0100, Alexandre Rubert wrote:
+>>
+>>> Hello,
+>>> I try to configure coovachilli to redirect all client to the uamhomepage
+>>> when there is no internet connection. But actually, it doesn't work. Do
+>>> you have an example of a kind of configuration ?
+>>>
+>>> Thanks
+>>> ______________________________**_________________
+>>> Chilli mailing list
+>>> Chilli at coova.org
+>>> http://lists.coova.org/cgi-**bin/mailman/listinfo/chilli<http://lists.coova.org/cgi-bin/mailman/listinfo/chilli>
+>>>
+>>
+>>
+> ______________________________**_________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-**bin/mailman/listinfo/chilli<http://lists.coova.org/cgi-bin/mailman/listinfo/chilli>
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130314/2e0bc73e/attachment.html>
+
+From bojan at gajba.net  Thu Mar 14 14:38:30 2013
+From: bojan at gajba.net (Bojan Pogacar)
+Date: Thu, 14 Mar 2013 15:38:30 +0100
+Subject: [Chilli] Coova when no wan
+In-Reply-To: <CACkgH724Wx7hDCR2=CyP3NoUuBWSzpuj5k2XXsTG1CY-kgPHFQ@mail.gmail.com>
+References: <51408AD1.6070001@gmail.com>
+ <1363228776.6420.25.camel@david-laptop> <51417AA2.6010100@gmail.com>
+ <CACkgH724Wx7hDCR2=CyP3NoUuBWSzpuj5k2XXsTG1CY-kgPHFQ@mail.gmail.com>
+Message-ID: <5141E0E6.2040709@gajba.net>
+
+Another problem with HTTPS redirection is, that google websites like 
+google.com, gmail, .. in Chrome not just warns about invalid (self 
+signed) certificate, but also disable redirection to captive portal. 
+They report that something strange is going on and you can not click 
+proceed anyway.
+
+The problem is even bigger with Chrome 25 because all searches from 
+address bar are now on https. Users are now confused and some don't try 
+to open some other web site to login and just complain, that they can 
+not login.
+
+Is there any solution for that?
+
+BR, Bojan
+
+
+
+Dne 14.3.2013 9:01, pi?e Xabier Oneca -- xOneca:
+> For HTTPS redirections to work, you need a valid certificate for each
+> domain you want to be redirected. It would be a huge security hole, so
+> you cannot do a beautiful HTTPS redirect.
+>
+> If you don't mind that the user gets a security warning in his browser,
+> you can use --redirssl with its --ssl* config options to allow
+> CoovaChilli to listen to HTTPS requests. Chilli does not do this by
+> default. You will need a (self signed) certificate.
+>
+> HTH.
+>
+> --
+> Xabier Oneca_,,_
+>
+> El 14/03/2013 08:50, "Alexandre Rubert" <alexandre.rubert at gmail.com
+> <mailto:alexandre.rubert at gmail.com>> escribi?:
+>
+>     Ok, thank for your answer. I tried with dnsmasq and now all DNS
+>     request return an IP which is unauthaurized by coova, in that way
+>     client is redirected to uamhomepage. That's what I want but when
+>     client try to access to https, he isn't redirected. Wireshark  show
+>     that client try to access to https on the redirected IP but there is
+>     nothing matching it.
+>     Le 14/03/2013 03:39, David Bird a ?crit :
+>
+>         The problem with there being no WAN is that DNS will not work.
+>         Without
+>         DNS, you do not get a redirect since the browser times out
+>         before making
+>         any HTTP request. However, what you can do is use option
+>         --domaindnslocal to instruct CoovaChilli to return a 'local' IP
+>         for any
+>         DNS request under the --domain (so, if you have domain=lan, then
+>         hostname.lan would resolve in chilli to a local IP). Typically, DNS
+>         systems will attempt the original hostname, then the hostname
+>         under the
+>         DHCP domain, searching for a result.
+>
+>
+>         On Wed, 2013-03-13 at 15:18 +0100, Alexandre Rubert wrote:
+>
+>             Hello,
+>             I try to configure coovachilli to redirect all client to the
+>             uamhomepage
+>             when there is no internet connection. But actually, it
+>             doesn't work. Do
+>             you have an example of a kind of configuration ?
+>
+>             Thanks
+>             _________________________________________________
+>             Chilli mailing list
+>             Chilli at coova.org <mailto:Chilli at coova.org>
+>             http://lists.coova.org/cgi-__bin/mailman/listinfo/chilli
+>             <http://lists.coova.org/cgi-bin/mailman/listinfo/chilli>
+>
+>
+>
+>     _________________________________________________
+>     Chilli mailing list
+>     Chilli at coova.org <mailto:Chilli at coova.org>
+>     http://lists.coova.org/cgi-__bin/mailman/listinfo/chilli
+>     <http://lists.coova.org/cgi-bin/mailman/listinfo/chilli>
+>
+>
+>
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+
+-- 
+Lep pozdrav,
+
+Bojan Poga?ar
+GSM: 031 262 535
+
+From david at coova.com  Thu Mar 14 16:29:48 2013
+From: david at coova.com (David Bird)
+Date: Thu, 14 Mar 2013 09:29:48 -0700
+Subject: [Chilli] Coova when no wan
+In-Reply-To: <5141E0E6.2040709@gajba.net>
+References: <51408AD1.6070001@gmail.com>
+ <1363228776.6420.25.camel@david-laptop> <51417AA2.6010100@gmail.com>
+ <CACkgH724Wx7hDCR2=CyP3NoUuBWSzpuj5k2XXsTG1CY-kgPHFQ@mail.gmail.com>
+ <5141E0E6.2040709@gajba.net>
+Message-ID: <1363278588.7253.5.camel@david-laptop>
+
+There is no elegant way to deal with https traffic... essentially,
+chilli is a man-in-the-middle and it breaks SSL security. Having users
+notified of this lack of security is a GOOD thing. My advice is to keep
+SSL blocked. What would be interesting for Chrome to integrate into
+their browser is a notice that 'Authentication is required' on the
+network -- similar to how Android will give you such a notice, etc. 
+
+
+On Thu, 2013-03-14 at 15:38 +0100, Bojan Pogacar wrote:
+> Another problem with HTTPS redirection is, that google websites like 
+> google.com, gmail, .. in Chrome not just warns about invalid (self 
+> signed) certificate, but also disable redirection to captive portal. 
+> They report that something strange is going on and you can not click 
+> proceed anyway.
+> 
+> The problem is even bigger with Chrome 25 because all searches from 
+> address bar are now on https. Users are now confused and some don't try 
+> to open some other web site to login and just complain, that they can 
+> not login.
+> 
+> Is there any solution for that?
+> 
+> BR, Bojan
+> 
+> 
+> 
+> Dne 14.3.2013 9:01, pi?e Xabier Oneca -- xOneca:
+> > For HTTPS redirections to work, you need a valid certificate for each
+> > domain you want to be redirected. It would be a huge security hole, so
+> > you cannot do a beautiful HTTPS redirect.
+> >
+> > If you don't mind that the user gets a security warning in his browser,
+> > you can use --redirssl with its --ssl* config options to allow
+> > CoovaChilli to listen to HTTPS requests. Chilli does not do this by
+> > default. You will need a (self signed) certificate.
+> >
+> > HTH.
+> >
+> > --
+> > Xabier Oneca_,,_
+> >
+> > El 14/03/2013 08:50, "Alexandre Rubert" <alexandre.rubert at gmail.com
+> > <mailto:alexandre.rubert at gmail.com>> escribi?:
+> >
+> >     Ok, thank for your answer. I tried with dnsmasq and now all DNS
+> >     request return an IP which is unauthaurized by coova, in that way
+> >     client is redirected to uamhomepage. That's what I want but when
+> >     client try to access to https, he isn't redirected. Wireshark  show
+> >     that client try to access to https on the redirected IP but there is
+> >     nothing matching it.
+> >     Le 14/03/2013 03:39, David Bird a ?crit :
+> >
+> >         The problem with there being no WAN is that DNS will not work.
+> >         Without
+> >         DNS, you do not get a redirect since the browser times out
+> >         before making
+> >         any HTTP request. However, what you can do is use option
+> >         --domaindnslocal to instruct CoovaChilli to return a 'local' IP
+> >         for any
+> >         DNS request under the --domain (so, if you have domain=lan, then
+> >         hostname.lan would resolve in chilli to a local IP). Typically, DNS
+> >         systems will attempt the original hostname, then the hostname
+> >         under the
+> >         DHCP domain, searching for a result.
+> >
+> >
+> >         On Wed, 2013-03-13 at 15:18 +0100, Alexandre Rubert wrote:
+> >
+> >             Hello,
+> >             I try to configure coovachilli to redirect all client to the
+> >             uamhomepage
+> >             when there is no internet connection. But actually, it
+> >             doesn't work. Do
+> >             you have an example of a kind of configuration ?
+> >
+> >             Thanks
+> >             _________________________________________________
+> >             Chilli mailing list
+> >             Chilli at coova.org <mailto:Chilli at coova.org>
+> >             http://lists.coova.org/cgi-__bin/mailman/listinfo/chilli
+> >             <http://lists.coova.org/cgi-bin/mailman/listinfo/chilli>
+> >
+> >
+> >
+> >     _________________________________________________
+> >     Chilli mailing list
+> >     Chilli at coova.org <mailto:Chilli at coova.org>
+> >     http://lists.coova.org/cgi-__bin/mailman/listinfo/chilli
+> >     <http://lists.coova.org/cgi-bin/mailman/listinfo/chilli>
+> >
+> >
+> >
+> > _______________________________________________
+> > Chilli mailing list
+> > Chilli at coova.org
+> > http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+> >
+> 
+
+-- 
+--
+David Bird
+http://www.linkedin.com/in/dwbird
+https://twitter.com/wlanmac
+
+
+From alexandre.rubert at gmail.com  Sat Mar 16 15:33:32 2013
+From: alexandre.rubert at gmail.com (Alexandre Rubert)
+Date: Sat, 16 Mar 2013 16:33:32 +0100
+Subject: [Chilli] Coova when no wan
+In-Reply-To: <1363278588.7253.5.camel@david-laptop>
+References: <51408AD1.6070001@gmail.com>
+ <1363228776.6420.25.camel@david-laptop> <51417AA2.6010100@gmail.com>
+ <CACkgH724Wx7hDCR2=CyP3NoUuBWSzpuj5k2XXsTG1CY-kgPHFQ@mail.gmail.com>
+ <5141E0E6.2040709@gajba.net> <1363278588.7253.5.camel@david-laptop>
+Message-ID: <514490CC.1050603@gmail.com>
+
+Ok so If there isn't any solution with coova, how do they do in Mc 
+Donald, or University ? What kind of soft do they use ?
+Le 14/03/2013 17:29, David Bird a ?crit :
+> There is no elegant way to deal with https traffic... essentially,
+> chilli is a man-in-the-middle and it breaks SSL security. Having users
+> notified of this lack of security is a GOOD thing. My advice is to keep
+> SSL blocked. What would be interesting for Chrome to integrate into
+> their browser is a notice that 'Authentication is required' on the
+> network -- similar to how Android will give you such a notice, etc.
+>
+>
+> On Thu, 2013-03-14 at 15:38 +0100, Bojan Pogacar wrote:
+>> Another problem with HTTPS redirection is, that google websites like
+>> google.com, gmail, .. in Chrome not just warns about invalid (self
+>> signed) certificate, but also disable redirection to captive portal.
+>> They report that something strange is going on and you can not click
+>> proceed anyway.
+>>
+>> The problem is even bigger with Chrome 25 because all searches from
+>> address bar are now on https. Users are now confused and some don't try
+>> to open some other web site to login and just complain, that they can
+>> not login.
+>>
+>> Is there any solution for that?
+>>
+>> BR, Bojan
+>>
+>>
+>>
+>> Dne 14.3.2013 9:01, pi?e Xabier Oneca -- xOneca:
+>>> For HTTPS redirections to work, you need a valid certificate for each
+>>> domain you want to be redirected. It would be a huge security hole, so
+>>> you cannot do a beautiful HTTPS redirect.
+>>>
+>>> If you don't mind that the user gets a security warning in his browser,
+>>> you can use --redirssl with its --ssl* config options to allow
+>>> CoovaChilli to listen to HTTPS requests. Chilli does not do this by
+>>> default. You will need a (self signed) certificate.
+>>>
+>>> HTH.
+>>>
+>>> --
+>>> Xabier Oneca_,,_
+>>>
+>>> El 14/03/2013 08:50, "Alexandre Rubert" <alexandre.rubert at gmail.com
+>>> <mailto:alexandre.rubert at gmail.com>> escribi?:
+>>>
+>>>      Ok, thank for your answer. I tried with dnsmasq and now all DNS
+>>>      request return an IP which is unauthaurized by coova, in that way
+>>>      client is redirected to uamhomepage. That's what I want but when
+>>>      client try to access to https, he isn't redirected. Wireshark  show
+>>>      that client try to access to https on the redirected IP but there is
+>>>      nothing matching it.
+>>>      Le 14/03/2013 03:39, David Bird a ?crit :
+>>>
+>>>          The problem with there being no WAN is that DNS will not work.
+>>>          Without
+>>>          DNS, you do not get a redirect since the browser times out
+>>>          before making
+>>>          any HTTP request. However, what you can do is use option
+>>>          --domaindnslocal to instruct CoovaChilli to return a 'local' IP
+>>>          for any
+>>>          DNS request under the --domain (so, if you have domain=lan, then
+>>>          hostname.lan would resolve in chilli to a local IP). Typically, DNS
+>>>          systems will attempt the original hostname, then the hostname
+>>>          under the
+>>>          DHCP domain, searching for a result.
+>>>
+>>>
+>>>          On Wed, 2013-03-13 at 15:18 +0100, Alexandre Rubert wrote:
+>>>
+>>>              Hello,
+>>>              I try to configure coovachilli to redirect all client to the
+>>>              uamhomepage
+>>>              when there is no internet connection. But actually, it
+>>>              doesn't work. Do
+>>>              you have an example of a kind of configuration ?
+>>>
+>>>              Thanks
+>>>              _________________________________________________
+>>>              Chilli mailing list
+>>>              Chilli at coova.org <mailto:Chilli at coova.org>
+>>>              http://lists.coova.org/cgi-__bin/mailman/listinfo/chilli
+>>>              <http://lists.coova.org/cgi-bin/mailman/listinfo/chilli>
+>>>
+>>>
+>>>
+>>>      _________________________________________________
+>>>      Chilli mailing list
+>>>      Chilli at coova.org <mailto:Chilli at coova.org>
+>>>      http://lists.coova.org/cgi-__bin/mailman/listinfo/chilli
+>>>      <http://lists.coova.org/cgi-bin/mailman/listinfo/chilli>
+>>>
+>>>
+>>>
+>>> _______________________________________________
+>>> Chilli mailing list
+>>> Chilli at coova.org
+>>> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>>>
+
+
+From david at coova.com  Mon Mar 18 21:05:35 2013
+From: david at coova.com (David Bird)
+Date: Mon, 18 Mar 2013 14:05:35 -0700
+Subject: [Chilli] Coova when no wan
+In-Reply-To: <514490CC.1050603@gmail.com>
+References: <51408AD1.6070001@gmail.com>
+ <1363228776.6420.25.camel@david-laptop> <51417AA2.6010100@gmail.com>
+ <CACkgH724Wx7hDCR2=CyP3NoUuBWSzpuj5k2XXsTG1CY-kgPHFQ@mail.gmail.com>
+ <5141E0E6.2040709@gajba.net> <1363278588.7253.5.camel@david-laptop>
+ <514490CC.1050603@gmail.com>
+Message-ID: <1363640735.12452.1.camel@david-laptop>
+
+Google for "WPAD" ...
+
+On Sat, 2013-03-16 at 16:33 +0100, Alexandre Rubert wrote:
+> Ok so If there isn't any solution with coova, how do they do in Mc 
+> Donald, or University ? What kind of soft do they use ?
+> Le 14/03/2013 17:29, David Bird a ?crit :
+> > There is no elegant way to deal with https traffic... essentially,
+> > chilli is a man-in-the-middle and it breaks SSL security. Having users
+> > notified of this lack of security is a GOOD thing. My advice is to keep
+> > SSL blocked. What would be interesting for Chrome to integrate into
+> > their browser is a notice that 'Authentication is required' on the
+> > network -- similar to how Android will give you such a notice, etc.
+> >
+> >
+> > On Thu, 2013-03-14 at 15:38 +0100, Bojan Pogacar wrote:
+> >> Another problem with HTTPS redirection is, that google websites like
+> >> google.com, gmail, .. in Chrome not just warns about invalid (self
+> >> signed) certificate, but also disable redirection to captive portal.
+> >> They report that something strange is going on and you can not click
+> >> proceed anyway.
+> >>
+> >> The problem is even bigger with Chrome 25 because all searches from
+> >> address bar are now on https. Users are now confused and some don't try
+> >> to open some other web site to login and just complain, that they can
+> >> not login.
+> >>
+> >> Is there any solution for that?
+> >>
+> >> BR, Bojan
+> >>
+> >>
+> >>
+> >> Dne 14.3.2013 9:01, pi?e Xabier Oneca -- xOneca:
+> >>> For HTTPS redirections to work, you need a valid certificate for each
+> >>> domain you want to be redirected. It would be a huge security hole, so
+> >>> you cannot do a beautiful HTTPS redirect.
+> >>>
+> >>> If you don't mind that the user gets a security warning in his browser,
+> >>> you can use --redirssl with its --ssl* config options to allow
+> >>> CoovaChilli to listen to HTTPS requests. Chilli does not do this by
+> >>> default. You will need a (self signed) certificate.
+> >>>
+> >>> HTH.
+> >>>
+> >>> --
+> >>> Xabier Oneca_,,_
+> >>>
+> >>> El 14/03/2013 08:50, "Alexandre Rubert" <alexandre.rubert at gmail.com
+> >>> <mailto:alexandre.rubert at gmail.com>> escribi?:
+> >>>
+> >>>      Ok, thank for your answer. I tried with dnsmasq and now all DNS
+> >>>      request return an IP which is unauthaurized by coova, in that way
+> >>>      client is redirected to uamhomepage. That's what I want but when
+> >>>      client try to access to https, he isn't redirected. Wireshark  show
+> >>>      that client try to access to https on the redirected IP but there is
+> >>>      nothing matching it.
+> >>>      Le 14/03/2013 03:39, David Bird a ?crit :
+> >>>
+> >>>          The problem with there being no WAN is that DNS will not work.
+> >>>          Without
+> >>>          DNS, you do not get a redirect since the browser times out
+> >>>          before making
+> >>>          any HTTP request. However, what you can do is use option
+> >>>          --domaindnslocal to instruct CoovaChilli to return a 'local' IP
+> >>>          for any
+> >>>          DNS request under the --domain (so, if you have domain=lan, then
+> >>>          hostname.lan would resolve in chilli to a local IP). Typically, DNS
+> >>>          systems will attempt the original hostname, then the hostname
+> >>>          under the
+> >>>          DHCP domain, searching for a result.
+> >>>
+> >>>
+> >>>          On Wed, 2013-03-13 at 15:18 +0100, Alexandre Rubert wrote:
+> >>>
+> >>>              Hello,
+> >>>              I try to configure coovachilli to redirect all client to the
+> >>>              uamhomepage
+> >>>              when there is no internet connection. But actually, it
+> >>>              doesn't work. Do
+> >>>              you have an example of a kind of configuration ?
+> >>>
+> >>>              Thanks
+> >>>              _________________________________________________
+> >>>              Chilli mailing list
+> >>>              Chilli at coova.org <mailto:Chilli at coova.org>
+> >>>              http://lists.coova.org/cgi-__bin/mailman/listinfo/chilli
+> >>>              <http://lists.coova.org/cgi-bin/mailman/listinfo/chilli>
+> >>>
+> >>>
+> >>>
+> >>>      _________________________________________________
+> >>>      Chilli mailing list
+> >>>      Chilli at coova.org <mailto:Chilli at coova.org>
+> >>>      http://lists.coova.org/cgi-__bin/mailman/listinfo/chilli
+> >>>      <http://lists.coova.org/cgi-bin/mailman/listinfo/chilli>
+> >>>
+> >>>
+> >>>
+> >>> _______________________________________________
+> >>> Chilli mailing list
+> >>> Chilli at coova.org
+> >>> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+> >>>
+> 
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+-- 
+--
+David Bird
+http://www.linkedin.com/in/dwbird
+https://twitter.com/wlanmac
+
+
+From david at coova.com  Mon Mar 18 23:33:28 2013
+From: david at coova.com (David Bird)
+Date: Mon, 18 Mar 2013 16:33:28 -0700
+Subject: [Chilli] Coova when no wan
+In-Reply-To: <1363640735.12452.1.camel@david-laptop>
+References: <51408AD1.6070001@gmail.com>
+ <1363228776.6420.25.camel@david-laptop> <51417AA2.6010100@gmail.com>
+ <CACkgH724Wx7hDCR2=CyP3NoUuBWSzpuj5k2XXsTG1CY-kgPHFQ@mail.gmail.com>
+ <5141E0E6.2040709@gajba.net> <1363278588.7253.5.camel@david-laptop>
+ <514490CC.1050603@gmail.com> <1363640735.12452.1.camel@david-laptop>
+Message-ID: <1363649608.12452.12.camel@david-laptop>
+
+I've been considering for sometime the integration of WPAD into chilli,
+allowing the setting of a PAC file via DHCP and/or DNS. If anyone is
+using WPAD + Chilli and has suggestions, feel free to send to the list
+or leave a comment at LinkedIn.
+
+http://www.linkedin.com/groups/Coova-Network-Access-Provisioning-Control-158903
+
+On Mon, 2013-03-18 at 14:05 -0700, David Bird wrote:
+> Google for "WPAD" ...
+> 
+
+-- 
+--
+David Bird
+http://www.linkedin.com/in/dwbird
+https://twitter.com/wlanmac
+
+
+From ravikant.4784 at gmail.com  Tue Mar 19 04:45:00 2013
+From: ravikant.4784 at gmail.com (Ravikant Patil)
+Date: Tue, 19 Mar 2013 10:15:00 +0530
+Subject: [Chilli] Coova when no wan
+In-Reply-To: <1363649608.12452.12.camel@david-laptop>
+References: <51408AD1.6070001@gmail.com>
+ <1363228776.6420.25.camel@david-laptop>
+ <51417AA2.6010100@gmail.com>
+ <CACkgH724Wx7hDCR2=CyP3NoUuBWSzpuj5k2XXsTG1CY-kgPHFQ@mail.gmail.com>
+ <5141E0E6.2040709@gajba.net> <1363278588.7253.5.camel@david-laptop>
+ <514490CC.1050603@gmail.com>
+ <1363640735.12452.1.camel@david-laptop>
+ <1363649608.12452.12.camel@david-laptop>
+Message-ID: <CAGPhq8L5hLwo9hF8t+w3LViG2pim0NF7O6jK+yeA-dyvRJ5r8w@mail.gmail.com>
+
+One of the hackish way to handle 'coova with no wan' is -
+
+- Write a script to check internet connection status {reachable,
+unreachable}.
+- Run it continuously on same controller machine (on which coova is
+running).
+- Use local dns server (for ex. dnsmasq).
+- When internet is down, insert config in dnsmasq.conf which resolves any
+DNS request to the ip of controller machine.(wild card resolv)
+- On controller machine use [SERVER_NAME] from SERVER object to redirect
+client to a page showing internet is unreacheble/no connectivity etc.
+- When internet is up remove the wild card entry from dnsmasq.conf
+
+(All the insert and remove config from dnsmasq.conf as well as internet
+connection status script are automated.)
+
+Hope this is helpful.
+
+
+
+Regards,
+
+Ravikant
+
+
+On Tue, Mar 19, 2013 at 5:03 AM, David Bird <david at coova.com> wrote:
+
+> I've been considering for sometime the integration of WPAD into chilli,
+> allowing the setting of a PAC file via DHCP and/or DNS. If anyone is
+> using WPAD + Chilli and has suggestions, feel free to send to the list
+> or leave a comment at LinkedIn.
+>
+>
+> http://www.linkedin.com/groups/Coova-Network-Access-Provisioning-Control-158903
+>
+> On Mon, 2013-03-18 at 14:05 -0700, David Bird wrote:
+> > Google for "WPAD" ...
+> >
+>
+> --
+> --
+> David Bird
+> http://www.linkedin.com/in/dwbird
+> https://twitter.com/wlanmac
+>
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130319/82eb9a5e/attachment.html>
+
+From alexandre.rubert at gmail.com  Tue Mar 19 06:52:26 2013
+From: alexandre.rubert at gmail.com (Alexandre Rubert)
+Date: Tue, 19 Mar 2013 07:52:26 +0100
+Subject: [Chilli] Coova when no wan
+In-Reply-To: <CAGPhq8L5hLwo9hF8t+w3LViG2pim0NF7O6jK+yeA-dyvRJ5r8w@mail.gmail.com>
+References: <51408AD1.6070001@gmail.com>
+ <1363228776.6420.25.camel@david-laptop> <51417AA2.6010100@gmail.com>
+ <CACkgH724Wx7hDCR2=CyP3NoUuBWSzpuj5k2XXsTG1CY-kgPHFQ@mail.gmail.com>
+ <5141E0E6.2040709@gajba.net> <1363278588.7253.5.camel@david-laptop>
+ <514490CC.1050603@gmail.com> <1363640735.12452.1.camel@david-laptop>
+ <1363649608.12452.12.camel@david-laptop>
+ <CAGPhq8L5hLwo9hF8t+w3LViG2pim0NF7O6jK+yeA-dyvRJ5r8w@mail.gmail.com>
+Message-ID: <51480B2A.3000807@gmail.com>
+
+It's what I did but it doesn't work for https like facebook or any 
+google search in the search bar. It always returns server error instead 
+of redirecting to uamhomepage.
+Le 19/03/2013 05:45, Ravikant Patil a ?crit :
+> One of the hackish way to handle 'coova with no wan' is -
+>
+> - Write a script to check internet connection status {reachable, 
+> unreachable}.
+> - Run it continuously on same controller machine (on which coova is 
+> running).
+> - Use local dns server (for ex. dnsmasq).
+> - When internet is down, insert config in dnsmasq.conf which resolves 
+> any DNS request to the ip of controller machine.(wild card resolv)
+> - On controller machine use [SERVER_NAME] from SERVER object to 
+> redirect client to a page showing internet is unreacheble/no 
+> connectivity etc.
+> - When internet is up remove the wild card entry from dnsmasq.conf
+>
+> (All the insert and remove config from dnsmasq.conf as well as 
+> internet connection status script are automated.)
+>
+> Hope this is helpful.
+>
+>
+>
+> Regards,
+>
+> Ravikant
+>
+>
+> On Tue, Mar 19, 2013 at 5:03 AM, David Bird <david at coova.com 
+> <mailto:david at coova.com>> wrote:
+>
+>     I've been considering for sometime the integration of WPAD into
+>     chilli,
+>     allowing the setting of a PAC file via DHCP and/or DNS. If anyone is
+>     using WPAD + Chilli and has suggestions, feel free to send to the list
+>     or leave a comment at LinkedIn.
+>
+>     http://www.linkedin.com/groups/Coova-Network-Access-Provisioning-Control-158903
+>
+>     On Mon, 2013-03-18 at 14:05 -0700, David Bird wrote:
+>     > Google for "WPAD" ...
+>     >
+>
+>     --
+>     --
+>     David Bird
+>     http://www.linkedin.com/in/dwbird
+>     https://twitter.com/wlanmac
+>
+>     _______________________________________________
+>     Chilli mailing list
+>     Chilli at coova.org <mailto:Chilli at coova.org>
+>     http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+>
+>
+>
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130319/88e70316/attachment.html>
+
+From ravikant.4784 at gmail.com  Tue Mar 19 09:05:53 2013
+From: ravikant.4784 at gmail.com (Ravikant Patil)
+Date: Tue, 19 Mar 2013 14:35:53 +0530
+Subject: [Chilli] Coova when no wan
+In-Reply-To: <51480B2A.3000807@gmail.com>
+References: <51408AD1.6070001@gmail.com>
+ <1363228776.6420.25.camel@david-laptop>
+ <51417AA2.6010100@gmail.com>
+ <CACkgH724Wx7hDCR2=CyP3NoUuBWSzpuj5k2XXsTG1CY-kgPHFQ@mail.gmail.com>
+ <5141E0E6.2040709@gajba.net> <1363278588.7253.5.camel@david-laptop>
+ <514490CC.1050603@gmail.com>
+ <1363640735.12452.1.camel@david-laptop>
+ <1363649608.12452.12.camel@david-laptop>
+ <CAGPhq8L5hLwo9hF8t+w3LViG2pim0NF7O6jK+yeA-dyvRJ5r8w@mail.gmail.com>
+ <51480B2A.3000807@gmail.com>
+Message-ID: <CAGPhq8KZd=BXf67QHnALUukJSi4hqKOXdHJjDPAhQw-bNnCxpw@mail.gmail.com>
+
+Search bar essentially creates https request to the respective search
+engine. Hence it will get handle by coova-chilli exactly the way https
+requests get handled. So, I think, all the above mentioned (possible set
+of) solutions apply to search bar case also.
+
+
+Regards,
+
+Ravikant
+
+
+On Tue, Mar 19, 2013 at 12:22 PM, Alexandre Rubert <
+alexandre.rubert at gmail.com> wrote:
+
+>  It's what I did but it doesn't work for https like facebook or any
+> google search in the search bar. It always returns server error instead of
+> redirecting to uamhomepage.
+> Le 19/03/2013 05:45, Ravikant Patil a ?crit :
+>
+>  One of the hackish way to handle 'coova with no wan' is -
+>
+>  - Write a script to check internet connection status {reachable,
+> unreachable}.
+> - Run it continuously on same controller machine (on which coova is
+> running).
+>  - Use local dns server (for ex. dnsmasq).
+>  - When internet is down, insert config in dnsmasq.conf which resolves
+> any DNS request to the ip of controller machine.(wild card resolv)
+>  - On controller machine use [SERVER_NAME] from SERVER object to redirect
+> client to a page showing internet is unreacheble/no connectivity etc.
+>  - When internet is up remove the wild card entry from dnsmasq.conf
+>
+>  (All the insert and remove config from dnsmasq.conf as well as internet
+> connection status script are automated.)
+>
+>  Hope this is helpful.
+>
+>
+>
+>  Regards,
+>
+>  Ravikant
+>
+>
+> On Tue, Mar 19, 2013 at 5:03 AM, David Bird <david at coova.com> wrote:
+>
+>> I've been considering for sometime the integration of WPAD into chilli,
+>> allowing the setting of a PAC file via DHCP and/or DNS. If anyone is
+>> using WPAD + Chilli and has suggestions, feel free to send to the list
+>> or leave a comment at LinkedIn.
+>>
+>>
+>> http://www.linkedin.com/groups/Coova-Network-Access-Provisioning-Control-158903
+>>
+>> On Mon, 2013-03-18 at 14:05 -0700, David Bird wrote:
+>> > Google for "WPAD" ...
+>>  >
+>>
+>> --
+>> --
+>> David Bird
+>> http://www.linkedin.com/in/dwbird
+>> https://twitter.com/wlanmac
+>>
+>> _______________________________________________
+>> Chilli mailing list
+>> Chilli at coova.org
+>> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>>
+>
+>
+>
+> _______________________________________________
+> Chilli mailing listChilli at coova.orghttp://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+>
+>
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130319/3cb788b3/attachment-0001.html>
+
+From bojan at gajba.net  Tue Mar 19 09:12:18 2013
+From: bojan at gajba.net (Bojan Pogacar)
+Date: Tue, 19 Mar 2013 10:12:18 +0100
+Subject: [Chilli] Coova when no wan
+In-Reply-To: <CAGPhq8KZd=BXf67QHnALUukJSi4hqKOXdHJjDPAhQw-bNnCxpw@mail.gmail.com>
+References: <51408AD1.6070001@gmail.com>
+ <1363228776.6420.25.camel@david-laptop> <51417AA2.6010100@gmail.com>
+ <CACkgH724Wx7hDCR2=CyP3NoUuBWSzpuj5k2XXsTG1CY-kgPHFQ@mail.gmail.com>
+ <5141E0E6.2040709@gajba.net> <1363278588.7253.5.camel@david-laptop>
+ <514490CC.1050603@gmail.com> <1363640735.12452.1.camel@david-laptop>
+ <1363649608.12452.12.camel@david-laptop>
+ <CAGPhq8L5hLwo9hF8t+w3LViG2pim0NF7O6jK+yeA-dyvRJ5r8w@mail.gmail.com>
+ <51480B2A.3000807@gmail.com>
+ <CAGPhq8KZd=BXf67QHnALUukJSi4hqKOXdHJjDPAhQw-bNnCxpw@mail.gmail.com>
+Message-ID: <51482BF2.5080304@gajba.net>
+
+The problem is not thah coova-chilli woulds handle https request, but 
+security in Google Chorome, that won't allow to open google services 
+with invalid certificate (selfsigned for coova-chilli man-in-the-middle).
+
+BR, Bojan
+
+
+
+
+Dne 19.3.2013 10:05, pi?e Ravikant Patil:
+> Search bar essentially creates https request to the respective search
+> engine. Hence it will get handle by coova-chilli exactly the way https
+> requests get handled. So, I think, all the above mentioned (possible set
+> of) solutions apply to search bar case also.
+>
+>
+> Regards,
+>
+> Ravikant
+>
+>
+> On Tue, Mar 19, 2013 at 12:22 PM, Alexandre Rubert
+> <alexandre.rubert at gmail.com <mailto:alexandre.rubert at gmail.com>> wrote:
+>
+>     It's what I did but it doesn't work for https like facebook or any
+>     google search in the search bar. It always returns server error
+>     instead of redirecting to uamhomepage.
+>     Le 19/03/2013 05:45, Ravikant Patil a ??crit? :
+>>     One of the hackish way to handle 'coova with no wan' is -
+>>
+>>     - Write a script to check internet connection status {reachable,
+>>     unreachable}.
+>>     - Run it continuously on same controller machine (on which coova
+>>     is running).
+>>     - Use local dns server (for ex. dnsmasq).
+>>     - When internet is down, insert config in dnsmasq.conf which
+>>     resolves any DNS request to the ip of controller machine.(wild
+>>     card resolv)
+>>     - On controller machine use [SERVER_NAME] from SERVER object to
+>>     redirect client to a page showing internet is unreacheble/no
+>>     connectivity etc.
+>>     - When internet is up remove the wild card entry from dnsmasq.conf
+>>
+>>     (All the insert and remove config from dnsmasq.conf as well as
+>>     internet connection status script are automated.)
+>>
+>>     Hope this is helpful.
+>>
+>>
+>>
+>>     Regards,
+>>
+>>     Ravikant
+>>
+>>
+>>     On Tue, Mar 19, 2013 at 5:03 AM, David Bird <david at coova.com
+>>     <mailto:david at coova.com>> wrote:
+>>
+>>         I've been considering for sometime the integration of WPAD
+>>         into chilli,
+>>         allowing the setting of a PAC file via DHCP and/or DNS. If
+>>         anyone is
+>>         using WPAD + Chilli and has suggestions, feel free to send to
+>>         the list
+>>         or leave a comment at LinkedIn.
+>>
+>>         http://www.linkedin.com/groups/Coova-Network-Access-Provisioning-Control-158903
+>>
+>>         On Mon, 2013-03-18 at 14:05 -0700, David Bird wrote:
+>>         > Google for "WPAD" ...
+>>         >
+>>
+>>         --
+>>         --
+>>         David Bird
+>>         http://www.linkedin.com/in/dwbird
+>>         https://twitter.com/wlanmac
+>>
+>>         _______________________________________________
+>>         Chilli mailing list
+>>         Chilli at coova.org <mailto:Chilli at coova.org>
+>>         http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>>
+>>
+>>
+>>
+>>     _______________________________________________
+>>     Chilli mailing list
+>>     Chilli at coova.org  <mailto:Chilli at coova.org>
+>>     http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+>
+>     _______________________________________________
+>     Chilli mailing list
+>     Chilli at coova.org <mailto:Chilli at coova.org>
+>     http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+>
+>
+>
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+
+-- 
+Lep pozdrav,
+
+Bojan Poga?ar
+GSM: 031 262 535
+
+From maltara86 at gmail.com  Wed Mar 20 22:03:38 2013
+From: maltara86 at gmail.com (=?ISO-8859-1?Q?Maria_Ang=E9lica_Lizarazo?=)
+Date: Wed, 20 Mar 2013 17:03:38 -0500
+Subject: [Chilli] Preproxy with coova
+Message-ID: <CABTDJHAEqv7rcE3T6sVhpo4F8Be4COApY=F-E-3SO8Pfnchgkw@mail.gmail.com>
+
+Hi. I've been using coova for several years now, and I can say that it does
+a wonderful job when managing hotspots. Now I'm facing the following
+scenario.
+If a client has a proxy  (it could be at a browser level or at a  software
+level), it can connect successfully and obtain an ip address but it doesn't
+get redirected to the captive portal. Calling the portal itself doesn't
+work either, the only way for the client to get redirected is to disable
+the proxy.
+I've been struggling with squid and tiny proxy, but to my understanding
+these 2 only work when dealing with post authentication requests that take
+place AFTER the client has successfully logged on.
+I've been messing around with the up.sh script trying to get the most
+popular proxy ports, but still no luck.
+What is the correct way to deal with this scenario? how can I get coova to
+redirect even if the port is let's say 31295?
+I'm using coova 1.2.5 on fedora, mainly because I need to have the ability
+to let clients with static ips connect to the hotspot. And according to the
+forums, that feature is missing on the next coova releases.
+Thank you
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130320/e322f536/attachment.html>
+
+From steffen.dettmer at nomadrail.com  Thu Mar 21 16:50:11 2013
+From: steffen.dettmer at nomadrail.com (Steffen Dettmer)
+Date: Thu, 21 Mar 2013 16:50:11 +0000
+Subject: [Chilli] compiler warning leads to build error
+Message-ID: <8C2CB2442BFDDB4D95785B991B30D3463116EED6@DBXPRD0510MB372.eurprd05.prod.outlook.com>
+
+Dear developers,
+
+
+
+Thanks for this nice software and all you efforts spent!
+
+
+
+I just noted a minor issue. On Debian 6 amd64 a warning leads to a compiler error:
+
+
+
+  main-opt.c:781: error: 'ptr' may be used uninitialized in this function
+
+
+
+because of -Werror. The warning even seems to be a false one.
+
+
+
+Is it intended to have -Werror in release builds? Seems -Werror is "hardcoded" in Makefile.am.
+
+For me I just patched src/Makefile* and removed -Werror, but I write in case others could be interested in.
+
+
+
+Best regards,
+
+Steffen
+
+
+
+
+
+
+
+
+
+/bin/bash ../libtool --tag=CC   --mode=link x86_64-linux-gnu-gcc -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF='"/etc/chilli.conf"' -DDEFPIDFILE='"/var/run/chilli.pid"' -DDEFSTATEDIR='"/var/run"' -DSBINDIR='"/usr/sbin"'   -DDEFLIBDIR='"/usr/lib/coova-chilli"' -g -O2   -o chilli_radconfig main-radconfig.o libchilli.la  ../bstring/libbstring.la  -lssl -lcrypto     -ldl -lrt
+
+libtool: link: x86_64-linux-gnu-gcc -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF=\"/etc/chilli.conf\" -DDEFPIDFILE=\"/var/run/chilli.pid\" -DDEFSTATEDIR=\"/var/run\" -DSBINDIR=\"/usr/sbin\" -DDEFLIBDIR=\"/usr/lib/coova-chilli\" -g -O2 -o .libs/chilli_radconfig main-radconfig.o  ./.libs/libchilli.so ../bstring/.libs/libbstring.so -lssl -lcrypto -ldl -lrt
+
+x86_64-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I..    -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF='"/etc/chilli.conf"' -DDEFPIDFILE='"/var/run/chilli.pid"' -DDEFSTATEDIR='"/var/run"' -DSBINDIR='"/usr/sbin"'   -DDEFLIBDIR='"/usr/lib/coova-chilli"' -g -O2 -MT main-opt.o -MD -MP -MF .deps/main-opt.Tpo -c -o main-opt.o main-opt.c
+
+cc1: warnings being treated as errors
+
+main-opt.c: In function 'main':
+
+main-opt.c:781: error: 'ptr' may be used uninitialized in this function
+
+make[4]: *** [main-opt.o] Error 1
+
+make[4]: Leaving directory `/home/steffen/tmp/coova-chilli-1.3.0/src'
+
+make[3]: *** [all-recursive] Error 1
+
+make[3]: Leaving directory `/home/steffen/tmp/coova-chilli-1.3.0/src'
+
+make[2]: *** [all-recursive] Error 1
+
+make[2]: Leaving directory `/home/steffen/tmp/coova-chilli-1.3.0'
+
+make[1]: *** [all] Error 2
+
+make[1]: Leaving directory `/home/steffen/tmp/coova-chilli-1.3.0'
+
+make: *** [build] Error 2
+
+dpkg-buildpackage: error: debian/rules build gave error exit status 2
+
+debuild: fatal error at line 1325:
+
+dpkg-buildpackage -rfakeroot -D -us -uc -i -b failed
+
+
+
+
+
+
+
+steffen at vivaldi:~/tmp/coova-chilli-1.3.0-steffen (master u=) $ cat /etc/issue
+
+Debian GNU/Linux 6.0 \n \l
+
+
+
+steffen at vivaldi:~/tmp/coova-chilli-1.3.0-steffen (master u=) $ uname -a
+
+Linux vivaldi 2.6.32-5-amd64 #1 SMP Sun Sep 23 10:07:46 UTC 2012 x86_64 GNU/Linux
+
+steffen at vivaldi:~/tmp/coova-chilli-1.3.0-steffen (master u=) $ gcc --version
+
+gcc (Debian 4.4.5-8) 4.4.5
+
+Copyright (C) 2010 Free Software Foundation, Inc.
+
+This is free software; see the source for copying conditions.  There is NO
+
+warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+
+
+
+
+src/main-opt.c:
+
+
+
+777     for (numargs = 0, i=0;
+
+ 778          numargs < args_info.uamdomain_given && i < MAX_UAM_DOMAINS;
+
+779          ++numargs) {
+
+780       char *tb = args_info.uamdomain_arg[numargs];
+
+781       char *tok, *str, *ptr;
+
+782       for (str = tb ; i < MAX_UAM_DOMAINS; str = NULL) {
+
+783         tok = strtok_r(str, ",", &ptr);
+
+784         if (!tok) break;
+
+785         log_dbg("uamdomain %s", tok);
+
+786         _options.uamdomains[i++] = STRDUP(tok);
+
+787       }
+
+788     }
+
+
+
+
+
+
+
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130321/96b1ef94/attachment.html>
+
+From alexandre.rubert at gmail.com  Thu Mar 21 17:06:58 2013
+From: alexandre.rubert at gmail.com (Alexandre Rubert)
+Date: Thu, 21 Mar 2013 18:06:58 +0100
+Subject: [Chilli] compiler warning leads to build error
+In-Reply-To: <8C2CB2442BFDDB4D95785B991B30D3463116EED6@DBXPRD0510MB372.eurprd05.prod.outlook.com>
+References: <8C2CB2442BFDDB4D95785B991B30D3463116EED6@DBXPRD0510MB372.eurprd05.prod.outlook.com>
+Message-ID: <514B3E32.1080304@gmail.com>
+
+Same error on x86 and same solution for me.
+Le 21/03/2013 17:50, Steffen Dettmer a ?crit :
+>
+> Dear developers,
+>
+> Thanks for this nice software and all you efforts spent!
+>
+> I just noted a minor issue. On Debian 6 amd64 a warning leads to a 
+> compiler error:
+>
+>   main-opt.c:781: error: 'ptr' may be used uninitialized in this function
+>
+> because of --Werror. The warning even seems to be a false one.
+>
+> Is it intended to have --Werror in release builds? Seems --Werror is 
+> "hardcoded" in Makefile.am.
+>
+>
+> For me I just patched src/Makefile* and removed --Werror, but I write 
+> in case others could be interested in.
+>
+> Best regards,
+>
+> Steffen
+>
+> /bin/bash ../libtool --tag=CC   --mode=link x86_64-linux-gnu-gcc 
+> -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 
+> -fomit-frame-pointer -funroll-loops -pipe -I../bstring 
+> -DDEFCHILLICONF='"/etc/chilli.conf"' 
+> -DDEFPIDFILE='"/var/run/chilli.pid"' -DDEFSTATEDIR='"/var/run"' 
+> -DSBINDIR='"/usr/sbin"' -DDEFLIBDIR='"/usr/lib/coova-chilli"' -g -O2   
+> -o chilli_radconfig main-radconfig.o libchilli.la 
+> ../bstring/libbstring.la  -lssl -lcrypto     -ldl -lrt
+>
+> libtool: link: x86_64-linux-gnu-gcc -D_GNU_SOURCE -Wall -Werror 
+> -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer 
+> -funroll-loops -pipe -I../bstring -DDEFCHILLICONF=\"/etc/chilli.conf\" 
+> -DDEFPIDFILE=\"/var/run/chilli.pid\" -DDEFSTATEDIR=\"/var/run\" 
+> -DSBINDIR=\"/usr/sbin\" -DDEFLIBDIR=\"/usr/lib/coova-chilli\" -g -O2 
+> -o .libs/chilli_radconfig main-radconfig.o ./.libs/libchilli.so 
+> ../bstring/.libs/libbstring.so -lssl -lcrypto -ldl -lrt
+>
+> x86_64-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I..    -D_GNU_SOURCE -Wall 
+> -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer 
+> -funroll-loops -pipe -I../bstring -DDEFCHILLICONF='"/etc/chilli.conf"' 
+> -DDEFPIDFILE='"/var/run/chilli.pid"' -DDEFSTATEDIR='"/var/run"' 
+> -DSBINDIR='"/usr/sbin"' -DDEFLIBDIR='"/usr/lib/coova-chilli"' -g -O2 
+> -MT main-opt.o -MD -MP -MF .deps/main-opt.Tpo -c -o main-opt.o main-opt.c
+>
+> cc1: warnings being treated as errors
+>
+> main-opt.c: In function 'main':
+>
+> main-opt.c:781: error: 'ptr' may be used uninitialized in this function
+>
+> make[4]: *** [main-opt.o] Error 1
+>
+> make[4]: Leaving directory `/home/steffen/tmp/coova-chilli-1.3.0/src'
+>
+> make[3]: *** [all-recursive] Error 1
+>
+> make[3]: Leaving directory `/home/steffen/tmp/coova-chilli-1.3.0/src'
+>
+> make[2]: *** [all-recursive] Error 1
+>
+> make[2]: Leaving directory `/home/steffen/tmp/coova-chilli-1.3.0'
+>
+> make[1]: *** [all] Error 2
+>
+> make[1]: Leaving directory `/home/steffen/tmp/coova-chilli-1.3.0'
+>
+> make: *** [build] Error 2
+>
+> dpkg-buildpackage: error: debian/rules build gave error exit status 2
+>
+> debuild: fatal error at line 1325:
+>
+> dpkg-buildpackage -rfakeroot -D -us -uc -i -b failed
+>
+> steffen at vivaldi:~/tmp/coova-chilli-1.3.0-steffen (master u=) $ cat 
+> /etc/issue
+>
+> Debian GNU/Linux 6.0 \n \l
+>
+> steffen at vivaldi:~/tmp/coova-chilli-1.3.0-steffen (master u=) $ uname -a
+>
+> Linux vivaldi 2.6.32-5-amd64 #1 SMP Sun Sep 23 10:07:46 UTC 2012 
+> x86_64 GNU/Linux
+>
+> steffen at vivaldi:~/tmp/coova-chilli-1.3.0-steffen (master u=) $ gcc 
+> --version
+>
+> gcc (Debian 4.4.5-8) 4.4.5
+>
+> Copyright (C) 2010 Free Software Foundation, Inc.
+>
+> This is free software; see the source for copying conditions.  There is NO
+>
+> warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+> PURPOSE.
+>
+> src/main-opt.c:
+>
+> 777     for (numargs = 0, i=0;
+>
+>  778          numargs < args_info.uamdomain_given && i < MAX_UAM_DOMAINS;
+>
+> 779          ++numargs) {
+>
+> 780       char *tb = args_info.uamdomain_arg[numargs];
+>
+> 781       char *tok, *str, *ptr;
+>
+> 782       for (str = tb ; i < MAX_UAM_DOMAINS; str = NULL) {
+>
+> 783         tok = strtok_r(str, ",", &ptr);
+>
+> 784         if (!tok) break;
+>
+> 785         log_dbg("uamdomain %s", tok);
+>
+> 786         _options.uamdomains[i++] = STRDUP(tok);
+>
+> 787 }
+>
+> 788 }
+>
+>
+>
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130321/b976ecbb/attachment-0001.html>
+
+From david at coova.com  Thu Mar 21 17:17:38 2013
+From: david at coova.com (David Bird)
+Date: Thu, 21 Mar 2013 10:17:38 -0700
+Subject: [Chilli] compiler warning leads to build error
+In-Reply-To: <8C2CB2442BFDDB4D95785B991B30D3463116EED6@DBXPRD0510MB372.eurprd05.prod.outlook.com>
+References: <8C2CB2442BFDDB4D95785B991B30D3463116EED6@DBXPRD0510MB372.eurprd05.prod.outlook.com>
+Message-ID: <1363886258.4683.0.camel@david-laptop>
+
+In subversion, it was already resolved with ptr=0 initialization. 
+
+
+On Thu, 2013-03-21 at 16:50 +0000, Steffen Dettmer wrote:
+> Dear developers,
+> 
+>  
+> 
+> Thanks for this nice software and all you efforts spent!
+> 
+>  
+> 
+> I just noted a minor issue. On Debian 6 amd64 a warning leads to a
+> compiler error:
+> 
+>  
+> 
+>   main-opt.c:781: error: ?ptr? may be used uninitialized in this
+> function
+> 
+>  
+> 
+> because of ?Werror. The warning even seems to be a false one.
+> 
+>  
+> 
+> Is it intended to have ?Werror in release builds? Seems ?Werror is
+> ?hardcoded? in Makefile.am.
+> 
+> 
+> For me I just patched src/Makefile* and removed ?Werror, but I write
+> in case others could be interested in.
+> 
+>  
+> 
+> Best regards,
+> 
+> Steffen
+> 
+>  
+> 
+>  
+> 
+>  
+> 
+>  
+> 
+> /bin/bash ../libtool --tag=CC   --mode=link x86_64-linux-gnu-gcc
+> -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2
+> -fomit-frame-pointer -funroll-loops -pipe -I../bstring
+> -DDEFCHILLICONF='"/etc/chilli.conf"'
+> -DDEFPIDFILE='"/var/run/chilli.pid"' -DDEFSTATEDIR='"/var/run"'
+> -DSBINDIR='"/usr/sbin"'   -DDEFLIBDIR='"/usr/lib/coova-chilli"' -g -O2
+> -o chilli_radconfig main-radconfig.o
+> libchilli.la  ../bstring/libbstring.la  -lssl -lcrypto     -ldl -lrt 
+> 
+> libtool: link: x86_64-linux-gnu-gcc -D_GNU_SOURCE -Wall -Werror
+> -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer
+> -funroll-loops -pipe -I../bstring -DDEFCHILLICONF=\"/etc/chilli.conf\"
+> -DDEFPIDFILE=\"/var/run/chilli.pid\" -DDEFSTATEDIR=\"/var/run\"
+> -DSBINDIR=\"/usr/sbin\" -DDEFLIBDIR=\"/usr/lib/coova-chilli\" -g -O2
+> -o .libs/chilli_radconfig
+> main-radconfig.o  ./.libs/libchilli.so ../bstring/.libs/libbstring.so
+> -lssl -lcrypto -ldl -lrt
+> 
+> x86_64-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I..    -D_GNU_SOURCE -Wall
+> -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer
+> -funroll-loops -pipe -I../bstring -DDEFCHILLICONF='"/etc/chilli.conf"'
+> -DDEFPIDFILE='"/var/run/chilli.pid"' -DDEFSTATEDIR='"/var/run"'
+> -DSBINDIR='"/usr/sbin"'   -DDEFLIBDIR='"/usr/lib/coova-chilli"' -g -O2
+> -MT main-opt.o -MD -MP -MF .deps/main-opt.Tpo -c -o main-opt.o
+> main-opt.c
+> 
+> cc1: warnings being treated as errors
+> 
+> main-opt.c: In function ?main?:
+> 
+> main-opt.c:781: error: ?ptr? may be used uninitialized in this
+> function
+> 
+> make[4]: *** [main-opt.o] Error 1
+> 
+> make[4]: Leaving directory `/home/steffen/tmp/coova-chilli-1.3.0/src'
+> 
+> make[3]: *** [all-recursive] Error 1
+> 
+> make[3]: Leaving directory `/home/steffen/tmp/coova-chilli-1.3.0/src'
+> 
+> make[2]: *** [all-recursive] Error 1
+> 
+> make[2]: Leaving directory `/home/steffen/tmp/coova-chilli-1.3.0'
+> 
+> make[1]: *** [all] Error 2
+> 
+> make[1]: Leaving directory `/home/steffen/tmp/coova-chilli-1.3.0'
+> 
+> make: *** [build] Error 2
+> 
+> dpkg-buildpackage: error: debian/rules build gave error exit status 2
+> 
+> debuild: fatal error at line 1325:
+> 
+> dpkg-buildpackage -rfakeroot -D -us -uc -i -b failed
+> 
+>  
+> 
+>  
+> 
+>  
+> 
+> steffen at vivaldi:~/tmp/coova-chilli-1.3.0-steffen (master u=) $
+> cat /etc/issue
+> 
+> Debian GNU/Linux 6.0 \n \l
+> 
+>  
+> 
+> steffen at vivaldi:~/tmp/coova-chilli-1.3.0-steffen (master u=) $ uname
+> -a
+> 
+> Linux vivaldi 2.6.32-5-amd64 #1 SMP Sun Sep 23 10:07:46 UTC 2012
+> x86_64 GNU/Linux
+> 
+> steffen at vivaldi:~/tmp/coova-chilli-1.3.0-steffen (master u=) $ gcc
+> --version
+> 
+> gcc (Debian 4.4.5-8) 4.4.5
+> 
+> Copyright (C) 2010 Free Software Foundation, Inc.
+> 
+> This is free software; see the source for copying conditions.  There
+> is NO
+> 
+> warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR
+> PURPOSE.
+> 
+>  
+> 
+>  
+> 
+> src/main-opt.c:
+> 
+>  
+> 
+> 777     for (numargs = 0, i=0; 
+> 
+>  778          numargs < args_info.uamdomain_given && i <
+> MAX_UAM_DOMAINS;
+> 
+> 779          ++numargs) {
+> 
+> 780       char *tb = args_info.uamdomain_arg[numargs];
+> 
+> 781       char *tok, *str, *ptr;
+> 
+> 782       for (str = tb ; i < MAX_UAM_DOMAINS; str = NULL) {
+> 
+> 783         tok = strtok_r(str, ",", &ptr);
+> 
+> 784         if (!tok) break;
+> 
+> 785         log_dbg("uamdomain %s", tok);
+> 
+> 786         _options.uamdomains[i++] = STRDUP(tok);
+> 
+> 787       }
+> 
+> 788     }
+> 
+>  
+> 
+>  
+> 
+>  
+> 
+>  
+> 
+> 
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+-- 
+--
+David Bird
+http://www.linkedin.com/in/dwbird
+https://twitter.com/wlanmac
+
+
+From radius.sir at gmail.com  Fri Mar 22 09:22:08 2013
+From: radius.sir at gmail.com (Russell Mike)
+Date: Fri, 22 Mar 2013 09:22:08 +0000
+Subject: [Chilli] How to Bring UP Newly Add VLAN (CoovaChilli) Without
+	Restarting Daemon
+Message-ID: <CADao4CpL_4UDJ5-d8yrS=FpKbFN_gnCBHXJYhun_MhuJy3B7PQ@mail.gmail.com>
+
+Dear List Greetings,
+
+I have CoovaChilli running flawlessly in multi tenancy mode (VLANs). When
+we add new customer (New VLAN), i need to restart "chilli" daemon for it to
+take effect. When restart "chilli" daemon to restart all instances on all
+VLANs, i understand that is obvious.
+
+But that disrupt the service for all other clients, it logs off all the
+users loged in through other VLANs as well. I was thinking if there is a
+another way to bring up the newly added VLAN rather than starting
+CoovaChilli daemon to restart all instances.
+
+Thanks \ RM --
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130322/9db51756/attachment.html>
+
+From jedgainer at gmail.com  Sat Mar 23 05:51:32 2013
+From: jedgainer at gmail.com (Jed Gainer)
+Date: Fri, 22 Mar 2013 22:51:32 -0700
+Subject: [Chilli] ignore streams
+Message-ID: <CAJc1nurhieMq9EtSEpvkn2aXY_x+q8LkesykYGea5nwFSncRiQ@mail.gmail.com>
+
+I am letting my users stream TV and don't want it to add to their
+bandwidth usage.
+
+Will the below stop connections to 10.1.0.1:8800 from counting?
+
+  /* If the ip src is uamlisten and psrc is uamport
+     we won't call leaky_bucket */
+  if ( ! (ipph->saddr  == _options.uamlisten.s_addr &&
+          (ipph->sport == htons(_options.uamport)
+#ifdef ENABLE_UAMUIPORT
+           || ipph->sport == htons(_options.uamuiport)
+#endif
+           || ipph->sport == htons(8800)
+           ))) {
+    if (chilli_acct_tosub(appconn, ipph))
+      return 0;
+  }
+
+From radius.sir at gmail.com  Tue Mar 26 12:02:23 2013
+From: radius.sir at gmail.com (Russell Mike)
+Date: Tue, 26 Mar 2013 12:02:23 +0000
+Subject: [Chilli] CoovaChilli Byte Reducer
+Message-ID: <CADao4Cp=a_Rvzh3F1BuxLiHOzB8mY2o=-_B6BnjYhs953WCy0Q@mail.gmail.com>
+
+Dear List Greetings,
+
+Is it possible to use up to 4GB bite reducer (Traffic Quota) with
+CoovaChilli 1.3.0 by using ? i came across some post where i read that
+2.1GB is the final limit of "ChilliSpot-Max-Total-Octets". Can someone
+please clarify with that.
+
+Thanks / Regards
+RM --
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130326/ba2e4c6f/attachment.html>
+
+From james at adsl24.co.uk  Wed Mar 27 14:57:58 2013
+From: james at adsl24.co.uk (James @ ADSL24)
+Date: Wed, 27 Mar 2013 14:57:58 -0000
+Subject: [Chilli] Dwell time / Client association stats
+Message-ID: <114701ce2afb$788ae710$69a0b530$@adsl24.co.uk>
+
+Hi David,
+
+We currently use OpenWRT to deploy wireless hotspots running the CoovaChilli
+software. This is working great and we're looking to implement some new
+features that will enable us to monitor the device dwell time at a
+particular location.
+
+What we need is the ability to have something running on the router (in the
+background) that is able to scan the wireless air space every few minutes to
+log all the MAC addresses of devices that can be seen. When a device then
+leaves the location, we can see how long that device has been there and thus
+determine the dwell time at that location. This is great for statistical
+purposes to the venue we provide the wifi.
+
+Is this something anyone could help us with, either by way of advice as to
+where we should be looking (binaries/utilities on the router already etc) or
+as a freelance opportunity?
+
+I thank you in advance for any help you can provide.
+
+James
+
+
+From info at easyhorpak.com  Thu Mar 28 01:46:32 2013
+From: info at easyhorpak.com (EasyHorpak.com)
+Date: Thu, 28 Mar 2013 08:46:32 +0700
+Subject: [Chilli] Dwell time / Client association stats
+In-Reply-To: <114701ce2afb$788ae710$69a0b530$@adsl24.co.uk>
+References: <114701ce2afb$788ae710$69a0b530$@adsl24.co.uk>
+Message-ID: <5153A0F8.2040805@easyhorpak.com>
+
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130328/d4313cf5/attachment-0001.html>
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: skybox3pn.gif
+Type: image/gif
+Size: 11182 bytes
+Desc: not available
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130328/d4313cf5/attachment-0002.gif>
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: skybox.gif
+Type: image/gif
+Size: 17909 bytes
+Desc: not available
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130328/d4313cf5/attachment-0003.gif>
+
+From radius.sir at gmail.com  Fri Mar 29 16:17:59 2013
+From: radius.sir at gmail.com (Russell Mike)
+Date: Fri, 29 Mar 2013 16:17:59 +0000
+Subject: [Chilli] Idle Timeout From CoovaChilli
+Message-ID: <CADao4CoBZ3Q8xy+pvR8LrVq1ebcZpe=zmqYkS0akSAQ6Eu3CDA@mail.gmail.com>
+
+Hi List,
+
+How can i set CoovaChilli 1.3.0 to log off user after certain amount of
+time such as 120 seconds. i have applied "Idle-Timeout" Freeradius
+attribute on the user but no effect.
+
+Idle-Timeout = seconds
+
+Thanks
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130329/adcdbd40/attachment.html>
+

@@ -1,0 +1,255 @@
+From mem.corruption at gmail.com  Sat Sep  8 16:08:34 2007
+From: mem.corruption at gmail.com (David Bird)
+Date: Sat, 8 Sep 2007 18:08:34 +0200
+Subject: CAP upgrades
+In-Reply-To: <200709081836.06558.listuser@peternixon.net>
+References: <200709081836.06558.listuser@peternixon.net>
+Message-ID: <ef21d1850709080908w136bf82dy402b7eeeef1f2d5c@mail.gmail.com>
+
+Hmm... yes, I know the current CoovaAP release has some issues... I have
+been focused more on chilli recently :)
+
+The story is that CoovaAP 1.0-beta.5, trying to resolve some stability
+issues, uses a non-standard OpenWRT whiterussian patch (sourced from the
+OpenWrt forum on the stability issue). This actually has been reported to
+fix the stability issue, but introduced a bunch of other problems. What the
+patch did was to bring some kamikaze drivers into whiterussian. It also made
+it impossible to upgrade the firmware using a .bin file (a change to mtd in
+kamikaze). You should be able to use the .trx file just fine or tftp a .bin.
+I perhaps rushed too quickly into releasing that version of CoovaAP.
+
+The best solution would be to finally get CoovaAP on kamikaze instead of
+spending time fixing whiterussian. But, this also has its issues. For one, I
+wanted to roll out a new web admin interface when porting to kamikaze.
+However, this still requires some work. The next release needs to be a major
+one, with cleaner packaging and keeping with stock OpenWRT kamikaze base...
+it is a work in progress for sure.
+
+David
+
+On 9/8/07, Peter Nixon <listuser at peternixon.net> wrote:
+>
+> David
+>
+> There seems to be a bug in the way CAP handles firmware upgrades.
+> Basically
+> the box does:
+>
+> Unlocking linux ...
+> Erasing linux ...
+> Writing from /tmp/firmware.bin to linux ...
+>
+> Then never comes back no matter how long you wait. A power reset of the
+> box
+> leaves it with the power led blinking and the box dead to the world..
+>
+> OpenWRT images can normally upgrade themselves (including crossgrade to
+> CAP)
+> so I guess you must have broken something in the CAP image to stop this
+> from
+> working. Any ides what? :-(
+>
+> Note. The only way to recover the box is to go through the tftp client
+> proceedure..
+>
+> Cheers
+>
+> --
+>
+> Peter Nixon
+> http://peternixon.net/
+>
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/cap/attachments/20070908/2af4dfd8/attachment.html>
+
+From david at candengo.com  Thu Sep 13 10:25:00 2007
+From: david at candengo.com (David Riches)
+Date: Thu, 13 Sep 2007 11:25:00 +0100
+Subject: Freeradius + acctupdate option
+Message-ID: <005d01c7f5f0$573b51d0$05b1f570$@com>
+
+Just a quick question regarding the post below if you don?t mind.
+
+Ive tried to append ?acctupdate to the config file, but it results in an
+error being thrown (unknown command) ? is this option still supported?
+
+Lastly,
+
+I don?t have attrs.accounting_response file ? ive installed a few times now
+but never end up with this file ? could someone please email me a copy?
+
+Regards to all
+
+David
+
+Original Post:
+
+If you need to manage multiple concurrent login and you want to have 
+Session-Timeout dinamically update on coovachilli when a user login
+multiple time, David add an amazing option, --acctupdate, that get
+the NON-standard response to acctupdate packets to radius with some
+attributes, like the Session-Timeout.
+
+But now the problem is: How to make it working with freeradius and mysql?
+
+Well, this is how:
+
+Firt of all, look at
+http://coova.org/wiki/index.php/CoovaChilli/WithFreeRADIUS and do the
+required changes to attrs.accounting_response file.
+
+Now, on radiusd.conf, in the module {} section, 
+add this:
+
+   attr_rewrite updatesessiontimeout {
+      attribute = Session-Timeout
+      searchin = reply
+      searchfor = "[+ ]"
+      replacewith = "%{sql:SELECT ch.Value-IF(SUM(acct.AcctSessionTime) IS
+NULL, 0, SUM(acct.AcctSessionTime)) \
+                      FROM radcheck AS ch LEFT JOIN radacct AS acct \
+                      ON acct.Username=ch.UserName AND
+acct.AcctSessionId!='%{Acct-Session-Id}'\
+                      AND acct.AcctUniqueId!='%{Acct-Unique-Session-Id}' \
+                      WHERE ch.UserName='%{User-Name}' AND
+ch.Attribute='Max-All-Session'"
+      new_attribute = yes
+      append = no
+   }
+
+Now, in the acctupdate {} section add simply updatesessiontimeout and
+voila', le jeux son fait!
+
+This assume that you have Max-All-Session in radcheck table, if you have it
+in radgroupcheck you need to 
+modify a bit the sql query.
+
+Just because isn't documented:
+
+If you need to manage multiple concurrent login and you want to have 
+Session-Timeout dinamically update on coovachilli when a user login
+multiple time, David add an amazing option, --acctupdate, that get
+the NON-standard response to acctupdate packets to radius with some
+attributes, like the Session-Timeout.
+
+But now the problem is: How to make it working with freeradius and mysql?
+
+Well, this is how:
+
+Firt of all, look at
+http://coova.org/wiki/index.php/CoovaChilli/WithFreeRADIUS and do the
+required changes to attrs.accounting_response file.
+
+Now, on radiusd.conf, in the module {} section, 
+add this:
+
+   attr_rewrite updatesessiontimeout {
+      attribute = Session-Timeout
+      searchin = reply
+      searchfor = "[+ ]"
+      replacewith = "%{sql:SELECT ch.Value-IF(SUM(acct.AcctSessionTime) IS
+NULL, 0, SUM(acct.AcctSessionTime)) \
+                      FROM radcheck AS ch LEFT JOIN radacct AS acct \
+                      ON acct.Username=ch.UserName AND
+acct.AcctSessionId!='%{Acct-Session-Id}'\
+                      AND acct.AcctUniqueId!='%{Acct-Unique-Session-Id}' \
+                      WHERE ch.UserName='%{User-Name}' AND
+ch.Attribute='Max-All-Session'"
+      new_attribute = yes
+      append = no
+   }
+
+Now, in the acctupdate {} section add simply updatesessiontimeout and
+voila', le jeux son fait!
+
+This assume that you have Max-All-Session in radcheck table, if you have it
+in radgroupcheck you need to 
+modify a bit the sql query.
+
+
+
+No virus found in this outgoing message.
+Checked by AVG Free Edition. 
+Version: 7.5.485 / Virus Database: 269.13.16/1004 - Release Date: 12/09/2007
+17:22
+ 
+
+
+
+
+From mem.corruption at gmail.com  Thu Sep 13 10:46:31 2007
+From: mem.corruption at gmail.com (David Bird)
+Date: Thu, 13 Sep 2007 12:46:31 +0200
+Subject: Freeradius + acctupdate option
+In-Reply-To: <005d01c7f5f0$573b51d0$05b1f570$@com>
+References: <005d01c7f5f0$573b51d0$05b1f570$@com>
+Message-ID: <ef21d1850709130346r58e0e3f5naec2914ea7fbd851@mail.gmail.com>
+
+The acctupdate option is new in 1.0.7. The FreeRADIUS documentation is
+using FreeRADIUS 2.0 (from CVS), I do believe... I hope this helps.
+
+
+From dutch1918 at gmail.com  Wed Sep 19 18:21:44 2007
+From: dutch1918 at gmail.com (LeRoy DeVries)
+Date: Wed, 19 Sep 2007 12:21:44 -0600
+Subject: Firewall
+Message-ID: <003d01c7fae9$f5f3ad60$1401a8c0@DVA1>
+
+I am trying to drop all tcp traffic from 10.1.1.0/24 to 192.168.0.1 Port 80
+but when I enter the Source destination Coova complains. Any help would be
+appreciated.
+
+ 
+
+ 
+
+LeRoy 
+
+ 
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/cap/attachments/20070919/0496d9df/attachment.htm>
+
+From wlan at mac.com  Sun Sep 30 18:50:17 2007
+From: wlan at mac.com (wlan at mac.com)
+Date: Sun, 30 Sep 2007 20:50:17 +0200
+Subject: 1.0-beta.6
+Message-ID: <B8F06E66-7F82-44BC-BBDB-722D631DD66B@mac.com>
+
+Hello,
+
+Today CoovaAP 1.0-beta.6 was released. see:
+http://coova.org/wiki/index.php/CoovaAP
+
+As always, be careful when flashing. If upgrading from an older  
+CoovaAP version, be sure to use the "trx" image. If flashing from  
+original firmware or tftp, then use the .bin versions.
+
+Cheers,
+David
+
+PS: Was recently asked about using your CoovaAAA account as the  
+"RADIUS Auto Config" -- don't... your account is not for that purpose  
+(a future feature in terms of account specific configurations).
+
+
+From dutch1918 at gmail.com  Sun Sep 30 22:04:21 2007
+From: dutch1918 at gmail.com (LeRoy DeVries)
+Date: Sun, 30 Sep 2007 16:04:21 -0600
+Subject: Upgrading
+Message-ID: <1191189861.5845.3.camel@Sunchaser-Hotspot.cap.coova.org>
+
+Should a person erase the JFFS2 partition when upgrading? 
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/cap/attachments/20070930/f8bda6e3/attachment.htm>
+

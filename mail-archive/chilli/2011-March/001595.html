@@ -1,0 +1,164 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] Show a notification when a user's session is about to	end
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Show%20a%20notification%20when%20a%20user%27s%20session%20is%20about%20to%0A%09end&In-Reply-To=%3CAANLkTim64x2LHr-mAVRq_pbq3wA%2BhyAcj81tssfZ3P8Y%40mail.gmail.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001588.html">
+   <LINK REL="Next"  HREF="001589.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] Show a notification when a user's session is about to	end</H1>
+    <B>Gergely Kiss</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Show%20a%20notification%20when%20a%20user%27s%20session%20is%20about%20to%0A%09end&In-Reply-To=%3CAANLkTim64x2LHr-mAVRq_pbq3wA%2BhyAcj81tssfZ3P8Y%40mail.gmail.com%3E"
+       TITLE="[Chilli] Show a notification when a user's session is about to	end">mail.gery at gmail.com
+       </A><BR>
+    <I>Mon Mar 14 19:19:33 UTC 2011</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001588.html">[Chilli] Show a notification when a user's session is about to end
+</A></li>
+        <LI>Next message: <A HREF="001589.html">[Chilli] ATTN David - Content Injection
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1595">[ date ]</a>
+              <a href="thread.html#1595">[ thread ]</a>
+              <a href="subject.html#1595">[ subject ]</a>
+              <a href="author.html#1595">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hi Jonas,
+
+I don't use the latest release of CoovaChilli, so this method may not work
+for versions newer than 1.2.2. But it worths a try...
+
+Some time ago I created a slightly modified version of the JSON interface -
+it was extremely easy to customize the code, even for me (I'm not a JS
+expert).
+
+This function should do the work:
+
+var userNotified = false;
+
+// Shows a notification if session timeout is about to expire
+function timeoutNotification () {
+   var notifyLimit = 600; // Set the notification limit here in seconds (10
+minutes by default)
+   var tSessionTime = parseInt ( chilliController.accounting.sessionTime ,
+10 ) ;
+   var tSessionTimeout = parseInt ( chilliController.session.sessionTimeout
+, 10 ) ;
+   var tRemaining = tSessionTimeout - tSessionTime;
+   if ( tRemaining &lt; notifyLimit &amp;&amp; userNotified == false ) {
+      alert('Your session is about to end in ' + Math.floor (tRemaining /
+60) + ' minutes.');
+      userNotified = true;
+   }
+}
+
+These lines should be put to the top of chilliController.js. You also need
+to actually call this function somewhere in the code, the best place would
+be the &quot;updateUI&quot; function, which runs each time the timer specified in
+chilliLibrary.js expires (&quot;interval&quot;):
+
+function updateUI (cmd ) {
+[...]
+
+    if ( chilliController.clientState == 1 ) {
+        if ( chilliController.statusURL ) {
+       chilliController.statusWindow =
+window.open(chilliController.statusURL, &quot;&quot;);
+    } else {
+       showStatusPage();
+*       // notifies user before the session times out
+       timeoutNotification();*
+       setDirtyFlag();
+        }
+    }
+
+[...]
+}
+
+I've set the timeout to 5 seconds, so at most 5 seconds after the specified
+notification limit, the warning message will be presented to the user.
+
+I'm not able to test the code right now, but hopefully it's simple enough to
+work out of the box...
+
+The customized version of the JSON interface is also attached for you - you
+just have to put the files into the &quot;www&quot; folder of your CoovaChilli
+installation (generaly to /etc/chilli/www) and put your network name and
+logo to &quot;index.html&quot; and &quot;splash.html&quot;.
+
+
+Regards,
+Gergely
+
+On 7 March 2011 15:01, Jonas Wouters &lt;<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">hello at jonaswouters.be</A>&gt; wrote:
+
+&gt;<i> Hi,
+</I>&gt;<i>
+</I>&gt;<i> We are looking for a way to warn a user if his session is about to end.
+</I>&gt;<i>  Without working with a separate popup.
+</I>&gt;<i>
+</I>&gt;<i> A user has a session length of about 60 minutes. Somehow we would like to
+</I>&gt;<i> notify the user at around 50 minutes that he is nearing the end.  All the
+</I>&gt;<i> connections should be able to stay open so closing the session early and
+</I>&gt;<i> opening a new session directly on the login/notification page  would not be
+</I>&gt;<i> an option.
+</I>&gt;<i>
+</I>&gt;<i> Anyone got any tips or experience he/she would like to share on this
+</I>&gt;<i> matter?
+</I>&gt;<i>
+</I>&gt;<i> Thanks
+</I>&gt;<i> Jonas
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> _______________________________________________
+</I>&gt;<i> Chilli mailing list
+</I>&gt;<i> <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">Chilli at coova.org</A>
+</I>&gt;<i> <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">http://lists.coova.org/cgi-bin/mailman/listinfo/chilli</A>
+</I>&gt;<i>
+</I>&gt;<i>
+</I>-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: &lt;<A HREF="http://lists.coova.org/pipermail/chilli/attachments/20110314/79f84068/attachment-0001.html">http://lists.coova.org/pipermail/chilli/attachments/20110314/79f84068/attachment-0001.html</A>&gt;
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: chilli_www_json.zip
+Type: application/zip
+Size: 23833 bytes
+Desc: not available
+URL: &lt;<A HREF="http://lists.coova.org/pipermail/chilli/attachments/20110314/79f84068/attachment-0001.zip">http://lists.coova.org/pipermail/chilli/attachments/20110314/79f84068/attachment-0001.zip</A>&gt;
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001588.html">[Chilli] Show a notification when a user's session is about to end
+</A></li>
+	<LI>Next message: <A HREF="001589.html">[Chilli] ATTN David - Content Injection
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1595">[ date ]</a>
+              <a href="thread.html#1595">[ thread ]</a>
+              <a href="subject.html#1595">[ subject ]</a>
+              <a href="author.html#1595">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

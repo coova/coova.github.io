@@ -1,0 +1,135 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] CoovaChilli uam secret / RADIUS secret causing
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20CoovaChilli%20uam%20secret%20/%20RADIUS%20secret%20causing&In-Reply-To=%3C0afd01cf6442%2436fbe250%24a4f3a6f0%24%40purple.so%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="002698.html">
+   <LINK REL="Next"  HREF="002701.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] CoovaChilli uam secret / RADIUS secret causing</H1>
+    <B>james at purple.so</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20CoovaChilli%20uam%20secret%20/%20RADIUS%20secret%20causing&In-Reply-To=%3C0afd01cf6442%2436fbe250%24a4f3a6f0%24%40purple.so%3E"
+       TITLE="[Chilli] CoovaChilli uam secret / RADIUS secret causing">james at purple.so
+       </A><BR>
+    <I>Wed Apr 30 07:02:55 UTC 2014</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="002698.html">[Chilli] CoovaChilli uam secret / RADIUS secret causing
+</A></li>
+        <LI>Next message: <A HREF="002701.html">[Chilli] CoovaChilli uam secret / RADIUS secret causing
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2700">[ date ]</a>
+              <a href="thread.html#2700">[ thread ]</a>
+              <a href="subject.html#2700">[ subject ]</a>
+              <a href="author.html#2700">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hi Luis
+
+Thanks again for your reply.
+
+I am aware of the necessity to keep the secret random and want to do so but
+there isn't any consistency between when coova generates a new challenge for
+the same MAC.
+
+As mentioned, I have most users who are ok, but say out of 10,000 logins a
+day there are several hundred rejects because the CHAP challenge was
+incorrect. By incorrect I mean when they hit our splash page and we generate
+the CHAP response from the incoming challenge in the URL string, when we
+send the login back to coova, coova has sometimes generated a different
+challenge for that client because some other HTTP request went out from a
+background app/service.
+
+With the more increasing use of smartphones, inevitably as soon as the user
+connects to an SSID there are many background apps/processes that try to get
+to the Internet, so it's rather difficult to generate the correct response
+if its changed.
+
+It does seem to be random, as in my previous post I mentioned I opened up
+multiple tabs/windows/programs and coova used the same challenge for that
+session, but this isn't happening all the time.
+
+Using CHAP is great, but when it means the fundamental part of the login
+process breaks, it involves user complaints and headache (as you can
+imagine).
+
+Not sure of the best route to take...
+
+Thanks
+
+James 
+
+
+
+-----Original Message-----
+From: James Wood [mailto:<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">james.wood at purplewifi.net</A>] 
+Sent: 29 April 2014 22:29
+To: '<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli at coova.org</A>'
+Subject: RE: [Chilli] CoovaChilli uam secret / RADIUS secret causing
+
+Hi Luis
+
+Thanks very much for your reply.
+
+Yes, I had thought this may be the issue, but I assumed that coova does not
+re-generate a new challenge for every HTTP request a client makes. To test,
+I opened 10 tabs in my browser, and 5 tabs in another browser, and the
+&quot;challenge&quot; value in the URL was the same across them all. We notice the
+challenge does change after around 10 minutes though (it must time out)...
+
+We've recently modified the coova code to generate the challenge based on
+something more unique to the user (their mac address, plus a secret, then
+hashed), rather than what coova uses by default (a 16 character string from
+/dev/random), so now, the challenge is unique per client MAC, and therefore
+no matter what sessions they have open it will always be the same
+&quot;challenge&quot;. Does that make sense? Even if they return in 1 hour, the
+challenge is the same, and only we know what the challenge is made up from
+on our external splash page side.
+
+But, I think coova should ensure that the same challenge is given to the
+same client MAC, as without it, it's near impossible to know which challenge
+to use at the correct one when encrypting the password to send back to coova
+for the login (we use an external splash page).
+
+What are your thoughts?
+
+Thanks
+
+James
+
+
+</PRE>
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="002698.html">[Chilli] CoovaChilli uam secret / RADIUS secret causing
+</A></li>
+	<LI>Next message: <A HREF="002701.html">[Chilli] CoovaChilli uam secret / RADIUS secret causing
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2700">[ date ]</a>
+              <a href="thread.html#2700">[ thread ]</a>
+              <a href="subject.html#2700">[ subject ]</a>
+              <a href="author.html#2700">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

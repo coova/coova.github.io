@@ -1,0 +1,75 @@
+From stappers at stappers.it  Mon Dec 29 17:28:17 2014
+From: stappers at stappers.it (Geert Stappers)
+Date: Mon, 29 Dec 2014 18:28:17 +0100
+Subject: [Chilli] place in the network
+Message-ID: <20141229172817.GC2628@rosa.stappers.it>
+
+Hi,
+
+At which place in the network is chilli?
+
+Is at DHCP server place?
+Webproxy "squid" place?
+Both?
+
+
+Cheers
+Geert Stappers
+
+From alghe.global at gmail.com  Mon Dec 29 19:07:04 2014
+From: alghe.global at gmail.com (Alexandru Gheorghe)
+Date: Mon, 29 Dec 2014 21:07:04 +0200
+Subject: [Chilli] place in the network
+In-Reply-To: <20141229172817.GC2628@rosa.stappers.it>
+References: <20141229172817.GC2628@rosa.stappers.it>
+Message-ID: <54A1A658.2020901@gmail.com>
+
+On 12/29/2014 07:28 PM, Geert Stappers wrote:
+> Hi,
+>
+> At which place in the network is chilli?
+[Separate] DHCP server should not take on Chilli's assigned network.
+Chilli has its own dhcp leasing part as a daemon, if you use a DHCP as
+well you may have conflicts. Technically it's a DHCP server as well but
+it's obvious that it's not only doing just that (usually it establishes
+so called "sessions" [not really accurate] on MAC address upon leasing).
+
+Also it is not a Web Proxy, so if you want to filter HTTP requests via
+squid you may want to assign the priority based on what you need, I
+would do it before getting to Chilli (so Client -> Squid -> Chilli).
+Normally, if you want to have it on the same server, you would first
+DNAT the HTTP(S) traffic to Squid itself then it should normally go to
+Chilli however leasing an IP should still work (meaning, Squid should
+only filter HTTP traffic and not block anything when the client would
+want an IP joining the Hotspot network).
+
+>
+> Is at DHCP server place?
+> Webproxy "squid" place?
+> Both?
+I hope I answered as best as possible, sorry if maybe is a bit out of
+the scope.
+
+>
+>
+> Cheers
+> Geert Stappers
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+-- 
+; Alexandru Gheorghe
+; alghe.global {at} gmail {dot} com
+; OpenPGP key ID 0xCAF985D2
+
+
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: signature.asc
+Type: application/pgp-signature
+Size: 836 bytes
+Desc: OpenPGP digital signature
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20141229/db303f52/attachment.pgp>
+

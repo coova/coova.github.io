@@ -1,0 +1,100 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] [Patch] Disable user-caused logout when UAM is not used
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20%5BPatch%5D%20Disable%20user-caused%20logout%20when%20UAM%20is%20not%20used&In-Reply-To=%3C4BF2AEB8.1000904%40hollants.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001400.html">
+   <LINK REL="Next"  HREF="001362.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] [Patch] Disable user-caused logout when UAM is not used</H1>
+    <B>IT-Systemmanagement Pieter Hollants</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20%5BPatch%5D%20Disable%20user-caused%20logout%20when%20UAM%20is%20not%20used&In-Reply-To=%3C4BF2AEB8.1000904%40hollants.com%3E"
+       TITLE="[Chilli] [Patch] Disable user-caused logout when UAM is not used">pieter at hollants.com
+       </A><BR>
+    <I>Tue May 18 15:14:00 UTC 2010</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001400.html">[Chilli] Coova and FTP
+</A></li>
+        <LI>Next message: <A HREF="001362.html">[Chilli] [Patch] Disable user-caused logout when UAM is not used
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1359">[ date ]</a>
+              <a href="thread.html#1359">[ thread ]</a>
+              <a href="subject.html#1359">[ subject ]</a>
+              <a href="author.html#1359">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Currently, users have the possiblity to logout by accessing
+<A HREF="http://&lt;chilliIP">http://&lt;chilliIP</A>&gt;:&lt;chilliPort&gt;/logout or by accessing <A HREF="http://logout.">http://logout.</A>
+This makes sense with UAM, where the webbrowser was the &quot;authentication
+device&quot; used to gain access to the Internet.
+
+With EAPOL, WPA and MAC authentication, however, the &quot;login&quot; occurs
+using the client operating system's methods and dialogs, so this is
+where the user also expects to perform a &quot;logoff&quot;, eg. by disassociating
+from the WPA-EAP perotected WLAN. (Yes, I know CoovaChilli itself can't
+notice a disassociation unless the access point sends accounting
+information).
+
+So to be consistent, the user-caused logout methods described above
+should not work outside of UAM, since that will only cause confusion:
+the user will be redirected to the uamhomepage Website and while he
+_can_ logon again there, this mixes up different auth. types and defeats
+the purpose of WPA-EAP.
+
+The attached patch therefore disables &quot;logout&quot; for all downlink
+protocols except UAM. It doesn't yet prevent authentication scripts from
+presenting a logout button, that's up to a seperate patch.
+
+Please review.
+
+-- 
+Dipl.-Wirtsch.-Inform. Pieter Hollants
+IT-Systemmanagement Pieter Hollants          Tel. : (+49) (0)6192-910717
+Rossertstra&#223;e 80                             Fax  : (+49) (0)6192-910713
+65830 Kriftel                                eMail: <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">pieter at hollants.com</A>
+
+
+-------------- next part --------------
+An embedded and charset-unspecified text was scrubbed...
+Name: coova-chilli-1.2.2-logout_uamonly.diff
+URL: &lt;<A HREF="http://lists.coova.org/pipermail/chilli/attachments/20100518/d7a8ecf3/attachment.asc">http://lists.coova.org/pipermail/chilli/attachments/20100518/d7a8ecf3/attachment.asc</A>&gt;
+</PRE>
+
+
+
+
+
+
+
+
+
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001400.html">[Chilli] Coova and FTP
+</A></li>
+	<LI>Next message: <A HREF="001362.html">[Chilli] [Patch] Disable user-caused logout when UAM is not used
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1359">[ date ]</a>
+              <a href="thread.html#1359">[ thread ]</a>
+              <a href="subject.html#1359">[ subject ]</a>
+              <a href="author.html#1359">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

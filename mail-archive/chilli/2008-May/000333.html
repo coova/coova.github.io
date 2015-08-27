@@ -1,0 +1,91 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> total data transfer size
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20total%20data%20transfer%20size&In-Reply-To=%3C483CFFD9.3080501%40ollisnet.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000332.html">
+   <LINK REL="Next"  HREF="000334.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>total data transfer size</H1>
+    <B>Oliver Hinckel</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20total%20data%20transfer%20size&In-Reply-To=%3C483CFFD9.3080501%40ollisnet.de%3E"
+       TITLE="total data transfer size">info at ollisnet.de
+       </A><BR>
+    <I>Wed May 28 06:46:49 UTC 2008</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000332.html">total data transfer size
+</A></li>
+        <LI>Next message: <A HREF="000334.html">Starting coova chilli with no internet connection
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#333">[ date ]</a>
+              <a href="thread.html#333">[ thread ]</a>
+              <a href="subject.html#333">[ subject ]</a>
+              <a href="author.html#333">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Oguzhan Kayhan wrote on 05/28/2008 08:22 AM:
+&gt;&gt;&gt;<i> It might signify that you're using AcctOutputOctets only, instead
+</I>&gt;&gt;&gt;<i> of combining them with AcctOutputGigawords.
+</I>&gt;&gt;&gt;<i>
+</I>&gt;&gt;<i> Indeed. Integers in RADIUS are unsigned 32bit. This leaves room for
+</I>&gt;&gt;<i> integers between 0 and 4,294,967,295. I believe there was also an
+</I>&gt;&gt;<i> issue in earlier chillispot versions where internally the octets were
+</I>&gt;&gt;<i> counted on signed integers, reducing the max (positive) value by
+</I>&gt;&gt;<i> half. CoovaChilli now uses an unsigned 64bit value of which the upper
+</I>&gt;&gt;<i> 32bits are put in giga attributes (if needed).
+</I>&gt;&gt;<i>
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> So, i found a webpage describing to combine octets with gigawords,
+</I>&gt;<i> for a crosscheck i wonder if the following is enough for using gigawords..
+</I>&gt;<i> 
+</I>&gt;<i> Adding the following to mysql.
+</I>&gt;<i> 
+</I>&gt;<i> ALTER TABLE radacct CHANGE AcctInputOctets AcctInputOctets BIGINT(20);
+</I>&gt;<i> ALTER TABLE radacct CHANGE AcctOutputOctets AcctOutputOctets BIGINT(20);
+</I>&gt;<i> 
+</I>&gt;<i> And replacing '%{Acct-Input-Octets}'  in sql.conf with
+</I>&gt;<i> '%{Acct-Input-Gigawords:-0}'  &lt;&lt; 32 | '%{Acct-Input-Octets:-0}'
+</I>&gt;<i> 
+</I>&gt;<i> (and also outpout octets too)
+</I>&gt;<i> 
+</I>&gt;<i> Or do i have to do smthing more?
+</I>&gt;<i> 
+</I>&gt;<i> Or should i follow a different way?
+</I>
+No, that's all. That's also what we did to solve this issue (except we 
+used &quot;+&quot; operator instead of &quot;|&quot; operator, but they have the same 
+meaning) and it works great :)
+
+- Olli
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000332.html">total data transfer size
+</A></li>
+	<LI>Next message: <A HREF="000334.html">Starting coova chilli with no internet connection
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#333">[ date ]</a>
+              <a href="thread.html#333">[ thread ]</a>
+              <a href="subject.html#333">[ subject ]</a>
+              <a href="author.html#333">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

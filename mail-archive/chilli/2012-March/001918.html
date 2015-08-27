@@ -1,0 +1,1785 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] Compilation issues with 1.2.9
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Compilation%20issues%20with%201.2.9&In-Reply-To=%3C20120324003921.GD3604%40lemonhead.scabb%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001917.html">
+   <LINK REL="Next"  HREF="001919.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] Compilation issues with 1.2.9</H1>
+    <B>Bertrand Jacquin</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Compilation%20issues%20with%201.2.9&In-Reply-To=%3C20120324003921.GD3604%40lemonhead.scabb%3E"
+       TITLE="[Chilli] Compilation issues with 1.2.9">beber at meleeweb.net
+       </A><BR>
+    <I>Sat Mar 24 00:39:23 UTC 2012</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001917.html">[Chilli] ChilliSpot-Max-Input-Gigawords problem
+</A></li>
+        <LI>Next message: <A HREF="001919.html">[Chilli] Compilation issues with 1.2.9
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1918">[ date ]</a>
+              <a href="thread.html#1918">[ thread ]</a>
+              <a href="subject.html#1918">[ subject ]</a>
+              <a href="author.html#1918">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hi,
+
+I'm getting some troubles building Coova Chilli 1.2.9 :
+
+# Case 1 (attached complete log file case1.log)
+
+--enable-statusfile --with-mmap --with-poll --with-ipc-msg :
+
+Making all in src
+make[2]: Entering directory `/var/tmp/i586-pc-linux-gnu/portage/net-wireless/coova-chilli-1.2.9/work/coova-chilli-1.2.9/src'
+make[3]: Entering directory `/var/tmp/i586-pc-linux-gnu/portage/net-wireless/coova-chilli-1.2.9/work/coova-chilli-1.2.9/src'
+/bin/sh ../libtool --tag=CC   --mode=compile i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I..    -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF='&quot;/etc/chilli.conf&quot;' -DDEFPIDFILE='&quot;/var/lib/run/chilli.pid&quot;' -DDEFSTATEDIR='&quot;/var/lib/run&quot;' -DSBINDIR='&quot;/usr/sbin&quot;'    -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c -o chilli.lo chilli.c
+libtool: compile:  i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I.. -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF=\&quot;/etc/chilli.conf\&quot; -DDEFPIDFILE=\&quot;/var/lib/run/chilli.pid\&quot; -DDEFSTATEDIR=\&quot;/var/lib/run\&quot; -DSBINDIR=\&quot;/usr/sbin\&quot; -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c chilli.c  -fPIC -DPIC -o .libs/chilli.o
+chilli.c: In function 'chilli_main':
+chilli.c:7526:26: error: 'struct tun_t' has no member named '_interface_count'
+chilli.c:7527:16: error: 'struct tun_t' has no member named '_interfaces'
+make[3]: *** [chilli.lo] Error 1
+make[3]: Leaving directory `/var/tmp/i586-pc-linux-gnu/portage/net-wireless/coova-chilli-1.2.9/work/coova-chilli-1.2.9/src'
+
+tun_t has member _interfaces and _interface_count only if
+ENABLE_MULTIROUTE is defined (tun.h) so if --enable-multiroute
+is passed to configure
+
+# Case 2 (attached complete log file case2.log)
+
+--enable-statusfile --with-mmap --with-poll --with-ipc-msg --enable-multiroute
+
+/bin/sh ../libtool --tag=CC   --mode=compile i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I..    -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF='&quot;/etc/chilli.conf&quot;' -DDEFPIDFILE='&quot;/var/lib/run/chilli.pid&quot;' -DDEFSTATEDIR='&quot;/var/lib/run&quot;' -DSBINDIR='&quot;/usr/sbin&quot;'    -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c -o net.lo net.c
+libtool: compile:  i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I.. -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF=\&quot;/etc/chilli.conf\&quot; -DDEFPIDFILE=\&quot;/var/lib/run/chilli.pid\&quot; -DDEFSTATEDIR=\&quot;/var/lib/run\&quot; -DSBINDIR=\&quot;/usr/sbin\&quot; -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c net.c  -fPIC -DPIC -o .libs/net.o
+cc1: warnings being treated as errors
+net.c: In function 'net_open_eth':
+net.c:1186:22: error: unused variable 'mr'
+net.c: In function 'rx_ring':
+net.c:1610:5: error: too many arguments to function 'func'
+net.c: In function 'setup_rings':
+net.c:1826:15: error: unused variable 'unit'
+net.c: In function 'set_buffer':
+net.c:1915:15: error: unused variable 'unit'
+net.c: At top level:
+net.c:1935:13: error: 'setup_filter' defined but not used
+make[3]: *** [net.lo] Error 1
+make[3]: Leaving directory `/var/tmp/i586-pc-linux-gnu/portage/net-wireless/coova-chilli-1.2.9/work/coova-chilli-1.2.9/src'
+
+net.c:1610 made this function call :
+
+  func(ctx, data + h-&gt;tp_mac, h-&gt;tp_snaplen);
+
+func is a net_handler that is defined as (net.h) :
+
+  typedef int (*net_handler)(void *ctx, struct pkt_buffer *pb);
+
+net.c should make a 2 parameter call.
+
+This issue can be avoid by undefining USING_MMAP so --without-mmap
+passed to configure
+
+# Case 3 (attached complete log file case3.log)
+
+--enable-statusfile --without-mmap --with-poll --with-ipc-msg --enable-multiroute --with-curl --with-ipv6 --enable-miniportal --without-nfqueue --with-pcap
+
+/bin/sh ../libtool --tag=CC   --mode=compile i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I..    -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF='&quot;/etc/chilli.conf&quot;' -DDEFPIDFILE='&quot;/var/lib/run/chilli.pid&quot;' -DDEFSTATEDIR='&quot;/var/lib/run&quot;' -DSBINDIR='&quot;/usr/sbin&quot;'    -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c -o net.lo net.c
+libtool: compile:  i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I.. -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF=\&quot;/etc/chilli.conf\&quot; -DDEFPIDFILE=\&quot;/var/lib/run/chilli.pid\&quot; -DDEFSTATEDIR=\&quot;/var/lib/run\&quot; -DSBINDIR=\&quot;/usr/sbin\&quot; -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c net.c  -fPIC -DPIC -o .libs/net.o
+net.c: In function 'net_pcap_handler':
+net.c:648:5: error: too many arguments to function 'np-&gt;func'
+cc1: warnings being treated as errors
+net.c: In function 'net_read_eth':
+net.c:718:5: error: passing argument 4 of 'pcap_dispatch' from incompatible pointer type
+/usr/i586-pc-linux-gnu/usr/include/pcap/pcap.h:298:5: note: expected 'u_char *' but argument is of type 'struct netpcap *'
+make[3]: *** [net.lo] Error 1
+make[3]: Leaving directory `/var/tmp/i586-pc-linux-gnu/portage/net-wireless/coova-chilli-1.2.9/work/coova-chilli-1.2.9/src'
+
+net.c:648 does :
+
+  np-&gt;read = np-&gt;func(np-&gt;d, (void *)bytes, hdr-&gt;caplen);
+
+np is a struct netpcap *
+struct netpcap has a func member declared as in net.c:621:
+
+  struct netpcap {
+    void *d;
+    size_t dlen;
+    size_t read;
+    net_handler func;
+  };
+
+So we should have a 2 parameters call to this net_handler func as case #2.
+
+-- 
+Beber
+-------------- next part --------------
+[32;01m * [39;49;00mPackage:    net-wireless/coova-chilli-1.2.9
+[32;01m * [39;49;00mRepository: meleeweb
+[32;01m * [39;49;00mMaintainer: <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">maintainer-wanted at gentoo.org</A>
+[32;01m * [39;49;00mUSE:        curl elibc_glibc ipv6 kernel_linux miniportal pcap ssl userland_GNU x86
+[32;01m * [39;49;00mFEATURES:   sandbox
+ [32;01m*[0m Determining =net-wireless/coova-chilli-1.2.9 SYSROOT dependencies ...
+ [32;01m*[0m Extracting app-misc/ca-certificates-20111025 to /usr/i586-pc-linux-gnu ...
+ [32;01m*[0m Extracting net-misc/curl-7.24.0 to /usr/i586-pc-linux-gnu ...
+ [32;01m*[0m   ./usr/include/curl/curlrules.h
+ [32;01m*[0m   ./usr/include/curl/curlbuild.h
+ [32;01m*[0m   ./usr/include/curl/typecheck-gcc.h
+ [32;01m*[0m   ./usr/include/curl/multi.h
+ [32;01m*[0m   ./usr/include/curl/stdcheaders.h
+ [32;01m*[0m   ./usr/include/curl/mprintf.h
+ [32;01m*[0m   ./usr/include/curl/easy.h
+ [32;01m*[0m   ./usr/include/curl/curlver.h
+ [32;01m*[0m   ./usr/include/curl/curl.h
+ [32;01m*[0m   ./usr/lib/libcurl.so.4.2.0
+ [32;01m*[0m   ./usr/lib/pkgconfig/libcurl.pc
+ [32;01m*[0m   ./usr/lib/libcurl.so
+ [32;01m*[0m   ./usr/lib/libcurl.so.4
+ [32;01m*[0m Extracting dev-libs/openssl-1.0.0h to /usr/i586-pc-linux-gnu ...
+ [32;01m*[0m   ./usr/include/openssl/kssl.h
+ [32;01m*[0m   ./usr/include/openssl/dtls1.h
+ [32;01m*[0m   ./usr/include/openssl/tls1.h
+ [32;01m*[0m   ./usr/include/openssl/ssl23.h
+ [32;01m*[0m   ./usr/include/openssl/ssl3.h
+ [32;01m*[0m   ./usr/include/openssl/ssl2.h
+ [32;01m*[0m   ./usr/include/openssl/ssl.h
+ [32;01m*[0m   ./usr/include/openssl/ts.h
+ [32;01m*[0m   ./usr/include/openssl/pqueue.h
+ [32;01m*[0m   ./usr/include/openssl/cms.h
+ [32;01m*[0m   ./usr/include/openssl/krb5_asn.h
+ [32;01m*[0m   ./usr/include/openssl/ui_compat.h
+ [32;01m*[0m   ./usr/include/openssl/ui.h
+ [32;01m*[0m   ./usr/include/openssl/ocsp.h
+ [32;01m*[0m   ./usr/include/openssl/comp.h
+ [32;01m*[0m   ./usr/include/openssl/pkcs12.h
+ [32;01m*[0m   ./usr/include/openssl/pkcs7.h
+ [32;01m*[0m   ./usr/include/openssl/txt_db.h
+ [32;01m*[0m   ./usr/include/openssl/conf_api.h
+ [32;01m*[0m   ./usr/include/openssl/conf.h
+ [32;01m*[0m   ./usr/include/openssl/x509v3.h
+ [32;01m*[0m   ./usr/include/openssl/x509_vfy.h
+ [32;01m*[0m   ./usr/include/openssl/x509.h
+ [32;01m*[0m   ./usr/include/openssl/pem2.h
+ [32;01m*[0m   ./usr/include/openssl/pem.h
+ [32;01m*[0m   ./usr/include/openssl/asn1t.h
+ [32;01m*[0m   ./usr/include/openssl/asn1_mac.h
+ [32;01m*[0m   ./usr/include/openssl/asn1.h
+ [32;01m*[0m   ./usr/include/openssl/evp.h
+ [32;01m*[0m   ./usr/include/openssl/err.h
+ [32;01m*[0m   ./usr/include/openssl/rand.h
+ [32;01m*[0m   ./usr/include/openssl/lhash.h
+ [32;01m*[0m   ./usr/include/openssl/safestack.h
+ [32;01m*[0m   ./usr/include/openssl/stack.h
+ [32;01m*[0m   ./usr/include/openssl/bio.h
+ [32;01m*[0m   ./usr/include/openssl/buffer.h
+ [32;01m*[0m   ./usr/include/openssl/engine.h
+ [32;01m*[0m   ./usr/include/openssl/dso.h
+ [32;01m*[0m   ./usr/include/openssl/ecdh.h
+ [32;01m*[0m   ./usr/include/openssl/dh.h
+ [32;01m*[0m   ./usr/include/openssl/ecdsa.h
+ [32;01m*[0m   ./usr/include/openssl/dsa.h
+ [32;01m*[0m   ./usr/include/openssl/rsa.h
+ [32;01m*[0m   ./usr/include/openssl/ec.h
+ [32;01m*[0m   ./usr/include/openssl/bn.h
+ [32;01m*[0m   ./usr/include/openssl/modes.h
+ [32;01m*[0m   ./usr/include/openssl/seed.h
+ [32;01m*[0m   ./usr/include/openssl/camellia.h
+ [32;01m*[0m   ./usr/include/openssl/cast.h
+ [32;01m*[0m   ./usr/include/openssl/blowfish.h
+ [32;01m*[0m   ./usr/include/openssl/idea.h
+ [32;01m*[0m   ./usr/include/openssl/rc5.h
+ [32;01m*[0m   ./usr/include/openssl/rc4.h
+ [32;01m*[0m   ./usr/include/openssl/rc2.h
+ [32;01m*[0m   ./usr/include/openssl/aes.h
+ [32;01m*[0m   ./usr/include/openssl/des_old.h
+ [32;01m*[0m   ./usr/include/openssl/des.h
+ [32;01m*[0m   ./usr/include/openssl/whrlpool.h
+ [32;01m*[0m   ./usr/include/openssl/ripemd.h
+ [32;01m*[0m   ./usr/include/openssl/hmac.h
+ [32;01m*[0m   ./usr/include/openssl/mdc2.h
+ [32;01m*[0m   ./usr/include/openssl/sha.h
+ [32;01m*[0m   ./usr/include/openssl/md5.h
+ [32;01m*[0m   ./usr/include/openssl/md4.h
+ [32;01m*[0m   ./usr/include/openssl/obj_mac.h
+ [32;01m*[0m   ./usr/include/openssl/objects.h
+ [32;01m*[0m   ./usr/include/openssl/ossl_typ.h
+ [32;01m*[0m   ./usr/include/openssl/symhacks.h
+ [32;01m*[0m   ./usr/include/openssl/ebcdic.h
+ [32;01m*[0m   ./usr/include/openssl/opensslconf.h
+ [32;01m*[0m   ./usr/include/openssl/opensslv.h
+ [32;01m*[0m   ./usr/include/openssl/crypto.h
+ [32;01m*[0m   ./usr/include/openssl/e_os2.h
+ [32;01m*[0m   ./usr/lib/libssl.so
+ [32;01m*[0m   ./usr/lib/libcrypto.so
+ [32;01m*[0m   ./usr/lib/libssl.so.1.0.0
+ [32;01m*[0m   ./usr/lib/libcrypto.so.1.0.0
+ [32;01m*[0m   ./usr/lib/pkgconfig/openssl.pc
+ [32;01m*[0m   ./usr/lib/pkgconfig/libssl.pc
+ [32;01m*[0m   ./usr/lib/pkgconfig/libcrypto.pc
+ [32;01m*[0m   ./usr/lib/engines/libgost.so
+ [32;01m*[0m   ./usr/lib/engines/libcapi.so
+ [32;01m*[0m   ./usr/lib/engines/libpadlock.so
+ [32;01m*[0m   ./usr/lib/engines/libubsec.so
+ [32;01m*[0m   ./usr/lib/engines/libsureware.so
+ [32;01m*[0m   ./usr/lib/engines/libnuron.so
+ [32;01m*[0m   ./usr/lib/engines/libchil.so
+ [32;01m*[0m   ./usr/lib/engines/libgmp.so
+ [32;01m*[0m   ./usr/lib/engines/libcswift.so
+ [32;01m*[0m   ./usr/lib/engines/libatalla.so
+ [32;01m*[0m   ./usr/lib/engines/libaep.so
+ [32;01m*[0m   ./usr/lib/engines/lib4758cca.so
+ [32;01m*[0m Extracting sys-apps/debianutils-3.4.4 to /usr/i586-pc-linux-gnu ...
+ [32;01m*[0m Extracting sys-apps/coreutils-8.14 to /usr/i586-pc-linux-gnu ...
+ [32;01m*[0m Extracting sys-libs/libcap-2.22 to /usr/i586-pc-linux-gnu ...
+ [32;01m*[0m   ./lib/libcap.so.2.22
+ [32;01m*[0m   ./lib/libcap.so.2
+ [32;01m*[0m   ./usr/lib/libcap.a
+ [32;01m*[0m   ./usr/lib/libcap.so
+ [32;01m*[0m   ./usr/include/sys/capability.h
+ [32;01m*[0m Extracting sys-apps/attr-2.4.46-r1 to /usr/i586-pc-linux-gnu ...
+ [32;01m*[0m   ./lib/libattr.so.1.1.0
+ [32;01m*[0m   ./lib/libattr.so.1
+ [32;01m*[0m   ./usr/include/attr/libattr.h
+ [32;01m*[0m   ./usr/include/attr/error_context.h
+ [32;01m*[0m   ./usr/include/attr/xattr.h
+ [32;01m*[0m   ./usr/include/attr/attributes.h
+ [32;01m*[0m   ./usr/lib/libattr.so
+ [32;01m*[0m Extracting sys-libs/zlib-1.2.5-r2 to /usr/i586-pc-linux-gnu ...
+ [32;01m*[0m   ./lib/libz.so.1.2.5
+ [32;01m*[0m   ./lib/libz.so.1
+ [32;01m*[0m   ./usr/include/zconf.h
+ [32;01m*[0m   ./usr/include/zlib.h
+ [32;01m*[0m   ./usr/lib/libz.a
+ [32;01m*[0m   ./usr/lib/libz.so
+ [32;01m*[0m   ./usr/lib/pkgconfig/zlib.pc
+ [32;01m*[0m Extracting net-libs/libpcap-1.1.1-r1 to /usr/i586-pc-linux-gnu ...
+ [32;01m*[0m   ./usr/include/pcap-namedb.h
+ [32;01m*[0m   ./usr/include/pcap-bpf.h
+ [32;01m*[0m   ./usr/include/pcap.h
+ [32;01m*[0m   ./usr/include/pcap/usb.h
+ [32;01m*[0m   ./usr/include/pcap/vlan.h
+ [32;01m*[0m   ./usr/include/pcap/sll.h
+ [32;01m*[0m   ./usr/include/pcap/pcap.h
+ [32;01m*[0m   ./usr/include/pcap/namedb.h
+ [32;01m*[0m   ./usr/include/pcap/ipnet.h
+ [32;01m*[0m   ./usr/include/pcap/bluetooth.h
+ [32;01m*[0m   ./usr/include/pcap/bpf.h
+ [32;01m*[0m   ./usr/lib/libpcap.a
+ [32;01m*[0m   ./usr/lib/libpcap.so.1.1.1
+ [32;01m*[0m   ./usr/lib/libpcap.so
+ [32;01m*[0m   ./usr/lib/libpcap.so.1
+ [32;01m*[0m Extracting dev-libs/libnl-1.1-r2 to /usr/i586-pc-linux-gnu ...
+ [32;01m*[0m   ./usr/include/netlink/utils.h
+ [32;01m*[0m   ./usr/include/netlink/types.h
+ [32;01m*[0m   ./usr/include/netlink/socket.h
+ [32;01m*[0m   ./usr/include/netlink/object.h
+ [32;01m*[0m   ./usr/include/netlink/object-api.h
+ [32;01m*[0m   ./usr/include/netlink/netlink.h
+ [32;01m*[0m   ./usr/include/netlink/netlink-kernel.h
+ [32;01m*[0m   ./usr/include/netlink/netlink-compat.h
+ [32;01m*[0m   ./usr/include/netlink/msg.h
+ [32;01m*[0m   ./usr/include/netlink/list.h
+ [32;01m*[0m   ./usr/include/netlink/handlers.h
+ [32;01m*[0m   ./usr/include/netlink/data.h
+ [32;01m*[0m   ./usr/include/netlink/cache.h
+ [32;01m*[0m   ./usr/include/netlink/cache-api.h
+ [32;01m*[0m   ./usr/include/netlink/attr.h
+ [32;01m*[0m   ./usr/include/netlink/addr.h
+ [32;01m*[0m   ./usr/include/netlink/fib_lookup/request.h
+ [32;01m*[0m   ./usr/include/netlink/fib_lookup/lookup.h
+ [32;01m*[0m   ./usr/include/netlink/genl/mngt.h
+ [32;01m*[0m   ./usr/include/netlink/genl/genl.h
+ [32;01m*[0m   ./usr/include/netlink/genl/family.h
+ [32;01m*[0m   ./usr/include/netlink/genl/ctrl.h
+ [32;01m*[0m   ./usr/include/netlink/route/tc.h
+ [32;01m*[0m   ./usr/include/netlink/route/rule.h
+ [32;01m*[0m   ./usr/include/netlink/route/rtnl.h
+ [32;01m*[0m   ./usr/include/netlink/route/route.h
+ [32;01m*[0m   ./usr/include/netlink/route/qdisc.h
+ [32;01m*[0m   ./usr/include/netlink/route/qdisc-modules.h
+ [32;01m*[0m   ./usr/include/netlink/route/nexthop.h
+ [32;01m*[0m   ./usr/include/netlink/route/neightbl.h
+ [32;01m*[0m   ./usr/include/netlink/route/neighbour.h
+ [32;01m*[0m   ./usr/include/netlink/route/link.h
+ [32;01m*[0m   ./usr/include/netlink/route/classifier.h
+ [32;01m*[0m   ./usr/include/netlink/route/classifier-modules.h
+ [32;01m*[0m   ./usr/include/netlink/route/class.h
+ [32;01m*[0m   ./usr/include/netlink/route/class-modules.h
+ [32;01m*[0m   ./usr/include/netlink/route/addr.h
+ [32;01m*[0m   ./usr/include/netlink/route/cls/u32.h
+ [32;01m*[0m   ./usr/include/netlink/route/cls/police.h
+ [32;01m*[0m   ./usr/include/netlink/route/cls/fw.h
+ [32;01m*[0m   ./usr/include/netlink/route/sch/tbf.h
+ [32;01m*[0m   ./usr/include/netlink/route/sch/sfq.h
+ [32;01m*[0m   ./usr/include/netlink/route/sch/red.h
+ [32;01m*[0m   ./usr/include/netlink/route/sch/prio.h
+ [32;01m*[0m   ./usr/include/netlink/route/sch/netem.h
+ [32;01m*[0m   ./usr/include/netlink/route/sch/htb.h
+ [32;01m*[0m   ./usr/include/netlink/route/sch/fifo.h
+ [32;01m*[0m   ./usr/include/netlink/route/sch/dsmark.h
+ [32;01m*[0m   ./usr/include/netlink/route/sch/cbq.h
+ [32;01m*[0m   ./usr/lib/libnl.so.1.1
+ [32;01m*[0m   ./usr/lib/pkgconfig/libnl-1.pc
+ [32;01m*[0m   ./usr/lib/libnl.so
+ [32;01m*[0m   ./usr/lib/libnl.so.1
+ [32;01m*[0m Fixing SYSROOT .la files
+&gt;&gt;&gt;<i> Unpacking source...
+</I>&gt;&gt;&gt;<i> Unpacking coova-chilli-1.2.9.tar.gz to /var/tmp/i586-pc-linux-gnu/portage/net-wireless/coova-chilli-1.2.9/work
+</I>&gt;&gt;&gt;<i> Source unpacked in /var/tmp/i586-pc-linux-gnu/portage/net-wireless/coova-chilli-1.2.9/work
+</I>&gt;&gt;&gt;<i> Preparing source in /var/tmp/i586-pc-linux-gnu/portage/net-wireless/coova-chilli-1.2.9/work/coova-chilli-1.2.9 ...
+</I>&gt;&gt;&gt;<i> Source prepared.
+</I>&gt;&gt;&gt;<i> Configuring source in /var/tmp/i586-pc-linux-gnu/portage/net-wireless/coova-chilli-1.2.9/work/coova-chilli-1.2.9 ...
+</I> * econf: updating coova-chilli-1.2.9/config.sub with /usr/share/gnuconfig/config.sub
+ * econf: updating coova-chilli-1.2.9/config.guess with /usr/share/gnuconfig/config.guess
+./configure --prefix=/usr --build=x86_64-pc-linux-gnu --host=i586-pc-linux-gnu --mandir=/usr/share/man --infodir=/usr/share/info --datadir=/usr/share --sysconfdir=/etc --localstatedir=/var/lib --disable-dependency-tracking --enable-statusfile --with-mmap --with-poll --with-ipc-msg
+configure: loading site script /usr/share/config.site
+configure: loading site script /usr/share/crossdev/include/site/linux
+configure: loading site script /usr/share/crossdev/include/site/linux-gnu
+checking for a BSD-compatible install... /usr/bin/install -c
+checking whether build environment is sane... yes
+checking for i586-pc-linux-gnu-strip... i586-pc-linux-gnu-strip
+checking for a thread-safe mkdir -p... /bin/mkdir -p
+checking for gawk... gawk
+checking whether make sets $(MAKE)... yes
+checking for i586-pc-linux-gnu-gcc... i586-pc-linux-gnu-gcc
+checking whether the C compiler works... yes
+checking for C compiler default output file name... a.out
+checking for suffix of executables... 
+checking whether we are cross compiling... yes
+checking for suffix of object files... o
+checking whether we are using the GNU C compiler... yes
+checking whether i586-pc-linux-gnu-gcc accepts -g... yes
+checking for i586-pc-linux-gnu-gcc option to accept ISO C89... none needed
+checking for style of include used by make... GNU
+checking dependency style of i586-pc-linux-gnu-gcc... none
+checking build system type... x86_64-pc-linux-gnu
+checking host system type... i586-pc-linux-gnu
+checking how to print strings... printf
+checking for a sed that does not truncate output... /bin/sed
+checking for grep that handles long lines and -e... /bin/grep
+checking for egrep... /bin/grep -E
+checking for fgrep... /bin/grep -F
+checking for ld used by i586-pc-linux-gnu-gcc... /usr/libexec/gcc/i586-pc-linux-gnu/ld
+checking if the linker (/usr/libexec/gcc/i586-pc-linux-gnu/ld) is GNU ld... yes
+checking for BSD- or MS-compatible name lister (nm)... /usr/bin/i586-pc-linux-gnu-nm -B
+checking the name lister (/usr/bin/i586-pc-linux-gnu-nm -B) interface... BSD nm
+checking whether ln -s works... yes
+checking the maximum length of command line arguments... 1572864
+checking whether the shell understands some XSI constructs... yes
+checking whether the shell understands &quot;+=&quot;... yes
+checking how to convert x86_64-pc-linux-gnu file names to i586-pc-linux-gnu format... func_convert_file_noop
+checking how to convert x86_64-pc-linux-gnu file names to toolchain format... func_convert_file_noop
+checking for /usr/libexec/gcc/i586-pc-linux-gnu/ld option to reload object files... -r
+checking for i586-pc-linux-gnu-objdump... i586-pc-linux-gnu-objdump
+checking how to recognize dependent libraries... pass_all
+checking for i586-pc-linux-gnu-dlltool... no
+checking for dlltool... no
+checking how to associate runtime and link libraries... printf %s\n
+checking for i586-pc-linux-gnu-ar... i586-pc-linux-gnu-ar
+checking for archiver @FILE support... @
+checking for i586-pc-linux-gnu-strip... (cached) i586-pc-linux-gnu-strip
+checking for i586-pc-linux-gnu-ranlib... i586-pc-linux-gnu-ranlib
+checking command to parse /usr/bin/i586-pc-linux-gnu-nm -B output from i586-pc-linux-gnu-gcc object... ok
+checking for sysroot... no
+checking for i586-pc-linux-gnu-mt... no
+checking for mt... no
+checking if : is a manifest tool... no
+checking how to run the C preprocessor... i586-pc-linux-gnu-gcc -E
+checking for ANSI C header files... yes
+checking for sys/types.h... yes
+checking for sys/stat.h... yes
+checking for stdlib.h... yes
+checking for string.h... yes
+checking for memory.h... yes
+checking for strings.h... yes
+checking for inttypes.h... yes
+checking for stdint.h... yes
+checking for unistd.h... yes
+checking for dlfcn.h... yes
+checking for objdir... .libs
+checking if i586-pc-linux-gnu-gcc supports -fno-rtti -fno-exceptions... no
+checking for i586-pc-linux-gnu-gcc option to produce PIC... -fPIC -DPIC
+checking if i586-pc-linux-gnu-gcc PIC flag -fPIC -DPIC works... yes
+checking if i586-pc-linux-gnu-gcc static flag -static works... yes
+checking if i586-pc-linux-gnu-gcc supports -c -o file.o... yes
+checking if i586-pc-linux-gnu-gcc supports -c -o file.o... (cached) yes
+checking whether the i586-pc-linux-gnu-gcc linker (/usr/libexec/gcc/i586-pc-linux-gnu/ld) supports shared libraries... yes
+checking whether -lc should be explicitly linked in... no
+checking dynamic linker characteristics... GNU/Linux ld.so
+checking how to hardcode library paths into programs... immediate
+checking whether stripping libraries is possible... yes
+checking if libtool supports shared libraries... yes
+checking whether to build shared libraries... yes
+checking whether to build static libraries... yes
+linux
+checking if if_packet.h has tpacket_stats defined... yes
+checking if tpacket_auxdata struct has tp_vlan_tci member... yes
+checking for ANSI C header files... (cached) yes
+checking arpa/inet.h usability... yes
+checking arpa/inet.h presence... yes
+checking for arpa/inet.h... yes
+checking errno.h usability... yes
+checking errno.h presence... yes
+checking for errno.h... yes
+checking fcntl.h usability... yes
+checking fcntl.h presence... yes
+checking for fcntl.h... yes
+checking dirent.h usability... yes
+checking dirent.h presence... yes
+checking for dirent.h... yes
+checking netdb.h usability... yes
+checking netdb.h presence... yes
+checking for netdb.h... yes
+checking netinet/in.h usability... yes
+checking netinet/in.h presence... yes
+checking for netinet/in.h... yes
+checking netinet/tcp.h usability... yes
+checking netinet/tcp.h presence... yes
+checking for netinet/tcp.h... yes
+checking for stdint.h... (cached) yes
+checking stddef.h usability... yes
+checking stddef.h presence... yes
+checking for stddef.h... yes
+checking for stdlib.h... (cached) yes
+checking for string.h... (cached) yes
+checking sys/ioctl.h usability... yes
+checking sys/ioctl.h presence... yes
+checking for sys/ioctl.h... yes
+checking sys/socket.h usability... yes
+checking sys/socket.h presence... yes
+checking for sys/socket.h... yes
+checking sys/sysinfo.h usability... yes
+checking sys/sysinfo.h presence... yes
+checking for sys/sysinfo.h... yes
+checking sys/param.h usability... yes
+checking sys/param.h presence... yes
+checking for sys/param.h... yes
+checking sys/time.h usability... yes
+checking sys/time.h presence... yes
+checking for sys/time.h... yes
+checking time.h usability... yes
+checking time.h presence... yes
+checking for time.h... yes
+checking sys/ipc.h usability... yes
+checking sys/ipc.h presence... yes
+checking for sys/ipc.h... yes
+checking sys/msg.h usability... yes
+checking sys/msg.h presence... yes
+checking for sys/msg.h... yes
+checking signal.h usability... yes
+checking signal.h presence... yes
+checking for signal.h... yes
+checking sys/wait.h usability... yes
+checking sys/wait.h presence... yes
+checking for sys/wait.h... yes
+checking sys/un.h usability... yes
+checking sys/un.h presence... yes
+checking for sys/un.h... yes
+checking ifaddrs.h usability... yes
+checking ifaddrs.h presence... yes
+checking for ifaddrs.h... yes
+checking for sys/stat.h... (cached) yes
+checking for sys/types.h... (cached) yes
+checking regex.h usability... yes
+checking regex.h presence... yes
+checking for regex.h... yes
+checking syslog.h usability... yes
+checking syslog.h presence... yes
+checking for syslog.h... yes
+checking poll.h usability... yes
+checking poll.h presence... yes
+checking for poll.h... yes
+checking sys/epoll.h usability... yes
+checking sys/epoll.h presence... yes
+checking for sys/epoll.h... yes
+checking for unistd.h... (cached) yes
+checking endian.h usability... yes
+checking endian.h presence... yes
+checking for endian.h... yes
+checking libgen.h usability... yes
+checking libgen.h presence... yes
+checking for libgen.h... yes
+checking asm/types.h usability... yes
+checking asm/types.h presence... yes
+checking for asm/types.h... yes
+checking for pwd.h... (cached) yes
+checking grp.h usability... yes
+checking grp.h presence... yes
+checking for grp.h... yes
+checking for resolv.h... yes
+checking for net/route.h... yes
+checking for net/if.h... yes
+checking for net/if_arp.h... yes
+checking for net/if_tun.h... no
+checking for net/ethernet.h... yes
+checking for an ANSI C-conforming const... yes
+checking for mode_t... yes
+checking whether time.h and sys/time.h may both be included... yes
+checking for pid_t... yes
+checking vfork.h usability... no
+checking vfork.h presence... no
+checking for vfork.h... no
+checking for fork... yes
+checking for vfork... yes
+checking for working fork... (cached) yes
+checking for working vfork... (cached) yes
+checking whether i586-pc-linux-gnu-gcc needs -traditional... no
+checking for working memcmp... no
+checking sys/select.h usability... yes
+checking sys/select.h presence... yes
+checking for sys/select.h... yes
+checking for sys/socket.h... (cached) yes
+checking types of arguments for select... int,fd_set *,struct timeval *
+checking for gethostbyname... yes
+checking for getprotoent... yes
+checking for gettimeofday... yes
+checking for inet_ntoa... yes
+checking for memset... yes
+checking for select... yes
+checking for socket... yes
+checking for strdup... yes
+checking for strerror... yes
+checking for strstr... yes
+checking for strtol... yes
+checking for getline... yes
+checking for dirname... yes
+checking for glob... yes
+checking for getaddrinfo... (cached) yes
+checking for getnameinfo... yes
+checking for getifaddrs... yes
+checking for sysinfo... yes
+checking for res_init in -lresolv... no
+checking for clock_gettime in -lrt... yes
+configure: creating ./config.status
+config.status: creating Makefile
+config.status: creating bstring/Makefile
+config.status: creating src/Makefile
+config.status: creating src/mssl/Makefile
+config.status: creating www/Makefile
+config.status: creating doc/Makefile
+config.status: creating conf/Makefile
+config.status: creating debian/Makefile
+config.status: creating miniportal/Makefile
+config.status: creating json/Makefile
+config.status: creating distro/Makefile
+config.status: creating distro/suse/coova-chilli.spec
+config.status: creating distro/redhat/coova-chilli.spec
+config.status: creating config.h
+config.status: executing depfiles commands
+config.status: executing libtool commands
+&gt;&gt;&gt;<i> Source configured.
+</I>&gt;&gt;&gt;<i> Compiling source in /var/tmp/i586-pc-linux-gnu/portage/net-wireless/coova-chilli-1.2.9/work/coova-chilli-1.2.9 ...
+</I>make -j1 
+make  all-recursive
+make[1]: Entering directory `/var/tmp/i586-pc-linux-gnu/portage/net-wireless/coova-chilli-1.2.9/work/coova-chilli-1.2.9'
+Making all in bstring
+make[2]: Entering directory `/var/tmp/i586-pc-linux-gnu/portage/net-wireless/coova-chilli-1.2.9/work/coova-chilli-1.2.9/bstring'
+/bin/sh ../libtool --tag=CC   --mode=compile i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I..     -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c -o bstrlib.lo bstrlib.c
+libtool: compile:  i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I.. -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c bstrlib.c  -fPIC -DPIC -o .libs/bstrlib.o
+libtool: compile:  i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I.. -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c bstrlib.c -o bstrlib.o &gt;/dev/null 2&gt;&amp;1
+/bin/sh ../libtool --tag=CC   --mode=compile i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I..     -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c -o snprintf.lo snprintf.c
+libtool: compile:  i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I.. -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c snprintf.c  -fPIC -DPIC -o .libs/snprintf.o
+libtool: compile:  i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I.. -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c snprintf.c -o snprintf.o &gt;/dev/null 2&gt;&amp;1
+/bin/sh ../libtool --tag=CC   --mode=link i586-pc-linux-gnu-gcc  -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer  -L/usr/i586-pc-linux-gnu/lib -L/usr/i586-pc-linux-gnu/usr/lib -o libbstring.la -rpath /usr/lib bstrlib.lo snprintf.lo  -lrt 
+libtool: link: i586-pc-linux-gnu-gcc -shared  -fPIC -DPIC  .libs/bstrlib.o .libs/snprintf.o   -L/usr/i586-pc-linux-gnu/lib -L/usr/i586-pc-linux-gnu/usr/lib -lrt  -march=geode -Os -mmmx -m3dnow   -Wl,-soname -Wl,libbstring.so.0 -o .libs/libbstring.so.0.0.0
+libtool: link: (cd &quot;.libs&quot; &amp;&amp; rm -f &quot;libbstring.so.0&quot; &amp;&amp; ln -s &quot;libbstring.so.0.0.0&quot; &quot;libbstring.so.0&quot;)
+libtool: link: (cd &quot;.libs&quot; &amp;&amp; rm -f &quot;libbstring.so&quot; &amp;&amp; ln -s &quot;libbstring.so.0.0.0&quot; &quot;libbstring.so&quot;)
+libtool: link: i586-pc-linux-gnu-ar cru .libs/libbstring.a  bstrlib.o snprintf.o
+libtool: link: i586-pc-linux-gnu-ranlib .libs/libbstring.a
+libtool: link: ( cd &quot;.libs&quot; &amp;&amp; rm -f &quot;libbstring.la&quot; &amp;&amp; ln -s &quot;../libbstring.la&quot; &quot;libbstring.la&quot; )
+make[2]: Leaving directory `/var/tmp/i586-pc-linux-gnu/portage/net-wireless/coova-chilli-1.2.9/work/coova-chilli-1.2.9/bstring'
+Making all in src
+make[2]: Entering directory `/var/tmp/i586-pc-linux-gnu/portage/net-wireless/coova-chilli-1.2.9/work/coova-chilli-1.2.9/src'
+make[3]: Entering directory `/var/tmp/i586-pc-linux-gnu/portage/net-wireless/coova-chilli-1.2.9/work/coova-chilli-1.2.9/src'
+/bin/sh ../libtool --tag=CC   --mode=compile i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I..    -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF='&quot;/etc/chilli.conf&quot;' -DDEFPIDFILE='&quot;/var/lib/run/chilli.pid&quot;' -DDEFSTATEDIR='&quot;/var/lib/run&quot;' -DSBINDIR='&quot;/usr/sbin&quot;'    -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c -o chilli.lo chilli.c
+libtool: compile:  i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I.. -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF=\&quot;/etc/chilli.conf\&quot; -DDEFPIDFILE=\&quot;/var/lib/run/chilli.pid\&quot; -DDEFSTATEDIR=\&quot;/var/lib/run\&quot; -DSBINDIR=\&quot;/usr/sbin\&quot; -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c chilli.c  -fPIC -DPIC -o .libs/chilli.o
+chilli.c: In function 'chilli_main':
+chilli.c:7526:26: error: 'struct tun_t' has no member named '_interface_count'
+chilli.c:7527:16: error: 'struct tun_t' has no member named '_interfaces'
+make[3]: *** [chilli.lo] Error 1
+make[3]: Leaving directory `/var/tmp/i586-pc-linux-gnu/portage/net-wireless/coova-chilli-1.2.9/work/coova-chilli-1.2.9/src'
+make[2]: *** [all-recursive] Error 1
+make[2]: Leaving directory `/var/tmp/i586-pc-linux-gnu/portage/net-wireless/coova-chilli-1.2.9/work/coova-chilli-1.2.9/src'
+make[1]: *** [all-recursive] Error 1
+make[1]: Leaving directory `/var/tmp/i586-pc-linux-gnu/portage/net-wireless/coova-chilli-1.2.9/work/coova-chilli-1.2.9'
+make: *** [all] Error 2
+ [31;01m*[0m ERROR: net-wireless/coova-chilli-1.2.9 failed (compile phase):
+ [31;01m*[0m   emake failed
+ [31;01m*[0m 
+ [31;01m*[0m If you need support, post the output of 'emerge --info =net-wireless/coova-chilli-1.2.9',
+ [31;01m*[0m the complete build log and the output of 'emerge -pqv =net-wireless/coova-chilli-1.2.9'.
+ [31;01m*[0m The complete build log is located at '/data/cross/alix3-i586/firmware/var/log/portage/net-wireless:coova-chilli-1.2.9:20120324-001230.log'.
+ [31;01m*[0m The ebuild environment file is located at '/var/tmp/i586-pc-linux-gnu/portage/net-wireless/coova-chilli-1.2.9/temp/environment'.
+ [31;01m*[0m S: '/var/tmp/i586-pc-linux-gnu/portage/net-wireless/coova-chilli-1.2.9/work/coova-chilli-1.2.9'
+-------------- next part --------------
+[32;01m * [39;49;00mPackage:    net-wireless/coova-chilli-1.2.9
+[32;01m * [39;49;00mRepository: meleeweb
+[32;01m * [39;49;00mMaintainer: <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">maintainer-wanted at gentoo.org</A>
+[32;01m * [39;49;00mUSE:        curl elibc_glibc ipv6 kernel_linux miniportal pcap ssl userland_GNU x86
+[32;01m * [39;49;00mFEATURES:   sandbox
+ [32;01m*[0m Determining =net-wireless/coova-chilli-1.2.9 SYSROOT dependencies ...
+ [32;01m*[0m Extracting app-misc/ca-certificates-20111025 to /usr/i586-pc-linux-gnu ...
+ [32;01m*[0m Extracting net-misc/curl-7.24.0 to /usr/i586-pc-linux-gnu ...
+ [32;01m*[0m   ./usr/include/curl/curlrules.h
+ [32;01m*[0m   ./usr/include/curl/curlbuild.h
+ [32;01m*[0m   ./usr/include/curl/typecheck-gcc.h
+ [32;01m*[0m   ./usr/include/curl/multi.h
+ [32;01m*[0m   ./usr/include/curl/stdcheaders.h
+ [32;01m*[0m   ./usr/include/curl/mprintf.h
+ [32;01m*[0m   ./usr/include/curl/easy.h
+ [32;01m*[0m   ./usr/include/curl/curlver.h
+ [32;01m*[0m   ./usr/include/curl/curl.h
+ [32;01m*[0m   ./usr/lib/libcurl.so.4.2.0
+ [32;01m*[0m   ./usr/lib/pkgconfig/libcurl.pc
+ [32;01m*[0m   ./usr/lib/libcurl.so
+ [32;01m*[0m   ./usr/lib/libcurl.so.4
+ [32;01m*[0m Extracting dev-libs/openssl-1.0.0h to /usr/i586-pc-linux-gnu ...
+ [32;01m*[0m   ./usr/include/openssl/kssl.h
+ [32;01m*[0m   ./usr/include/openssl/dtls1.h
+ [32;01m*[0m   ./usr/include/openssl/tls1.h
+ [32;01m*[0m   ./usr/include/openssl/ssl23.h
+ [32;01m*[0m   ./usr/include/openssl/ssl3.h
+ [32;01m*[0m   ./usr/include/openssl/ssl2.h
+ [32;01m*[0m   ./usr/include/openssl/ssl.h
+ [32;01m*[0m   ./usr/include/openssl/ts.h
+ [32;01m*[0m   ./usr/include/openssl/pqueue.h
+ [32;01m*[0m   ./usr/include/openssl/cms.h
+ [32;01m*[0m   ./usr/include/openssl/krb5_asn.h
+ [32;01m*[0m   ./usr/include/openssl/ui_compat.h
+ [32;01m*[0m   ./usr/include/openssl/ui.h
+ [32;01m*[0m   ./usr/include/openssl/ocsp.h
+ [32;01m*[0m   ./usr/include/openssl/comp.h
+ [32;01m*[0m   ./usr/include/openssl/pkcs12.h
+ [32;01m*[0m   ./usr/include/openssl/pkcs7.h
+ [32;01m*[0m   ./usr/include/openssl/txt_db.h
+ [32;01m*[0m   ./usr/include/openssl/conf_api.h
+ [32;01m*[0m   ./usr/include/openssl/conf.h
+ [32;01m*[0m   ./usr/include/openssl/x509v3.h
+ [32;01m*[0m   ./usr/include/openssl/x509_vfy.h
+ [32;01m*[0m   ./usr/include/openssl/x509.h
+ [32;01m*[0m   ./usr/include/openssl/pem2.h
+ [32;01m*[0m   ./usr/include/openssl/pem.h
+ [32;01m*[0m   ./usr/include/openssl/asn1t.h
+ [32;01m*[0m   ./usr/include/openssl/asn1_mac.h
+ [32;01m*[0m   ./usr/include/openssl/asn1.h
+ [32;01m*[0m   ./usr/include/openssl/evp.h
+ [32;01m*[0m   ./usr/include/openssl/err.h
+ [32;01m*[0m   ./usr/include/openssl/rand.h
+ [32;01m*[0m   ./usr/include/openssl/lhash.h
+ [32;01m*[0m   ./usr/include/openssl/safestack.h
+ [32;01m*[0m   ./usr/include/openssl/stack.h
+ [32;01m*[0m   ./usr/include/openssl/bio.h
+ [32;01m*[0m   ./usr/include/openssl/buffer.h
+ [32;01m*[0m   ./usr/include/openssl/engine.h
+ [32;01m*[0m   ./usr/include/openssl/dso.h
+ [32;01m*[0m   ./usr/include/openssl/ecdh.h
+ [32;01m*[0m   ./usr/include/openssl/dh.h
+ [32;01m*[0m   ./usr/include/openssl/ecdsa.h
+ [32;01m*[0m   ./usr/include/openssl/dsa.h
+ [32;01m*[0m   ./usr/include/openssl/rsa.h
+ [32;01m*[0m   ./usr/include/openssl/ec.h
+ [32;01m*[0m   ./usr/include/openssl/bn.h
+ [32;01m*[0m   ./usr/include/openssl/modes.h
+ [32;01m*[0m   ./usr/include/openssl/seed.h
+ [32;01m*[0m   ./usr/include/openssl/camellia.h
+ [32;01m*[0m   ./usr/include/openssl/cast.h
+ [32;01m*[0m   ./usr/include/openssl/blowfish.h
+ [32;01m*[0m   ./usr/include/openssl/idea.h
+ [32;01m*[0m   ./usr/include/openssl/rc5.h
+ [32;01m*[0m   ./usr/include/openssl/rc4.h
+ [32;01m*[0m   ./usr/include/openssl/rc2.h
+ [32;01m*[0m   ./usr/include/openssl/aes.h
+ [32;01m*[0m   ./usr/include/openssl/des_old.h
+ [32;01m*[0m   ./usr/include/openssl/des.h
+ [32;01m*[0m   ./usr/include/openssl/whrlpool.h
+ [32;01m*[0m   ./usr/include/openssl/ripemd.h
+ [32;01m*[0m   ./usr/include/openssl/hmac.h
+ [32;01m*[0m   ./usr/include/openssl/mdc2.h
+ [32;01m*[0m   ./usr/include/openssl/sha.h
+ [32;01m*[0m   ./usr/include/openssl/md5.h
+ [32;01m*[0m   ./usr/include/openssl/md4.h
+ [32;01m*[0m   ./usr/include/openssl/obj_mac.h
+ [32;01m*[0m   ./usr/include/openssl/objects.h
+ [32;01m*[0m   ./usr/include/openssl/ossl_typ.h
+ [32;01m*[0m   ./usr/include/openssl/symhacks.h
+ [32;01m*[0m   ./usr/include/openssl/ebcdic.h
+ [32;01m*[0m   ./usr/include/openssl/opensslconf.h
+ [32;01m*[0m   ./usr/include/openssl/opensslv.h
+ [32;01m*[0m   ./usr/include/openssl/crypto.h
+ [32;01m*[0m   ./usr/include/openssl/e_os2.h
+ [32;01m*[0m   ./usr/lib/libssl.so
+ [32;01m*[0m   ./usr/lib/libcrypto.so
+ [32;01m*[0m   ./usr/lib/libssl.so.1.0.0
+ [32;01m*[0m   ./usr/lib/libcrypto.so.1.0.0
+ [32;01m*[0m   ./usr/lib/pkgconfig/openssl.pc
+ [32;01m*[0m   ./usr/lib/pkgconfig/libssl.pc
+ [32;01m*[0m   ./usr/lib/pkgconfig/libcrypto.pc
+ [32;01m*[0m   ./usr/lib/engines/libgost.so
+ [32;01m*[0m   ./usr/lib/engines/libcapi.so
+ [32;01m*[0m   ./usr/lib/engines/libpadlock.so
+ [32;01m*[0m   ./usr/lib/engines/libubsec.so
+ [32;01m*[0m   ./usr/lib/engines/libsureware.so
+ [32;01m*[0m   ./usr/lib/engines/libnuron.so
+ [32;01m*[0m   ./usr/lib/engines/libchil.so
+ [32;01m*[0m   ./usr/lib/engines/libgmp.so
+ [32;01m*[0m   ./usr/lib/engines/libcswift.so
+ [32;01m*[0m   ./usr/lib/engines/libatalla.so
+ [32;01m*[0m   ./usr/lib/engines/libaep.so
+ [32;01m*[0m   ./usr/lib/engines/lib4758cca.so
+ [32;01m*[0m Extracting sys-apps/debianutils-3.4.4 to /usr/i586-pc-linux-gnu ...
+ [32;01m*[0m Extracting sys-apps/coreutils-8.14 to /usr/i586-pc-linux-gnu ...
+ [32;01m*[0m Extracting sys-libs/libcap-2.22 to /usr/i586-pc-linux-gnu ...
+ [32;01m*[0m   ./lib/libcap.so.2.22
+ [32;01m*[0m   ./lib/libcap.so.2
+ [32;01m*[0m   ./usr/lib/libcap.a
+ [32;01m*[0m   ./usr/lib/libcap.so
+ [32;01m*[0m   ./usr/include/sys/capability.h
+ [32;01m*[0m Extracting sys-apps/attr-2.4.46-r1 to /usr/i586-pc-linux-gnu ...
+ [32;01m*[0m   ./lib/libattr.so.1.1.0
+ [32;01m*[0m   ./lib/libattr.so.1
+ [32;01m*[0m   ./usr/include/attr/libattr.h
+ [32;01m*[0m   ./usr/include/attr/error_context.h
+ [32;01m*[0m   ./usr/include/attr/xattr.h
+ [32;01m*[0m   ./usr/include/attr/attributes.h
+ [32;01m*[0m   ./usr/lib/libattr.so
+ [32;01m*[0m Extracting sys-libs/zlib-1.2.5-r2 to /usr/i586-pc-linux-gnu ...
+ [32;01m*[0m   ./lib/libz.so.1.2.5
+ [32;01m*[0m   ./lib/libz.so.1
+ [32;01m*[0m   ./usr/include/zconf.h
+ [32;01m*[0m   ./usr/include/zlib.h
+ [32;01m*[0m   ./usr/lib/libz.a
+ [32;01m*[0m   ./usr/lib/libz.so
+ [32;01m*[0m   ./usr/lib/pkgconfig/zlib.pc
+ [32;01m*[0m Extracting net-libs/libpcap-1.1.1-r1 to /usr/i586-pc-linux-gnu ...
+ [32;01m*[0m   ./usr/include/pcap-namedb.h
+ [32;01m*[0m   ./usr/include/pcap-bpf.h
+ [32;01m*[0m   ./usr/include/pcap.h
+ [32;01m*[0m   ./usr/include/pcap/usb.h
+ [32;01m*[0m   ./usr/include/pcap/vlan.h
+ [32;01m*[0m   ./usr/include/pcap/sll.h
+ [32;01m*[0m   ./usr/include/pcap/pcap.h
+ [32;01m*[0m   ./usr/include/pcap/namedb.h
+ [32;01m*[0m   ./usr/include/pcap/ipnet.h
+ [32;01m*[0m   ./usr/include/pcap/bluetooth.h
+ [32;01m*[0m   ./usr/include/pcap/bpf.h
+ [32;01m*[0m   ./usr/lib/libpcap.a
+ [32;01m*[0m   ./usr/lib/libpcap.so.1.1.1
+ [32;01m*[0m   ./usr/lib/libpcap.so
+ [32;01m*[0m   ./usr/lib/libpcap.so.1
+ [32;01m*[0m Extracting dev-libs/libnl-1.1-r2 to /usr/i586-pc-linux-gnu ...
+ [32;01m*[0m   ./usr/include/netlink/utils.h
+ [32;01m*[0m   ./usr/include/netlink/types.h
+ [32;01m*[0m   ./usr/include/netlink/socket.h
+ [32;01m*[0m   ./usr/include/netlink/object.h
+ [32;01m*[0m   ./usr/include/netlink/object-api.h
+ [32;01m*[0m   ./usr/include/netlink/netlink.h
+ [32;01m*[0m   ./usr/include/netlink/netlink-kernel.h
+ [32;01m*[0m   ./usr/include/netlink/netlink-compat.h
+ [32;01m*[0m   ./usr/include/netlink/msg.h
+ [32;01m*[0m   ./usr/include/netlink/list.h
+ [32;01m*[0m   ./usr/include/netlink/handlers.h
+ [32;01m*[0m   ./usr/include/netlink/data.h
+ [32;01m*[0m   ./usr/include/netlink/cache.h
+ [32;01m*[0m   ./usr/include/netlink/cache-api.h
+ [32;01m*[0m   ./usr/include/netlink/attr.h
+ [32;01m*[0m   ./usr/include/netlink/addr.h
+ [32;01m*[0m   ./usr/include/netlink/fib_lookup/request.h
+ [32;01m*[0m   ./usr/include/netlink/fib_lookup/lookup.h
+ [32;01m*[0m   ./usr/include/netlink/genl/mngt.h
+ [32;01m*[0m   ./usr/include/netlink/genl/genl.h
+ [32;01m*[0m   ./usr/include/netlink/genl/family.h
+ [32;01m*[0m   ./usr/include/netlink/genl/ctrl.h
+ [32;01m*[0m   ./usr/include/netlink/route/tc.h
+ [32;01m*[0m   ./usr/include/netlink/route/rule.h
+ [32;01m*[0m   ./usr/include/netlink/route/rtnl.h
+ [32;01m*[0m   ./usr/include/netlink/route/route.h
+ [32;01m*[0m   ./usr/include/netlink/route/qdisc.h
+ [32;01m*[0m   ./usr/include/netlink/route/qdisc-modules.h
+ [32;01m*[0m   ./usr/include/netlink/route/nexthop.h
+ [32;01m*[0m   ./usr/include/netlink/route/neightbl.h
+ [32;01m*[0m   ./usr/include/netlink/route/neighbour.h
+ [32;01m*[0m   ./usr/include/netlink/route/link.h
+ [32;01m*[0m   ./usr/include/netlink/route/classifier.h
+ [32;01m*[0m   ./usr/include/netlink/route/classifier-modules.h
+ [32;01m*[0m   ./usr/include/netlink/route/class.h
+ [32;01m*[0m   ./usr/include/netlink/route/class-modules.h
+ [32;01m*[0m   ./usr/include/netlink/route/addr.h
+ [32;01m*[0m   ./usr/include/netlink/route/cls/u32.h
+ [32;01m*[0m   ./usr/include/netlink/route/cls/police.h
+ [32;01m*[0m   ./usr/include/netlink/route/cls/fw.h
+ [32;01m*[0m   ./usr/include/netlink/route/sch/tbf.h
+ [32;01m*[0m   ./usr/include/netlink/route/sch/sfq.h
+ [32;01m*[0m   ./usr/include/netlink/route/sch/red.h
+ [32;01m*[0m   ./usr/include/netlink/route/sch/prio.h
+ [32;01m*[0m   ./usr/include/netlink/route/sch/netem.h
+ [32;01m*[0m   ./usr/include/netlink/route/sch/htb.h
+ [32;01m*[0m   ./usr/include/netlink/route/sch/fifo.h
+ [32;01m*[0m   ./usr/include/netlink/route/sch/dsmark.h
+ [32;01m*[0m   ./usr/include/netlink/route/sch/cbq.h
+ [32;01m*[0m   ./usr/lib/libnl.so.1.1
+ [32;01m*[0m   ./usr/lib/pkgconfig/libnl-1.pc
+ [32;01m*[0m   ./usr/lib/libnl.so
+ [32;01m*[0m   ./usr/lib/libnl.so.1
+ [32;01m*[0m Fixing SYSROOT .la files
+&gt;&gt;&gt;<i> Unpacking source...
+</I>&gt;&gt;&gt;<i> Unpacking coova-chilli-1.2.9.tar.gz to /var/tmp/i586-pc-linux-gnu/portage/net-wireless/coova-chilli-1.2.9/work
+</I>&gt;&gt;&gt;<i> Source unpacked in /var/tmp/i586-pc-linux-gnu/portage/net-wireless/coova-chilli-1.2.9/work
+</I>&gt;&gt;&gt;<i> Preparing source in /var/tmp/i586-pc-linux-gnu/portage/net-wireless/coova-chilli-1.2.9/work/coova-chilli-1.2.9 ...
+</I>&gt;&gt;&gt;<i> Source prepared.
+</I>&gt;&gt;&gt;<i> Configuring source in /var/tmp/i586-pc-linux-gnu/portage/net-wireless/coova-chilli-1.2.9/work/coova-chilli-1.2.9 ...
+</I> * econf: updating coova-chilli-1.2.9/config.sub with /usr/share/gnuconfig/config.sub
+ * econf: updating coova-chilli-1.2.9/config.guess with /usr/share/gnuconfig/config.guess
+./configure --prefix=/usr --build=x86_64-pc-linux-gnu --host=i586-pc-linux-gnu --mandir=/usr/share/man --infodir=/usr/share/info --datadir=/usr/share --sysconfdir=/etc --localstatedir=/var/lib --disable-dependency-tracking --enable-statusfile --with-mmap --with-poll --with-ipc-msg --enable-multiroute
+configure: loading site script /usr/share/config.site
+configure: loading site script /usr/share/crossdev/include/site/linux
+configure: loading site script /usr/share/crossdev/include/site/linux-gnu
+checking for a BSD-compatible install... /usr/bin/install -c
+checking whether build environment is sane... yes
+checking for i586-pc-linux-gnu-strip... i586-pc-linux-gnu-strip
+checking for a thread-safe mkdir -p... /bin/mkdir -p
+checking for gawk... gawk
+checking whether make sets $(MAKE)... yes
+checking for i586-pc-linux-gnu-gcc... i586-pc-linux-gnu-gcc
+checking whether the C compiler works... yes
+checking for C compiler default output file name... a.out
+checking for suffix of executables... 
+checking whether we are cross compiling... yes
+checking for suffix of object files... o
+checking whether we are using the GNU C compiler... yes
+checking whether i586-pc-linux-gnu-gcc accepts -g... yes
+checking for i586-pc-linux-gnu-gcc option to accept ISO C89... none needed
+checking for style of include used by make... GNU
+checking dependency style of i586-pc-linux-gnu-gcc... none
+checking build system type... x86_64-pc-linux-gnu
+checking host system type... i586-pc-linux-gnu
+checking how to print strings... printf
+checking for a sed that does not truncate output... /bin/sed
+checking for grep that handles long lines and -e... /bin/grep
+checking for egrep... /bin/grep -E
+checking for fgrep... /bin/grep -F
+checking for ld used by i586-pc-linux-gnu-gcc... /usr/libexec/gcc/i586-pc-linux-gnu/ld
+checking if the linker (/usr/libexec/gcc/i586-pc-linux-gnu/ld) is GNU ld... yes
+checking for BSD- or MS-compatible name lister (nm)... /usr/bin/i586-pc-linux-gnu-nm -B
+checking the name lister (/usr/bin/i586-pc-linux-gnu-nm -B) interface... BSD nm
+checking whether ln -s works... yes
+checking the maximum length of command line arguments... 1572864
+checking whether the shell understands some XSI constructs... yes
+checking whether the shell understands &quot;+=&quot;... yes
+checking how to convert x86_64-pc-linux-gnu file names to i586-pc-linux-gnu format... func_convert_file_noop
+checking how to convert x86_64-pc-linux-gnu file names to toolchain format... func_convert_file_noop
+checking for /usr/libexec/gcc/i586-pc-linux-gnu/ld option to reload object files... -r
+checking for i586-pc-linux-gnu-objdump... i586-pc-linux-gnu-objdump
+checking how to recognize dependent libraries... pass_all
+checking for i586-pc-linux-gnu-dlltool... no
+checking for dlltool... no
+checking how to associate runtime and link libraries... printf %s\n
+checking for i586-pc-linux-gnu-ar... i586-pc-linux-gnu-ar
+checking for archiver @FILE support... @
+checking for i586-pc-linux-gnu-strip... (cached) i586-pc-linux-gnu-strip
+checking for i586-pc-linux-gnu-ranlib... i586-pc-linux-gnu-ranlib
+checking command to parse /usr/bin/i586-pc-linux-gnu-nm -B output from i586-pc-linux-gnu-gcc object... ok
+checking for sysroot... no
+checking for i586-pc-linux-gnu-mt... no
+checking for mt... no
+checking if : is a manifest tool... no
+checking how to run the C preprocessor... i586-pc-linux-gnu-gcc -E
+checking for ANSI C header files... yes
+checking for sys/types.h... yes
+checking for sys/stat.h... yes
+checking for stdlib.h... yes
+checking for string.h... yes
+checking for memory.h... yes
+checking for strings.h... yes
+checking for inttypes.h... yes
+checking for stdint.h... yes
+checking for unistd.h... yes
+checking for dlfcn.h... yes
+checking for objdir... .libs
+checking if i586-pc-linux-gnu-gcc supports -fno-rtti -fno-exceptions... no
+checking for i586-pc-linux-gnu-gcc option to produce PIC... -fPIC -DPIC
+checking if i586-pc-linux-gnu-gcc PIC flag -fPIC -DPIC works... yes
+checking if i586-pc-linux-gnu-gcc static flag -static works... yes
+checking if i586-pc-linux-gnu-gcc supports -c -o file.o... yes
+checking if i586-pc-linux-gnu-gcc supports -c -o file.o... (cached) yes
+checking whether the i586-pc-linux-gnu-gcc linker (/usr/libexec/gcc/i586-pc-linux-gnu/ld) supports shared libraries... yes
+checking whether -lc should be explicitly linked in... no
+checking dynamic linker characteristics... GNU/Linux ld.so
+checking how to hardcode library paths into programs... immediate
+checking whether stripping libraries is possible... yes
+checking if libtool supports shared libraries... yes
+checking whether to build shared libraries... yes
+checking whether to build static libraries... yes
+linux
+checking if if_packet.h has tpacket_stats defined... yes
+checking if tpacket_auxdata struct has tp_vlan_tci member... yes
+checking for ANSI C header files... (cached) yes
+checking arpa/inet.h usability... yes
+checking arpa/inet.h presence... yes
+checking for arpa/inet.h... yes
+checking errno.h usability... yes
+checking errno.h presence... yes
+checking for errno.h... yes
+checking fcntl.h usability... yes
+checking fcntl.h presence... yes
+checking for fcntl.h... yes
+checking dirent.h usability... yes
+checking dirent.h presence... yes
+checking for dirent.h... yes
+checking netdb.h usability... yes
+checking netdb.h presence... yes
+checking for netdb.h... yes
+checking netinet/in.h usability... yes
+checking netinet/in.h presence... yes
+checking for netinet/in.h... yes
+checking netinet/tcp.h usability... yes
+checking netinet/tcp.h presence... yes
+checking for netinet/tcp.h... yes
+checking for stdint.h... (cached) yes
+checking stddef.h usability... yes
+checking stddef.h presence... yes
+checking for stddef.h... yes
+checking for stdlib.h... (cached) yes
+checking for string.h... (cached) yes
+checking sys/ioctl.h usability... yes
+checking sys/ioctl.h presence... yes
+checking for sys/ioctl.h... yes
+checking sys/socket.h usability... yes
+checking sys/socket.h presence... yes
+checking for sys/socket.h... yes
+checking sys/sysinfo.h usability... yes
+checking sys/sysinfo.h presence... yes
+checking for sys/sysinfo.h... yes
+checking sys/param.h usability... yes
+checking sys/param.h presence... yes
+checking for sys/param.h... yes
+checking sys/time.h usability... yes
+checking sys/time.h presence... yes
+checking for sys/time.h... yes
+checking time.h usability... yes
+checking time.h presence... yes
+checking for time.h... yes
+checking sys/ipc.h usability... yes
+checking sys/ipc.h presence... yes
+checking for sys/ipc.h... yes
+checking sys/msg.h usability... yes
+checking sys/msg.h presence... yes
+checking for sys/msg.h... yes
+checking signal.h usability... yes
+checking signal.h presence... yes
+checking for signal.h... yes
+checking sys/wait.h usability... yes
+checking sys/wait.h presence... yes
+checking for sys/wait.h... yes
+checking sys/un.h usability... yes
+checking sys/un.h presence... yes
+checking for sys/un.h... yes
+checking ifaddrs.h usability... yes
+checking ifaddrs.h presence... yes
+checking for ifaddrs.h... yes
+checking for sys/stat.h... (cached) yes
+checking for sys/types.h... (cached) yes
+checking regex.h usability... yes
+checking regex.h presence... yes
+checking for regex.h... yes
+checking syslog.h usability... yes
+checking syslog.h presence... yes
+checking for syslog.h... yes
+checking poll.h usability... yes
+checking poll.h presence... yes
+checking for poll.h... yes
+checking sys/epoll.h usability... yes
+checking sys/epoll.h presence... yes
+checking for sys/epoll.h... yes
+checking for unistd.h... (cached) yes
+checking endian.h usability... yes
+checking endian.h presence... yes
+checking for endian.h... yes
+checking libgen.h usability... yes
+checking libgen.h presence... yes
+checking for libgen.h... yes
+checking asm/types.h usability... yes
+checking asm/types.h presence... yes
+checking for asm/types.h... yes
+checking for pwd.h... (cached) yes
+checking grp.h usability... yes
+checking grp.h presence... yes
+checking for grp.h... yes
+checking for resolv.h... yes
+checking for net/route.h... yes
+checking for net/if.h... yes
+checking for net/if_arp.h... yes
+checking for net/if_tun.h... no
+checking for net/ethernet.h... yes
+checking for an ANSI C-conforming const... yes
+checking for mode_t... yes
+checking whether time.h and sys/time.h may both be included... yes
+checking for pid_t... yes
+checking vfork.h usability... no
+checking vfork.h presence... no
+checking for vfork.h... no
+checking for fork... yes
+checking for vfork... yes
+checking for working fork... (cached) yes
+checking for working vfork... (cached) yes
+checking whether i586-pc-linux-gnu-gcc needs -traditional... no
+checking for working memcmp... no
+checking sys/select.h usability... yes
+checking sys/select.h presence... yes
+checking for sys/select.h... yes
+checking for sys/socket.h... (cached) yes
+checking types of arguments for select... int,fd_set *,struct timeval *
+checking for gethostbyname... yes
+checking for getprotoent... yes
+checking for gettimeofday... yes
+checking for inet_ntoa... yes
+checking for memset... yes
+checking for select... yes
+checking for socket... yes
+checking for strdup... yes
+checking for strerror... yes
+checking for strstr... yes
+checking for strtol... yes
+checking for getline... yes
+checking for dirname... yes
+checking for glob... yes
+checking for getaddrinfo... (cached) yes
+checking for getnameinfo... yes
+checking for getifaddrs... yes
+checking for sysinfo... yes
+checking for res_init in -lresolv... no
+checking for clock_gettime in -lrt... yes
+configure: creating ./config.status
+config.status: creating Makefile
+config.status: creating bstring/Makefile
+config.status: creating src/Makefile
+config.status: creating src/mssl/Makefile
+config.status: creating www/Makefile
+config.status: creating doc/Makefile
+config.status: creating conf/Makefile
+config.status: creating debian/Makefile
+config.status: creating miniportal/Makefile
+config.status: creating json/Makefile
+config.status: creating distro/Makefile
+config.status: creating distro/suse/coova-chilli.spec
+config.status: creating distro/redhat/coova-chilli.spec
+config.status: creating config.h
+config.status: executing depfiles commands
+config.status: executing libtool commands
+&gt;&gt;&gt;<i> Source configured.
+</I>&gt;&gt;&gt;<i> Compiling source in /var/tmp/i586-pc-linux-gnu/portage/net-wireless/coova-chilli-1.2.9/work/coova-chilli-1.2.9 ...
+</I>make -j1 
+make  all-recursive
+make[1]: Entering directory `/var/tmp/i586-pc-linux-gnu/portage/net-wireless/coova-chilli-1.2.9/work/coova-chilli-1.2.9'
+Making all in bstring
+make[2]: Entering directory `/var/tmp/i586-pc-linux-gnu/portage/net-wireless/coova-chilli-1.2.9/work/coova-chilli-1.2.9/bstring'
+/bin/sh ../libtool --tag=CC   --mode=compile i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I..     -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c -o bstrlib.lo bstrlib.c
+libtool: compile:  i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I.. -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c bstrlib.c  -fPIC -DPIC -o .libs/bstrlib.o
+libtool: compile:  i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I.. -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c bstrlib.c -o bstrlib.o &gt;/dev/null 2&gt;&amp;1
+/bin/sh ../libtool --tag=CC   --mode=compile i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I..     -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c -o snprintf.lo snprintf.c
+libtool: compile:  i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I.. -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c snprintf.c  -fPIC -DPIC -o .libs/snprintf.o
+libtool: compile:  i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I.. -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c snprintf.c -o snprintf.o &gt;/dev/null 2&gt;&amp;1
+/bin/sh ../libtool --tag=CC   --mode=link i586-pc-linux-gnu-gcc  -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer  -L/usr/i586-pc-linux-gnu/lib -L/usr/i586-pc-linux-gnu/usr/lib -o libbstring.la -rpath /usr/lib bstrlib.lo snprintf.lo  -lrt 
+libtool: link: i586-pc-linux-gnu-gcc -shared  -fPIC -DPIC  .libs/bstrlib.o .libs/snprintf.o   -L/usr/i586-pc-linux-gnu/lib -L/usr/i586-pc-linux-gnu/usr/lib -lrt  -march=geode -Os -mmmx -m3dnow   -Wl,-soname -Wl,libbstring.so.0 -o .libs/libbstring.so.0.0.0
+libtool: link: (cd &quot;.libs&quot; &amp;&amp; rm -f &quot;libbstring.so.0&quot; &amp;&amp; ln -s &quot;libbstring.so.0.0.0&quot; &quot;libbstring.so.0&quot;)
+libtool: link: (cd &quot;.libs&quot; &amp;&amp; rm -f &quot;libbstring.so&quot; &amp;&amp; ln -s &quot;libbstring.so.0.0.0&quot; &quot;libbstring.so&quot;)
+libtool: link: i586-pc-linux-gnu-ar cru .libs/libbstring.a  bstrlib.o snprintf.o
+libtool: link: i586-pc-linux-gnu-ranlib .libs/libbstring.a
+libtool: link: ( cd &quot;.libs&quot; &amp;&amp; rm -f &quot;libbstring.la&quot; &amp;&amp; ln -s &quot;../libbstring.la&quot; &quot;libbstring.la&quot; )
+make[2]: Leaving directory `/var/tmp/i586-pc-linux-gnu/portage/net-wireless/coova-chilli-1.2.9/work/coova-chilli-1.2.9/bstring'
+Making all in src
+make[2]: Entering directory `/var/tmp/i586-pc-linux-gnu/portage/net-wireless/coova-chilli-1.2.9/work/coova-chilli-1.2.9/src'
+make[3]: Entering directory `/var/tmp/i586-pc-linux-gnu/portage/net-wireless/coova-chilli-1.2.9/work/coova-chilli-1.2.9/src'
+/bin/sh ../libtool --tag=CC   --mode=compile i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I..    -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF='&quot;/etc/chilli.conf&quot;' -DDEFPIDFILE='&quot;/var/lib/run/chilli.pid&quot;' -DDEFSTATEDIR='&quot;/var/lib/run&quot;' -DSBINDIR='&quot;/usr/sbin&quot;'    -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c -o chilli.lo chilli.c
+libtool: compile:  i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I.. -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF=\&quot;/etc/chilli.conf\&quot; -DDEFPIDFILE=\&quot;/var/lib/run/chilli.pid\&quot; -DDEFSTATEDIR=\&quot;/var/lib/run\&quot; -DSBINDIR=\&quot;/usr/sbin\&quot; -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c chilli.c  -fPIC -DPIC -o .libs/chilli.o
+libtool: compile:  i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I.. -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF=\&quot;/etc/chilli.conf\&quot; -DDEFPIDFILE=\&quot;/var/lib/run/chilli.pid\&quot; -DDEFSTATEDIR=\&quot;/var/lib/run\&quot; -DSBINDIR=\&quot;/usr/sbin\&quot; -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c chilli.c -o chilli.o &gt;/dev/null 2&gt;&amp;1
+/bin/sh ../libtool --tag=CC   --mode=compile i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I..    -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF='&quot;/etc/chilli.conf&quot;' -DDEFPIDFILE='&quot;/var/lib/run/chilli.pid&quot;' -DDEFSTATEDIR='&quot;/var/lib/run&quot;' -DSBINDIR='&quot;/usr/sbin&quot;'    -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c -o tun.lo tun.c
+libtool: compile:  i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I.. -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF=\&quot;/etc/chilli.conf\&quot; -DDEFPIDFILE=\&quot;/var/lib/run/chilli.pid\&quot; -DDEFSTATEDIR=\&quot;/var/lib/run\&quot; -DSBINDIR=\&quot;/usr/sbin\&quot; -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c tun.c  -fPIC -DPIC -o .libs/tun.o
+libtool: compile:  i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I.. -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF=\&quot;/etc/chilli.conf\&quot; -DDEFPIDFILE=\&quot;/var/lib/run/chilli.pid\&quot; -DDEFSTATEDIR=\&quot;/var/lib/run\&quot; -DSBINDIR=\&quot;/usr/sbin\&quot; -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c tun.c -o tun.o &gt;/dev/null 2&gt;&amp;1
+/bin/sh ../libtool --tag=CC   --mode=compile i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I..    -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF='&quot;/etc/chilli.conf&quot;' -DDEFPIDFILE='&quot;/var/lib/run/chilli.pid&quot;' -DDEFSTATEDIR='&quot;/var/lib/run&quot;' -DSBINDIR='&quot;/usr/sbin&quot;'    -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c -o ippool.lo ippool.c
+libtool: compile:  i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I.. -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF=\&quot;/etc/chilli.conf\&quot; -DDEFPIDFILE=\&quot;/var/lib/run/chilli.pid\&quot; -DDEFSTATEDIR=\&quot;/var/lib/run\&quot; -DSBINDIR=\&quot;/usr/sbin\&quot; -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c ippool.c  -fPIC -DPIC -o .libs/ippool.o
+libtool: compile:  i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I.. -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF=\&quot;/etc/chilli.conf\&quot; -DDEFPIDFILE=\&quot;/var/lib/run/chilli.pid\&quot; -DDEFSTATEDIR=\&quot;/var/lib/run\&quot; -DSBINDIR=\&quot;/usr/sbin\&quot; -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c ippool.c -o ippool.o &gt;/dev/null 2&gt;&amp;1
+/bin/sh ../libtool --tag=CC   --mode=compile i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I..    -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF='&quot;/etc/chilli.conf&quot;' -DDEFPIDFILE='&quot;/var/lib/run/chilli.pid&quot;' -DDEFSTATEDIR='&quot;/var/lib/run&quot;' -DSBINDIR='&quot;/usr/sbin&quot;'    -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c -o radius.lo radius.c
+libtool: compile:  i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I.. -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF=\&quot;/etc/chilli.conf\&quot; -DDEFPIDFILE=\&quot;/var/lib/run/chilli.pid\&quot; -DDEFSTATEDIR=\&quot;/var/lib/run\&quot; -DSBINDIR=\&quot;/usr/sbin\&quot; -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c radius.c  -fPIC -DPIC -o .libs/radius.o
+libtool: compile:  i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I.. -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF=\&quot;/etc/chilli.conf\&quot; -DDEFPIDFILE=\&quot;/var/lib/run/chilli.pid\&quot; -DDEFSTATEDIR=\&quot;/var/lib/run\&quot; -DSBINDIR=\&quot;/usr/sbin\&quot; -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c radius.c -o radius.o &gt;/dev/null 2&gt;&amp;1
+/bin/sh ../libtool --tag=CC   --mode=compile i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I..    -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF='&quot;/etc/chilli.conf&quot;' -DDEFPIDFILE='&quot;/var/lib/run/chilli.pid&quot;' -DDEFSTATEDIR='&quot;/var/lib/run&quot;' -DSBINDIR='&quot;/usr/sbin&quot;'    -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c -o md5.lo md5.c
+libtool: compile:  i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I.. -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF=\&quot;/etc/chilli.conf\&quot; -DDEFPIDFILE=\&quot;/var/lib/run/chilli.pid\&quot; -DDEFSTATEDIR=\&quot;/var/lib/run\&quot; -DSBINDIR=\&quot;/usr/sbin\&quot; -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c md5.c  -fPIC -DPIC -o .libs/md5.o
+libtool: compile:  i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I.. -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF=\&quot;/etc/chilli.conf\&quot; -DDEFPIDFILE=\&quot;/var/lib/run/chilli.pid\&quot; -DDEFSTATEDIR=\&quot;/var/lib/run\&quot; -DSBINDIR=\&quot;/usr/sbin\&quot; -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c md5.c -o md5.o &gt;/dev/null 2&gt;&amp;1
+/bin/sh ../libtool --tag=CC   --mode=compile i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I..    -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF='&quot;/etc/chilli.conf&quot;' -DDEFPIDFILE='&quot;/var/lib/run/chilli.pid&quot;' -DDEFSTATEDIR='&quot;/var/lib/run&quot;' -DSBINDIR='&quot;/usr/sbin&quot;'    -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c -o redir.lo redir.c
+libtool: compile:  i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I.. -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF=\&quot;/etc/chilli.conf\&quot; -DDEFPIDFILE=\&quot;/var/lib/run/chilli.pid\&quot; -DDEFSTATEDIR=\&quot;/var/lib/run\&quot; -DSBINDIR=\&quot;/usr/sbin\&quot; -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c redir.c  -fPIC -DPIC -o .libs/redir.o
+libtool: compile:  i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I.. -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF=\&quot;/etc/chilli.conf\&quot; -DDEFPIDFILE=\&quot;/var/lib/run/chilli.pid\&quot; -DDEFSTATEDIR=\&quot;/var/lib/run\&quot; -DSBINDIR=\&quot;/usr/sbin\&quot; -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c redir.c -o redir.o &gt;/dev/null 2&gt;&amp;1
+/bin/sh ../libtool --tag=CC   --mode=compile i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I..    -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF='&quot;/etc/chilli.conf&quot;' -DDEFPIDFILE='&quot;/var/lib/run/chilli.pid&quot;' -DDEFSTATEDIR='&quot;/var/lib/run&quot;' -DSBINDIR='&quot;/usr/sbin&quot;'    -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c -o dhcp.lo dhcp.c
+libtool: compile:  i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I.. -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF=\&quot;/etc/chilli.conf\&quot; -DDEFPIDFILE=\&quot;/var/lib/run/chilli.pid\&quot; -DDEFSTATEDIR=\&quot;/var/lib/run\&quot; -DSBINDIR=\&quot;/usr/sbin\&quot; -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c dhcp.c  -fPIC -DPIC -o .libs/dhcp.o
+libtool: compile:  i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I.. -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF=\&quot;/etc/chilli.conf\&quot; -DDEFPIDFILE=\&quot;/var/lib/run/chilli.pid\&quot; -DDEFSTATEDIR=\&quot;/var/lib/run\&quot; -DSBINDIR=\&quot;/usr/sbin\&quot; -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c dhcp.c -o dhcp.o &gt;/dev/null 2&gt;&amp;1
+/bin/sh ../libtool --tag=CC   --mode=compile i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I..    -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF='&quot;/etc/chilli.conf&quot;' -DDEFPIDFILE='&quot;/var/lib/run/chilli.pid&quot;' -DDEFSTATEDIR='&quot;/var/lib/run&quot;' -DSBINDIR='&quot;/usr/sbin&quot;'    -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c -o syserr.lo syserr.c
+libtool: compile:  i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I.. -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF=\&quot;/etc/chilli.conf\&quot; -DDEFPIDFILE=\&quot;/var/lib/run/chilli.pid\&quot; -DDEFSTATEDIR=\&quot;/var/lib/run\&quot; -DSBINDIR=\&quot;/usr/sbin\&quot; -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c syserr.c  -fPIC -DPIC -o .libs/syserr.o
+libtool: compile:  i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I.. -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF=\&quot;/etc/chilli.conf\&quot; -DDEFPIDFILE=\&quot;/var/lib/run/chilli.pid\&quot; -DDEFSTATEDIR=\&quot;/var/lib/run\&quot; -DSBINDIR=\&quot;/usr/sbin\&quot; -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c syserr.c -o syserr.o &gt;/dev/null 2&gt;&amp;1
+/bin/sh ../libtool --tag=CC   --mode=compile i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I..    -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF='&quot;/etc/chilli.conf&quot;' -DDEFPIDFILE='&quot;/var/lib/run/chilli.pid&quot;' -DDEFSTATEDIR='&quot;/var/lib/run&quot;' -DSBINDIR='&quot;/usr/sbin&quot;'    -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c -o iphash.lo iphash.c
+libtool: compile:  i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I.. -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF=\&quot;/etc/chilli.conf\&quot; -DDEFPIDFILE=\&quot;/var/lib/run/chilli.pid\&quot; -DDEFSTATEDIR=\&quot;/var/lib/run\&quot; -DSBINDIR=\&quot;/usr/sbin\&quot; -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c iphash.c  -fPIC -DPIC -o .libs/iphash.o
+libtool: compile:  i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I.. -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF=\&quot;/etc/chilli.conf\&quot; -DDEFPIDFILE=\&quot;/var/lib/run/chilli.pid\&quot; -DDEFSTATEDIR=\&quot;/var/lib/run\&quot; -DSBINDIR=\&quot;/usr/sbin\&quot; -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c iphash.c -o iphash.o &gt;/dev/null 2&gt;&amp;1
+/bin/sh ../libtool --tag=CC   --mode=compile i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I..    -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF='&quot;/etc/chilli.conf&quot;' -DDEFPIDFILE='&quot;/var/lib/run/chilli.pid&quot;' -DDEFSTATEDIR='&quot;/var/lib/run&quot;' -DSBINDIR='&quot;/usr/sbin&quot;'    -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c -o lookup.lo lookup.c
+libtool: compile:  i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I.. -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF=\&quot;/etc/chilli.conf\&quot; -DDEFPIDFILE=\&quot;/var/lib/run/chilli.pid\&quot; -DDEFSTATEDIR=\&quot;/var/lib/run\&quot; -DSBINDIR=\&quot;/usr/sbin\&quot; -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c lookup.c  -fPIC -DPIC -o .libs/lookup.o
+libtool: compile:  i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I.. -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF=\&quot;/etc/chilli.conf\&quot; -DDEFPIDFILE=\&quot;/var/lib/run/chilli.pid\&quot; -DDEFSTATEDIR=\&quot;/var/lib/run\&quot; -DSBINDIR=\&quot;/usr/sbin\&quot; -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c lookup.c -o lookup.o &gt;/dev/null 2&gt;&amp;1
+/bin/sh ../libtool --tag=CC   --mode=compile i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I..    -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF='&quot;/etc/chilli.conf&quot;' -DDEFPIDFILE='&quot;/var/lib/run/chilli.pid&quot;' -DDEFSTATEDIR='&quot;/var/lib/run&quot;' -DSBINDIR='&quot;/usr/sbin&quot;'    -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c -o util.lo util.c
+libtool: compile:  i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I.. -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF=\&quot;/etc/chilli.conf\&quot; -DDEFPIDFILE=\&quot;/var/lib/run/chilli.pid\&quot; -DDEFSTATEDIR=\&quot;/var/lib/run\&quot; -DSBINDIR=\&quot;/usr/sbin\&quot; -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c util.c  -fPIC -DPIC -o .libs/util.o
+libtool: compile:  i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I.. -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF=\&quot;/etc/chilli.conf\&quot; -DDEFPIDFILE=\&quot;/var/lib/run/chilli.pid\&quot; -DDEFSTATEDIR=\&quot;/var/lib/run\&quot; -DSBINDIR=\&quot;/usr/sbin\&quot; -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c util.c -o util.o &gt;/dev/null 2&gt;&amp;1
+/bin/sh ../libtool --tag=CC   --mode=compile i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I..    -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF='&quot;/etc/chilli.conf&quot;' -DDEFPIDFILE='&quot;/var/lib/run/chilli.pid&quot;' -DDEFSTATEDIR='&quot;/var/lib/run&quot;' -DSBINDIR='&quot;/usr/sbin&quot;'    -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c -o options.lo options.c
+libtool: compile:  i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I.. -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF=\&quot;/etc/chilli.conf\&quot; -DDEFPIDFILE=\&quot;/var/lib/run/chilli.pid\&quot; -DDEFSTATEDIR=\&quot;/var/lib/run\&quot; -DSBINDIR=\&quot;/usr/sbin\&quot; -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c options.c  -fPIC -DPIC -o .libs/options.o
+libtool: compile:  i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I.. -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF=\&quot;/etc/chilli.conf\&quot; -DDEFPIDFILE=\&quot;/var/lib/run/chilli.pid\&quot; -DDEFSTATEDIR=\&quot;/var/lib/run\&quot; -DSBINDIR=\&quot;/usr/sbin\&quot; -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c options.c -o options.o &gt;/dev/null 2&gt;&amp;1
+/bin/sh ../libtool --tag=CC   --mode=compile i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I..    -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF='&quot;/etc/chilli.conf&quot;' -DDEFPIDFILE='&quot;/var/lib/run/chilli.pid&quot;' -DDEFSTATEDIR='&quot;/var/lib/run&quot;' -DSBINDIR='&quot;/usr/sbin&quot;'    -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c -o statusfile.lo statusfile.c
+libtool: compile:  i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I.. -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF=\&quot;/etc/chilli.conf\&quot; -DDEFPIDFILE=\&quot;/var/lib/run/chilli.pid\&quot; -DDEFSTATEDIR=\&quot;/var/lib/run\&quot; -DSBINDIR=\&quot;/usr/sbin\&quot; -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c statusfile.c  -fPIC -DPIC -o .libs/statusfile.o
+libtool: compile:  i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I.. -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF=\&quot;/etc/chilli.conf\&quot; -DDEFPIDFILE=\&quot;/var/lib/run/chilli.pid\&quot; -DDEFSTATEDIR=\&quot;/var/lib/run\&quot; -DSBINDIR=\&quot;/usr/sbin\&quot; -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c statusfile.c -o statusfile.o &gt;/dev/null 2&gt;&amp;1
+/bin/sh ../libtool --tag=CC   --mode=compile i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I..    -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF='&quot;/etc/chilli.conf&quot;' -DDEFPIDFILE='&quot;/var/lib/run/chilli.pid&quot;' -DDEFSTATEDIR='&quot;/var/lib/run&quot;' -DSBINDIR='&quot;/usr/sbin&quot;'    -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c -o conn.lo conn.c
+libtool: compile:  i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I.. -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF=\&quot;/etc/chilli.conf\&quot; -DDEFPIDFILE=\&quot;/var/lib/run/chilli.pid\&quot; -DDEFSTATEDIR=\&quot;/var/lib/run\&quot; -DSBINDIR=\&quot;/usr/sbin\&quot; -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c conn.c  -fPIC -DPIC -o .libs/conn.o
+libtool: compile:  i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I.. -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF=\&quot;/etc/chilli.conf\&quot; -DDEFPIDFILE=\&quot;/var/lib/run/chilli.pid\&quot; -DDEFSTATEDIR=\&quot;/var/lib/run\&quot; -DSBINDIR=\&quot;/usr/sbin\&quot; -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c conn.c -o conn.o &gt;/dev/null 2&gt;&amp;1
+/bin/sh ../libtool --tag=CC   --mode=compile i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I..    -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF='&quot;/etc/chilli.conf&quot;' -DDEFPIDFILE='&quot;/var/lib/run/chilli.pid&quot;' -DDEFSTATEDIR='&quot;/var/lib/run&quot;' -DSBINDIR='&quot;/usr/sbin&quot;'    -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c -o sig.lo sig.c
+libtool: compile:  i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I.. -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF=\&quot;/etc/chilli.conf\&quot; -DDEFPIDFILE=\&quot;/var/lib/run/chilli.pid\&quot; -DDEFSTATEDIR=\&quot;/var/lib/run\&quot; -DSBINDIR=\&quot;/usr/sbin\&quot; -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c sig.c  -fPIC -DPIC -o .libs/sig.o
+libtool: compile:  i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I.. -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF=\&quot;/etc/chilli.conf\&quot; -DDEFPIDFILE=\&quot;/var/lib/run/chilli.pid\&quot; -DDEFSTATEDIR=\&quot;/var/lib/run\&quot; -DSBINDIR=\&quot;/usr/sbin\&quot; -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c sig.c -o sig.o &gt;/dev/null 2&gt;&amp;1
+/bin/sh ../libtool --tag=CC   --mode=compile i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I..    -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF='&quot;/etc/chilli.conf&quot;' -DDEFPIDFILE='&quot;/var/lib/run/chilli.pid&quot;' -DDEFSTATEDIR='&quot;/var/lib/run&quot;' -DSBINDIR='&quot;/usr/sbin&quot;'    -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c -o garden.lo garden.c
+libtool: compile:  i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I.. -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF=\&quot;/etc/chilli.conf\&quot; -DDEFPIDFILE=\&quot;/var/lib/run/chilli.pid\&quot; -DDEFSTATEDIR=\&quot;/var/lib/run\&quot; -DSBINDIR=\&quot;/usr/sbin\&quot; -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c garden.c  -fPIC -DPIC -o .libs/garden.o
+libtool: compile:  i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I.. -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF=\&quot;/etc/chilli.conf\&quot; -DDEFPIDFILE=\&quot;/var/lib/run/chilli.pid\&quot; -DDEFSTATEDIR=\&quot;/var/lib/run\&quot; -DSBINDIR=\&quot;/usr/sbin\&quot; -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c garden.c -o garden.o &gt;/dev/null 2&gt;&amp;1
+/bin/sh ../libtool --tag=CC   --mode=compile i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I..    -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF='&quot;/etc/chilli.conf&quot;' -DDEFPIDFILE='&quot;/var/lib/run/chilli.pid&quot;' -DDEFSTATEDIR='&quot;/var/lib/run&quot;' -DSBINDIR='&quot;/usr/sbin&quot;'    -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c -o dns.lo dns.c
+libtool: compile:  i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I.. -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF=\&quot;/etc/chilli.conf\&quot; -DDEFPIDFILE=\&quot;/var/lib/run/chilli.pid\&quot; -DDEFSTATEDIR=\&quot;/var/lib/run\&quot; -DSBINDIR=\&quot;/usr/sbin\&quot; -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c dns.c  -fPIC -DPIC -o .libs/dns.o
+libtool: compile:  i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I.. -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF=\&quot;/etc/chilli.conf\&quot; -DDEFPIDFILE=\&quot;/var/lib/run/chilli.pid\&quot; -DDEFSTATEDIR=\&quot;/var/lib/run\&quot; -DSBINDIR=\&quot;/usr/sbin\&quot; -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c dns.c -o dns.o &gt;/dev/null 2&gt;&amp;1
+/bin/sh ../libtool --tag=CC   --mode=compile i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I..    -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF='&quot;/etc/chilli.conf&quot;' -DDEFPIDFILE='&quot;/var/lib/run/chilli.pid&quot;' -DDEFSTATEDIR='&quot;/var/lib/run&quot;' -DSBINDIR='&quot;/usr/sbin&quot;'    -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c -o session.lo session.c
+libtool: compile:  i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I.. -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF=\&quot;/etc/chilli.conf\&quot; -DDEFPIDFILE=\&quot;/var/lib/run/chilli.pid\&quot; -DDEFSTATEDIR=\&quot;/var/lib/run\&quot; -DSBINDIR=\&quot;/usr/sbin\&quot; -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c session.c  -fPIC -DPIC -o .libs/session.o
+libtool: compile:  i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I.. -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF=\&quot;/etc/chilli.conf\&quot; -DDEFPIDFILE=\&quot;/var/lib/run/chilli.pid\&quot; -DDEFSTATEDIR=\&quot;/var/lib/run\&quot; -DSBINDIR=\&quot;/usr/sbin\&quot; -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c session.c -o session.o &gt;/dev/null 2&gt;&amp;1
+/bin/sh ../libtool --tag=CC   --mode=compile i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I..    -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF='&quot;/etc/chilli.conf&quot;' -DDEFPIDFILE='&quot;/var/lib/run/chilli.pid&quot;' -DDEFSTATEDIR='&quot;/var/lib/run&quot;' -DSBINDIR='&quot;/usr/sbin&quot;'    -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c -o pkt.lo pkt.c
+libtool: compile:  i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I.. -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF=\&quot;/etc/chilli.conf\&quot; -DDEFPIDFILE=\&quot;/var/lib/run/chilli.pid\&quot; -DDEFSTATEDIR=\&quot;/var/lib/run\&quot; -DSBINDIR=\&quot;/usr/sbin\&quot; -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c pkt.c  -fPIC -DPIC -o .libs/pkt.o
+libtool: compile:  i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I.. -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF=\&quot;/etc/chilli.conf\&quot; -DDEFPIDFILE=\&quot;/var/lib/run/chilli.pid\&quot; -DDEFSTATEDIR=\&quot;/var/lib/run\&quot; -DSBINDIR=\&quot;/usr/sbin\&quot; -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c pkt.c -o pkt.o &gt;/dev/null 2&gt;&amp;1
+/bin/sh ../libtool --tag=CC   --mode=compile i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I..    -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF='&quot;/etc/chilli.conf&quot;' -DDEFPIDFILE='&quot;/var/lib/run/chilli.pid&quot;' -DDEFSTATEDIR='&quot;/var/lib/run&quot;' -DSBINDIR='&quot;/usr/sbin&quot;'    -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c -o chksum.lo chksum.c
+libtool: compile:  i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I.. -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF=\&quot;/etc/chilli.conf\&quot; -DDEFPIDFILE=\&quot;/var/lib/run/chilli.pid\&quot; -DDEFSTATEDIR=\&quot;/var/lib/run\&quot; -DSBINDIR=\&quot;/usr/sbin\&quot; -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c chksum.c  -fPIC -DPIC -o .libs/chksum.o
+libtool: compile:  i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I.. -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF=\&quot;/etc/chilli.conf\&quot; -DDEFPIDFILE=\&quot;/var/lib/run/chilli.pid\&quot; -DDEFSTATEDIR=\&quot;/var/lib/run\&quot; -DSBINDIR=\&quot;/usr/sbin\&quot; -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c chksum.c -o chksum.o &gt;/dev/null 2&gt;&amp;1
+/bin/sh ../libtool --tag=CC   --mode=compile i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I..    -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF='&quot;/etc/chilli.conf&quot;' -DDEFPIDFILE='&quot;/var/lib/run/chilli.pid&quot;' -DDEFSTATEDIR='&quot;/var/lib/run&quot;' -DSBINDIR='&quot;/usr/sbin&quot;'    -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c -o net.lo net.c
+libtool: compile:  i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I.. -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF=\&quot;/etc/chilli.conf\&quot; -DDEFPIDFILE=\&quot;/var/lib/run/chilli.pid\&quot; -DDEFSTATEDIR=\&quot;/var/lib/run\&quot; -DSBINDIR=\&quot;/usr/sbin\&quot; -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c net.c  -fPIC -DPIC -o .libs/net.o
+cc1: warnings being treated as errors
+net.c: In function 'net_open_eth':
+net.c:1186:22: error: unused variable 'mr'
+net.c: In function 'rx_ring':
+net.c:1610:5: error: too many arguments to function 'func'
+net.c: In function 'setup_rings':
+net.c:1826:15: error: unused variable 'unit'
+net.c: In function 'set_buffer':
+net.c:1915:15: error: unused variable 'unit'
+net.c: At top level:
+net.c:1935:13: error: 'setup_filter' defined but not used
+make[3]: *** [net.lo] Error 1
+make[3]: Leaving directory `/var/tmp/i586-pc-linux-gnu/portage/net-wireless/coova-chilli-1.2.9/work/coova-chilli-1.2.9/src'
+make[2]: *** [all-recursive] Error 1
+make[2]: Leaving directory `/var/tmp/i586-pc-linux-gnu/portage/net-wireless/coova-chilli-1.2.9/work/coova-chilli-1.2.9/src'
+make[1]: *** [all-recursive] Error 1
+make[1]: Leaving directory `/var/tmp/i586-pc-linux-gnu/portage/net-wireless/coova-chilli-1.2.9/work/coova-chilli-1.2.9'
+make: *** [all] Error 2
+ [31;01m*[0m ERROR: net-wireless/coova-chilli-1.2.9 failed (compile phase):
+ [31;01m*[0m   emake failed
+ [31;01m*[0m 
+ [31;01m*[0m If you need support, post the output of 'emerge --info =net-wireless/coova-chilli-1.2.9',
+ [31;01m*[0m the complete build log and the output of 'emerge -pqv =net-wireless/coova-chilli-1.2.9'.
+ [31;01m*[0m The complete build log is located at '/data/cross/alix3-i586/firmware/var/log/portage/net-wireless:coova-chilli-1.2.9:20120324-001520.log'.
+ [31;01m*[0m The ebuild environment file is located at '/var/tmp/i586-pc-linux-gnu/portage/net-wireless/coova-chilli-1.2.9/temp/environment'.
+ [31;01m*[0m S: '/var/tmp/i586-pc-linux-gnu/portage/net-wireless/coova-chilli-1.2.9/work/coova-chilli-1.2.9'
+-------------- next part --------------
+[32;01m * [39;49;00mPackage:    net-wireless/coova-chilli-1.2.9
+[32;01m * [39;49;00mRepository: meleeweb
+[32;01m * [39;49;00mMaintainer: <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">maintainer-wanted at gentoo.org</A>
+[32;01m * [39;49;00mUSE:        curl elibc_glibc ipv6 kernel_linux miniportal pcap ssl userland_GNU x86
+[32;01m * [39;49;00mFEATURES:   sandbox
+ [32;01m*[0m Determining =net-wireless/coova-chilli-1.2.9 SYSROOT dependencies ...
+ [32;01m*[0m Extracting app-misc/ca-certificates-20111025 to /usr/i586-pc-linux-gnu ...
+ [32;01m*[0m Extracting net-misc/curl-7.24.0 to /usr/i586-pc-linux-gnu ...
+ [32;01m*[0m   ./usr/include/curl/curlrules.h
+ [32;01m*[0m   ./usr/include/curl/curlbuild.h
+ [32;01m*[0m   ./usr/include/curl/typecheck-gcc.h
+ [32;01m*[0m   ./usr/include/curl/multi.h
+ [32;01m*[0m   ./usr/include/curl/stdcheaders.h
+ [32;01m*[0m   ./usr/include/curl/mprintf.h
+ [32;01m*[0m   ./usr/include/curl/easy.h
+ [32;01m*[0m   ./usr/include/curl/curlver.h
+ [32;01m*[0m   ./usr/include/curl/curl.h
+ [32;01m*[0m   ./usr/lib/libcurl.so.4.2.0
+ [32;01m*[0m   ./usr/lib/pkgconfig/libcurl.pc
+ [32;01m*[0m   ./usr/lib/libcurl.so
+ [32;01m*[0m   ./usr/lib/libcurl.so.4
+ [32;01m*[0m Extracting dev-libs/openssl-1.0.0h to /usr/i586-pc-linux-gnu ...
+ [32;01m*[0m   ./usr/include/openssl/kssl.h
+ [32;01m*[0m   ./usr/include/openssl/dtls1.h
+ [32;01m*[0m   ./usr/include/openssl/tls1.h
+ [32;01m*[0m   ./usr/include/openssl/ssl23.h
+ [32;01m*[0m   ./usr/include/openssl/ssl3.h
+ [32;01m*[0m   ./usr/include/openssl/ssl2.h
+ [32;01m*[0m   ./usr/include/openssl/ssl.h
+ [32;01m*[0m   ./usr/include/openssl/ts.h
+ [32;01m*[0m   ./usr/include/openssl/pqueue.h
+ [32;01m*[0m   ./usr/include/openssl/cms.h
+ [32;01m*[0m   ./usr/include/openssl/krb5_asn.h
+ [32;01m*[0m   ./usr/include/openssl/ui_compat.h
+ [32;01m*[0m   ./usr/include/openssl/ui.h
+ [32;01m*[0m   ./usr/include/openssl/ocsp.h
+ [32;01m*[0m   ./usr/include/openssl/comp.h
+ [32;01m*[0m   ./usr/include/openssl/pkcs12.h
+ [32;01m*[0m   ./usr/include/openssl/pkcs7.h
+ [32;01m*[0m   ./usr/include/openssl/txt_db.h
+ [32;01m*[0m   ./usr/include/openssl/conf_api.h
+ [32;01m*[0m   ./usr/include/openssl/conf.h
+ [32;01m*[0m   ./usr/include/openssl/x509v3.h
+ [32;01m*[0m   ./usr/include/openssl/x509_vfy.h
+ [32;01m*[0m   ./usr/include/openssl/x509.h
+ [32;01m*[0m   ./usr/include/openssl/pem2.h
+ [32;01m*[0m   ./usr/include/openssl/pem.h
+ [32;01m*[0m   ./usr/include/openssl/asn1t.h
+ [32;01m*[0m   ./usr/include/openssl/asn1_mac.h
+ [32;01m*[0m   ./usr/include/openssl/asn1.h
+ [32;01m*[0m   ./usr/include/openssl/evp.h
+ [32;01m*[0m   ./usr/include/openssl/err.h
+ [32;01m*[0m   ./usr/include/openssl/rand.h
+ [32;01m*[0m   ./usr/include/openssl/lhash.h
+ [32;01m*[0m   ./usr/include/openssl/safestack.h
+ [32;01m*[0m   ./usr/include/openssl/stack.h
+ [32;01m*[0m   ./usr/include/openssl/bio.h
+ [32;01m*[0m   ./usr/include/openssl/buffer.h
+ [32;01m*[0m   ./usr/include/openssl/engine.h
+ [32;01m*[0m   ./usr/include/openssl/dso.h
+ [32;01m*[0m   ./usr/include/openssl/ecdh.h
+ [32;01m*[0m   ./usr/include/openssl/dh.h
+ [32;01m*[0m   ./usr/include/openssl/ecdsa.h
+ [32;01m*[0m   ./usr/include/openssl/dsa.h
+ [32;01m*[0m   ./usr/include/openssl/rsa.h
+ [32;01m*[0m   ./usr/include/openssl/ec.h
+ [32;01m*[0m   ./usr/include/openssl/bn.h
+ [32;01m*[0m   ./usr/include/openssl/modes.h
+ [32;01m*[0m   ./usr/include/openssl/seed.h
+ [32;01m*[0m   ./usr/include/openssl/camellia.h
+ [32;01m*[0m   ./usr/include/openssl/cast.h
+ [32;01m*[0m   ./usr/include/openssl/blowfish.h
+ [32;01m*[0m   ./usr/include/openssl/idea.h
+ [32;01m*[0m   ./usr/include/openssl/rc5.h
+ [32;01m*[0m   ./usr/include/openssl/rc4.h
+ [32;01m*[0m   ./usr/include/openssl/rc2.h
+ [32;01m*[0m   ./usr/include/openssl/aes.h
+ [32;01m*[0m   ./usr/include/openssl/des_old.h
+ [32;01m*[0m   ./usr/include/openssl/des.h
+ [32;01m*[0m   ./usr/include/openssl/whrlpool.h
+ [32;01m*[0m   ./usr/include/openssl/ripemd.h
+ [32;01m*[0m   ./usr/include/openssl/hmac.h
+ [32;01m*[0m   ./usr/include/openssl/mdc2.h
+ [32;01m*[0m   ./usr/include/openssl/sha.h
+ [32;01m*[0m   ./usr/include/openssl/md5.h
+ [32;01m*[0m   ./usr/include/openssl/md4.h
+ [32;01m*[0m   ./usr/include/openssl/obj_mac.h
+ [32;01m*[0m   ./usr/include/openssl/objects.h
+ [32;01m*[0m   ./usr/include/openssl/ossl_typ.h
+ [32;01m*[0m   ./usr/include/openssl/symhacks.h
+ [32;01m*[0m   ./usr/include/openssl/ebcdic.h
+ [32;01m*[0m   ./usr/include/openssl/opensslconf.h
+ [32;01m*[0m   ./usr/include/openssl/opensslv.h
+ [32;01m*[0m   ./usr/include/openssl/crypto.h
+ [32;01m*[0m   ./usr/include/openssl/e_os2.h
+ [32;01m*[0m   ./usr/lib/libssl.so
+ [32;01m*[0m   ./usr/lib/libcrypto.so
+ [32;01m*[0m   ./usr/lib/libssl.so.1.0.0
+ [32;01m*[0m   ./usr/lib/libcrypto.so.1.0.0
+ [32;01m*[0m   ./usr/lib/pkgconfig/openssl.pc
+ [32;01m*[0m   ./usr/lib/pkgconfig/libssl.pc
+ [32;01m*[0m   ./usr/lib/pkgconfig/libcrypto.pc
+ [32;01m*[0m   ./usr/lib/engines/libgost.so
+ [32;01m*[0m   ./usr/lib/engines/libcapi.so
+ [32;01m*[0m   ./usr/lib/engines/libpadlock.so
+ [32;01m*[0m   ./usr/lib/engines/libubsec.so
+ [32;01m*[0m   ./usr/lib/engines/libsureware.so
+ [32;01m*[0m   ./usr/lib/engines/libnuron.so
+ [32;01m*[0m   ./usr/lib/engines/libchil.so
+ [32;01m*[0m   ./usr/lib/engines/libgmp.so
+ [32;01m*[0m   ./usr/lib/engines/libcswift.so
+ [32;01m*[0m   ./usr/lib/engines/libatalla.so
+ [32;01m*[0m   ./usr/lib/engines/libaep.so
+ [32;01m*[0m   ./usr/lib/engines/lib4758cca.so
+ [32;01m*[0m Extracting sys-apps/debianutils-3.4.4 to /usr/i586-pc-linux-gnu ...
+ [32;01m*[0m Extracting sys-apps/coreutils-8.14 to /usr/i586-pc-linux-gnu ...
+ [32;01m*[0m Extracting sys-libs/libcap-2.22 to /usr/i586-pc-linux-gnu ...
+ [32;01m*[0m   ./lib/libcap.so.2.22
+ [32;01m*[0m   ./lib/libcap.so.2
+ [32;01m*[0m   ./usr/lib/libcap.a
+ [32;01m*[0m   ./usr/lib/libcap.so
+ [32;01m*[0m   ./usr/include/sys/capability.h
+ [32;01m*[0m Extracting sys-apps/attr-2.4.46-r1 to /usr/i586-pc-linux-gnu ...
+ [32;01m*[0m   ./lib/libattr.so.1.1.0
+ [32;01m*[0m   ./lib/libattr.so.1
+ [32;01m*[0m   ./usr/include/attr/libattr.h
+ [32;01m*[0m   ./usr/include/attr/error_context.h
+ [32;01m*[0m   ./usr/include/attr/xattr.h
+ [32;01m*[0m   ./usr/include/attr/attributes.h
+ [32;01m*[0m   ./usr/lib/libattr.so
+ [32;01m*[0m Extracting net-libs/libpcap-1.1.1-r1 to /usr/i586-pc-linux-gnu ...
+ [32;01m*[0m   ./usr/include/pcap-namedb.h
+ [32;01m*[0m   ./usr/include/pcap-bpf.h
+ [32;01m*[0m   ./usr/include/pcap.h
+ [32;01m*[0m   ./usr/include/pcap/usb.h
+ [32;01m*[0m   ./usr/include/pcap/vlan.h
+ [32;01m*[0m   ./usr/include/pcap/sll.h
+ [32;01m*[0m   ./usr/include/pcap/pcap.h
+ [32;01m*[0m   ./usr/include/pcap/namedb.h
+ [32;01m*[0m   ./usr/include/pcap/ipnet.h
+ [32;01m*[0m   ./usr/include/pcap/bluetooth.h
+ [32;01m*[0m   ./usr/include/pcap/bpf.h
+ [32;01m*[0m   ./usr/lib/libpcap.a
+ [32;01m*[0m   ./usr/lib/libpcap.so.1.1.1
+ [32;01m*[0m   ./usr/lib/libpcap.so
+ [32;01m*[0m   ./usr/lib/libpcap.so.1
+ [32;01m*[0m Extracting dev-libs/libnl-1.1-r2 to /usr/i586-pc-linux-gnu ...
+ [32;01m*[0m   ./usr/include/netlink/utils.h
+ [32;01m*[0m   ./usr/include/netlink/types.h
+ [32;01m*[0m   ./usr/include/netlink/socket.h
+ [32;01m*[0m   ./usr/include/netlink/object.h
+ [32;01m*[0m   ./usr/include/netlink/object-api.h
+ [32;01m*[0m   ./usr/include/netlink/netlink.h
+ [32;01m*[0m   ./usr/include/netlink/netlink-kernel.h
+ [32;01m*[0m   ./usr/include/netlink/netlink-compat.h
+ [32;01m*[0m   ./usr/include/netlink/msg.h
+ [32;01m*[0m   ./usr/include/netlink/list.h
+ [32;01m*[0m   ./usr/include/netlink/handlers.h
+ [32;01m*[0m   ./usr/include/netlink/data.h
+ [32;01m*[0m   ./usr/include/netlink/cache.h
+ [32;01m*[0m   ./usr/include/netlink/cache-api.h
+ [32;01m*[0m   ./usr/include/netlink/attr.h
+ [32;01m*[0m   ./usr/include/netlink/addr.h
+ [32;01m*[0m   ./usr/include/netlink/fib_lookup/request.h
+ [32;01m*[0m   ./usr/include/netlink/fib_lookup/lookup.h
+ [32;01m*[0m   ./usr/include/netlink/genl/mngt.h
+ [32;01m*[0m   ./usr/include/netlink/genl/genl.h
+ [32;01m*[0m   ./usr/include/netlink/genl/family.h
+ [32;01m*[0m   ./usr/include/netlink/genl/ctrl.h
+ [32;01m*[0m   ./usr/include/netlink/route/tc.h
+ [32;01m*[0m   ./usr/include/netlink/route/rule.h
+ [32;01m*[0m   ./usr/include/netlink/route/rtnl.h
+ [32;01m*[0m   ./usr/include/netlink/route/route.h
+ [32;01m*[0m   ./usr/include/netlink/route/qdisc.h
+ [32;01m*[0m   ./usr/include/netlink/route/qdisc-modules.h
+ [32;01m*[0m   ./usr/include/netlink/route/nexthop.h
+ [32;01m*[0m   ./usr/include/netlink/route/neightbl.h
+ [32;01m*[0m   ./usr/include/netlink/route/neighbour.h
+ [32;01m*[0m   ./usr/include/netlink/route/link.h
+ [32;01m*[0m   ./usr/include/netlink/route/classifier.h
+ [32;01m*[0m   ./usr/include/netlink/route/classifier-modules.h
+ [32;01m*[0m   ./usr/include/netlink/route/class.h
+ [32;01m*[0m   ./usr/include/netlink/route/class-modules.h
+ [32;01m*[0m   ./usr/include/netlink/route/addr.h
+ [32;01m*[0m   ./usr/include/netlink/route/cls/u32.h
+ [32;01m*[0m   ./usr/include/netlink/route/cls/police.h
+ [32;01m*[0m   ./usr/include/netlink/route/cls/fw.h
+ [32;01m*[0m   ./usr/include/netlink/route/sch/tbf.h
+ [32;01m*[0m   ./usr/include/netlink/route/sch/sfq.h
+ [32;01m*[0m   ./usr/include/netlink/route/sch/red.h
+ [32;01m*[0m   ./usr/include/netlink/route/sch/prio.h
+ [32;01m*[0m   ./usr/include/netlink/route/sch/netem.h
+ [32;01m*[0m   ./usr/include/netlink/route/sch/htb.h
+ [32;01m*[0m   ./usr/include/netlink/route/sch/fifo.h
+ [32;01m*[0m   ./usr/include/netlink/route/sch/dsmark.h
+ [32;01m*[0m   ./usr/include/netlink/route/sch/cbq.h
+ [32;01m*[0m   ./usr/lib/libnl.so.1.1
+ [32;01m*[0m   ./usr/lib/pkgconfig/libnl-1.pc
+ [32;01m*[0m   ./usr/lib/libnl.so
+ [32;01m*[0m   ./usr/lib/libnl.so.1
+ [32;01m*[0m Extracting sys-libs/zlib-1.2.5-r2 to /usr/i586-pc-linux-gnu ...
+ [32;01m*[0m   ./lib/libz.so.1.2.5
+ [32;01m*[0m   ./lib/libz.so.1
+ [32;01m*[0m   ./usr/include/zconf.h
+ [32;01m*[0m   ./usr/include/zlib.h
+ [32;01m*[0m   ./usr/lib/libz.a
+ [32;01m*[0m   ./usr/lib/libz.so
+ [32;01m*[0m   ./usr/lib/pkgconfig/zlib.pc
+ [32;01m*[0m Fixing SYSROOT .la files
+&gt;&gt;&gt;<i> Unpacking source...
+</I>&gt;&gt;&gt;<i> Unpacking coova-chilli-1.2.9.tar.gz to /var/tmp/i586-pc-linux-gnu/portage/net-wireless/coova-chilli-1.2.9/work
+</I>&gt;&gt;&gt;<i> Source unpacked in /var/tmp/i586-pc-linux-gnu/portage/net-wireless/coova-chilli-1.2.9/work
+</I>&gt;&gt;&gt;<i> Preparing source in /var/tmp/i586-pc-linux-gnu/portage/net-wireless/coova-chilli-1.2.9/work/coova-chilli-1.2.9 ...
+</I>&gt;&gt;&gt;<i> Source prepared.
+</I>&gt;&gt;&gt;<i> Configuring source in /var/tmp/i586-pc-linux-gnu/portage/net-wireless/coova-chilli-1.2.9/work/coova-chilli-1.2.9 ...
+</I> * econf: updating coova-chilli-1.2.9/config.sub with /usr/share/gnuconfig/config.sub
+ * econf: updating coova-chilli-1.2.9/config.guess with /usr/share/gnuconfig/config.guess
+./configure --prefix=/usr --build=x86_64-pc-linux-gnu --host=i586-pc-linux-gnu --mandir=/usr/share/man --infodir=/usr/share/info --datadir=/usr/share --sysconfdir=/etc --localstatedir=/var/lib --disable-dependency-tracking --enable-statusfile --without-mmap --with-poll --with-ipc-msg --enable-multiroute --with-curl --with-ipv6 --enable-miniportal --without-nfqueue --with-pcap
+configure: loading site script /usr/share/config.site
+configure: loading site script /usr/share/crossdev/include/site/linux
+configure: loading site script /usr/share/crossdev/include/site/linux-gnu
+checking for a BSD-compatible install... /usr/bin/install -c
+checking whether build environment is sane... yes
+checking for i586-pc-linux-gnu-strip... i586-pc-linux-gnu-strip
+checking for a thread-safe mkdir -p... /bin/mkdir -p
+checking for gawk... gawk
+checking whether make sets $(MAKE)... yes
+checking for i586-pc-linux-gnu-gcc... i586-pc-linux-gnu-gcc
+checking whether the C compiler works... yes
+checking for C compiler default output file name... a.out
+checking for suffix of executables... 
+checking whether we are cross compiling... yes
+checking for suffix of object files... o
+checking whether we are using the GNU C compiler... yes
+checking whether i586-pc-linux-gnu-gcc accepts -g... yes
+checking for i586-pc-linux-gnu-gcc option to accept ISO C89... none needed
+checking for style of include used by make... GNU
+checking dependency style of i586-pc-linux-gnu-gcc... none
+checking build system type... x86_64-pc-linux-gnu
+checking host system type... i586-pc-linux-gnu
+checking how to print strings... printf
+checking for a sed that does not truncate output... /bin/sed
+checking for grep that handles long lines and -e... /bin/grep
+checking for egrep... /bin/grep -E
+checking for fgrep... /bin/grep -F
+checking for ld used by i586-pc-linux-gnu-gcc... /usr/libexec/gcc/i586-pc-linux-gnu/ld
+checking if the linker (/usr/libexec/gcc/i586-pc-linux-gnu/ld) is GNU ld... yes
+checking for BSD- or MS-compatible name lister (nm)... /usr/bin/i586-pc-linux-gnu-nm -B
+checking the name lister (/usr/bin/i586-pc-linux-gnu-nm -B) interface... BSD nm
+checking whether ln -s works... yes
+checking the maximum length of command line arguments... 1572864
+checking whether the shell understands some XSI constructs... yes
+checking whether the shell understands &quot;+=&quot;... yes
+checking how to convert x86_64-pc-linux-gnu file names to i586-pc-linux-gnu format... func_convert_file_noop
+checking how to convert x86_64-pc-linux-gnu file names to toolchain format... func_convert_file_noop
+checking for /usr/libexec/gcc/i586-pc-linux-gnu/ld option to reload object files... -r
+checking for i586-pc-linux-gnu-objdump... i586-pc-linux-gnu-objdump
+checking how to recognize dependent libraries... pass_all
+checking for i586-pc-linux-gnu-dlltool... no
+checking for dlltool... no
+checking how to associate runtime and link libraries... printf %s\n
+checking for i586-pc-linux-gnu-ar... i586-pc-linux-gnu-ar
+checking for archiver @FILE support... @
+checking for i586-pc-linux-gnu-strip... (cached) i586-pc-linux-gnu-strip
+checking for i586-pc-linux-gnu-ranlib... i586-pc-linux-gnu-ranlib
+checking command to parse /usr/bin/i586-pc-linux-gnu-nm -B output from i586-pc-linux-gnu-gcc object... ok
+checking for sysroot... no
+checking for i586-pc-linux-gnu-mt... no
+checking for mt... no
+checking if : is a manifest tool... no
+checking how to run the C preprocessor... i586-pc-linux-gnu-gcc -E
+checking for ANSI C header files... yes
+checking for sys/types.h... yes
+checking for sys/stat.h... yes
+checking for stdlib.h... yes
+checking for string.h... yes
+checking for memory.h... yes
+checking for strings.h... yes
+checking for inttypes.h... yes
+checking for stdint.h... yes
+checking for unistd.h... yes
+checking for dlfcn.h... yes
+checking for objdir... .libs
+checking if i586-pc-linux-gnu-gcc supports -fno-rtti -fno-exceptions... no
+checking for i586-pc-linux-gnu-gcc option to produce PIC... -fPIC -DPIC
+checking if i586-pc-linux-gnu-gcc PIC flag -fPIC -DPIC works... yes
+checking if i586-pc-linux-gnu-gcc static flag -static works... yes
+checking if i586-pc-linux-gnu-gcc supports -c -o file.o... yes
+checking if i586-pc-linux-gnu-gcc supports -c -o file.o... (cached) yes
+checking whether the i586-pc-linux-gnu-gcc linker (/usr/libexec/gcc/i586-pc-linux-gnu/ld) supports shared libraries... yes
+checking whether -lc should be explicitly linked in... no
+checking dynamic linker characteristics... GNU/Linux ld.so
+checking how to hardcode library paths into programs... immediate
+checking whether stripping libraries is possible... yes
+checking if libtool supports shared libraries... yes
+checking whether to build shared libraries... yes
+checking whether to build static libraries... yes
+linux
+checking if if_packet.h has tpacket_stats defined... yes
+checking if tpacket_auxdata struct has tp_vlan_tci member... yes
+checking for ANSI C header files... (cached) yes
+checking arpa/inet.h usability... yes
+checking arpa/inet.h presence... yes
+checking for arpa/inet.h... yes
+checking errno.h usability... yes
+checking errno.h presence... yes
+checking for errno.h... yes
+checking fcntl.h usability... yes
+checking fcntl.h presence... yes
+checking for fcntl.h... yes
+checking dirent.h usability... yes
+checking dirent.h presence... yes
+checking for dirent.h... yes
+checking netdb.h usability... yes
+checking netdb.h presence... yes
+checking for netdb.h... yes
+checking netinet/in.h usability... yes
+checking netinet/in.h presence... yes
+checking for netinet/in.h... yes
+checking netinet/tcp.h usability... yes
+checking netinet/tcp.h presence... yes
+checking for netinet/tcp.h... yes
+checking for stdint.h... (cached) yes
+checking stddef.h usability... yes
+checking stddef.h presence... yes
+checking for stddef.h... yes
+checking for stdlib.h... (cached) yes
+checking for string.h... (cached) yes
+checking sys/ioctl.h usability... yes
+checking sys/ioctl.h presence... yes
+checking for sys/ioctl.h... yes
+checking sys/socket.h usability... yes
+checking sys/socket.h presence... yes
+checking for sys/socket.h... yes
+checking sys/sysinfo.h usability... yes
+checking sys/sysinfo.h presence... yes
+checking for sys/sysinfo.h... yes
+checking sys/param.h usability... yes
+checking sys/param.h presence... yes
+checking for sys/param.h... yes
+checking sys/time.h usability... yes
+checking sys/time.h presence... yes
+checking for sys/time.h... yes
+checking time.h usability... yes
+checking time.h presence... yes
+checking for time.h... yes
+checking sys/ipc.h usability... yes
+checking sys/ipc.h presence... yes
+checking for sys/ipc.h... yes
+checking sys/msg.h usability... yes
+checking sys/msg.h presence... yes
+checking for sys/msg.h... yes
+checking signal.h usability... yes
+checking signal.h presence... yes
+checking for signal.h... yes
+checking sys/wait.h usability... yes
+checking sys/wait.h presence... yes
+checking for sys/wait.h... yes
+checking sys/un.h usability... yes
+checking sys/un.h presence... yes
+checking for sys/un.h... yes
+checking ifaddrs.h usability... yes
+checking ifaddrs.h presence... yes
+checking for ifaddrs.h... yes
+checking for sys/stat.h... (cached) yes
+checking for sys/types.h... (cached) yes
+checking regex.h usability... yes
+checking regex.h presence... yes
+checking for regex.h... yes
+checking syslog.h usability... yes
+checking syslog.h presence... yes
+checking for syslog.h... yes
+checking poll.h usability... yes
+checking poll.h presence... yes
+checking for poll.h... yes
+checking sys/epoll.h usability... yes
+checking sys/epoll.h presence... yes
+checking for sys/epoll.h... yes
+checking for unistd.h... (cached) yes
+checking endian.h usability... yes
+checking endian.h presence... yes
+checking for endian.h... yes
+checking libgen.h usability... yes
+checking libgen.h presence... yes
+checking for libgen.h... yes
+checking asm/types.h usability... yes
+checking asm/types.h presence... yes
+checking for asm/types.h... yes
+checking for pwd.h... (cached) yes
+checking grp.h usability... yes
+checking grp.h presence... yes
+checking for grp.h... yes
+checking for resolv.h... yes
+checking for net/route.h... yes
+checking for net/if.h... yes
+checking for net/if_arp.h... yes
+checking for net/if_tun.h... no
+checking for net/ethernet.h... yes
+checking for an ANSI C-conforming const... yes
+checking for mode_t... yes
+checking whether time.h and sys/time.h may both be included... yes
+checking for pid_t... yes
+checking vfork.h usability... no
+checking vfork.h presence... no
+checking for vfork.h... no
+checking for fork... yes
+checking for vfork... yes
+checking for working fork... (cached) yes
+checking for working vfork... (cached) yes
+checking whether i586-pc-linux-gnu-gcc needs -traditional... no
+checking for working memcmp... (cached) yes
+checking sys/select.h usability... yes
+checking sys/select.h presence... yes
+checking for sys/select.h... yes
+checking for sys/socket.h... (cached) yes
+checking types of arguments for select... int,fd_set *,struct timeval *
+checking for gethostbyname... yes
+checking for getprotoent... yes
+checking for gettimeofday... yes
+checking for inet_ntoa... yes
+checking for memset... yes
+checking for select... yes
+checking for socket... yes
+checking for strdup... yes
+checking for strerror... yes
+checking for strstr... yes
+checking for strtol... yes
+checking for getline... yes
+checking for dirname... yes
+checking for glob... yes
+checking for getaddrinfo... (cached) yes
+checking for getnameinfo... yes
+checking for getifaddrs... yes
+checking for sysinfo... yes
+checking for res_init in -lresolv... no
+checking for pcap_open_live in -lpcap... yes
+checking for curl_global_init in -lcurl... yes
+checking for clock_gettime in -lrt... yes
+configure: creating ./config.status
+config.status: creating Makefile
+config.status: creating bstring/Makefile
+config.status: creating src/Makefile
+config.status: creating src/mssl/Makefile
+config.status: creating www/Makefile
+config.status: creating doc/Makefile
+config.status: creating conf/Makefile
+config.status: creating debian/Makefile
+config.status: creating miniportal/Makefile
+config.status: creating json/Makefile
+config.status: creating distro/Makefile
+config.status: creating distro/suse/coova-chilli.spec
+config.status: creating distro/redhat/coova-chilli.spec
+config.status: creating config.h
+config.status: executing depfiles commands
+config.status: executing libtool commands
+&gt;&gt;&gt;<i> Source configured.
+</I>ebuild-ipc timed out during read after 15 seconds, retrying...
+&gt;&gt;&gt;<i> Compiling source in /var/tmp/i586-pc-linux-gnu/portage/net-wireless/coova-chilli-1.2.9/work/coova-chilli-1.2.9 ...
+</I>make -j1 
+make  all-recursive
+make[1]: Entering directory `/var/tmp/i586-pc-linux-gnu/portage/net-wireless/coova-chilli-1.2.9/work/coova-chilli-1.2.9'
+Making all in bstring
+make[2]: Entering directory `/var/tmp/i586-pc-linux-gnu/portage/net-wireless/coova-chilli-1.2.9/work/coova-chilli-1.2.9/bstring'
+/bin/sh ../libtool --tag=CC   --mode=compile i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I..     -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c -o bstrlib.lo bstrlib.c
+libtool: compile:  i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I.. -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c bstrlib.c  -fPIC -DPIC -o .libs/bstrlib.o
+libtool: compile:  i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I.. -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c bstrlib.c -o bstrlib.o &gt;/dev/null 2&gt;&amp;1
+/bin/sh ../libtool --tag=CC   --mode=compile i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I..     -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c -o snprintf.lo snprintf.c
+libtool: compile:  i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I.. -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c snprintf.c  -fPIC -DPIC -o .libs/snprintf.o
+libtool: compile:  i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I.. -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c snprintf.c -o snprintf.o &gt;/dev/null 2&gt;&amp;1
+/bin/sh ../libtool --tag=CC   --mode=link i586-pc-linux-gnu-gcc  -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer  -L/usr/i586-pc-linux-gnu/lib -L/usr/i586-pc-linux-gnu/usr/lib -o libbstring.la -rpath /usr/lib bstrlib.lo snprintf.lo  -lrt 
+libtool: link: i586-pc-linux-gnu-gcc -shared  -fPIC -DPIC  .libs/bstrlib.o .libs/snprintf.o   -L/usr/i586-pc-linux-gnu/lib -L/usr/i586-pc-linux-gnu/usr/lib -lrt  -march=geode -Os -mmmx -m3dnow   -Wl,-soname -Wl,libbstring.so.0 -o .libs/libbstring.so.0.0.0
+libtool: link: (cd &quot;.libs&quot; &amp;&amp; rm -f &quot;libbstring.so.0&quot; &amp;&amp; ln -s &quot;libbstring.so.0.0.0&quot; &quot;libbstring.so.0&quot;)
+libtool: link: (cd &quot;.libs&quot; &amp;&amp; rm -f &quot;libbstring.so&quot; &amp;&amp; ln -s &quot;libbstring.so.0.0.0&quot; &quot;libbstring.so&quot;)
+libtool: link: i586-pc-linux-gnu-ar cru .libs/libbstring.a  bstrlib.o snprintf.o
+libtool: link: i586-pc-linux-gnu-ranlib .libs/libbstring.a
+libtool: link: ( cd &quot;.libs&quot; &amp;&amp; rm -f &quot;libbstring.la&quot; &amp;&amp; ln -s &quot;../libbstring.la&quot; &quot;libbstring.la&quot; )
+make[2]: Leaving directory `/var/tmp/i586-pc-linux-gnu/portage/net-wireless/coova-chilli-1.2.9/work/coova-chilli-1.2.9/bstring'
+Making all in src
+make[2]: Entering directory `/var/tmp/i586-pc-linux-gnu/portage/net-wireless/coova-chilli-1.2.9/work/coova-chilli-1.2.9/src'
+make[3]: Entering directory `/var/tmp/i586-pc-linux-gnu/portage/net-wireless/coova-chilli-1.2.9/work/coova-chilli-1.2.9/src'
+/bin/sh ../libtool --tag=CC   --mode=compile i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I..    -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF='&quot;/etc/chilli.conf&quot;' -DDEFPIDFILE='&quot;/var/lib/run/chilli.pid&quot;' -DDEFSTATEDIR='&quot;/var/lib/run&quot;' -DSBINDIR='&quot;/usr/sbin&quot;'    -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c -o chilli.lo chilli.c
+libtool: compile:  i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I.. -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF=\&quot;/etc/chilli.conf\&quot; -DDEFPIDFILE=\&quot;/var/lib/run/chilli.pid\&quot; -DDEFSTATEDIR=\&quot;/var/lib/run\&quot; -DSBINDIR=\&quot;/usr/sbin\&quot; -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c chilli.c  -fPIC -DPIC -o .libs/chilli.o
+libtool: compile:  i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I.. -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF=\&quot;/etc/chilli.conf\&quot; -DDEFPIDFILE=\&quot;/var/lib/run/chilli.pid\&quot; -DDEFSTATEDIR=\&quot;/var/lib/run\&quot; -DSBINDIR=\&quot;/usr/sbin\&quot; -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c chilli.c -o chilli.o &gt;/dev/null 2&gt;&amp;1
+/bin/sh ../libtool --tag=CC   --mode=compile i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I..    -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF='&quot;/etc/chilli.conf&quot;' -DDEFPIDFILE='&quot;/var/lib/run/chilli.pid&quot;' -DDEFSTATEDIR='&quot;/var/lib/run&quot;' -DSBINDIR='&quot;/usr/sbin&quot;'    -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c -o tun.lo tun.c
+libtool: compile:  i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I.. -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF=\&quot;/etc/chilli.conf\&quot; -DDEFPIDFILE=\&quot;/var/lib/run/chilli.pid\&quot; -DDEFSTATEDIR=\&quot;/var/lib/run\&quot; -DSBINDIR=\&quot;/usr/sbin\&quot; -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c tun.c  -fPIC -DPIC -o .libs/tun.o
+libtool: compile:  i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I.. -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF=\&quot;/etc/chilli.conf\&quot; -DDEFPIDFILE=\&quot;/var/lib/run/chilli.pid\&quot; -DDEFSTATEDIR=\&quot;/var/lib/run\&quot; -DSBINDIR=\&quot;/usr/sbin\&quot; -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c tun.c -o tun.o &gt;/dev/null 2&gt;&amp;1
+/bin/sh ../libtool --tag=CC   --mode=compile i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I..    -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF='&quot;/etc/chilli.conf&quot;' -DDEFPIDFILE='&quot;/var/lib/run/chilli.pid&quot;' -DDEFSTATEDIR='&quot;/var/lib/run&quot;' -DSBINDIR='&quot;/usr/sbin&quot;'    -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c -o ippool.lo ippool.c
+libtool: compile:  i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I.. -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF=\&quot;/etc/chilli.conf\&quot; -DDEFPIDFILE=\&quot;/var/lib/run/chilli.pid\&quot; -DDEFSTATEDIR=\&quot;/var/lib/run\&quot; -DSBINDIR=\&quot;/usr/sbin\&quot; -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c ippool.c  -fPIC -DPIC -o .libs/ippool.o
+libtool: compile:  i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I.. -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF=\&quot;/etc/chilli.conf\&quot; -DDEFPIDFILE=\&quot;/var/lib/run/chilli.pid\&quot; -DDEFSTATEDIR=\&quot;/var/lib/run\&quot; -DSBINDIR=\&quot;/usr/sbin\&quot; -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c ippool.c -o ippool.o &gt;/dev/null 2&gt;&amp;1
+/bin/sh ../libtool --tag=CC   --mode=compile i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I..    -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF='&quot;/etc/chilli.conf&quot;' -DDEFPIDFILE='&quot;/var/lib/run/chilli.pid&quot;' -DDEFSTATEDIR='&quot;/var/lib/run&quot;' -DSBINDIR='&quot;/usr/sbin&quot;'    -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c -o radius.lo radius.c
+libtool: compile:  i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I.. -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF=\&quot;/etc/chilli.conf\&quot; -DDEFPIDFILE=\&quot;/var/lib/run/chilli.pid\&quot; -DDEFSTATEDIR=\&quot;/var/lib/run\&quot; -DSBINDIR=\&quot;/usr/sbin\&quot; -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c radius.c  -fPIC -DPIC -o .libs/radius.o
+libtool: compile:  i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I.. -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF=\&quot;/etc/chilli.conf\&quot; -DDEFPIDFILE=\&quot;/var/lib/run/chilli.pid\&quot; -DDEFSTATEDIR=\&quot;/var/lib/run\&quot; -DSBINDIR=\&quot;/usr/sbin\&quot; -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c radius.c -o radius.o &gt;/dev/null 2&gt;&amp;1
+/bin/sh ../libtool --tag=CC   --mode=compile i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I..    -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF='&quot;/etc/chilli.conf&quot;' -DDEFPIDFILE='&quot;/var/lib/run/chilli.pid&quot;' -DDEFSTATEDIR='&quot;/var/lib/run&quot;' -DSBINDIR='&quot;/usr/sbin&quot;'    -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c -o md5.lo md5.c
+libtool: compile:  i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I.. -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF=\&quot;/etc/chilli.conf\&quot; -DDEFPIDFILE=\&quot;/var/lib/run/chilli.pid\&quot; -DDEFSTATEDIR=\&quot;/var/lib/run\&quot; -DSBINDIR=\&quot;/usr/sbin\&quot; -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c md5.c  -fPIC -DPIC -o .libs/md5.o
+libtool: compile:  i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I.. -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF=\&quot;/etc/chilli.conf\&quot; -DDEFPIDFILE=\&quot;/var/lib/run/chilli.pid\&quot; -DDEFSTATEDIR=\&quot;/var/lib/run\&quot; -DSBINDIR=\&quot;/usr/sbin\&quot; -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c md5.c -o md5.o &gt;/dev/null 2&gt;&amp;1
+/bin/sh ../libtool --tag=CC   --mode=compile i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I..    -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF='&quot;/etc/chilli.conf&quot;' -DDEFPIDFILE='&quot;/var/lib/run/chilli.pid&quot;' -DDEFSTATEDIR='&quot;/var/lib/run&quot;' -DSBINDIR='&quot;/usr/sbin&quot;'    -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c -o redir.lo redir.c
+libtool: compile:  i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I.. -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF=\&quot;/etc/chilli.conf\&quot; -DDEFPIDFILE=\&quot;/var/lib/run/chilli.pid\&quot; -DDEFSTATEDIR=\&quot;/var/lib/run\&quot; -DSBINDIR=\&quot;/usr/sbin\&quot; -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c redir.c  -fPIC -DPIC -o .libs/redir.o
+libtool: compile:  i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I.. -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF=\&quot;/etc/chilli.conf\&quot; -DDEFPIDFILE=\&quot;/var/lib/run/chilli.pid\&quot; -DDEFSTATEDIR=\&quot;/var/lib/run\&quot; -DSBINDIR=\&quot;/usr/sbin\&quot; -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c redir.c -o redir.o &gt;/dev/null 2&gt;&amp;1
+/bin/sh ../libtool --tag=CC   --mode=compile i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I..    -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF='&quot;/etc/chilli.conf&quot;' -DDEFPIDFILE='&quot;/var/lib/run/chilli.pid&quot;' -DDEFSTATEDIR='&quot;/var/lib/run&quot;' -DSBINDIR='&quot;/usr/sbin&quot;'    -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c -o dhcp.lo dhcp.c
+libtool: compile:  i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I.. -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF=\&quot;/etc/chilli.conf\&quot; -DDEFPIDFILE=\&quot;/var/lib/run/chilli.pid\&quot; -DDEFSTATEDIR=\&quot;/var/lib/run\&quot; -DSBINDIR=\&quot;/usr/sbin\&quot; -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c dhcp.c  -fPIC -DPIC -o .libs/dhcp.o
+libtool: compile:  i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I.. -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF=\&quot;/etc/chilli.conf\&quot; -DDEFPIDFILE=\&quot;/var/lib/run/chilli.pid\&quot; -DDEFSTATEDIR=\&quot;/var/lib/run\&quot; -DSBINDIR=\&quot;/usr/sbin\&quot; -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c dhcp.c -o dhcp.o &gt;/dev/null 2&gt;&amp;1
+/bin/sh ../libtool --tag=CC   --mode=compile i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I..    -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF='&quot;/etc/chilli.conf&quot;' -DDEFPIDFILE='&quot;/var/lib/run/chilli.pid&quot;' -DDEFSTATEDIR='&quot;/var/lib/run&quot;' -DSBINDIR='&quot;/usr/sbin&quot;'    -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c -o syserr.lo syserr.c
+libtool: compile:  i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I.. -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF=\&quot;/etc/chilli.conf\&quot; -DDEFPIDFILE=\&quot;/var/lib/run/chilli.pid\&quot; -DDEFSTATEDIR=\&quot;/var/lib/run\&quot; -DSBINDIR=\&quot;/usr/sbin\&quot; -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c syserr.c  -fPIC -DPIC -o .libs/syserr.o
+libtool: compile:  i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I.. -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF=\&quot;/etc/chilli.conf\&quot; -DDEFPIDFILE=\&quot;/var/lib/run/chilli.pid\&quot; -DDEFSTATEDIR=\&quot;/var/lib/run\&quot; -DSBINDIR=\&quot;/usr/sbin\&quot; -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c syserr.c -o syserr.o &gt;/dev/null 2&gt;&amp;1
+/bin/sh ../libtool --tag=CC   --mode=compile i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I..    -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF='&quot;/etc/chilli.conf&quot;' -DDEFPIDFILE='&quot;/var/lib/run/chilli.pid&quot;' -DDEFSTATEDIR='&quot;/var/lib/run&quot;' -DSBINDIR='&quot;/usr/sbin&quot;'    -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c -o iphash.lo iphash.c
+libtool: compile:  i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I.. -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF=\&quot;/etc/chilli.conf\&quot; -DDEFPIDFILE=\&quot;/var/lib/run/chilli.pid\&quot; -DDEFSTATEDIR=\&quot;/var/lib/run\&quot; -DSBINDIR=\&quot;/usr/sbin\&quot; -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c iphash.c  -fPIC -DPIC -o .libs/iphash.o
+libtool: compile:  i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I.. -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF=\&quot;/etc/chilli.conf\&quot; -DDEFPIDFILE=\&quot;/var/lib/run/chilli.pid\&quot; -DDEFSTATEDIR=\&quot;/var/lib/run\&quot; -DSBINDIR=\&quot;/usr/sbin\&quot; -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c iphash.c -o iphash.o &gt;/dev/null 2&gt;&amp;1
+/bin/sh ../libtool --tag=CC   --mode=compile i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I..    -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF='&quot;/etc/chilli.conf&quot;' -DDEFPIDFILE='&quot;/var/lib/run/chilli.pid&quot;' -DDEFSTATEDIR='&quot;/var/lib/run&quot;' -DSBINDIR='&quot;/usr/sbin&quot;'    -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c -o lookup.lo lookup.c
+libtool: compile:  i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I.. -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF=\&quot;/etc/chilli.conf\&quot; -DDEFPIDFILE=\&quot;/var/lib/run/chilli.pid\&quot; -DDEFSTATEDIR=\&quot;/var/lib/run\&quot; -DSBINDIR=\&quot;/usr/sbin\&quot; -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c lookup.c  -fPIC -DPIC -o .libs/lookup.o
+libtool: compile:  i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I.. -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF=\&quot;/etc/chilli.conf\&quot; -DDEFPIDFILE=\&quot;/var/lib/run/chilli.pid\&quot; -DDEFSTATEDIR=\&quot;/var/lib/run\&quot; -DSBINDIR=\&quot;/usr/sbin\&quot; -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c lookup.c -o lookup.o &gt;/dev/null 2&gt;&amp;1
+/bin/sh ../libtool --tag=CC   --mode=compile i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I..    -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF='&quot;/etc/chilli.conf&quot;' -DDEFPIDFILE='&quot;/var/lib/run/chilli.pid&quot;' -DDEFSTATEDIR='&quot;/var/lib/run&quot;' -DSBINDIR='&quot;/usr/sbin&quot;'    -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c -o util.lo util.c
+libtool: compile:  i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I.. -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF=\&quot;/etc/chilli.conf\&quot; -DDEFPIDFILE=\&quot;/var/lib/run/chilli.pid\&quot; -DDEFSTATEDIR=\&quot;/var/lib/run\&quot; -DSBINDIR=\&quot;/usr/sbin\&quot; -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c util.c  -fPIC -DPIC -o .libs/util.o
+libtool: compile:  i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I.. -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF=\&quot;/etc/chilli.conf\&quot; -DDEFPIDFILE=\&quot;/var/lib/run/chilli.pid\&quot; -DDEFSTATEDIR=\&quot;/var/lib/run\&quot; -DSBINDIR=\&quot;/usr/sbin\&quot; -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c util.c -o util.o &gt;/dev/null 2&gt;&amp;1
+/bin/sh ../libtool --tag=CC   --mode=compile i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I..    -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF='&quot;/etc/chilli.conf&quot;' -DDEFPIDFILE='&quot;/var/lib/run/chilli.pid&quot;' -DDEFSTATEDIR='&quot;/var/lib/run&quot;' -DSBINDIR='&quot;/usr/sbin&quot;'    -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c -o options.lo options.c
+libtool: compile:  i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I.. -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF=\&quot;/etc/chilli.conf\&quot; -DDEFPIDFILE=\&quot;/var/lib/run/chilli.pid\&quot; -DDEFSTATEDIR=\&quot;/var/lib/run\&quot; -DSBINDIR=\&quot;/usr/sbin\&quot; -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c options.c  -fPIC -DPIC -o .libs/options.o
+libtool: compile:  i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I.. -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF=\&quot;/etc/chilli.conf\&quot; -DDEFPIDFILE=\&quot;/var/lib/run/chilli.pid\&quot; -DDEFSTATEDIR=\&quot;/var/lib/run\&quot; -DSBINDIR=\&quot;/usr/sbin\&quot; -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c options.c -o options.o &gt;/dev/null 2&gt;&amp;1
+/bin/sh ../libtool --tag=CC   --mode=compile i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I..    -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF='&quot;/etc/chilli.conf&quot;' -DDEFPIDFILE='&quot;/var/lib/run/chilli.pid&quot;' -DDEFSTATEDIR='&quot;/var/lib/run&quot;' -DSBINDIR='&quot;/usr/sbin&quot;'    -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c -o statusfile.lo statusfile.c
+libtool: compile:  i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I.. -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF=\&quot;/etc/chilli.conf\&quot; -DDEFPIDFILE=\&quot;/var/lib/run/chilli.pid\&quot; -DDEFSTATEDIR=\&quot;/var/lib/run\&quot; -DSBINDIR=\&quot;/usr/sbin\&quot; -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c statusfile.c  -fPIC -DPIC -o .libs/statusfile.o
+libtool: compile:  i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I.. -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF=\&quot;/etc/chilli.conf\&quot; -DDEFPIDFILE=\&quot;/var/lib/run/chilli.pid\&quot; -DDEFSTATEDIR=\&quot;/var/lib/run\&quot; -DSBINDIR=\&quot;/usr/sbin\&quot; -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c statusfile.c -o statusfile.o &gt;/dev/null 2&gt;&amp;1
+/bin/sh ../libtool --tag=CC   --mode=compile i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I..    -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF='&quot;/etc/chilli.conf&quot;' -DDEFPIDFILE='&quot;/var/lib/run/chilli.pid&quot;' -DDEFSTATEDIR='&quot;/var/lib/run&quot;' -DSBINDIR='&quot;/usr/sbin&quot;'    -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c -o conn.lo conn.c
+libtool: compile:  i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I.. -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF=\&quot;/etc/chilli.conf\&quot; -DDEFPIDFILE=\&quot;/var/lib/run/chilli.pid\&quot; -DDEFSTATEDIR=\&quot;/var/lib/run\&quot; -DSBINDIR=\&quot;/usr/sbin\&quot; -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c conn.c  -fPIC -DPIC -o .libs/conn.o
+libtool: compile:  i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I.. -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF=\&quot;/etc/chilli.conf\&quot; -DDEFPIDFILE=\&quot;/var/lib/run/chilli.pid\&quot; -DDEFSTATEDIR=\&quot;/var/lib/run\&quot; -DSBINDIR=\&quot;/usr/sbin\&quot; -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c conn.c -o conn.o &gt;/dev/null 2&gt;&amp;1
+/bin/sh ../libtool --tag=CC   --mode=compile i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I..    -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF='&quot;/etc/chilli.conf&quot;' -DDEFPIDFILE='&quot;/var/lib/run/chilli.pid&quot;' -DDEFSTATEDIR='&quot;/var/lib/run&quot;' -DSBINDIR='&quot;/usr/sbin&quot;'    -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c -o sig.lo sig.c
+libtool: compile:  i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I.. -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF=\&quot;/etc/chilli.conf\&quot; -DDEFPIDFILE=\&quot;/var/lib/run/chilli.pid\&quot; -DDEFSTATEDIR=\&quot;/var/lib/run\&quot; -DSBINDIR=\&quot;/usr/sbin\&quot; -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c sig.c  -fPIC -DPIC -o .libs/sig.o
+libtool: compile:  i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I.. -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF=\&quot;/etc/chilli.conf\&quot; -DDEFPIDFILE=\&quot;/var/lib/run/chilli.pid\&quot; -DDEFSTATEDIR=\&quot;/var/lib/run\&quot; -DSBINDIR=\&quot;/usr/sbin\&quot; -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c sig.c -o sig.o &gt;/dev/null 2&gt;&amp;1
+/bin/sh ../libtool --tag=CC   --mode=compile i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I..    -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF='&quot;/etc/chilli.conf&quot;' -DDEFPIDFILE='&quot;/var/lib/run/chilli.pid&quot;' -DDEFSTATEDIR='&quot;/var/lib/run&quot;' -DSBINDIR='&quot;/usr/sbin&quot;'    -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c -o garden.lo garden.c
+libtool: compile:  i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I.. -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF=\&quot;/etc/chilli.conf\&quot; -DDEFPIDFILE=\&quot;/var/lib/run/chilli.pid\&quot; -DDEFSTATEDIR=\&quot;/var/lib/run\&quot; -DSBINDIR=\&quot;/usr/sbin\&quot; -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c garden.c  -fPIC -DPIC -o .libs/garden.o
+libtool: compile:  i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I.. -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF=\&quot;/etc/chilli.conf\&quot; -DDEFPIDFILE=\&quot;/var/lib/run/chilli.pid\&quot; -DDEFSTATEDIR=\&quot;/var/lib/run\&quot; -DSBINDIR=\&quot;/usr/sbin\&quot; -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c garden.c -o garden.o &gt;/dev/null 2&gt;&amp;1
+/bin/sh ../libtool --tag=CC   --mode=compile i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I..    -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF='&quot;/etc/chilli.conf&quot;' -DDEFPIDFILE='&quot;/var/lib/run/chilli.pid&quot;' -DDEFSTATEDIR='&quot;/var/lib/run&quot;' -DSBINDIR='&quot;/usr/sbin&quot;'    -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c -o dns.lo dns.c
+libtool: compile:  i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I.. -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF=\&quot;/etc/chilli.conf\&quot; -DDEFPIDFILE=\&quot;/var/lib/run/chilli.pid\&quot; -DDEFSTATEDIR=\&quot;/var/lib/run\&quot; -DSBINDIR=\&quot;/usr/sbin\&quot; -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c dns.c  -fPIC -DPIC -o .libs/dns.o
+libtool: compile:  i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I.. -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF=\&quot;/etc/chilli.conf\&quot; -DDEFPIDFILE=\&quot;/var/lib/run/chilli.pid\&quot; -DDEFSTATEDIR=\&quot;/var/lib/run\&quot; -DSBINDIR=\&quot;/usr/sbin\&quot; -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c dns.c -o dns.o &gt;/dev/null 2&gt;&amp;1
+/bin/sh ../libtool --tag=CC   --mode=compile i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I..    -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF='&quot;/etc/chilli.conf&quot;' -DDEFPIDFILE='&quot;/var/lib/run/chilli.pid&quot;' -DDEFSTATEDIR='&quot;/var/lib/run&quot;' -DSBINDIR='&quot;/usr/sbin&quot;'    -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c -o session.lo session.c
+libtool: compile:  i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I.. -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF=\&quot;/etc/chilli.conf\&quot; -DDEFPIDFILE=\&quot;/var/lib/run/chilli.pid\&quot; -DDEFSTATEDIR=\&quot;/var/lib/run\&quot; -DSBINDIR=\&quot;/usr/sbin\&quot; -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c session.c  -fPIC -DPIC -o .libs/session.o
+libtool: compile:  i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I.. -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF=\&quot;/etc/chilli.conf\&quot; -DDEFPIDFILE=\&quot;/var/lib/run/chilli.pid\&quot; -DDEFSTATEDIR=\&quot;/var/lib/run\&quot; -DSBINDIR=\&quot;/usr/sbin\&quot; -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c session.c -o session.o &gt;/dev/null 2&gt;&amp;1
+/bin/sh ../libtool --tag=CC   --mode=compile i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I..    -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF='&quot;/etc/chilli.conf&quot;' -DDEFPIDFILE='&quot;/var/lib/run/chilli.pid&quot;' -DDEFSTATEDIR='&quot;/var/lib/run&quot;' -DSBINDIR='&quot;/usr/sbin&quot;'    -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c -o pkt.lo pkt.c
+libtool: compile:  i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I.. -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF=\&quot;/etc/chilli.conf\&quot; -DDEFPIDFILE=\&quot;/var/lib/run/chilli.pid\&quot; -DDEFSTATEDIR=\&quot;/var/lib/run\&quot; -DSBINDIR=\&quot;/usr/sbin\&quot; -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c pkt.c  -fPIC -DPIC -o .libs/pkt.o
+libtool: compile:  i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I.. -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF=\&quot;/etc/chilli.conf\&quot; -DDEFPIDFILE=\&quot;/var/lib/run/chilli.pid\&quot; -DDEFSTATEDIR=\&quot;/var/lib/run\&quot; -DSBINDIR=\&quot;/usr/sbin\&quot; -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c pkt.c -o pkt.o &gt;/dev/null 2&gt;&amp;1
+/bin/sh ../libtool --tag=CC   --mode=compile i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I..    -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF='&quot;/etc/chilli.conf&quot;' -DDEFPIDFILE='&quot;/var/lib/run/chilli.pid&quot;' -DDEFSTATEDIR='&quot;/var/lib/run&quot;' -DSBINDIR='&quot;/usr/sbin&quot;'    -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c -o chksum.lo chksum.c
+libtool: compile:  i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I.. -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF=\&quot;/etc/chilli.conf\&quot; -DDEFPIDFILE=\&quot;/var/lib/run/chilli.pid\&quot; -DDEFSTATEDIR=\&quot;/var/lib/run\&quot; -DSBINDIR=\&quot;/usr/sbin\&quot; -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c chksum.c  -fPIC -DPIC -o .libs/chksum.o
+libtool: compile:  i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I.. -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF=\&quot;/etc/chilli.conf\&quot; -DDEFPIDFILE=\&quot;/var/lib/run/chilli.pid\&quot; -DDEFSTATEDIR=\&quot;/var/lib/run\&quot; -DSBINDIR=\&quot;/usr/sbin\&quot; -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c chksum.c -o chksum.o &gt;/dev/null 2&gt;&amp;1
+/bin/sh ../libtool --tag=CC   --mode=compile i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I..    -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF='&quot;/etc/chilli.conf&quot;' -DDEFPIDFILE='&quot;/var/lib/run/chilli.pid&quot;' -DDEFSTATEDIR='&quot;/var/lib/run&quot;' -DSBINDIR='&quot;/usr/sbin&quot;'    -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c -o net.lo net.c
+libtool: compile:  i586-pc-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I.. -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF=\&quot;/etc/chilli.conf\&quot; -DDEFPIDFILE=\&quot;/var/lib/run/chilli.pid\&quot; -DDEFSTATEDIR=\&quot;/var/lib/run\&quot; -DSBINDIR=\&quot;/usr/sbin\&quot; -march=geode -Os -mmmx -m3dnow -fno-align-jumps -fno-align-functions -fno-align-labels -fno-align-loops -pipe -fomit-frame-pointer -c net.c  -fPIC -DPIC -o .libs/net.o
+net.c: In function 'net_pcap_handler':
+net.c:648:5: error: too many arguments to function 'np-&gt;func'
+cc1: warnings being treated as errors
+net.c: In function 'net_read_eth':
+net.c:718:5: error: passing argument 4 of 'pcap_dispatch' from incompatible pointer type
+/usr/i586-pc-linux-gnu/usr/include/pcap/pcap.h:298:5: note: expected 'u_char *' but argument is of type 'struct netpcap *'
+make[3]: *** [net.lo] Error 1
+make[3]: Leaving directory `/var/tmp/i586-pc-linux-gnu/portage/net-wireless/coova-chilli-1.2.9/work/coova-chilli-1.2.9/src'
+make[2]: *** [all-recursive] Error 1
+make[2]: Leaving directory `/var/tmp/i586-pc-linux-gnu/portage/net-wireless/coova-chilli-1.2.9/work/coova-chilli-1.2.9/src'
+make[1]: *** [all-recursive] Error 1
+make[1]: Leaving directory `/var/tmp/i586-pc-linux-gnu/portage/net-wireless/coova-chilli-1.2.9/work/coova-chilli-1.2.9'
+make: *** [all] Error 2
+ [31;01m*[0m ERROR: net-wireless/coova-chilli-1.2.9 failed (compile phase):
+ [31;01m*[0m   emake failed
+ [31;01m*[0m 
+ [31;01m*[0m If you need support, post the output of 'emerge --info =net-wireless/coova-chilli-1.2.9',
+ [31;01m*[0m the complete build log and the output of 'emerge -pqv =net-wireless/coova-chilli-1.2.9'.
+ [31;01m*[0m The complete build log is located at '/data/cross/alix3-i586/firmware/var/log/portage/net-wireless:coova-chilli-1.2.9:20120324-003042.log'.
+ [31;01m*[0m The ebuild environment file is located at '/var/tmp/i586-pc-linux-gnu/portage/net-wireless/coova-chilli-1.2.9/temp/environment'.
+ [31;01m*[0m S: '/var/tmp/i586-pc-linux-gnu/portage/net-wireless/coova-chilli-1.2.9/work/coova-chilli-1.2.9'
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: signature.asc
+Type: application/pgp-signature
+Size: 198 bytes
+Desc: Digital signature
+URL: &lt;<A HREF="http://lists.coova.org/pipermail/chilli/attachments/20120324/8b612fae/attachment-0001.pgp">http://lists.coova.org/pipermail/chilli/attachments/20120324/8b612fae/attachment-0001.pgp</A>&gt;
+</PRE>
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001917.html">[Chilli] ChilliSpot-Max-Input-Gigawords problem
+</A></li>
+	<LI>Next message: <A HREF="001919.html">[Chilli] Compilation issues with 1.2.9
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1918">[ date ]</a>
+              <a href="thread.html#1918">[ thread ]</a>
+              <a href="subject.html#1918">[ subject ]</a>
+              <a href="author.html#1918">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

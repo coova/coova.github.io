@@ -1,0 +1,185 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] OpenSSL &amp; redirssl etc
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20OpenSSL%20%26%20redirssl%20etc&In-Reply-To=%3C1272087660.4496.89.camel%40david-laptop%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001316.html">
+   <LINK REL="Next"  HREF="001337.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] OpenSSL &amp; redirssl etc</H1>
+    <B>David Bird</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20OpenSSL%20%26%20redirssl%20etc&In-Reply-To=%3C1272087660.4496.89.camel%40david-laptop%3E"
+       TITLE="[Chilli] OpenSSL &amp; redirssl etc">david at coova.com
+       </A><BR>
+    <I>Sat Apr 24 05:41:00 UTC 2010</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001316.html">[Chilli] OpenSSL &amp; redirssl etc
+</A></li>
+        <LI>Next message: <A HREF="001337.html">[Chilli] OpenSSL &amp; redirssl etc
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1317">[ date ]</a>
+              <a href="thread.html#1317">[ thread ]</a>
+              <a href="subject.html#1317">[ subject ]</a>
+              <a href="author.html#1317">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hi Tim,
+
+I don't think you want &quot;RADPROXY&quot; at all.. you would use that for 802.1x
+authentication proxy (or, more recently, if using MAC authentication
+with gear like Cisco or OmniAccess). For RadSec, yes, you do indeed need
+the sslcertfile, sslkeyfile, and sslcafile. Currently, the sslcertfile
+and sslkeyfile are also used for the uamuissl and redirssl (though,
+should probably separate as you'd eventually want different certs for
+those purposes). With the subversion code, using RadSec means that
+chilli_radsec will listen to localhost ports radiusauthport and
+radiusacctport and will connect to RadSec server radiusserver1 port 2083
+(not yet able to change the standard RadSec port). Chilli is then
+configured (by itself, internally) to use the chilli_radsec ports (on
+localhost) for it's RADIUS. 
+
+I will have to give your setup a try regarding redirssl (is that what
+you are testing below?). I recently tested it all working, though I was
+configured with --enable-chilliredir. Will also verify without it. 
+
+David
+
+
+On Fri, 2010-04-23 at 16:07 +0100, Timothy wrote:
+&gt;<i> Hi David,
+</I>&gt;<i> 
+</I>&gt;<i> I look to still be having the problem.
+</I>&gt;<i> 
+</I>&gt;<i> When running in debug &amp; connecting via http to a static file in
+</I>&gt;<i> /etc/chilli/www
+</I>&gt;<i> 
+</I>&gt;<i> redir.c: 2524: 0 (Debug) Calling redir_getstate()
+</I>&gt;<i> redir.c: 2550: 0 (Debug) Receiving HTTP Request
+</I>&gt;<i> redir.c: 1497: 0 (Debug) The path: www/test.html
+</I>&gt;<i> redir.c: 1567: 0 (Debug) Host: &lt;removed&gt;:3990
+</I>&gt;<i> redir.c: 1584: 0 (Debug) User-Agent: Mozilla/5.0 (Windows; U; Windows NT
+</I>&gt;<i> 5.1; en-GB; rv:1.9.1.8) Gecko/20100202 Firefox/3.5.8 (.NET CLR 3.5.30729)
+</I>&gt;<i> redir.c: 1550: 0 (Debug) end of http-request
+</I>&gt;<i> redir.c: 1693: 0 (Debug) Serving file test.html
+</I>&gt;<i> redir.c: 2598: 0 (Debug) Processing HTTP Request
+</I>&gt;<i> redir.c: 2318: 0 (Debug) close_exit
+</I>&gt;<i> chilli.c: 73: 0 (Debug) received 18 signal
+</I>&gt;<i> 
+</I>&gt;<i> When trying with https:// I get
+</I>&gt;<i> 
+</I>&gt;<i> redir.c: 1385: 0 (Debug) HTTP request timeout!
+</I>&gt;<i> redir.c: 1706: 0 (Debug) --&gt;&gt; Setting userurl=[<A HREF="http:///]">http:///]</A>
+</I>&gt;<i> redir.c: 2598: 0 (Debug) Processing HTTP Request
+</I>&gt;<i> redir.c: 2839: 0 (Debug) Processing received request
+</I>&gt;<i> redir.c: 3051: 0 (Debug) redir_accept: Original request
+</I>&gt;<i> redir.c: 3072: 0 (Debug) ----&gt;&gt;&gt; resetting challenge:
+</I>&gt;<i> c62d84b69bd8916fc3a536a63e7b5976
+</I>&gt;<i> redir.c: 3083: 0 (Debug) ----&gt;&gt;&gt; challenge: c62d84b69bd8916fc3a536a63e7b5976
+</I>&gt;<i> redir.c: 2318: 0 (Debug) close_exit
+</I>&gt;<i> chilli.c: 73: 0 (Debug) received 18 signal
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> Compiled with ENABLE_CHILLIPROXY ENABLE_CHILLIRADSEC ENABLE_CHILLIXML
+</I>&gt;<i> ENABLE_IEEE8021Q ENABLE_JSON ENABLE_LEAKYBUCKET ENABLE_SESSGARDEN
+</I>&gt;<i> HAVE_OPENSSL
+</I>&gt;<i> 
+</I>&gt;<i> I think there may need to be some additional items for radsec config
+</I>&gt;<i> still (remote server(s) and port(s), I might be misreading the defaults
+</I>&gt;<i> and functions file though). I can see where radsec is configured to
+</I>&gt;<i> listen on localhost. Does HS_RADPROXY=on cause coova-chilli to speak to
+</I>&gt;<i> the local proxy and then HS_RADIUS= is the remote server ?
+</I>&gt;<i> 
+</I>&gt;<i>     [ -n &quot;$HS_SSLKEYFILE&quot; -a -n &quot;$HS_SSLCERTFILE&quot; ] &amp;&amp; {
+</I>&gt;<i>         addconfig2 &quot;sslkeyfile $HS_SSLKEYFILE&quot;
+</I>&gt;<i>         addconfig2 &quot;sslcertfile $HS_SSLCERTFILE&quot;
+</I>&gt;<i>     }
+</I>&gt;<i> 
+</I>&gt;<i> Should that contain sslcafile.
+</I>&gt;<i> 
+</I>&gt;<i> Maybe I've just been looking at this too long and not thinking clearly
+</I>&gt;<i> enough
+</I>&gt;<i> 
+</I>&gt;<i> Tim
+</I>&gt;<i> 
+</I>&gt;<i> David Bird wrote:
+</I>&gt;<i> &gt; Hi Tim,
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; You are always encouraged to check against the current subversion; and
+</I>&gt;<i> &gt; to restate your problem if it persists. I'm testing various features
+</I>&gt;<i> &gt; now, including redirssl, uamuissl, and radsec, and have success. I'm
+</I>&gt;<i> &gt; currently configured with:  ./configure --enable-largelimits
+</I>&gt;<i> &gt; --enable-proxyvsa --enable-miniportal --enable-chilliredir
+</I>&gt;<i> &gt; --enable-chilliproxy --enable-binstatusfile --with-poll
+</I>&gt;<i> &gt; --enable-chilliradsec --with-openssl , btw, I took your off-line
+</I>&gt;<i> &gt; suggestion and you'll find this also in the subversion version:
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; $ chilli --help
+</I>&gt;<i> &gt; coova-chilli 1.2.3-rc1
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; ...
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; Compiled with ENABLE_BINSTATFILE ENABLE_CHILLIPROXY ENABLE_CHILLIRADSEC
+</I>&gt;<i> &gt; ENABLE_CHILLIREDIR ENABLE_CHILLIXML ENABLE_IEEE8021Q ENABLE_JSON
+</I>&gt;<i> &gt; ENABLE_LARGELIMITS ENABLE_LEAKYBUCKET ENABLE_MINIPORTAL ENABLE_PROXYVSA
+</I>&gt;<i> &gt; ENABLE_SESSGARDEN ENABLE_STATFILE HAVE_OPENSSL USING_POLL 
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; David
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; On Tue, 2010-04-20 at 13:23 +0100, Timothy wrote:
+</I>&gt;<i> &gt;   
+</I>&gt;<i> &gt;&gt; Hi,
+</I>&gt;<i> &gt;&gt;
+</I>&gt;<i> &gt;&gt; A while ago there were some issues with REDIRSSL and OpenSSL (matrix SSL
+</I>&gt;<i> &gt;&gt; worked fine)
+</I>&gt;<i> &gt;&gt; The error was ssl_error_rx_record_too_long
+</I>&gt;<i> &gt;&gt; Has anyone been able to get this working correctly with openssl (rather
+</I>&gt;<i> &gt;&gt; than matrix) or is this issue still outstanding ?
+</I>&gt;<i> &gt;&gt;
+</I>&gt;<i> &gt;&gt; I'm trying to get UAMUISSL working but I get the
+</I>&gt;<i> &gt;&gt; ssl_error_rx_record_too_long.
+</I>&gt;<i> &gt;&gt;
+</I>&gt;<i> &gt;&gt; Tim
+</I>&gt;<i> &gt;&gt; _______________________________________________
+</I>&gt;<i> &gt;&gt; Chilli mailing list
+</I>&gt;<i> &gt;&gt; <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">Chilli at coova.org</A>
+</I>&gt;<i> &gt;&gt; <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">http://lists.coova.org/cgi-bin/mailman/listinfo/chilli</A>
+</I>&gt;<i> &gt;&gt;     
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt;   
+</I>&gt;<i> 
+</I>
+
+</PRE>
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001316.html">[Chilli] OpenSSL &amp; redirssl etc
+</A></li>
+	<LI>Next message: <A HREF="001337.html">[Chilli] OpenSSL &amp; redirssl etc
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1317">[ date ]</a>
+              <a href="thread.html#1317">[ thread ]</a>
+              <a href="subject.html#1317">[ subject ]</a>
+              <a href="author.html#1317">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,120 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> macallowlocal with uamanyip doesn't work
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20macallowlocal%20with%20uamanyip%20doesn%27t%20work&In-Reply-To=%3C481CB796.1010703%40gmail.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000244.html">
+   <LINK REL="Next"  HREF="000237.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>macallowlocal with uamanyip doesn't work</H1>
+    <B>Gunther Mayer</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20macallowlocal%20with%20uamanyip%20doesn%27t%20work&In-Reply-To=%3C481CB796.1010703%40gmail.com%3E"
+       TITLE="macallowlocal with uamanyip doesn't work">gunther.mayer at googlemail.com
+       </A><BR>
+    <I>Sat May  3 19:05:58 UTC 2008</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000244.html">Messages
+</A></li>
+        <LI>Next message: <A HREF="000237.html">uamanyip patch
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#236">[ date ]</a>
+              <a href="thread.html#236">[ thread ]</a>
+              <a href="subject.html#236">[ subject ]</a>
+              <a href="author.html#236">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hi,
+
+Seeing that nobody replied to this one I started digging into the code 
+myself and found that the required routes weren't set up at all for 
+macallowlocal or even macauth cases for that matter. I whipped up a 
+patch against 1.0.11 to address this and came up with a route_add/delete 
+helper function that cb_dhcp_request (once before each return statement) 
+and cb_dhcp_disconnect (where the route deletion code sits) call. If 
+anybody is interested in that patch I'm happy to send them on.
+
+I tried to port it to svn r167 but I realised that David has already 
+done something very similar with the net_add_route/net_del_route macros. 
+However, it still doesn't work as the current place where the route 
+addition sits (dhcp_set_addrs) isn't called when macallow or macauth are 
+active. I'm gonna code this up along the lines of my 1.0.11 patch and 
+submit it if nobody objects to this.
+
+By the way, what is the reason for the
+
+#warning fix this
+    /*XXX: todo! net_delete_route(&amp;tuntap(tun)); */
+
+in tun.c? If we correctly delete routes in cb_dhcp_disconnect I don't 
+see a reason why the tun code also needs to do this - when we take down 
+the interface all static routes will go with it.
+
+Gunther
+
+Gunther Mayer wrote:
+&gt;<i> Hi again,
+</I>&gt;<i>
+</I>&gt;<i> I realised today that static ip (misconfigured) clients that are 
+</I>&gt;<i> supposed to be given access with uamanyip don't have ANY sort of 
+</I>&gt;<i> connection when they are additionally macallowed with the 
+</I>&gt;<i> macallowlocal option. I noticed this problem with both 1.0.11 and 
+</I>&gt;<i> latest svn and neither a debug nor a debugfacility 255 would give me 
+</I>&gt;<i> any clues to why this wouldn't work.
+</I>&gt;<i>
+</I>&gt;<i> To reproduce:
+</I>&gt;<i>
+</I>&gt;<i>    1. Pick a hotspot client, configure its static IP with totally
+</I>&gt;<i>       random ip settings (static ip, gateway within subnet and any
+</I>&gt;<i>       usable dns, preferably with uamanydns)
+</I>&gt;<i>    2. Turn on uamanyip on the chilli box with suitable statip subnet
+</I>&gt;<i>       and restart chilli
+</I>&gt;<i>    3. Back on the client you'll see that it'll get redirected to the
+</I>&gt;<i>       portal page as expected and can even ping, ssh or whatever the
+</I>&gt;<i>       chilli box when using its dhcplisten ip address
+</I>&gt;<i>    4. Now add &quot;macallowed &lt;client mac address&gt;&quot; together with the
+</I>&gt;<i>       &quot;macallowlocal&quot; option into chilli.conf and restart chilli
+</I>&gt;<i>    5. The client now has no access whatsoever, no Internet access,
+</I>&gt;<i>       cannot ping the chilli box, nothing. A tcpdump on the chilli box
+</I>&gt;<i>       shows the packets coming in from the client but no response ever
+</I>&gt;<i>       coming in
+</I>&gt;<i>
+</I>&gt;<i> While I'm pretty sure this time there aren't any dodgy firewall rules 
+</I>&gt;<i> messing up my setup I'd like somebody to confirm this problem and then 
+</I>&gt;<i> perhaps fix it?
+</I>&gt;<i>
+</I>&gt;<i> Gunther
+</I>&gt;<i>
+</I>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: &lt;<A HREF="http://lists.coova.org/pipermail/chilli/attachments/20080503/a33778ca/attachment.htm">http://lists.coova.org/pipermail/chilli/attachments/20080503/a33778ca/attachment.htm</A>&gt;
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000244.html">Messages
+</A></li>
+	<LI>Next message: <A HREF="000237.html">uamanyip patch
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#236">[ date ]</a>
+              <a href="thread.html#236">[ thread ]</a>
+              <a href="subject.html#236">[ subject ]</a>
+              <a href="author.html#236">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

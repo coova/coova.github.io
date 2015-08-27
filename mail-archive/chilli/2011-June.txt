@@ -1,0 +1,1622 @@
+From peter at endian.com  Fri Jun  3 10:29:00 2011
+From: peter at endian.com (Peter Warasin)
+Date: Fri, 03 Jun 2011 12:29:00 +0200
+Subject: [Chilli] [PATCH] do not set bucket*size to BUCKET_SIZE_MIN if
+ bandwithmax* is disabled
+In-Reply-To: <1305707159.5281.66.camel@david-laptop>
+References: <4DD2903E.8080803@endian.com>
+	<1305707159.5281.66.camel@david-laptop>
+Message-ID: <4DE8B76C.7020105@endian.com>
+
+Hi David
+
+Sorry for the delay.
+
+On 18/05/11 10:25, David Bird wrote:
+> But, there is:
+>     if (!conn->s_state.bucketupsize) {
+>       leaky_bucket_init(conn);
+>     } 
+> which if we allow bucketupsize to remain zero will keep being called. 
+
+yeah.
+probably we should have some variable which stores if
+leaky_bucket_init() was already called, or set it to -1 instead of 0 if
+limitation should be disabled.
+
+right now leaky_bucket_init() will be called all the time when
+bucketupsize is 0 (if disabled), which is not efficient, but would be ok
+from view of functionality.
+
+Problem however is, that it will be set to BUCKET_SIZE_MIN when in fact
+you chose to have it disabled (0). That limits to a small bandwidth when
+you selected to have no limitation at all.
+
+What happened to me is setting a download bandwidth limit and no upload
+bandwidth limit, and in the end i had a correct download limitation but
+a wrong (instead of no) upload limitation of BUCKET_SIZE_MIN.
+
+
+peter
+
+
+
+-- 
+:: e n d i a n
+:: open source - open minds
+
+:: peter warasin
+:: http://www.endian.com   :: peter at endian.com
+
+From peter at endian.com  Fri Jun  3 10:39:45 2011
+From: peter at endian.com (Peter Warasin)
+Date: Fri, 03 Jun 2011 12:39:45 +0200
+Subject: [Chilli] stresstest coova chilli
+Message-ID: <4DE8B9F1.5040701@endian.com>
+
+hi guys
+
+Is there someone which already did stress test coova chilli?
+
+We currently face an odd problem, where under unknown random
+circumstances a user which is successfully logged out in chilli remains
+online within radius. This is quite impossible to reproduce and
+therefore I would stress test chilli.
+
+However the setup is way to complex to simulate hundreds/thousands of
+users. What I would like to try now is to split chilli in subproblems
+making it possible to enable/disable them at will and then test the
+subproblems.
+
+Anyone already did such a thing? Or does someone have suggestions how to
+simulate many users?
+
+Comments would be much appreciated
+
+peter
+
+-- 
+:: e n d i a n
+:: open source - open minds
+
+:: peter warasin
+:: http://www.endian.com   :: peter at endian.com
+
+From jmeiring at amobia.com  Fri Jun  3 13:56:09 2011
+From: jmeiring at amobia.com (Johan Meiring)
+Date: Fri, 03 Jun 2011 15:56:09 +0200
+Subject: [Chilli] stresstest coova chilli
+In-Reply-To: <4DE8B9F1.5040701@endian.com>
+References: <4DE8B9F1.5040701@endian.com>
+Message-ID: <4DE8E7F9.6010503@amobia.com>
+
+On 2011/06/03 12:39 PM, Peter Warasin wrote:
+> hi guys
+>
+> Is there someone which already did stress test coova chilli?
+>
+> We currently face an odd problem, where under unknown random
+> circumstances a user which is successfully logged out in chilli remains
+> online within radius. This is quite impossible to reproduce and
+> therefore I would stress test chilli.
+>
+> However the setup is way to complex to simulate hundreds/thousands of
+> users. What I would like to try now is to split chilli in subproblems
+> making it possible to enable/disable them at will and then test the
+> subproblems.
+>
+> Anyone already did such a thing? Or does someone have suggestions how to
+> simulate many users?
+>
+
+This is a radius problem and not coova chilli.
+
+This is quite normal.
+Radius packets are UDP and can easily get lost (especially with lots of clients)
+
+You need to make your radius server able to handle lost accounting packets.
+
+e.g.
+Lets say your interim accountint update is set to 5 minutes.
+Every time you receive an accounting packet, update a "last seen" field.
+
+Run a cron job every 5 minutes that "closes" sessions (sets accounting stop 
+time to something other than null) where the "last seen" field is older than 
+15 minutes.
+
+Hope this makes sense.
+
+Cheers,
+
+-- 
+
+
+Johan Meiring
+Amobia Communications
+Tel: (0861) AMOBIA / (0861) 266242
+Fax: (0861) AMOFAX / (0861) 266329
+
+
+From wichert at wiggy.net  Fri Jun  3 14:13:49 2011
+From: wichert at wiggy.net (Wichert Akkerman)
+Date: Fri, 03 Jun 2011 16:13:49 +0200
+Subject: [Chilli] stresstest coova chilli
+In-Reply-To: <4DE8E7F9.6010503@amobia.com>
+References: <4DE8B9F1.5040701@endian.com> <4DE8E7F9.6010503@amobia.com>
+Message-ID: <4DE8EC1D.1040907@wiggy.net>
+
+On 06/03/2011 03:56 PM, Johan Meiring wrote:
+> This is a radius problem and not coova chilli.
+>
+> This is quite normal.
+> Radius packets are UDP and can easily get lost (especially with lots 
+> of clients)
+
+Which is why a NAS such as RADIUS must resend the accounting packets 
+unless they get an ack from the radius server. RADIUS is not a lossy 
+protocol.
+
+> Run a cron job every 5 minutes that "closes" sessions (sets accounting 
+> stop time to something other than null) where the "last seen" field is 
+> older than 15 minutes.
+
+chilli must send an AccountingStop RADIUS packet to the NAS, which it 
+must repeat until the NAS confirms receipt of the packet with an 
+Accounting-Response reply.
+
+
+Wichert.
+
+
+From peter at endian.com  Fri Jun  3 16:17:15 2011
+From: peter at endian.com (Peter Warasin)
+Date: Fri, 03 Jun 2011 18:17:15 +0200
+Subject: [Chilli] stresstest coova chilli
+In-Reply-To: <4DE8E7F9.6010503@amobia.com>
+References: <4DE8B9F1.5040701@endian.com> <4DE8E7F9.6010503@amobia.com>
+Message-ID: <4DE9090B.4090208@endian.com>
+
+Hi guys
+
+On 03/06/11 15:56, Johan Meiring wrote:
+> This is a radius problem and not coova chilli.
+> This is quite normal.
+> Radius packets are UDP and can easily get lost (especially with lots of
+> clients)
+> 
+> You need to make your radius server able to handle lost accounting packets.
+
+ah this sounds reasonable. thank you!
+I first also thought about maybe an issue with our local radius, but
+then we faced this also with different external radius servers.
+
+Is radius really that unreliable?? This sounds dreadful to me. Or did we
+simply configure it wrong?
+
+
+> Lets say your interim accountint update is set to 5 minutes.
+> Every time you receive an accounting packet, update a "last seen" field.
+> 
+> Run a cron job every 5 minutes that "closes" sessions (sets accounting
+> stop time to something other than null) where the "last seen" field is
+> older than 15 minutes.
+> 
+> Hope this makes sense.
+
+Well, we do this so right now as a workaround (cron job). But i would
+not consider this "the fix". Shouldn't chilli make sure accounting data
+is correctly stored?
+I'm a little perplex now :)
+
+Well, thank you for your help! You save me a lot of time by not
+searching on the wrong side.
+
+
+peter
+
+-- 
+:: e n d i a n
+:: open source - open minds
+
+:: peter warasin
+:: http://www.endian.com   :: peter at endian.com
+
+From peter at endian.com  Fri Jun  3 16:21:32 2011
+From: peter at endian.com (Peter Warasin)
+Date: Fri, 03 Jun 2011 18:21:32 +0200
+Subject: [Chilli] stresstest coova chilli
+In-Reply-To: <4DE8EC1D.1040907@wiggy.net>
+References: <4DE8B9F1.5040701@endian.com> <4DE8E7F9.6010503@amobia.com>
+	<4DE8EC1D.1040907@wiggy.net>
+Message-ID: <4DE90A0C.1080209@endian.com>
+
+Hi Wichert
+
+On 03/06/11 16:13, Wichert Akkerman wrote:
+>> Radius packets are UDP and can easily get lost (especially with lots
+>> of clients)
+> Which is why a NAS such as RADIUS must resend the accounting packets
+> unless they get an ack from the radius server. RADIUS is not a lossy
+> protocol.
+
+Well. I would expect that to be honest :) But does it really do it?
+
+
+> chilli must send an AccountingStop RADIUS packet to the NAS, which it
+> must repeat until the NAS confirms receipt of the packet with an
+> Accounting-Response reply.
+
+yeah. do you thing this is missing in implementation or is this a
+configuration issue?
+
+thank you for your thoughts
+
+peter
+
+-- 
+:: e n d i a n
+:: open source - open minds
+
+:: peter warasin
+:: http://www.endian.com   :: peter at endian.com
+
+From wichert at wiggy.net  Fri Jun  3 18:02:22 2011
+From: wichert at wiggy.net (Wichert Akkerman)
+Date: Fri, 03 Jun 2011 20:02:22 +0200
+Subject: [Chilli] stresstest coova chilli
+In-Reply-To: <4DE90A0C.1080209@endian.com>
+References: <4DE8B9F1.5040701@endian.com>
+	<4DE8E7F9.6010503@amobia.com>	<4DE8EC1D.1040907@wiggy.net>
+	<4DE90A0C.1080209@endian.com>
+Message-ID: <4DE921AE.6010705@wiggy.net>
+
+On 06/03/2011 06:21 PM, Peter Warasin wrote:
+> Hi Wichert
+>
+> On 03/06/11 16:13, Wichert Akkerman wrote:
+>>> Radius packets are UDP and can easily get lost (especially with lots
+>>> of clients)
+>> Which is why a NAS such as RADIUS must resend the accounting packets
+>> unless they get an ack from the radius server. RADIUS is not a lossy
+>> protocol.
+> Well. I would expect that to be honest :) But does it really do it?
+
+I haven't verified. One thing a quick grep suggests is that coova either 
+does not do resends,
+or if it does it it does not set the Acct-Delay-Time.
+
+
+From david at coova.com  Sat Jun  4 06:19:06 2011
+From: david at coova.com (David Bird)
+Date: Sat, 4 Jun 2011 08:19:06 +0200
+Subject: [Chilli] stresstest coova chilli
+In-Reply-To: <4DE921AE.6010705@wiggy.net>
+References: <4DE8B9F1.5040701@endian.com> <4DE8E7F9.6010503@amobia.com>
+	<4DE8EC1D.1040907@wiggy.net> <4DE90A0C.1080209@endian.com>
+	<4DE921AE.6010705@wiggy.net>
+Message-ID: <99C9A865-4345-4674-B5C4-B179FD208B43@coova.com>
+
+Chilli has a general RADIUS queue with retransmissions. The primary and secondary RADIUS are both tried, but there is a limited number of retries. 
+
+On Jun 3, 2011, at 8:02 PM, Wichert Akkerman <wichert at wiggy.net> wrote:
+
+> On 06/03/2011 06:21 PM, Peter Warasin wrote:
+>> Hi Wichert
+>> 
+>> On 03/06/11 16:13, Wichert Akkerman wrote:
+>>>> Radius packets are UDP and can easily get lost (especially with lots
+>>>> of clients)
+>>> Which is why a NAS such as RADIUS must resend the accounting packets
+>>> unless they get an ack from the radius server. RADIUS is not a lossy
+>>> protocol.
+>> Well. I would expect that to be honest :) But does it really do it?
+> 
+> I haven't verified. One thing a quick grep suggests is that coova either does not do resends,
+> or if it does it it does not set the Acct-Delay-Time.
+> 
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+From wichert at wiggy.net  Sat Jun  4 07:54:42 2011
+From: wichert at wiggy.net (Wichert Akkerman)
+Date: Sat, 04 Jun 2011 09:54:42 +0200
+Subject: [Chilli] stresstest coova chilli
+In-Reply-To: <99C9A865-4345-4674-B5C4-B179FD208B43@coova.com>
+References: <4DE8B9F1.5040701@endian.com> <4DE8E7F9.6010503@amobia.com>
+	<4DE8EC1D.1040907@wiggy.net> <4DE90A0C.1080209@endian.com>
+	<4DE921AE.6010705@wiggy.net>
+	<99C9A865-4345-4674-B5C4-B179FD208B43@coova.com>
+Message-ID: <4DE9E4C2.7070701@wiggy.net>
+
+On 06/04/2011 08:19 AM, David Bird wrote:
+> Chilli has a general RADIUS queue with retransmissions. The primary and secondary RADIUS are both tried, but there is a limited number of retries.
+
+Did I see correctly chilli does not update Acct-Delay-Time when it 
+resends an AccountingRequest packet? A grep revealed that the there is a 
+#define for the code, but it was not used anywhere.
+
+Wichert.
+
+From fmacedo at cpd.ufrgs.br  Mon Jun  6 20:36:32 2011
+From: fmacedo at cpd.ufrgs.br (Fernando Macedo)
+Date: Mon, 06 Jun 2011 17:36:32 -0300
+Subject: [Chilli] Proxying radius packets to Chilli
+Message-ID: <4DED3A50.4000005@cpd.ufrgs.br>
+
+When a freeradius proxies packets to Coova Chilli, this error occurs on 
+Chilli:
+
+"chilli.c: 2705: Framed IP address or Calling Station ID is missing from 
+radius request"
+
+What can I do to Coova Chilli accept freeradius proxied packets?
+
+Cheers,
+Fernando
+
+From peter at endian.com  Tue Jun  7 08:02:03 2011
+From: peter at endian.com (Peter Warasin)
+Date: Tue, 07 Jun 2011 10:02:03 +0200
+Subject: [Chilli] stresstest coova chilli
+In-Reply-To: <99C9A865-4345-4674-B5C4-B179FD208B43@coova.com>
+References: <4DE8B9F1.5040701@endian.com>
+	<4DE8E7F9.6010503@amobia.com>	<4DE8EC1D.1040907@wiggy.net>
+	<4DE90A0C.1080209@endian.com>	<4DE921AE.6010705@wiggy.net>
+	<99C9A865-4345-4674-B5C4-B179FD208B43@coova.com>
+Message-ID: <4DEDDAFB.9070809@endian.com>
+
+Hi guys
+
+On 04/06/11 08:19, David Bird wrote:
+> Chilli has a general RADIUS queue with retransmissions. The primary and secondary RADIUS are both tried, but there is a limited number of retries. 
+
+Thank you for your comments
+
+Now I doubt that it might be a radius UDP transmission issue because
+this happens now on a system where radius is on the same machine like
+chilli, so traffic goes through localhost.
+
+I did a tcpdump of the radius traffic and noticed that exactly at that
+time when my workaround-code (which runs every 5 seconds) fixes the not
+logged out users, I see no Accounting-Stop packet, but an Interim-Update
+packet instead.
+That packet has the users mac address instead of his username in
+User-Name field.
+
+Anyone a clue what happens here?
+
+Can it be that the interim-update by chance happens at the same time as
+the logout and thus stop packet is not sent somehow?
+
+Thank you in advance
+
+kind regards,
+peter
+
+
+-- 
+:: e n d i a n
+:: open source - open minds
+
+:: peter warasin
+:: http://www.endian.com   :: peter at endian.com
+
+From timwhite88 at gmail.com  Mon Jun 13 09:54:54 2011
+From: timwhite88 at gmail.com (Tim White)
+Date: Mon, 13 Jun 2011 19:54:54 +1000
+Subject: [Chilli] Exclude up/down traffic from "quota" if in walled garden
+Message-ID: <4DF5DE6E.6030004@gmail.com>
+
+I wrote a patch a long time ago to exclude traffic to a from the local 
+coovachilli server from the "quota" counting. It basically matches for 
+port 80 on the uamlisten at the same time that we already check for 
+uamport and uamuiport. My reasoning was that I wanted to use a different 
+webserver for the captive portal, that also hosts a local mirror.  It 
+can be seen at 
+http://grase.bzr.sf.net/bzr/grase/grase-coova-chilli/annotate/head%3A/debian/patches/ignore_localhttp.diff
+
+What I'm hoping to try and do is extend this so that we can exclude all 
+traffic from the walled garden hosts so that I can allow access to some 
+local mirrors that are on the other side of the coovachilli machine, 
+without it counting against the quota.
+
+Currently both my modifications are in the cb_tun_ind function. I 
+understand that my modifications would need to be moved into it's own 
+area (as currently the second one actually forces the packet through the 
+tun/tap interface due to me piggybacking on other code.
+
+If I understand the code correctly, the functions I need to bypass are 
+chilli_acct_fromsub and chilli_acct_tosub. Both those functions only 
+modify the accounting data, and don't modify the packet path. Please 
+correct me if I'm wrong.
+
+So for example, before the chilli_acct_fromsub call I'd put an if 
+statement to call a funky function to check if the daddr is in the uam 
+list and if so, then call the tun_encaps function otherwise allow the 
+chilli_acct_fromsub to call.
+Can someone point me to where I can get access to the list of 
+uamdomains/address, and functions that already compare to the list? C 
+hasn't been my main language for a good number of years and I'm having 
+trouble finding things in the rather large chilli.c file.
+
+Also, if I'm trying to put these functions in the wrong area, i.e. me 
+bypassing chilli_acct_fromsub, and it's going to cause serious problems 
+somewhere, please tell me!
+
+I hope this won't work out too difficult, and that I can code it well 
+enough that it can be come a feature.
+
+Thanks
+
+Tim
+
+From timwhite88 at gmail.com  Tue Jun 14 00:43:37 2011
+From: timwhite88 at gmail.com (Tim White)
+Date: Tue, 14 Jun 2011 10:43:37 +1000
+Subject: [Chilli] Period "Reauthorisation"
+Message-ID: <4DF6AEB9.7040307@gmail.com>
+
+I'm wondering if there has been any discussion about implementing period 
+reauthorisation in Coova Chilli?
+Basically, I'm hoping to implement "recurring limits" using sqlcounter. 
+However, this becomes more difficult with sessions that go over the time 
+period used for recurrance.
+
+For example, data limits. If you have an hourly data limit of 50Mb, the 
+only attribute you can use to tell Coova this is the 
+ChilliSpot-Max-Total-Octets. Ideally what we need is for Chilli to 
+periodically reauthorise the sessions so that new attributes can be sent 
+back.
+
+My guess is that this could cause lots of problems with leaky_bucket and 
+other counters, so I was thinking that it's probably best implemented by 
+ending the current session, and starting a new session, all 
+transparently to the user.
+ From my understanding of RADIUS, it would need a whole new 
+authentication, which would require saving the users password. And, if 
+the user uses CHAP (which I believe comes from RADIUS and not 
+CoovaChilli) then we are dead in the water.
+
+Can someone with a better understanding of RADIUS and CoovaChilli let me 
+know if this is possible in the world of RADIUS, or totally impossible?
+
+I think I'm beginning to understand why ISP's generally use a monthly 
+limit! :-P
+
+Tim
+
+From royce.ml at inomial.com  Tue Jun 14 01:09:07 2011
+From: royce.ml at inomial.com (Royce Ausburn)
+Date: Tue, 14 Jun 2011 11:09:07 +1000
+Subject: [Chilli] Period "Reauthorisation"
+In-Reply-To: <4DF6AEB9.7040307@gmail.com>
+References: <4DF6AEB9.7040307@gmail.com>
+Message-ID: <A3666E54-D352-4518-9225-584E2336072E@inomial.com>
+
+You could look at doing this from your RADIUS server's end rather than from within chilli.  Using accounting updates chilli already sends and initiating a RADIUS CoA when you need to kick/wall garden.
+
+HTH
+
+--Royce
+
+On 14/06/2011, at 10:43 AM, Tim White wrote:
+
+> I'm wondering if there has been any discussion about implementing period reauthorisation in Coova Chilli?
+> Basically, I'm hoping to implement "recurring limits" using sqlcounter. However, this becomes more difficult with sessions that go over the time period used for recurrance.
+> 
+> For example, data limits. If you have an hourly data limit of 50Mb, the only attribute you can use to tell Coova this is the ChilliSpot-Max-Total-Octets. Ideally what we need is for Chilli to periodically reauthorise the sessions so that new attributes can be sent back.
+> 
+> My guess is that this could cause lots of problems with leaky_bucket and other counters, so I was thinking that it's probably best implemented by ending the current session, and starting a new session, all transparently to the user.
+> From my understanding of RADIUS, it would need a whole new authentication, which would require saving the users password. And, if the user uses CHAP (which I believe comes from RADIUS and not CoovaChilli) then we are dead in the water.
+> 
+> Can someone with a better understanding of RADIUS and CoovaChilli let me know if this is possible in the world of RADIUS, or totally impossible?
+> 
+> I think I'm beginning to understand why ISP's generally use a monthly limit! :-P
+> 
+> Tim
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+
+From timwhite88 at gmail.com  Tue Jun 14 02:03:45 2011
+From: timwhite88 at gmail.com (Tim White)
+Date: Tue, 14 Jun 2011 12:03:45 +1000
+Subject: [Chilli] Period "Reauthorisation"
+In-Reply-To: <A3666E54-D352-4518-9225-584E2336072E@inomial.com>
+References: <4DF6AEB9.7040307@gmail.com>
+	<A3666E54-D352-4518-9225-584E2336072E@inomial.com>
+Message-ID: <4DF6C181.8030705@gmail.com>
+
+Thanks Royce. I wasn't aware of CoA.
+If I understand this correctly, with accounting updates chilli sends a 
+CoA packet (if coaport is defined). However, some googleing also shows 
+acctupdate. I'm using FreeRadius, and some of the documentation in the 
+old Coova Wiki seems to be gone.
+Any idea which is the better one to do? CoA or acctupdate? Do they both 
+work for updating the remaining data/time or is CoA just for disconnects?
+Normally I can find most things with Google, however this topic is 
+eluding me. Having the right search terms is helping now, but there 
+seems to be a lack of documentation.
+
+Thanks
+
+Tim
+
+On 14/06/11 11:09, Royce Ausburn wrote:
+> You could look at doing this from your RADIUS server's end rather than from within chilli.  Using accounting updates chilli already sends and initiating a RADIUS CoA when you need to kick/wall garden.
+>
+> HTH
+>
+> --Royce
+>
+> On 14/06/2011, at 10:43 AM, Tim White wrote:
+>
+>> I'm wondering if there has been any discussion about implementing period reauthorisation in Coova Chilli?
+>> Basically, I'm hoping to implement "recurring limits" using sqlcounter. However, this becomes more difficult with sessions that go over the time period used for recurrance.
+>>
+>> For example, data limits. If you have an hourly data limit of 50Mb, the only attribute you can use to tell Coova this is the ChilliSpot-Max-Total-Octets. Ideally what we need is for Chilli to periodically reauthorise the sessions so that new attributes can be sent back.
+>>
+>> My guess is that this could cause lots of problems with leaky_bucket and other counters, so I was thinking that it's probably best implemented by ending the current session, and starting a new session, all transparently to the user.
+>>  From my understanding of RADIUS, it would need a whole new authentication, which would require saving the users password. And, if the user uses CHAP (which I believe comes from RADIUS and not CoovaChilli) then we are dead in the water.
+>>
+>> Can someone with a better understanding of RADIUS and CoovaChilli let me know if this is possible in the world of RADIUS, or totally impossible?
+>>
+>> I think I'm beginning to understand why ISP's generally use a monthly limit! :-P
+>>
+>> Tim
+>> _______________________________________________
+>> Chilli mailing list
+>> Chilli at coova.org
+>> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+
+From royce.ml at inomial.com  Tue Jun 14 03:47:06 2011
+From: royce.ml at inomial.com (Royce Ausburn)
+Date: Tue, 14 Jun 2011 13:47:06 +1000
+Subject: [Chilli] Period "Reauthorisation"
+In-Reply-To: <4DF6C181.8030705@gmail.com>
+References: <4DF6AEB9.7040307@gmail.com>
+	<A3666E54-D352-4518-9225-584E2336072E@inomial.com>
+	<4DF6C181.8030705@gmail.com>
+Message-ID: <86E050EB-A011-4071-B333-DEC64C29F1C7@inomial.com>
+
+Hi Tim,
+
+Turning on acctupdate will have Chilli send accounting updates periodically to your FreeRADIUS server.  Enabling CoA on the Chilli end will have Chilli listen on a port for CoA and Disconnect Messages.  Your FreeRADIUS server may at any time decide to issue a CoA packet to Chilli, updating the session with new attributes.  
+
+So you'd stop using Chilli to manage the session limits and instead use accounting updates to keep your FreeRADIUS server up to date on how much data has been used.  Your FreeRADIUS server may then calculate whether their over their limit and use CoA or a Disconnect Message to take action.  If you can get this working with FreeRADIUS you'll have quite a bit of flexibility when your next difficult requirement comes up ;)
+
+I have very little experience with FreeRADIUS - I'm not sure how you'd do it.  My company has its own RADIUS server so this sort of thing is quite easy for us... Hopefully it's easy with FreeRADIUS ;)
+
+Does that help?
+
+--Royce
+
+Chief Engineer @ Inomial
+03 9663 3554
+0417 954 640
+
+
+
+On 14/06/2011, at 12:03 PM, Tim White wrote:
+
+> Thanks Royce. I wasn't aware of CoA.
+> If I understand this correctly, with accounting updates chilli sends a CoA packet (if coaport is defined). However, some googleing also shows acctupdate. I'm using FreeRadius, and some of the documentation in the old Coova Wiki seems to be gone.
+> Any idea which is the better one to do? CoA or acctupdate? Do they both work for updating the remaining data/time or is CoA just for disconnects?
+> Normally I can find most things with Google, however this topic is eluding me. Having the right search terms is helping now, but there seems to be a lack of documentation.
+> 
+> Thanks
+> 
+> Tim
+> 
+> On 14/06/11 11:09, Royce Ausburn wrote:
+>> You could look at doing this from your RADIUS server's end rather than from within chilli.  Using accounting updates chilli already sends and initiating a RADIUS CoA when you need to kick/wall garden.
+>> 
+>> HTH
+>> 
+>> --Royce
+>> 
+>> On 14/06/2011, at 10:43 AM, Tim White wrote:
+>> 
+>>> I'm wondering if there has been any discussion about implementing period reauthorisation in Coova Chilli?
+>>> Basically, I'm hoping to implement "recurring limits" using sqlcounter. However, this becomes more difficult with sessions that go over the time period used for recurrance.
+>>> 
+>>> For example, data limits. If you have an hourly data limit of 50Mb, the only attribute you can use to tell Coova this is the ChilliSpot-Max-Total-Octets. Ideally what we need is for Chilli to periodically reauthorise the sessions so that new attributes can be sent back.
+>>> 
+>>> My guess is that this could cause lots of problems with leaky_bucket and other counters, so I was thinking that it's probably best implemented by ending the current session, and starting a new session, all transparently to the user.
+>>> From my understanding of RADIUS, it would need a whole new authentication, which would require saving the users password. And, if the user uses CHAP (which I believe comes from RADIUS and not CoovaChilli) then we are dead in the water.
+>>> 
+>>> Can someone with a better understanding of RADIUS and CoovaChilli let me know if this is possible in the world of RADIUS, or totally impossible?
+>>> 
+>>> I think I'm beginning to understand why ISP's generally use a monthly limit! :-P
+>>> 
+>>> Tim
+>>> _______________________________________________
+>>> Chilli mailing list
+>>> Chilli at coova.org
+>>> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+> 
+
+
+From david at coova.com  Tue Jun 14 04:22:16 2011
+From: david at coova.com (David Bird)
+Date: Tue, 14 Jun 2011 06:22:16 +0200
+Subject: [Chilli] Period "Reauthorisation"
+In-Reply-To: <86E050EB-A011-4071-B333-DEC64C29F1C7@inomial.com>
+References: <4DF6AEB9.7040307@gmail.com>
+	<A3666E54-D352-4518-9225-584E2336072E@inomial.com>
+	<4DF6C181.8030705@gmail.com>
+	<86E050EB-A011-4071-B333-DEC64C29F1C7@inomial.com>
+Message-ID: <8EA67C8E-A4F7-4688-B2BD-96C2E2B280BF@coova.com>
+
+Actually, the acctupdate option means that accounting responses from the radius server may have session parameter options like bandwidth and time limits. In a way, it is the poor man's CoA which is useful for when you do not have a direct route back to the router to use CoA. 
+
+--
+  David Bird
+  Coova Technologies, LLC
+
+On Jun 14, 2011, at 5:47 AM, Royce Ausburn <royce.ml at inomial.com> wrote:
+
+> Hi Tim,
+> 
+> Turning on acctupdate will have Chilli send accounting updates periodically to your FreeRADIUS server.  Enabling CoA on the Chilli end will have Chilli listen on a port for CoA and Disconnect Messages.  Your FreeRADIUS server may at any time decide to issue a CoA packet to Chilli, updating the session with new attributes.  
+> 
+> So you'd stop using Chilli to manage the session limits and instead use accounting updates to keep your FreeRADIUS server up to date on how much data has been used.  Your FreeRADIUS server may then calculate whether their over their limit and use CoA or a Disconnect Message to take action.  If you can get this working with FreeRADIUS you'll have quite a bit of flexibility when your next difficult requirement comes up ;)
+> 
+> I have very little experience with FreeRADIUS - I'm not sure how you'd do it.  My company has its own RADIUS server so this sort of thing is quite easy for us... Hopefully it's easy with FreeRADIUS ;)
+> 
+> Does that help?
+> 
+> --Royce
+> 
+> Chief Engineer @ Inomial
+> 03 9663 3554
+> 0417 954 640
+> 
+> 
+> 
+> On 14/06/2011, at 12:03 PM, Tim White wrote:
+> 
+>> Thanks Royce. I wasn't aware of CoA.
+>> If I understand this correctly, with accounting updates chilli sends a CoA packet (if coaport is defined). However, some googleing also shows acctupdate. I'm using FreeRadius, and some of the documentation in the old Coova Wiki seems to be gone.
+>> Any idea which is the better one to do? CoA or acctupdate? Do they both work for updating the remaining data/time or is CoA just for disconnects?
+>> Normally I can find most things with Google, however this topic is eluding me. Having the right search terms is helping now, but there seems to be a lack of documentation.
+>> 
+>> Thanks
+>> 
+>> Tim
+>> 
+>> On 14/06/11 11:09, Royce Ausburn wrote:
+>>> You could look at doing this from your RADIUS server's end rather than from within chilli.  Using accounting updates chilli already sends and initiating a RADIUS CoA when you need to kick/wall garden.
+>>> 
+>>> HTH
+>>> 
+>>> --Royce
+>>> 
+>>> On 14/06/2011, at 10:43 AM, Tim White wrote:
+>>> 
+>>>> I'm wondering if there has been any discussion about implementing period reauthorisation in Coova Chilli?
+>>>> Basically, I'm hoping to implement "recurring limits" using sqlcounter. However, this becomes more difficult with sessions that go over the time period used for recurrance.
+>>>> 
+>>>> For example, data limits. If you have an hourly data limit of 50Mb, the only attribute you can use to tell Coova this is the ChilliSpot-Max-Total-Octets. Ideally what we need is for Chilli to periodically reauthorise the sessions so that new attributes can be sent back.
+>>>> 
+>>>> My guess is that this could cause lots of problems with leaky_bucket and other counters, so I was thinking that it's probably best implemented by ending the current session, and starting a new session, all transparently to the user.
+>>>> From my understanding of RADIUS, it would need a whole new authentication, which would require saving the users password. And, if the user uses CHAP (which I believe comes from RADIUS and not CoovaChilli) then we are dead in the water.
+>>>> 
+>>>> Can someone with a better understanding of RADIUS and CoovaChilli let me know if this is possible in the world of RADIUS, or totally impossible?
+>>>> 
+>>>> I think I'm beginning to understand why ISP's generally use a monthly limit! :-P
+>>>> 
+>>>> Tim
+>>>> _______________________________________________
+>>>> Chilli mailing list
+>>>> Chilli at coova.org
+>>>> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>> 
+> 
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+From david at coova.com  Tue Jun 14 04:22:54 2011
+From: david at coova.com (David Bird)
+Date: Tue, 14 Jun 2011 06:22:54 +0200
+Subject: [Chilli] Exclude up/down traffic from "quota" if in walled
+	garden
+In-Reply-To: <4DF5DE6E.6030004@gmail.com>
+References: <4DF5DE6E.6030004@gmail.com>
+Message-ID: <DB6F5BC5-D768-4477-BAE9-7576DFC622AB@coova.com>
+
+Look in the garden.c file for the walled garden routines. From what you explained, I think you are on the right track. 
+
+--
+  David Bird
+  Coova Technologies, LLC
+
+On Jun 13, 2011, at 11:54 AM, Tim White <timwhite88 at gmail.com> wrote:
+
+> I wrote a patch a long time ago to exclude traffic to a from the local coovachilli server from the "quota" counting. It basically matches for port 80 on the uamlisten at the same time that we already check for uamport and uamuiport. My reasoning was that I wanted to use a different webserver for the captive portal, that also hosts a local mirror.  It can be seen at http://grase.bzr.sf.net/bzr/grase/grase-coova-chilli/annotate/head%3A/debian/patches/ignore_localhttp.diff
+> 
+> What I'm hoping to try and do is extend this so that we can exclude all traffic from the walled garden hosts so that I can allow access to some local mirrors that are on the other side of the coovachilli machine, without it counting against the quota.
+> 
+> Currently both my modifications are in the cb_tun_ind function. I understand that my modifications would need to be moved into it's own area (as currently the second one actually forces the packet through the tun/tap interface due to me piggybacking on other code.
+> 
+> If I understand the code correctly, the functions I need to bypass are chilli_acct_fromsub and chilli_acct_tosub. Both those functions only modify the accounting data, and don't modify the packet path. Please correct me if I'm wrong.
+> 
+> So for example, before the chilli_acct_fromsub call I'd put an if statement to call a funky function to check if the daddr is in the uam list and if so, then call the tun_encaps function otherwise allow the chilli_acct_fromsub to call.
+> Can someone point me to where I can get access to the list of uamdomains/address, and functions that already compare to the list? C hasn't been my main language for a good number of years and I'm having trouble finding things in the rather large chilli.c file.
+> 
+> Also, if I'm trying to put these functions in the wrong area, i.e. me bypassing chilli_acct_fromsub, and it's going to cause serious problems somewhere, please tell me!
+> 
+> I hope this won't work out too difficult, and that I can code it well enough that it can be come a feature.
+> 
+> Thanks
+> 
+> Tim
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+From royce.ml at inomial.com  Tue Jun 14 04:58:10 2011
+From: royce.ml at inomial.com (Royce Ausburn)
+Date: Tue, 14 Jun 2011 14:58:10 +1000
+Subject: [Chilli] Period "Reauthorisation"
+In-Reply-To: <8EA67C8E-A4F7-4688-B2BD-96C2E2B280BF@coova.com>
+References: <4DF6AEB9.7040307@gmail.com>
+	<A3666E54-D352-4518-9225-584E2336072E@inomial.com>
+	<4DF6C181.8030705@gmail.com>
+	<86E050EB-A011-4071-B333-DEC64C29F1C7@inomial.com>
+	<8EA67C8E-A4F7-4688-B2BD-96C2E2B280BF@coova.com>
+Message-ID: <721E8368-332D-4063-A0FF-EC2FE87D2B40@inomial.com>
+
+My bad... I didn't know about that feature - thanks David.
+
+Is that a Chilli specific feature, or is there an RFC for it that I don't know about?
+
+On 14/06/2011, at 2:22 PM, David Bird wrote:
+
+> Actually, the acctupdate option means that accounting responses from the radius server may have session parameter options like bandwidth and time limits. In a way, it is the poor man's CoA which is useful for when you do not have a direct route back to the router to use CoA. 
+> 
+> --
+>  David Bird
+>  Coova Technologies, LLC
+> 
+> On Jun 14, 2011, at 5:47 AM, Royce Ausburn <royce.ml at inomial.com> wrote:
+> 
+>> Hi Tim,
+>> 
+>> Turning on acctupdate will have Chilli send accounting updates periodically to your FreeRADIUS server.  Enabling CoA on the Chilli end will have Chilli listen on a port for CoA and Disconnect Messages.  Your FreeRADIUS server may at any time decide to issue a CoA packet to Chilli, updating the session with new attributes.  
+>> 
+>> So you'd stop using Chilli to manage the session limits and instead use accounting updates to keep your FreeRADIUS server up to date on how much data has been used.  Your FreeRADIUS server may then calculate whether their over their limit and use CoA or a Disconnect Message to take action.  If you can get this working with FreeRADIUS you'll have quite a bit of flexibility when your next difficult requirement comes up ;)
+>> 
+>> I have very little experience with FreeRADIUS - I'm not sure how you'd do it.  My company has its own RADIUS server so this sort of thing is quite easy for us... Hopefully it's easy with FreeRADIUS ;)
+>> 
+>> Does that help?
+>> 
+>> --Royce
+>> 
+>> Chief Engineer @ Inomial
+>> 03 9663 3554
+>> 0417 954 640
+>> 
+>> 
+>> 
+>> On 14/06/2011, at 12:03 PM, Tim White wrote:
+>> 
+>>> Thanks Royce. I wasn't aware of CoA.
+>>> If I understand this correctly, with accounting updates chilli sends a CoA packet (if coaport is defined). However, some googleing also shows acctupdate. I'm using FreeRadius, and some of the documentation in the old Coova Wiki seems to be gone.
+>>> Any idea which is the better one to do? CoA or acctupdate? Do they both work for updating the remaining data/time or is CoA just for disconnects?
+>>> Normally I can find most things with Google, however this topic is eluding me. Having the right search terms is helping now, but there seems to be a lack of documentation.
+>>> 
+>>> Thanks
+>>> 
+>>> Tim
+>>> 
+>>> On 14/06/11 11:09, Royce Ausburn wrote:
+>>>> You could look at doing this from your RADIUS server's end rather than from within chilli.  Using accounting updates chilli already sends and initiating a RADIUS CoA when you need to kick/wall garden.
+>>>> 
+>>>> HTH
+>>>> 
+>>>> --Royce
+>>>> 
+>>>> On 14/06/2011, at 10:43 AM, Tim White wrote:
+>>>> 
+>>>>> I'm wondering if there has been any discussion about implementing period reauthorisation in Coova Chilli?
+>>>>> Basically, I'm hoping to implement "recurring limits" using sqlcounter. However, this becomes more difficult with sessions that go over the time period used for recurrance.
+>>>>> 
+>>>>> For example, data limits. If you have an hourly data limit of 50Mb, the only attribute you can use to tell Coova this is the ChilliSpot-Max-Total-Octets. Ideally what we need is for Chilli to periodically reauthorise the sessions so that new attributes can be sent back.
+>>>>> 
+>>>>> My guess is that this could cause lots of problems with leaky_bucket and other counters, so I was thinking that it's probably best implemented by ending the current session, and starting a new session, all transparently to the user.
+>>>>> From my understanding of RADIUS, it would need a whole new authentication, which would require saving the users password. And, if the user uses CHAP (which I believe comes from RADIUS and not CoovaChilli) then we are dead in the water.
+>>>>> 
+>>>>> Can someone with a better understanding of RADIUS and CoovaChilli let me know if this is possible in the world of RADIUS, or totally impossible?
+>>>>> 
+>>>>> I think I'm beginning to understand why ISP's generally use a monthly limit! :-P
+>>>>> 
+>>>>> Tim
+>>>>> _______________________________________________
+>>>>> Chilli mailing list
+>>>>> Chilli at coova.org
+>>>>> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>>> 
+>> 
+>> _______________________________________________
+>> Chilli mailing list
+>> Chilli at coova.org
+>> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+
+From david at coova.com  Tue Jun 14 05:06:44 2011
+From: david at coova.com (David Bird)
+Date: Tue, 14 Jun 2011 07:06:44 +0200
+Subject: [Chilli] Period "Reauthorisation"
+In-Reply-To: <721E8368-332D-4063-A0FF-EC2FE87D2B40@inomial.com>
+References: <4DF6AEB9.7040307@gmail.com>
+	<A3666E54-D352-4518-9225-584E2336072E@inomial.com>
+	<4DF6C181.8030705@gmail.com>
+	<86E050EB-A011-4071-B333-DEC64C29F1C7@inomial.com>
+	<8EA67C8E-A4F7-4688-B2BD-96C2E2B280BF@coova.com>
+	<721E8368-332D-4063-A0FF-EC2FE87D2B40@inomial.com>
+Message-ID: <D9120DB7-D857-4006-BD9C-A2E029C275F3@coova.com>
+
+No, in fact, it perhaps violates an RFC recommendation or two since it is limited what should be in an acct response. 
+
+--
+  David Bird
+  Coova Technologies, LLC
+
+On Jun 14, 2011, at 6:58 AM, Royce Ausburn <royce.ml at inomial.com> wrote:
+
+> My bad... I didn't know about that feature - thanks David.
+> 
+> Is that a Chilli specific feature, or is there an RFC for it that I don't know about?
+> 
+> On 14/06/2011, at 2:22 PM, David Bird wrote:
+> 
+>> Actually, the acctupdate option means that accounting responses from the radius server may have session parameter options like bandwidth and time limits. In a way, it is the poor man's CoA which is useful for when you do not have a direct route back to the router to use CoA. 
+>> 
+>> --
+>> David Bird
+>> Coova Technologies, LLC
+>> 
+>> On Jun 14, 2011, at 5:47 AM, Royce Ausburn <royce.ml at inomial.com> wrote:
+>> 
+>>> Hi Tim,
+>>> 
+>>> Turning on acctupdate will have Chilli send accounting updates periodically to your FreeRADIUS server.  Enabling CoA on the Chilli end will have Chilli listen on a port for CoA and Disconnect Messages.  Your FreeRADIUS server may at any time decide to issue a CoA packet to Chilli, updating the session with new attributes.  
+>>> 
+>>> So you'd stop using Chilli to manage the session limits and instead use accounting updates to keep your FreeRADIUS server up to date on how much data has been used.  Your FreeRADIUS server may then calculate whether their over their limit and use CoA or a Disconnect Message to take action.  If you can get this working with FreeRADIUS you'll have quite a bit of flexibility when your next difficult requirement comes up ;)
+>>> 
+>>> I have very little experience with FreeRADIUS - I'm not sure how you'd do it.  My company has its own RADIUS server so this sort of thing is quite easy for us... Hopefully it's easy with FreeRADIUS ;)
+>>> 
+>>> Does that help?
+>>> 
+>>> --Royce
+>>> 
+>>> Chief Engineer @ Inomial
+>>> 03 9663 3554
+>>> 0417 954 640
+>>> 
+>>> 
+>>> 
+>>> On 14/06/2011, at 12:03 PM, Tim White wrote:
+>>> 
+>>>> Thanks Royce. I wasn't aware of CoA.
+>>>> If I understand this correctly, with accounting updates chilli sends a CoA packet (if coaport is defined). However, some googleing also shows acctupdate. I'm using FreeRadius, and some of the documentation in the old Coova Wiki seems to be gone.
+>>>> Any idea which is the better one to do? CoA or acctupdate? Do they both work for updating the remaining data/time or is CoA just for disconnects?
+>>>> Normally I can find most things with Google, however this topic is eluding me. Having the right search terms is helping now, but there seems to be a lack of documentation.
+>>>> 
+>>>> Thanks
+>>>> 
+>>>> Tim
+>>>> 
+>>>> On 14/06/11 11:09, Royce Ausburn wrote:
+>>>>> You could look at doing this from your RADIUS server's end rather than from within chilli.  Using accounting updates chilli already sends and initiating a RADIUS CoA when you need to kick/wall garden.
+>>>>> 
+>>>>> HTH
+>>>>> 
+>>>>> --Royce
+>>>>> 
+>>>>> On 14/06/2011, at 10:43 AM, Tim White wrote:
+>>>>> 
+>>>>>> I'm wondering if there has been any discussion about implementing period reauthorisation in Coova Chilli?
+>>>>>> Basically, I'm hoping to implement "recurring limits" using sqlcounter. However, this becomes more difficult with sessions that go over the time period used for recurrance.
+>>>>>> 
+>>>>>> For example, data limits. If you have an hourly data limit of 50Mb, the only attribute you can use to tell Coova this is the ChilliSpot-Max-Total-Octets. Ideally what we need is for Chilli to periodically reauthorise the sessions so that new attributes can be sent back.
+>>>>>> 
+>>>>>> My guess is that this could cause lots of problems with leaky_bucket and other counters, so I was thinking that it's probably best implemented by ending the current session, and starting a new session, all transparently to the user.
+>>>>>> From my understanding of RADIUS, it would need a whole new authentication, which would require saving the users password. And, if the user uses CHAP (which I believe comes from RADIUS and not CoovaChilli) then we are dead in the water.
+>>>>>> 
+>>>>>> Can someone with a better understanding of RADIUS and CoovaChilli let me know if this is possible in the world of RADIUS, or totally impossible?
+>>>>>> 
+>>>>>> I think I'm beginning to understand why ISP's generally use a monthly limit! :-P
+>>>>>> 
+>>>>>> Tim
+>>>>>> _______________________________________________
+>>>>>> Chilli mailing list
+>>>>>> Chilli at coova.org
+>>>>>> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>>>> 
+>>> 
+>>> _______________________________________________
+>>> Chilli mailing list
+>>> Chilli at coova.org
+>>> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+> 
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+From mctiew at yahoo.com  Tue Jun 14 05:10:59 2011
+From: mctiew at yahoo.com (Ming-Ching Tiew)
+Date: Mon, 13 Jun 2011 22:10:59 -0700 (PDT)
+Subject: [Chilli] Period "Reauthorisation"
+In-Reply-To: <D9120DB7-D857-4006-BD9C-A2E029C275F3@coova.com>
+Message-ID: <67302.85083.qm@web161427.mail.bf1.yahoo.com>
+
+
+
+--- On Tue, 6/14/11, David Bird <david at coova.com> wrote:
+
+> No, in fact, it perhaps violates an
+> RFC recommendation or two since it is limited what should be
+> in an acct response. 
+> 
+
+It's a more useful feature compared to CoA because CoA requires 
+a separate connection - which is normally not permitted for
+the radius server to make a connection back to the chilli machine.
+Whereas acctupdate requires no firewall rule changes.
+
+From timwhite88 at gmail.com  Tue Jun 14 05:35:38 2011
+From: timwhite88 at gmail.com (Tim White)
+Date: Tue, 14 Jun 2011 15:35:38 +1000
+Subject: [Chilli] Period "Reauthorisation"
+In-Reply-To: <A3666E54-D352-4518-9225-584E2336072E@inomial.com>
+References: <4DF6AEB9.7040307@gmail.com>
+	<A3666E54-D352-4518-9225-584E2336072E@inomial.com>
+Message-ID: <4DF6F32A.9080304@gmail.com>
+
+Ok, so far I've got CoA replies working. So I guess this becomes more 
+unlang/module stuff.
+
+For example, in the accounting section, I have the following
+        update coa {
+               User-Name = "%{User-Name}"
+               Acct-Session-Id = "%{Acct-Session-Id}"
+               NAS-IP-Address = "%{NAS-IP-Address}"
+#             ChilliSpot-Max-Total-Octets = "%{noresetBytecounter: ''}"
+#             noresetcounter
+#             noresetByteCounter
+        }
+
+Now, with every accounting packet, a CoA request is initiated from the 
+server to Coova Chilli. Great!
+I'm a bit lost at now getting the sqlcounter information back into this 
+packet. Without any ChilliSpot attributes going back to CoovaChilli, it 
+assumes those attributes no longer matter, and so for example the user 
+gets no limits!
+
+Does anyone have some example FreeRadius stuff that might assist here? 
+Otherwise I'll have to go pester the FreeRadius list. When it's all 
+working I'll post a nice article with details for others.
+
+Tim
+
+On 14/06/11 11:09, Royce Ausburn wrote:
+> You could look at doing this from your RADIUS server's end rather than from within chilli.  Using accounting updates chilli already sends and initiating a RADIUS CoA when you need to kick/wall garden.
+>
+> HTH
+>
+> --Royce
+>
+> On 14/06/2011, at 10:43 AM, Tim White wrote:
+>
+>> I'm wondering if there has been any discussion about implementing period reauthorisation in Coova Chilli?
+>> Basically, I'm hoping to implement "recurring limits" using sqlcounter. However, this becomes more difficult with sessions that go over the time period used for recurrance.
+>>
+>> For example, data limits. If you have an hourly data limit of 50Mb, the only attribute you can use to tell Coova this is the ChilliSpot-Max-Total-Octets. Ideally what we need is for Chilli to periodically reauthorise the sessions so that new attributes can be sent back.
+>>
+>> My guess is that this could cause lots of problems with leaky_bucket and other counters, so I was thinking that it's probably best implemented by ending the current session, and starting a new session, all transparently to the user.
+>>  From my understanding of RADIUS, it would need a whole new authentication, which would require saving the users password. And, if the user uses CHAP (which I believe comes from RADIUS and not CoovaChilli) then we are dead in the water.
+>>
+>> Can someone with a better understanding of RADIUS and CoovaChilli let me know if this is possible in the world of RADIUS, or totally impossible?
+>>
+>> I think I'm beginning to understand why ISP's generally use a monthly limit! :-P
+>>
+>> Tim
+>> _______________________________________________
+>> Chilli mailing list
+>> Chilli at coova.org
+>> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+
+From jmeiring at amobia.com  Tue Jun 14 09:34:00 2011
+From: jmeiring at amobia.com (Johan Meiring)
+Date: Tue, 14 Jun 2011 11:34:00 +0200
+Subject: [Chilli] Period "Reauthorisation"
+In-Reply-To: <4DF6C181.8030705@gmail.com>
+References: <4DF6AEB9.7040307@gmail.com>	<A3666E54-D352-4518-9225-584E2336072E@inomial.com>
+	<4DF6C181.8030705@gmail.com>
+Message-ID: <4DF72B08.4090504@amobia.com>
+
+On 2011/06/14 04:03 AM, Tim White wrote:
+> Thanks Royce. I wasn't aware of CoA.
+> If I understand this correctly, with accounting updates chilli sends a CoA
+> packet (if coaport is defined). However, some googleing also shows
+> acctupdate. I'm using FreeRadius, and some of the documentation in the old
+> Coova Wiki seems to be gone.
+> Any idea which is the better one to do? CoA or acctupdate? Do they both work
+> for updating the remaining data/time or is CoA just for disconnects?
+> Normally I can find most things with Google, however this topic is eluding
+> me. Having the right search terms is helping now, but there seems to be a
+> lack of documentation.
+>
+
+
+You need to seperate the issues.
+COA/Disconnect is an RFC standard.
+acctupdate is not.
+
+You can use either with chilli.
+
+COA/Disconnect
+--------------
+You get a COA and a Disconnect.
+Disconnect would ask the NAS (chillespot) to disconnect the client
+COA can modify Authorisation parameters like time left or bandwidth available.
+
+COA/Disconnect is sent from the radius server to the NAS (chilli)
+
+acctupdate
+----------
+Chilli has implements a second (non RFC way) where the Accounting Reply can 
+contain similar Radius Attibutes to what a COA packet would contain.
+
+This is for cases where you cannot reach the NAS from the Radius server. 
+(e.g. the NAS is behind a dynamic nat)
+
+It works very well. (I use it here).
+
+
+Cheers,
+
+
+
+
+-- 
+
+
+Johan Meiring
+Amobia Communications
+Tel: (0861) AMOBIA / (0861) 266242
+Fax: (0861) AMOFAX / (0861) 266329
+
+
+From david at coova.com  Tue Jun 14 09:48:06 2011
+From: david at coova.com (David Bird)
+Date: Tue, 14 Jun 2011 11:48:06 +0200
+Subject: [Chilli] released 1.2.7
+Message-ID: <1308044886.4947.91.camel@david-laptop>
+
+http://www.coova.org/CoovaChilli
+
+Cheers,
+David
+
+
+From timwhite88 at gmail.com  Tue Jun 14 11:20:31 2011
+From: timwhite88 at gmail.com (Tim White)
+Date: Tue, 14 Jun 2011 21:20:31 +1000
+Subject: [Chilli] Period "Reauthorisation"
+In-Reply-To: <4DF6F32A.9080304@gmail.com>
+References: <4DF6AEB9.7040307@gmail.com>
+	<A3666E54-D352-4518-9225-584E2336072E@inomial.com>
+	<4DF6F32A.9080304@gmail.com>
+Message-ID: <4DF743FF.1050508@gmail.com>
+
+For anyone following this thread, I have a semi working implementation 
+that is messy, but at least gives an understanding of how to do this if 
+you wish to go to the trouble.
+
+I have the following in the accounting section of my sites-available/default
+
+         update control {
+                Tmp-String-0 := "%{sql: select 
+FLOOR(IFNULL(radgroupreply.value - U1.usedoctets,radgroupreply.value) + 
+U2.TotalThisSession)   from radgroupreply, radusergroup, ( select 
+SUM(((AcctInputOctets + AcctOutputOctets) / acctsessiontime)
+  * ((UNIX_TIMESTAMP(acctstarttime) + acctsessiontime) - 
+UNIX_TIMESTAMP(DATE_SUB(NOW(), INTERVAL 1 HOUR)))) AS usedoctets  from 
+radacct WHERE UserName = '%{User-Name}' AND 
+UNIX_TIMESTAMP(acctstarttime) + acctsessiontime > UNIX_TIMESTAMP
+(DATE_SUB(NOW(), INTERVAL 1 HOUR)) ) U1, (SELECT SUM(AcctInputOctets + 
+AcctOutputOctets) as TotalThisSession FROM radacct WHERE AcctSessionId = 
+'%{Acct-Session-Id}' ) U2 where UserName =  '%{User-Name}' AND Attribute 
+= 'Max-Hourly-Octets' AND radgroupreply.GroupName = 
+radusergroup.GroupName }"
+
+         }
+
+         if(control:Tmp-String-0 > 0) {
+                 update coa {
+                         User-Name = "%{User-Name}"
+                         Acct-Session-Id = "%{Acct-Session-Id}"
+                         NAS-IP-Address = "%{NAS-IP-Address}"
+                         ChilliSpot-Max-Total-Octets = 
+"%{control:Tmp-String-0}"
+                 }
+         }
+
+What that convoluted sql query does is find all sessions associated with 
+this user, that have been active during the period we are interested in 
+(in this case, the last 1 hour). It then "normalises" the data usage 
+across that timespan, and takes the quantity for the amount of that 
+session that was in the active period. (For example, if a session was 10 
+minutes long, but only 5 minutes in the current period, it'll take 1/2 
+the data usage for that session). Yes, this isn't accurate but without 
+setting up accounting into a special table that uses 1 row per time 
+period of smaller periods instead of 1 row per session, this is the best 
+we can do.
+We then lookup the Max-Hourly-Octets values for that user (in this case 
+it's in the radgroupreply table as I'm only applying the limits to 
+groups), and calculate how much data they can continue to use in this 
+time period. Lastly, we need to add the current sessions usage to that 
+final figure as Coova Chilli has already counted it in it's session and 
+we have counted it also. (ether you'll wrap your brain around that last 
+bit or you won't).
+
+Then we store the result in a Tmp string so that we only send the CoA 
+packet if we actually have something to set. This way, if 
+ChilliSpot-Max-Total-Octets has been set elsewhere, we aren't 
+overwriting it. Also, sending a blank ChilliSpot-Max-Total-Octets will 
+set no limit for users, even if they previously got one in the initial 
+radreply packet.
+
+Oh, and Max-Hourly-Octets in the reply messages at login will cause 
+problems, unless you also have a sqlcounter setup to use that attribute 
+to give a proper ChilliSpot-Max-Total-Octets reply attribute as well. 
+(Simply because Max-Hourly-Octets isn't in the dictionary)
+
+I believe we also need to send any other limits the user may have, as it 
+seems CoovaChilli assumes the lack of the attributes in the CoA request 
+means that attribute no longer applies. More testing needed.
+
+My recommendation for anyone trying this. Don't. Set your users a "x 
+hours per day" limit, and if you are really worried about them using 
+lots of downloads/uploads, give them a bandwidth limit (throttle them).
+
+ From what I've seen so far, I think implementing basic 'x mb a day' and 
+'x mb a week' limits and not worrying about the reset period too much 
+will work without too much trouble as long as you don't need limits to 
+be strict (and you disable simultaneous login). (Also, I believe 
+sqlcounter still has the bug that near the end of a reset period it can 
+return a strange number for data queries as it was designed for time 
+queries).
+
+If you really care, maybe running a cron job that does fancy sql and 
+performs a CoA disconnect on users who have been using too much is a 
+better way than trying to have recurring data limits.
+
+Thanks for everyone that helped me get this far. Now I've just got to 
+work out if I (against my own advice) continue pushing forward or if in 
+the long run a better solution is to run away from this as fast as I can!
+
+Tim
+
+From yuhrong.leu at gmail.com  Tue Jun 14 14:23:08 2011
+From: yuhrong.leu at gmail.com (Yuh-Rong Leu)
+Date: Tue, 14 Jun 2011 22:23:08 +0800
+Subject: [Chilli] released 1.2.7
+Message-ID: <BANLkTi=FAOPzctj_6zT=yRpT9AdcB=_v9A@mail.gmail.com>
+
+I don't see any description about content injection in the change log of
+1.2.7. Does this mean that there is no content injection enhancement in this
+release?
+
+Yuh-Rong Leu
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20110614/e78e6892/attachment.html>
+
+From peter at endian.com  Fri Jun 17 17:22:50 2011
+From: peter at endian.com (Peter Warasin)
+Date: Fri, 17 Jun 2011 19:22:50 +0200
+Subject: [Chilli] cast issue with packed structs under arm
+Message-ID: <4DFB8D6A.9070508@endian.com>
+
+hi guys
+
+i currently deal with an issue we notice with coova-chilli 1.2.6 under
+armv5tel (marvell kirkwood). i have a possible solution, but would like
+to ask for your opinion, maybe there's a better solution than mine.
+
+
+===================
+What happened to us
+===================
+
+We have a user with a static ip configured (FRAMED_IP_ADDRESS) to
+192.168.11.66.
+The user logged in without problems and everything worked, but it did
+not have configured 192.168.11.66 but 192.168.11.6
+
+Similar problem (i found out) is with logging out a user with
+chilli_query logout ip 192.168.11.1
+which is not working at all.
+
+Another related problem is mac addresses shown in chilli_query list
+which should be the same actually show up as different.
+
+Within exactly the same environment but x86 works all as expected.
+
+
+=====
+Cause
+=====
+
+The issue is in cb_radius_auth_conf() in line 3647:
+
+    hisip = (struct in_addr*) &(hisipattr->v.i);
+
+This cast is invalid under arm. In arm everything must be aligned,
+otherwise it is fixed up by the kernel (with cpu cost). The radius
+struct is packed, so the compiler adds no padding to the assembler
+representation.
+
+It looks like that because of type-punning the compiler does not know
+that the struct is packed, reads the first 3 bytes and overjumps then
+the next 2 bytes, where the padding normally, when not packed, should
+be. Result is, instead of 192.168.11.66 i get 192.168.11.6, when 6 is
+the value which resides within memory area 2 bytes after 66
+
+
+=================
+Possible solution
+=================
+
+http://pastebin.com/VgxRxzJn
+
+here you see an isolated code of this problem commented out the line
+which causes the problem and added a workaround i found within tcpdump.
+
+this actually is working
+
+Now I am no expert on alignment of memory and arm at all,. so I asked
+around a bit in #arm channels, for maybe a very easy solution.. well.
+looks like there is no simple compiler flag or something which fixes
+this. I think it is really necessary to change every cast.
+
+However this means it is necessary to check every cast in coova-chilli.
+This probably happens on many places, which maybe nobody did recognized yet.
+And then after all it is necessary to replace these lines adding then
+also a temporary variable which need to be mallocd and freed. (don't
+like that)
+
+I start now to write a patch which fixes the issues mentioned above,.
+But i am unsure if this is a good solution, so probably i will not
+search for every probably invalid cast right now before i got your opinions.
+
+So please be verbose :)
+
+thank you in advance
+
+peter
+
+
+-- 
+:: e n d i a n
+:: open source - open minds
+
+:: peter warasin
+:: http://www.endian.com   :: peter at endian.com
+
+From vega.marco82 at gmail.com  Sun Jun 19 19:06:07 2011
+From: vega.marco82 at gmail.com (Marco Vega)
+Date: Sun, 19 Jun 2011 14:06:07 -0500
+Subject: [Chilli] ARP table location
+Message-ID: <BANLkTik5TZsu1JnzJ5TanCSmWNREiJxpJg@mail.gmail.com>
+
+Hello. I already have the anyip feature working, but it seems to have a
+problem updating the coova ARP tables. I can connect with an static ip and
+it redirects me, but if I change it to another static ip (being connected to
+the network) it fails to redirect, even if I disconnect from the net. The
+only way that I can get redirected with the "new" static ip, is if I restart
+the server. Restarting the chilli does not make it work.
+
+I know that on a real network this would not happen, but it is important for
+me to have this system setup and running perfectly.
+It seems that the mac address is tied with the previous ip address, and the
+new arp is not processed by coova. I believe that there must be something
+going on with the arp table refresh rate.
+Where is the coova arp table stored? Can I change the refresh rate?
+I have the coova 1.2.5 running on ubuntu server 10.04.
+Thank you
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20110619/372102b2/attachment.html>
+
+From peter at endian.com  Tue Jun 21 10:23:43 2011
+From: peter at endian.com (Peter Warasin)
+Date: Tue, 21 Jun 2011 12:23:43 +0200
+Subject: [Chilli] [PATCH] fix casts which turn out invalid under armv5tel
+In-Reply-To: <4DFB8D6A.9070508@endian.com>
+References: <4DFB8D6A.9070508@endian.com>
+Message-ID: <4E00712F.6080107@endian.com>
+
+Hi list
+
+With coova-chilli 1.2.6 compiled for armv5tel
+(run on marvell kirkwood Feroceon 88FR131)
+due to casting of type-punned variables to/from packed structs we get
+wrong values after the cast because the cast reads out wrong memory
+areas due to missing padding.
+Note, this happens only on arm due to its particular nature and
+necessity to have all structs aligned. With x86 this does not happen.
+
+The attached patch fixes right now:
+- value of static ip supplied by radius is read correctly
+- chilli_query listip passes now correct value for ip address
+- chilli_query logout ip passes now correct value for ip address
+
+I fear this happens on more places than these which actually happened to
+me and were the most obvious ones.
+I think every cast from/to packed struct needs to be handled this way.
+
+What do you think?
+
+peter
+
+-- 
+:: e n d i a n
+:: open source - open minds
+
+:: peter warasin
+:: http://www.endian.com   :: peter at endian.com
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: coova-chilli-1.2.6-fix-invalid-cast-on-arm.patch
+Type: text/x-patch
+Size: 3225 bytes
+Desc: not available
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20110621/5638d788/attachment.bin>
+
+From david at coova.com  Wed Jun 22 07:23:40 2011
+From: david at coova.com (David Bird)
+Date: Wed, 22 Jun 2011 09:23:40 +0200
+Subject: [Chilli] [PATCH] fix casts which turn out invalid under armv5tel
+In-Reply-To: <4E00712F.6080107@endian.com>
+References: <4DFB8D6A.9070508@endian.com>  <4E00712F.6080107@endian.com>
+Message-ID: <1308727420.4947.181.camel@david-laptop>
+
+Thanks... I will work in your changes and look for other examples of the
+dereferencing. 
+
+On Tue, 2011-06-21 at 12:23 +0200, Peter Warasin wrote:
+> Hi list
+> 
+> With coova-chilli 1.2.6 compiled for armv5tel
+> (run on marvell kirkwood Feroceon 88FR131)
+> due to casting of type-punned variables to/from packed structs we get
+> wrong values after the cast because the cast reads out wrong memory
+> areas due to missing padding.
+> Note, this happens only on arm due to its particular nature and
+> necessity to have all structs aligned. With x86 this does not happen.
+> 
+> The attached patch fixes right now:
+> - value of static ip supplied by radius is read correctly
+> - chilli_query listip passes now correct value for ip address
+> - chilli_query logout ip passes now correct value for ip address
+> 
+> I fear this happens on more places than these which actually happened to
+> me and were the most obvious ones.
+> I think every cast from/to packed struct needs to be handled this way.
+> 
+> What do you think?
+> 
+> peter
+> 
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+
+
+From abramoff at sipnet.ru  Mon Jun 27 07:40:17 2011
+From: abramoff at sipnet.ru (Victor Abramoff)
+Date: Mon, 27 Jun 2011 11:40:17 +0400
+Subject: [Chilli] DHCP sends invalid mask 0.0.0.0
+Message-ID: <775F111E58CA436AA323E55EBD5CD934@svet.local>
+
+Hi,
+
+I'm trying setup version 1.2.7. When client connects, the first time dhcp sends 255.255.255.0. When client requests lease update, dhcp sends mask 0.0.0.0 instead 255.255.255.0. Then client lost connectivity.
+
+
+From david at coova.com  Mon Jun 27 15:46:33 2011
+From: david at coova.com (David Bird)
+Date: Mon, 27 Jun 2011 17:46:33 +0200
+Subject: [Chilli] DHCP sends invalid mask 0.0.0.0
+In-Reply-To: <775F111E58CA436AA323E55EBD5CD934@svet.local>
+References: <775F111E58CA436AA323E55EBD5CD934@svet.local>
+Message-ID: <1309189593.3112.1.camel@david-laptop>
+
+what kind of system? Can you try the version in subversion?
+
+
+On Mon, 2011-06-27 at 11:40 +0400, Victor Abramoff wrote:
+> Hi,
+> 
+> I'm trying setup version 1.2.7. When client connects, the first time dhcp sends 255.255.255.0. When client requests lease update, dhcp sends mask 0.0.0.0 instead 255.255.255.0. Then client lost connectivity.
+> 
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+
+
+From stelio at skyrove.com  Mon Jun 27 15:59:29 2011
+From: stelio at skyrove.com (Stelio Gouveia)
+Date: Mon, 27 Jun 2011 17:59:29 +0200
+Subject: [Chilli] CoovaChilli walled garden - No more room
+Message-ID: <BANLkTikVwS-MPPoQf-XQ67SQskQX0Q+1RA@mail.gmail.com>
+
+Hi Folks
+
+We've recently added facebook.com,facebook.net,fbcdn.net,akamaiedge.net to
+our walled garden (CoovaChilli 1.2.3). On occasion we've noticed that some
+resources from Facebook just don't load, and the CoovaChilli logs suggest
+"No more room for walled garden entries". This happens as a result of the
+walled garden domains resolving to different IPs and eventually filling the
+walled garden list. Has anyone else seen this sort of behavior?
+
+I've noticed a enable_largelimits compile flag, but we're compiling
+for Ubiquity Nanostation and there's a comment that suggests this flag is
+for non-embedded systems. What's the side effect of enabling the flag
+regardless?
+
+- Stelio
+
+Skyrove Software Engineer,
+Skyrove (Pty) Ltd
+Technology Top 100 Award Winner (2006)
+Mobile: +27 82 34 09 120
+Tel: +27 861 ROVERS (0861 768 377)
+Fax: +27 86 6204077
+Email & Gtalk: stelio at skyrove.com
+Web:   www.skyrove.com
+
+This message contains confidential information. If you are not the intended
+recipient you are notified that disclosing, copying, distributing or taking
+any action in reliance on the contents of this information is strictly
+prohibited. E-mail transmission cannot be guaranteed to be secure or
+error-free as information could be intercepted, corrupted, lost, destroyed,
+arrive late or incomplete, or contain viruses. The sender therefore does not
+accept liability for any errors or omissions in the contents of this
+message.
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20110627/314f5f9f/attachment.html>
+
+From stelio at skyrove.com  Mon Jun 27 16:02:56 2011
+From: stelio at skyrove.com (Stelio Gouveia)
+Date: Mon, 27 Jun 2011 18:02:56 +0200
+Subject: [Chilli] CoovaChilli walled garden - No more room
+In-Reply-To: <BANLkTikVwS-MPPoQf-XQ67SQskQX0Q+1RA@mail.gmail.com>
+References: <BANLkTikVwS-MPPoQf-XQ67SQskQX0Q+1RA@mail.gmail.com>
+Message-ID: <BANLkTi=pgdYotk2DR2MjMSivJtheXoX21w@mail.gmail.com>
+
+Correction, I'm compiling for Ubiquiti Picostation so 32MB SDRAM, 8MB Flash
+
+- Stelio
+
+On Mon, Jun 27, 2011 at 5:59 PM, Stelio Gouveia <stelio at skyrove.com> wrote:
+
+> Hi Folks
+>
+> We've recently added facebook.com,facebook.net,fbcdn.net,akamaiedge.net to
+> our walled garden (CoovaChilli 1.2.3). On occasion we've noticed that some
+> resources from Facebook just don't load, and the CoovaChilli logs suggest
+> "No more room for walled garden entries". This happens as a result of the
+> walled garden domains resolving to different IPs and eventually filling the
+> walled garden list. Has anyone else seen this sort of behavior?
+>
+> I've noticed a enable_largelimits compile flag, but we're compiling
+> for Ubiquity Nanostation and there's a comment that suggests this flag is
+> for non-embedded systems. What's the side effect of enabling the flag
+> regardless?
+>
+> - Stelio
+>
+> Skyrove Software Engineer,
+> Skyrove (Pty) Ltd
+> Technology Top 100 Award Winner (2006)
+> Mobile: +27 82 34 09 120
+> Tel: +27 861 ROVERS (0861 768 377)
+> Fax: +27 86 6204077
+> Email & Gtalk: stelio at skyrove.com
+> Web:   www.skyrove.com
+>
+> This message contains confidential information. If you are not the intended
+> recipient you are notified that disclosing, copying, distributing or taking
+> any action in reliance on the contents of this information is strictly
+> prohibited. E-mail transmission cannot be guaranteed to be secure or
+> error-free as information could be intercepted, corrupted, lost, destroyed,
+> arrive late or incomplete, or contain viruses. The sender therefore does not
+> accept liability for any errors or omissions in the contents of this
+> message.
+>
+
+
+
+-- 
+Regards
+Stelio Gouveia
+--
+Skyrove Software Engineer,
+Skyrove (Pty) Ltd
+Technology Top 100 Award Winner (2006)
+Mobile: +27 82 34 09 120
+Tel: +27 861 ROVERS (0861 768 377)
+Fax: +27 86 6204077
+Email & Gtalk: stelio at skyrove.com
+Web:   www.skyrove.com
+
+This message contains confidential information. If you are not the intended
+recipient you are notified that disclosing, copying, distributing or taking
+any action in reliance on the contents of this information is strictly
+prohibited. E-mail transmission cannot be guaranteed to be secure or
+error-free as information could be intercepted, corrupted, lost, destroyed,
+arrive late or incomplete, or contain viruses. The sender therefore does not
+accept liability for any errors or omissions in the contents of this
+message.
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20110627/2fc1291b/attachment.html>
+
+From abramoff at sipnet.ru  Tue Jun 28 08:24:53 2011
+From: abramoff at sipnet.ru (Victor Abramoff)
+Date: Tue, 28 Jun 2011 12:24:53 +0400
+Subject: [Chilli] DHCP sends invalid mask 0.0.0.0
+In-Reply-To: <1309189593.3112.1.camel@david-laptop>
+References: <775F111E58CA436AA323E55EBD5CD934@svet.local>
+	<1309189593.3112.1.camel@david-laptop>
+Message-ID: <0AF9CB500F904703B7EF54CE5694876C@svet.local>
+
+> what kind of system? Can you try the version in subversion?
+
+Centos-4.9, 2.6.9-100.EL. The Chilli has been compiled from default spec
+with default set of features. I try svn 444, the bug seems to be fixed.
+Also, please include cosmetic RedHat init patch. Thanks.
+
+--- conf/chilli.orig    2011-06-28 11:44:38.000000000 +0400
++++ conf/chilli 2011-06-28 12:11:57.000000000 +0400
+@@ -74,7 +74,7 @@
+        }
+
+        ifconfig $HS_LANIF 0.0.0.0
+-       if [ "$(which start-stop-daemon)" = "" ]; then
++       if [ "$(which start-stop-daemon 2>/dev/null)" = "" ]; then
+            /usr/sbin/chilli -c $CONFIG --pidfile=$pidfile &
+        else
+             start-stop-daemon -S --pidfile=$pidfile --user=chilli \
+@@ -104,7 +104,7 @@
+
+        crontab -l 2>&- | grep -v $0 | crontab -
+
+-       if [ "$(which start-stop-daemon)" != "" ]; then
++       if [ "$(which start-stop-daemon 2>/dev/null)" != "" ]; then
+             start-stop-daemon -K --pidfile=$pidfile --user=chilli \
+                /usr/sbin/chilli
+        fi
+
+

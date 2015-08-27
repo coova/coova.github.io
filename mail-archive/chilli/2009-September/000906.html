@@ -1,0 +1,107 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> 15 character maximum password length for PAP?
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%2015%20character%20maximum%20password%20length%20for%20PAP%3F&In-Reply-To=%3C4AA8B8DA.7030105%40wiggy.net%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000907.html">
+   <LINK REL="Next"  HREF="000908.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>15 character maximum password length for PAP?</H1>
+    <B>Wichert Akkerman</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%2015%20character%20maximum%20password%20length%20for%20PAP%3F&In-Reply-To=%3C4AA8B8DA.7030105%40wiggy.net%3E"
+       TITLE="15 character maximum password length for PAP?">wichert at wiggy.net
+       </A><BR>
+    <I>Thu Sep 10 08:29:14 UTC 2009</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000907.html">15 character maximum password length for PAP?
+</A></li>
+        <LI>Next message: <A HREF="000908.html">15 character maximum password length for PAP?
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#906">[ date ]</a>
+              <a href="thread.html#906">[ thread ]</a>
+              <a href="subject.html#906">[ subject ]</a>
+              <a href="author.html#906">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>On 9/9/09 19:33 , Mark Dennehy wrote:
+&gt;<i> Ref:[Mark Dennehy, Wed, 09/09/09 @ 16:39 +0100]
+</I>&gt;&gt;<i> Ref:[Wichert Akkerman, Wed, 09/09/09 @ 17:19 +0200]
+</I>&gt;&gt;&gt;&gt;<i> Are the changes not also in revision 223?
+</I>&gt;&gt;&gt;<i> There might have been other changes since then which affect that code.
+</I>&gt;&gt;&gt;<i> Knowing if 217 works for you will help us track that down.
+</I>&gt;&gt;&gt;<i> Wichert.
+</I>&gt;&gt;<i> Okay, checking it out now.
+</I>&gt;<i>
+</I>&gt;<i> Nope, getting the same problem again. If I put in
+</I>&gt;<i> &quot;test/12345678901234567890&quot; as the username/password into the captive
+</I>&gt;<i> portal, I get &quot;test/1234567890123456&quot; as the username/password being
+</I>&gt;<i> received by FreeRADIUS.
+</I>&gt;<i>
+</I>&gt;<i> I think it's down to lines 1653-1655 in redir.c:
+</I>&gt;<i>
+</I>&gt;<i>      /*
+</I>&gt;<i>       * decode password - encoded by the UAM portal/script.
+</I>&gt;<i>       */
+</I>&gt;<i>      for (m=0; m&lt;  RADIUS_PWSIZE;)
+</I>&gt;<i>            for (n=0; n&lt;  REDIR_MD5LEN; m++, n++)
+</I>&gt;<i>              user_password[m] = conn-&gt;password[m] ^ chap_challenge[n];
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> The problem is, they do the right thing :-)
+</I>&gt;<i> If conn-&gt;password[] is longer than chap_challange[], those lines repeat
+</I>&gt;<i> chap_challange[] to compensate.
+</I>
+I was quite sure they do the right thing now and I'm happy to see that 
+you agree :). There were some problems with passwords of 16 characters 
+and longer before revision 217 in related parts of the code.
+
+&gt;<i> Whereas in hotspotlogin.cgi:
+</I>&gt;<i>
+</I>&gt;<i>    $hexchal  = pack &quot;H32&quot;, $challenge;
+</I>&gt;<i>
+</I>&gt;<i>    ...
+</I>&gt;<i>
+</I>&gt;<i>    } elsif (defined($userpassword)) {
+</I>&gt;<i>      # Encode plain text password with challenge
+</I>&gt;<i>      # (which may or may not be uamsecret encoded)
+</I>&gt;<i>
+</I>&gt;<i>      $pappassword = unpack &quot;H32&quot;, ($password ^ $newchal);
+</I>&gt;<i>
+</I>&gt;<i>      $logonUrl = &quot;<A HREF="http://$uamip:$uamport/logon?username=$username&amp;password=$pappassword&quot;;">http://$uamip:$uamport/logon?username=$username&amp;password=$pappassword&quot;;</A>
+</I>
+Nicely spotted. I had not seen that since we use a custom portal with 
+chilli.
+
+Regards,
+Wichert.
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000907.html">15 character maximum password length for PAP?
+</A></li>
+	<LI>Next message: <A HREF="000908.html">15 character maximum password length for PAP?
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#906">[ date ]</a>
+              <a href="thread.html#906">[ thread ]</a>
+              <a href="subject.html#906">[ subject ]</a>
+              <a href="author.html#906">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

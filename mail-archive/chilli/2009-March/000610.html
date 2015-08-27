@@ -1,0 +1,361 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> VPN Traffic issues
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20VPN%20Traffic%20issues&In-Reply-To=%3CBB13BEB48D3B3B4CA1AA6A51DB9CFBCE1A1785EB19%40ausyd04.globalgossip.net%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000609.html">
+   <LINK REL="Next"  HREF="000614.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>VPN Traffic issues</H1>
+    <B>Daniel Garcia</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20VPN%20Traffic%20issues&In-Reply-To=%3CBB13BEB48D3B3B4CA1AA6A51DB9CFBCE1A1785EB19%40ausyd04.globalgossip.net%3E"
+       TITLE="VPN Traffic issues">DGarcia at globalgossip.net
+       </A><BR>
+    <I>Thu Mar  5 09:19:11 UTC 2009</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000609.html">VPN Traffic issues
+</A></li>
+        <LI>Next message: <A HREF="000614.html">VPN Traffic issues
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#610">[ date ]</a>
+              <a href="thread.html#610">[ thread ]</a>
+              <a href="subject.html#610">[ subject ]</a>
+              <a href="author.html#610">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>
+&gt;<i>Is eth1 your WAN interface or the chilli DHCP interface? Looks like your
+</I>&gt;<i>chilli DHCP ... not sure why you need an IP on that interface for &quot;pass
+</I>&gt;<i>through traffic&quot; ...
+</I>
+eth1 is the chilli DHCP interface, the one that chilli replaces with 0.0.0.0 and creates a virtual tunnel
+
+In regards for pass-through traffic, what I mean is, I have a couple of APS and other devices behind the chilli hotspot network and I would like to be able to HTTP to those devices, also get traffic like SNMP working for monitoring purposes, which is why I placed the internet on eth1, so the APS with IP's can be browsed to.
+
+
+&gt;<i>I noticed that you don't have an MTU clamp iptables rule, which might
+</I>&gt;<i>help (see the up.sh in svn).
+</I>
+Whats an MTU clamp? Ill take a look.
+
+
+So, you are saying the current setup allows VPNs to work, but you can't
+web surf when not using the VPN (or when using the VPN)?
+
+&gt;<i>You might want to do a wireshark dump (or tcpdump) of the subscriber's
+</I>&gt;<i>traffic. Or, run chilli in debug mode to help see what it is doing. The
+</I>&gt;<i>first question is: can the subscriber surf the walled garden or does
+</I>&gt;<i>*nothing* work?
+</I>
+surf the walled garden? Sorry you lost me. Browsing the internet is fine when subscribers log in correctly. Once logged in and successfully browsing, if they VPN, then browsing stops working. I notice that DNS is working because I see the browser resolving the name URL...it appears to be something in the iptables is preventing it
+
+David
+
+
+On Wed, 2009-03-04 at 17:15 +1100, Daniel Garcia wrote:
+&gt;<i> Hi David/Delevopers,
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> I am having a headache with Coova and I was wondering if someone could
+</I>&gt;<i> help me out, Ive been working on Coova for a few weeks now and time is
+</I>&gt;<i> running out for me and so I hope you can help me.
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> I was tasked with getting multiple VPN traffic to work with Coova so
+</I>&gt;<i> people from the hotspot network for our wireless users. We have a
+</I>&gt;<i> linux box that acts as a gateway for wireless traffic.
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> Following the instructions on the web and coova I have done the
+</I>&gt;<i> following...
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> Edit /usr/local/etc/chilli/Up.sh
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> #!/bin/sh
+</I>&gt;<i>
+</I>&gt;<i> # Coova Chilli - David Bird &lt;<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">david at coova.com</A>&gt;
+</I>&gt;<i>
+</I>&gt;<i> # Licensed under the GPL, see <A HREF="http://coova.org/">http://coova.org/</A>
+</I>&gt;<i>
+</I>&gt;<i> # up.sh /dev/tun0 192.168.0.10 255.255.255.0
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> . /usr/local/etc/chilli/functions
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> [ -e &quot;/usr/local/var/run/chilli.iptables&quot; ] &amp;&amp;
+</I>&gt;<i> sh /usr/local/var/run/chilli.iptables 2&gt;/dev/null
+</I>&gt;<i>
+</I>&gt;<i> rm -f /usr/local/var/run/chilli.iptables 2&gt;/dev/null
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> IF=$(basename $DEV)
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> ipt() {
+</I>&gt;<i>
+</I>&gt;<i>     opt=$1; shift
+</I>&gt;<i>
+</I>&gt;<i>     echo &quot;iptables -D $*&quot; &gt;&gt; /usr/local/var/run/chilli.iptables
+</I>&gt;<i>
+</I>&gt;<i>     iptables $opt $*
+</I>&gt;<i>
+</I>&gt;<i> }
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> ipt_in() {
+</I>&gt;<i>
+</I>&gt;<i>     ipt -A INPUT -i $IF $*
+</I>&gt;<i>
+</I>&gt;<i> }
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> [ -n &quot;$DHCPIF&quot; ] &amp;&amp; {
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>     [ -n &quot;$UAMPORT&quot; -a &quot;$UAMPORT&quot; != &quot;0&quot; ] &amp;&amp; \
+</I>&gt;<i>
+</I>&gt;<i>       ipt_in -p tcp -m tcp --dport $UAMPORT --dst $ADDR -j ACCEPT
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>     [ -n &quot;$UAMUIPORT&quot; -a &quot;$UAMUIPORT&quot; != &quot;0&quot; ] &amp;&amp; \
+</I>&gt;<i>
+</I>&gt;<i>       ipt_in -p tcp -m tcp --dport $UAMUIPORT --dst $ADDR -j ACCEPT
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>     [ -n &quot;HS_TCP_PORTS&quot; ] &amp;&amp; {
+</I>&gt;<i>
+</I>&gt;<i>       for port in $HS_TCP_PORTS; do
+</I>&gt;<i>
+</I>&gt;<i>           ipt_in -p tcp -m tcp --dport $port --dst $ADDR -j ACCEPT
+</I>&gt;<i>
+</I>&gt;<i>       done
+</I>&gt;<i>
+</I>&gt;<i>     }
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>     ipt_in -p udp -d 255.255.255.255 --destination-port 67:68 -j
+</I>&gt;<i> ACCEPT
+</I>&gt;<i>
+</I>&gt;<i>     ipt_in -p udp --dst $ADDR --dport 53 -j ACCEPT
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>     ipt -A INPUT -i $IF --dst $ADDR -j DROP
+</I>&gt;<i>
+</I>&gt;<i>     ipt -A INPUT -i $IF -j DROP
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>     ipt -I FORWARD -j DROP -i $DHCPIF
+</I>&gt;<i>
+</I>&gt;<i>     ipt -I FORWARD -j DROP -o $DHCPIF
+</I>&gt;<i>
+</I>&gt;<i>     ipt -t raw -I PREROUTING -j NOTRACK -i $DHCPIF #Beg. of appended
+</I>&gt;<i> lines
+</I>&gt;<i>
+</I>&gt;<i>     ipt -t raw -I OUTPUT -j NOTRACK -o $DHCPIF
+</I>&gt;<i>
+</I>&gt;<i>     ipt -I FORWARD -j ACCEPT -i tun0 -p gre
+</I>&gt;<i>
+</I>&gt;<i>     ipt -I FORWARD -j ACCEPT -i tun0 -p tcp --dport 1723
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>     ipt -I PREROUTING -t raw -j NOTRACK -i $DHCPIF
+</I>&gt;<i>
+</I>&gt;<i>     ipt -I OUTPUT -t raw -j NOTRACK -o $DHCPIF #End of appended lines
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>     ipt -I POSTROUTING -t nat -o eth0 -j MASQUERADE
+</I>&gt;<i>
+</I>&gt;<i>     ipt -I PREROUTING -t nat -i $IF -p tcp --dport 25 -j DNAT
+</I>&gt;<i> --to-destination $HS_SMTP
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>     [ &quot;$HS_LAN_ACCESS&quot; != &quot;on&quot; -a &quot;$HS_LAN_ACCESS&quot; != &quot;allow&quot; ] &amp;&amp; \
+</I>&gt;<i>
+</I>&gt;<i>       ipt -I FORWARD -i $IF -o \! $HS_WANIF -j DROP
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>     [ &quot;$HS_LOCAL_DNS&quot; = &quot;on&quot; ] &amp;&amp; {
+</I>&gt;<i>
+</I>&gt;<i>       ipt -I PREROUTING -t nat -i $IF -p udp --dport 53 -j DNAT
+</I>&gt;<i> --to-destination $HS_DNS1
+</I>&gt;<i>
+</I>&gt;<i>       ipt -I PREROUTING -t nat -i $IF -p tcp --dport 53 -j DNAT
+</I>&gt;<i> --to-destination $HS_DNS1
+</I>&gt;<i>
+</I>&gt;<i>       }
+</I>&gt;<i>
+</I>&gt;<i> }
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> # site specific stuff optional
+</I>&gt;<i>
+</I>&gt;<i> [ -e /usr/local/etc/chilli/ipup.sh ]
+</I>&gt;<i> &amp;&amp; . /usr/local/etc/chilli/ipup.sh
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> As you can see the blue is the added code I copied from the forums. I
+</I>&gt;<i> also did the following for the install of the appropriate modules...
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> Modprobe ip_conntrack_pptp
+</I>&gt;<i>
+</I>&gt;<i> Modprobe ip_nat_pptp
+</I>&gt;<i>
+</I>&gt;<i> Modprobe nf_nat_proto_gre
+</I>&gt;<i>
+</I>&gt;<i> Modprobe nf_conntrack_proto_gre
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> Now, I also amended the following
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> # vi /usr/local/etc/init.d/chilli
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> Under the case$1 in
+</I>&gt;<i>
+</I>&gt;<i>                            Start) &#8211; section (this starts the chilli
+</I>&gt;<i> software and calls many procedures
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> Changed the following code:
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> Ifconfig $HS_LANIF 0.0.0.0
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> To: ifconfig $HS_LANIF 10.200.100.129/24
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> As I want an IP on the eth1 interface for traffic passthrough.
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> My problem is two-fold, 1. Multiple VPN connections work great and I
+</I>&gt;<i> can access the resources on the other network, but i can NOT browse
+</I>&gt;<i> the internet. DNS is working because I can see a web search doing a
+</I>&gt;<i> name-to-ip address translation, so HTTP or nat&#8217;ing is getting screwed
+</I>&gt;<i> up somewhere.
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> Also, we want to have snmp and ftp services working and go through the
+</I>&gt;<i> eth1 interface (which is why I have placed an IP address on eth1; for
+</I>&gt;<i> routing purposes), but if I remove the DROP chains:
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>     ipt -I FORWARD -j DROP -i $DHCPIF
+</I>&gt;<i>
+</I>&gt;<i>     ipt -I FORWARD -j DROP -o $DHCPIF
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> Then VPN stops working, I cant even get one connection going. Ive
+</I>&gt;<i> spent weeks on these two issues to no avail.
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> Thank you.
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> Daniel Garcia
+</I>&gt;<i>
+</I>&gt;<i> IT Assistant Manager
+</I>&gt;<i>
+</I>&gt;<i> Core Infrastructure &amp; Systems Development
+</I>&gt;<i>
+</I>&gt;<i> Global Gossip Group
+</I>&gt;<i>
+</I>&gt;<i> [a]    14 Wentworth Avenue, Sydney, NSW 2010
+</I>&gt;<i>
+</I>&gt;<i> [t]    +612 9263 0458
+</I>&gt;<i>
+</I>&gt;<i> [f]    +612 9263 0404
+</I>&gt;<i>
+</I>&gt;<i> [m]    0400 604 897
+</I>&gt;<i>
+</I>&gt;<i> [e]    <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">dgarcia at globalgossip.net</A>
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>
+</I>
+
+---------------------------------------------------------------------
+To unsubscribe, e-mail: <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli-unsubscribe at coova.org</A>
+For additional commands, e-mail: <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli-help at coova.org</A>
+Wiki: <A HREF="http://coova.org/wiki/index.php/CoovaChilli">http://coova.org/wiki/index.php/CoovaChilli</A>
+Forum: <A HREF="http://coova.org/phpBB3/viewforum.php?f=4">http://coova.org/phpBB3/viewforum.php?f=4</A>
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000609.html">VPN Traffic issues
+</A></li>
+	<LI>Next message: <A HREF="000614.html">VPN Traffic issues
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#610">[ date ]</a>
+              <a href="thread.html#610">[ thread ]</a>
+              <a href="subject.html#610">[ subject ]</a>
+              <a href="author.html#610">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

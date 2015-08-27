@@ -1,0 +1,160 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] Chilli - wlan ssid doesn't get broadcasted
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Chilli%20-%20wlan%20ssid%20doesn%27t%20get%20broadcasted&In-Reply-To=%3CCACkgH70Y7PoPU%3D36szRk8HbsqoYzjRP-RSaHg8q%2Bz2hv2GpfnQ%40mail.gmail.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="002537.html">
+   <LINK REL="Next"  HREF="002540.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] Chilli - wlan ssid doesn't get broadcasted</H1>
+    <B>Xabier Oneca -- xOneca</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Chilli%20-%20wlan%20ssid%20doesn%27t%20get%20broadcasted&In-Reply-To=%3CCACkgH70Y7PoPU%3D36szRk8HbsqoYzjRP-RSaHg8q%2Bz2hv2GpfnQ%40mail.gmail.com%3E"
+       TITLE="[Chilli] Chilli - wlan ssid doesn't get broadcasted">xoneca at gmail.com
+       </A><BR>
+    <I>Thu Jan 23 21:44:21 UTC 2014</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="002537.html">[Chilli] Chilli - wlan ssid doesn't get broadcasted
+</A></li>
+        <LI>Next message: <A HREF="002540.html">[Chilli] Chilli - wlan ssid doesn't get broadcasted
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2538">[ date ]</a>
+              <a href="thread.html#2538">[ thread ]</a>
+              <a href="subject.html#2538">[ subject ]</a>
+              <a href="author.html#2538">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hello Krishna,
+
+You have the wlan0 interface as client, and you have to set it up as
+access point.
+
+You have to set-up first an Access Point with hostapd
+(<A HREF="http://hostap.epitest.fi/hostapd/">http://hostap.epitest.fi/hostapd/</A>). Then, you can use the interface
+with CoovaChilli.
+
+Cheers,
+
+Xabier Oneca_,,_
+
+
+2014/1/23 Krishna Pattabiraman &lt;<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">codelectron at googlemail.com</A>&gt;:
+&gt;<i> Hi everyone,
+</I>&gt;<i>
+</I>&gt;<i> I am trying to configure an Acer one netbook running Ubuntu as a captive
+</I>&gt;<i> portal.The wired ethernet interface eth0 is connected to the internet and
+</I>&gt;<i> the wlan0 interface will act as a access point for wifi devices. I am unable
+</I>&gt;<i> to see the wlan interface's SSID appear in smartphone or pc. It seems
+</I>&gt;<i> something is wrong or missing, Can anyone help me in this?
+</I>&gt;<i>
+</I>&gt;<i> Here are my configuration files.
+</I>&gt;<i>
+</I>&gt;<i> ----------------------------/etc/network/interfaces----------------------------
+</I>&gt;<i> auto lo
+</I>&gt;<i> iface lo inet loopback
+</I>&gt;<i>
+</I>&gt;<i> auto eth0
+</I>&gt;<i> iface eth0 inet dhcp
+</I>&gt;<i>
+</I>&gt;<i> auto wlan0
+</I>&gt;<i> -----------------------------------------------------------------------------------------
+</I>&gt;<i> -------------------------------/etc/chilli/defaults---------------------------------------
+</I>&gt;<i> HS_LANIF=wlan0             # WAN Interface toward the Internet
+</I>&gt;<i> HS_WANIF=eth0              # Subscriber Interface for client devices
+</I>&gt;<i> HS_NETWORK=192.168.10.0    # HotSpot Network (must include HS_UAMLISTEN)
+</I>&gt;<i> HS_NETMASK=255.255.255.0   # HotSpot Network Netmask
+</I>&gt;<i> HS_UAMLISTEN=192.168.10.1          # HotSpot IP Address (on subscriber
+</I>&gt;<i> network)
+</I>&gt;<i> HS_UAMPORT=3990            # HotSpot UAM Port (on subscriber network)
+</I>&gt;<i> HS_UAMUIPORT=4990          # HotSpot UAM &quot;UI&quot; Port (on subscriber network,
+</I>&gt;<i> for embedded portal)
+</I>&gt;<i>
+</I>&gt;<i> HS_DNS1=8.8.8.8
+</I>&gt;<i> HS_DNS2=208.67.220.220
+</I>&gt;<i>
+</I>&gt;<i> HS_LOC_ID=&quot;2&quot;
+</I>&gt;<i>
+</I>&gt;<i> HS_NASID=&quot;xxxx&quot;
+</I>&gt;<i> HS_NASIP=127.0.0.1
+</I>&gt;<i>
+</I>&gt;<i> HS_RADIUS=127.0.0.1
+</I>&gt;<i> HS_RADIUS2=localhost
+</I>&gt;<i> HS_UAMALLOW=192.168.10.0/24
+</I>&gt;<i> HS_RADSECRET=testing123   # Set to be your RADIUS shared secret
+</I>&gt;<i> HS_UAMSECRET=change-me     # Set to be your UAM secret
+</I>&gt;<i> HS_UAMALIASNAME=chilli
+</I>&gt;<i>
+</I>&gt;<i> HS_LOC_NETWORK=&quot;My Network&quot;
+</I>&gt;<i> HS_LOC_NAME=&quot;My HotSpot&quot;
+</I>&gt;<i> HS_WWWDIR=/etc/chilli/www
+</I>&gt;<i>
+</I>&gt;<i> #   Using this option assumes 'haserl' is installed per-default
+</I>&gt;<i> #   but, and CGI type program can ran from wwwsh to process requests
+</I>&gt;<i> #   to chilli with url /www/filename.chi
+</I>&gt;<i> HS_WWWBIN=/etc/chilli/wwwsh
+</I>&gt;<i>
+</I>&gt;<i> #   Some configurations used in certain user interfaces
+</I>&gt;<i> #
+</I>&gt;<i> HS_PROVIDER=Coova
+</I>&gt;<i> HS_PROVIDER_LINK=<A HREF="http://www.coova.org/">http://www.coova.org/</A>
+</I>&gt;<i> --------------------------------------------------------------------------------------------------------
+</I>&gt;<i>
+</I>&gt;<i> Im getting following error messages
+</I>&gt;<i>
+</I>&gt;<i> ----------------------------Chilli-----------------------------
+</I>&gt;<i> chilli.c: 379: 0 (Debug) caught 17 via selfpipe
+</I>&gt;<i> chilli.c: 310: 0 (Debug) child 7327 terminated
+</I>&gt;<i> ----------------------------------------------------------------
+</I>&gt;<i>
+</I>&gt;<i> ----------------------------Freeradius--------------------
+</I>&gt;<i> Thu Jan 23 17:40:19 2014 : Info: rlm_radutmp: NAS localhost restarted
+</I>&gt;<i> (Accounting-On packet seen)
+</I>&gt;<i> Thu Jan 23 17:40:19 2014 : Error: rlm_radutmp: Error accessing file
+</I>&gt;<i> /var/log/freeradius/radutmp: No such file or directory
+</I>&gt;<i> ----------------------------------------------------------------
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> Thanks,
+</I>&gt;<i> Krishna
+</I>&gt;<i>
+</I>&gt;<i> _______________________________________________
+</I>&gt;<i> Chilli mailing list
+</I>&gt;<i> <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">Chilli at coova.org</A>
+</I>&gt;<i> <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">http://lists.coova.org/cgi-bin/mailman/listinfo/chilli</A>
+</I>&gt;<i>
+</I></PRE>
+
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="002537.html">[Chilli] Chilli - wlan ssid doesn't get broadcasted
+</A></li>
+	<LI>Next message: <A HREF="002540.html">[Chilli] Chilli - wlan ssid doesn't get broadcasted
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2538">[ date ]</a>
+              <a href="thread.html#2538">[ thread ]</a>
+              <a href="subject.html#2538">[ subject ]</a>
+              <a href="author.html#2538">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

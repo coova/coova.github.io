@@ -1,0 +1,181 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> VPN Traffic issues
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20VPN%20Traffic%20issues&In-Reply-To=%3CBB13BEB48D3B3B4CA1AA6A51DB9CFBCE1A17820B8C%40ausyd04.globalgossip.net%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000632.html">
+   <LINK REL="Next"  HREF="000608.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>VPN Traffic issues</H1>
+    <B>Daniel Garcia</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20VPN%20Traffic%20issues&In-Reply-To=%3CBB13BEB48D3B3B4CA1AA6A51DB9CFBCE1A17820B8C%40ausyd04.globalgossip.net%3E"
+       TITLE="VPN Traffic issues">DGarcia at globalgossip.net
+       </A><BR>
+    <I>Wed Mar  4 06:15:59 UTC 2009</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000632.html">Problem with restarting chilli 1.0.12 - redir.c: 982: 28 (No 	space left on device) msgget() failed
+</A></li>
+        <LI>Next message: <A HREF="000608.html">VPN Traffic issues
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#607">[ date ]</a>
+              <a href="thread.html#607">[ thread ]</a>
+              <a href="subject.html#607">[ subject ]</a>
+              <a href="author.html#607">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hi David/Delevopers,
+
+I am having a headache with Coova and I was wondering if someone could help me out, Ive been working on Coova for a few weeks now and time is running out for me and so I hope you can help me.
+
+I was tasked with getting multiple VPN traffic to work with Coova so people from the hotspot network for our wireless users. We have a linux box that acts as a gateway for wireless traffic.
+
+Following the instructions on the web and coova I have done the following...
+
+Edit /usr/local/etc/chilli/Up.sh
+
+#!/bin/sh
+# Coova Chilli - David Bird &lt;<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">david at coova.com</A>&gt;
+# Licensed under the GPL, see <A HREF="http://coova.org/">http://coova.org/</A>
+# up.sh /dev/tun0 192.168.0.10 255.255.255.0
+
+. /usr/local/etc/chilli/functions
+
+[ -e &quot;/usr/local/var/run/chilli.iptables&quot; ] &amp;&amp; sh /usr/local/var/run/chilli.iptables 2&gt;/dev/null
+rm -f /usr/local/var/run/chilli.iptables 2&gt;/dev/null
+
+IF=$(basename $DEV)
+
+ipt() {
+    opt=$1; shift
+    echo &quot;iptables -D $*&quot; &gt;&gt; /usr/local/var/run/chilli.iptables
+    iptables $opt $*
+}
+
+ipt_in() {
+    ipt -A INPUT -i $IF $*
+}
+
+[ -n &quot;$DHCPIF&quot; ] &amp;&amp; {
+
+    [ -n &quot;$UAMPORT&quot; -a &quot;$UAMPORT&quot; != &quot;0&quot; ] &amp;&amp; \
+      ipt_in -p tcp -m tcp --dport $UAMPORT --dst $ADDR -j ACCEPT
+
+    [ -n &quot;$UAMUIPORT&quot; -a &quot;$UAMUIPORT&quot; != &quot;0&quot; ] &amp;&amp; \
+      ipt_in -p tcp -m tcp --dport $UAMUIPORT --dst $ADDR -j ACCEPT
+
+    [ -n &quot;HS_TCP_PORTS&quot; ] &amp;&amp; {
+      for port in $HS_TCP_PORTS; do
+          ipt_in -p tcp -m tcp --dport $port --dst $ADDR -j ACCEPT
+      done
+    }
+
+    ipt_in -p udp -d 255.255.255.255 --destination-port 67:68 -j ACCEPT
+    ipt_in -p udp --dst $ADDR --dport 53 -j ACCEPT
+
+    ipt -A INPUT -i $IF --dst $ADDR -j DROP
+    ipt -A INPUT -i $IF -j DROP
+
+    ipt -I FORWARD -j DROP -i $DHCPIF
+    ipt -I FORWARD -j DROP -o $DHCPIF
+    ipt -t raw -I PREROUTING -j NOTRACK -i $DHCPIF #Beg. of appended lines
+    ipt -t raw -I OUTPUT -j NOTRACK -o $DHCPIF
+    ipt -I FORWARD -j ACCEPT -i tun0 -p gre
+    ipt -I FORWARD -j ACCEPT -i tun0 -p tcp --dport 1723
+
+    ipt -I PREROUTING -t raw -j NOTRACK -i $DHCPIF
+    ipt -I OUTPUT -t raw -j NOTRACK -o $DHCPIF #End of appended lines
+
+    ipt -I POSTROUTING -t nat -o eth0 -j MASQUERADE
+    ipt -I PREROUTING -t nat -i $IF -p tcp --dport 25 -j DNAT --to-destination $HS_SMTP
+
+    [ &quot;$HS_LAN_ACCESS&quot; != &quot;on&quot; -a &quot;$HS_LAN_ACCESS&quot; != &quot;allow&quot; ] &amp;&amp; \
+      ipt -I FORWARD -i $IF -o \! $HS_WANIF -j DROP
+
+    [ &quot;$HS_LOCAL_DNS&quot; = &quot;on&quot; ] &amp;&amp; {
+      ipt -I PREROUTING -t nat -i $IF -p udp --dport 53 -j DNAT --to-destination $HS_DNS1
+      ipt -I PREROUTING -t nat -i $IF -p tcp --dport 53 -j DNAT --to-destination $HS_DNS1
+      }
+}
+
+# site specific stuff optional
+[ -e /usr/local/etc/chilli/ipup.sh ] &amp;&amp; . /usr/local/etc/chilli/ipup.sh
+
+As you can see the blue is the added code I copied from the forums. I also did the following for the install of the appropriate modules...
+
+Modprobe ip_conntrack_pptp
+Modprobe ip_nat_pptp
+Modprobe nf_nat_proto_gre
+Modprobe nf_conntrack_proto_gre
+
+Now, I also amended the following
+
+# vi /usr/local/etc/init.d/chilli
+
+Under the case$1 in
+                           Start) - section (this starts the chilli software and calls many procedures
+
+Changed the following code:
+
+Ifconfig $HS_LANIF 0.0.0.0
+
+To: ifconfig $HS_LANIF 10.200.100.129/24
+
+As I want an IP on the eth1 interface for traffic passthrough.
+
+My problem is two-fold, 1. Multiple VPN connections work great and I can access the resources on the other network, but i can NOT browse the internet. DNS is working because I can see a web search doing a name-to-ip address translation, so HTTP or nat'ing is getting screwed up somewhere.
+
+Also, we want to have snmp and ftp services working and go through the eth1 interface (which is why I have placed an IP address on eth1; for routing purposes), but if I remove the DROP chains:
+
+    ipt -I FORWARD -j DROP -i $DHCPIF
+    ipt -I FORWARD -j DROP -o $DHCPIF
+
+Then VPN stops working, I cant even get one connection going. Ive spent weeks on these two issues to no avail.
+
+Thank you.
+
+
+
+
+Daniel Garcia
+IT Assistant Manager
+Core Infrastructure &amp; Systems Development
+Global Gossip Group
+[a]    14 Wentworth Avenue, Sydney, NSW 2010
+[t]    +612 9263 0458
+[f]    +612 9263 0404
+[m]    0400 604 897
+[e]    <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">dgarcia at globalgossip.net</A>
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: &lt;<A HREF="http://lists.coova.org/pipermail/chilli/attachments/20090304/9068f52e/attachment.htm">http://lists.coova.org/pipermail/chilli/attachments/20090304/9068f52e/attachment.htm</A>&gt;
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000632.html">Problem with restarting chilli 1.0.12 - redir.c: 982: 28 (No 	space left on device) msgget() failed
+</A></li>
+	<LI>Next message: <A HREF="000608.html">VPN Traffic issues
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#607">[ date ]</a>
+              <a href="thread.html#607">[ thread ]</a>
+              <a href="subject.html#607">[ subject ]</a>
+              <a href="author.html#607">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

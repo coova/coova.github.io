@@ -1,0 +1,145 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> Cisco WLAN controller 4400 and dhcp relay
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20Cisco%20WLAN%20controller%204400%20and%20dhcp%20relay&In-Reply-To=%3C4A51C5FA.6030000%40ibh.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000788.html">
+   <LINK REL="Next"  HREF="000792.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>Cisco WLAN controller 4400 and dhcp relay</H1>
+    <B>Thomas Liske</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20Cisco%20WLAN%20controller%204400%20and%20dhcp%20relay&In-Reply-To=%3C4A51C5FA.6030000%40ibh.de%3E"
+       TITLE="Cisco WLAN controller 4400 and dhcp relay">liske at ibh.de
+       </A><BR>
+    <I>Mon Jul  6 09:38:02 UTC 2009</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000788.html">Cisco WLAN controller 4400 and dhcp relay
+</A></li>
+        <LI>Next message: <A HREF="000792.html">Cisco WLAN controller 4400 and dhcp relay
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#789">[ date ]</a>
+              <a href="thread.html#789">[ thread ]</a>
+              <a href="subject.html#789">[ subject ]</a>
+              <a href="author.html#789">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hi,
+
+karczewski cyrill wrote:
+&gt;<i> Hello everyone!! I hope you are fine!!
+</I>&gt;<i> 
+</I>&gt;<i> I have a problem with coova-chilli 1.0.13 and i will be so gratefull for anyone find a solution.
+</I>&gt;<i> 
+</I>&gt;<i> I use a cisco WLAN controller 4400 with vlans configured. in order to transmit dhcp requests in that vlan, cisco has a dhcp relay.
+</I>&gt;<i> 
+</I>&gt;<i> the problem is that before transmit dhcp requests to chilli, the cisco controller does an ARP request to chilli.
+</I>&gt;<i> 
+</I>&gt;<i> Chilli reply, but the cisco controller doesn't like this answer.
+</I>&gt;<i> 
+</I>&gt;<i> In fact, when chilli reply, in the ARP target address field, chilli put 0.0.0.0 instead of the cisco controller ip address. It send the ARP reply in broadcast mode.
+</I>&gt;<i> 
+</I>&gt;<i> So, the cisco controller send an ARP request again and again...
+</I>&gt;<i> 
+</I>&gt;<i> here is the cisco request:
+</I>&gt;<i> 
+</I>&gt;<i> <A HREF="http://picasaweb.google.com/cyrill51/Chillispot#5355257375354395602">http://picasaweb.google.com/cyrill51/Chillispot#5355257375354395602</A>
+</I>&gt;<i> 
+</I>&gt;<i> here is the reply
+</I>&gt;<i> 
+</I>&gt;<i> <A HREF="http://picasaweb.google.com/cyrill51/Chillispot#5355257377945980914">http://picasaweb.google.com/cyrill51/Chillispot#5355257377945980914</A>
+</I>&gt;<i> 
+</I>&gt;<i> Anyone has an idea to correct this in chilli or in the cisco controller.
+</I>&gt;<i> 
+</I>
+it seems to be an issue on the WLC implementation. According to RFC826 
+the WLC should accept the arp reply with an zero target address:
+
+
+==============================[RFC826]==============================
+?Do I have the hardware type in ar$hrd?
+Yes: (almost definitely)
+   [optionally check the hardware length ar$hln]
+   ?Do I speak the protocol in ar$pro?
+   Yes:
+     [optionally check the protocol length ar$pln]
+     Merge_flag := false
+     If the pair &lt;protocol type, sender protocol address&gt; is
+         already in my translation table, update the sender
+	hardware address field of the entry with the new
+	information in the packet and set Merge_flag to true.
+     ?Am I the target protocol address?
+     Yes:
+       If Merge_flag is false, add the triplet &lt;protocol type,
+           sender protocol address, sender hardware address&gt; to
+	  the translation table.
+       ?Is the opcode ares_op$REQUEST?  (NOW look at the opcode!!)
+       Yes:
+	Swap hardware and protocol fields, putting the local
+	    hardware and protocol addresses in the sender fields.
+	Set the ar$op field to ares_op$REPLY
+	Send the packet to the (new) target hardware address on
+	    the same hardware on which the request was received.
+==============================[RFC826]==============================
+
+There are no checks on the target address for ARP replies. The arp reply 
+is btw not send as a broadcast, there is the WLC's ARP address specified 
+as the destination address in the ethernet header.
+
+I'd just checked Linux's implementation on sending ARP replies, it sets 
+the target IP address to the original request source address. Maybe it 
+should be fixed in cc to perform as other common ARP implementations 
+perform.
+
+
+Regards,
+Thomas
+
+-- 
+<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">support at ibh.de</A>                              Tel. +49 351 477 77 30
+www.ibh.de                                  Fax  +49 351 477 77 39
+
+-----------------------------------------------------------------------
+Dipl.-Ing. Thomas Liske
+Netzwerk- und System-Design
+
+
+IBH IT-Service GmbH                         Amtsgericht Dresden
+Gostritzer Str. 61-63                       HRB 13626
+D-01217 Dresden                             GF: Prof. Dr. Thomas Horn
+Germany                                     VAT DE182302907
+-----------------------------------------------------------------------
+Ihr Partner f&#252;r: LAN, WAN IP-Quality, Security, VoIP, SAN, Backup, USV
+-----------------------------------------------------------------------
+        professioneller IT-Service - kompetent und zuverl&#228;ssig
+-----------------------------------------------------------------------
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000788.html">Cisco WLAN controller 4400 and dhcp relay
+</A></li>
+	<LI>Next message: <A HREF="000792.html">Cisco WLAN controller 4400 and dhcp relay
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#789">[ date ]</a>
+              <a href="thread.html#789">[ thread ]</a>
+              <a href="subject.html#789">[ subject ]</a>
+              <a href="author.html#789">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,270 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] Problem upload data using latest coovachilli git
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Problem%20upload%20data%20using%20latest%20coovachilli%20git&In-Reply-To=%3CCAJc1nuo7gKb%3DirvVJ8XAERn2Ppg9JnJkZySn87_ArU_5QcPnzA%40mail.gmail.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="002781.html">
+   <LINK REL="Next"  HREF="002783.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] Problem upload data using latest coovachilli git</H1>
+    <B>Jed Gainer</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Problem%20upload%20data%20using%20latest%20coovachilli%20git&In-Reply-To=%3CCAJc1nuo7gKb%3DirvVJ8XAERn2Ppg9JnJkZySn87_ArU_5QcPnzA%40mail.gmail.com%3E"
+       TITLE="[Chilli] Problem upload data using latest coovachilli git">jedgainer at gmail.com
+       </A><BR>
+    <I>Tue Jul  8 01:02:15 UTC 2014</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="002781.html">[Chilli] Way to get move loggs in to syslog
+</A></li>
+        <LI>Next message: <A HREF="002783.html">[Chilli] Problem upload data using latest coovachilli git
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2782">[ date ]</a>
+              <a href="thread.html#2782">[ thread ]</a>
+              <a href="subject.html#2782">[ subject ]</a>
+              <a href="author.html#2782">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>CPU getting maxed out?
+
+
+On Fri, Jun 27, 2014 at 6:19 AM, Mohsen Saeedi &lt;<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">mohsen.saeedi at gmail.com</A>&gt;
+wrote:
+
+&gt;<i>
+</I>&gt;<i>  On 06/27/2014 03:05 PM, Anonio Silva wrote:
+</I>&gt;<i>
+</I>&gt;<i> Hi,
+</I>&gt;<i>
+</I>&gt;<i> With last git 9b7138f4d85a88e6e7e0b1cb5d3202d1a3bbad27, I've a problem
+</I>&gt;<i> with data upload.  The connection is very inconstant going from 400Kbps to
+</I>&gt;<i> 0Kpbs, then to 50Kbps,  150Kbps and sometimes it just freezes...
+</I>&gt;<i>
+</I>&gt;<i> My scenario is very simple:
+</I>&gt;<i>
+</I>&gt;<i> WAN --- Server running Chilli (eth1: e1000e: 100Mb/s) ------ PC (windows 7)
+</I>&gt;<i>
+</I>&gt;<i> Once the pc is authenticate (by MAC), i try to upload a file to the ftp
+</I>&gt;<i> server running on the same server where the chilli is running. It also
+</I>&gt;<i> happens if i upload data to WAN.
+</I>&gt;<i> With the download there is no problem.
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> My configuration:
+</I>&gt;<i>
+</I>&gt;<i> *chilli.conf*
+</I>&gt;<i> fg
+</I>&gt;<i> debug
+</I>&gt;<i> unixipc=chilli2.ipc
+</I>&gt;<i> tundev=tuneth1
+</I>&gt;<i> nasmac=&quot;portal2&quot;
+</I>&gt;<i> pidfile=/var/run/chilli/chilli2.pid
+</I>&gt;<i> dhcpif=eth1
+</I>&gt;<i> net=192.168.30.0/24
+</I>&gt;<i> statip=192.168.30.0/24
+</I>&gt;<i> dynip=192.168.30.0/24
+</I>&gt;<i> dhcpstart=2
+</I>&gt;<i> dhcpend=10
+</I>&gt;<i> lease=1800
+</I>&gt;<i> dns1=192.168.10.254
+</I>&gt;<i> domain=local.local
+</I>&gt;<i> radiusserver1=localhost
+</I>&gt;<i> radiusserver2=localhost
+</I>&gt;<i> radiusauthport=1812
+</I>&gt;<i> radiusacctport=1813
+</I>&gt;<i> radiussecret=secret
+</I>&gt;<i> coaport=3771
+</I>&gt;<i> uamlisten=192.168.30.1
+</I>&gt;<i> uamserver=<A HREF="https://192.168.10.254">https://192.168.10.254</A>
+</I>&gt;<i> uamlogoutip=5.5.5.1
+</I>&gt;<i> uamsecret=secret
+</I>&gt;<i> uamport=3990
+</I>&gt;<i> uamuiport=3992
+</I>&gt;<i> macauth
+</I>&gt;<i> strictmacauth
+</I>&gt;<i>
+</I>&gt;<i> i run it with:
+</I>&gt;<i> /usr/sbin/chilli --conf chilli.conf --pidfile /var/run/chilli/chilli.pid
+</I>&gt;<i> --cmdsock /var/run/chilli/chilli.sock
+</I>&gt;<i>
+</I>&gt;<i> for iptables i have:
+</I>&gt;<i> -A INPUT --in-interface eth1 -j DROP
+</I>&gt;<i> -A FORWARD --in-interface eth1 -j DROP
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> If i drop the iptables rules that block the traffic on the dhcpif the
+</I>&gt;<i> upload is fine. There is no radius attribute to limit the speed.
+</I>&gt;<i>
+</I>&gt;<i> I'm running debian wheezy. I download the coova-chilli from the git repos,
+</I>&gt;<i> and compile it using the debian package, in the trunk directory i did
+</I>&gt;<i> dpkg-buildpackage.  then i install de coova-chilli.deb
+</I>&gt;<i>
+</I>&gt;<i> Can you help me to figure out where is the problem?
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> Thanks,
+</I>&gt;<i> Ant&#243;nio
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> LOG of chilli:
+</I>&gt;<i>
+</I>&gt;<i> main-opt.c: 453: 0 (Debug) IPv6 disabled
+</I>&gt;<i> main-opt.c: 640: 0 (Debug) DHCP Listen: 192.168.30.1
+</I>&gt;<i> main-opt.c: 641: 0 (Debug) UAM Listen: 192.168.30.1
+</I>&gt;<i> garden.c: 439: 0 (Debug) Uamallowed IP address #0:1024: proto=0
+</I>&gt;<i> host=192.168.10.254 port=443
+</I>&gt;<i> options.c: 446: 0 (Debug) PID 7669 saving options to
+</I>&gt;<i> /var/run/chilli.7668.cfg.bin
+</I>&gt;<i> options.c: 414: 0 (Debug) Loading modules
+</I>&gt;<i> options.c: 658: 0 (Debug) PID 7668 reloaded binary options file
+</I>&gt;<i> chilli.c: 7270: 0 (Debug) clock realtime sec 1403863345 nsec 332183759
+</I>&gt;<i> chilli.c: 7275: 0 (Debug) clock monotonic sec 7232 nsec 305988264
+</I>&gt;<i> tun.c: 605: 0 (Debug) TX queue length set to 100
+</I>&gt;<i> ippool.c: 338: 0 (Debug) Hashlog 9 264 512
+</I>&gt;<i> net.c: 1279: 0 (Debug) Net SNDBUF 212992
+</I>&gt;<i> net.c: 1282: 0 (Debug) Net RCVBUF 212992
+</I>&gt;<i> net.c: 1337: 0 (Debug) device eth1 ifindex 4
+</I>&gt;<i> net.c: 1353: 0 (Debug) lo  address family: 17 (AF_PACKET)
+</I>&gt;<i> net.c: 1353: 0 (Debug) eth3  address family: 17 (AF_PACKET)
+</I>&gt;<i> net.c: 1353: 0 (Debug) eth0  address family: 17 (AF_PACKET)
+</I>&gt;<i> net.c: 1353: 0 (Debug) eth1  address family: 17 (AF_PACKET)
+</I>&gt;<i> net.c: 1353: 0 (Debug) lo  address family: 2 (AF_INET)
+</I>&gt;<i> net.c: 1353: 0 (Debug) eth0  address family: 2 (AF_INET)
+</I>&gt;<i> net.c: 1353: 0 (Debug) eth1  address family: 2 (AF_INET)
+</I>&gt;<i> net.c: 1353: 0 (Debug) tuneth3  address family: 2 (AF_INET)
+</I>&gt;<i> net.c: 1353: 0 (Debug) tuneth1  address family: 2 (AF_INET)
+</I>&gt;<i> dhcp.c: 481: 0 (Debug) hash table size 64 (56)
+</I>&gt;<i> dhcp.c: 333: 0 (Debug) GARP: Replying to broadcast
+</I>&gt;<i> dhcp.c: 1169: 0 (Debug) dhcpif (eth1) IPv6 address ::
+</I>&gt;<i> radius.c: 1316: 0 (Debug) RADIUS client 0.0.0.0:3771
+</I>&gt;<i> chilli.c: 7430: 0 (Debug) Waiting for client request...
+</I>&gt;<i> net.c: 416: 0 (Debug) net select count: 1
+</I>&gt;<i> net.c: 416: 0 (Debug) net select count: 2
+</I>&gt;<i> net.c: 416: 0 (Debug) net select count: 3
+</I>&gt;<i> net.c: 416: 0 (Debug) net select count: 4
+</I>&gt;<i> net.c: 416: 0 (Debug) net select count: 5
+</I>&gt;<i> net.c: 416: 0 (Debug) net select count: 6
+</I>&gt;<i> net.c: 416: 0 (Debug) net select count: 7
+</I>&gt;<i> rtmon.c: 465: 0 (Debug) i=0 sz=1
+</I>&gt;<i> rtmon.c: 465: 0 (Debug) i=0 sz=2
+</I>&gt;<i> rtmon.c: 465: 0 (Debug) i=1 sz=2
+</I>&gt;<i> rtmon.c: 465: 0 (Debug) i=0 sz=3
+</I>&gt;<i> rtmon.c: 465: 0 (Debug) i=1 sz=3
+</I>&gt;<i> rtmon.c: 465: 0 (Debug) i=2 sz=3
+</I>&gt;<i> rtmon.c: 465: 0 (Debug) i=0 sz=4
+</I>&gt;<i> rtmon.c: 465: 0 (Debug) i=1 sz=4
+</I>&gt;<i> rtmon.c: 465: 0 (Debug) i=2 sz=4
+</I>&gt;<i> rtmon.c: 465: 0 (Debug) i=3 sz=4
+</I>&gt;<i>
+</I>&gt;<i> System Interfaces
+</I>&gt;<i> 0) lo (1) ip=127.0.0.1 net=127.0.0.0 mask=255.0.0.0 mac=00-00-00-00-00-00
+</I>&gt;<i> mtu=65536
+</I>&gt;<i> 1) eth0 (3) ip=192.168.10.254 net=192.168.10.0 mask=255.255.255.0
+</I>&gt;<i> bcase=192.168.10.255 mac=00-15-17-DA-4A-cd mtu=1500
+</I>&gt;<i> 2) eth1 (4) ip=10.10.1.1 net=10.10.1.0 mask=255.255.255.0
+</I>&gt;<i> bcase=10.10.1.255 mac=00-15-17-DA-4A-cc mtu=1500
+</I>&gt;<i> 3) tuneth3 (26) ip=192.168.20.1 net=192.168.20.0 mask=255.255.255.0
+</I>&gt;<i> peer=192.168.20.1 mac=00-00-00-00-00-00 mtu=1500
+</I>&gt;<i> 4) tuneth1 (30) ip=192.168.30.1 net=192.168.30.0 mask=255.255.255.0
+</I>&gt;<i> peer=192.168.30.1 mac=00-00-00-00-00-00 mtu=1500
+</I>&gt;<i>
+</I>&gt;<i> System Routes
+</I>&gt;<i> 0) dst=10.10.1.0 mask=255.255.255.0 dev=eth1 (4)
+</I>&gt;<i> 1) dst=192.168.10.0 mask=255.255.255.0 dev=eth0 (3)
+</I>&gt;<i> 2) dst=192.168.20.0 mask=255.255.255.0 dev=tuneth3 (26)
+</I>&gt;<i> 3) dst=192.168.30.0 mask=255.255.255.0 dev=tuneth1 (30)
+</I>&gt;<i> net.c: 416: 0 (Debug) net select count: 8
+</I>&gt;<i> net.c: 416: 0 (Debug) net select count: 9
+</I>&gt;<i> radius.c: 1907: 0 (Debug) Received RADIUS packet id=0
+</I>&gt;<i> radius.c: 427: 0 (Debug) RADIUS queue-out id=0 idx=0
+</I>&gt;<i> dhcp.c: 3713: 0 (Debug) Address not found (192.168.30.2)
+</I>&gt;<i> dhcp.c: 728: 0 (Debug) DHCP newconn: 68-B5-99-DB-72-AC
+</I>&gt;<i> chilli.c: 5137: 0 (Debug) New DHCP request from MAC=68-B5-99-DB-72-AC
+</I>&gt;<i> chilli.c: 5140: 0 (Debug) New DHCP connection established
+</I>&gt;<i> chilli.c: 5098: 0 (Debug) New Chilli Connection
+</I>&gt;<i> chilli.c: 4896: 0 (Debug) ----&gt; cb_dhcp_request &lt;----
+</I>&gt;<i> chilli.c: 4900: 0 (Debug) DHCP request for IP address 192.168.30.2
+</I>&gt;<i> chilli.c: 1542: 0 (Debug) Starting radius authentication
+</I>&gt;<i> dhcp.c: 3965: 0 (Debug) dropping packet; ip not known: 192.168.30.2
+</I>&gt;<i> radius.c: 1907: 0 (Debug) Received RADIUS packet id=1
+</I>&gt;<i> radius.c: 427: 0 (Debug) RADIUS queue-out id=1 idx=1
+</I>&gt;<i> chilli.c: 4419: 0 (Debug) Received RADIUS response id=1
+</I>&gt;<i> chilli.c: 4608: 0 (Debug) Received RADIUS Access-Accept
+</I>&gt;<i> chilli.c: 865: 0 (Debug) newip 192.168.30.2
+</I>&gt;<i> ippool.c: 456: 0 (Debug) Requesting new static ip: 192.168.30.2
+</I>&gt;<i> radius.c: 1907: 0 (Debug) Received RADIUS packet id=2
+</I>&gt;<i> radius.c: 427: 0 (Debug) RADIUS queue-out id=2 idx=2
+</I>&gt;<i> dhcp.c: 3785: 0 (Debug) ICMP frag forbidden for IP packet with length 2560
+</I>&gt;<i> &gt; 1500
+</I>&gt;<i> dhcp.c: 3785: 0 (Debug) ICMP frag forbidden for IP packet with length 2560
+</I>&gt;<i> &gt; 1500
+</I>&gt;<i> dhcp.c: 3785: 0 (Debug) ICMP frag forbidden for IP packet with length 2560
+</I>&gt;<i> &gt; 1500
+</I>&gt;<i> dhcp.c: 3785: 0 (Debug) ICMP frag forbidden for IP packet with length 2560
+</I>&gt;<i> &gt; 1500
+</I>&gt;<i> dhcp.c: 3785: 0 (Debug) ICMP frag forbidden for IP packet with length 2560
+</I>&gt;<i> &gt; 1500
+</I>&gt;<i> (... continues until the transfer is complete, when i remote the firewall
+</I>&gt;<i> rule the ouput speed of this messages is faster)
+</I>&gt;<i>
+</I>&gt;<i> _______________________________________________
+</I>&gt;<i> Chilli mailing <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">listChilli at coova.orghttp</A>://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+</I>&gt;<i>
+</I>&gt;<i>  Hi
+</I>&gt;<i>
+</I>&gt;<i> We have this problem too when we switch to 1.3 from 1.2.8. we test in any
+</I>&gt;<i> environment and the problem appears in any condition and any network
+</I>&gt;<i> infrastructure. The problem often occurs in high internet bandwidth. I
+</I>&gt;<i> think one man knows about this problem and David should be responsible
+</I>&gt;<i> about it.
+</I>&gt;<i> David we will appreciated if you survey code that have been added to latest
+</I>&gt;<i> version. 1.2.8 doesn't have any problem with data upload. The worst
+</I>&gt;<i> problem is when you're trying to upload attachment on Gmail.
+</I>&gt;<i>
+</I>&gt;<i> Best regards,
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> _______________________________________________
+</I>&gt;<i> Chilli mailing list
+</I>&gt;<i> <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">Chilli at coova.org</A>
+</I>&gt;<i> <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">http://lists.coova.org/cgi-bin/mailman/listinfo/chilli</A>
+</I>&gt;<i>
+</I>&gt;<i>
+</I>-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: &lt;<A HREF="http://lists.coova.org/pipermail/chilli/attachments/20140707/e86ae6be/attachment.html">http://lists.coova.org/pipermail/chilli/attachments/20140707/e86ae6be/attachment.html</A>&gt;
+</PRE>
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="002781.html">[Chilli] Way to get move loggs in to syslog
+</A></li>
+	<LI>Next message: <A HREF="002783.html">[Chilli] Problem upload data using latest coovachilli git
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2782">[ date ]</a>
+              <a href="thread.html#2782">[ thread ]</a>
+              <a href="subject.html#2782">[ subject ]</a>
+              <a href="author.html#2782">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,130 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> VPN revisited.
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20VPN%20revisited.&In-Reply-To=%3C48AE95F8.4030605%40endian.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000469.html">
+   <LINK REL="Next"  HREF="000471.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>VPN revisited.</H1>
+    <B>Peter Warasin</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20VPN%20revisited.&In-Reply-To=%3C48AE95F8.4030605%40endian.com%3E"
+       TITLE="VPN revisited.">peter at endian.com
+       </A><BR>
+    <I>Fri Aug 22 10:33:28 UTC 2008</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000469.html">VPN revisited.
+</A></li>
+        <LI>Next message: <A HREF="000471.html">VPN revisited.
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#470">[ date ]</a>
+              <a href="thread.html#470">[ thread ]</a>
+              <a href="subject.html#470">[ subject ]</a>
+              <a href="author.html#470">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hi David
+
+wlanmac wrote:
+&gt;<i> Since you are doing so many tests, it would be great to see your results
+</I>&gt;<i> in a spreadsheet noting each test's parameters. 
+</I>
+Well, had should think about that before :/
+
+
+&gt;&gt;<i> That's wired. Maybe it was only luck? Sometimes it works also for me 
+</I>&gt;&gt;<i> without special iptables rules. But most of the time it doesn't.
+</I>&gt;&gt;<i> Have you tried to connect/disconnect/connect/disconnect all the time?
+</I>&gt;<i> I would guess that constantly connecting and disconnecting would
+</I>&gt;<i> confused Windows more than the firewall. ;)
+</I>
+I guessed that too, but no, without chilli and with the pptp helpers 
+loaded you can connect/disconnect all the time. That's working without 
+problems.
+
+
+&gt;<i> So, you are saying that you never have trouble with one VPN passing
+</I>&gt;<i> through? No matter what modules you use? 
+</I>
+No.
+
+Without pptp modules you can have exactly 1 pptp connection which is 
+working always fine. As soon as you start a second connection it does 
+not work anymore. That's quite normal, with and without chilli.
+
+With chilli pptp most of the time does not work with kernel modules, 
+without kernel modules the first connection works always.
+
+creating that notrack rules all work fine.
+
+
+&gt;<i> The notrack rules for the dhcpif should probably help if the helpers are
+</I>&gt;<i> getting confused. I wonder if conntrack sees all packets (unless told to
+</I>&gt;<i> not track in the raw table) even if they are DROP'ed during INPUT on the
+</I>&gt;<i> device. Can you also DROP from the raw table? hmm.. 
+</I>
+It's not enough to drop only in the filter table in order to hide the 
+packets from netfilter.
+The packets flow through every netfilter &quot;table&quot; (raw, mangle, nat, 
+filter, nat). There are actually way more such tables, which you can't 
+see with iptables.
+The tables in reality are entries in a callback array. A packet goes 
+through a number of callback handlers (14 hardcoded) and other modules 
+may insert their own callback handlers (for example LVS does).
+
+Dropping a packet in one of those callback handlers, the filter table 
+for example does not mean that it does not go through any other callback 
+handler. It means only that it stops going through rules within that 
+callback handler, the filter table in our case.
+
+The filter table can only drop and accept packets, which should not harm 
+nor help chilli, while the mangle and nat table are those which actually 
+can change packets, which can destroy things.
+
+I see no possibility to completely shut down netfilter completely for a 
+specific device, probably that is what should be done in the first place 
+in order to give the packets to chilli in exactly that condition as they 
+arrived.
+
+So I think one need also to manually make rules which make exceptions 
+for the dhcpif in the mangle and nat table whenever one has entries there.
+
+peter
+
+-- 
+::<i> e n d i a n
+</I>::<i> open source - open minds
+</I>
+::<i> peter warasin
+</I>::<i> <A HREF="http://www.endian.com">http://www.endian.com</A>   :: <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">peter at endian.com</A>
+</I>
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000469.html">VPN revisited.
+</A></li>
+	<LI>Next message: <A HREF="000471.html">VPN revisited.
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#470">[ date ]</a>
+              <a href="thread.html#470">[ thread ]</a>
+              <a href="subject.html#470">[ subject ]</a>
+              <a href="author.html#470">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

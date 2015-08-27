@@ -1,0 +1,210 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [isf-wifidog] update from Saturday and continuing discussion	of v2 WAS: Re: WifiDog v2 development update?
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5Bisf-wifidog%5D%20update%20from%20Saturday%20and%20continuing%20discussion%09of%20v2%0A%20WAS%3A%20Re%3A%20WifiDog%20v2%20development%20update%3F&In-Reply-To=%3C1242244948.7718.87.camel%40david-laptop%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000734.html">
+   <LINK REL="Next"  HREF="000736.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[isf-wifidog] update from Saturday and continuing discussion	of v2 WAS: Re: WifiDog v2 development update?</H1>
+    <B>wlanmac</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5Bisf-wifidog%5D%20update%20from%20Saturday%20and%20continuing%20discussion%09of%20v2%0A%20WAS%3A%20Re%3A%20WifiDog%20v2%20development%20update%3F&In-Reply-To=%3C1242244948.7718.87.camel%40david-laptop%3E"
+       TITLE="[isf-wifidog] update from Saturday and continuing discussion	of v2 WAS: Re: WifiDog v2 development update?">wlan at mac.com
+       </A><BR>
+    <I>Wed May 13 20:02:28 UTC 2009</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000734.html">Sometimes Mac Authentication doesn't work
+</A></li>
+        <LI>Next message: <A HREF="000736.html">confirm unsubscribe from chilli at coova.org
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#735">[ date ]</a>
+              <a href="thread.html#735">[ thread ]</a>
+              <a href="subject.html#735">[ subject ]</a>
+              <a href="author.html#735">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>For a little background on RADIUS:
+
+- It's a protocol based on UDP packets (like DNS), as such it is
+stateless and you never are &quot;waiting&quot; on a TCP connection. 
+
+- It's *designed* for provisioning and accounting, particularly useful
+when the logins have &quot;attributes&quot; or session specific settings.
+
+- Pretty much most authentications systems do or can support RADIUS.
+
+- RADIUS &quot;realm based roaming&quot; is a built-in way for authentication
+roaming where the RADIUS protocol can route authentication and
+accounting request to the appropriate &quot;home provider&quot;. 
+
+- Nearly all quality WiFi gear supports RADIUS. Even stock Linksys can
+do RADIUS for WPA Enterprise authentication (though no accounting is
+provided). There are 'vendor specific' ways to set RADIUS attribute, but
+the underlining protocol is the same. 
+
+One thought is that there could be a middle-ware server running which
+can translate RADIUS into WiFiDog HTTP provisioning. It could be a small
+server running as an extension to chilli on the router, or it could even
+be centralized (possibly tying together several RADIUS based networks).
+The proxy would be enabling chilli to run as the access controller and
+WiFiDog (as is) as the portal.
+
+Some thoughts on the topic:
+
+- easy to wrap into a router to seamlessly resemble a WiFiDog router
+(but with all the added features of chilli). 
+
+- equally easy to centralize the proxy - potentially to handle multiple
+WiFiDog portals and/or RADIUS networks (essentially, creating a RADIUS
+realm-based WiFiDog authentication broker). 
+
+- the process of converting RADIUS to WiFiDog/HTTP will drive the
+portal/protocol development to cover more underlying chilli (and general
+NAS) features. 
+
+ - will serve as an example of how to integrate the WiFiDog/HTTP
+protocol with other access controllers (for instance, utilizing APIs of
+commercial vendors). 
+
+- can focus on RADIUS (plus proxy) to solve many roaming and
+single-sign-on issues - including linking with other RADIUS-based home
+providers - in a non-portal specific way. 
+
+David
+
+LinkedIn? <A HREF="http://www.linkedin.com/groups?gid=158903">http://www.linkedin.com/groups?gid=158903</A>
+
+
+
+
+On Mon, 2009-05-04 at 15:24 -0400, Michael Lenczner wrote: 
+&gt;<i> Hello all,
+</I>&gt;<i> 
+</I>&gt;<i> On Sun, Apr 5, 2009 at 1:52 AM, wlanmac &lt;<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">wlan at mac.com</A>&gt; wrote:
+</I>&gt;<i> &gt; Yes, RADIUS is powerful and ideal for access provisioning. Implementing
+</I>&gt;<i> &gt; your 'business logic' in RADIUS also has the benefit of being usable
+</I>&gt;<i> &gt; with multiple types of access controllers, using some standard (WISPr)
+</I>&gt;<i> &gt; or vendor specific attributes. Though, RADIUS doesn't make any
+</I>&gt;<i> &gt; guarantees about the features of the access controller.
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; This could be a turning point for the WiFiDog project. As a portal
+</I>&gt;<i> &gt; project, I'm guessing that the WiFiDog community might break up into
+</I>&gt;<i> &gt; smaller projects (already happening, it seems) as it is VERY difficult
+</I>&gt;<i> &gt; to find a web development platform/framework that everyone is happy
+</I>&gt;<i> &gt; with. It also sounds like people are willing to dump the v1 web
+</I>&gt;<i> &gt; framework, which will no doubt further break up the community unless
+</I>&gt;<i> &gt; there is a clean upgrade procedure. This is bad news for any open-source
+</I>&gt;<i> &gt; project that struggles to maintain their community and attract more
+</I>&gt;<i> &gt; contributors (especially developers)...
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; My two cents for the project:
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; - To keep WiFiDog an access controller AND portal project, WiFiDog
+</I>&gt;<i> &gt; should be more active in defining the &quot;protocol&quot; and development of the
+</I>&gt;<i> &gt; gateway. The project should encourage and embrace the use of multiple
+</I>&gt;<i> &gt; kinds of portals and web frameworks - don't push away those who break
+</I>&gt;<i> &gt; away from the portal.
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; - To turn WiFiDog into a portal project, then don't necessarily keep the
+</I>&gt;<i> &gt; gateway portion when there are other options available which can do more
+</I>&gt;<i> &gt; things. Even if it means adding the WiFiDog &quot;protocol&quot; to something like
+</I>&gt;<i> &gt; Chilli, at least you don't have to reinvent the wheel in terms of basic
+</I>&gt;<i> &gt; access controller features.
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; David
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt;
+</I>&gt;<i> &lt;snip&gt;
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> Update on the weekend meeting and background context:
+</I>&gt;<i> 
+</I>&gt;<i> So there was a meeting last saturday in Sherbrooke where 6-7 community
+</I>&gt;<i> wireless groups from Quebec and Ontario (about 20 people) got together
+</I>&gt;<i> and discussed Wifidog and something we're calling the ZAP Stack.
+</I>&gt;<i> 
+</I>&gt;<i> (Several of the community wireless groups in Quebec have taken the
+</I>&gt;<i> label ZAP Cityname with ZAP refering to Zone d'Acces Public (Public
+</I>&gt;<i> Access Zone). )
+</I>&gt;<i> 
+</I>&gt;<i> The ZAP stack is the entire ecosystem of tools needed to run a
+</I>&gt;<i> community wireless group of the wifidog model.  There is a focus on
+</I>&gt;<i> hotspots, with a serious intention of including mesh capability in the
+</I>&gt;<i> near future.  All of the groups use Wifidog.  We're looking at using
+</I>&gt;<i> the term &quot;ZAP Stack&quot; to differentiate between Wifidog and the overal
+</I>&gt;<i> technical toolset needed by a Community Wireless Network.  ZAPStack
+</I>&gt;<i> could be easily called CWNStack.
+</I>&gt;<i> 
+</I>&gt;<i> The groups present this weekend represented a total of more than 500
+</I>&gt;<i> hotspots and 150,000 users, and several of them have recently received
+</I>&gt;<i> government funding to extend their operations.
+</I>&gt;<i> 
+</I>&gt;<i> Sylvain Carle led the day's discussion and will be coordinating the
+</I>&gt;<i> contributions of the Quebec groups to the creation of a stack of
+</I>&gt;<i> software (ZAP Stack) that addresses their needs.  This stack involves
+</I>&gt;<i> Wifidog but the exact relation of the technologies to Wifidog and the
+</I>&gt;<i> specific role of Wifidog is still to be determined.
+</I>&gt;<i> 
+</I>&gt;<i> &lt;/weekend update&gt;
+</I>&gt;<i> 
+</I>&gt;<i> I found this thread (WifiDog v2) really interesting and informative.
+</I>&gt;<i> I hope we can continue the discussion.
+</I>&gt;<i> 
+</I>&gt;<i> To enable the larger discussion of what our (the Wifidog community)
+</I>&gt;<i> individual / collective needs are and how they fit in with wifidog
+</I>&gt;<i> development Gabe and I created a page listing some of the interesting
+</I>&gt;<i> / relevant tools in the CWN space.  Richard added to it and David
+</I>&gt;<i> added and fixed it up. (Thanks David!).  And I've taken some content
+</I>&gt;<i> from this thread and added it to the Wifidog TNG page so that it isn't
+</I>&gt;<i> lost. (<A HREF="http://dev.wifidog.org/wiki/TNG">http://dev.wifidog.org/wiki/TNG</A>)
+</I>&gt;<i> 
+</I>&gt;<i> Personally I'm trying to understand the relationship between Radius
+</I>&gt;<i> and Wifidog, and if Chillispot / CoovaChilli and or Radius could have
+</I>&gt;<i> a role to play in addressing some of our needs for better network and
+</I>&gt;<i> user management at our hotspots (ergo including the above text.  Any
+</I>&gt;<i> thoughts, pointers would be helpful.  I know that there are others
+</I>&gt;<i> that understand the pieces of this puzzle better than I do, but
+</I>&gt;<i> sometimes newb questions can be useful.
+</I>&gt;<i> 
+</I>&gt;<i> Please feel free to ask any questions about the Quebec CWN situation.
+</I>&gt;<i> There will be updates and clarification posted here by either Sylvain
+</I>&gt;<i> or David from ZAP Quebec in the near future.  We're still figuring
+</I>&gt;<i> this stuff out ourselves. :-)
+</I>&gt;<i> 
+</I>&gt;<i> mike
+</I>&gt;<i> _______________________________________________
+</I>&gt;<i> WiFiDog mailing list
+</I>&gt;<i> <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">WiFiDog at listes.ilesansfil.org</A>
+</I>&gt;<i> <A HREF="http://listes.ilesansfil.org/cgi-bin/mailman/listinfo/wifidog">http://listes.ilesansfil.org/cgi-bin/mailman/listinfo/wifidog</A>
+</I>
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000734.html">Sometimes Mac Authentication doesn't work
+</A></li>
+	<LI>Next message: <A HREF="000736.html">confirm unsubscribe from chilli at coova.org
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#735">[ date ]</a>
+              <a href="thread.html#735">[ thread ]</a>
+              <a href="subject.html#735">[ subject ]</a>
+              <a href="author.html#735">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

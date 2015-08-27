@@ -1,0 +1,207 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] MAC blacklist and other security measures
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20MAC%20blacklist%20and%20other%20security%20measures&In-Reply-To=%3C4BF6E08E.8070506%40hpp.org.br%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001383.html">
+   <LINK REL="Next"  HREF="001388.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] MAC blacklist and other security measures</H1>
+    <B>Felipe Augusto van de Wiel</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20MAC%20blacklist%20and%20other%20security%20measures&In-Reply-To=%3C4BF6E08E.8070506%40hpp.org.br%3E"
+       TITLE="[Chilli] MAC blacklist and other security measures">felipe.wiel at hpp.org.br
+       </A><BR>
+    <I>Fri May 21 19:35:42 UTC 2010</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001383.html">[Chilli] MAC blacklist and other security measures
+</A></li>
+        <LI>Next message: <A HREF="001388.html">[Chilli] MAC blacklist and other security measures
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1387">[ date ]</a>
+              <a href="thread.html#1387">[ thread ]</a>
+              <a href="subject.html#1387">[ subject ]</a>
+              <a href="author.html#1387">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA512
+
+Hey!
+
+On 21-05-2010 01:46, David Bird wrote:
+&gt;&gt;<i> 	Let me revive this thread in order to add a
+</I>&gt;&gt;<i> few comments that would be nice to have and publicly
+</I>&gt;&gt;<i> archived, specially because a few things have changed.
+</I>&gt;&gt;<i>
+</I>&gt;<i> 
+</I>&gt;<i> Thanks for your feedback!
+</I>
+	You are very welcome!
+
+	Coova developers and contributors are very nice
+and kind with outsiders and sysadmins trying different
+things and giving crazy suggestions/ideas. :)
+
+	I always come back because there are always
+ideas and different suggestions and Coova is moving to
+add features that weeks before we talked on the list.
+
+	So, thank you for always paying attention.
+
+
+&gt;&gt;<i> On 06-04-2010 12:42, Felipe Augusto van de Wiel wrote:
+</I>&gt;&gt;&gt;<i> On 21-03-2010 03:16, David Bird wrote:
+</I>&gt;&gt;&gt;&gt;<i> Hm.. one way might be to enable MAC authentication
+</I>&gt;&gt;&gt;&gt;<i> such that:
+</I>&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;<i> 	That means enable 'macauth', right?  Using
+</I>&gt;&gt;&gt;<i> only 'macauthdeny' didn't result in the expected
+</I>&gt;&gt;&gt;<i> behavior.
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> 	Although it was not clear before, now it
+</I>&gt;&gt;<i> makes a lot of sense that macauthdeny depends on
+</I>&gt;&gt;<i> macauth, otherwise you are not authenticating MAC
+</I>&gt;&gt;<i> addresses.
+</I>&gt;<i> 
+</I>&gt;<i> Indeed, macauthdeny is used with macauth. It makes it
+</I>&gt;<i> such that an Access-Reject means the user session is
+</I>&gt;<i> put in DROP state (where there is no returning from).
+</I>
+	This is exactly what we want and indeed it
+work as expected. As I mentioned before, the free
+wifi we provide for our clients/customers but
+sometimes we have some &quot;corporate&quot; users abusing it,
+so we blacklist them to avoid circumventing the
+firewall/proxy.
+
+	It was nice to know it worked perfectly.
+More and more we are trying to improve our RADIUS
+setup, specially around LDAP, so we are looking to
+have EAP and a more well organized infrastructure.
+
+
+&gt;&gt;<i> 	In this new scenario, it would be great to
+</I>&gt;&gt;<i> have a way to &quot;drop&quot; clients that got a Access-Reject
+</I>&gt;&gt;<i> from RADIUS.
+</I>&gt;<i> 
+</I>&gt;<i> That is what the macauthdeny option does, really. If
+</I>&gt;<i> you don't want all Access-Accepted sessions to have
+</I>&gt;<i> full access, then you can try out the feature where
+</I>&gt;<i> you also return this in the access-accept:
+</I>&gt;<i> 
+</I>&gt;<i>   ChilliSpot-Config = 'splash' 
+</I>
+	I did that with the DEFAULT option, it even
+raised the &quot;splash&quot; bug that replaces the entire
+local.conf file.
+
+	And it worked as expected, traffic on other
+ports are allowed and web redirects to captive portal
+until authenticated.
+
+	We want to allow our users to use other ports,
+otherwise we could change the firewall to block it all.
+
+
+&gt;<i> which will put the user in a 'splash' state (full Internet
+</I>&gt;<i> access, just with portal redirection). You can also try
+</I>&gt;<i> 'require-uam-auth' (which requires using option --wpaguests
+</I>&gt;<i> even if not using WPA, btw) which will put the user in the
+</I>&gt;<i> standard &quot;DNAT&quot; state. In an Access-Reject, you can also
+</I>&gt;<i> use ChilliSpot-Config = 'admin-reset' to release the DHCP
+</I>&gt;<i> release right away. Using that, you can also enforce a
+</I>&gt;<i> &quot;DROP&quot; state where you keep revoking the lease (but will
+</I>&gt;<i> also potentially mean you get a LOT of mac auth RADIUS
+</I>&gt;<i> requests).
+</I>
+	The standard DNAT state would still allow the
+navigation of pages allowed by Coova until client
+authenticates in the Captive Portal. And indeed,
+'admin-reset' can cause a lot of auth requests.
+
+	As I understood it, right now I can't tell
+Coova to change clients to 'drop' unless I use macauth
+and macauthdeny. I was planning on investigate more on
+the RADIUS side to see if there are something I am
+missing, but I realize that probably is Coova that
+needs to process the answer.
+
+	Thanks for clarifying that. We can live with
+the clients being blocked on the Captive Portal and
+all other ports and only being able to navigate to
+some of the allowed pages.
+
+	One of the nice points of the macauthdeny is
+that the client can't even get an IP or bind to the
+AP, which leads the client to believe it is not
+working (and achieves the point we are expecting,
+preventing corporate users to abuse the free wifi
+with corporate computers). :)
+
+[...]
+&gt;&gt;<i> 	I was wondering if it is possible to have the
+</I>&gt;&gt;<i> blocked MAC address to move to a 'drop' state after
+</I>&gt;&gt;<i> Access-Reject, is there such possibility in Coova?
+</I>&gt;<i> 
+</I>&gt;<i> It might be nice to have a &quot;ChilliSpot-Config = 'blocked'&quot;
+</I>&gt;<i> option that can be used outside of macauthdeny for this
+</I>&gt;<i> kind of use.
+</I>
+	Indeed, that would be very cool! :-)
+
+Kind regards,
+- -- 
+Felipe Augusto van de Wiel &lt;<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">felipe.wiel at hpp.org.br</A>&gt;
+Tecnologia da Informa&#231;&#227;o (TI) - Complexo Pequeno Pr&#237;ncipe
+<A HREF="http://www.pequenoprincipe.org.br/">http://www.pequenoprincipe.org.br/</A>    T: +55 41 3310 1747
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.10 (GNU/Linux)
+Comment: Using GnuPG with Mozilla - <A HREF="http://enigmail.mozdev.org/">http://enigmail.mozdev.org/</A>
+
+iQIcBAEBCgAGBQJL9uCKAAoJECCPPxLgxLxP3XEP/1FLpkZmMb0GioPlI0evdFn2
+JiHrOXwNQz89qHKps5lOfHIYfJ/pvqEnNYxC/0iJ1LegKVt0v9JNIE8brFBUaR1F
+zPt7z9zL6Qx+VqWtMLdMWPxAv5izkIS7mzc0ck+IvfP7lmo4zvLHJDAQw1Cn0FMF
+i5KbGeJhgptlhhh3xr/r6mwD+qeMgY2STJzvwRbgq7925a/cWzkJAmafTYmKl2Up
+5pJZLdcWSCpqi0ijIKKQ5+aZgG6ELYifUvQC4pQFicV+YuSw/1YGOGbS5BysYN/z
+2vBW2o6DqX17/t8mVs8+e4cFdKnGCpJl1fqaiUuVkMPgttNBJ8I03Gw1yWGuK5F5
+kSgu5KFDutVSnHS4irGZKvOHRUThiSTdOmeZwAPirH7FjR/LU5dcI4puwORIYKbj
+7fDFNez7RO16IsnthGqdKp5LFtSFY/MQ0lUtFL9vTzcNNtIerhDQSQ3vcCUv7Qkn
+OYNSLceAb371QiKRKnEPYGYlpRguh0GVHdvFBGyGcBHj/VooxrS1In144eYteEw2
+0LXt5mCDGKxfI2CJ9XytZz2bZrivyLCSVV5oqyeQzugfoqhsBds2S/tBeMIaWebA
+sUOsQ+8T21bBZnGupu+jTSDJUyrv65ldfJCvcwqHqzNIpxs0DM3GL0dV4l99jiPo
+VKvdiEkmBP7iYjq86URQ
+=I8Vn
+-----END PGP SIGNATURE-----
+</PRE>
+
+
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001383.html">[Chilli] MAC blacklist and other security measures
+</A></li>
+	<LI>Next message: <A HREF="001388.html">[Chilli] MAC blacklist and other security measures
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1387">[ date ]</a>
+              <a href="thread.html#1387">[ thread ]</a>
+              <a href="subject.html#1387">[ subject ]</a>
+              <a href="author.html#1387">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

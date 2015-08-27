@@ -1,0 +1,111 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] MAC Flapping bug in dhcp_nakDNS
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20MAC%20Flapping%20bug%20in%20dhcp_nakDNS&In-Reply-To=%3C1258272581.4334.34.camel%40david-laptop%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000996.html">
+   <LINK REL="Next"  HREF="000992.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] MAC Flapping bug in dhcp_nakDNS</H1>
+    <B>David Bird</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20MAC%20Flapping%20bug%20in%20dhcp_nakDNS&In-Reply-To=%3C1258272581.4334.34.camel%40david-laptop%3E"
+       TITLE="[Chilli] MAC Flapping bug in dhcp_nakDNS">david at coova.com
+       </A><BR>
+    <I>Sun Nov 15 08:09:41 UTC 2009</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000996.html">[Chilli] MAC Flapping bug in dhcp_nakDNS
+</A></li>
+        <LI>Next message: <A HREF="000992.html">[Chilli] Hotspot Login on Mobile Phones
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#997">[ date ]</a>
+              <a href="thread.html#997">[ thread ]</a>
+              <a href="subject.html#997">[ subject ]</a>
+              <a href="author.html#997">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hi Andre,
+
+Sorry that I didn't ack you message sooner. It got caught in the
+moderator list because you are not subscribed to the list, at least not
+from this address. 
+
+Thanks... 
+
+On Sat, 2009-11-14 at 17:17 +0100, Andre Beck wrote:
+&gt;<i> Hi,
+</I>&gt;<i> 
+</I>&gt;<i> I'm seeing a steady stream of MAC flap warnings on switches operating
+</I>&gt;<i> a Coova Chilli installation, where the MAC of a client appears to
+</I>&gt;<i> flap between the client side (coming from Cisco WLCs here, but that's
+</I>&gt;<i> not relevant) and the port towards the server running the Chilli
+</I>&gt;<i> instance in question. I think I tracked it down to this fix:
+</I>&gt;<i> 
+</I>&gt;<i> --- src/dhcp.c.orig     2009-11-14 17:04:01.000000000 +0100
+</I>&gt;<i> +++ src/dhcp.c  2009-11-14 17:04:29.000000000 +0100
+</I>&gt;<i> @@ -786,7 +786,7 @@
+</I>&gt;<i>  
+</I>&gt;<i>    memcpy(answer, pack, len); 
+</I>&gt;<i>  
+</I>&gt;<i> -  answer_ethh = ethhdr(pack);
+</I>&gt;<i> +  answer_ethh = ethhdr(answer);
+</I>&gt;<i>    answer_iph  = iphdr(answer);
+</I>&gt;<i>    answer_udph = udphdr(answer);
+</I>&gt;<i>    answer_dns  = dnspkt(answer);
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> Apparently, the intented swapping of the Ethernet SA and DA is done
+</I>&gt;<i> on the wrong buffer (the original packet, not the answer copy that
+</I>&gt;<i> will get sent), so it's missing from the final frame going out.
+</I>&gt;<i> 
+</I>&gt;<i> Please note that this will mean dhcp_nakDNS() has never worked as
+</I>&gt;<i> expected, so fixing it now might introduce a regression. I'm entirely
+</I>&gt;<i> not sure sending NXdomains to clients for potentially perfectly valid
+</I>&gt;<i> queries is that good an idea, especially in times of resolver-side
+</I>&gt;<i> negative caching. But that's another story, first I'd like to get rid
+</I>&gt;<i> of the noise in my switch logs ;)
+</I>&gt;<i> 
+</I>&gt;<i> HTH,
+</I>&gt;<i> Andre.
+</I>
+
+</PRE>
+
+
+
+
+
+
+
+
+
+
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000996.html">[Chilli] MAC Flapping bug in dhcp_nakDNS
+</A></li>
+	<LI>Next message: <A HREF="000992.html">[Chilli] Hotspot Login on Mobile Phones
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#997">[ date ]</a>
+              <a href="thread.html#997">[ thread ]</a>
+              <a href="subject.html#997">[ subject ]</a>
+              <a href="author.html#997">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,170 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] Comunication Issues
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Comunication%20Issues&In-Reply-To=%3C1361988022.6805.11.camel%40david-laptop%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="002179.html">
+   <LINK REL="Next"  HREF="002180.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] Comunication Issues</H1>
+    <B>David Bird</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Comunication%20Issues&In-Reply-To=%3C1361988022.6805.11.camel%40david-laptop%3E"
+       TITLE="[Chilli] Comunication Issues">david at coova.com
+       </A><BR>
+    <I>Wed Feb 27 18:00:22 UTC 2013</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="002179.html">[Chilli] Comunication Issues
+</A></li>
+        <LI>Next message: <A HREF="002180.html">[Chilli] SOLVED !!  DHCP Pool Range With CoovaChilli 1.3.0
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2184">[ date ]</a>
+              <a href="thread.html#2184">[ thread ]</a>
+              <a href="subject.html#2184">[ subject ]</a>
+              <a href="author.html#2184">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hi,
+
+I don't think using a tap with OpenVPN will help much. Are you wanting
+to put the OpenVPN link into a bridge? 
+
+Do you have an idea where your RADIUS might be being dropped? Are you
+relying on CoA RADIUS being sent *to* chilli? If so, then the VPN will
+help with that (and have the side effect of a more secure RADIUS path,
+suitable for iPass integration, etc). 
+
+Not sure this is your issue, but having your RADIUS server clean up
+active sessions when there is an Accounting-On (startup) packet from
+chilli may help. 
+
+The risk of someone resuming/assuming the IP of an authorized station is
+an inherent risk of using Layer3 mode -- similarly in layer2 people can
+hijack an authorized MAC address, however the former case in layer3 mode
+is more likely to happen just by accident. 
+
+David
+
+
+
+On Tue, 2013-02-26 at 09:21 -0100, Luis Ferreira wrote:
+&gt;<i> Greeting to all,
+</I>&gt;<i> 
+</I>&gt;<i>  
+</I>&gt;<i> 
+</I>&gt;<i> I would like you help with an issue that I&#8217;m getting. First I&#8217;ll just
+</I>&gt;<i> expose a couple of my problems:
+</I>&gt;<i> 
+</I>&gt;<i>  
+</I>&gt;<i> 
+</I>&gt;<i> Every time to time, I found in the list of current sessions on the
+</I>&gt;<i> RADIUS, users online that do not have login done on Chilli. That cause
+</I>&gt;<i> the radius to not allow the login because there is already someone
+</I>&gt;<i> using the account.
+</I>&gt;<i> 
+</I>&gt;<i> Also, I&#8217;ve notice that some users disappear from the online users, but
+</I>&gt;<i> chilli still has them on and working. That has a very bad side effect.
+</I>&gt;<i> Someone connect to the wifi, and if it catch the same ip (lease is for
+</I>&gt;<i> 8 hours) it will get free internet, because radius as already close
+</I>&gt;<i> the session of the original one.
+</I>&gt;<i> 
+</I>&gt;<i>                 Other thing is Chilli disconnect clients, but they
+</I>&gt;<i> still appear on RADIUS.
+</I>&gt;<i> 
+</I>&gt;<i>  
+</I>&gt;<i> 
+</I>&gt;<i> All of that seems to me failures in communication between RADIUS
+</I>&gt;<i> (Central Server on different country with dedicated IP), and Chilli
+</I>&gt;<i> Box&#8217;s (Couple of them spread around with dynamic DNS)
+</I>&gt;<i> 
+</I>&gt;<i>  
+</I>&gt;<i> 
+</I>&gt;<i> What I thought it could help me, was implementing openvpn with TAP
+</I>&gt;<i> device on the machines, to improve the reliability of the
+</I>&gt;<i> communications.
+</I>&gt;<i> 
+</I>&gt;<i>  
+</I>&gt;<i> 
+</I>&gt;<i> So, my questions are:
+</I>&gt;<i> 
+</I>&gt;<i>  
+</I>&gt;<i> 
+</I>&gt;<i> 1&#186; Is this a practical approach (tell RADIUS to use fixed IP address
+</I>&gt;<i> to disconnect packets, instead of dyndns address)?
+</I>&gt;<i> 
+</I>&gt;<i> 2&#186; Will this cause a lot of overhead (low bandwidth)
+</I>&gt;<i> 
+</I>&gt;<i> 3&#186; Will this help on the issue 
+</I>&gt;<i> 
+</I>&gt;<i> 4&#186; Is there a better approach for this kind of implementation (RADIUS
+</I>&gt;<i> at remote location and chilli with dynamic dns)?
+</I>&gt;<i> 
+</I>&gt;<i> 5&#186; Will openVPN work good with Chilli (Chilli IP
+</I>&gt;<i> 10.1.10.0/255.255.255.0 | OpenVPN 192.168.100.0/255.255.255.0)
+</I>&gt;<i> 
+</I>&gt;<i>  
+</I>&gt;<i> 
+</I>&gt;<i> Thoughts appreciated
+</I>&gt;<i> 
+</I>&gt;<i>  
+</I>&gt;<i> 
+</I>&gt;<i> Chilli 1.2.9
+</I>&gt;<i> 
+</I>&gt;<i> Layer 3
+</I>&gt;<i> 
+</I>&gt;<i> VLAN
+</I>&gt;<i> 
+</I>&gt;<i>  
+</I>&gt;<i> 
+</I>&gt;<i> Regards,
+</I>&gt;<i> 
+</I>&gt;<i> Luis
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> _______________________________________________
+</I>&gt;<i> Chilli mailing list
+</I>&gt;<i> <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">Chilli at coova.org</A>
+</I>&gt;<i> <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">http://lists.coova.org/cgi-bin/mailman/listinfo/chilli</A>
+</I>
+-- 
+--
+David Bird
+<A HREF="http://www.linkedin.com/in/dwbird">http://www.linkedin.com/in/dwbird</A>
+<A HREF="https://twitter.com/wlanmac">https://twitter.com/wlanmac</A>
+
+</PRE>
+
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="002179.html">[Chilli] Comunication Issues
+</A></li>
+	<LI>Next message: <A HREF="002180.html">[Chilli] SOLVED !!  DHCP Pool Range With CoovaChilli 1.3.0
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2184">[ date ]</a>
+              <a href="thread.html#2184">[ thread ]</a>
+              <a href="subject.html#2184">[ subject ]</a>
+              <a href="author.html#2184">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

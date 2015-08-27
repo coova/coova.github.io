@@ -1,0 +1,149 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] Radius Queue Full
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Radius%20Queue%20Full&In-Reply-To=%3C1318699909.5098.1.camel%40david-laptop%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001742.html">
+   <LINK REL="Next"  HREF="001748.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] Radius Queue Full</H1>
+    <B>David Bird</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Radius%20Queue%20Full&In-Reply-To=%3C1318699909.5098.1.camel%40david-laptop%3E"
+       TITLE="[Chilli] Radius Queue Full">david at coova.com
+       </A><BR>
+    <I>Sat Oct 15 17:31:49 UTC 2011</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001742.html">[Chilli] Radius Queue Full
+</A></li>
+        <LI>Next message: <A HREF="001748.html">[Chilli]  Radius Queue Full
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1744">[ date ]</a>
+              <a href="thread.html#1744">[ thread ]</a>
+              <a href="subject.html#1744">[ subject ]</a>
+              <a href="author.html#1744">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hello,
+
+The RADIUS queue issue is fixed in the next release. So is a segfault
+which occurs under certain conditions....
+
+David
+
+On Sat, 2011-10-15 at 21:57 +1000, Timothy White wrote:
+&gt;<i> I'm guessing this was stuck in a moderation queue for a few months.
+</I>&gt;<i> 
+</I>&gt;<i> My understanding is that the radius queue is used so that if the
+</I>&gt;<i> RADIUS server doesn't respond for a little while, accounting packets
+</I>&gt;<i> aren't lost. Ether, your RADIUS server isn't letting Chilli know that
+</I>&gt;<i> it's received those packets (or the network is congested so the
+</I>&gt;<i> messages don't get back), or the RADIUS server is overlaoded.
+</I>&gt;<i> What is your accounting interval set at? If you are experiencing
+</I>&gt;<i> higher &quot;loads&quot; (just think, if you set your interval at 10s, with 200
+</I>&gt;<i> users that's 200 accounting packets every 10 seconds, which the RADIUS
+</I>&gt;<i> server has to do database updates on) then setting a longer accounting
+</I>&gt;<i> interval would help. I know in Cisco routers that the accounting
+</I>&gt;<i> interval is a number of hours!! Generally for a Captive Portal Hotspot
+</I>&gt;<i> though, you want a smaller interval. I currently use about 2.5
+</I>&gt;<i> minutes, in particular so that if no accounting packets are seen in 2
+</I>&gt;<i> intervals (5 minutes) we assume the session to be stale and disconnect
+</I>&gt;<i> it (as we limit connections to 1 per user).
+</I>&gt;<i> 
+</I>&gt;<i> Have you managed to fix it or are you still having problems?
+</I>&gt;<i> 
+</I>&gt;<i> Tim
+</I>&gt;<i> 
+</I>&gt;<i> On Mon, Aug 1, 2011 at 11:54 AM, Robert White &lt;<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">rwhite at globalgossip.net</A>&gt; wrote:
+</I>&gt;<i> &gt; Hello there,
+</I>&gt;<i> &gt; Has any one seen this message before?
+</I>&gt;<i> &gt; ~# tail messages -n 50
+</I>&gt;<i> &gt; Jul 31 18:56:26 pxe coova-chilli[29486]: radius.c: 218: radius queue is
+</I>&gt;<i> &gt; full!
+</I>&gt;<i> &gt; Jul 31 18:56:26 pxe last message repeated 255 times
+</I>&gt;<i> &gt; Jul 31 18:56:26 pxe coova-chilli[29486]: radius.c: 1403: could not put in
+</I>&gt;<i> &gt; queue
+</I>&gt;<i> &gt; Jul 31 18:56:26 pxe coova-chilli[29486]: radius.c: 218: radius queue is
+</I>&gt;<i> &gt; full!
+</I>&gt;<i> &gt; Jul 31 18:56:26 pxe last message repeated 255 times
+</I>&gt;<i> &gt; Jul 31 18:56:26 pxe coova-chilli[29486]: radius.c: 1403: could not put in
+</I>&gt;<i> &gt; queue
+</I>&gt;<i> &gt; Jul 31 18:56:29 pxe coova-chilli[29486]: radius.c: 218: radius queue is
+</I>&gt;<i> &gt; full!
+</I>&gt;<i> &gt; Jul 31 18:56:29 pxe last message repeated 255 times
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; The message is obviously quite self explanatory but I'm wondering exactly
+</I>&gt;<i> &gt; why this queue would fill up.  What is the Radius queue actually for?
+</I>&gt;<i> &gt;  Waiting for replies from a Radius server?  Can i set the queue to a bigger
+</I>&gt;<i> &gt; size?  is there a way of clearing the queue without restarting chilli.  I
+</I>&gt;<i> &gt; run chilli across lots of different sites.  I only see this message at some
+</I>&gt;<i> &gt; of my busier sites. 150~200 users and tbh i thought chilli could easily cope
+</I>&gt;<i> &gt; with more than a few 100 users.  Is this a problem with my Radius setup do
+</I>&gt;<i> &gt; you think?
+</I>&gt;<i> &gt; I'd be grateful if anyone could shed some more light on this log message.
+</I>&gt;<i> &gt; Thanks,
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; Rob White
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; -------------------------------------------------
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; IMPORTANT NOTICE : The information in this email is confidential and may
+</I>&gt;<i> &gt; also be privileged.
+</I>&gt;<i> &gt; If you are not the intended recipient, any use or dissemination of the
+</I>&gt;<i> &gt; information and any
+</I>&gt;<i> &gt; disclosure or copying of this email is unauthorised and strictly prohibited.
+</I>&gt;<i> &gt; If you have received
+</I>&gt;<i> &gt; this email in error, please promptly inform us by reply email or telephone.
+</I>&gt;<i> &gt; You should also delete
+</I>&gt;<i> &gt; this email and destroy any hard copies produced.
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; _______________________________________________
+</I>&gt;<i> &gt; Chilli mailing list
+</I>&gt;<i> &gt; <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">Chilli at coova.org</A>
+</I>&gt;<i> &gt; <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">http://lists.coova.org/cgi-bin/mailman/listinfo/chilli</A>
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt;
+</I>&gt;<i> _______________________________________________
+</I>&gt;<i> Chilli mailing list
+</I>&gt;<i> <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">Chilli at coova.org</A>
+</I>&gt;<i> <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">http://lists.coova.org/cgi-bin/mailman/listinfo/chilli</A>
+</I>
+
+</PRE>
+
+
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001742.html">[Chilli] Radius Queue Full
+</A></li>
+	<LI>Next message: <A HREF="001748.html">[Chilli]  Radius Queue Full
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1744">[ date ]</a>
+              <a href="thread.html#1744">[ thread ]</a>
+              <a href="subject.html#1744">[ subject ]</a>
+              <a href="author.html#1744">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

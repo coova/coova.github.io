@@ -1,0 +1,700 @@
+From giovanni.bezicheri at nethesis.it  Tue Sep  2 07:04:38 2014
+From: giovanni.bezicheri at nethesis.it (Giovanni Bezicheri)
+Date: Tue, 02 Sep 2014 09:04:38 +0200
+Subject: [Chilli]  CoovaChilli on NethServer
+Message-ID: <54056C06.1010403@nethesis.it>
+
+Hi all!
+
+We have made the rpm package of CoovaChilli for NethServer (see 
+http://dev.nethserver.org/issues/2782 on NethServer tracker).
+
+NethServer is an operating system for Linux enthusiasts, designed for 
+small offices and medium enterprises (http://www.nethserver.org/).
+
+From houssenbay at et.esiea.fr  Thu Sep  4 17:31:11 2014
+From: houssenbay at et.esiea.fr (HOUSSENBAY Adnane-Olivier)
+Date: Thu, 4 Sep 2014 17:31:11 +0000
+Subject: [Chilli] 802.1X - EAP/TLS Authentication using coova as Radius proxy
+Message-ID: <1409851870842.43939@et.esiea.fr>
+
+Dear CoovaChilli users,
+
+
+I'm trying to do 802.1X (wired/ and wireless with wpa) authentication using EAP-TLS method which involve mutual authentication with certificates (both sides client/server).
+
+
+I already succeed to 802.1X EAP-PEAP authentication but I'm having trouble with EAP-TLS.
+
+
+I configured chilli as proxy radius with the parameters below :
+
+--proxylisten
+
+--proxyport
+
+--proxyclient
+
+--proxysecret
+
+
+Here is my authentication chain link:
+
+Supplicant wpa_supplicant <-> switch Alcatel <-> coovachilli <-> freeradius server
+
+
+So, the dialog between the supplicant and freeradius is doing well until
+
+freeradius ask for client certificate. At this moment the switch interrupt
+
+the authentication process. ( I got the same with wireless authentication using
+
+Alcatel omniaccess AP)
+
+
+I checked with wireshark the frames between freeradius <->coova<-> switch :
+
+the radius packet from freeradius (Access-challenge) containing certificate request is forwarded to
+
+the switch properly.
+
+
+Frames between supplicant <-> switch
+
+When client certificate is requested the supplicant send the first eap fragment which contains
+
+the client certificate but it's "dropped" by the switch and it displays "Radius server not reachable"
+
+
+To resume the situation here is the radius packets exchange :
+
+switch <-----------------------------------> freeradius
+
+--------> Access-Request: identity
+
+<-------- Access-Challenge : Start TLS
+
+---------> Access-Request: Client Hello
+
+<-------- Access-Challenge : Server Hello, Certificate Request
+
+
+And then nothing happens :(
+
+
+Please help me if anyone have suggestion or explanation about this strange behaviour.
+
+
+Thanks for all the reply, all the best.
+
+
+Olivier
+
+
+
+
+
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20140904/34762870/attachment.html>
+
+From giovanni.bezicheri at nethesis.it  Mon Sep  8 10:18:02 2014
+From: giovanni.bezicheri at nethesis.it (Giovanni Bezicheri)
+Date: Mon, 08 Sep 2014 12:18:02 +0200
+Subject: [Chilli] Use of facebook to authenticate in RADIUS
+In-Reply-To: <CACz10oOK-LF6UwDcd0FO7sGm+mMVGmcW6zy3GWe33tRNDG4woA@mail.gmail.com>
+References: <CACz10oOK-LF6UwDcd0FO7sGm+mMVGmcW6zy3GWe33tRNDG4woA@mail.gmail.com>
+Message-ID: <540D825A.4070703@nethesis.it>
+
+Il 27/08/2014 17:55, Wilson Talento ha scritto:
+> Hi.
+> I am developing a system with captive portal which uses facebook 
+> accounts as login credentials. I am using coovachilli on an OpenWRT to 
+> do this feature.
+> However, in order to access facebook login, i have to include 
+> facebook.com <http://facebook.com> to uamdomains. The problem is, 
+> since facebook.com <http://facebook.com> is included in the whitelist, 
+> they can go directly to facebook.com <http://facebook.com> without 
+> passing through my splash page. Any suggestion for workaround on this?
+>
+> Thank you very much. Any opinion will be greatly appreciated.
+>
+> P.S. The use of squidproxy may not be available. I have a very low 
+> flash memory in my router and the package for squid won't fit.
+>
+>
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+Hi,
+i had the same problem. I think the suitable solution is to enable a 
+provisional session to do this kind of authorization. Facebook uses many 
+servers so enabling the only facebook.com domain would not be the clear 
+path..
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20140908/c08c0385/attachment.html>
+
+From augustus_meyer at yahoo.de  Mon Sep  8 11:28:33 2014
+From: augustus_meyer at yahoo.de (reiner otto)
+Date: Mon, 8 Sep 2014 12:28:33 +0100
+Subject: [Chilli] Use of facebook to authenticate in RADIUS
+In-Reply-To: <540D825A.4070703@nethesis.it>
+References: <CACz10oOK-LF6UwDcd0FO7sGm+mMVGmcW6zy3GWe33tRNDG4woA@mail.gmail.com>
+ <540D825A.4070703@nethesis.it>
+Message-ID: <1410175713.52393.YahooMailNeo@web172702.mail.ir2.yahoo.com>
+
+
+>P.S. The use of squidproxy may not be available. I have a very low flash
+ memory in my router and the package for squid won't fit.<
+Hm, I have squid package running on a 64MB flash system, using about 12MB RAM. Could be smaller, in case of reducing cache_mem, and recompile, to remove unnecessary components.
+
+
+
+Giovanni Bezicheri <giovanni.bezicheri at nethesis.it> schrieb am 12:18 Montag, 8.September 2014:
+ 
+
+
+Il 27/08/2014 17:55, Wilson Talento ha scritto:
+
+Hi. 
+>I am developing a system with captive portal which uses facebook
+        accounts as login credentials. I am using coovachilli on an
+        OpenWRT to do this feature.
+>However, in order to access facebook login, i have to include facebook.com to uamdomains. The problem is, since facebook.com is included in the whitelist, they can go directly to facebook.com without passing through my splash page. Any suggestion for workaround on this?
+>
+>Thank you very much. Any opinion will be greatly appreciated.
+>
+>P.S. The use of squidproxy may not be available. I have a very
+        low flash memory in my router and the package for squid won't
+        fit.
+>
+>
+>_______________________________________________
+Chilli mailing list Chilli at coova.org http://lists.coova.org/cgi-bin/mailman/listinfo/chilli 
+Hi,
+i had the same problem. I think the suitable solution is to enable a
+    provisional session to do this kind of authorization. Facebook uses
+    many servers so enabling the only facebook.com domain would not be
+    the clear path..
+
+
+_______________________________________________
+Chilli mailing list
+Chilli at coova.org
+http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20140908/94c648f9/attachment.html>
+
+From houssenbay at et.esiea.fr  Tue Sep  9 14:33:13 2014
+From: houssenbay at et.esiea.fr (HOUSSENBAY Adnane-Olivier)
+Date: Tue, 9 Sep 2014 14:33:13 +0000
+Subject: [Chilli] 802.1X - EAP/TLS Authentication using coova as Radius
+	proxy [SOLVED]
+In-Reply-To: <1409851870842.43939@et.esiea.fr>
+References: <1409851870842.43939@et.esiea.fr>
+Message-ID: <1410273192924.14722@et.esiea.fr>
+
+Hi everyone,
+
+I solved the EAP-TLS authentication issue.
+
+The length of packets sent by wpa_supplicant was too big (1408 bytes).
+
+Indeed, when the radius client encapsulates EAP message in a radius packet (Access-Request), total length of radius packet was greater than 1500 bytes.
+
+Thus coovaChilli dropped these packets.
+
+To fix that, I just configure my supplicant to make fragments of 1024 bytes.
+
+Here is my configuration of wpa_supplicant, maybe it can be useful to somebody :
+# EAP-TLS wired authentication
+
+    network={
+
+            eapol_flags=0
+
+            key_mgmt=WPA-EAP
+
+            eap=TLS
+
+            identity="yourID"
+
+            ca_cert="path/to/ca_certificate
+            client_cert="path/to/client_certificate"
+
+            private_key="path/to/client_private_key
+
+            private_key_passwd="yourPassword"
+
+            fragment_size=1024
+
+    }
+
+
+Finally, I would like to thanks coovaChilli developers for their work. It's a great project and for me the best network access controller.
+
+Best regards,
+
+
+Olivier
+ALCASAR<http://www.alcasar.net/en> project member
+
+
+
+
+________________________________
+De : HOUSSENBAY Adnane-Olivier
+Envoy? : jeudi 4 septembre 2014 19:31
+? : chilli at coova.org
+Objet : 802.1X - EAP/TLS Authentication using coova as Radius proxy
+
+
+Dear CoovaChilli users,
+
+
+I'm trying to do 802.1X (wired/ and wireless with wpa) authentication using EAP-TLS method which involve mutual authentication with certificates (both sides client/server).
+
+
+I already succeed to 802.1X EAP-PEAP authentication but I'm having trouble with EAP-TLS.
+
+
+I configured chilli as proxy radius with the parameters below :
+
+--proxylisten
+
+--proxyport
+
+--proxyclient
+
+--proxysecret
+
+
+Here is my authentication chain link:
+
+Supplicant wpa_supplicant <-> switch Alcatel <-> coovachilli <-> freeradius server
+
+
+So, the dialog between the supplicant and freeradius is doing well until
+
+freeradius ask for client certificate. At this moment the switch interrupt
+
+the authentication process. ( I got the same with wireless authentication using
+
+Alcatel omniaccess AP)
+
+
+I checked with wireshark the frames between freeradius <->coova<-> switch :
+
+the radius packet from freeradius (Access-challenge) containing certificate request is forwarded to
+
+the switch properly.
+
+
+Frames between supplicant <-> switch
+
+When client certificate is requested the supplicant send the first eap fragment which contains
+
+the client certificate but it's "dropped" by the switch and it displays "Radius server not reachable"
+
+
+To resume the situation here is the radius packets exchange :
+
+switch <-----------------------------------> freeradius
+
+--------> Access-Request: identity
+
+<-------- Access-Challenge : Start TLS
+
+---------> Access-Request: Client Hello
+
+<-------- Access-Challenge : Server Hello, Certificate Request
+
+
+And then nothing happens :(
+
+
+Please help me if anyone have suggestion or explanation about this strange behaviour.
+
+
+Thanks for all the reply, all the best.
+
+
+Olivier
+
+
+
+
+
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20140909/d7086187/attachment.html>
+
+From alghe.global at gmail.com  Sat Sep 27 10:10:49 2014
+From: alghe.global at gmail.com (Alexandru Gheorghe)
+Date: Sat, 27 Sep 2014 13:10:49 +0300
+Subject: [Chilli] [Chillispot] Redirection problem with DD-WRT
+Message-ID: <54268D29.3090707@gmail.com>
+
+Hi guys,
+
+    Please apologize me for having to put into discussions the defuncted
+Chillispot but this is a forced corner case for me.
+
+    With router TP-Link TL-WR740N (see [1] for hardware details), I've
+installed DD-WRT image for WR740N (v24 PreSP2 Beta Build 21061).
+    Trying to get chillispot to work, so here goes some information my
+setup (please bare with me):
+
+FreeRADIUS side (on CentOS, firewall disabled allows incoming, SELinux
+not enforcing):
+-----------------------------------------------------------------------
+1. Type: other
+2. clients allow 0.0.0.0/0
+3. secret is configured to be the same with hotspotlogin.cgi (chillispot
+doc/) for test purposes
+4. local radius test login works fine (both accept & reject)
+5. remote radius test (from dd-wrt) works fine from bash
+6. when dd-wrt should redirect the user there's no incoming data on the
+WAN interface of the server (ping however is seen and is working; so
+this rules out connectivity issues)
+
+
+DD-WRT most important:
+
+A summary first: this router is intended to be deployed in production
+behind an ADSL router, so it will serve Hotspot and will use the
+upstream router as a gateway.
+
+A. Networking side
+------------------
+i. Config type: Gateway
+
+ii. WAN is static in Gateway's LAN (router ip: 192.168.1.2/24, gw:
+192.168.1.254 -> this is the ADSL)
+
+iii. DHCP disabled
+
+iv. br0: eth0 ("WAN" - to ADSL router) + eth1 (LAN)
+
+v. br1: ath0.1 + ath0 (wireless iface; ath0.1 is the hotspot one which
+announces its bssid to the public and is free; ath0 is for management
+purposes, passwd protected)
+
+vi. firewall is disabled; connectivity is fine (dns as well); all
+interfaces are set bridged (Setup > Networking); brctl is ok (see iv and
+v above)
+
+vii. tun0 is created by chilli and serves dhcp for its subnet as well
+(192.168.182.0/24); running in debug mode i can see it serves dhcp
+leases so is fine
+
+viii. the client that gets the lease has chilli (192.168.182.1) as
+gateway, first ip for client is from range: .2-.254/24 (OK) and dns
+works correctly (can resolve google.ro for example); pinging also works
+
+ix. iptables is reflecting the rules from firewall.openwrt[2]
+(chillispot doc/); once I remove masquerade on postrouting however in
+nat table, connectivity for client is cut; it seems is bypassing chilli
+somehow
+
+So last: x. redirection issue: the client gets the lease, but when it
+will browse is just completely bypassing chilli altogether. Chilli gives
+the lease, and i can see the traffic (tcpdump) but the browser is not
+redirected to hotspotlogin.cgi (centos tcpdump doesn't prompt anything
+so is like chilli never got the traffic in the first place).
+
+How can chilli be bypassed since it is the gateway and should capture
+all traffic from the client? Could it be that once chilli gives the
+lease then traffic bypasses from br1 to br0 without going via tun0?
+
+Tried in debug mode, nothing of interest just the lease (chilli -d -f -c
+/tmp/chilli/chilli.conf). Could be the forward rules that are not blocking?
+
+Any suggestions? Much appreciated!
+
+Thanks a lot,
+Alex
+
+
+__REFERENCES:
+
+[1] specs:
+
+Platform...........Atheros AR9132 @ 400 MHz
+FCC ID.............TE7WR1043NX
+Wireless NIC...Atheros AR9103 3x3 MIMO
+WLAN..............802.11b/g/n
+LAN.................4/gigabit
+WAN................1/gigabit
+RAM.................32 MB
+Flash...............8 MB
+Serial Port.......1 (internal)
+JTAG...............1 (internal)
+USB.................1 (external)
+Input Voltage...12V 1.5A
+
+
+
+[2] firewall rules:
+#!/bin/sh
+#
+# Firewall script for ChilliSpot on OpenWRT
+#
+# -- changed for a different network topology: enable Wi-Fi --
+
+WANIF="eth0"
+WLANIF="ath0.1"
+LANIF="br0"
+
+IPTABLES="/usr/sbin/iptables"
+
+for T in filter nat mangle ; do
+  $IPTABLES -t $T -F
+  $IPTABLES -t $T -X
+done
+
+$IPTABLES -P INPUT DROP
+$IPTABLES -P FORWARD ACCEPT
+$IPTABLES -P OUTPUT ACCEPT
+
+# Just let everything to the router be accepted (behind another router
+already)
+$IPTABLES -A INPUT -j ACCEPT
+
+#Allow related and established on all interfaces (input)
+#$IPTABLES -A INPUT -m state --state RELATED,ESTABLISHED -j ACCEPT
+
+#Allow related and established $WANIF. Reject everything else.
+#$IPTABLES -A INPUT -i $WANIF -j REJECT
+
+#Allow related and established $WLANIF. Drop everything else.
+#$IPTABLES -A INPUT -i $WLANIF -j DROP
+
+#Allow 3990 on other interfaces (input).
+#$IPTABLES -A INPUT -p tcp -m tcp --dport 3990 --syn -j ACCEPT
+
+#Allow everything on loopback interface.
+$IPTABLES -A INPUT -i lo -j ACCEPT
+
+#Allow everything on $LANIF
+#$IPTABLES -A INPUT -i $LANIF -j ACCEPT
+
+#Drop everything to and from $WLANIF (forward)
+$IPTABLES -A FORWARD -i $WLANIF -j DROP
+$IPTABLES -A FORWARD -o $WLANIF -j DROP
+
+#Enable NAT on output device.
+$IPTABLES -t nat -A POSTROUTING -o $WANIF -j MASQUERADE
+
+
+-- 
+; Alexandru Gheorghe
+; alghe.global {at} gmail {dot} com
+; OpenPGP key ID 0xCAF985D2
+
+
+
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: signature.asc
+Type: application/pgp-signature
+Size: 836 bytes
+Desc: OpenPGP digital signature
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20140927/93292e33/attachment.pgp>
+
+From alghe.global at gmail.com  Sun Sep 28 14:46:25 2014
+From: alghe.global at gmail.com (Alexandru Gheorghe)
+Date: Sun, 28 Sep 2014 17:46:25 +0300
+Subject: [Chilli] [Chillispot] Redirection problem with DD-WRT [SOLVED]
+In-Reply-To: <54268D29.3090707@gmail.com>
+References: <54268D29.3090707@gmail.com>
+Message-ID: <54281F41.1090800@gmail.com>
+
+
+
+On 09/27/2014 01:10 PM, Alexandru Gheorghe wrote:
+> Hi guys,
+> 
+>     Please apologize me for having to put into discussions the defuncted
+> Chillispot but this is a forced corner case for me.
+> 
+>     With router TP-Link TL-WR740N (see [1] for hardware details), I've
+> installed DD-WRT image for WR740N (v24 PreSP2 Beta Build 21061).
+>     Trying to get chillispot to work, so here goes some information my
+> setup (please bare with me):
+> 
+> FreeRADIUS side (on CentOS, firewall disabled allows incoming, SELinux
+> not enforcing):
+> -----------------------------------------------------------------------
+> 1. Type: other
+> 2. clients allow 0.0.0.0/0
+> 3. secret is configured to be the same with hotspotlogin.cgi (chillispot
+> doc/) for test purposes
+> 4. local radius test login works fine (both accept & reject)
+> 5. remote radius test (from dd-wrt) works fine from bash
+> 6. when dd-wrt should redirect the user there's no incoming data on the
+> WAN interface of the server (ping however is seen and is working; so
+> this rules out connectivity issues)
+> 
+> 
+> DD-WRT most important:
+> 
+> A summary first: this router is intended to be deployed in production
+> behind an ADSL router, so it will serve Hotspot and will use the
+> upstream router as a gateway.
+> 
+> A. Networking side
+> ------------------
+> i. Config type: Gateway
+> 
+> ii. WAN is static in Gateway's LAN (router ip: 192.168.1.2/24, gw:
+> 192.168.1.254 -> this is the ADSL)
+> 
+> iii. DHCP disabled
+> 
+> iv. br0: eth0 ("WAN" - to ADSL router) + eth1 (LAN)
+> 
+> v. br1: ath0.1 + ath0 (wireless iface; ath0.1 is the hotspot one which
+> announces its bssid to the public and is free; ath0 is for management
+> purposes, passwd protected)
+> 
+> vi. firewall is disabled; connectivity is fine (dns as well); all
+> interfaces are set bridged (Setup > Networking); brctl is ok (see iv and
+> v above)
+> 
+> vii. tun0 is created by chilli and serves dhcp for its subnet as well
+> (192.168.182.0/24); running in debug mode i can see it serves dhcp
+> leases so is fine
+> 
+> viii. the client that gets the lease has chilli (192.168.182.1) as
+> gateway, first ip for client is from range: .2-.254/24 (OK) and dns
+> works correctly (can resolve google.ro for example); pinging also works
+> 
+> ix. iptables is reflecting the rules from firewall.openwrt[2]
+> (chillispot doc/); once I remove masquerade on postrouting however in
+> nat table, connectivity for client is cut; it seems is bypassing chilli
+> somehow
+> 
+> So last: x. redirection issue: the client gets the lease, but when it
+> will browse is just completely bypassing chilli altogether. Chilli gives
+> the lease, and i can see the traffic (tcpdump) but the browser is not
+> redirected to hotspotlogin.cgi (centos tcpdump doesn't prompt anything
+> so is like chilli never got the traffic in the first place).
+I've fixed this by not having br1 and tun0 overlapping.
+
+tun0 (chilli listen) is now on 192.168.182.0/24
+
+while br1 is on different network: 192.168.183.0/24
+
+what was happening was taht once chilli served the dhcp request for the
+client, he would go out via br1 to br0 and internet bypassing chilli
+completely.
+
+
+> How can chilli be bypassed since it is the gateway and should capture
+> all traffic from the client? Could it be that once chilli gives the
+> lease then traffic bypasses from br1 to br0 without going via tun0?
+indeed this happened, it was not going through chilli after the lease
+anymore
+
+> 
+> Tried in debug mode, nothing of interest just the lease (chilli -d -f -c
+> /tmp/chilli/chilli.conf). Could be the forward rules that are not blocking?
+> 
+> Any suggestions? Much appreciated!
+> 
+> Thanks a lot,
+> Alex
+> 
+> 
+> __REFERENCES:
+> 
+> [1] specs:
+> 
+> Platform...........Atheros AR9132 @ 400 MHz
+> FCC ID.............TE7WR1043NX
+> Wireless NIC...Atheros AR9103 3x3 MIMO
+> WLAN..............802.11b/g/n
+> LAN.................4/gigabit
+> WAN................1/gigabit
+> RAM.................32 MB
+> Flash...............8 MB
+> Serial Port.......1 (internal)
+> JTAG...............1 (internal)
+> USB.................1 (external)
+> Input Voltage...12V 1.5A
+> 
+> 
+> 
+> [2] firewall rules:
+> #!/bin/sh
+> #
+> # Firewall script for ChilliSpot on OpenWRT
+> #
+> # -- changed for a different network topology: enable Wi-Fi --
+> 
+> WANIF="eth0"
+> WLANIF="ath0.1"
+> LANIF="br0"
+> 
+> IPTABLES="/usr/sbin/iptables"
+> 
+> for T in filter nat mangle ; do
+>   $IPTABLES -t $T -F
+>   $IPTABLES -t $T -X
+> done
+> 
+> $IPTABLES -P INPUT DROP
+> $IPTABLES -P FORWARD ACCEPT
+> $IPTABLES -P OUTPUT ACCEPT
+> 
+> # Just let everything to the router be accepted (behind another router
+> already)
+> $IPTABLES -A INPUT -j ACCEPT
+> 
+> #Allow related and established on all interfaces (input)
+> #$IPTABLES -A INPUT -m state --state RELATED,ESTABLISHED -j ACCEPT
+> 
+> #Allow related and established $WANIF. Reject everything else.
+> #$IPTABLES -A INPUT -i $WANIF -j REJECT
+> 
+> #Allow related and established $WLANIF. Drop everything else.
+> #$IPTABLES -A INPUT -i $WLANIF -j DROP
+> 
+> #Allow 3990 on other interfaces (input).
+> #$IPTABLES -A INPUT -p tcp -m tcp --dport 3990 --syn -j ACCEPT
+> 
+> #Allow everything on loopback interface.
+> $IPTABLES -A INPUT -i lo -j ACCEPT
+> 
+> #Allow everything on $LANIF
+> #$IPTABLES -A INPUT -i $LANIF -j ACCEPT
+> 
+> #Drop everything to and from $WLANIF (forward)
+> $IPTABLES -A FORWARD -i $WLANIF -j DROP
+> $IPTABLES -A FORWARD -o $WLANIF -j DROP
+> 
+> #Enable NAT on output device.
+> $IPTABLES -t nat -A POSTROUTING -o $WANIF -j MASQUERADE
+> 
+> 
+
+-- 
+; Alexandru Gheorghe
+; alghe.global {at} gmail {dot} com
+; OpenPGP key ID 0xCAF985D2
+
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: signature.asc
+Type: application/pgp-signature
+Size: 836 bytes
+Desc: OpenPGP digital signature
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20140928/5ba146fe/attachment.pgp>
+

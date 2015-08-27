@@ -1,0 +1,163 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> Freeradius + acctupdate option
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:cap%40coova.org?Subject=Re%3A%20Freeradius%20%2B%20acctupdate%20option&In-Reply-To=%3C005d01c7f5f0%24573b51d0%2405b1f570%24%40com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000001.html">
+   <LINK REL="Next"  HREF="000003.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>Freeradius + acctupdate option</H1>
+    <B>David Riches</B> 
+    <A HREF="mailto:cap%40coova.org?Subject=Re%3A%20Freeradius%20%2B%20acctupdate%20option&In-Reply-To=%3C005d01c7f5f0%24573b51d0%2405b1f570%24%40com%3E"
+       TITLE="Freeradius + acctupdate option">david at candengo.com
+       </A><BR>
+    <I>Thu Sep 13 10:25:00 UTC 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000001.html">CAP upgrades
+</A></li>
+        <LI>Next message: <A HREF="000003.html">Freeradius + acctupdate option
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2">[ date ]</a>
+              <a href="thread.html#2">[ thread ]</a>
+              <a href="subject.html#2">[ subject ]</a>
+              <a href="author.html#2">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Just a quick question regarding the post below if you don&#8217;t mind.
+
+Ive tried to append &#8211;acctupdate to the config file, but it results in an
+error being thrown (unknown command) &#8211; is this option still supported?
+
+Lastly,
+
+I don&#8217;t have attrs.accounting_response file &#8211; ive installed a few times now
+but never end up with this file &#8211; could someone please email me a copy?
+
+Regards to all
+
+David
+
+Original Post:
+
+If you need to manage multiple concurrent login and you want to have 
+Session-Timeout dinamically update on coovachilli when a user login
+multiple time, David add an amazing option, --acctupdate, that get
+the NON-standard response to acctupdate packets to radius with some
+attributes, like the Session-Timeout.
+
+But now the problem is: How to make it working with freeradius and mysql?
+
+Well, this is how:
+
+Firt of all, look at
+<A HREF="http://coova.org/wiki/index.php/CoovaChilli/WithFreeRADIUS">http://coova.org/wiki/index.php/CoovaChilli/WithFreeRADIUS</A> and do the
+required changes to attrs.accounting_response file.
+
+Now, on radiusd.conf, in the module {} section, 
+add this:
+
+   attr_rewrite updatesessiontimeout {
+      attribute = Session-Timeout
+      searchin = reply
+      searchfor = &quot;[+ ]&quot;
+      replacewith = &quot;%{sql:SELECT ch.Value-IF(SUM(acct.AcctSessionTime) IS
+NULL, 0, SUM(acct.AcctSessionTime)) \
+                      FROM radcheck AS ch LEFT JOIN radacct AS acct \
+                      ON acct.Username=ch.UserName AND
+acct.AcctSessionId!='%{Acct-Session-Id}'\
+                      AND acct.AcctUniqueId!='%{Acct-Unique-Session-Id}' \
+                      WHERE ch.UserName='%{User-Name}' AND
+ch.Attribute='Max-All-Session'&quot;
+      new_attribute = yes
+      append = no
+   }
+
+Now, in the acctupdate {} section add simply updatesessiontimeout and
+voila', le jeux son fait!
+
+This assume that you have Max-All-Session in radcheck table, if you have it
+in radgroupcheck you need to 
+modify a bit the sql query.
+
+Just because isn't documented:
+
+If you need to manage multiple concurrent login and you want to have 
+Session-Timeout dinamically update on coovachilli when a user login
+multiple time, David add an amazing option, --acctupdate, that get
+the NON-standard response to acctupdate packets to radius with some
+attributes, like the Session-Timeout.
+
+But now the problem is: How to make it working with freeradius and mysql?
+
+Well, this is how:
+
+Firt of all, look at
+<A HREF="http://coova.org/wiki/index.php/CoovaChilli/WithFreeRADIUS">http://coova.org/wiki/index.php/CoovaChilli/WithFreeRADIUS</A> and do the
+required changes to attrs.accounting_response file.
+
+Now, on radiusd.conf, in the module {} section, 
+add this:
+
+   attr_rewrite updatesessiontimeout {
+      attribute = Session-Timeout
+      searchin = reply
+      searchfor = &quot;[+ ]&quot;
+      replacewith = &quot;%{sql:SELECT ch.Value-IF(SUM(acct.AcctSessionTime) IS
+NULL, 0, SUM(acct.AcctSessionTime)) \
+                      FROM radcheck AS ch LEFT JOIN radacct AS acct \
+                      ON acct.Username=ch.UserName AND
+acct.AcctSessionId!='%{Acct-Session-Id}'\
+                      AND acct.AcctUniqueId!='%{Acct-Unique-Session-Id}' \
+                      WHERE ch.UserName='%{User-Name}' AND
+ch.Attribute='Max-All-Session'&quot;
+      new_attribute = yes
+      append = no
+   }
+
+Now, in the acctupdate {} section add simply updatesessiontimeout and
+voila', le jeux son fait!
+
+This assume that you have Max-All-Session in radcheck table, if you have it
+in radgroupcheck you need to 
+modify a bit the sql query.
+
+
+
+No virus found in this outgoing message.
+Checked by AVG Free Edition. 
+Version: 7.5.485 / Virus Database: 269.13.16/1004 - Release Date: 12/09/2007
+17:22
+ 
+
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000001.html">CAP upgrades
+</A></li>
+	<LI>Next message: <A HREF="000003.html">Freeradius + acctupdate option
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2">[ date ]</a>
+              <a href="thread.html#2">[ thread ]</a>
+              <a href="subject.html#2">[ subject ]</a>
+              <a href="author.html#2">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/cap">More information about the Cap
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,112 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> uamanyip patch
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20uamanyip%20patch&In-Reply-To=%3C47F55510.5060806%40gmail.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000172.html">
+   <LINK REL="Next"  HREF="000175.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>uamanyip patch</H1>
+    <B>Gunther Mayer</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20uamanyip%20patch&In-Reply-To=%3C47F55510.5060806%40gmail.com%3E"
+       TITLE="uamanyip patch">gunther.mayer at googlemail.com
+       </A><BR>
+    <I>Thu Apr  3 22:07:12 UTC 2008</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000172.html">http://ipaddress:3990/prelogin - HTTP ERROR 404 !?
+</A></li>
+        <LI>Next message: <A HREF="000175.html">uamanyip patch
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#174">[ date ]</a>
+              <a href="thread.html#174">[ thread ]</a>
+              <a href="subject.html#174">[ subject ]</a>
+              <a href="author.html#174">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hi David,
+
+I've recently tried out the uamanyip option in coova and was very 
+pleased at how well it works. I want to use it all the time in future 
+across our network to simplify troubleshooting, should save a couple of 
+support calls ;-)
+
+However, I found a very annoying side effect of uamanyip: It spoofs ARP 
+requests for just about anything. While that's the point of uamanyip, it 
+makes it impossible to have other devices such as access points that you 
+have to access for management purposes on the chilli network. Say chilli 
+listens on 192.168.182.1 and there's another access point with static ip 
+192.168.182.2 (of course not part of the dynip range) to increase 
+wireless coverage. As soon as anybody tries to ping or otherwise access 
+192.168.182.2 because chilli will immediately claim it through arp 
+before the real device has a chance to answer - it creates a race 
+condition. Putting such devices on entirely different subnets makes no 
+difference as their ip's will be stolen too. The only though somewhat 
+ugly way I found around that was to clear the arp cache on my client and 
+then force a mapping with arp -s.
+
+So, I thought wouldn't it be cool to let chilli ignore arp requests for 
+anything other than itself but only on its own subnet. Anything else 
+will still be caught and spoofed as usual. Hence I came up with the 
+below patch, I created it against 1.0.11-stable but applying it to svn 
+(r161) proved trivial, as it's a very short patch.
+
+I think this should be done by default as it allows devices on the 
+chilli subnet to talk to each other properly (of course for real 
+isolation one would use something like ebtables or a/p isolation). But 
+of course the patch could be extended to make this optional 
+(uamanyipignorelan?) if people wanted to keep the current behaviour. 
+Thoughts?
+
+Gunther
+
+Index: dhcp.c
+===================================================================
+--- dhcp.c      (revision 161)
++++ dhcp.c      (working copy)
+@@ -2595,6 +2595,14 @@
+       return 0; /* Only reply if he asked for his router address */
+     }
+   }
++  else if ((taraddr.s_addr != options.dhcplisten.s_addr) &amp;&amp;
++        ((conn-&gt;hisip.s_addr &amp; conn-&gt;hismask.s_addr) ==
++        (reqaddr.s_addr &amp; conn-&gt;hismask.s_addr))) {
++    /* when uamanyip is on we should ignore arp requests that ARE 
+within our subnet except of course the ones for ourselves*/
++    if (options.debug)
++      log_dbg(&quot;ARP: request for ip other than us within our 
+subnet(uamanyip on), ignoring&quot;);
++    return 0;
++  }
+ 
+   conn-&gt;lasttime = mainclock;
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000172.html">http://ipaddress:3990/prelogin - HTTP ERROR 404 !?
+</A></li>
+	<LI>Next message: <A HREF="000175.html">uamanyip patch
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#174">[ date ]</a>
+              <a href="thread.html#174">[ thread ]</a>
+              <a href="subject.html#174">[ subject ]</a>
+              <a href="author.html#174">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

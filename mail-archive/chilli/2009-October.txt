@@ -1,0 +1,1174 @@
+From david at coova.com  Mon Oct 26 10:55:04 2009
+From: david at coova.com (David Bird)
+Date: Mon, 26 Oct 2009 11:55:04 +0100
+Subject: [Chilli] test
+Message-ID: <1256554504.13781.26.camel@david-laptop>
+
+test
+
+
+From david at coova.com  Mon Oct 26 10:55:30 2009
+From: david at coova.com (David Bird)
+Date: Mon, 26 Oct 2009 11:55:30 +0100
+Subject: [Chilli] test
+Message-ID: <1256554530.13781.28.camel@david-laptop>
+
+test
+
+
+From derekchilli at hssl.ie  Fri Oct  2 17:54:32 2009
+From: derekchilli at hssl.ie (Derek C)
+Date: Fri, 2 Oct 2009 18:54:32 +0100 (IST)
+Subject: dhcpradius option in coova chilli 1.0.14
+Message-ID: <37133.78.152.250.255.1254506072.squirrel@www.rivertowermail.com>
+
+Hi all,
+
+Does anyone have any info on how to use the "dhcpradius" option, with
+coova chilli 1.0.14, to pass DHCP details (computer DHCP hostname for
+example) to the server?
+
+I'm using free radius and I'm not sure when/how the dhcp details are
+passed to the radius server.  Do I need to specify extra options in
+freeradius?
+
+I'd love if the details were simply passed as CGI data to the uamserver
+but if I can get the details to the radius server I'm sure I can work with
+this.
+
+thanks very much for any help!
+
+Derek
+
+
+
+
+-- 
+Derek C
+In Ireland
+
+
+
+From oguzhank at bilkent.edu.tr  Mon Oct 12 10:31:45 2009
+From: oguzhank at bilkent.edu.tr (Oguzhan Kayhan)
+Date: Mon, 12 Oct 2009 13:31:45 +0300 (EEST)
+Subject: dhcp relay
+Message-ID: <55298.139.179.14.250.1255343505.squirrel@webmail.bilkent.edu.tr>
+
+Hello,
+I wonder am i thinking wrong about dhcprelay..
+
+I am planning to run a dhcpserver on same server with coova.
+And i want to disable coova's own dhcp server, so i can give static ip's
+to some of MACID's (like printers etc)
+I dont wanna use anyip and and dynamic-static ip masks.
+Because it creates other problems too.
+
+
+As i see it seems possible  via freeradius+jradius.
+What i wonder how (or can I) can i set coova to use local dhcp server
+instead of its own or freeradius..
+
+
+
+From oguzhank at bilkent.edu.tr  Tue Oct 13 08:04:19 2009
+From: oguzhank at bilkent.edu.tr (Oguzhan Kayhan)
+Date: Tue, 13 Oct 2009 11:04:19 +0300 (EEST)
+Subject: dhcp relay
+In-Reply-To: 
+     <55298.139.179.14.250.1255343505.squirrel@webmail.bilkent.edu.tr>
+References: 
+    <55298.139.179.14.250.1255343505.squirrel@webmail.bilkent.edu.tr>
+Message-ID: <35489.139.179.14.250.1255421059.squirrel@webmail.bilkent.edu.tr>
+
+Anybody??? :)
+
+I made a few tests more..
+I installed dhcp server to another server.
+And i also installed coova.
+Lets assume DHCP server is on 192.168.1.10
+and coova wan ip is 192.168.1.11
+So what i need to enter on coova config i guess is,
+
+But when i enter dhcpgateway 192.168.1.10
+
+the msg i got on syslog is
+
+Oct 13 11:00:04 gw coova-chilli[11812]: dhcp.c: 2262: received DHCP
+response from host other than our gateway
+Oct 13 11:00:04 gw coova-chilli[11812]: chilli.c: 4164:
+dhcp_relay_decaps() failed!
+
+if i enter dhcprelayagent 192.168.1.10
+
+nothing happens..it still gives the ip addresses from coova.
+
+Anybody experienced about that????
+
+
+
+
+> Hello,
+> I wonder am i thinking wrong about dhcprelay..
+>
+> I am planning to run a dhcpserver on same server with coova.
+> And i want to disable coova's own dhcp server, so i can give static ip's
+> to some of MACID's (like printers etc)
+> I dont wanna use anyip and and dynamic-static ip masks.
+> Because it creates other problems too.
+>
+>
+> As i see it seems possible  via freeradius+jradius.
+> What i wonder how (or can I) can i set coova to use local dhcp server
+> instead of its own or freeradius..
+>
+>
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> http://www.coova.org/CoovaChilli
+>
+>
+
+
+
+
+From oguzhank at bilkent.edu.tr  Tue Oct 13 08:30:45 2009
+From: oguzhank at bilkent.edu.tr (Oguzhan Kayhan)
+Date: Tue, 13 Oct 2009 11:30:45 +0300 (EEST)
+Subject: dhcp relay
+In-Reply-To: 
+     <35489.139.179.14.250.1255421059.squirrel@webmail.bilkent.edu.tr>
+References: <55298.139.179.14.250.1255343505.squirrel@webmail.bilkent.edu.tr>
+    <35489.139.179.14.250.1255421059.squirrel@webmail.bilkent.edu.tr>
+Message-ID: <55586.139.179.14.250.1255422645.squirrel@webmail.bilkent.edu.tr>
+
+Last correction
+dhcpgateway 192.168.1.10
+dhcpgatewayport 67
+dhcprelayagent  192.168.255.1
+usetap
+
+
+with this config, it seems client gets necessary ip address which i set on
+dhcp server running on 192.168.1.10  but on syslog,
+i keep on getting
+
+
+Oct 13 11:28:44 gw coova-chilli[13573]: dhcp.c: 2262: received DHCP
+response from host other than our gateway
+Oct 13 11:28:44 gw coova-chilli[13573]: chilli.c: 4164:
+dhcp_relay_decaps() failed!
+
+
+But it seems everything is working..
+
+So is there a real error, or is it just a bug that keeps on giving this
+msgs..
+
+
+
+
+> Anybody??? :)
+>
+> I made a few tests more..
+> I installed dhcp server to another server.
+> And i also installed coova.
+> Lets assume DHCP server is on 192.168.1.10
+> and coova wan ip is 192.168.1.11
+> So what i need to enter on coova config i guess is,
+>
+> But when i enter dhcpgateway 192.168.1.10
+>
+> the msg i got on syslog is
+>
+> Oct 13 11:00:04 gw coova-chilli[11812]: dhcp.c: 2262: received DHCP
+> response from host other than our gateway
+> Oct 13 11:00:04 gw coova-chilli[11812]: chilli.c: 4164:
+> dhcp_relay_decaps() failed!
+>
+> if i enter dhcprelayagent 192.168.1.10
+>
+> nothing happens..it still gives the ip addresses from coova.
+>
+> Anybody experienced about that????
+>
+>
+>
+>
+>> Hello,
+>> I wonder am i thinking wrong about dhcprelay..
+>>
+>> I am planning to run a dhcpserver on same server with coova.
+>> And i want to disable coova's own dhcp server, so i can give static ip's
+>> to some of MACID's (like printers etc)
+>> I dont wanna use anyip and and dynamic-static ip masks.
+>> Because it creates other problems too.
+>>
+>>
+>> As i see it seems possible  via freeradius+jradius.
+>> What i wonder how (or can I) can i set coova to use local dhcp server
+>> instead of its own or freeradius..
+>>
+>>
+>> ---------------------------------------------------------------------
+>> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+>> For additional commands, e-mail: chilli-help at coova.org
+>> http://www.coova.org/CoovaChilli
+>>
+>>
+>
+>
+>
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> http://www.coova.org/CoovaChilli
+>
+>
+
+
+
+
+From mail.gery at gmail.com  Tue Oct 13 09:16:31 2009
+From: mail.gery at gmail.com (Gergely Kiss)
+Date: Tue, 13 Oct 2009 11:16:31 +0200
+Subject: dhcp relay
+In-Reply-To: <35489.139.179.14.250.1255421059.squirrel@webmail.bilkent.edu.tr>
+References: <55298.139.179.14.250.1255343505.squirrel@webmail.bilkent.edu.tr>
+	 <35489.139.179.14.250.1255421059.squirrel@webmail.bilkent.edu.tr>
+Message-ID: <f1cd8c6d0910130216h4605af9xd54704c53b2309dd@mail.gmail.com>
+
+It's not possible to use two or more DHCP servers reliably on a single
+network segment, as you may never know which server gives a lease to a
+particular client. It's because of the way DHCP works. A DHCP client sends
+its request to the broadcast address and whichever server receives it first
+will create a lease for that client.
+The best solution, I think, is to use static (manually set) addresses to
+printers, servers and other permanent equipments on your network.
+DHCP relaying may work, if you know how to configure it, but I cannot help
+with that as I never used relaying with Chilli.
+Probably other users can tell you more about this.
+
+2009/10/13 Oguzhan Kayhan <oguzhank at bilkent.edu.tr>
+
+> Anybody??? :)
+>
+> I made a few tests more..
+> I installed dhcp server to another server.
+> And i also installed coova.
+> Lets assume DHCP server is on 192.168.1.10
+> and coova wan ip is 192.168.1.11
+> So what i need to enter on coova config i guess is,
+>
+> But when i enter dhcpgateway 192.168.1.10
+>
+> the msg i got on syslog is
+>
+> Oct 13 11:00:04 gw coova-chilli[11812]: dhcp.c: 2262: received DHCP
+> response from host other than our gateway
+> Oct 13 11:00:04 gw coova-chilli[11812]: chilli.c: 4164:
+> dhcp_relay_decaps() failed!
+>
+> if i enter dhcprelayagent 192.168.1.10
+>
+> nothing happens..it still gives the ip addresses from coova.
+>
+> Anybody experienced about that????
+>
+>
+>
+>
+> > Hello,
+> > I wonder am i thinking wrong about dhcprelay..
+> >
+> > I am planning to run a dhcpserver on same server with coova.
+> > And i want to disable coova's own dhcp server, so i can give static ip's
+> > to some of MACID's (like printers etc)
+> > I dont wanna use anyip and and dynamic-static ip masks.
+> > Because it creates other problems too.
+> >
+> >
+> > As i see it seems possible  via freeradius+jradius.
+> > What i wonder how (or can I) can i set coova to use local dhcp server
+> > instead of its own or freeradius..
+> >
+> >
+> > ---------------------------------------------------------------------
+> > To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> > For additional commands, e-mail: chilli-help at coova.org
+> > http://www.coova.org/CoovaChilli
+> >
+> >
+>
+>
+>
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> http://www.coova.org/CoovaChilli
+>
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20091013/f891f5d3/attachment.htm>
+
+From wlan at mac.com  Tue Oct 13 09:31:09 2009
+From: wlan at mac.com (wlanmac)
+Date: Tue, 13 Oct 2009 11:31:09 +0200
+Subject: dhcp relay
+In-Reply-To: <55586.139.179.14.250.1255422645.squirrel@webmail.bilkent.edu.tr>
+References: <55298.139.179.14.250.1255343505.squirrel@webmail.bilkent.edu.tr>
+ <35489.139.179.14.250.1255421059.squirrel@webmail.bilkent.edu.tr>
+ <55586.139.179.14.250.1255422645.squirrel@webmail.bilkent.edu.tr>
+Message-ID: <1255426269.8099.44.camel@david-laptop>
+
+Hi,
+
+As mentioned, you shouldn't have two DHCP servers listening for
+broadcasts, but your dhcp relay configuration is starting to look good.
+Though, do be sure that the real dhcp server isn't also replying
+directly to the same request. 
+
+You might also consider using MAC authentication and Framed-IP-Address
+in an Access-Accept to set "static" IP addresses in your network based
+on MAC address. 
+
+David
+
+On Tue, 2009-10-13 at 11:30 +0300, Oguzhan Kayhan wrote:
+> Last correction
+> dhcpgateway 192.168.1.10
+> dhcpgatewayport 67
+> dhcprelayagent  192.168.255.1
+> usetap
+> 
+> 
+> with this config, it seems client gets necessary ip address which i set on
+> dhcp server running on 192.168.1.10  but on syslog,
+> i keep on getting
+> 
+> 
+> Oct 13 11:28:44 gw coova-chilli[13573]: dhcp.c: 2262: received DHCP
+> response from host other than our gateway
+> Oct 13 11:28:44 gw coova-chilli[13573]: chilli.c: 4164:
+> dhcp_relay_decaps() failed!
+> 
+> 
+> But it seems everything is working..
+> 
+> So is there a real error, or is it just a bug that keeps on giving this
+> msgs..
+> 
+> 
+> 
+> 
+> > Anybody??? :)
+> >
+> > I made a few tests more..
+> > I installed dhcp server to another server.
+> > And i also installed coova.
+> > Lets assume DHCP server is on 192.168.1.10
+> > and coova wan ip is 192.168.1.11
+> > So what i need to enter on coova config i guess is,
+> >
+> > But when i enter dhcpgateway 192.168.1.10
+> >
+> > the msg i got on syslog is
+> >
+> > Oct 13 11:00:04 gw coova-chilli[11812]: dhcp.c: 2262: received DHCP
+> > response from host other than our gateway
+> > Oct 13 11:00:04 gw coova-chilli[11812]: chilli.c: 4164:
+> > dhcp_relay_decaps() failed!
+> >
+> > if i enter dhcprelayagent 192.168.1.10
+> >
+> > nothing happens..it still gives the ip addresses from coova.
+> >
+> > Anybody experienced about that????
+> >
+> >
+> >
+> >
+> >> Hello,
+> >> I wonder am i thinking wrong about dhcprelay..
+> >>
+> >> I am planning to run a dhcpserver on same server with coova.
+> >> And i want to disable coova's own dhcp server, so i can give static ip's
+> >> to some of MACID's (like printers etc)
+> >> I dont wanna use anyip and and dynamic-static ip masks.
+> >> Because it creates other problems too.
+> >>
+> >>
+> >> As i see it seems possible  via freeradius+jradius.
+> >> What i wonder how (or can I) can i set coova to use local dhcp server
+> >> instead of its own or freeradius..
+> >>
+> >>
+> >> ---------------------------------------------------------------------
+> >> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> >> For additional commands, e-mail: chilli-help at coova.org
+> >> http://www.coova.org/CoovaChilli
+> >>
+> >>
+> >
+> >
+> >
+> > ---------------------------------------------------------------------
+> > To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> > For additional commands, e-mail: chilli-help at coova.org
+> > http://www.coova.org/CoovaChilli
+> >
+> >
+> 
+> 
+> 
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> http://www.coova.org/CoovaChilli
+> 
+
+
+
+From oguzhank at bilkent.edu.tr  Tue Oct 13 09:34:52 2009
+From: oguzhank at bilkent.edu.tr (Oguzhan Kayhan)
+Date: Tue, 13 Oct 2009 12:34:52 +0300 (EEST)
+Subject: dhcp relay
+In-Reply-To: <f1cd8c6d0910130216h4605af9xd54704c53b2309dd@mail.gmail.com>
+References: <55298.139.179.14.250.1255343505.squirrel@webmail.bilkent.edu.tr>
+    <35489.139.179.14.250.1255421059.squirrel@webmail.bilkent.edu.tr>
+    <f1cd8c6d0910130216h4605af9xd54704c53b2309dd@mail.gmail.com>
+Message-ID: <45609.139.179.14.250.1255426492.squirrel@webmail.bilkent.edu.tr>
+
+Hi,
+Yes easiest way is to set manual ip addresses for such devices but!!!!
+To make static ip addresses work, i need to enable uamanyip. Otherwise
+static ip's does not work.
+And when i enable uamanyip, for example a client connected to another
+accesspoint switches to this coova, and second coova gets the old ip
+address of the client so, it can not work.
+There should be a way to allow only static-ip subnet on coova.
+
+The other solution.
+There is only one dhcp server (except coova) running on the network.
+And it is configured to answer to requests coming from coova's ip only.
+
+What i notice is, i set one of my clients macid to get 192.168.1.50 ip add
+on dhcp server.And also on dhcp server it waas set to release ip addresses
+starting from 192.168.1.10.
+Anyway, on coova when a client tries to connect. coova tries to distribute
+ip address from its own configuration even if i enabled dhcpgateway and
+dhcprelayagent parameters on it and the ip address that coova gives (for
+ex 192.168.1.2) and the clients ip address taken from dhcp server itself
+192.169.1.10. so it makes impossible to work with.
+
+
+
+> It's not possible to use two or more DHCP servers reliably on a single
+> network segment, as you may never know which server gives a lease to a
+> particular client. It's because of the way DHCP works. A DHCP client sends
+> its request to the broadcast address and whichever server receives it
+> first
+> will create a lease for that client.
+> The best solution, I think, is to use static (manually set) addresses to
+> printers, servers and other permanent equipments on your network.
+> DHCP relaying may work, if you know how to configure it, but I cannot help
+> with that as I never used relaying with Chilli.
+> Probably other users can tell you more about this.
+>
+> 2009/10/13 Oguzhan Kayhan <oguzhank at bilkent.edu.tr>
+>
+>> Anybody??? :)
+>>
+>> I made a few tests more..
+>> I installed dhcp server to another server.
+>> And i also installed coova.
+>> Lets assume DHCP server is on 192.168.1.10
+>> and coova wan ip is 192.168.1.11
+>> So what i need to enter on coova config i guess is,
+>>
+>> But when i enter dhcpgateway 192.168.1.10
+>>
+>> the msg i got on syslog is
+>>
+>> Oct 13 11:00:04 gw coova-chilli[11812]: dhcp.c: 2262: received DHCP
+>> response from host other than our gateway
+>> Oct 13 11:00:04 gw coova-chilli[11812]: chilli.c: 4164:
+>> dhcp_relay_decaps() failed!
+>>
+>> if i enter dhcprelayagent 192.168.1.10
+>>
+>> nothing happens..it still gives the ip addresses from coova.
+>>
+>> Anybody experienced about that????
+>>
+>>
+>>
+>>
+>> > Hello,
+>> > I wonder am i thinking wrong about dhcprelay..
+>> >
+>> > I am planning to run a dhcpserver on same server with coova.
+>> > And i want to disable coova's own dhcp server, so i can give static
+>> ip's
+>> > to some of MACID's (like printers etc)
+>> > I dont wanna use anyip and and dynamic-static ip masks.
+>> > Because it creates other problems too.
+>> >
+>> >
+>> > As i see it seems possible  via freeradius+jradius.
+>> > What i wonder how (or can I) can i set coova to use local dhcp server
+>> > instead of its own or freeradius..
+>> >
+>> >
+>> > ---------------------------------------------------------------------
+>> > To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+>> > For additional commands, e-mail: chilli-help at coova.org
+>> > http://www.coova.org/CoovaChilli
+>> >
+>> >
+>>
+>>
+>>
+>> ---------------------------------------------------------------------
+>> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+>> For additional commands, e-mail: chilli-help at coova.org
+>> http://www.coova.org/CoovaChilli
+>>
+>>
+>
+
+
+
+
+From liske at ibh.de  Tue Oct 13 12:01:04 2009
+From: liske at ibh.de (Thomas Liske)
+Date: Tue, 13 Oct 2009 14:01:04 +0200
+Subject: [OT] Re: dhcp relay
+In-Reply-To: <1255426269.8099.44.camel@david-laptop>
+References: <55298.139.179.14.250.1255343505.squirrel@webmail.bilkent.edu.tr> <35489.139.179.14.250.1255421059.squirrel@webmail.bilkent.edu.tr> <55586.139.179.14.250.1255422645.squirrel@webmail.bilkent.edu.tr> <1255426269.8099.44.camel@david-laptop>
+Message-ID: <4AD46C00.3050309@ibh.de>
+
+Hi,
+
+wlanmac wrote:
+> As mentioned, you shouldn't have two DHCP servers listening for
+
+I now it's OT, but:
+
+It's _absolute legal_ (to get some high available) to have more than one 
+DHCP server on the same network segment.
+
+Poor man's scenario:
+
+DHCP servers with non overlaping pools (any DHCP server(s)) and 
+identical static assignments.
+
+Rich man's scenario:
+
+DHCP server cluster with some replication mechanism (like ISC DHCPD 
+version >= 3) and possible overlaping pools and identical static 
+assignments.
+
+
+Getting a HA chilli is another topic I ponder about from time to time ;).
+
+
+Regards,
+Thomas
+
+> broadcasts, but your dhcp relay configuration is starting to look good.
+> Though, do be sure that the real dhcp server isn't also replying
+> directly to the same request. 
+> 
+> You might also consider using MAC authentication and Framed-IP-Address
+> in an Access-Accept to set "static" IP addresses in your network based
+> on MAC address. 
+> 
+> David
+> 
+> On Tue, 2009-10-13 at 11:30 +0300, Oguzhan Kayhan wrote:
+>> Last correction
+>> dhcpgateway 192.168.1.10
+>> dhcpgatewayport 67
+>> dhcprelayagent  192.168.255.1
+>> usetap
+>>
+>>
+>> with this config, it seems client gets necessary ip address which i set on
+>> dhcp server running on 192.168.1.10  but on syslog,
+>> i keep on getting
+>>
+>>
+>> Oct 13 11:28:44 gw coova-chilli[13573]: dhcp.c: 2262: received DHCP
+>> response from host other than our gateway
+>> Oct 13 11:28:44 gw coova-chilli[13573]: chilli.c: 4164:
+>> dhcp_relay_decaps() failed!
+>>
+>>
+>> But it seems everything is working..
+>>
+>> So is there a real error, or is it just a bug that keeps on giving this
+>> msgs..
+>>
+>>
+>>
+>>
+>>> Anybody??? :)
+>>>
+>>> I made a few tests more..
+>>> I installed dhcp server to another server.
+>>> And i also installed coova.
+>>> Lets assume DHCP server is on 192.168.1.10
+>>> and coova wan ip is 192.168.1.11
+>>> So what i need to enter on coova config i guess is,
+>>>
+>>> But when i enter dhcpgateway 192.168.1.10
+>>>
+>>> the msg i got on syslog is
+>>>
+>>> Oct 13 11:00:04 gw coova-chilli[11812]: dhcp.c: 2262: received DHCP
+>>> response from host other than our gateway
+>>> Oct 13 11:00:04 gw coova-chilli[11812]: chilli.c: 4164:
+>>> dhcp_relay_decaps() failed!
+>>>
+>>> if i enter dhcprelayagent 192.168.1.10
+>>>
+>>> nothing happens..it still gives the ip addresses from coova.
+>>>
+>>> Anybody experienced about that????
+>>>
+>>>
+>>>
+>>>
+>>>> Hello,
+>>>> I wonder am i thinking wrong about dhcprelay..
+>>>>
+>>>> I am planning to run a dhcpserver on same server with coova.
+>>>> And i want to disable coova's own dhcp server, so i can give static ip's
+>>>> to some of MACID's (like printers etc)
+>>>> I dont wanna use anyip and and dynamic-static ip masks.
+>>>> Because it creates other problems too.
+>>>>
+>>>>
+>>>> As i see it seems possible  via freeradius+jradius.
+>>>> What i wonder how (or can I) can i set coova to use local dhcp server
+>>>> instead of its own or freeradius..
+>>>>
+>>>>
+>>>> ---------------------------------------------------------------------
+>>>> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+>>>> For additional commands, e-mail: chilli-help at coova.org
+>>>> http://www.coova.org/CoovaChilli
+>>>>
+>>>>
+>>>
+>>>
+>>> ---------------------------------------------------------------------
+>>> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+>>> For additional commands, e-mail: chilli-help at coova.org
+>>> http://www.coova.org/CoovaChilli
+>>>
+>>>
+>>
+>>
+>> ---------------------------------------------------------------------
+>> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+>> For additional commands, e-mail: chilli-help at coova.org
+>> http://www.coova.org/CoovaChilli
+>>
+> 
+> 
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> http://www.coova.org/CoovaChilli
+> 
+
+
+-- 
+support at ibh.de                              Tel. +49 351 477 77 30
+www.ibh.de                                  Fax  +49 351 477 77 39
+
+-----------------------------------------------------------------------
+Dipl.-Ing. Thomas Liske
+Netzwerk- und System-Design
+
+
+IBH IT-Service GmbH                         Amtsgericht Dresden
+Gostritzer Str. 61-63                       HRB 13626
+D-01217 Dresden                             GF: Prof. Dr. Thomas Horn
+Germany                                     VAT DE182302907
+-----------------------------------------------------------------------
+Ihr Partner f?r: LAN, WAN IP-Quality, Security, VoIP, SAN, Backup, USV
+-----------------------------------------------------------------------
+        professioneller IT-Service - kompetent und zuverl?ssig
+-----------------------------------------------------------------------
+
+
+From oguzhank at bilkent.edu.tr  Tue Oct 13 13:06:47 2009
+From: oguzhank at bilkent.edu.tr (Oguzhan Kayhan)
+Date: Tue, 13 Oct 2009 16:06:47 +0300 (EEST)
+Subject: dhcpstart-end
+Message-ID: <39574.139.179.14.250.1255439207.squirrel@webmail.bilkent.edu.tr>
+
+So,here comes another challence..
+
+
+I decided to give static ip's via framed-ip-address parameter of freeradius.
+It seems working flawlessly..
+
+But to reserve some ip addresses on the subnet,
+i wanted to use dhcpstart-dhcpend parameters.
+
+So for that,
+I thought dhcpstart 10 dhcpend 254 parameters might be as
+starting distributing from 192.168.0.10 to 254
+Yes it does but..this time it doesnt give the ip addresses that set by
+framed-ip-addresses. (which i set as 192.168.0.5)
+So, as i understand the ip  that i needed to use with framed-ip-address
+parameter must be in dymanic subnet.
+So that seems doesnt resolve my problem again.
+
+Any solutions are welcome..
+All i want is to reserve a few addresses to use with printers etc..and
+mac-auth that printers..
+
+Thats why i wanted to use dhcp-relay because coovas own dhcp parameters
+doenst have such options..But unable to manage it to work :(
+
+
+
+
+
+
+
+
+
+
+From oguzhank at bilkent.edu.tr  Wed Oct 14 08:56:27 2009
+From: oguzhank at bilkent.edu.tr (Oguzhan Kayhan)
+Date: Wed, 14 Oct 2009 11:56:27 +0300 (EEST)
+Subject: help in developing coova !!!!
+Message-ID: <58798.139.179.14.250.1255510587.squirrel@webmail.bilkent.edu.tr>
+
+
+Hi,
+As i read on the forums and according to my own needs, we are planning to
+develop an option on coova.
+What we need is as i previosuly write on this email list.. We need to
+reserve some ip addresses and set them to some macids also to be able to
+use some staticip devices on coova network like printers switches etc..
+
+As far as i see there are a couple of problems and options.
+First of all, it is unable to use staticip pool without enabling uamanyip
+parameter. But enabling this, also enables the client set ip addresses
+outside of stat and dynamic ip pools.
+
+Solution might be creating a localfile with some macids=ipaddresses and
+coova should reserve this ip addresses fr this macids even it is in
+dynamic pool.
+
+Or allowing to give static ip addresses if ip is on staticip pool even
+uamanyip parameter is off.
+
+Or only allowing staticip pool to be used if the ip address is set by
+radius by framed-ip-address parameter.(sure anyip parameter off again)
+
+So what i am asking is a little help on which solution is much more useful
+for  coova community..and also where should i start.. is the solution lies
+on editing ippool.c or dhcp ??
+
+I am asking this because editing the source just according to my needs
+wont help coova community itself much.
+
+Any ideas will be appreciated..
+
+
+
+
+
+
+
+
+From oguzhank at bilkent.edu.tr  Wed Oct 14 12:33:37 2009
+From: oguzhank at bilkent.edu.tr (Oguzhan Kayhan)
+Date: Wed, 14 Oct 2009 15:33:37 +0300 (EEST)
+Subject: help in developing coova !!!!
+In-Reply-To: 
+     <58798.139.179.14.250.1255510587.squirrel@webmail.bilkent.edu.tr>
+References: 
+    <58798.139.179.14.250.1255510587.squirrel@webmail.bilkent.edu.tr>
+Message-ID: <51309.139.179.14.250.1255523617.squirrel@webmail.bilkent.edu.tr>
+
+I fund a hint that can make my work much more easier..
+uamnatanyip parameter.
+
+The problem is it allows only from dynamic pool addresses.
+
+It can be so so great if there were a paremeter called uamstatanyip to
+make static ip assigments available only for staticip pool.
+Or an overwrite of framed-ip-pool parameter if the ip is within the range of
+dynamic or static pool.
+
+Or if whoever developing that part of the system, can give me a hand to
+figure out the parameters,so i can take part in writing that patch for
+chilli also.
+
+
+
+
+
+
+>
+> Hi,
+> As i read on the forums and according to my own needs, we are planning to
+> develop an option on coova.
+> What we need is as i previosuly write on this email list.. We need to
+> reserve some ip addresses and set them to some macids also to be able to
+> use some staticip devices on coova network like printers switches etc..
+>
+> As far as i see there are a couple of problems and options.
+> First of all, it is unable to use staticip pool without enabling uamanyip
+> parameter. But enabling this, also enables the client set ip addresses
+> outside of stat and dynamic ip pools.
+>
+> Solution might be creating a localfile with some macids=ipaddresses and
+> coova should reserve this ip addresses fr this macids even it is in
+> dynamic pool.
+>
+> Or allowing to give static ip addresses if ip is on staticip pool even
+> uamanyip parameter is off.
+>
+> Or only allowing staticip pool to be used if the ip address is set by
+> radius by framed-ip-address parameter.(sure anyip parameter off again)
+>
+> So what i am asking is a little help on which solution is much more useful
+> for  coova community..and also where should i start.. is the solution lies
+> on editing ippool.c or dhcp ??
+>
+> I am asking this because editing the source just according to my needs
+> wont help coova community itself much.
+>
+> Any ideas will be appreciated..
+>
+>
+>
+>
+>
+>
+>
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> http://www.coova.org/CoovaChilli
+>
+>
+
+
+
+
+From oguzhank at bilkent.edu.tr  Thu Oct 15 11:07:28 2009
+From: oguzhank at bilkent.edu.tr (Oguzhan Kayhan)
+Date: Thu, 15 Oct 2009 14:07:28 +0300 (EEST)
+Subject: dhcp relay
+In-Reply-To: <f1cd8c6d0910130216h4605af9xd54704c53b2309dd@mail.gmail.com>
+References: <55298.139.179.14.250.1255343505.squirrel@webmail.bilkent.edu.tr>
+    <35489.139.179.14.250.1255421059.squirrel@webmail.bilkent.edu.tr>
+    <f1cd8c6d0910130216h4605af9xd54704c53b2309dd@mail.gmail.com>
+Message-ID: <34032.139.179.14.250.1255604848.squirrel@webmail.bilkent.edu.tr>
+
+So, i figured out the problem why i couldnt get ip from dhcp-relay
+It seems problem was time-offset parameter.
+But now,
+Both coova itself and dhcp-server relayed are giving me addresses.
+dhcpgateway 192.168.0.10
+dhcpgatewayport 67
+dhcprelayagent 139.179.101
+macauth
+macpasswd password
+
+So my client gets the ip address (from relay) 192.168.10.20 (As i start
+range from 20)
+but on chilli_query i see another ip like 192.168.10.2  for same mac-id
+So why coova still distributes ip even i have dhcpgateway parameter on my
+config???
+Is there another config to stop coova dhcp service???
+
+> It's not possible to use two or more DHCP servers reliably on a single
+> network segment, as you may never know which server gives a lease to a
+> particular client. It's because of the way DHCP works. A DHCP client sends
+> its request to the broadcast address and whichever server receives it
+> first
+> will create a lease for that client.
+> The best solution, I think, is to use static (manually set) addresses to
+> printers, servers and other permanent equipments on your network.
+> DHCP relaying may work, if you know how to configure it, but I cannot help
+> with that as I never used relaying with Chilli.
+> Probably other users can tell you more about this.
+>
+> 2009/10/13 Oguzhan Kayhan <oguzhank at bilkent.edu.tr>
+>
+>> Anybody??? :)
+>>
+>> I made a few tests more..
+>> I installed dhcp server to another server.
+>> And i also installed coova.
+>> Lets assume DHCP server is on 192.168.1.10
+>> and coova wan ip is 192.168.1.11
+>> So what i need to enter on coova config i guess is,
+>>
+>> But when i enter dhcpgateway 192.168.1.10
+>>
+>> the msg i got on syslog is
+>>
+>> Oct 13 11:00:04 gw coova-chilli[11812]: dhcp.c: 2262: received DHCP
+>> response from host other than our gateway
+>> Oct 13 11:00:04 gw coova-chilli[11812]: chilli.c: 4164:
+>> dhcp_relay_decaps() failed!
+>>
+>> if i enter dhcprelayagent 192.168.1.10
+>>
+>> nothing happens..it still gives the ip addresses from coova.
+>>
+>> Anybody experienced about that????
+>>
+>>
+>>
+>>
+>> > Hello,
+>> > I wonder am i thinking wrong about dhcprelay..
+>> >
+>> > I am planning to run a dhcpserver on same server with coova.
+>> > And i want to disable coova's own dhcp server, so i can give static
+>> ip's
+>> > to some of MACID's (like printers etc)
+>> > I dont wanna use anyip and and dynamic-static ip masks.
+>> > Because it creates other problems too.
+>> >
+>> >
+>> > As i see it seems possible  via freeradius+jradius.
+>> > What i wonder how (or can I) can i set coova to use local dhcp server
+>> > instead of its own or freeradius..
+>> >
+>> >
+>> > ---------------------------------------------------------------------
+>> > To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+>> > For additional commands, e-mail: chilli-help at coova.org
+>> > http://www.coova.org/CoovaChilli
+>> >
+>> >
+>>
+>>
+>>
+>> ---------------------------------------------------------------------
+>> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+>> For additional commands, e-mail: chilli-help at coova.org
+>> http://www.coova.org/CoovaChilli
+>>
+>>
+>
+
+
+
+
+From david at coova.com  Tue Oct 27 11:37:55 2009
+From: david at coova.com (David Bird)
+Date: Tue, 27 Oct 2009 12:37:55 +0100
+Subject: [Chilli] new mailing list
+Message-ID: <1256643475.7649.34.camel@david-laptop>
+
+Hello all,
+
+Hopefully, this message get to you all correctly using the new mailing
+list management software. The archives should also all be there, at the
+URL below. 
+
+Cheers,
+David
+
+
+From david at coova.com  Tue Oct 27 11:49:53 2009
+From: david at coova.com (David Bird)
+Date: Tue, 27 Oct 2009 12:49:53 +0100
+Subject: [Chilli] chilli speed
+Message-ID: <1256644193.7649.43.camel@david-laptop>
+
+Hello,
+
+It has been a complaint that chilli is throughput limited on typical
+routers (much less so on a typical PC). Doing some testing with
+valgrind, not surprisingly, the one of the biggest time-sinks is the
+check on the "message queue" that chilli established. This has been
+around in chilli from the beginning, and is the mechanism for the forked
+"redir" processes to communicate back to chilli (like, for instance,
+when someone has logged in successfully). In the main chilli loop, the
+queue is checked for messages on each pass... and for each packet
+in/out! I've been doing some testing using a UNIX socket instead, where
+the socket can be part of the select() (and not require the expensive
+msgrcv() call) and has just about completely removed the overhead
+associated in servicing this IPC mechanism. Anyways, I haven't test it
+yet on a router, but it looks promising! 
+
+David
+
+PS: when sending mail to our mail server, it will be delayed a bit by
+our anti-spam setup... fyi.  
+
+
+From venture37 at gmail.com  Tue Oct 27 13:52:19 2009
+From: venture37 at gmail.com (Sevan / Venture37)
+Date: Tue, 27 Oct 2009 13:52:19 +0000
+Subject: [Chilli] chilli speed
+In-Reply-To: <1256644193.7649.43.camel@david-laptop>
+References: <1256644193.7649.43.camel@david-laptop>
+Message-ID: <4AE6FB13.7050204@gmail.com>
+
+On 27/10/2009 11:49, David Bird wrote:
+> Hello,
+>
+> It has been a complaint that chilli is throughput limited on typical
+> routers (much less so on a typical PC). Doing some testing with
+> valgrind, not surprisingly, the one of the biggest time-sinks is the
+> check on the "message queue" that chilli established. This has been
+> around in chilli from the beginning, and is the mechanism for the forked
+> "redir" processes to communicate back to chilli (like, for instance,
+> when someone has logged in successfully). In the main chilli loop, the
+> queue is checked for messages on each pass... and for each packet
+> in/out! I've been doing some testing using a UNIX socket instead, where
+> the socket can be part of the select() (and not require the expensive
+> msgrcv() call) and has just about completely removed the overhead
+> associated in servicing this IPC mechanism. Anyways, I haven't test it
+> yet on a router, but it looks promising!
+>
+> David
+
+Very Cool! :)
+
+> PS: when sending mail to our mail server, it will be delayed a bit by
+> our anti-spam setup... fyi.
+
+greylisting?
+
+From venture37 at gmail.com  Tue Oct 27 13:53:05 2009
+From: venture37 at gmail.com (Sevan / Venture37)
+Date: Tue, 27 Oct 2009 13:53:05 +0000
+Subject: [Chilli] new mailing list
+In-Reply-To: <1256643475.7649.34.camel@david-laptop>
+References: <1256643475.7649.34.camel@david-laptop>
+Message-ID: <4AE6FB41.1000901@gmail.com>
+
+On 27/10/2009 11:37, David Bird wrote:
+> Hello all,
+>
+> Hopefully, this message get to you all correctly using the new mailing
+> list management software. The archives should also all be there, at the
+> URL below.
+>
+> Cheers,
+> David
+
+Hello David! :)
+What made you switch to mailman?
+
+
+Sevan
+
+From bnoteris at odbee.com  Thu Oct 29 16:09:52 2009
+From: bnoteris at odbee.com (Benoit noteris)
+Date: Thu, 29 Oct 2009 17:09:52 +0100
+Subject: [Chilli] [chilli routing ]
+In-Reply-To: <1256644193.7649.43.camel@david-laptop>
+References: <1256644193.7649.43.camel@david-laptop>
+Message-ID: <003501ca58b2$3fc9c050$bf5d40f0$@com>
+
+
+Dear List,
+
+I'm wondering something if we do not nat ip on chilli gateway so we routing
+public that find, 
+
+But my question is about authentication blocking, I've made one test and
+find the result wired,
+
+
+The ip address are routed all over the internet ( public ip ) and so they
+are normally reachable if the client is in pass mode,
+And if he is in dnat normally it should not be reachable. 
+
+But I've found a client where they are a server which are providing web
+server and the client was reachable even if he was in dnat.
+
+What do you think about that ? 
+
+Benoit noteris
+
+
+From bogus@does.not.exist.com  Mon Oct 26 10:55:09 2009
+From: bogus@does.not.exist.com ()
+Date: Mon, 26 Oct 2009 10:55:09 -0000
+Subject: No subject
+Message-ID: <mailman.0.1272476047.30512.chilli@coova.org>
+
+So if you have a 60 min lease then it would be renewed every 30 mins.<br>
+I'm not sure of the exact state machine of most devices but I do know
+from logs that most laptop's try to renew an existing (or previous) ip
+address. I don't know what embedded devices (such as iphones etc) do.<br>
+<br>
+What is the network topoligy, is coova-chilli running on an access
+point
+(such as with openwrt) or have you got a server with 1 or more AP's /
+devices connected via a switch?<br>
+<br>
+As for re-authing a session if that would be implemented I know I would
+prefer it to be a configurable option (or at worse a compile time
+option). Having EVERY DHCP request turn into a radius request could
+cause a significant volume of traffic.<br>
+<br>
+Tim<br>
+</body>
+</html>
+
+--------------060401030205030803060907--
+
+From bogus@does.not.exist.com  Mon Oct 26 10:55:09 2009
+From: bogus@does.not.exist.com ()
+Date: Mon, 26 Oct 2009 10:55:09 -0000
+Subject: No subject
+Message-ID: <mailman.1.1272500949.30512.chilli@coova.org>
+
+So if you have a 60 min lease then it would be renewed every 30 mins.<br>
+I&#39;m not sure of the exact state machine of most devices but I do know
+from logs that most laptop&#39;s try to renew an existing (or previous) ip
+address. I don&#39;t know what embedded devices (such as iphones etc) do.<b=
+r></div></blockquote><div><br>Reallocation and renewal are different types =
+of requests in a dhcp lease lifecycle. A renewal request would not require =
+macauth processing, whereas - like initial allocation - a reallocation does=
+ and should.<br>
+
+=A0</div><blockquote class=3D"gmail_quote" style=3D"margin: 0pt 0pt 0pt 0.8=
+ex; border-left: 1px solid rgb(204, 204, 204); padding-left: 1ex;"><div bgc=
+olor=3D"#ffffff" text=3D"#000000">
+What is the network topoligy, is coova-chilli running on an access
+point
+(such as with openwrt) or have you got a server with 1 or more AP&#39;s /
+devices connected via a switch?<br></div></blockquote><div><br>Chilli on a =
+Ubuntu server (VM&#39;d) with 94 AP&#39;s (DHCP forwarding active) across m=
+any switches.<br>=A0</div><blockquote class=3D"gmail_quote" style=3D"margin=
+: 0pt 0pt 0pt 0.8ex; border-left: 1px solid rgb(204, 204, 204); padding-lef=
+t: 1ex;">
+
+<div bgcolor=3D"#ffffff" text=3D"#000000">
+As for re-authing a session if that would be implemented I know I would
+prefer it to be a configurable option (or at worse a compile time
+option). Having EVERY DHCP request turn into a radius request could
+cause a significant volume of traffic.<br clear=3D"all"></div></blockquote>=
+</div><br>The reauth should only need to be additionally added to the reall=
+ocation dhcp lease request, which would be a small percentage of total dhcp=
+ requests.<br>
+
+<br>-- <br>Cheers,<br>Jason<br>
+
+--0016e68eeeddf074b80485553657--
+

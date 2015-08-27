@@ -1,0 +1,214 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Jradius] How to use vendor specific attributes?
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:jradius%40coova.org?Subject=Re%3A%20%5BJradius%5D%20How%20to%20use%20vendor%20specific%20attributes%3F&In-Reply-To=%3CC266C6CB8E0BFE43B49583893F9968E803F928A2%40exchange.pdcindscape.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000020.html">
+   <LINK REL="Next"  HREF="000022.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Jradius] How to use vendor specific attributes?</H1>
+    <B>Karuna G. Kumar</B> 
+    <A HREF="mailto:jradius%40coova.org?Subject=Re%3A%20%5BJradius%5D%20How%20to%20use%20vendor%20specific%20attributes%3F&In-Reply-To=%3CC266C6CB8E0BFE43B49583893F9968E803F928A2%40exchange.pdcindscape.com%3E"
+       TITLE="[Jradius] How to use vendor specific attributes?">karuna.kumar at indscape.com
+       </A><BR>
+    <I>Wed Jul 14 10:48:33 UTC 2010</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000020.html">[Jradius] How to use vendor specific attributes?
+</A></li>
+        <LI>Next message: <A HREF="000022.html">[Jradius] How to use vendor specific attributes?
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#21">[ date ]</a>
+              <a href="thread.html#21">[ thread ]</a>
+              <a href="subject.html#21">[ subject ]</a>
+              <a href="author.html#21">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>David,
+
+Thanks for the response. I need little more help from you. Because, still JRadius cannot read my VSAttribute.
+
+I have rebuild the dictionary as explained and created a jradius-dictionary.jar. I have placed this jar file in jradius's lib folder and restarted the JRadius server. 
+
+After that, I have sent auth request to the JRadius handler (LocalUsersHandler.java). Authentication is successful but throwing the following exception while sending the response attributes back.
+
+# Log:
+------
+
+&gt;&gt;&gt;<i> packets in request from &quot;example&quot;:
+</I>--- packet 1 of 2
+Class: class net.jradius.packet.AccessRequest
+Attributes:
+User-Name = test
+Acct-Session-Id = 001
+NAS-Identifier = 00:E0:81:2A:45:FA
+NAS-IP-Address = 192.168.1.109
+Called-Station-Id = called
+Calling-Station-Id = caller
+NAS-Port = 1234
+NAS-Port-Type = Ethernet
+User-Password = [Encrypted String]
+
+--- packet 2 of 2
+Class: class net.jradius.packet.NullPacket
+Attributes:
+
+Configuration Items:
+User-Password := [Encrypted String]
+Cleartext-Password := test123
+JRadius-Session-Id := e026a240c242c7362d6997c5678c5727 JRadius-Request-Id := 66
+
+Appropriate session locking must be implemented
+net.jradius.exception.UnknownAttributeException: Unknown attribute Pronto-AVPair
+	at net.jradius.packet.attribute.AttributeFactory.newAttribute(AttributeFactory.java:306)
+	at net.jradius.packet.attribute.AttributeFactory.newAttribute(AttributeFactory.java:343)
+	at com.pronto.handler.LocalUsersHandler$LocalUser.getAttributeList(LocalUsersHandler.java:109)
+	at com.pronto.handler.LocalUsersHandler.handle(LocalUsersHandler.java:249)
+	at net.jradius.handler.PacketHandlerBase.handle(PacketHandlerBase.java:49)
+	at net.jradius.handler.EventHandlerBase.execute(EventHandlerBase.java:66)
+	at net.jradius.server.RadiusProcessor.runPacketHandlers(RadiusProcessor.java:130)
+	at net.jradius.freeradius.FreeRadiusProcessor.processRequest(FreeRadiusProcessor.java:57)
+	at net.jradius.server.Processor.process(Processor.java:123)
+	at net.jradius.server.Processor.run(Processor.java:99)
+14 Jul, 2010 3:44:33 PM net.jradius.log.BaseRadiusLog info
+INFO: Allowing WPA access for username: test Appropriate session locking must be implemented Appropriate session locking must be implemented Appropriate session locking must be implemented
+
+&gt;&gt;&gt;<i> packets in request from &quot;example&quot;:
+</I>--- packet 1 of 2
+Class: class net.jradius.packet.AccessRequest
+Attributes:
+User-Name = test
+Acct-Session-Id = 001
+NAS-Identifier = 00:E0:81:2A:45:FA
+NAS-IP-Address = 192.168.1.109
+Called-Station-Id = called
+Calling-Station-Id = caller
+NAS-Port = 1234
+NAS-Port-Type = Ethernet
+User-Password = [Encrypted String]
+
+--- packet 2 of 2
+Class: class net.jradius.packet.AccessAccept
+Attributes:
+Reply-Message = Hello test user!
+Session-Timeout = 3600
+Idle-Timeout = 300
+User-Name = test
+Class := [Binary Data (length=46)]
+
+Configuration Items:
+Cleartext-Password := test123
+JRadius-Session-Id := e026a240c242c7362d6997c5678c5727 JRadius-Request-Id := 66 Auth-Type = PAP
+
+
+# Jradius-config.xml:
+---------------------
+.
+.
+.
+&lt;users&gt;
+&lt;user username=&quot;test&quot; password=&quot;test123&quot;&gt;
+  Reply-Message = Hello test user!
+  Session-Timeout = 3600
+  Idle-Timeout = 300
+  User-Name = test
+  Pronto-AVPair = test
+&lt;/user&gt;
+&lt;/users&gt;
+.
+.
+
+# After executing build_dictionary.sh... file.list inside tmp-dictionary folder shows the following.
+
+./net/jradius/dictionary/vsa_pronto/VSADictionaryImpl.java
+./net/jradius/dictionary/vsa_pronto/Attr_ProntoAVPair.java
+
+# In tmp-dictionary folder, net/jradius/dictionary/vsa_pronto/Attr_ProntoAVPair.java shows following.
+
+Public final class Attr_ProntoAVPair extends VSAttribute
+{
+	Public static final String NAME = &quot;Pronto-AVPair&quot;;
+	.
+	.
+	.
+
+
+What went wrong? Please help. Thanks in advance.
+
+- Karun.
+
+
+-----Original Message-----
+From: wlanmac [mailto:<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/jradius">wlan at mac.com</A>] 
+Sent: Thursday, July 08, 2010 11:49
+To: Karuna G. Kumar
+Subject: Re: [Jradius] How to use vendor specific attributes?
+
+You can use VSAs just like any other attribute in JRadius. If you are
+wanting to create your own VSAs, then model a dictionary file off of the
+FreeRADIUS dictionary files that come with JRadius. Then (re)build the
+JRadius dictionary (<A HREF="http://www.coova.org/JRadius/Dictionary">http://www.coova.org/JRadius/Dictionary</A>) where your
+new dictionary file is includes in the main &quot;dictionary&quot; file (also make
+sure the same dictionary files are used in FreeRADIUS too). 
+
+David
+
+
+On Thu, 2010-07-08 at 11:26 +0530, Karuna G. Kumar wrote:
+&gt;<i> Hi,
+</I>&gt;<i> 
+</I>&gt;<i>  
+</I>&gt;<i> 
+</I>&gt;<i> I am using FreeRADIUS and JRadius. That means, rlm_jradius module in
+</I>&gt;<i> FreeRADIUS. Using JRadius handler to process authentication,
+</I>&gt;<i> authorization and accounting.
+</I>&gt;<i> 
+</I>&gt;<i>  
+</I>&gt;<i> 
+</I>&gt;<i> Now, I don&#8217;t know how to use vendor specific attributes in request and
+</I>&gt;<i> response objects. Please provide me any documentation on how to
+</I>&gt;<i> configure this. Thanks in advance.
+</I>&gt;<i> 
+</I>&gt;<i>  
+</I>&gt;<i> 
+</I>&gt;<i> - Karun.
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> _______________________________________________
+</I>&gt;<i> Jradius mailing list
+</I>&gt;<i> <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/jradius">Jradius at coova.org</A>
+</I>&gt;<i> <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/jradius">http://lists.coova.org/cgi-bin/mailman/listinfo/jradius</A>
+</I>
+
+
+
+</PRE>
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000020.html">[Jradius] How to use vendor specific attributes?
+</A></li>
+	<LI>Next message: <A HREF="000022.html">[Jradius] How to use vendor specific attributes?
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#21">[ date ]</a>
+              <a href="thread.html#21">[ thread ]</a>
+              <a href="subject.html#21">[ subject ]</a>
+              <a href="author.html#21">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/jradius">More information about the Jradius
+mailing list</a><br>
+</body></html>

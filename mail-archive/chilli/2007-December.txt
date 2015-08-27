@@ -1,0 +1,1004 @@
+From whsu at frccorp.com  Thu Dec 13 20:17:42 2007
+From: whsu at frccorp.com (Weitan Hsu)
+Date: Thu, 13 Dec 2007 14:17:42 -0600
+Subject: cross-compile for arm-linux
+Message-ID: <47619366.8000808@frccorp.com>
+
+Hi All,
+
+Is there anyone successfully compiled Chillispot for arm-linux 
+architecture? When I try compiling with ./configure --host=arm-linux I 
+got a bunch of parse errors. The first error is
+
+In file included from /usr/local/arm-linux/sys-include/net/route.h:28,
+                 from system.h:133,
+                 from chilli.c:15:
+/usr/local/arm-linux/sys-include/net/dst.h:30: error: parse error before 
+"atomic_t"
+/usr/local/arm-linux/sys-include/net/dst.h:67: error: parse error before 
+'}' token
+/usr/local/arm-linux/sys-include/net/dst.h:85: error: parse error before 
+"atomic_t"
+/usr/local/arm-linux/sys-include/net/dst.h:87: error: parse error before 
+'}' token
+
+Compiler chain is snapgear 3.2.0, for ixp425 platform (Gateworks Avila 
+2348-4 board).
+
+Any help is highly appreciated.
+
+Regards,
+Weitan
+
+
+From aykut.demirkol at gmail.com  Thu Dec 13 21:41:36 2007
+From: aykut.demirkol at gmail.com (Aykut Demirkol)
+Date: Thu, 13 Dec 2007 23:41:36 +0200
+Subject: Chilli dhcp problem (No such device or address) does any one heard?
+In-Reply-To: <47619366.8000808@frccorp.com>
+References: <47619366.8000808@frccorp.com>
+Message-ID: <4761A710.10504@gmail.com>
+
+Hi all,
+Realy need help.
+My coova gives following error message for dhcp. I search so many hours 
+in google and could not found sth about it.
+Only think I found is a non solved, problem submition in a dd-wrt forum 
+http://www.dd-wrt.com/phpBB2/viewtopic.php?p=110254&highlight=&sid=7d5ac03bb833498ce981480fb882dbe5#110254 
+.
+
+My Chilli in debug mode gives:
+chilli.c: 2596: 0 (Debug) New DHCP request from MAC=00-1B-9E-15-XX-XX
+chilli.c: 2599: 0 (Debug) New DHCP connection established
+chilli.c: 2505: 0 (Debug) DHCP requested IP address
+chilli.c: 2558: 0 (Debug) Client MAC=00-1B-9E-15-XX-XX assigned IP 10.1.0.2
+dhcp.c: 633: 6 (No such device or address) sendto(fd=5, len=335) failed
+dhcp.c: 633: 6 (No such device or address) sendto(fd=7, len=42) failed
+dhcp.c: 633: 6 (No such device or address) sendto(fd=7, len=42) failed
+dhcp.c: 633: 6 (No such device or address) sendto(fd=7, len=42) failed
+dhcp.c: 633: 6 (No such device or address) sendto(fd=7, len=42) failed
+dhcp.c: 633: 6 (No such device or address) sendto(fd=7, len=42) failed
+dhcp.c: 633: 6 (No such device or address) sendto(fd=7, len=42) failed
+dhcp.c: 633: 6 (No such device or address) sendto(fd=7, len=42) failed
+dhcp.c: 633: 6 (No such device or address) sendto(fd=7, len=42) failed
+......
+
+It seems it has the dhcp request, assign an ip to mac but while 
+delivering result sth happens..
+Does any one heard about this problem?
+
+
+
+From wlan at mac.com  Fri Dec 14 06:24:44 2007
+From: wlan at mac.com (wlan at mac.com)
+Date: Fri, 14 Dec 2007 07:24:44 +0100
+Subject: Chilli dhcp problem (No such device or address) does any one heard?
+In-Reply-To: <4761A710.10504@gmail.com>
+References: <47619366.8000808@frccorp.com> <4761A710.10504@gmail.com>
+Message-ID: <8B409829-8DA0-4D39-8390-EC66B5F873EB@mac.com>
+
+Hi,
+
+What version are you using and can you reproduce the problem? If so,  
+what do you do to get it to fail?
+
+Cheers
+
+On Dec 13, 2007, at 10:41 PM, Aykut Demirkol wrote:
+
+> Hi all,
+> Realy need help.
+> My coova gives following error message for dhcp. I search so many  
+> hours in google and could not found sth about it.
+> Only think I found is a non solved, problem submition in a dd-wrt  
+> forum http://www.dd-wrt.com/phpBB2/viewtopic.php? 
+> p=110254&highlight=&sid=7d5ac03bb833498ce981480fb882dbe5#110254 .
+>
+> My Chilli in debug mode gives:
+> chilli.c: 2596: 0 (Debug) New DHCP request from MAC=00-1B-9E-15-XX-XX
+> chilli.c: 2599: 0 (Debug) New DHCP connection established
+> chilli.c: 2505: 0 (Debug) DHCP requested IP address
+> chilli.c: 2558: 0 (Debug) Client MAC=00-1B-9E-15-XX-XX assigned IP  
+> 10.1.0.2
+> dhcp.c: 633: 6 (No such device or address) sendto(fd=5, len=335)  
+> failed
+> dhcp.c: 633: 6 (No such device or address) sendto(fd=7, len=42) failed
+> dhcp.c: 633: 6 (No such device or address) sendto(fd=7, len=42) failed
+> dhcp.c: 633: 6 (No such device or address) sendto(fd=7, len=42) failed
+> dhcp.c: 633: 6 (No such device or address) sendto(fd=7, len=42) failed
+> dhcp.c: 633: 6 (No such device or address) sendto(fd=7, len=42) failed
+> dhcp.c: 633: 6 (No such device or address) sendto(fd=7, len=42) failed
+> dhcp.c: 633: 6 (No such device or address) sendto(fd=7, len=42) failed
+> dhcp.c: 633: 6 (No such device or address) sendto(fd=7, len=42) failed
+> ......
+>
+> It seems it has the dhcp request, assign an ip to mac but while  
+> delivering result sth happens..
+> Does any one heard about this problem?
+>
+>
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>
+
+
+
+From wlan at mac.com  Fri Dec 14 06:29:56 2007
+From: wlan at mac.com (wlan at mac.com)
+Date: Fri, 14 Dec 2007 07:29:56 +0100
+Subject: cross-compile for arm-linux
+In-Reply-To: <47619366.8000808@frccorp.com>
+References: <47619366.8000808@frccorp.com>
+Message-ID: <5EEA53B7-6F86-4889-A1F7-7372347DC322@mac.com>
+
+Probably missing a header file for this architecture.  Find out what  
+is causing the errors in net/dst.h and grep the header files for the  
+undefined data types. A quick google shows that this is a common  
+place to have a problem... didn't immediately see a quick solution.
+
+On Dec 13, 2007, at 9:17 PM, Weitan Hsu wrote:
+
+> Hi All,
+>
+> Is there anyone successfully compiled Chillispot for arm-linux  
+> architecture? When I try compiling with ./configure --host=arm- 
+> linux I got a bunch of parse errors. The first error is
+>
+> In file included from /usr/local/arm-linux/sys-include/net/route.h:28,
+>                 from system.h:133,
+>                 from chilli.c:15:
+> /usr/local/arm-linux/sys-include/net/dst.h:30: error: parse error  
+> before "atomic_t"
+> /usr/local/arm-linux/sys-include/net/dst.h:67: error: parse error  
+> before '}' token
+> /usr/local/arm-linux/sys-include/net/dst.h:85: error: parse error  
+> before "atomic_t"
+> /usr/local/arm-linux/sys-include/net/dst.h:87: error: parse error  
+> before '}' token
+>
+> Compiler chain is snapgear 3.2.0, for ixp425 platform (Gateworks  
+> Avila 2348-4 board).
+>
+> Any help is highly appreciated.
+>
+> Regards,
+> Weitan
+>
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>
+
+
+
+From whsu at frccorp.com  Fri Dec 14 15:14:32 2007
+From: whsu at frccorp.com (Weitan Hsu)
+Date: Fri, 14 Dec 2007 09:14:32 -0600
+Subject: cross-compile for arm-linux
+In-Reply-To: <4C5DEAB9-B31A-47DC-AF49-7E78BE7F37FD@mac.com>
+References: <47619366.8000808@frccorp.com> <4C5DEAB9-B31A-47DC-AF49-7E78BE7F37FD@mac.com>
+Message-ID: <47629DD8.3030605@frccorp.com>
+
+Thank you so much, David. Anyone knows how to patch this missing header?
+Thanks in advance!
+
+Weitan
+
+
+
+David Bird wrote:
+> Probably missing a header file for this architecture.  Find out what 
+> is causing the errors in net/dst.h and grep the header files for the 
+> undefined data types. A quick google shows that this is a common place 
+> to have a problem... didn't immediately see a quick solution.
+>
+> On Dec 13, 2007, at 9:17 PM, Weitan Hsu wrote:
+>
+>> Hi All,
+>>
+>> Is there anyone successfully compiled Chillispot for arm-linux 
+>> architecture? When I try compiling with ./configure --host=arm-linux 
+>> I got a bunch of parse errors. The first error is
+>>
+>> In file included from /usr/local/arm-linux/sys-include/net/route.h:28,
+>>                 from system.h:133,
+>>                 from chilli.c:15:
+>> /usr/local/arm-linux/sys-include/net/dst.h:30: error: parse error 
+>> before "atomic_t"
+>> /usr/local/arm-linux/sys-include/net/dst.h:67: error: parse error 
+>> before '}' token
+>> /usr/local/arm-linux/sys-include/net/dst.h:85: error: parse error 
+>> before "atomic_t"
+>> /usr/local/arm-linux/sys-include/net/dst.h:87: error: parse error 
+>> before '}' token
+>>
+>> Compiler chain is snapgear 3.2.0, for ixp425 platform (Gateworks 
+>> Avila 2348-4 board).
+>>
+>> Any help is highly appreciated.
+>>
+>> Regards,
+>> Weitan
+>>
+>> ---------------------------------------------------------------------
+>> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+>> For additional commands, e-mail: chilli-help at coova.org
+>> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+>> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>>
+>
+>
+
+
+
+
+From aykut.demirkol at gmail.com  Fri Dec 14 23:42:19 2007
+From: aykut.demirkol at gmail.com (Aykut Demirkol)
+Date: Sat, 15 Dec 2007 01:42:19 +0200
+Subject: Chilli dhcp problem (No such device or address) does any one
+ heard?
+In-Reply-To: <8B409829-8DA0-4D39-8390-EC66B5F873EB@mac.com>
+References: <47619366.8000808@frccorp.com> <4761A710.10504@gmail.com> <8B409829-8DA0-4D39-8390-EC66B5F873EB@mac.com>
+Message-ID: <476314DB.4060004@gmail.com>
+
+Version is 0.6.
+I have a same version in another identical box that does not have same 
+problem. I checked all lan,wireless,dhcp confugation through web page.  
+They are same.
+I tired to compare nvram's by diff. But can not figure out sth. The box 
+with problem has 2K nvram output, working one gave 4K of nvram output. 
+So there are lots of differences.
+I saved the configurations through web interface. And compared by diff. 
+They are really same.
+Next, I will copy and compare all /etc/ files with diff (It seems that 
+saving conf through web interface gives only some of the files in /etc/). 
+
+I had worked on it but can not break my working box to give same 
+problem. So, No I am not able to regenerate problem yet.
+
+Do you have any idea why this error can occur: "No such device or address".
+I looked to the source code (dhcp.c). I am not currently expert of code 
+but I thought it can be sth about fd "File descriptor to network interface".
+
+
+
+wlan at mac.com wrote:
+> Hi,
+>
+> What version are you using and can you reproduce the problem? If so, 
+> what do you do to get it to fail?
+>
+> Cheers
+>
+> On Dec 13, 2007, at 10:41 PM, Aykut Demirkol wrote:
+>
+>> Hi all,
+>> Realy need help.
+>> My coova gives following error message for dhcp. I search so many 
+>> hours in google and could not found sth about it.
+>> Only think I found is a non solved, problem submition in a dd-wrt 
+>> forum 
+>> http://www.dd-wrt.com/phpBB2/viewtopic.php?p=110254&highlight=&sid=7d5ac03bb833498ce981480fb882dbe5#110254 
+>> .
+>>
+>> My Chilli in debug mode gives:
+>> chilli.c: 2596: 0 (Debug) New DHCP request from MAC=00-1B-9E-15-XX-XX
+>> chilli.c: 2599: 0 (Debug) New DHCP connection established
+>> chilli.c: 2505: 0 (Debug) DHCP requested IP address
+>> chilli.c: 2558: 0 (Debug) Client MAC=00-1B-9E-15-XX-XX assigned IP 
+>> 10.1.0.2
+>> dhcp.c: 633: 6 (No such device or address) sendto(fd=5, len=335) failed
+>> dhcp.c: 633: 6 (No such device or address) sendto(fd=7, len=42) failed
+>> dhcp.c: 633: 6 (No such device or address) sendto(fd=7, len=42) failed
+>> dhcp.c: 633: 6 (No such device or address) sendto(fd=7, len=42) failed
+>> dhcp.c: 633: 6 (No such device or address) sendto(fd=7, len=42) failed
+>> dhcp.c: 633: 6 (No such device or address) sendto(fd=7, len=42) failed
+>> dhcp.c: 633: 6 (No such device or address) sendto(fd=7, len=42) failed
+>> dhcp.c: 633: 6 (No such device or address) sendto(fd=7, len=42) failed
+>> dhcp.c: 633: 6 (No such device or address) sendto(fd=7, len=42) failed
+>> ......
+>>
+>> It seems it has the dhcp request, assign an ip to mac but while 
+>> delivering result sth happens..
+>> Does any one heard about this problem?
+>>
+>>
+>> ---------------------------------------------------------------------
+>> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+>> For additional commands, e-mail: chilli-help at coova.org
+>> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+>> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>>
+>
+>
+
+
+
+From wlan at mac.com  Sat Dec 15 09:50:14 2007
+From: wlan at mac.com (David Bird)
+Date: Sat, 15 Dec 2007 10:50:14 +0100
+Subject: Chilli dhcp problem (No such device or address) does any one heard?
+In-Reply-To: <476314DB.4060004@gmail.com>
+References: <47619366.8000808@frccorp.com> <4761A710.10504@gmail.com> <8B409829-8DA0-4D39-8390-EC66B5F873EB@mac.com> <476314DB.4060004@gmail.com>
+Message-ID: <5B66CC10-153B-442D-9FB8-971506C926B5@mac.com>
+
+I'm not sure what you mean by version 0.6.. of what?
+
+I doubt it has to do with your configurations. It is possible that  
+you have more than one instance of chilli running at the same time?  
+Any other information you have as to when this occurs (heavy load,  
+network disturbances, etc)?
+
+If you can, try using the latest CoovaChilli version...
+
+David
+
+On Dec 15, 2007, at 12:42 AM, Aykut Demirkol wrote:
+
+> Version is 0.6.
+> I have a same version in another identical box that does not have  
+> same problem. I checked all lan,wireless,dhcp confugation through  
+> web page.  They are same.
+> I tired to compare nvram's by diff. But can not figure out sth. The  
+> box with problem has 2K nvram output, working one gave 4K of nvram  
+> output. So there are lots of differences.
+> I saved the configurations through web interface. And compared by  
+> diff. They are really same.
+> Next, I will copy and compare all /etc/ files with diff (It seems  
+> that saving conf through web interface gives only some of the files  
+> in /etc/).
+> I had worked on it but can not break my working box to give same  
+> problem. So, No I am not able to regenerate problem yet.
+>
+> Do you have any idea why this error can occur: "No such device or  
+> address".
+> I looked to the source code (dhcp.c). I am not currently expert of  
+> code but I thought it can be sth about fd "File descriptor to  
+> network interface".
+>
+>
+>
+> wlan at mac.com wrote:
+>> Hi,
+>>
+>> What version are you using and can you reproduce the problem? If  
+>> so, what do you do to get it to fail?
+>>
+>> Cheers
+>>
+>> On Dec 13, 2007, at 10:41 PM, Aykut Demirkol wrote:
+>>
+>>> Hi all,
+>>> Realy need help.
+>>> My coova gives following error message for dhcp. I search so many  
+>>> hours in google and could not found sth about it.
+>>> Only think I found is a non solved, problem submition in a dd-wrt  
+>>> forum http://www.dd-wrt.com/phpBB2/viewtopic.php? 
+>>> p=110254&highlight=&sid=7d5ac03bb833498ce981480fb882dbe5#110254 .
+>>>
+>>> My Chilli in debug mode gives:
+>>> chilli.c: 2596: 0 (Debug) New DHCP request from MAC=00-1B-9E-15- 
+>>> XX-XX
+>>> chilli.c: 2599: 0 (Debug) New DHCP connection established
+>>> chilli.c: 2505: 0 (Debug) DHCP requested IP address
+>>> chilli.c: 2558: 0 (Debug) Client MAC=00-1B-9E-15-XX-XX assigned  
+>>> IP 10.1.0.2
+>>> dhcp.c: 633: 6 (No such device or address) sendto(fd=5, len=335)  
+>>> failed
+>>> dhcp.c: 633: 6 (No such device or address) sendto(fd=7, len=42)  
+>>> failed
+>>> dhcp.c: 633: 6 (No such device or address) sendto(fd=7, len=42)  
+>>> failed
+>>> dhcp.c: 633: 6 (No such device or address) sendto(fd=7, len=42)  
+>>> failed
+>>> dhcp.c: 633: 6 (No such device or address) sendto(fd=7, len=42)  
+>>> failed
+>>> dhcp.c: 633: 6 (No such device or address) sendto(fd=7, len=42)  
+>>> failed
+>>> dhcp.c: 633: 6 (No such device or address) sendto(fd=7, len=42)  
+>>> failed
+>>> dhcp.c: 633: 6 (No such device or address) sendto(fd=7, len=42)  
+>>> failed
+>>> dhcp.c: 633: 6 (No such device or address) sendto(fd=7, len=42)  
+>>> failed
+>>> ......
+>>>
+>>> It seems it has the dhcp request, assign an ip to mac but while  
+>>> delivering result sth happens..
+>>> Does any one heard about this problem?
+>>>
+>>>
+>>> -------------------------------------------------------------------- 
+>>> -
+>>> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+>>> For additional commands, e-mail: chilli-help at coova.org
+>>> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+>>> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>>>
+>>
+>>
+>
+>
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>
+
+
+
+From aykut.demirkol at gmail.com  Sun Dec 16 19:21:11 2007
+From: aykut.demirkol at gmail.com (Aykut Demirkol)
+Date: Sun, 16 Dec 2007 21:21:11 +0200
+Subject: Chilli dhcp problem (No such device or address) does any one
+ heard?
+In-Reply-To: <5B66CC10-153B-442D-9FB8-971506C926B5@mac.com>
+References: <47619366.8000808@frccorp.com> <4761A710.10504@gmail.com> <8B409829-8DA0-4D39-8390-EC66B5F873EB@mac.com> <476314DB.4060004@gmail.com> <5B66CC10-153B-442D-9FB8-971506C926B5@mac.com>
+Message-ID: <47657AA7.5020004@gmail.com>
+
+Coova 1.0 beta 6, coova-chilli 1.0.8-1
+
+No there is one chilli running. Working and non working boxes are both 
+in a test enviroment with no load or disturbance.
+
+Can you give any circumtances when dhcp.c can cause a "No such device or 
+address" message.
+
+David Bird wrote:
+> I'm not sure what you mean by version 0.6.. of what?
+>
+> I doubt it has to do with your configurations. It is possible that you 
+> have more than one instance of chilli running at the same time? Any 
+> other information you have as to when this occurs (heavy load, network 
+> disturbances, etc)?
+>
+> If you can, try using the latest CoovaChilli version...
+>
+> David
+>
+> On Dec 15, 2007, at 12:42 AM, Aykut Demirkol wrote:
+>
+>> Version is 0.6.
+>> I have a same version in another identical box that does not have 
+>> same problem. I checked all lan,wireless,dhcp confugation through web 
+>> page.  They are same.
+>> I tired to compare nvram's by diff. But can not figure out sth. The 
+>> box with problem has 2K nvram output, working one gave 4K of nvram 
+>> output. So there are lots of differences.
+>> I saved the configurations through web interface. And compared by 
+>> diff. They are really same.
+>> Next, I will copy and compare all /etc/ files with diff (It seems 
+>> that saving conf through web interface gives only some of the files 
+>> in /etc/).
+>> I had worked on it but can not break my working box to give same 
+>> problem. So, No I am not able to regenerate problem yet.
+>>
+>> Do you have any idea why this error can occur: "No such device or 
+>> address".
+>> I looked to the source code (dhcp.c). I am not currently expert of 
+>> code but I thought it can be sth about fd "File descriptor to network 
+>> interface".
+>>
+>>
+>>
+>> wlan at mac.com wrote:
+>>> Hi,
+>>>
+>>> What version are you using and can you reproduce the problem? If so, 
+>>> what do you do to get it to fail?
+>>>
+>>> Cheers
+>>>
+>>> On Dec 13, 2007, at 10:41 PM, Aykut Demirkol wrote:
+>>>
+>>>> Hi all,
+>>>> Realy need help.
+>>>> My coova gives following error message for dhcp. I search so many 
+>>>> hours in google and could not found sth about it.
+>>>> Only think I found is a non solved, problem submition in a dd-wrt 
+>>>> forum 
+>>>> http://www.dd-wrt.com/phpBB2/viewtopic.php?p=110254&highlight=&sid=7d5ac03bb833498ce981480fb882dbe5#110254 
+>>>> .
+>>>>
+>>>> My Chilli in debug mode gives:
+>>>> chilli.c: 2596: 0 (Debug) New DHCP request from MAC=00-1B-9E-15-XX-XX
+>>>> chilli.c: 2599: 0 (Debug) New DHCP connection established
+>>>> chilli.c: 2505: 0 (Debug) DHCP requested IP address
+>>>> chilli.c: 2558: 0 (Debug) Client MAC=00-1B-9E-15-XX-XX assigned IP 
+>>>> 10.1.0.2
+>>>> dhcp.c: 633: 6 (No such device or address) sendto(fd=5, len=335) 
+>>>> failed
+>>>> dhcp.c: 633: 6 (No such device or address) sendto(fd=7, len=42) failed
+>>>> dhcp.c: 633: 6 (No such device or address) sendto(fd=7, len=42) failed
+>>>> dhcp.c: 633: 6 (No such device or address) sendto(fd=7, len=42) failed
+>>>> dhcp.c: 633: 6 (No such device or address) sendto(fd=7, len=42) failed
+>>>> dhcp.c: 633: 6 (No such device or address) sendto(fd=7, len=42) failed
+>>>> dhcp.c: 633: 6 (No such device or address) sendto(fd=7, len=42) failed
+>>>> dhcp.c: 633: 6 (No such device or address) sendto(fd=7, len=42) failed
+>>>> dhcp.c: 633: 6 (No such device or address) sendto(fd=7, len=42) failed
+>>>> ......
+>>>>
+>>>> It seems it has the dhcp request, assign an ip to mac but while 
+>>>> delivering result sth happens..
+>>>> Does any one heard about this problem?
+>>>>
+>>>>
+>>>> ---------------------------------------------------------------------
+>>>> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+>>>> For additional commands, e-mail: chilli-help at coova.org
+>>>> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+>>>> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>>>>
+>>>
+>>>
+>>
+>>
+>> ---------------------------------------------------------------------
+>> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+>> For additional commands, e-mail: chilli-help at coova.org
+>> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+>> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>>
+>
+>
+
+
+
+From wlan at mac.com  Mon Dec 17 10:10:40 2007
+From: wlan at mac.com (David Bird)
+Date: Mon, 17 Dec 2007 11:10:40 +0100
+Subject: Chilli dhcp problem (No such device or address) does any one heard?
+In-Reply-To: <47657AA7.5020004@gmail.com>
+References: <47619366.8000808@frccorp.com> <4761A710.10504@gmail.com> <8B409829-8DA0-4D39-8390-EC66B5F873EB@mac.com> <476314DB.4060004@gmail.com> <5B66CC10-153B-442D-9FB8-971506C926B5@mac.com> <47657AA7.5020004@gmail.com>
+Message-ID: <C551E130-23B8-447A-8EDF-121ECEDDE992@mac.com>
+
+ From what I understand, you would only get such an error if your  
+network somehow broke. Some possible causes that come to mind might  
+be a network driver unloaded or crashing, faulty hardware, or  
+something otherwise taking down the interface or changing it's  
+ifindex. What I will do, however, is have chilli try to reconnect a  
+broken socket (after trying to UP the interface that is not running).
+
+On Dec 16, 2007, at 8:21 PM, Aykut Demirkol wrote:
+
+> Coova 1.0 beta 6, coova-chilli 1.0.8-1
+>
+> No there is one chilli running. Working and non working boxes are  
+> both in a test enviroment with no load or disturbance.
+>
+> Can you give any circumtances when dhcp.c can cause a "No such  
+> device or address" message.
+>
+> David Bird wrote:
+>> I'm not sure what you mean by version 0.6.. of what?
+>>
+>> I doubt it has to do with your configurations. It is possible that  
+>> you have more than one instance of chilli running at the same  
+>> time? Any other information you have as to when this occurs (heavy  
+>> load, network disturbances, etc)?
+>>
+>> If you can, try using the latest CoovaChilli version...
+>>
+>> David
+>>
+>> On Dec 15, 2007, at 12:42 AM, Aykut Demirkol wrote:
+>>
+>>> Version is 0.6.
+>>> I have a same version in another identical box that does not have  
+>>> same problem. I checked all lan,wireless,dhcp confugation through  
+>>> web page.  They are same.
+>>> I tired to compare nvram's by diff. But can not figure out sth.  
+>>> The box with problem has 2K nvram output, working one gave 4K of  
+>>> nvram output. So there are lots of differences.
+>>> I saved the configurations through web interface. And compared by  
+>>> diff. They are really same.
+>>> Next, I will copy and compare all /etc/ files with diff (It seems  
+>>> that saving conf through web interface gives only some of the  
+>>> files in /etc/).
+>>> I had worked on it but can not break my working box to give same  
+>>> problem. So, No I am not able to regenerate problem yet.
+>>>
+>>> Do you have any idea why this error can occur: "No such device or  
+>>> address".
+>>> I looked to the source code (dhcp.c). I am not currently expert  
+>>> of code but I thought it can be sth about fd "File descriptor to  
+>>> network interface".
+>>>
+>>>
+>>>
+>>> wlan at mac.com wrote:
+>>>> Hi,
+>>>>
+>>>> What version are you using and can you reproduce the problem? If  
+>>>> so, what do you do to get it to fail?
+>>>>
+>>>> Cheers
+>>>>
+>>>> On Dec 13, 2007, at 10:41 PM, Aykut Demirkol wrote:
+>>>>
+>>>>> Hi all,
+>>>>> Realy need help.
+>>>>> My coova gives following error message for dhcp. I search so  
+>>>>> many hours in google and could not found sth about it.
+>>>>> Only think I found is a non solved, problem submition in a dd- 
+>>>>> wrt forum http://www.dd-wrt.com/phpBB2/viewtopic.php? 
+>>>>> p=110254&highlight=&sid=7d5ac03bb833498ce981480fb882dbe5#110254 .
+>>>>>
+>>>>> My Chilli in debug mode gives:
+>>>>> chilli.c: 2596: 0 (Debug) New DHCP request from MAC=00-1B-9E-15- 
+>>>>> XX-XX
+>>>>> chilli.c: 2599: 0 (Debug) New DHCP connection established
+>>>>> chilli.c: 2505: 0 (Debug) DHCP requested IP address
+>>>>> chilli.c: 2558: 0 (Debug) Client MAC=00-1B-9E-15-XX-XX assigned  
+>>>>> IP 10.1.0.2
+>>>>> dhcp.c: 633: 6 (No such device or address) sendto(fd=5,  
+>>>>> len=335) failed
+>>>>> dhcp.c: 633: 6 (No such device or address) sendto(fd=7, len=42)  
+>>>>> failed
+>>>>> dhcp.c: 633: 6 (No such device or address) sendto(fd=7, len=42)  
+>>>>> failed
+>>>>> dhcp.c: 633: 6 (No such device or address) sendto(fd=7, len=42)  
+>>>>> failed
+>>>>> dhcp.c: 633: 6 (No such device or address) sendto(fd=7, len=42)  
+>>>>> failed
+>>>>> dhcp.c: 633: 6 (No such device or address) sendto(fd=7, len=42)  
+>>>>> failed
+>>>>> dhcp.c: 633: 6 (No such device or address) sendto(fd=7, len=42)  
+>>>>> failed
+>>>>> dhcp.c: 633: 6 (No such device or address) sendto(fd=7, len=42)  
+>>>>> failed
+>>>>> dhcp.c: 633: 6 (No such device or address) sendto(fd=7, len=42)  
+>>>>> failed
+>>>>> ......
+>>>>>
+>>>>> It seems it has the dhcp request, assign an ip to mac but while  
+>>>>> delivering result sth happens..
+>>>>> Does any one heard about this problem?
+>>>>>
+>>>>>
+>>>>> ------------------------------------------------------------------ 
+>>>>> ---
+>>>>> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+>>>>> For additional commands, e-mail: chilli-help at coova.org
+>>>>> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+>>>>> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>>>>>
+>>>>
+>>>>
+>>>
+>>>
+>>> -------------------------------------------------------------------- 
+>>> -
+>>> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+>>> For additional commands, e-mail: chilli-help at coova.org
+>>> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+>>> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>>>
+>>
+>>
+>
+
+
+
+From vazudevan at gmail.com  Wed Dec 19 12:55:13 2007
+From: vazudevan at gmail.com (Vasudevan Srinivasan)
+Date: Wed, 19 Dec 2007 18:25:13 +0530
+Subject: Coovachilli on freebsd?
+Message-ID: <94d4228d0712190455w4bcb0a39tadd9d47498c65f23@mail.gmail.com>
+
+Hi,
+
+Anybody out there using coovachilli on FreeBSD-6.2?
+I'm unable to compile it.
+following is the error (similarly for resolv.h, net/if.h, net/if_arp.h
+and net/route.h)
+<snip>
+checking resolv.h presence... yes
+configure: WARNING: resolv.h: present but cannot be compiled
+configure: WARNING: resolv.h:     check for missing prerequisite headers?
+configure: WARNING: resolv.h: see the Autoconf documentation
+configure: WARNING: resolv.h:     section "Present But Cannot Be Compiled"
+configure: WARNING: resolv.h: proceeding with the preprocessor's result
+configure: WARNING: resolv.h: in the future, the compiler will take precedence
+configure: WARNING:     ## -------------------------------- ##
+configure: WARNING:     ## Report this to support at coova.org ##
+configure: WARNING:     ## -------------------------------- ##
+
+</snip>
+
+regards,
+Vasudevan
+
+
+From raphael at endian.com  Thu Dec 20 19:31:03 2007
+From: raphael at endian.com (Raphael Vallazza)
+Date: Thu, 20 Dec 2007 20:31:03 +0100
+Subject: [PATCH] AnyIP + macauth 
+Message-ID: <5E459856-2081-440B-AED8-BB33C8D3A143@endian.com>
+
+Hello,
+
+here is the patch i've "sent" to the forum :)
+
+I've noticed some issues with anyip and radius macauth authentication,  
+the patch is attached. Another fixed issue is that ippool_new didn't  
+recognize if an already allocated ip was static (this happens if newip  
+is called twice in a session, happens sometimes, maybe it souldn't...).
+
+What do you think about a function (allocate_ip?) that encapsulates/ 
+wraps all the newip/client ip assigning functionality? This way some  
+redundant code (especially the ALPAPAD one) could be removed, i  
+started coding it and it worked with UAM and macauth, but i didn't  
+want to mess up things with other authentication methods.
+
+The patch applies on 1.0.11 and on SVN.
+
+Raphael
+
+
+-- 
+
+:: e n d i a n
+:: open source - open minds
+
+:: raphael vallazza
+:: phone +39 0471 631763  :: fax +39 0471 631764
+:: http://www.endian.com  :: raphael (AT) endian.com
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20071220/338a99d0/attachment.htm>
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: coova-chilli-1.0.11-macauth-anyip.patch
+Type: application/octet-stream
+Size: 4254 bytes
+Desc: not available
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20071220/338a99d0/attachment.obj>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20071220/338a99d0/attachment-0001.htm>
+
+From wlan at mac.com  Fri Dec 21 05:15:56 2007
+From: wlan at mac.com (wlan at mac.com)
+Date: Fri, 21 Dec 2007 06:15:56 +0100
+Subject: [PATCH] AnyIP + macauth
+In-Reply-To: <5E459856-2081-440B-AED8-BB33C8D3A143@endian.com>
+References: <5E459856-2081-440B-AED8-BB33C8D3A143@endian.com>
+Message-ID: <DD3334EC-BC2D-4873-9206-CF916DF08F2F@mac.com>
+
+Hi,
+
+The changes have been committed to svn, if you would check it.
+
+Let me know if you want svn write access!
+
+Cheers
+David
+
+On Dec 20, 2007, at 8:31 PM, Raphael Vallazza wrote:
+
+> Hello,
+>
+> here is the patch i've "sent" to the forum :)
+>
+> I've noticed some issues with anyip and radius macauth  
+> authentication, the patch is attached. Another fixed issue is that  
+> ippool_new didn't recognize if an already allocated ip was static  
+> (this happens if newip is called twice in a session, happens  
+> sometimes, maybe it souldn't...).
+>
+> What do you think about a function (allocate_ip?) that encapsulates/ 
+> wraps all the newip/client ip assigning functionality? This way  
+> some redundant code (especially the ALPAPAD one) could be removed,  
+> i started coding it and it worked with UAM and macauth, but i  
+> didn't want to mess up things with other authentication methods.
+>
+> The patch applies on 1.0.11 and on SVN.
+>
+> Raphael
+> <coova-chilli-1.0.11-macauth-anyip.patch>
+>
+> -- 
+>
+> :: e n d i a n
+> :: open source - open minds
+>
+> :: raphael vallazza
+> :: phone +39 0471 631763  :: fax +39 0471 631764
+> :: http://www.endian.com  :: raphael (AT) endian.com
+>
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20071221/65ede754/attachment.htm>
+
+From venture37 at hotmail.com  Mon Dec 24 17:39:12 2007
+From: venture37 at hotmail.com (Sevan / Venture37)
+Date: Mon, 24 Dec 2007 17:39:12 +0000
+Subject: CoovaChilli port for FreeBSD - BETA
+Message-ID: <BAY117-W386B3D300C87170E38C3E9A0590@phx.gbl>
+
+
+http://www.geeklan.co.uk/?p=99
+_________________________________________________________________
+Who's friends with who and co-starred in what?
+http://www.searchgamesbox.com/celebrityseparation.shtml
+
+From wlan at mac.com  Fri Dec 28 09:05:35 2007
+From: wlan at mac.com (wlan at mac.com)
+Date: Fri, 28 Dec 2007 10:05:35 +0100
+Subject: chilli features...
+Message-ID: <B8BF8799-6592-45A2-A868-85F1F085B226@mac.com>
+
+Hello all,
+
+I have some ideas for new chilli features and wanted to run them by  
+the mailing list and ask for comments.
+
+Right now, when you use MAC authentication, if an access-reject is  
+returned, the user will still get assigned an IP address and will  
+then be given the captive portal. This is good as a way to have  
+certain devices bypass the captive portal. But, it would also be nice  
+to use MAC authentication as a way to manage blocked devices. I'm  
+considering an option which will have chilli drop all traffic from  
+clients that get an access-reject during mac authentication. When  
+clients are in the 'drop' state, all traffic from them is ignored.
+
+There have been some requests in the forum for a less restrictive  
+"splash page" feature. Of course, you can already do this with some  
+coding in the landing page to auto-login the user with some pre- 
+configured username and password. Though, I think it would be nice to  
+have another authentication state -- where the client has access to  
+the Internet (on all ports except port 80), but still gets redirected  
+to a splash page when trying to browse non-SSL websites. From the  
+splash page, the user will have to 'login' again (or have some  
+scripting do this automatically). Sessions will be put into the  
+'splash' state either by an Access-Accept with the option indicated  
+in an attribute during MAC authentication or using chilli_query from  
+the command line. In either case, a specific splash page URL can also  
+be provided -- as a means to send users to potentially different  
+splash pages.
+
+The splash page feature when combined with mac-auth really becomes a  
+two-stage authentication process... kinda like the "WPA Guest"  
+feature that is already implemented. The 'first' stage is either mac- 
+auth or WPA and the 'second' stage being the captive portal. From an  
+accounting perspective, it may be nice to have accounting of the  
+first stage "session" being separate from the second stage. This way,  
+you could know the usage of a client before and after the second  
+stage authentication. There are two ways of doing this: either the  
+first and second stage session's accounting overlaps or the first  
+stage session is stopped when the second stage session starts. If the  
+sessions overlap, the Acct-Multi-Session-Id could be used to link  
+together the two RADIUS sessions.
+
+Any comments or suggestions are welcome!
+
+David
+
+
+From gunther.mayer at googlemail.com  Fri Dec 28 12:54:53 2007
+From: gunther.mayer at googlemail.com (Gunther Mayer)
+Date: Fri, 28 Dec 2007 14:54:53 +0200
+Subject: chilli features...
+In-Reply-To: <B8BF8799-6592-45A2-A868-85F1F085B226@mac.com>
+References: <B8BF8799-6592-45A2-A868-85F1F085B226@mac.com>
+Message-ID: <4774F21D.3080500@gmail.com>
+
+wlan at mac.com wrote:
+> Hello all,
+>
+> I have some ideas for new chilli features and wanted to run them by 
+> the mailing list and ask for comments.
+>
+> Right now, when you use MAC authentication, if an access-reject is 
+> returned, the user will still get assigned an IP address and will then 
+> be given the captive portal. This is good as a way to have certain 
+> devices bypass the captive portal. But, it would also be nice to use 
+> MAC authentication as a way to manage blocked devices. I'm considering 
+> an option which will have chilli drop all traffic from clients that 
+> get an access-reject during mac authentication. When clients are in 
+> the 'drop' state, all traffic from them is ignored.
+We have considered this as well, though I think it's better do manage 
+blocked devices based on a MAC blacklist in the radius backend. 
+Otherwise those people whose MAC authentication legitimately fails (e.g. 
+because they haven't registered theirs yet through some sort of web 
+frontend) get blocked permanently.
+
+
+From wlan at mac.com  Fri Dec 28 13:10:07 2007
+From: wlan at mac.com (wlan at mac.com)
+Date: Fri, 28 Dec 2007 14:10:07 +0100
+Subject: chilli features...
+In-Reply-To: <4774F21D.3080500@gmail.com>
+References: <B8BF8799-6592-45A2-A868-85F1F085B226@mac.com> <4774F21D.3080500@gmail.com>
+Message-ID: <7B2220C0-1BD5-4D3F-AEE6-ECF1668838AC@mac.com>
+
+>> Right now, when you use MAC authentication, if an access-reject is  
+>> returned, the user will still get assigned an IP address and will  
+>> then be given the captive portal. This is good as a way to have  
+>> certain devices bypass the captive portal. But, it would also be  
+>> nice to use MAC authentication as a way to manage blocked devices.  
+>> I'm considering an option which will have chilli drop all traffic  
+>> from clients that get an access-reject during mac authentication.  
+>> When clients are in the 'drop' state, all traffic from them is  
+>> ignored.
+> We have considered this as well, though I think it's better do  
+> manage blocked devices based on a MAC blacklist in the radius  
+> backend. Otherwise those people whose MAC authentication  
+> legitimately fails (e.g. because they haven't registered theirs yet  
+> through some sort of web frontend) get blocked permanently.
+
+Yes, giving out an access-accept vs. -reject is the decision of the  
+RADIUS server - so the MAC list will be there. The idea is that all  
+devices not on the list will get an access-accept (in one form or  
+another). The RADIUS server can issue:
+
+	- Access-Accept (Full access)
+	- Access-Accept + "require UAM" or Splash option
+	- Access-Reject (Zero access)
+
+This would be an option, not the default. The default will remain as  
+it... which is that a reject still gives walled garden access during  
+MAC auth.
+
+David
+
+
+From gunther.mayer at googlemail.com  Fri Dec 28 16:12:52 2007
+From: gunther.mayer at googlemail.com (Gunther Mayer)
+Date: Fri, 28 Dec 2007 18:12:52 +0200
+Subject: chilli features...
+In-Reply-To: <7B2220C0-1BD5-4D3F-AEE6-ECF1668838AC@mac.com>
+References: <B8BF8799-6592-45A2-A868-85F1F085B226@mac.com> <4774F21D.3080500@gmail.com> <7B2220C0-1BD5-4D3F-AEE6-ECF1668838AC@mac.com>
+Message-ID: <47752084.6080304@gmail.com>
+
+wlan at mac.com wrote:
+>>> Right now, when you use MAC authentication, if an access-reject is 
+>>> returned, the user will still get assigned an IP address and will 
+>>> then be given the captive portal. This is good as a way to have 
+>>> certain devices bypass the captive portal. But, it would also be 
+>>> nice to use MAC authentication as a way to manage blocked devices. 
+>>> I'm considering an option which will have chilli drop all traffic 
+>>> from clients that get an access-reject during mac authentication. 
+>>> When clients are in the 'drop' state, all traffic from them is ignored.
+>> We have considered this as well, though I think it's better do manage 
+>> blocked devices based on a MAC blacklist in the radius backend. 
+>> Otherwise those people whose MAC authentication legitimately fails 
+>> (e.g. because they haven't registered theirs yet through some sort of 
+>> web frontend) get blocked permanently.
+>
+> Yes, giving out an access-accept vs. -reject is the decision of the 
+> RADIUS server - so the MAC list will be there. The idea is that all 
+> devices not on the list will get an access-accept (in one form or 
+> another). The RADIUS server can issue:
+>
+>     - Access-Accept (Full access)
+>     - Access-Accept + "require UAM" or Splash option
+>     - Access-Reject (Zero access)
+>
+> This would be an option, not the default. The default will remain as 
+> it... which is that a reject still gives walled garden access during 
+> MAC auth.
+I see, sorry, I didn't understand fully what you were trying to achieve, 
+now I do. However, I would still say if you want to block a given MAC 
+permanently at least you should tell them why they're blocked, something 
+that can only be done through UAM as some sort of visual/textual 
+feedback on the splash page.
+
+Hmm, come to think of it, UAM blocking would still allow them walled 
+garden access, something one might want to block entirely indeed.
+
+In any case, I think such a use case is still too advanced for our setup 
+but I'm sure others will find it very useful.
+
+Gunther
+
+

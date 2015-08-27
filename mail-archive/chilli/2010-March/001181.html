@@ -1,0 +1,125 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] chilli 1.2.2 mutli process problem..
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20chilli%201.2.2%20mutli%20process%20problem..&In-Reply-To=%3C1268056479.3395.624.camel%40david-laptop%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001180.html">
+   <LINK REL="Next"  HREF="001182.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] chilli 1.2.2 mutli process problem..</H1>
+    <B>David Bird</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20chilli%201.2.2%20mutli%20process%20problem..&In-Reply-To=%3C1268056479.3395.624.camel%40david-laptop%3E"
+       TITLE="[Chilli] chilli 1.2.2 mutli process problem..">david at coova.com
+       </A><BR>
+    <I>Mon Mar  8 13:54:39 UTC 2010</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001180.html">[Chilli] chilli 1.2.2 mutli process problem..
+</A></li>
+        <LI>Next message: <A HREF="001182.html">[Chilli] chilli 1.2.2 mutli process problem..
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1181">[ date ]</a>
+              <a href="thread.html#1181">[ thread ]</a>
+              <a href="subject.html#1181">[ subject ]</a>
+              <a href="author.html#1181">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Each needs it's own --unixipc option or build with ./configure
+--with-ipc-msg to keep using msgsnd/msgrcv instead of unix socket. 
+
+On Mon, 2010-03-08 at 15:43 +0200, Oguzhan Kayhan wrote:
+&gt;<i> Hello,
+</I>&gt;<i> I was using coova with multiple interfaces-processes for a while.
+</I>&gt;<i> I decided to upgrade to 1.2.2 version.
+</I>&gt;<i> My config is like this..
+</I>&gt;<i> /etc/chilli-a
+</I>&gt;<i> /etc/chilli-a.conf
+</I>&gt;<i> /etc/chilli-b
+</I>&gt;<i> /etc/chilli-b.conf   
+</I>&gt;<i> 
+</I>&gt;<i> /etc/init.d/chilli-a
+</I>&gt;<i> /etc/init.d/chilli-b  etc...
+</I>&gt;<i> 
+</I>&gt;<i> And i also changed every parameter in functions file to make it run in seperate 
+</I>&gt;<i> processes as 
+</I>&gt;<i> 
+</I>&gt;<i> -----------
+</I>&gt;<i> CHILLI=/etc/chilli-a
+</I>&gt;<i> RUN_D=/var/run
+</I>&gt;<i> SBIN=/usr/sbin
+</I>&gt;<i> ARPCHECK=$RUN_D/chilli-a.arp
+</I>&gt;<i> LKFILE=$RUN_D/chilli-a.run
+</I>&gt;<i> MAIN_CONF=$CHILLI/main.conf
+</I>&gt;<i> LOCAL_CONF=$CHILLI/local.conf
+</I>&gt;<i> HS_CONF=$CHILLI/hs.conf
+</I>&gt;<i> HS_TEMP=/tmp/hs-a.conf
+</I>&gt;<i> MAIN_TEMP=/tmp/main.conf
+</I>&gt;<i> CMDSOCK=$RUN_D/chilli-a.sock
+</I>&gt;<i> PIDFILE=$RUN_D/chilli-a.pid   vs....
+</I>&gt;<i> -----
+</I>&gt;<i> But when i run multiple processes, only the first process works fine..
+</I>&gt;<i> Others can get Ip but redirection does not work. And i see such entries in 
+</I>&gt;<i> syslog.
+</I>&gt;<i> 
+</I>&gt;<i> I switched back to 1.4 version...
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> [chilli_redir]: redir.c: 2522: invalid www request [delivery/afr.php]!
+</I>&gt;<i> Mar  8 15:27:16 erouter [chilli_redir]: redir.c: 2522: invalid www request 
+</I>&gt;<i> [delivery/lg.php]!
+</I>&gt;<i> Mar  8 15:27:16 erouter [chilli_redir]: redir.c: 2522: invalid www request 
+</I>&gt;<i> [delivery/lg.php]!
+</I>&gt;<i> Mar  8 15:27:16 erouter [chilli_redir]: redir.c: 2522: invalid www request 
+</I>&gt;<i> [delivery/lg.php]!
+</I>&gt;<i> Mar  8 15:27:16 erouter [chilli_redir]: redir.c: 2522: invalid www request 
+</I>&gt;<i> [delivery/lg.php]!
+</I>&gt;<i> Mar  8 15:27:16 erouter [chilli_redir]: redir.c: 2522: invalid www request 
+</I>&gt;<i> [delivery/lg.php]!
+</I>&gt;<i> 
+</I>&gt;<i> ar  8 15:28:04 erouter [chilli_redir]: redir.c: 2540: invalid file extension! 
+</I>&gt;<i> [undefined]                                                                                                  
+</I>&gt;<i> Mar  8 15:28:04 erouter [chilli_redir]: redir.c: 2540: invalid file extension! 
+</I>&gt;<i> [undefined]                                                                                                  
+</I>&gt;<i> Mar  8 15:28:04 erouter [chilli_redir]: redir.c: 2540: invalid file extension! 
+</I>&gt;<i> [undefined]                                                                                                  
+</I>&gt;<i> Mar  8 15:28:04 erouter [chilli_redir]: redir.c: 2540: invalid file extension! 
+</I>&gt;<i> [undefined]          
+</I>&gt;<i> _______________________________________________
+</I>&gt;<i> Chilli mailing list
+</I>&gt;<i> <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">Chilli at coova.org</A>
+</I>&gt;<i> <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">http://lists.coova.org/cgi-bin/mailman/listinfo/chilli</A>
+</I>
+
+</PRE>
+
+
+
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001180.html">[Chilli] chilli 1.2.2 mutli process problem..
+</A></li>
+	<LI>Next message: <A HREF="001182.html">[Chilli] chilli 1.2.2 mutli process problem..
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1181">[ date ]</a>
+              <a href="thread.html#1181">[ thread ]</a>
+              <a href="subject.html#1181">[ subject ]</a>
+              <a href="author.html#1181">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

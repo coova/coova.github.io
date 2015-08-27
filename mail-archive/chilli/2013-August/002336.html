@@ -1,0 +1,145 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] Problems with SVN/HEAD + deb package
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Problems%20with%20SVN/HEAD%20%2B%20deb%20package&In-Reply-To=%3CCABvP5W1WWzwU5tuu-N8mU3GjN3oABgbUuQVHoh9ReoZqonXAYw%40mail.gmail.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="002335.html">
+   <LINK REL="Next"  HREF="002337.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] Problems with SVN/HEAD + deb package</H1>
+    <B>Jorge Pereira</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Problems%20with%20SVN/HEAD%20%2B%20deb%20package&In-Reply-To=%3CCABvP5W1WWzwU5tuu-N8mU3GjN3oABgbUuQVHoh9ReoZqonXAYw%40mail.gmail.com%3E"
+       TITLE="[Chilli] Problems with SVN/HEAD + deb package">jpereiran at gmail.com
+       </A><BR>
+    <I>Mon Aug  5 02:23:01 UTC 2013</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="002335.html">[Chilli] Problems with SVN/HEAD + deb package
+</A></li>
+        <LI>Next message: <A HREF="002337.html">[Chilli] not responding
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2336">[ date ]</a>
+              <a href="thread.html#2336">[ thread ]</a>
+              <a href="subject.html#2336">[ subject ]</a>
+              <a href="author.html#2336">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>i've debian/tmp
+
+
+On Sun, Aug 4, 2013 at 9:49 PM, David Bird &lt;<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">david at coova.com</A>&gt; wrote:
+
+&gt;<i> After you build using dhbulid, do you have a debian/tmp or a
+</I>&gt;<i> debian/coova-chilli directory? Some deb tools seems to use one or the
+</I>&gt;<i> other. Try changing:
+</I>&gt;<i>
+</I>&gt;<i>         $(MAKE) DESTDIR=$(CURDIR)/debian/tmp install
+</I>&gt;<i>
+</I>&gt;<i> to be
+</I>&gt;<i>
+</I>&gt;<i>         $(MAKE) DESTDIR=$(CURDIR)/debian/coova-chilli install
+</I>&gt;<i>
+</I>&gt;<i> in debian/rules.
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> On Wed, 2013-07-31 at 18:21 -0300, Jorge Pereira wrote:
+</I>&gt;<i> &gt; Hi Chuck, how u doin?
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; actually, isn't a mistake. sorry for my last message, the problems is
+</I>&gt;<i> &gt; that after following steps by [1] using &quot;dhbuild -b&quot;. the package *.deb
+</I>&gt;<i> &gt; missing some files! look the size.
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; [<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">root at wifi</A> coova-chilli.svn]# dhbuild -b
+</I>&gt;<i> &gt; ...............
+</I>&gt;<i> &gt; [<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">root at wifi</A> coova-chilli.svn]# ls -lh ../
+</I>&gt;<i> &gt; total 52K
+</I>&gt;<i> &gt; drwxr-xr-x  4 root root 4.0K Jul 31 18:14 .
+</I>&gt;<i> &gt; drwxr-xr-x  4 root root 4.0K Jul 30 20:17 ..
+</I>&gt;<i> &gt; -rw-r--r--  1 root root  34K Jul 31 18:14 coova-chilli_1.3.0_amd64.deb
+</I>&gt;<i> &gt; [<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">root at wifi</A> coova-chilli.svn]#
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; after trying using debin/rules directly, have same problem.
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; [<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">root at wifi</A> coova-chilli.svn]#fakeroot ./debian/rules clean binary
+</I>&gt;<i> &gt; [<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">root at wifi</A> coova-chilli.svn]#
+</I>&gt;<i> &gt; drwxr-xr-x  4 root root 4.0K Jul 31 18:14 .
+</I>&gt;<i> &gt; drwxr-xr-x  4 root root 4.0K Jul 30 20:17 ..
+</I>&gt;<i> &gt; -rw-r--r--  1 root root  34K Jul 31 18:14 coova-chilli_1.3.0_amd64.deb
+</I>&gt;<i> &gt; [<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">root at wifi</A> coova-chilli.svn]#
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; if anyone have some idea, tell us! :)
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; [1] <A HREF="http://coova.org/CoovaChilli/DistroBuilding">http://coova.org/CoovaChilli/DistroBuilding</A>
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; -- Jorge Pereira
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; On Wed, Jul 31, 2013 at 3:30 AM, Chuck Dand &lt;<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chuckd at kooked.co.uk</A>&gt; wrote:
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt; On 31/07/13 05:39, Jorge Pereira wrote:
+</I>&gt;<i> &gt; &gt;&gt;
+</I>&gt;<i> &gt; &gt;&gt;
+</I>&gt;<i> &gt; &gt;&gt; i'm trying to build a deb package using the latest revision 485, but
+</I>&gt;<i> get
+</I>&gt;<i> &gt; &gt;&gt; only error!
+</I>&gt;<i> &gt; &gt;&gt; so, have someone with same problems?
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt; It might possibly help if you can provide details of the error that
+</I>&gt;<i> you're getting when you try to build.
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt; --
+</I>&gt;<i> &gt; &gt; Chuck Dand
+</I>&gt;<i> &gt; &gt; _______________________________________________
+</I>&gt;<i> &gt; &gt; Chilli mailing list
+</I>&gt;<i> &gt; &gt; <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">Chilli at coova.org</A>
+</I>&gt;<i> &gt; &gt; <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">http://lists.coova.org/cgi-bin/mailman/listinfo/chilli</A>
+</I>&gt;<i> &gt; _______________________________________________
+</I>&gt;<i> &gt; Chilli mailing list
+</I>&gt;<i> &gt; <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">Chilli at coova.org</A>
+</I>&gt;<i> &gt; <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">http://lists.coova.org/cgi-bin/mailman/listinfo/chilli</A>
+</I>&gt;<i>
+</I>&gt;<i> --
+</I>&gt;<i> --
+</I>&gt;<i> David Bird
+</I>&gt;<i> <A HREF="http://www.linkedin.com/in/dwbird/">http://www.linkedin.com/in/dwbird/</A>
+</I>&gt;<i>
+</I>&gt;<i>
+</I>-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: &lt;<A HREF="http://lists.coova.org/pipermail/chilli/attachments/20130804/04671d46/attachment.html">http://lists.coova.org/pipermail/chilli/attachments/20130804/04671d46/attachment.html</A>&gt;
+</PRE>
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="002335.html">[Chilli] Problems with SVN/HEAD + deb package
+</A></li>
+	<LI>Next message: <A HREF="002337.html">[Chilli] not responding
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2336">[ date ]</a>
+              <a href="thread.html#2336">[ thread ]</a>
+              <a href="subject.html#2336">[ subject ]</a>
+              <a href="author.html#2336">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

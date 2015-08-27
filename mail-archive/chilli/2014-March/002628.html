@@ -1,0 +1,122 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] [3/6] Fix bug: Headers providing a flag don't imply this is
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20%5B3/6%5D%20Fix%20bug%3A%20Headers%20providing%20a%20flag%20don%27t%20imply%20this%20is&In-Reply-To=%3C20140318145905.GE5711%40pluto.office.getslash.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="002627.html">
+   <LINK REL="Next"  HREF="002634.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] [3/6] Fix bug: Headers providing a flag don't imply this is</H1>
+    <B>Jan-Benedict Glaw</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20%5B3/6%5D%20Fix%20bug%3A%20Headers%20providing%20a%20flag%20don%27t%20imply%20this%20is&In-Reply-To=%3C20140318145905.GE5711%40pluto.office.getslash.de%3E"
+       TITLE="[Chilli] [3/6] Fix bug: Headers providing a flag don't imply this is">jbglaw at getslash.de
+       </A><BR>
+    <I>Tue Mar 18 14:59:05 UTC 2014</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="002627.html">[Chilli] [2/6] Depend on iptables
+</A></li>
+        <LI>Next message: <A HREF="002634.html">[Chilli] [3/6] Fix bug: Headers providing a flag don't imply	this is
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2628">[ date ]</a>
+              <a href="thread.html#2628">[ thread ]</a>
+              <a href="subject.html#2628">[ subject ]</a>
+              <a href="author.html#2628">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>One of the socket flags is checked for existence, but that doesn't
+neccessarily mean that it's supported on the target system. Accept
+failure here, SO_REUSEPORT isn't really important.
+
+2014-03-06  Jan-Benedict Glaw  &lt;<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">jbglaw at lug-owl.de</A>&gt;
+
+	* src/redir.c (redir_listen): Handle failure upon SO_REUSEPORT.
+---
+ src/redir.c | 15 +++++++++++----
+ 1 file changed, 11 insertions(+), 4 deletions(-)
+
+diff --git a/src/redir.c b/src/redir.c
+index 7c194fd..9d6d63e 100644
+--- a/src/redir.c
++++ b/src/redir.c
+@@ -1705,10 +1705,17 @@ int redir_listen(struct redir_t *redir) {
+ #ifdef SO_REUSEPORT
+     optval = 1;
+     if (setsockopt(redir-&gt;fd[n], SOL_SOCKET, SO_REUSEPORT, &amp;optval, sizeof(optval))) {
+-      log_err(errno, &quot;setsockopt(SO_REUSEPORT)&quot;);
+-      safe_close(redir-&gt;fd[n]);
+-      redir-&gt;fd[n]=0;
+-      return -1;
++      error_t last_errno = errno;
++      log_err(last_errno, &quot;setsockopt(SO_REUSEPORT)&quot;);
++      if (last_errno != ENOPROTOOPT) {
++	log_dbg (&quot;setsockopt(SO_REUSEPORT) failed hard, aborting.&quot;);
++	safe_close(redir-&gt;fd[n]);
++	redir-&gt;fd[n]=0;
++	return -1;
++      } else {
++	log_dbg (&quot;setsockopt(SO_REUSEPORT) failed due to proto not available &quot;
++		 &quot;(probably compiled with newer header files), continueing anyways...&quot;);
++      }
+     }
+ #endif
+     
+-- 
+1.8.3.2
+
+-- 
+Getslash GmbH, Bahnhofstra&#223;e 16, 59302 Oelde
+Tel: +49-2522-834349-5    Fax:   +49-2522-834349-1
+<A HREF="http://www.getslash.de">http://www.getslash.de</A>    Mobil: +49-152-33822499
+Sitz der Gesellschaft: Oelde
+Handelsregister: Amtsgericht M&#252;nster, HRB 11911
+Ust-Id-Nr.: DE 815060326
+Gesch&#228;ftsf&#252;hrung: Andre Peitz, Tobias Hanisch
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: signature.asc
+Type: application/pgp-signature
+Size: 836 bytes
+Desc: Digital signature
+URL: &lt;<A HREF="http://lists.coova.org/pipermail/chilli/attachments/20140318/ed06500e/attachment.pgp">http://lists.coova.org/pipermail/chilli/attachments/20140318/ed06500e/attachment.pgp</A>&gt;
+</PRE>
+
+
+
+
+
+
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="002627.html">[Chilli] [2/6] Depend on iptables
+</A></li>
+	<LI>Next message: <A HREF="002634.html">[Chilli] [3/6] Fix bug: Headers providing a flag don't imply	this is
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2628">[ date ]</a>
+              <a href="thread.html#2628">[ thread ]</a>
+              <a href="subject.html#2628">[ subject ]</a>
+              <a href="author.html#2628">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

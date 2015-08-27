@@ -1,0 +1,219 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> DHCP - WLAN behaviour of Windows Notebooks
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20DHCP%20-%20WLAN%20behaviour%20of%20Windows%20Notebooks&In-Reply-To=%3Cef21d1850709080637k253336c8wa6c80a1c9ea8fd8e%40mail.gmail.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000054.html">
+   <LINK REL="Next"  HREF="000056.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>DHCP - WLAN behaviour of Windows Notebooks</H1>
+    <B>David Bird</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20DHCP%20-%20WLAN%20behaviour%20of%20Windows%20Notebooks&In-Reply-To=%3Cef21d1850709080637k253336c8wa6c80a1c9ea8fd8e%40mail.gmail.com%3E"
+       TITLE="DHCP - WLAN behaviour of Windows Notebooks">mem.corruption at gmail.com
+       </A><BR>
+    <I>Sat Sep  8 13:37:18 UTC 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000054.html">DHCP - WLAN behaviour of Windows Notebooks
+</A></li>
+        <LI>Next message: <A HREF="000056.html">Accessing AP through eth1 
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#55">[ date ]</a>
+              <a href="thread.html#55">[ thread ]</a>
+              <a href="subject.html#55">[ subject ]</a>
+              <a href="author.html#55">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>I think I must come to your island to help you out! :)
+
+Have you tested authenticating multiple users from the same AP? From
+your network diagram, I wasn't certain if you're APs are bridging the
+192.168.1.0/24 network. If not, you may be authenticating the entire
+AP instead of just one user.
+
+I typically don't assign my dhcpif an IP address, but others do. You
+indeed just need to be a lot more careful with your iptables rules.
+For instance, if someone made the their default gateway that of your
+eth1 instead of the chilli tunnel, are they bypassing authentication?
+You need to be careful what traffic gets picked up and handled by the
+kernel and what gets switched through chilli...
+
+David
+
+
+On 9/8/07, SR Infosyst&#232;mes &lt;<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">contact at sriviere.info</A>&gt; wrote:
+&gt;<i> Hi all,
+</I>&gt;<i>
+</I>&gt;<i> I'm fairly new around TUN/TAP systems, and experiment some problems.
+</I>&gt;<i>
+</I>&gt;<i> Setting up a wifi network for tests, I use a single debian server
+</I>&gt;<i> hosting all the stuff (LAMP/RADIUS/COOVA-CHILLI) with two AP used like
+</I>&gt;<i> hubs (ap open-mode, no dhcp, original manufacturer firmware).
+</I>&gt;<i>
+</I>&gt;<i> This test platform must be unchanged for production : one PC, many AP
+</I>&gt;<i> (with original manufacturer firmware).
+</I>&gt;<i>
+</I>&gt;<i>             internet
+</I>&gt;<i>           192.168.0.x
+</I>&gt;<i>                |
+</I>&gt;<i>                |
+</I>&gt;<i> ----------- eth0 -----------
+</I>&gt;<i> |                          |
+</I>&gt;<i> |Debian server (all in one)|
+</I>&gt;<i> |                          |
+</I>&gt;<i> ------------eth1------------
+</I>&gt;<i>                |
+</I>&gt;<i>                |
+</I>&gt;<i>           192.168.1.x
+</I>&gt;<i>                |
+</I>&gt;<i>                |
+</I>&gt;<i>            --------
+</I>&gt;<i>            |switch|
+</I>&gt;<i>            --------
+</I>&gt;<i>              /  \
+</I>&gt;<i>             /    \
+</I>&gt;<i>            /      \
+</I>&gt;<i>          AP1      AP2
+</I>&gt;<i>
+</I>&gt;<i> At this stage, after a week of work and tests, all basics function works
+</I>&gt;<i> well (home redirection, user connection, and so on).
+</I>&gt;<i>
+</I>&gt;<i> It's like magic, I thank warmly all the CoovaChilli maintainers ! Chilli
+</I>&gt;<i> is far more elegant and efficient than stuff like NoCat.
+</I>&gt;<i>
+</I>&gt;<i> My /etc/network/interface is standard :
+</I>&gt;<i> ______________________________
+</I>&gt;<i> auto eth0
+</I>&gt;<i> iface eth0 inet static
+</I>&gt;<i> network 192.168.0.0
+</I>&gt;<i> netmask 255.255.255.0
+</I>&gt;<i> address 192.168.0.251
+</I>&gt;<i> gateway 192.168.0.254
+</I>&gt;<i>
+</I>&gt;<i> auto eth1
+</I>&gt;<i> iface eth1 inet static
+</I>&gt;<i> address 0.0.0.0
+</I>&gt;<i> _______________________________
+</I>&gt;<i>
+</I>&gt;<i> But I need to maintain my AP via SSH. (change subtles settings not
+</I>&gt;<i> available bySo, I modify eth1 to :
+</I>&gt;<i> _______________________________
+</I>&gt;<i>
+</I>&gt;<i> auto eth1
+</I>&gt;<i> iface eth1 inet static
+</I>&gt;<i> network 192.168.1.0
+</I>&gt;<i> netmask 255.255.255.0
+</I>&gt;<i> address 192.168.1.251
+</I>&gt;<i> _______________________________
+</I>&gt;<i>
+</I>&gt;<i> AP connections via SSH works well (ntp, tftp firmwares updates too), but
+</I>&gt;<i> now I lost automatic redirection to &quot;uamhomepage&quot; (when a new wifi
+</I>&gt;<i> client connects it don't get the home page but the web browser page by
+</I>&gt;<i> default is searched until timeout).
+</I>&gt;<i>
+</I>&gt;<i> I still may connect using <A HREF="http://192.168.1.1:3990/prelogin,">http://192.168.1.1:3990/prelogin,</A> but
+</I>&gt;<i> automatic redirection is very useful for users.
+</I>&gt;<i>
+</I>&gt;<i> In addition CoovaChilli now affects an IP address to the AP via its
+</I>&gt;<i> internal dhcp and there is some ARP problems...
+</I>&gt;<i>
+</I>&gt;<i> I've read in the old ChilliSpot doc we can set an address to eth1, to
+</I>&gt;<i> maintain AP, but maybe it's a little more difficult :)
+</I>&gt;<i>
+</I>&gt;<i> I guess I need to exclude AP (by MAC addresses ?) from CoovaChilli
+</I>&gt;<i> processing and make a setup for concurrents access (wifi clients and AP
+</I>&gt;<i> maintenance via SSH).
+</I>&gt;<i>
+</I>&gt;<i> I'm not familiar with TUN, reading manpages carefully, I noticed some
+</I>&gt;<i> parameters (dhcpmac) which may help, after many tries, I feel I need help...
+</I>&gt;<i>
+</I>&gt;<i> chilli.conf parameters (all others omitted, values by default) :
+</I>&gt;<i> _______________________________
+</I>&gt;<i> dhcpif          eth1
+</I>&gt;<i> dhcpstart       5
+</I>&gt;<i> dhcpend         240
+</I>&gt;<i> net             192.168.1.0/24
+</I>&gt;<i> dynip           192.168.1.0/24
+</I>&gt;<i> uamserver <A HREF="https://192.168.1.1/cake/hotcakes/webroot/welcome/go/">https://192.168.1.1/cake/hotcakes/webroot/welcome/go/</A>
+</I>&gt;<i> uamhomepage <A HREF="http://192.168.1.1/cake/hotcakes/welcome/login_page.html">http://192.168.1.1/cake/hotcakes/welcome/login_page.html</A>
+</I>&gt;<i> uamsecret ht2eb8ej6s4et3rg1ulp
+</I>&gt;<i> uamlisten 192.168.1.1
+</I>&gt;<i> uamallowed 212.27.54.252,212.27.53.252
+</I>&gt;<i> radiusserver1 127.0.0.1
+</I>&gt;<i> radiusserver2 127.0.0.1
+</I>&gt;<i> radiussecret testing123
+</I>&gt;<i> _______________________________
+</I>&gt;<i>
+</I>&gt;<i> AP1 &amp; AP2 settings :
+</I>&gt;<i> _______________________________
+</I>&gt;<i>
+</I>&gt;<i> AP1 ip addr : 192.168.1.241
+</I>&gt;<i> AP1 ip mask : 255.255.255.0
+</I>&gt;<i> AP1 ip gateway : 192.168.1.1
+</I>&gt;<i> AP1 dhcp : disabled
+</I>&gt;<i>
+</I>&gt;<i> AP2 ip addr : 192.168.1.242
+</I>&gt;<i> AP2 ip mask : 255.255.255.0
+</I>&gt;<i> AP2 ip gateway : 192.168.1.1
+</I>&gt;<i> AP2 dhcp : disabled
+</I>&gt;<i> _______________________________
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> I've also tried to set AP ip gateway to eth1 IP address (192.168.1.251)
+</I>&gt;<i> without success.
+</I>&gt;<i>
+</I>&gt;<i> If you can help me, it would be much appreciated.
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> All the best form Oleron island.
+</I>&gt;<i>
+</I>&gt;<i> St&#233;phane Rivi&#232;re
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> --
+</I>&gt;<i> LA SOLUTION &#224; vos probl&#232;mes INFORMATIQUES
+</I>&gt;<i>
+</I>&gt;<i> SR Infosyst&#232;mes
+</I>&gt;<i> 15, rue du Temple
+</I>&gt;<i> 17310 St Pierre d'Ol&#233;ron
+</I>&gt;<i> Ile d'Ol&#233;ron - France
+</I>&gt;<i>
+</I>&gt;<i> Mobile : 06 89 29 88 44
+</I>&gt;<i> Fixe :   09 54 10 55 60 (appel local)
+</I>&gt;<i> Fax :    05 46 36 30 59
+</I>&gt;<i> Site :   www.sriviere.info
+</I>&gt;<i> Email :  <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">contact at sriviere.info</A>
+</I>&gt;<i> Skype :  stephane.riviere
+</I>&gt;<i>
+</I>&gt;<i> Certificat X509 : disponible sur le site
+</I>&gt;<i>
+</I>
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000054.html">DHCP - WLAN behaviour of Windows Notebooks
+</A></li>
+	<LI>Next message: <A HREF="000056.html">Accessing AP through eth1 
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#55">[ date ]</a>
+              <a href="thread.html#55">[ thread ]</a>
+              <a href="subject.html#55">[ subject ]</a>
+              <a href="author.html#55">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

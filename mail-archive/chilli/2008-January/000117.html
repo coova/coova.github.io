@@ -1,0 +1,132 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> UAM web server failover
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20UAM%20web%20server%20failover&In-Reply-To=%3C479B9197.3010708%40zizi.ath.cx%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000116.html">
+   
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>UAM web server failover</H1>
+    <B>sophana</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20UAM%20web%20server%20failover&In-Reply-To=%3C479B9197.3010708%40zizi.ath.cx%3E"
+       TITLE="UAM web server failover">sophana at zizi.ath.cx
+       </A><BR>
+    <I>Sat Jan 26 20:01:27 UTC 2008</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000116.html">UAM web server failover
+</A></li>
+        
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#117">[ date ]</a>
+              <a href="thread.html#117">[ thread ]</a>
+              <a href="subject.html#117">[ subject ]</a>
+              <a href="author.html#117">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>If the access point looses all connectivity, there should be a 
+redirection to a local served page telling that the service is interrupted.
+There is nothing more that can be done.
+
+The uam server failover is mainly useful in case of server outages, or 
+maintenance.
+
+note: the reply-to seems to be working just fine. thanks.
+
+<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">wlan at mac.com</A> a &#233;crit :
+&gt;<i> I think it is a good idea, and perhaps something to be integrated into 
+</I>&gt;<i> chilli. It would have to fork a process to do the check (so that there 
+</I>&gt;<i> is no waiting in the main loop), but it could reconfigure the server 
+</I>&gt;<i> with it's findings. If it is just switching landing pages, that's not 
+</I>&gt;<i> too difficult. But, it still wouldn't help the situation when the 
+</I>&gt;<i> access point lost all connectivity since DNS will likely be timing out 
+</I>&gt;<i> on the original requests.
+</I>&gt;<i>
+</I>&gt;<i> David
+</I>&gt;<i>
+</I>&gt;<i> On Jan 26, 2008, at 1:53 PM, sophana wrote:
+</I>&gt;<i>
+</I>&gt;&gt;<i> Hi
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> Lot of people would like the UAM webserver failover feature in coova 
+</I>&gt;&gt;<i> chilli or coovaAP.
+</I>&gt;&gt;<i> I'd like to help implementing this.
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> Maybe the first step would be to agree on a spec?
+</I>&gt;&gt;<i> So here's a simple proposition:
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> Add an optionnal alternate uam server parameter (or uamserver2)
+</I>&gt;&gt;<i> Another would be the monitoring period.
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> Every 15-30 minutes (the monitoring period), an http request is 
+</I>&gt;&gt;<i> alternatively sent to one of the uam urls with 
+</I>&gt;&gt;<i> &quot;?ping=1&amp;nasId=xx&amp;calledMac=xx&amp;md5=xx&quot; added to the url.
+</I>&gt;&gt;<i> The http response should be a text response: Ok
+</I>&gt;&gt;<i> If current uam response if not Ok:
+</I>&gt;&gt;<i>  if last resonse from other uam server was Ok: set to other uam 
+</I>&gt;&gt;<i> server (if not already).
+</I>&gt;&gt;<i>  else: switch to not available service internal page.
+</I>&gt;&gt;<i> else if current is OK and state was not available: set to current
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> If main uam server is ok and currently selecting the alternate, then 
+</I>&gt;&gt;<i> switch back to the main uam server.
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> Note that the monitoring process must not be launched by cron because 
+</I>&gt;&gt;<i> all hotspot may try to send a monitoring request at the same time.
+</I>&gt;&gt;<i> About some more alternatives, there could be also more than 1 
+</I>&gt;&gt;<i> alternate server, and maybe it could be possible to use inexpensive 
+</I>&gt;&gt;<i> ping requests in addition to http requests.
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> Now, about the implementation, I don't know if it would be 
+</I>&gt;&gt;<i> better/easier to do this inside coova chilli, or in a monitoring script.
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> What do you think about all this?
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> Regards
+</I>&gt;&gt;<i> Sophana
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> ---------------------------------------------------------------------
+</I>&gt;&gt;<i> To unsubscribe, e-mail: <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli-unsubscribe at coova.org</A>
+</I>&gt;&gt;<i> For additional commands, e-mail: <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli-help at coova.org</A>
+</I>&gt;&gt;<i> Wiki: <A HREF="http://coova.org/wiki/index.php/CoovaChilli">http://coova.org/wiki/index.php/CoovaChilli</A>
+</I>&gt;&gt;<i> Forum: <A HREF="http://coova.org/phpBB3/viewforum.php?f=4">http://coova.org/phpBB3/viewforum.php?f=4</A>
+</I>&gt;&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> ---------------------------------------------------------------------
+</I>&gt;<i> To unsubscribe, e-mail: <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli-unsubscribe at coova.org</A>
+</I>&gt;<i> For additional commands, e-mail: <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli-help at coova.org</A>
+</I>&gt;<i> Wiki: <A HREF="http://coova.org/wiki/index.php/CoovaChilli">http://coova.org/wiki/index.php/CoovaChilli</A>
+</I>&gt;<i> Forum: <A HREF="http://coova.org/phpBB3/viewforum.php?f=4">http://coova.org/phpBB3/viewforum.php?f=4</A>
+</I>&gt;<i>
+</I>&gt;<i>
+</I>
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000116.html">UAM web server failover
+</A></li>
+	
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#117">[ date ]</a>
+              <a href="thread.html#117">[ thread ]</a>
+              <a href="subject.html#117">[ subject ]</a>
+              <a href="author.html#117">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

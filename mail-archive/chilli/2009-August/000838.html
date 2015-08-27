@@ -1,0 +1,87 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> Password encoding/decoding
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20Password%20encoding/decoding&In-Reply-To=%3C4A76D43D.5070805%40wiggy.net%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   
+   <LINK REL="Next"  HREF="000850.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>Password encoding/decoding</H1>
+    <B>Wichert Akkerman</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20Password%20encoding/decoding&In-Reply-To=%3C4A76D43D.5070805%40wiggy.net%3E"
+       TITLE="Password encoding/decoding">wichert at wiggy.net
+       </A><BR>
+    <I>Mon Aug  3 12:12:45 UTC 2009</I>
+    <P><UL>
+        
+        <LI>Next message: <A HREF="000850.html">Password encoding/decoding
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#838">[ date ]</a>
+              <a href="thread.html#838">[ thread ]</a>
+              <a href="subject.html#838">[ subject ]</a>
+              <a href="author.html#838">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>I am wondering if something goes wrong in the password handling. I know 
+something goes wrong on my end in the UAM&lt;-&gt;Chilli communication which 
+mangles passwords: if I sent ABCDEFGHIJKLMNOPQRSTUVWXYZ as password
+chilli decodes that to ABCDEFGHIJKLMNOPK&lt;lots of binary&gt;. But things go 
+wrong on when that is sent to RADIUS as well. Here is the FreeRadius log 
+output for the same request:
+
+rad_recv: Access-Request packet from host 127.0.0.1 port 56008, id=2, 
+length=269
+	Vendor-14559-Attr-8 = 0x312e302e3134
+	User-Name = &quot;wichert&quot;
+	User-Password = &quot;U\004j,&quot;
+	NAS-IP-Address = 10.1.0.1
+	Service-Type = Login-User
+	Framed-IP-Address = 10.1.0.3
+	Calling-Station-Id = &quot;00-0C-29-27-79-83&quot;
+	Called-Station-Id = &quot;00-0C-29-6C-0F-92&quot;
+	NAS-Identifier = &quot;nas01&quot;
+	Acct-Session-Id = &quot;4a76d33900000002&quot;
+	NAS-Port-Type = Wireless-802.11
+	NAS-Port = 2
+	WISPr-Location-ID = &quot;isocc=NL,cc=31,ac=020,network=Attingo,KLM_Lounge&quot;
+	WISPr-Location-Name = &quot;KLM_Lounge&quot;
+	WISPr-Logoff-URL = &quot;<A HREF="http://10.1.0.1:3990/logoff&quot;">http://10.1.0.1:3990/logoff&quot;</A>
+	Message-Authenticator = 0x4d6f776979e5711baf9ae428338e9bf7
+Login incorrect (rlm_pap: CLEAR TEXT password check failed): 
+[wichert/U\004j,] (from client localhost port 2 cli 00-0C-29-27-79-83)
+   WARNING: Unprintable characters in the password. 	  Double-check the 
+shared secret on the server and the NAS!
+
+which shows that my bad password has become even more corrupted.
+
+Wichert.
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	
+	<LI>Next message: <A HREF="000850.html">Password encoding/decoding
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#838">[ date ]</a>
+              <a href="thread.html#838">[ thread ]</a>
+              <a href="subject.html#838">[ subject ]</a>
+              <a href="author.html#838">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

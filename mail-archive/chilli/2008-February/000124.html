@@ -1,0 +1,95 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> chilli features...
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20chilli%20features...&In-Reply-To=%3C56D381E7-F7FF-42EB-900F-D7F074D1405C%40mac.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000123.html">
+   <LINK REL="Next"  HREF="000125.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>chilli features...</H1>
+    <B>JB</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20chilli%20features...&In-Reply-To=%3C56D381E7-F7FF-42EB-900F-D7F074D1405C%40mac.com%3E"
+       TITLE="chilli features...">list.coovachilli at mac.com
+       </A><BR>
+    <I>Sat Feb  9 19:08:17 UTC 2008</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000123.html">Here is a patch for default bandwidth-max option
+</A></li>
+        <LI>Next message: <A HREF="000125.html">chilli features...
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#124">[ date ]</a>
+              <a href="thread.html#124">[ thread ]</a>
+              <a href="subject.html#124">[ subject ]</a>
+              <a href="author.html#124">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hi,
+
+I just stumbled across this idea for a new feature for CoovaChilli:
+
+<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">wlan at mac.com</A> wrote:
+&gt;<i> Right now, when you use MAC authentication, if an access-reject is  
+</I>&gt;<i> returned, the user will still get assigned an IP address and will  
+</I>&gt;<i> then be given the captive portal. This is good as a way to have  
+</I>&gt;<i> certain devices bypass the captive portal. But, it would also be  
+</I>&gt;<i> nice to use MAC authentication as a way to manage blocked devices.  
+</I>&gt;<i> I'm considering an option which will have chilli drop all traffic  
+</I>&gt;<i> from clients that get an access-reject during mac authentication.  
+</I>&gt;<i> When clients are in the 'drop' state, all traffic from them is  
+</I>&gt;<i> ignored.
+</I>
+
+I think that would be a great feature! Or has this been already  
+implemented? If not, here are my two cents:
+
+Why not (mis)use the Reply-Message attribute from RADIUS to achieve  
+this? If the value of Reply-Message is a certain &quot;code&quot;, like  
+&quot;chilli:drop&quot;, then Chilli knows it should ignore all further requests  
+from this MAC address. Basically, there would be three ways to handle  
+a response from an Access-Request request (apart from errors or the  
+like):
+
+Access-Accept -&gt; UAM &quot;success&quot;
+Access-Reject and Reply-Message is not &quot;chilli:drop&quot; -&gt; UAM &quot;failed&quot;
+Access-Reject and Reply-Message is &quot;chilli:drop&quot; -&gt; Drop request(s)
+
+This way, we would neither break the current behaviour nor the RFCs.  
+No need to turn this feature on or off in chilli because the logic  
+(maybe along with black-/white-lists) resides in the RADIUS server.
+
+Would there still be some sort of session handling? How long would  
+chilli drop requests until it &quot;asks&quot; RADIUS again?
+
+JB
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000123.html">Here is a patch for default bandwidth-max option
+</A></li>
+	<LI>Next message: <A HREF="000125.html">chilli features...
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#124">[ date ]</a>
+              <a href="thread.html#124">[ thread ]</a>
+              <a href="subject.html#124">[ subject ]</a>
+              <a href="author.html#124">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

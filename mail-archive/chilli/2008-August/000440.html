@@ -1,0 +1,108 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> check for  request for authentication server allows bypassing?
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20check%20for%20%20request%20for%20authentication%20server%20allows%20bypassing%3F&In-Reply-To=%3C48988F0A.60400%40endian.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000439.html">
+   <LINK REL="Next"  HREF="000441.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>check for  request for authentication server allows bypassing?</H1>
+    <B>Peter Warasin</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20check%20for%20%20request%20for%20authentication%20server%20allows%20bypassing%3F&In-Reply-To=%3C48988F0A.60400%40endian.com%3E"
+       TITLE="check for  request for authentication server allows bypassing?">peter at endian.com
+       </A><BR>
+    <I>Tue Aug  5 17:34:02 UTC 2008</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000439.html">chilli stops sending accounting packets to the radius server
+</A></li>
+        <LI>Next message: <A HREF="000441.html">check for  request for authentication server allows bypassing?
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#440">[ date ]</a>
+              <a href="thread.html#440">[ thread ]</a>
+              <a href="subject.html#440">[ subject ]</a>
+              <a href="author.html#440">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hi guys
+
+I found out that coovachilli allows access to the whole uamlisten ip 
+address whether the user is authenticated or not.
+
+In my case there is a squid running on the same host, which then allows 
+people to bypass the hotspot by manually configure their browsers in 
+order to use that proxy.
+
+
+This is due to some lines commented out in dhcp.c:1936, which makes the 
+check whether it is a request for the auth server or not less specific.
+
+------------------------- snip ----------------------------------
+   /* Was it a request for authentication server? */
+   for (i = 0; i&lt;this-&gt;authiplen; i++) {
+     if ((pack-&gt;iph.daddr == this-&gt;authip[i].s_addr) /* &amp;&amp;
+	(pack-&gt;iph.protocol == PKT_IP_PROTO_TCP) &amp;&amp;
+	((tcph-&gt;dst == htons(DHCP_HTTP)) ||
+	(tcph-&gt;dst == htons(DHCP_HTTPS)))*/)
+       return 0; /* Destination was authentication server */
+   }
+------------------------- snap ----------------------------------
+
+I would like to ask why these lines are commented out and if it is safe 
+to remove the comment and bring them back in? That would close the hole.
+
+I tested with the correct check (lines not commented out), which is 
+working fine for me (dhcp and anyip). uamallow is also working fine.
+
+So I am wondering if there is some reason, something I am missing, why 
+this check has been made less specific.
+
+I attach a patch which removes the comment, for the case that there is 
+no reason for disabling that lines.
+
+kind regards
+
+peter
+
+-- 
+::<i> e n d i a n
+</I>::<i> open source - open minds
+</I>
+::<i> peter warasin
+</I>::<i> <A HREF="http://www.endian.com">http://www.endian.com</A>   :: <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">peter at endian.com</A>
+</I>-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: close_access_to_host.patch
+Type: text/x-diff
+Size: 1033 bytes
+Desc: not available
+URL: &lt;<A HREF="http://lists.coova.org/pipermail/chilli/attachments/20080805/cad9ada8/attachment.patch">http://lists.coova.org/pipermail/chilli/attachments/20080805/cad9ada8/attachment.patch</A>&gt;
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000439.html">chilli stops sending accounting packets to the radius server
+</A></li>
+	<LI>Next message: <A HREF="000441.html">check for  request for authentication server allows bypassing?
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#440">[ date ]</a>
+              <a href="thread.html#440">[ thread ]</a>
+              <a href="subject.html#440">[ subject ]</a>
+              <a href="author.html#440">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

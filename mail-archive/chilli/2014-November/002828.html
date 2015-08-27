@@ -1,0 +1,120 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] Assign ip to HS_LANIF interface
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Assign%20ip%20to%20HS_LANIF%20interface&In-Reply-To=%3C5458FEC0.50004%40gmail.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="002827.html">
+   <LINK REL="Next"  HREF="002829.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] Assign ip to HS_LANIF interface</H1>
+    <B>Alexandru Gheorghe</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Assign%20ip%20to%20HS_LANIF%20interface&In-Reply-To=%3C5458FEC0.50004%40gmail.com%3E"
+       TITLE="[Chilli] Assign ip to HS_LANIF interface">alghe.global at gmail.com
+       </A><BR>
+    <I>Tue Nov  4 16:28:48 UTC 2014</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="002827.html">[Chilli] Assign ip to HS_LANIF interface
+</A></li>
+        <LI>Next message: <A HREF="002829.html">[Chilli] coovachilli for splash only
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2828">[ date ]</a>
+              <a href="thread.html#2828">[ thread ]</a>
+              <a href="subject.html#2828">[ subject ]</a>
+              <a href="author.html#2828">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>On 11/04/2014 06:12 PM, Giovanni Bezicheri wrote:
+&gt;<i> The coova chilli init script removes the ip address from HS_LANIF
+</I>&gt;<i> interface.
+</I>&gt;<i> Anyone experiments any side effects by assigning an ip to the HS_LANIF
+</I>&gt;<i> interface (commenting &quot;ifconfig $HS_LANIF 0.0.0.0&quot; line)? Is that a good
+</I>&gt;<i> practice?
+</I>
+HS_LANIF interface shouldn't have any ip assigned to it, it's merely
+used as an interface to the kernel in order to capture the traffic (tun
+driver)
+
+the 0.0.0.0 is a good practice, yes
+
+
+&gt;&gt;<i> start() {
+</I>&gt;&gt;<i>      echo -n $&quot;Starting $prog: &quot;
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i>      check_required
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i>      /sbin/modprobe tun &gt;/dev/null 2&gt;&amp;1
+</I>&gt;&gt;<i>      echo 1 &gt; /proc/sys/net/ipv4/ip_forward
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i>      [ -e /dev/net/tun ] || {
+</I>&gt;&gt;<i>          (cd /dev; mkdir net; cd net; mknod tun c 10 200)
+</I>&gt;&gt;<i>      }
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i>      writeconfig
+</I>&gt;&gt;<i>      radiusconfig
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i>      test ${HS_ADMINTERVAL:-0} -gt 0 &amp;&amp; {
+</I>&gt;&gt;<i>          (crontab -l 2&gt;&amp;- | grep -v $0
+</I>&gt;&gt;<i>          echo &quot;*/$HS_ADMINTERVAL * * * * $0 radconfig&quot;) | crontab - 2&gt;&amp;-
+</I>&gt;&gt;<i>      }
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i>      ifconfig $HS_LANIF 0.0.0.0
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i>      daemon $exec -c $CONFIG
+</I>&gt;&gt;<i>      retval=$?
+</I>&gt;&gt;<i>      echo
+</I>&gt;&gt;<i>      [ $retval -eq 0 ] &amp;&amp; touch $lockfile
+</I>&gt;&gt;<i>      return $retval
+</I>&gt;&gt;<i> }
+</I>&gt;<i> _______________________________________________
+</I>&gt;<i> Chilli mailing list
+</I>&gt;<i> <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">Chilli at coova.org</A>
+</I>&gt;<i> <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">http://lists.coova.org/cgi-bin/mailman/listinfo/chilli</A>
+</I>
+-- 
+; Alexandru Gheorghe
+; alghe.global {at} gmail {dot} com
+; OpenPGP key ID 0xCAF985D2
+
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: signature.asc
+Type: application/pgp-signature
+Size: 836 bytes
+Desc: OpenPGP digital signature
+URL: &lt;<A HREF="http://lists.coova.org/pipermail/chilli/attachments/20141104/61615952/attachment.pgp">http://lists.coova.org/pipermail/chilli/attachments/20141104/61615952/attachment.pgp</A>&gt;
+</PRE>
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="002827.html">[Chilli] Assign ip to HS_LANIF interface
+</A></li>
+	<LI>Next message: <A HREF="002829.html">[Chilli] coovachilli for splash only
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2828">[ date ]</a>
+              <a href="thread.html#2828">[ thread ]</a>
+              <a href="subject.html#2828">[ subject ]</a>
+              <a href="author.html#2828">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

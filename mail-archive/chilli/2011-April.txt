@@ -1,0 +1,1295 @@
+From mctiew at yahoo.com  Fri Apr  1 09:03:32 2011
+From: mctiew at yahoo.com (Ming-Ching Tiew)
+Date: Fri, 1 Apr 2011 02:03:32 -0700 (PDT)
+Subject: [Chilli] Chilli reply not getting back to VLAN
+Message-ID: <368688.88839.qm@web31502.mail.mud.yahoo.com>
+
+
+I have been trying to set up a wireless VLAN configuration where for chilli I have enable ieee8021q and tcpmss 1400, and chilli is listening to eth0 interface, and vlan is created on eth0.2 and bridged with the wireless interface.
+
+Well from the output of chilli debug messages and also dumping of eth0, I could see that chilli has already responded with the dhcp request and replied with the IP accordingly. 
+
+Somehow the output from chilli is unable to get back to eth0.2. Chilli is listening to eth0, that's where it could see all the VLAN traffic with VLAN tags. However, the reply does not seem to get back to eth0.2 or the bridge interface of eth0.2 and wlan0. 
+
+I am testing it on coovachili 1.2.5. Most likely is my own problem and so I am looking for suggestion of how to troubleshoot. 
+
+Thanks.
+
+From dagmid_d at yahoo.com  Fri Apr  1 09:07:09 2011
+From: dagmid_d at yahoo.com (Dagia Dorjsuren)
+Date: Fri, 1 Apr 2011 02:07:09 -0700 (PDT)
+Subject: [Chilli] about login page of coovachilli on ubiquiti
+Message-ID: <282288.23644.qm@web33902.mail.mud.yahoo.com>
+
+                        
+                       Hi,
+
+
+
+I need to create a status page form my clients to show their "connection status" ...
+
+
+
+
+
+Ex: digit "status" on address bar -> Time Remaining 
+
+
+
+
+
+How to add that page on my coova ubiquiti?
+                  
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20110401/994240aa/attachment.html>
+
+From mctiew at yahoo.com  Fri Apr  1 09:26:38 2011
+From: mctiew at yahoo.com (Ming-Ching Tiew)
+Date: Fri, 1 Apr 2011 02:26:38 -0700 (PDT)
+Subject: [Chilli] Chilli reply not getting back to VLAN
+In-Reply-To: <368688.88839.qm@web31502.mail.mud.yahoo.com>
+Message-ID: <282517.12068.qm@web31505.mail.mud.yahoo.com>
+
+
+Below is the sample output from tcpdump -n -e -ttt -vv -i eth0. The packet is sent back to 00:22:fb:c6:9f:b4, which is the client's mac. But that is not getting into eth0.2. Tcpdump on eth0.2 could only see dhcp/bootp request, there is no reply.
+
+
+
+tcpdump: listening on eth0, link-type EN10MB (Ethernet), capture size 96 bytes
+00:00:00.000000 00:22:fb:c6:9f:b4 > ff:ff:ff:ff:ff:ff, ethertype 802.1Q (0x8100), length 24: vlan 2, p 0, LLC, dsap Null (0x00) Individual, ssap Null (0x00) Response, ctrl 0xaf: Unnumbered, xid, Flags [Response], length 6: 01 00
+00:00:03.675980 00:22:fb:c6:9f:b4 > ff:ff:ff:ff:ff:ff, ethertype 802.1Q (0x8100), length 346: vlan 2, p 0, ethertype IPv4, (tos 0x10, ttl 128, id 0, offset 0, flags [none], proto UDP (17), length 328)
+    0.0.0.0.68 > 255.255.255.255.67: BOOTP/DHCP, Request from 00:22:fb:c6:9f:b4, length 300, xid 0xff51eb6a, Flags [none] (0x0000)
+	  Client-Ethernet-Address 00:22:fb:c6:9f:b4 [|bootp]
+00:00:00.004133 00:25:9c:49:e6:47 > 00:22:fb:c6:9f:b4, ethertype 802.1Q (0x8100), length 337: vlan 2, p 0, ethertype IPv4, (tos 0x0, ttl 16, id 0, offset 0, flags [none], proto UDP (17), length 319)
+    192.168.182.1.67 > 192.168.182.5.68: BOOTP/DHCP, Reply, length 291, xid 0xff51eb6a, Flags [none] (0x0000)
+	  Your-IP 192.168.182.5 [|bootp]
+
+
+--- On Fri, 4/1/11, Ming-Ching Tiew <mctiew at yahoo.com> wrote:
+
+> From: Ming-Ching Tiew <mctiew at yahoo.com>
+> Subject: [Chilli] Chilli reply not getting back to VLAN
+> To: chilli at coova.org
+> Date: Friday, April 1, 2011, 9:03 AM
+> 
+> I have been trying to set up a wireless VLAN configuration
+> where for chilli I have enable ieee8021q and tcpmss 1400,
+> and chilli is listening to eth0 interface, and vlan is
+> created on eth0.2 and bridged with the wireless interface.
+> 
+> Well from the output of chilli debug messages and also
+> dumping of eth0, I could see that chilli has already
+> responded with the dhcp request and replied with the IP
+> accordingly. 
+> 
+> Somehow the output from chilli is unable to get back to
+> eth0.2. Chilli is listening to eth0, that's where it could
+> see all the VLAN traffic with VLAN tags. However, the reply
+> does not seem to get back to eth0.2 or the bridge interface
+> of eth0.2 and wlan0. 
+> 
+> I am testing it on coovachili 1.2.5. Most likely is my own
+> problem and so I am looking for suggestion of how to
+> troubleshoot. 
+> 
+> Thanks.
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+> 
+
+From mctiew at yahoo.com  Sat Apr  2 04:52:07 2011
+From: mctiew at yahoo.com (Ming-Ching Tiew)
+Date: Fri, 1 Apr 2011 21:52:07 -0700 (PDT)
+Subject: [Chilli] Chilli reply not getting back to VLAN
+In-Reply-To: <282517.12068.qm@web31505.mail.mud.yahoo.com>
+Message-ID: <756351.79162.qm@web31506.mail.mud.yahoo.com>
+
+
+
+--- On Fri, 4/1/11, Ming-Ching Tiew <mctiew at yahoo.com> wrote:
+
+> From: Ming-Ching Tiew <mctiew at yahoo.com>
+> Subject: Re: [Chilli] Chilli reply not getting back to VLAN
+> To: chilli at coova.org
+> Date: Friday, April 1, 2011, 9:26 AM
+> 
+> Below is the sample output from tcpdump -n -e -ttt -vv -i
+> eth0. The packet is sent back to 00:22:fb:c6:9f:b4, which is
+> the client's mac. But that is not getting into eth0.2.
+> Tcpdump on eth0.2 could only see dhcp/bootp request, there
+> is no reply.
+> 
+
+Sorry I am still stuck at this. I checked the source, there is some socket binding code, but I am not sure exactly which segment of the code is relevant. Is it possible that the UDP reply is 'bind' to 'eth0' and so unable to send to 'eth0.2' and so the client is not getting any reply ?
+
+
+
+
+From david at coova.com  Sat Apr  2 05:50:48 2011
+From: david at coova.com (David Bird)
+Date: Sat, 2 Apr 2011 07:50:48 +0200
+Subject: [Chilli] Chilli reply not getting back to VLAN
+In-Reply-To: <368688.88839.qm@web31502.mail.mud.yahoo.com>
+References: <368688.88839.qm@web31502.mail.mud.yahoo.com>
+Message-ID: <1B78EEB3-30C9-47BE-9B0B-26B95E0652D8@coova.com>
+
+> 
+> I have been trying to set up a wireless VLAN configuration where for chilli I have enable ieee8021q and tcpmss 1400, and chilli is listening to eth0 interface, and vlan is created on eth0.2 and bridged with the wireless interface.
+> 
+
+What you are trying to do is an interesting idea, but that will not work... Chilli sends to the same interface it listens to with it's RAW socket ... It's dhcpif. 
+
+You can, however, run multiple instance of chilli, one for each of your wireless interfaces (or vlans).
+
+
+> Well from the output of chilli debug messages and also dumping of eth0, I could see that chilli has already responded with the dhcp request and replied with the IP accordingly. 
+> 
+> Somehow the output from chilli is unable to get back to eth0.2. Chilli is listening to eth0, that's where it could see all the VLAN traffic with VLAN tags. However, the reply does not seem to get back to eth0.2 or the bridge interface of eth0.2 and wlan0. 
+> 
+> I am testing it on coovachili 1.2.5. Most likely is my own problem and so I am looking for suggestion of how to troubleshoot. 
+> 
+> Thanks.
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20110402/d6c59e0f/attachment.html>
+
+From mctiew at yahoo.com  Sat Apr  2 06:37:19 2011
+From: mctiew at yahoo.com (Ming-Ching Tiew)
+Date: Fri, 1 Apr 2011 23:37:19 -0700 (PDT)
+Subject: [Chilli] Chilli reply not getting back to VLAN
+In-Reply-To: <3A5E11A2-8B18-4235-BB17-82D8BB13493F@me.com>
+Message-ID: <115087.23083.qm@web31506.mail.mud.yahoo.com>
+
+
+
+--- On Sat, 4/2/11, David Bird <dwbird at me.com> wrote:
+
+> 
+> That will not work... Chilli sends to the same interface it
+> listens to ... It's dhcpif. 
+> 
+> You can, however, run multiple instance of chilli, one for
+> each of your wireless interfaces (or vlans) 
+> 
+
+Hmmm I didn't know chilli could not work this way .... :(
+
+I was under the impression that's how the ieee8021q option works,
+where I could have one instance of chilli "managing" a few VLANs on the same network interface.
+
+There is another reason why such scheme will be useful. Say for example on the server machine where chilli is running, I created many VLANs on dhcpif eth0. And eth0 is connected to a port on the managed switch where VLAN tagging is enabled. On the same switch there are many untagged VLAN ports where each client is connected. By doing so, we accomplish "client isolation" - ie the clients are blocked from talking to each other.
+
+
+
+From david at coova.com  Sat Apr  2 06:45:56 2011
+From: david at coova.com (David Bird)
+Date: Sat, 2 Apr 2011 08:45:56 +0200
+Subject: [Chilli] Chilli reply not getting back to VLAN
+In-Reply-To: <115087.23083.qm@web31506.mail.mud.yahoo.com>
+References: <115087.23083.qm@web31506.mail.mud.yahoo.com>
+Message-ID: <961D405A-0A25-4A3E-A770-7423C3AAEA9A@coova.com>
+
+> 
+> 
+> 
+>> 
+>> That will not work... Chilli sends to the same interface it
+>> listens to ... It's dhcpif. 
+>> 
+>> You can, however, run multiple instance of chilli, one for
+>> each of your wireless interfaces (or vlans) 
+>> 
+> 
+> Hmmm I didn't know chilli could not work this way .... :(
+> 
+> I was under the impression that's how the ieee8021q option works,
+> where I could have one instance of chilli "managing" a few VLANs on the same network interface.
+
+That is how chilli works with ieee802q option... But, you are trying to tag the wireless interface with a bridge on the local host (eth0.x) ... And that will not work for the reason you showed... That since chilli is working with eth0 (and knows nothing about eth0.x), any reply from chilli will NOT be tagged by eth0.x. If you use a VLAN switch and have chilli handle eth0 (with no eth0.x tricks) then is should work fine... 
+
+> 
+> There is another reason why such scheme will be useful. Say for example on the server machine where chilli is running, I created many VLANs on dhcpif eth0. And eth0 is connected to a port on the managed switch where VLAN tagging is enabled. On the same switch there are many untagged VLAN ports where each client is connected. By doing so, we accomplish "client isolation" - ie the clients are blocked from talking to each other.
+> 
+> 
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20110402/7aa6cc5d/attachment.html>
+
+From mctiew at yahoo.com  Thu Apr  7 09:47:57 2011
+From: mctiew at yahoo.com (Ming-Ching Tiew)
+Date: Thu, 7 Apr 2011 02:47:57 -0700 (PDT)
+Subject: [Chilli] run some script in the web redirect
+Message-ID: <792786.61915.qm@web31506.mail.mud.yahoo.com>
+
+Is there a way for me to get in the middle of the web redirect and execute some scripts ( on the machine which runs chilli ) ?
+
+I want the web to be redirected dynamically to a url (outside the machine which runs chilli) according to some information retrieved from the script.
+
+Regards.
+
+From stelio at skyrove.com  Thu Apr  7 11:35:33 2011
+From: stelio at skyrove.com (Stelio Gouveia)
+Date: Thu, 7 Apr 2011 13:35:33 +0200
+Subject: [Chilli] run some script in the web redirect
+In-Reply-To: <792786.61915.qm@web31506.mail.mud.yahoo.com>
+References: <792786.61915.qm@web31506.mail.mud.yahoo.com>
+Message-ID: <BANLkTikzK-y=3wLiu2M8Hm6_Svu17UE2sw@mail.gmail.com>
+
+Hi Ming-Ching
+
+Another way would be to monitor the access logs of your captive portal
+server, and call some script when your users hit the captive portal.
+
+CoovaChilli will also expose some query string parameters to your captive
+portal, which would be passed to your script.
+
+- Stelio
+
+On Thu, Apr 7, 2011 at 11:47 AM, Ming-Ching Tiew <mctiew at yahoo.com> wrote:
+
+> Is there a way for me to get in the middle of the web redirect and execute
+> some scripts ( on the machine which runs chilli ) ?
+>
+> I want the web to be redirected dynamically to a url (outside the machine
+> which runs chilli) according to some information retrieved from the script.
+>
+> Regards.
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+
+
+
+-- 
+Regards
+Stelio Gouveia
+--
+Skyrove Software Engineer,
+Skyrove (Pty) Ltd
+Technology Top 100 Award Winner (2006)
+Mobile: +27 82 34 09 120
+Tel: +27 861 ROVERS (0861 768 377)
+Fax: +27 86 6204077
+Email & Gtalk: stelio at skyrove.com
+Web:   www.skyrove.com
+
+This message contains confidential information. If you are not the intended
+recipient you are notified that disclosing, copying, distributing or taking
+any action in reliance on the contents of this information is strictly
+prohibited. E-mail transmission cannot be guaranteed to be secure or
+error-free as information could be intercepted, corrupted, lost, destroyed,
+arrive late or incomplete, or contain viruses. The sender therefore does not
+accept liability for any errors or omissions in the contents of this
+message.
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20110407/32ef68a3/attachment.html>
+
+From mctiew at yahoo.com  Thu Apr  7 12:07:23 2011
+From: mctiew at yahoo.com (Ming-Ching Tiew)
+Date: Thu, 7 Apr 2011 05:07:23 -0700 (PDT)
+Subject: [Chilli] run some script in the web redirect
+Message-ID: <706836.28431.qm@web31504.mail.mud.yahoo.com>
+
+The script has to be run on the machine which runs coova chilli. 
+
+So do you mean I configure coovachilli to use a local uamhome on the
+machine which runs coova chilli and then dynamically redirect it to some other external url after executing the script ?
+
+--- On Thu, 4/7/11, Stelio Gouveia <stelio at skyrove.com> wrote:
+
+Hi Ming-Ching
+Another way would be to monitor the access logs of your captive portal server, and call some script when your users hit the captive portal.
+CoovaChilli will also expose some query string parameters to your captive portal, which would be passed to your
+ script.?
+
+
+
+
+From stelio at skyrove.com  Thu Apr  7 14:48:44 2011
+From: stelio at skyrove.com (Stelio Gouveia)
+Date: Thu, 7 Apr 2011 16:48:44 +0200
+Subject: [Chilli] run some script in the web redirect
+In-Reply-To: <706836.28431.qm@web31504.mail.mud.yahoo.com>
+References: <706836.28431.qm@web31504.mail.mud.yahoo.com>
+Message-ID: <BANLkTikWbSDKdMU=VqgxSomJD89NPXmptw@mail.gmail.com>
+
+Hi Ming-Ching
+
+Your UAM Server could be hosted on the same machine as CoovaChilli though
+it's not required. I'm suggesting active monitoring of your UAM Server
+access logs, rather than trying to hook into the redirect process in
+CoovaChilli. You'll need to write a daemon to continuously check the UAM
+Servers access log and spawn some event if a new request is detected. Keep
+in mind, this will only happen after CoovaChilli redirect.
+
+- Stelio
+
+On Thu, Apr 7, 2011 at 2:07 PM, Ming-Ching Tiew <mctiew at yahoo.com> wrote:
+
+> The script has to be run on the machine which runs coova chilli.
+>
+> So do you mean I configure coovachilli to use a local uamhome on the
+> machine which runs coova chilli and then dynamically redirect it to some
+> other external url after executing the script ?
+>
+> --- On Thu, 4/7/11, Stelio Gouveia <stelio at skyrove.com> wrote:
+>
+> Hi Ming-Ching
+> Another way would be to monitor the access logs of your captive portal
+> server, and call some script when your users hit the captive portal.
+> CoovaChilli will also expose some query string parameters to your captive
+> portal, which would be passed to your
+>  script.
+>
+>
+>
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+
+
+
+-- 
+Regards
+Stelio Gouveia
+--
+Skyrove Software Engineer,
+Skyrove (Pty) Ltd
+Technology Top 100 Award Winner (2006)
+Mobile: +27 82 34 09 120
+Tel: +27 861 ROVERS (0861 768 377)
+Fax: +27 86 6204077
+Email & Gtalk: stelio at skyrove.com
+Web:   www.skyrove.com
+
+This message contains confidential information. If you are not the intended
+recipient you are notified that disclosing, copying, distributing or taking
+any action in reliance on the contents of this information is strictly
+prohibited. E-mail transmission cannot be guaranteed to be secure or
+error-free as information could be intercepted, corrupted, lost, destroyed,
+arrive late or incomplete, or contain viruses. The sender therefore does not
+accept liability for any errors or omissions in the contents of this
+message.
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20110407/ce496d1c/attachment.html>
+
+From mctiew at yahoo.com  Thu Apr  7 14:54:28 2011
+From: mctiew at yahoo.com (Ming-Ching Tiew)
+Date: Thu, 7 Apr 2011 07:54:28 -0700 (PDT)
+Subject: [Chilli] run some script in the web redirect
+In-Reply-To: <BANLkTikWbSDKdMU=VqgxSomJD89NPXmptw@mail.gmail.com>
+Message-ID: <868569.51228.qm@web31503.mail.mud.yahoo.com>
+
+
+Not sure if you get the requirement. The requirement is to dynamically redirect to different URLs based on the outcome of the script. If whatever you suggest happens after the redirection, it's already too late.
+
+--- On Thu, 4/7/11, Stelio Gouveia <stelio at skyrove.com> wrote:
+
+From: Stelio Gouveia <stelio at skyrove.com>
+Subject: Re: [Chilli] run some script in the web redirect
+To: "Ming-Ching Tiew" <mctiew at yahoo.com>
+Cc: chilli at coova.org
+Date: Thursday, April 7, 2011, 2:48 PM
+
+Hi Ming-Ching
+Your UAM Server could be hosted on the same machine as CoovaChilli though it's not required. I'm suggesting active monitoring of your UAM Server access logs, rather than?trying to hook into the redirect process in CoovaChilli. You'll need to write a daemon to continuously check the UAM Servers access log and spawn some event if a new request is detected. Keep in mind, this will only happen after CoovaChilli redirect.
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20110407/3955b473/attachment.html>
+
+From stelio at skyrove.com  Thu Apr  7 15:02:15 2011
+From: stelio at skyrove.com (Stelio Gouveia)
+Date: Thu, 7 Apr 2011 17:02:15 +0200
+Subject: [Chilli] run some script in the web redirect
+In-Reply-To: <868569.51228.qm@web31503.mail.mud.yahoo.com>
+References: <BANLkTikWbSDKdMU=VqgxSomJD89NPXmptw@mail.gmail.com>
+	<868569.51228.qm@web31503.mail.mud.yahoo.com>
+Message-ID: <BANLkTinXhC6S3N1qfUDdci_X87dRruvsPw@mail.gmail.com>
+
+"on the machine which runs chilli", then do you mean the chilli host or
+client machine? And what will your script do?
+
+- Stelio
+
+On Thu, Apr 7, 2011 at 4:54 PM, Ming-Ching Tiew <mctiew at yahoo.com> wrote:
+
+>
+> Not sure if you get the requirement. The requirement is to dynamically
+> redirect to different URLs based on the outcome of the script. If whatever
+> you suggest happens after the redirection, it's already too late.
+>
+>
+> --- On *Thu, 4/7/11, Stelio Gouveia <stelio at skyrove.com>* wrote:
+>
+>
+> From: Stelio Gouveia <stelio at skyrove.com>
+> Subject: Re: [Chilli] run some script in the web redirect
+> To: "Ming-Ching Tiew" <mctiew at yahoo.com>
+> Cc: chilli at coova.org
+> Date: Thursday, April 7, 2011, 2:48 PM
+>
+>
+> Hi Ming-Ching
+>
+> Your UAM Server could be hosted on the same machine as CoovaChilli though
+> it's not required. I'm suggesting active monitoring of your UAM Server
+> access logs, rather than trying to hook into the redirect process in
+> CoovaChilli. You'll need to write a daemon to continuously check the UAM
+> Servers access log and spawn some event if a new request is detected. Keep
+> in mind, this will only happen after CoovaChilli redirect.
+>
+>
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+>
+
+
+-- 
+Regards
+Stelio Gouveia
+--
+Skyrove Software Engineer,
+Skyrove (Pty) Ltd
+Technology Top 100 Award Winner (2006)
+Mobile: +27 82 34 09 120
+Tel: +27 861 ROVERS (0861 768 377)
+Fax: +27 86 6204077
+Email & Gtalk: stelio at skyrove.com
+Web:   www.skyrove.com
+
+This message contains confidential information. If you are not the intended
+recipient you are notified that disclosing, copying, distributing or taking
+any action in reliance on the contents of this information is strictly
+prohibited. E-mail transmission cannot be guaranteed to be secure or
+error-free as information could be intercepted, corrupted, lost, destroyed,
+arrive late or incomplete, or contain viruses. The sender therefore does not
+accept liability for any errors or omissions in the contents of this
+message.
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20110407/dfed8f9e/attachment.html>
+
+From david at coova.com  Thu Apr  7 15:22:35 2011
+From: david at coova.com (David Bird)
+Date: Thu, 7 Apr 2011 17:22:35 +0200
+Subject: [Chilli] run some script in the web redirect
+In-Reply-To: <792786.61915.qm@web31506.mail.mud.yahoo.com>
+References: <792786.61915.qm@web31506.mail.mud.yahoo.com>
+Message-ID: <293F2AC5-024F-46CC-9F49-9CD6D5B8E5E6@coova.com>
+
+Check out the compile time option --enable-modules and the example module for inspiration... 
+
+David 
+
+
+On Apr 7, 2011, at 11:47 AM, Ming-Ching Tiew <mctiew at yahoo.com> wrote:
+
+> Is there a way for me to get in the middle of the web redirect and execute some scripts ( on the machine which runs chilli ) ?
+> 
+> I want the web to be redirected dynamically to a url (outside the machine which runs chilli) according to some information retrieved from the script.
+> 
+> Regards.
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+From david at coova.com  Thu Apr  7 15:33:23 2011
+From: david at coova.com (David Bird)
+Date: Thu, 7 Apr 2011 17:33:23 +0200
+Subject: [Chilli] run some script in the web redirect
+In-Reply-To: <792786.61915.qm@web31506.mail.mud.yahoo.com>
+References: <792786.61915.qm@web31506.mail.mud.yahoo.com>
+Message-ID: <5614C217-271E-4C22-8DE1-494B2FEB6265@coova.com>
+
+Or, ... Use an 'embedded' mini portal page to take the first redirect and to redirect somewhere else based on the parameters you are interested in.. 
+
+
+On Apr 7, 2011, at 11:47 AM, Ming-Ching Tiew <mctiew at yahoo.com> wrote:
+
+> Is there a way for me to get in the middle of the web redirect and execute some scripts ( on the machine which runs chilli ) ?
+> 
+> I want the web to be redirected dynamically to a url (outside the machine which runs chilli) according to some information retrieved from the script.
+> 
+> Regards.
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+From mctiew at yahoo.com  Mon Apr 11 09:31:42 2011
+From: mctiew at yahoo.com (Ming-Ching Tiew)
+Date: Mon, 11 Apr 2011 02:31:42 -0700 (PDT)
+Subject: [Chilli] pptp passthrough over coova chilli
+Message-ID: <164553.31796.qm@web31502.mail.mud.yahoo.com>
+
+Have been trying all kinds of combinations on pptp vpn pass through over coova chilli without any consistent result.
+
+A colleague of mine help tested it on openwrt, and he said it worked on both cases, one is on 2.4.X kernel with chilli 1.0.12, and another is 2.6.X kernel with chilli 1.2.5.
+
+However my testing results on the my platforms have been negative. The PPTP pass through works perfectly without running chilli but as soon as that is turned on, pptp pass through does not work. The symptom of the problem is connected is established after entering username and password, but no traffic is possible. Can ping the PPTP server but cannot ping to the other end of private network. But occasionally things just work, which I have no idea how.
+
+Anyone else has tried this ?
+
+From mctiew at yahoo.com  Wed Apr 13 01:37:28 2011
+From: mctiew at yahoo.com (Ming-Ching Tiew)
+Date: Tue, 12 Apr 2011 18:37:28 -0700 (PDT)
+Subject: [Chilli] pptp passthrough over coova chilli
+In-Reply-To: <164553.31796.qm@web31502.mail.mud.yahoo.com>
+Message-ID: <412446.88822.qm@web31505.mail.mud.yahoo.com>
+
+
+
+--- On Mon, 4/11/11, Ming-Ching Tiew <mctiew at yahoo.com> wrote:
+
+> 
+> A colleague of mine help tested it on openwrt, and he said
+> it worked on both cases, one is on 2.4.X kernel with chilli
+> 1.0.12, and another is 2.6.X kernel with chilli 1.2.5.
+> 
+> However my testing results on the my platforms have been
+> negative. The PPTP pass through works perfectly without
+> running chilli but as soon as that is turned on, pptp pass
+> through does not work. The symptom of the problem is
+> connected is established after entering username and
+> password, but no traffic is possible. Can ping the PPTP
+> server but cannot ping to the other end of private network.
+> But occasionally things just work, which I have no idea
+> how.
+> 
+
+Apparently there is some kind of corruption issue because the PPTP server will receive many unsupported protocol 0xXXXX and start rejecting the packets. 'tcpdump' on the network revealed the same thing and got lots of LCP prot-rej. It's not even a firewall dropping packet or routing problem packet not reaching the PPTP server.
+
+From kg6hum at gmail.com  Fri Apr 15 12:52:39 2011
+From: kg6hum at gmail.com (Rob Campbell)
+Date: Fri, 15 Apr 2011 05:52:39 -0700
+Subject: [Chilli] (no subject)
+Message-ID: <BANLkTikb8jkz5cPOv+2ChB_koq6NHxV_1g@mail.gmail.com>
+
+http://travelbybus.co.cc/e21j
+
+-- 
+--
+Rob Campbell
+KG6HUM
+
+From mctiew at yahoo.com  Sat Apr 16 13:20:28 2011
+From: mctiew at yahoo.com (Ming-Ching Tiew)
+Date: Sat, 16 Apr 2011 06:20:28 -0700 (PDT)
+Subject: [Chilli] conup execution - serially or in parallel ?
+Message-ID: <544440.57537.qm@web31505.mail.mud.yahoo.com>
+
+I would like to know if conup is executed serially or if it is possbile that another conup instance is executed before the completion of the previous one ?
+
+Reason is my conup script is access some common file, if parallel execution is possible, it might corrupt the file, then I will have to lock it for exclusive access. 
+
+Thank you!
+
+From rwhite at globalgossip.net  Sun Apr 17 11:47:28 2011
+From: rwhite at globalgossip.net (Robert White)
+Date: Sun, 17 Apr 2011 23:47:28 +1200
+Subject: [Chilli] pptp passthrough over coova chilli
+In-Reply-To: <412446.88822.qm@web31505.mail.mud.yahoo.com>
+References: <164553.31796.qm@web31502.mail.mud.yahoo.com>
+	<412446.88822.qm@web31505.mail.mud.yahoo.com>
+Message-ID: <BANLkTinzV554Axhw7=rr8E2byO0QTBG3BQ@mail.gmail.com>
+
+Make sure you're loading all the necessary modules in the kernel (2.6.x)
+
+
+/sbin/modprobe ip_conntrack
+/sbin/modprobe ip_gre
+/sbin/modprobe ip_conntrack_pptp
+/sbin/modprobe ip_nat_pptp
+
+
+
+On 13 April 2011 13:37, Ming-Ching Tiew <mctiew at yahoo.com> wrote:
+
+>
+>
+> --- On Mon, 4/11/11, Ming-Ching Tiew <mctiew at yahoo.com> wrote:
+>
+> >
+> > A colleague of mine help tested it on openwrt, and he said
+> > it worked on both cases, one is on 2.4.X kernel with chilli
+> > 1.0.12, and another is 2.6.X kernel with chilli 1.2.5.
+> >
+> > However my testing results on the my platforms have been
+> > negative. The PPTP pass through works perfectly without
+> > running chilli but as soon as that is turned on, pptp pass
+> > through does not work. The symptom of the problem is
+> > connected is established after entering username and
+> > password, but no traffic is possible. Can ping the PPTP
+> > server but cannot ping to the other end of private network.
+> > But occasionally things just work, which I have no idea
+> > how.
+> >
+>
+> Apparently there is some kind of corruption issue because the PPTP server
+> will receive many unsupported protocol 0xXXXX and start rejecting the
+> packets. 'tcpdump' on the network revealed the same thing and got lots of
+> LCP prot-rej. It's not even a firewall dropping packet or routing problem
+> packet not reaching the PPTP server.
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+
+-------------------------------------------------
+
+IMPORTANT NOTICE : The information in this email is confidential and may also be privileged. 
+If you are not the intended recipient, any use or dissemination of the information and any
+disclosure or copying of this email is unauthorised and strictly prohibited. If you have received
+this email in error, please promptly inform us by reply email or telephone. You should also delete
+this email and destroy any hard copies produced.
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20110417/fab21428/attachment.html>
+
+From mctiew at yahoo.com  Sun Apr 17 12:27:21 2011
+From: mctiew at yahoo.com (Ming-Ching Tiew)
+Date: Sun, 17 Apr 2011 05:27:21 -0700 (PDT)
+Subject: [Chilli] pptp passthrough over coova chilli
+In-Reply-To: <BANLkTinzV554Axhw7=rr8E2byO0QTBG3BQ@mail.gmail.com>
+Message-ID: <473198.9403.qm@web31505.mail.mud.yahoo.com>
+
+
+
+--- On Sun, 4/17/11, Robert White <rwhite at globalgossip.net> wrote:
+
+From: Robert White <rwhite at globalgossip.net>
+Subject: Re: [Chilli] pptp passthrough over coova chilli
+To: "Ming-Ching Tiew" <mctiew at yahoo.com>
+Cc: chilli at coova.org
+Date: Sunday, April 17, 2011, 11:47 AM
+
+Make sure you're loading all the?necessary?modules in the kernel (2.6.x)
+
+/sbin/modprobe ip_conntrack/sbin/modprobe ip_gre/sbin/modprobe ip_conntrack_pptp
+/sbin/modprobe ip_nat_pptp
+
+
+On 13 April 2011 13:37, Ming-Ching Tiew <mctiew at yahoo.com> wrote:
+
+
+
+
+
+--- On Mon, 4/11/11, Ming-Ching Tiew <mctiew at yahoo.com> wrote:
+
+
+
+>
+
+> A colleague of mine help tested it on openwrt, and he said
+
+> it worked on both cases, one is on 2.4.X kernel with chilli
+
+> 1.0.12, and another is 2.6.X kernel with chilli 1.2.5.
+
+>
+
+> However my testing results on the my platforms have been
+
+> negative. The PPTP pass through works perfectly without
+
+> running chilli but as soon as that is turned on, pptp pass
+
+> through does not work. The symptom of the problem is
+
+> connected is established after entering username and
+
+> password, but no traffic is possible. Can ping the PPTP
+
+> server but cannot ping to the other end of private network.
+
+> But occasionally things just work, which I have no idea
+
+> how.
+
+>
+
+
+
+Apparently there is some kind of corruption issue because the PPTP server will receive many unsupported protocol 0xXXXX and start rejecting the packets. 'tcpdump' on the network revealed the same thing and got lots of LCP prot-rej. It's not even a firewall dropping packet or routing problem packet not reaching the PPTP server.
+
+
+_______________________________________________
+
+Chilli mailing list
+
+Chilli at coova.org
+
+http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+
+
+
+-------------------------------------------------
+
+IMPORTANT NOTICE : The information in this email is confidential and may also be privileged. 
+If you are not the intended recipient, any use or dissemination of the information and any
+disclosure or copying of this email is unauthorised and strictly prohibited. If you have received
+this email in error, please promptly inform us by reply email or telephone. You should also delete
+this email and destroy any hard copies produced.
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20110417/aa7764a7/attachment.html>
+
+From lorenzo.milesi at ufficyo.com  Thu Apr 21 08:14:40 2011
+From: lorenzo.milesi at ufficyo.com (Lorenzo Milesi)
+Date: Thu, 21 Apr 2011 10:14:40 +0200 (CEST)
+Subject: [Chilli] Authenticate static IP
+In-Reply-To: <978658197.813.1303371819228.JavaMail.root@quaglia>
+Message-ID: <1960816566.822.1303373680307.JavaMail.root@quaglia>
+
+Hi.
+
+I'd like to know something I didn't clearly understand from reading around: I'd like to place some clients with STATIC ip inside the "wireless" area (that is, the dhcpif).
+But I don't want these to be MAC-Auth'ed, I want them to be subject to the captive portal and normal authentication, like the other DHCP clients.
+
+Is this possible?
+Thanks
+
+From mctiew at yahoo.com  Fri Apr 22 03:53:06 2011
+From: mctiew at yahoo.com (Ming-Ching Tiew)
+Date: Thu, 21 Apr 2011 20:53:06 -0700 (PDT)
+Subject: [Chilli] pptp passthrough over coova chilli
+In-Reply-To: <BANLkTinzV554Axhw7=rr8E2byO0QTBG3BQ@mail.gmail.com>
+Message-ID: <433431.46572.qm@web31507.mail.mud.yahoo.com>
+
+
+I would like to know if this is a field tested result, or it's just a "theoretization". 
+If it has been field tested and proven positive, perhaps you should post your coova chilli version.
+
+
+--- On Sun, 4/17/11, Robert White <rwhite at globalgossip.net> wrote:
+
+From: Robert White <rwhite at globalgossip.net>
+Subject: Re: [Chilli] pptp passthrough over coova chilli
+To: "Ming-Ching Tiew" <mctiew at yahoo.com>
+Cc: chilli at coova.org
+Date: Sunday, April 17, 2011, 11:47 AM
+
+Make sure you're loading all the?necessary?modules in the kernel (2.6.x)
+
+/sbin/modprobe ip_conntrack/sbin/modprobe ip_gre/sbin/modprobe ip_conntrack_pptp
+/sbin/modprobe ip_nat_pptp
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20110421/f606e6a0/attachment.html>
+
+From rwhite at globalgossip.net  Fri Apr 22 10:12:25 2011
+From: rwhite at globalgossip.net (Robert White)
+Date: Fri, 22 Apr 2011 20:12:25 +1000
+Subject: [Chilli] pptp passthrough over coova chilli
+In-Reply-To: <433431.46572.qm@web31507.mail.mud.yahoo.com>
+References: <BANLkTinzV554Axhw7=rr8E2byO0QTBG3BQ@mail.gmail.com>
+	<433431.46572.qm@web31507.mail.mud.yahoo.com>
+Message-ID: <BANLkTi=87AX32nCKrRUeE+K4SQTduDb+qQ@mail.gmail.com>
+
+I've had this working in 1.1.3 and 1.2.5.
+
+Ensure the modules are in the kernel and also edit up.sh to include
+
+ipt -I FORWARD -j ACCEPT -i $TUNTAP -p gre
+ipt -I FORWARD -j ACCEPT -i $TUNTAP -p tcp --dport 1723
+
+
+On 22 April 2011 13:53, Ming-Ching Tiew <mctiew at yahoo.com> wrote:
+
+>
+> I would like to know if this is a field tested result, or it's just a
+> "theoretization".
+> If it has been field tested and proven positive, perhaps you should post
+> your coova chilli version.
+>
+>
+>
+> --- On *Sun, 4/17/11, Robert White <rwhite at globalgossip.net>* wrote:
+>
+>
+> From: Robert White <rwhite at globalgossip.net>
+> Subject: Re: [Chilli] pptp passthrough over coova chilli
+> To: "Ming-Ching Tiew" <mctiew at yahoo.com>
+> Cc: chilli at coova.org
+> Date: Sunday, April 17, 2011, 11:47 AM
+>
+> Make sure you're loading all the necessary modules in the kernel (2.6.x)
+>
+>
+> /sbin/modprobe ip_conntrack
+> /sbin/modprobe ip_gre
+> /sbin/modprobe ip_conntrack_pptp
+> /sbin/modprobe ip_nat_pptp
+>
+>
+>
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+>
+
+-------------------------------------------------
+
+IMPORTANT NOTICE : The information in this email is confidential and may also be privileged. 
+If you are not the intended recipient, any use or dissemination of the information and any
+disclosure or copying of this email is unauthorised and strictly prohibited. If you have received
+this email in error, please promptly inform us by reply email or telephone. You should also delete
+this email and destroy any hard copies produced.
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20110422/023fefd3/attachment.html>
+
+From mctiew at yahoo.com  Sat Apr 23 03:26:30 2011
+From: mctiew at yahoo.com (Ming-Ching Tiew)
+Date: Fri, 22 Apr 2011 20:26:30 -0700 (PDT)
+Subject: [Chilli] pptp passthrough over coova chilli
+In-Reply-To: <BANLkTi=87AX32nCKrRUeE+K4SQTduDb+qQ@mail.gmail.com>
+Message-ID: <450601.58597.qm@web31504.mail.mud.yahoo.com>
+
+
+The standard 'up.sh' from the distro is to accept everything from the tuntap interface for the iptables FORWARD and INPUT chain, so the additional rules are redundant. If in your configuration you needed these additional rules, then perhaps you are not using the standard up.sh from the distro.
+
+
+--- On Fri, 4/22/11, Robert White <rwhite at globalgossip.net> wrote:
+
+From: Robert White <rwhite at globalgossip.net>
+Subject: Re: [Chilli] pptp passthrough over coova chilli
+To: "Ming-Ching Tiew" <mctiew at yahoo.com>
+Cc: chilli at coova.org
+Date: Friday, April 22, 2011, 10:12 AM
+
+I've had this working in 1.1.3 and 1.2.5.
+Ensure the modules are in the kernel and also edit up.sh to include
+ipt -I FORWARD -j ACCEPT -i $TUNTAP -p greipt -I FORWARD -j ACCEPT -i $TUNTAP -p tcp --dport 1723
+
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20110422/f9437933/attachment.html>
+
+From info at easyhorpak.com  Mon Apr 25 05:45:22 2011
+From: info at easyhorpak.com (EasyHorpak.com)
+Date: Mon, 25 Apr 2011 12:45:22 +0700
+Subject: [Chilli] Coova on Openwrt send the same Acct-Session-Id on new user
+	session.
+Message-ID: <4DB50A72.9030405@easyhorpak.com>
+
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20110425/a19b6cf6/attachment.html>
+
+From yuhrong.leu at gmail.com  Tue Apr 26 07:07:21 2011
+From: yuhrong.leu at gmail.com (Yuh-Rong Leu)
+Date: Tue, 26 Apr 2011 15:07:21 +0800
+Subject: [Chilli] Crazy TCP resets when CoovaChilli is enabled (UAM
+	redirection problem)
+Message-ID: <BANLkTi=bYTHGUDDLR-qWrOfMe7_2b+7f0Q@mail.gmail.com>
+
+Web redirection doesn't work stably with my CoovaChilli/OpenWrt box. Here
+are the test results:
+
+If the browser home page is set to http://www.google.com:
+- IE9 is seldom redirected to the welcome/login page
+- Chrome 10 is redirected to the welcome/login page most of the time.
+- Firefox 4 is is redirected to the welcome/login page most of the time.
+
+If the browser home page is set to http://www.microsoft.com:
+- Redirection works quite fine with all kinds of browsers.
+
+If the browser home page is set to http://www.apple.com or
+http://www.bing.com:
+- Redirection does not work at all with any browsers.
+
+Peeking the packets with Wireshark, I found TCP connections are reset
+several times by CoovaChilli/OpenWrt. And some TCP reset messages sent by
+CoovaChilli/OpenWrt have insanely large SEQ number. As the attached
+Wireshard packet capture, which was generated by "telnet 64.233.183.105 80,"
+shows, 5 RST messages were sent, and 4 of them are with Seq=1246334216.
+
+I believe it's these crazy RST messages that make UAM redirection not work
+stably. I doubt the RST messages were due to Firwall rules CoovaChilli added
+to iptables, but I have not been able to figure out where the firewall rules
+reside.
+
+Can anyone tell how CoovaChilli manipulates iptables before it sends HTTP
+302 Moved Temporarily for UAM redireciton?
+
+Yuh-Rong Leu
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20110426/2236c607/attachment-0001.html>
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: CrazyTcpReset.gif
+Type: image/gif
+Size: 125244 bytes
+Desc: not available
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20110426/2236c607/attachment-0001.gif>
+
+From mctiew at yahoo.com  Wed Apr 27 01:18:14 2011
+From: mctiew at yahoo.com (Ming-Ching Tiew)
+Date: Tue, 26 Apr 2011 18:18:14 -0700 (PDT)
+Subject: [Chilli] chilli 1.2.6 layer3 anyone success ?
+Message-ID: <397430.60184.qm@web31507.mail.mud.yahoo.com>
+
+
+Anyone successfully used or tried out the chilli version 1.2.6 with layer3 option turned on ?
+
+I tried it on a routed network, it does not seem to work. Maybe my understanding of the configuration is wrong. Here is the topology :-
+
+               
+            |
+            |    eth1 218.189.19.35 ( natted to internet )
+       ------------
+      |            |  chilli 1.2.6 layer3
+      --------------
+            |    eth0  192.168.2.253 ( route 192.168.20.0/24 via .252)
+            |
+            |
+            |       192.168.2.252 ( route )
+       ------------
+      |            |  router with DHCP server for 192.168.20.0/24
+      --------------
+            |       192.168.20.253
+            |
+   -----------------------
+   | Captive Portal Clients, eg  192.168.2.100
+   ------------------------
+     
+
+The chilli configuration file :-
+
+uamanyip
+layer3
+uamlisten	192.168.20.1
+net		192.168.20.0/255.255.255.0
+statip		192.168.20.0/255.255.255.0
+dhcpif		eth0
+uamallowed	218.189.19.34,192.168.20.0/24
+nasip 		219.189,19.35
+nasmac		01:00:5e:00:00:01
+dns1 		192.168.20.1
+dns2 		218.189.19.36
+radiusserver1	218.189.19.34
+radiusserver2	218.189.19.34
+uamhomepage	http://218.189.19.34/www/xxxx.html
+uamserver	http://218.189.19.34/cgi-bin/xxxx.php
+
+Appreciate any comments and/or assistance.
+
+
+
+From miguel.lopes at cabocom.cv  Wed Apr 27 11:36:25 2011
+From: miguel.lopes at cabocom.cv (Miguel Lopes - Cabocom)
+Date: Wed, 27 Apr 2011 10:36:25 -0100
+Subject: [Chilli] chilli 1.2.6 layer3 anyone success ?
+In-Reply-To: <397430.60184.qm@web31507.mail.mud.yahoo.com>
+References: <397430.60184.qm@web31507.mail.mud.yahoo.com>
+Message-ID: <000f01cc04cf$5879a410$096cec30$@lopes@cabocom.cv>
+
+Hi,
+
+Yes we are using it here for about 160 clients over a 2km mesh and it is
+working fine, what I see if you have your network a bit misconfigured, here
+is a link with our network topology working with chilli layer 3 option on.
+The only issue we are experiencing has been documented here and which is
+http://lists.coova.org/pipermail/chilli/2011-March/001602.html, this
+basically causes chilli to randomly crash, other than that all is well.
+
+Links : 
+
+Network topology - http://cabocom.cv/schema2.jpg 
+Chilli config - http://cabocom.cv/chilliconf.txt
+
+Kind Regards / Atentamente,
+
+Miguel Lopes
+
+Tel - +2382428087
+Fax - +2382428088
+Email - miguel.lopes at cabocom.cv
+Web - www.cabocom.cv
+Facebook - facebook.cabocom.cv
+
+
+-----Mensagem original-----
+De: chilli-bounces at coova.org [mailto:chilli-bounces at coova.org] Em nome de
+Ming-Ching Tiew
+Enviada: quarta-feira, 27 de Abril de 2011 00:18
+Para: chilli list
+Assunto: [Chilli] chilli 1.2.6 layer3 anyone success ?
+
+
+Anyone successfully used or tried out the chilli version 1.2.6 with layer3
+option turned on ?
+
+I tried it on a routed network, it does not seem to work. Maybe my
+understanding of the configuration is wrong. Here is the topology :-
+
+               
+            |
+            |    eth1 218.189.19.35 ( natted to internet )
+       ------------
+      |            |  chilli 1.2.6 layer3
+      --------------
+            |    eth0  192.168.2.253 ( route 192.168.20.0/24 via .252)
+            |
+            |
+            |       192.168.2.252 ( route )
+       ------------
+      |            |  router with DHCP server for 192.168.20.0/24
+      --------------
+            |       192.168.20.253
+            |
+   -----------------------
+   | Captive Portal Clients, eg  192.168.2.100
+   ------------------------
+     
+
+The chilli configuration file :-
+
+uamanyip
+layer3
+uamlisten	192.168.20.1
+net		192.168.20.0/255.255.255.0
+statip		192.168.20.0/255.255.255.0
+dhcpif		eth0
+uamallowed	218.189.19.34,192.168.20.0/24
+nasip 		219.189,19.35
+nasmac		01:00:5e:00:00:01
+dns1 		192.168.20.1
+dns2 		218.189.19.36
+radiusserver1	218.189.19.34
+radiusserver2	218.189.19.34
+uamhomepage	http://218.189.19.34/www/xxxx.html
+uamserver	http://218.189.19.34/cgi-bin/xxxx.php
+
+Appreciate any comments and/or assistance.
+
+
+_______________________________________________
+Chilli mailing list
+Chilli at coova.org
+http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+__________ Information from ESET NOD32 Antivirus, version of virus signature
+database 6072 (20110426) __________
+
+The message was checked by ESET NOD32 Antivirus.
+
+http://www.eset.com
+
+
+ 
+
+__________ Information from ESET NOD32 Antivirus, version of virus signature
+database 6072 (20110426) __________
+
+The message was checked by ESET NOD32 Antivirus.
+
+http://www.eset.com
+ 
+ 
+
+__________ Information from ESET NOD32 Antivirus, version of virus signature
+database 6072 (20110426) __________
+
+The message was checked by ESET NOD32 Antivirus.
+
+http://www.eset.com
+ 
+
+
+From mctiew at yahoo.com  Wed Apr 27 12:15:42 2011
+From: mctiew at yahoo.com (Ming-Ching Tiew)
+Date: Wed, 27 Apr 2011 05:15:42 -0700 (PDT)
+Subject: [Chilli] chilli 1.2.6 layer3 anyone success ?
+In-Reply-To: <000f01cc04cf$5879a410$096cec30$@lopes@cabocom.cv>
+Message-ID: <942953.32717.qm@web31503.mail.mud.yahoo.com>
+
+
+
+--- On Wed, 4/27/11, Miguel Lopes - Cabocom <miguel.lopes at cabocom.cv> wrote:
+
+> 
+> Yes we are using it here for about 160 clients over a 2km
+> mesh and it is
+> working fine, what I see if you have your network a bit
+> misconfigured, 
+
+Yes, it is misconfigured but what is the part which is 
+misconfigured then ? In what way it is misconfigured ?
+This is what I am asking. My question is not answered.
+
+>here
+> is a link with our network topology working with chilli
+> layer 3 option on.
+
+Honestly I don't see any reason why you opted to have 
+layer3 on, since effectively you have chilli Layer 2 to
+the connecting devices. What you have is just external
+DHCP server instead of using chilli dhcp, that's all.
+
+In any case I am only interested to know why my setup is 
+NOT working. I hope someone could point out why.
+
+Thank you and regards.
+
+
+From yuhrong.leu at gmail.com  Wed Apr 27 14:33:13 2011
+From: yuhrong.leu at gmail.com (Yuh-Rong Leu)
+Date: Wed, 27 Apr 2011 22:33:13 +0800
+Subject: [Chilli] Crazy TCP resets when CoovaChilli is enabled (UAM
+	redirection problem)
+In-Reply-To: <BANLkTi=bYTHGUDDLR-qWrOfMe7_2b+7f0Q@mail.gmail.com>
+References: <BANLkTi=bYTHGUDDLR-qWrOfMe7_2b+7f0Q@mail.gmail.com>
+Message-ID: <BANLkTi=_=FT+ZFOOq5nOwiGNWhiZjm+ibA@mail.gmail.com>
+
+I found the root cause of the crazy TCP reset messages.
+
+In dhcp.c, the dhcp_data_req() function calls dhcp_undoDNAT with the
+do_reset parameter set to 1 when authstate == DHCP_AUTH_DNAT (at around
+line# 4074). Therefore, crazy TCP reset messages will be sent inside
+dhcp_undoDNAT.
+
+After the code is changed to use 0 for the do_reset  parameter when calling
+dhcp_undoDNAT, the problem goes away, and Web redirection works well with
+any triggering any URL on any browser.
+
+Yuh-Rong Leu
+
+
+
+2011/4/26 Yuh-Rong Leu <yuhrong.leu at gmail.com>
+
+> Web redirection doesn't work stably with my CoovaChilli/OpenWrt box. Here
+> are the test results:
+>
+> If the browser home page is set to http://www.google.com:
+> - IE9 is seldom redirected to the welcome/login page
+> - Chrome 10 is redirected to the welcome/login page most of the time.
+> - Firefox 4 is is redirected to the welcome/login page most of the time.
+>
+> If the browser home page is set to http://www.microsoft.com:
+> - Redirection works quite fine with all kinds of browsers.
+>
+> If the browser home page is set to http://www.apple.com or
+> http://www.bing.com:
+> - Redirection does not work at all with any browsers.
+>
+> Peeking the packets with Wireshark, I found TCP connections are reset
+> several times by CoovaChilli/OpenWrt. And some TCP reset messages sent by
+> CoovaChilli/OpenWrt have insanely large SEQ number. As the attached
+> Wireshard packet capture, which was generated by "telnet 64.233.183.105 80,"
+> shows, 5 RST messages were sent, and 4 of them are with Seq=1246334216.
+>
+> I believe it's these crazy RST messages that make UAM redirection not work
+> stably. I doubt the RST messages were due to Firwall rules CoovaChilli added
+> to iptables, but I have not been able to figure out where the firewall rules
+> reside.
+>
+> Can anyone tell how CoovaChilli manipulates iptables before it sends HTTP
+> 302 Moved Temporarily for UAM redireciton?
+>
+> Yuh-Rong Leu
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20110427/09197169/attachment.html>
+
+From david at coova.com  Wed Apr 27 19:31:04 2011
+From: david at coova.com (David Bird)
+Date: Wed, 27 Apr 2011 21:31:04 +0200
+Subject: [Chilli] Crazy TCP resets when CoovaChilli is enabled
+	(UAM	redirection problem)
+Message-ID: <obyrc0ixaetf0ug1p3kvklwb.1303932664172@email.android.com>
+
+Thanks for the message. I will review it in more detail as soon as possible, sometime next week.
+
+Best regards,
+David
+
+Yuh-Rong Leu <yuhrong.leu at gmail.com> wrote:
+
+>I found the root cause of the crazy TCP reset messages.
+>
+>In dhcp.c, the dhcp_data_req() function calls dhcp_undoDNAT with the
+>do_reset parameter set to 1 when authstate == DHCP_AUTH_DNAT (at around
+>line# 4074). Therefore, crazy TCP reset messages will be sent inside
+>dhcp_undoDNAT.
+>
+>After the code is changed to use 0 for the do_reset  parameter when calling
+>dhcp_undoDNAT, the problem goes away, and Web redirection works well with
+>any triggering any URL on any browser.
+>
+>Yuh-Rong Leu
+>
+>
+>
+>2011/4/26 Yuh-Rong Leu <yuhrong.leu at gmail.com>
+>
+>> Web redirection doesn't work stably with my CoovaChilli/OpenWrt box. Here
+>> are the test results:
+>>
+>> If the browser home page is set to http://www.google.com:
+>> - IE9 is seldom redirected to the welcome/login page
+>> - Chrome 10 is redirected to the welcome/login page most of the time.
+>> - Firefox 4 is is redirected to the welcome/login page most of the time.
+>>
+>> If the browser home page is set to http://www.microsoft.com:
+>> - Redirection works quite fine with all kinds of browsers.
+>>
+>> If the browser home page is set to http://www.apple.com or
+>> http://www.bing.com:
+>> - Redirection does not work at all with any browsers.
+>>
+>> Peeking the packets with Wireshark, I found TCP connections are reset
+>> several times by CoovaChilli/OpenWrt. And some TCP reset messages sent by
+>> CoovaChilli/OpenWrt have insanely large SEQ number. As the attached
+>> Wireshard packet capture, which was generated by "telnet 64.233.183.105 80,"
+>> shows, 5 RST messages were sent, and 4 of them are with Seq=1246334216.
+>>
+>> I believe it's these crazy RST messages that make UAM redirection not work
+>> stably. I doubt the RST messages were due to Firwall rules CoovaChilli added
+>> to iptables, but I have not been able to figure out where the firewall rules
+>> reside.
+>>
+>> Can anyone tell how CoovaChilli manipulates iptables before it sends HTTP
+>> 302 Moved Temporarily for UAM redireciton?
+>>
+>> Yuh-Rong Leu
+>>
+>
+>_______________________________________________
+>Chilli mailing list
+>Chilli at coova.org
+>http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+

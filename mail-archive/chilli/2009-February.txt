@@ -1,0 +1,2313 @@
+From daniel at firewall-services.com  Mon Feb  2 08:00:58 2009
+From: daniel at firewall-services.com (Daniel Berteaud)
+Date: Mon, 02 Feb 2009 09:00:58 +0100
+Subject: privileges
+In-Reply-To: <ef21d1850901310228n2e813c59g57089fcf534c2534@mail.gmail.com>
+References: <1231867711.6866.141.camel@germaine.lapiole.org>
+	 <ef21d1850901310228n2e813c59g57089fcf534c2534@mail.gmail.com>
+Message-ID: <1233561658.2852.291.camel@germaine.lapiole.org>
+
+Le samedi 31 janvier 2009 ? 11:28 +0100, David Bird a ?crit :
+> Options for uid and gid will be in the next svn update, most likely.
+> 
+> David
+
+Hey, that's really a great news.
+
+Thanks for your work on this project.
+
+Best Regards
+
+> 
+> On 1/13/09, Daniel Berteaud <daniel at firewall-services.com> wrote:
+> > Hi.
+> >
+> > I use coova-chilli on some servers and I'm quite happy with it.
+> >
+> > But there's one *huge* security issue with it: it must runs as root.
+> > I'm realy not very found of daemon listening on a public interface with
+> > root privileges.
+> > I understand coova daemon must start with root privileges as it has to
+> > create a tun interface, configure the real one etc... but, I think it
+> > should then drop the privileges to another user (just like openvpn do
+> > for example).
+> >
+> > Additionnaly, the daemon could be chrooted in a directory.
+> >
+> > Is there a way to do this, or is something like this a planed feature ?
+> >
+> > Cheers, Daniel
+> >
+> > --
+> > Daniel Berteaud
+> > FIREWALL-SERVICES SARL.
+> > Soci?t? de Services en Logiciels Libres
+> > Technop?le Montesquieu
+> > 33650 MARTILLAC
+> > Tel : 05 56 64 15 32
+> > Fax : 05 56 64 15 32
+> > Mail: daniel at firewall-services.com
+> > Web : http://www.firewall-services.com
+> >
+> >
+> > ---------------------------------------------------------------------
+> > To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> > For additional commands, e-mail: chilli-help at coova.org
+> > Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> > Forum: http://coova.org/phpBB3/viewforum.php?f=4
+> >
+> >
+> 
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+> 
+-- 
+Daniel Berteaud
+FIREWALL-SERVICES SARL.
+Soci?t? de Services en Logiciels Libres
+Technop?le Montesquieu
+33650 MARTILLAC
+Tel : 05 56 64 15 32
+Fax : 05 56 64 15 32
+Mail: daniel at firewall-services.com
+Web : http://www.firewall-services.com
+
+
+
+From gunther.mayer at googlemail.com  Tue Feb  3 14:57:42 2009
+From: gunther.mayer at googlemail.com (Gunther Mayer)
+Date: Tue, 03 Feb 2009 16:57:42 +0200
+Subject: privileges
+In-Reply-To: <1233561658.2852.291.camel@germaine.lapiole.org>
+References: <1231867711.6866.141.camel@germaine.lapiole.org>	 <ef21d1850901310228n2e813c59g57089fcf534c2534@mail.gmail.com> <1233561658.2852.291.camel@germaine.lapiole.org>
+Message-ID: <49885B66.2020501@gmail.com>
+
+Daniel Berteaud wrote:
+> Le samedi 31 janvier 2009 ? 11:28 +0100, David Bird a ?crit :
+>   
+>> Options for uid and gid will be in the next svn update, most likely.
+>>     
+
+I can see many issues already with running chilli as non-root: For 
+example how should uamanyip create any routes for new static ip clients? 
+Also I'm sure there are certain IOCTL's in tun.c which might not take 
+lightly to being accessed by an unprivileged user. I think properly 
+securing this is a lot more work than it seems... But then again David's 
+our man and if he can't do it no-one can ;-)
+
+Gunther
+
+
+From wlan at mac.com  Tue Feb  3 15:44:10 2009
+From: wlan at mac.com (wlanmac)
+Date: Tue, 03 Feb 2009 16:44:10 +0100
+Subject: privileges
+In-Reply-To: <49885B66.2020501@gmail.com>
+References: <1231867711.6866.141.camel@germaine.lapiole.org>
+ <ef21d1850901310228n2e813c59g57089fcf534c2534@mail.gmail.com>
+ <1233561658.2852.291.camel@germaine.lapiole.org> <49885B66.2020501@gmail.com>
+Message-ID: <1233675850.7054.27.camel@david-laptop>
+
+I've tested it a bit already. Adding the basic feature of shedding root
+priv's (and setting up the shared message queue permissions), it seems
+to work generally. But, yes, it would have greater issues with regard to
+the uid and gid of script it runs, etc. Perhaps the setuid/gui will be
+kept and only used for the fork()ed processes that handle redirects
+(http input from subscriber). 
+
+David
+
+On Tue, 2009-02-03 at 16:57 +0200, Gunther Mayer wrote:
+> Daniel Berteaud wrote:
+> > Le samedi 31 janvier 2009 ? 11:28 +0100, David Bird a ?crit :
+> >   
+> >> Options for uid and gid will be in the next svn update, most likely.
+> >>     
+> 
+> I can see many issues already with running chilli as non-root: For 
+> example how should uamanyip create any routes for new static ip clients? 
+> Also I'm sure there are certain IOCTL's in tun.c which might not take 
+> lightly to being accessed by an unprivileged user. I think properly 
+> securing this is a lot more work than it seems... But then again David's 
+> our man and if he can't do it no-one can ;-)
+> 
+> Gunther
+> 
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+> 
+
+
+
+From liske at ibh.de  Wed Feb  4 10:03:39 2009
+From: liske at ibh.de (Thomas Liske)
+Date: Wed, 4 Feb 2009 11:03:39 +0100 (CET)
+Subject: /32 subnet
+Message-ID: <Pine.LNX.4.64.0902041046360.7216@sisyphos.ibh>
+
+Hi,
+
+the basic idea behind the attached patch is the following:
+
+On a hotspot, normaly you don't want to allow client to client 
+communication (everybody should have access to the internet and be somehow 
+protected from other hotspot users) - especially for the windows dhows.
+
+This patch adds a new configuration option "noc2c" (no client 2 client 
+communcation). With this option enabled, the DHCP offers supplies a /32 
+netmask. Doing this would prevent any hotspot client to communcate with 
+anybody, even the default gateway. Therefore it adds a static route for 
+the default gw as an connected route. This prevents (windows) clients 
+doing any broadcasts on the hotspot network and reach any other hotspot 
+client (default gateway must not route any pakets coming from a hotspot 
+client to any other hotspot client). It would be great if somebody could 
+test it with additional clients, Win XP works as expected.
+
+Any comments on the patch are welcome ;)
+
+
+Regards,
+Thomas
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: coovachilli-noc2c.diff
+Type: text/x-diff
+Size: 9140 bytes
+Desc: 
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20090204/f35a352e/attachment.diff>
+
+From outbackdingo at gmail.com  Wed Feb  4 10:15:59 2009
+From: outbackdingo at gmail.com (Outback Dingo)
+Date: Wed, 4 Feb 2009 17:15:59 +0700
+Subject: /32 subnet
+In-Reply-To: <Pine.LNX.4.64.0902041046360.7216@sisyphos.ibh>
+References: <Pine.LNX.4.64.0902041046360.7216@sisyphos.ibh>
+Message-ID: <5635aa0d0902040215tb89e086gbb6eba0a12452b2f@mail.gmail.com>
+
+hrmm honestly, isnt this the same as AP separation on the AP itself?? using
+say
+
+ option isolate  1 in both openwrt and i believe dd-wrt it essentaily does
+the same thing if im not mistaken
+
+though on the other hand i guess i could see it for server based chilli
+access controllers
+
+On Wed, Feb 4, 2009 at 5:03 PM, Thomas Liske <liske at ibh.de> wrote:
+
+> Hi,
+>
+> the basic idea behind the attached patch is the following:
+>
+> On a hotspot, normaly you don't want to allow client to client
+> communication (everybody should have access to the internet and be somehow
+> protected from other hotspot users) - especially for the windows dhows.
+>
+> This patch adds a new configuration option "noc2c" (no client 2 client
+> communcation). With this option enabled, the DHCP offers supplies a /32
+> netmask. Doing this would prevent any hotspot client to communcate with
+> anybody, even the default gateway. Therefore it adds a static route for the
+> default gw as an connected route. This prevents (windows) clients doing any
+> broadcasts on the hotspot network and reach any other hotspot client
+> (default gateway must not route any pakets coming from a hotspot client to
+> any other hotspot client). It would be great if somebody could test it with
+> additional clients, Win XP works as expected.
+>
+> Any comments on the patch are welcome ;)
+>
+>
+> Regards,
+> Thomas
+>
+>
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20090204/e098230f/attachment.htm>
+
+From m.simioni at gmail.com  Wed Feb  4 10:21:41 2009
+From: m.simioni at gmail.com (Marco Simioni)
+Date: Wed, 4 Feb 2009 11:21:41 +0100
+Subject: /32 subnet
+In-Reply-To: <Pine.LNX.4.64.0902041046360.7216@sisyphos.ibh>
+References: <Pine.LNX.4.64.0902041046360.7216@sisyphos.ibh>
+Message-ID: <f71cb680902040221r6a91e84s22aacf17744134c7@mail.gmail.com>
+
+Hi,
+
+good job, but i think these kind of security measures have to be
+implemented at lower layer (layer 2).
+
+I mean, we usually achieve this task the following ways:
+
+- we use ethernet switches with Private VLAN feature (this allow
+separation of traffic between the host ports) (see
+http://www.ciscopress.com/articles/article.asp?p=1181682&seqNum=3 for
+examples, but also cheaper switches implements this)
+
+- we use access points that has the option "Deny clients
+communication" (this deny communications between wireless hosts)
+
+With your method i think that a client can always work at layer 2 (arp
+scanning and so on) to see the other clients.
+
+Anyway, i will be pleased to test it in the next weeks.
+
+Regards, aNt1X
+
+
+2009/2/4 Thomas Liske <liske at ibh.de>:
+> Hi,
+>
+> the basic idea behind the attached patch is the following:
+>
+> On a hotspot, normaly you don't want to allow client to client communication
+> (everybody should have access to the internet and be somehow protected from
+> other hotspot users) - especially for the windows dhows.
+>
+> This patch adds a new configuration option "noc2c" (no client 2 client
+> communcation). With this option enabled, the DHCP offers supplies a /32
+> netmask. Doing this would prevent any hotspot client to communcate with
+> anybody, even the default gateway. Therefore it adds a static route for the
+> default gw as an connected route. This prevents (windows) clients doing any
+> broadcasts on the hotspot network and reach any other hotspot client
+> (default gateway must not route any pakets coming from a hotspot client to
+> any other hotspot client). It would be great if somebody could test it with
+> additional clients, Win XP works as expected.
+>
+> Any comments on the patch are welcome ;)
+>
+>
+> Regards,
+> Thomas
+>
+>
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>
+
+
+From liske at ibh.de  Wed Feb  4 10:25:26 2009
+From: liske at ibh.de (Thomas Liske)
+Date: Wed, 4 Feb 2009 11:25:26 +0100 (CET)
+Subject: /32 subnet
+In-Reply-To: <5635aa0d0902040215tb89e086gbb6eba0a12452b2f@mail.gmail.com>
+References: <Pine.LNX.4.64.0902041046360.7216@sisyphos.ibh>
+ <5635aa0d0902040215tb89e086gbb6eba0a12452b2f@mail.gmail.com>
+Message-ID: <Pine.LNX.4.64.0902041117180.7216@sisyphos.ibh>
+
+Hi,
+
+On Wed, 4 Feb 2009, Outback Dingo wrote:
+
+> hrmm honestly, isnt this the same as AP separation on the AP itself?? using
+> say
+
+nope, AP client seperation is layer 2, this will give you some more 
+protection. My layer 3 approach wouldn't prevent bad guys to change their 
+subnet mask and send some malicious UDP pakets. But TCP connection 
+wouldn't work, since the three-way-handshake would be blocked.
+
+And you need an AP which support client separation. Whats 
+about wired hotspots?
+
+
+Regards,
+Thomas
+
+
+From liske at ibh.de  Wed Feb  4 10:30:08 2009
+From: liske at ibh.de (Thomas Liske)
+Date: Wed, 4 Feb 2009 11:30:08 +0100 (CET)
+Subject: /32 subnet
+In-Reply-To: <f71cb680902040221r6a91e84s22aacf17744134c7@mail.gmail.com>
+References: <Pine.LNX.4.64.0902041046360.7216@sisyphos.ibh>
+ <f71cb680902040221r6a91e84s22aacf17744134c7@mail.gmail.com>
+Message-ID: <Pine.LNX.4.64.0902041126130.7216@sisyphos.ibh>
+
+Hi,
+
+
+On Wed, 4 Feb 2009, Marco Simioni wrote:
+> good job, but i think these kind of security measures have to be
+> implemented at lower layer (layer 2).
+I don't disagree here....
+
+> - we use ethernet switches with Private VLAN feature (this allow
+> separation of traffic between the host ports) (see
+> http://www.ciscopress.com/articles/article.asp?p=1181682&seqNum=3 for
+> examples, but also cheaper switches implements this)
+
+but deploying private VLANs in existing L2 networks is not always an 
+option.
+
+> With your method i think that a client can always work at layer 2 (arp
+> scanning and so on) to see the other clients.
+
+Scanning for clients will work, but connecting i.e. on a cifs share should 
+not.
+
+
+Regards,
+Thomas
+
+
+From ep at acm.org  Wed Feb  4 10:49:23 2009
+From: ep at acm.org (Emanuele Pucciarelli)
+Date: Wed, 4 Feb 2009 11:49:23 +0100
+Subject: /32 subnet
+In-Reply-To: <Pine.LNX.4.64.0902041117180.7216@sisyphos.ibh>
+References: <Pine.LNX.4.64.0902041046360.7216@sisyphos.ibh> <5635aa0d0902040215tb89e086gbb6eba0a12452b2f@mail.gmail.com> <Pine.LNX.4.64.0902041117180.7216@sisyphos.ibh>
+Message-ID: <6B09A3FD-B254-4B8D-A6B4-7E3FBFE09C3F@acm.org>
+
+Il giorno 04/feb/09, alle ore 11:25, Thomas Liske ha scritto:
+
+> And you need an AP which support client separation. Whats about  
+> wired hotspots?
+
+I second Marco ? there are L2 switches that can separate ports. Cisco  
+started it, but nowadays you can find inexpensive alternatives that do  
+it too. E.g. HP Procurve's 2510 switches call it "protected ports";  
+they don't have all the private VLAN features that Catalysts offer,  
+but IMHO they are more than good enough for a small/medium  
+installation on a budget.
+
+Where this is not an option, I think that L3 separation is a very  
+welcome addition to avoid accidental communication, from random  
+browsing to subnet-sweeping malware :)
+
+A similar approach is followed by some boxes that pick a random subnet  
+(I haven't tested them, but I suppose it may be a simple /30) out of a  
+larger private IP space, therefore adding a different IP alias to the  
+default gateway for each connected client. I don't know whether that  
+would improve on your patch; it seems to me that it would add further  
+complication without providing additional security.
+
+So? thank you for the patch! :)
+
+-- 
+Emanuele
+
+From wlan at mac.com  Wed Feb  4 10:57:37 2009
+From: wlan at mac.com (wlanmac)
+Date: Wed, 04 Feb 2009 11:57:37 +0100
+Subject: /32 subnet
+In-Reply-To: <Pine.LNX.4.64.0902041046360.7216@sisyphos.ibh>
+References: <Pine.LNX.4.64.0902041046360.7216@sisyphos.ibh>
+Message-ID: <1233745057.7037.6.camel@david-laptop>
+
+I will add it.. thanks for making it all option-ized already - though,
+it needed an entry in cmdline.ggo, which is used to generate
+cmdline.[ch]. 
+
+David
+
+On Wed, 2009-02-04 at 11:03 +0100, Thomas Liske wrote:
+> Hi,
+> 
+> the basic idea behind the attached patch is the following:
+> 
+> On a hotspot, normaly you don't want to allow client to client 
+> communication (everybody should have access to the internet and be somehow 
+> protected from other hotspot users) - especially for the windows dhows.
+> 
+> This patch adds a new configuration option "noc2c" (no client 2 client 
+> communcation). With this option enabled, the DHCP offers supplies a /32 
+> netmask. Doing this would prevent any hotspot client to communcate with 
+> anybody, even the default gateway. Therefore it adds a static route for 
+> the default gw as an connected route. This prevents (windows) clients 
+> doing any broadcasts on the hotspot network and reach any other hotspot 
+> client (default gateway must not route any pakets coming from a hotspot 
+> client to any other hotspot client). It would be great if somebody could 
+> test it with additional clients, Win XP works as expected.
+> 
+> Any comments on the patch are welcome ;)
+> 
+> 
+> Regards,
+> Thomas
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+
+
+
+From oguzhank at bilkent.edu.tr  Wed Feb  4 11:31:15 2009
+From: oguzhank at bilkent.edu.tr (Oguzhan Kayhan)
+Date: Wed, 4 Feb 2009 13:31:15 +0200 (EET)
+Subject: /32 subnet
+In-Reply-To: <Pine.LNX.4.64.0902041046360.7216@sisyphos.ibh>
+References: <Pine.LNX.4.64.0902041046360.7216@sisyphos.ibh>
+Message-ID: <43897.139.179.14.250.1233747075.squirrel@webmail.bilkent.edu.tr>
+
+> Hi,
+>
+> the basic idea behind the attached patch is the following:
+>
+> On a hotspot, normaly you don't want to allow client to client
+> communication (everybody should have access to the internet and be somehow
+> protected from other hotspot users) - especially for the windows dhows.
+>
+> This patch adds a new configuration option "noc2c" (no client 2 client
+> communcation). With this option enabled, the DHCP offers supplies a /32
+> netmask. Doing this would prevent any hotspot client to communcate with
+> anybody, even the default gateway. Therefore it adds a static route for
+> the default gw as an connected route. This prevents (windows) clients
+> doing any broadcasts on the hotspot network and reach any other hotspot
+> client (default gateway must not route any pakets coming from a hotspot
+> client to any other hotspot client). It would be great if somebody could
+> test it with additional clients, Win XP works as expected.
+>
+> Any comments on the patch are welcome ;)
+>
+>
+> Regards,
+> Thomas
+
+Nice patch really. Seperating all clients from eachother is a good idea..
+And my humble opinion is, to force all clients to pass from gateway is
+better idea.Why i say it so..
+Because, assume u have some users behind coova. They can communicate or
+transfer files without any need of authentication. And even they
+authenticate, it wont effect any limitation in upload/download speeds that
+they have in internet traffic.
+Local traffic is without any control.
+So forcing them to use gateway in all their transmissions will help admins
+to control the users in a better way.
+
+
+
+>
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+
+
+
+
+From liske at ibh.de  Wed Feb  4 12:29:11 2009
+From: liske at ibh.de (Thomas Liske)
+Date: Wed, 4 Feb 2009 13:29:11 +0100 (CET)
+Subject: /32 subnet
+In-Reply-To: <1233745057.7037.6.camel@david-laptop>
+References: <Pine.LNX.4.64.0902041046360.7216@sisyphos.ibh>
+ <1233745057.7037.6.camel@david-laptop>
+Message-ID: <Pine.LNX.4.64.0902041319260.7216@sisyphos.ibh>
+
+Hi,
+
+On Wed, 4 Feb 2009, wlanmac wrote:
+
+> I will add it.. thanks for making it all option-ized already - though,
+> it needed an entry in cmdline.ggo, which is used to generate
+> cmdline.[ch].
+
+thanks for adding the patch. I realized there was something missing, but 
+forgot to fix it before submiting the patch ;)
+
+It would be nice if people with SmartPhones and other "unusual" hotspot 
+clients with different IP stacks/DHCP clients could check if it is working 
+for them (I only have notebooks for testing).
+
+ 	Thomas
+
+
+From mathieu at alengrin.fr  Wed Feb  4 13:14:54 2009
+From: mathieu at alengrin.fr (Mathieu Alengrin)
+Date: Wed, 4 Feb 2009 14:14:54 +0100
+Subject: Disable administrative login
+Message-ID: <cf60aca70902040514pdf0235la4e20872e37aeeab@mail.gmail.com>
+
+Hi,
+
+I don't need the "Administrative Login" feature but it seems that
+there is no way to disable it: removing the adminuser and
+adminpassword parameters or setting it to an empty string doesn't
+work: it still sends an Access-Request and an Accounting-Request.
+Also, there are default values for adminuser and adminpassword
+(chillispot/chillispot). Because administrative login is not mandatory
+(chilli can work without it), is it important to have these default
+values?
+
+I wrote a patch that remove default values for adminuser and
+adminpassword and doesn't send the RADIUS requests if adminuser is not
+set.
+
+I hope it could help someone!
+
+Cheers,
+Mathieu Alengrin
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: noadminlogin.patch
+Type: application/octet-stream
+Size: 5773 bytes
+Desc: not available
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20090204/8719e322/attachment.obj>
+
+From wlan at mac.com  Wed Feb  4 13:58:24 2009
+From: wlan at mac.com (wlanmac)
+Date: Wed, 04 Feb 2009 14:58:24 +0100
+Subject: Disable administrative login
+In-Reply-To: <cf60aca70902040514pdf0235la4e20872e37aeeab@mail.gmail.com>
+References: <cf60aca70902040514pdf0235la4e20872e37aeeab@mail.gmail.com>
+Message-ID: <1233755904.7037.9.camel@david-laptop>
+
+Yes, perhaps it doesn't hurt to remove the default settings there. But,
+I think the accounting on/off should remain. It's not related to the
+Administrative-User stuff and is RFC compliant for a nas.
+
+On Wed, 2009-02-04 at 14:14 +0100, Mathieu Alengrin wrote:
+> Hi,
+> 
+> I don't need the "Administrative Login" feature but it seems that
+> there is no way to disable it: removing the adminuser and
+> adminpassword parameters or setting it to an empty string doesn't
+> work: it still sends an Access-Request and an Accounting-Request.
+> Also, there are default values for adminuser and adminpassword
+> (chillispot/chillispot). Because administrative login is not mandatory
+> (chilli can work without it), is it important to have these default
+> values?
+> 
+> I wrote a patch that remove default values for adminuser and
+> adminpassword and doesn't send the RADIUS requests if adminuser is not
+> set.
+> 
+> I hope it could help someone!
+> 
+> Cheers,
+> Mathieu Alengrin
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+
+
+
+From gdamjan at mail.net.mk  Thu Feb  5 19:34:46 2009
+From: gdamjan at mail.net.mk (Damjan)
+Date: Thu, 5 Feb 2009 20:34:46 +0100
+Subject: /32 subnet
+In-Reply-To: <6B09A3FD-B254-4B8D-A6B4-7E3FBFE09C3F@acm.org>
+References: <Pine.LNX.4.64.0902041046360.7216@sisyphos.ibh> <5635aa0d0902040215tb89e086gbb6eba0a12452b2f@mail.gmail.com> <Pine.LNX.4.64.0902041117180.7216@sisyphos.ibh> <6B09A3FD-B254-4B8D-A6B4-7E3FBFE09C3F@acm.org>
+Message-ID: <20090205193446.GA17646@legolas.on.net.mk>
+
+> Where this is not an option, I think that L3 separation is a very  
+> welcome addition to avoid accidental communication, from random  
+> browsing to subnet-sweeping malware :)
+
+But an iptables rule does the same thing, no?
+
+
+-- 
+damjan | ??????
+This is my jabber ID -->         damjan at bagra.net.mk 
+ -- not my mail address, it's a Jabber ID --^ :)
+
+
+From ep at acm.org  Thu Feb  5 20:06:24 2009
+From: ep at acm.org (Emanuele Pucciarelli)
+Date: Thu, 5 Feb 2009 21:06:24 +0100
+Subject: /32 subnet
+In-Reply-To: <20090205193446.GA17646@legolas.on.net.mk>
+References: <Pine.LNX.4.64.0902041046360.7216@sisyphos.ibh> <5635aa0d0902040215tb89e086gbb6eba0a12452b2f@mail.gmail.com> <Pine.LNX.4.64.0902041117180.7216@sisyphos.ibh> <6B09A3FD-B254-4B8D-A6B4-7E3FBFE09C3F@acm.org> <20090205193446.GA17646@legolas.on.net.mk>
+Message-ID: <C9FEDDDB-A2AF-41A8-99AA-5704612AEA3F@acm.org>
+
+Il giorno 05/feb/09, alle ore 20:34, Damjan ha scritto:
+
+>> Where this is not an option, I think that L3 separation is a very
+>> welcome addition to avoid accidental communication, from random
+>> browsing to subnet-sweeping malware :)
+>
+> But an iptables rule does the same thing, no?
+
+Not exactly: you may need it, but it's not enough. Here's an example:  
+you have a switched network, without any fancy features on the switch;  
+some clients; one Linux gateway with iptables and Chillispot, and an  
+iptables rule dropping client-to-client traffic.
+
+In a classical setup, each client will get the same subnet. Therefore,  
+when an application tries to reach another client, the IP stack will  
+not forward the packet to the gateway, but directly to the other  
+client. Iptables cannot do anything: it is not involved in this  
+exchange.
+
+With L3 separation, the client's IP stack. even if it becomes aware of  
+the other clients' IP addresses, will believe that they are an a  
+different subnet. If an application tries to reach another client,  
+whatever the reason, the IP stack will forward the packet to the  
+gateway, where iptables can drop it altogether.
+
+(Again ? this does not provide "strong" security, because an  
+application accessing raw sockets can bypass this limitation, but it's  
+definitely helpful!)
+
+Bye!
+
+-- 
+Emanuele
+
+
+
+From wlan at mac.com  Fri Feb  6 06:15:56 2009
+From: wlan at mac.com (wlanmac)
+Date: Fri, 06 Feb 2009 07:15:56 +0100
+Subject: /32 subnet
+In-Reply-To: <C9FEDDDB-A2AF-41A8-99AA-5704612AEA3F@acm.org>
+References: <Pine.LNX.4.64.0902041046360.7216@sisyphos.ibh>
+ <5635aa0d0902040215tb89e086gbb6eba0a12452b2f@mail.gmail.com>
+ <Pine.LNX.4.64.0902041117180.7216@sisyphos.ibh>
+ <6B09A3FD-B254-4B8D-A6B4-7E3FBFE09C3F@acm.org>
+ <20090205193446.GA17646@legolas.on.net.mk>
+ <C9FEDDDB-A2AF-41A8-99AA-5704612AEA3F@acm.org>
+Message-ID: <1233900956.7084.10.camel@david-laptop>
+
+btw, the noc2c option is available now in the svn version. I have been
+using it on my network here and all my various client devices have no
+problems with it...
+
+David
+
+
+On Thu, 2009-02-05 at 21:06 +0100, Emanuele Pucciarelli wrote:
+> Il giorno 05/feb/09, alle ore 20:34, Damjan ha scritto:
+> 
+> >> Where this is not an option, I think that L3 separation is a very
+> >> welcome addition to avoid accidental communication, from random
+> >> browsing to subnet-sweeping malware :)
+> >
+> > But an iptables rule does the same thing, no?
+> 
+> Not exactly: you may need it, but it's not enough. Here's an example:  
+> you have a switched network, without any fancy features on the switch;  
+> some clients; one Linux gateway with iptables and Chillispot, and an  
+> iptables rule dropping client-to-client traffic.
+> 
+> In a classical setup, each client will get the same subnet. Therefore,  
+> when an application tries to reach another client, the IP stack will  
+> not forward the packet to the gateway, but directly to the other  
+> client. Iptables cannot do anything: it is not involved in this  
+> exchange.
+> 
+> With L3 separation, the client's IP stack. even if it becomes aware of  
+> the other clients' IP addresses, will believe that they are an a  
+> different subnet. If an application tries to reach another client,  
+> whatever the reason, the IP stack will forward the packet to the  
+> gateway, where iptables can drop it altogether.
+> 
+> (Again ? this does not provide "strong" security, because an  
+> application accessing raw sockets can bypass this limitation, but it's  
+> definitely helpful!)
+> 
+> Bye!
+> 
+
+
+
+From gdamjan at mail.net.mk  Fri Feb  6 14:36:28 2009
+From: gdamjan at mail.net.mk (Damjan)
+Date: Fri, 6 Feb 2009 15:36:28 +0100
+Subject: /32 subnet
+In-Reply-To: <C9FEDDDB-A2AF-41A8-99AA-5704612AEA3F@acm.org>
+References: <Pine.LNX.4.64.0902041046360.7216@sisyphos.ibh> <5635aa0d0902040215tb89e086gbb6eba0a12452b2f@mail.gmail.com> <Pine.LNX.4.64.0902041117180.7216@sisyphos.ibh> <6B09A3FD-B254-4B8D-A6B4-7E3FBFE09C3F@acm.org> <20090205193446.GA17646@legolas.on.net.mk> <C9FEDDDB-A2AF-41A8-99AA-5704612AEA3F@acm.org>
+Message-ID: <20090206143628.GA21228@legolas.on.net.mk>
+
+> >But an iptables rule does the same thing, no?
+> 
+> Not exactly: you may need it, but it's not enough. Here's an example:  
+> you have a switched network, without any fancy features on the switch;  
+> some clients; one Linux gateway with iptables and Chillispot, and an  
+> iptables rule dropping client-to-client traffic.
+> 
+> In a classical setup, each client will get the same subnet. Therefore,  
+> when an application tries to reach another client, the IP stack will  
+> not forward the packet to the gateway, but directly to the other  
+> client. Iptables cannot do anything: it is not involved in this  
+> exchange.
+
+right, but the /32 trick can be so easilly bypassed it's not real
+security at all. If your L2 domain is not separated, you can't do
+anything.
+
+BTW, at least some Ubuntu versions with Avahi installed, would also add
+169.254.0.0/16 alias address to the interface and announce itself to the
+network. Without L2 separation (on APs and switches) the users will
+still see each other *automatically* even with that /32 trick.
+
+
+
+-- 
+damjan | ??????
+This is my jabber ID -->         damjan at bagra.net.mk 
+ -- not my mail address, it's a Jabber ID --^ :)
+
+
+From gunther.mayer at googlemail.com  Sat Feb  7 16:58:56 2009
+From: gunther.mayer at googlemail.com (Gunther Mayer)
+Date: Sat, 07 Feb 2009 18:58:56 +0200
+Subject: Disable administrative login
+In-Reply-To: <cf60aca70902040514pdf0235la4e20872e37aeeab@mail.gmail.com>
+References: <cf60aca70902040514pdf0235la4e20872e37aeeab@mail.gmail.com>
+Message-ID: <498DBDD0.4090606@gmail.com>
+
+Mathieu Alengrin wrote:
+> Hi,
+>
+> I don't need the "Administrative Login" feature but it seems that
+> there is no way to disable it: removing the adminuser and
+> adminpassword parameters or setting it to an empty string doesn't
+> work: it still sends an Access-Request and an Accounting-Request.
+>   
+
+I solved this quite some time ago quite simply:
+
+    adminuser=
+
+in your chilli.conf disables "Administrative Login" altogether. No need 
+to patch anything. There was a thread about it last year I think.
+
+Gunther
+
+
+From gunther.mayer at googlemail.com  Sat Feb  7 18:00:23 2009
+From: gunther.mayer at googlemail.com (Gunther Mayer)
+Date: Sat, 07 Feb 2009 20:00:23 +0200
+Subject: /32 subnet
+In-Reply-To: <20090206143628.GA21228@legolas.on.net.mk>
+References: <Pine.LNX.4.64.0902041046360.7216@sisyphos.ibh> <5635aa0d0902040215tb89e086gbb6eba0a12452b2f@mail.gmail.com> <Pine.LNX.4.64.0902041117180.7216@sisyphos.ibh> <6B09A3FD-B254-4B8D-A6B4-7E3FBFE09C3F@acm.org> <20090205193446.GA17646@legolas.on.net.mk> <C9FEDDDB-A2AF-41A8-99AA-5704612AEA3F@acm.org> <20090206143628.GA21228@legolas.on.net.mk>
+Message-ID: <498DCC37.8030006@gmail.com>
+
+Damjan wrote:
+>>> But an iptables rule does the same thing, no?
+>>>       
+>> Not exactly: you may need it, but it's not enough. Here's an example:  
+>> you have a switched network, without any fancy features on the switch;  
+>> some clients; one Linux gateway with iptables and Chillispot, and an  
+>> iptables rule dropping client-to-client traffic.
+>>
+>> In a classical setup, each client will get the same subnet. Therefore,  
+>> when an application tries to reach another client, the IP stack will  
+>> not forward the packet to the gateway, but directly to the other  
+>> client. Iptables cannot do anything: it is not involved in this  
+>> exchange.
+>>     
+>
+> right, but the /32 trick can be so easilly bypassed it's not real
+> security at all. If your L2 domain is not separated, you can't do
+> anything.
+>
+> BTW, at least some Ubuntu versions with Avahi installed, would also add
+> 169.254.0.0/16 alias address to the interface and announce itself to the
+> network. Without L2 separation (on APs and switches) the users will
+> still see each other *automatically* even with that /32 trick.
+>   
+
+After all the discussion I've seen it seems to me that the noc2c option 
+provides just another layer of security, albeit one that may easily be 
+circumvented.
+
+If you really want *proper* isolation you'll need a layer 2 firewall 
+such as ebtables on all your switching/bridging equipment behind coova, 
+i.e. all switches, a/p's etc. that are used to enlarge the coverage of 
+your coova hotspot. The core rule would drop everything not destined or 
+originating from the gateway (coova).
+
+Gunther
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20090207/d148c3df/attachment.htm>
+
+From liske at ibh.de  Sun Feb  8 09:06:52 2009
+From: liske at ibh.de (Thomas Liske)
+Date: Sun, 8 Feb 2009 10:06:52 +0100 (CET)
+Subject: /32 subnet
+In-Reply-To: <498DCC37.8030006@gmail.com>
+References: <Pine.LNX.4.64.0902041046360.7216@sisyphos.ibh>
+ <5635aa0d0902040215tb89e086gbb6eba0a12452b2f@mail.gmail.com>
+ <Pine.LNX.4.64.0902041117180.7216@sisyphos.ibh> <6B09A3FD-B254-4B8D-A6B4-7E3FBFE09C3F@acm.org>
+ <20090205193446.GA17646@legolas.on.net.mk> <C9FEDDDB-A2AF-41A8-99AA-5704612AEA3F@acm.org>
+ <20090206143628.GA21228@legolas.on.net.mk> <498DCC37.8030006@gmail.com>
+Message-ID: <Pine.LNX.4.64.0902080950590.10528@sisyphos.ibh>
+
+Hi,
+
+On Sat, 7 Feb 2009, Gunther Mayer wrote:
+
+> Damjan wrote:
+>>>> But an iptables rule does the same thing, no?
+>>>> 
+>>> Not exactly: you may need it, but it's not enough. Here's an example:  you 
+>>> have a switched network, without any fancy features on the switch;  some 
+>>> clients; one Linux gateway with iptables and Chillispot, and an  iptables 
+>>> rule dropping client-to-client traffic.
+>>> 
+>>> In a classical setup, each client will get the same subnet. Therefore, 
+>>> when an application tries to reach another client, the IP stack will  not 
+>>> forward the packet to the gateway, but directly to the other  client. 
+>>> Iptables cannot do anything: it is not involved in this  exchange.
+>>> 
+>> 
+>> right, but the /32 trick can be so easilly bypassed it's not real
+>> security at all. If your L2 domain is not separated, you can't do
+>> anything.
+>> 
+>> BTW, at least some Ubuntu versions with Avahi installed, would also add
+>> 169.254.0.0/16 alias address to the interface and announce itself to the
+>> network. Without L2 separation (on APs and switches) the users will
+>> still see each other *automatically* even with that /32 trick.
+>> 
+>
+> After all the discussion I've seen it seems to me that the noc2c option 
+> provides just another layer of security, albeit one that may easily be 
+> circumvented.
+
+Not at all. This depends on the transport layer protocol. You will never 
+be able to establish Tcp connections (if you protect the broadcast domain 
+from arp spoofing at least for the gateway). On the other hand, a firewall 
+would'n protect you from spoofed (Udp based) DNS replies, the nc2c option 
+does neither.
+
+> If you really want *proper* isolation you'll need a layer 2 firewall such as 
+> ebtables on all your switching/bridging equipment behind coova, i.e. all 
+> switches, a/p's etc. that are used to enlarge the coverage of your coova 
+> hotspot. The core rule would drop everything not destined or originating from 
+> the gateway (coova).
+
+I think real L2 isolation is hard to get:
+  - AP isolation feature: what's about clients connected to another AP in
+    the same domain?
+  - Cisco WLC: to expensive for small setups, but provides real (wireless)
+    client isolation with multiple APs
+  - HP Protected Ports: works only per switch -> same problem as
+    with multiple stand alone APs
+  - Cisco Private VLANs: expensive again - all switches need to support
+    it but you get real client isolation
+
+If you have only one switch or one AP for you HotSpot clients, there is no 
+problem to get some low cost L2 isolation. But for larger setup it is not 
+always an option.
+
+
+ 	Thomas
+
+
+From mathieu at alengrin.fr  Mon Feb  9 12:28:28 2009
+From: mathieu at alengrin.fr (Mathieu Alengrin)
+Date: Mon, 9 Feb 2009 13:28:28 +0100
+Subject: Disable administrative login
+In-Reply-To: <498DBDD0.4090606@gmail.com>
+References: <cf60aca70902040514pdf0235la4e20872e37aeeab@mail.gmail.com>
+	 <498DBDD0.4090606@gmail.com>
+Message-ID: <cf60aca70902090428i1d26d38q5d6b7badab7029db@mail.gmail.com>
+
+Thank you.
+Indeed, adminuser= disables the administrative login.
+I missed it because I tried:
+
+adminuser ""
+and
+adminuser
+
+and these forms doesn't works. The chilli.conf man page may be
+incomplete: it indicates that options can be used with or without the
+equal sign.
+
+I just found your similar thread, sorry for the duplicate post!
+
+Mathieu
+
+On Sat, Feb 7, 2009 at 5:58 PM, Gunther Mayer
+<gunther.mayer at googlemail.com> wrote:
+> Mathieu Alengrin wrote:
+>>
+>> Hi,
+>>
+>> I don't need the "Administrative Login" feature but it seems that
+>> there is no way to disable it: removing the adminuser and
+>> adminpassword parameters or setting it to an empty string doesn't
+>> work: it still sends an Access-Request and an Accounting-Request.
+>>
+>
+> I solved this quite some time ago quite simply:
+>
+>   adminuser=
+>
+> in your chilli.conf disables "Administrative Login" altogether. No need to
+> patch anything. There was a thread about it last year I think.
+>
+> Gunther
+>
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>
+>
+
+
+From wlan at mac.com  Wed Feb 11 05:49:13 2009
+From: wlan at mac.com (wlanmac)
+Date: Wed, 11 Feb 2009 06:49:13 +0100
+Subject: new in svn
+Message-ID: <1234331353.7595.3.camel@david-laptop>
+
+I've made some commits to SVN. 
+
+The previously submitted noc2c patch was included earlier, and now I
+have also added an option ''adminupdatefile'' ... When set, and when
+using the Administrative-User, ChilliSpot-Config attributes returned in
+the Admin-User Access-Accept will be written out to this
+adminupdatefile. If the file changes, then chilli will also reread
+configurations. So, by having a configure that includes this
+adminupdatefile, then this way chilli can get some of it's configuration
+via RADIUS. This will make it easier to manage some chilli config
+options and things like uamallowed and uamdomain. 
+
+Oh, and don't forget to join the linkedin group!
+
+http://www.linkedin.com/groups?gid=158903
+
+David
+
+
+
+From gunther.mayer at googlemail.com  Fri Feb 13 07:48:21 2009
+From: gunther.mayer at googlemail.com (Gunther Mayer)
+Date: Fri, 13 Feb 2009 09:48:21 +0200
+Subject: new in svn
+In-Reply-To: <1234331353.7595.3.camel@david-laptop>
+References: <1234331353.7595.3.camel@david-laptop>
+Message-ID: <499525C5.2050209@gmail.com>
+
+wlanmac wrote:
+> I've made some commits to SVN. 
+>
+> The previously submitted noc2c patch was included earlier, and now I
+> have also added an option ''adminupdatefile'' ... When set, and when
+> using the Administrative-User, ChilliSpot-Config attributes returned in
+> the Admin-User Access-Accept will be written out to this
+> adminupdatefile. If the file changes, then chilli will also reread
+> configurations. So, by having a configure that includes this
+> adminupdatefile, then this way chilli can get some of it's configuration
+> via RADIUS. This will make it easier to manage some chilli config
+> options and things like uamallowed and uamdomain.
+>   
+
+That's a very useful feature. Just as a matter of interest, how did 
+adminuser/adminpassword work before? I thought that previously it had 
+already been possible to manage chilli.conf centrally via radius?
+
+
+From wlan at mac.com  Fri Feb 13 07:58:47 2009
+From: wlan at mac.com (wlanmac)
+Date: Fri, 13 Feb 2009 08:58:47 +0100
+Subject: new in svn
+In-Reply-To: <499525C5.2050209@gmail.com>
+References: <1234331353.7595.3.camel@david-laptop> <499525C5.2050209@gmail.com>
+Message-ID: <1234511927.7028.10.camel@david-laptop>
+
+Yes, it does. But, only from scripts that use chilli_radconfig to fetch
+configurations before restarting chilli. The chilli_radconfig method is
+still interesting for full configurations, but having the administrative
+session update "re-configurable" settings (some settings, like
+uamlisten, require chilli to be restarted) is also handy as part of
+chilli's config re-read interval (this is when a new administrative-user
+auth is performed to potentially update the config).
+
+
+
+On Fri, 2009-02-13 at 09:48 +0200, Gunther Mayer wrote:
+> wlanmac wrote:
+> > I've made some commits to SVN. 
+> >
+> > The previously submitted noc2c patch was included earlier, and now I
+> > have also added an option ''adminupdatefile'' ... When set, and when
+> > using the Administrative-User, ChilliSpot-Config attributes returned in
+> > the Admin-User Access-Accept will be written out to this
+> > adminupdatefile. If the file changes, then chilli will also reread
+> > configurations. So, by having a configure that includes this
+> > adminupdatefile, then this way chilli can get some of it's configuration
+> > via RADIUS. This will make it easier to manage some chilli config
+> > options and things like uamallowed and uamdomain.
+> >   
+> 
+> That's a very useful feature. Just as a matter of interest, how did 
+> adminuser/adminpassword work before? I thought that previously it had 
+> already been possible to manage chilli.conf centrally via radius?
+> 
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+> 
+
+
+
+From henk at skyrove.com  Fri Feb 13 08:27:10 2009
+From: henk at skyrove.com (Henk Kleynhans)
+Date: Fri, 13 Feb 2009 10:27:10 +0200
+Subject: Coova Donations?
+Message-ID: <d42f029a0902130027q77d5e647w8ae8d810077da9f9@mail.gmail.com>
+
+Hi David,
+
+How can I make a small donation to the Coova project? I couldn't find PayPal
+details on the website.
+
+Best,
+Henk
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20090213/e016ee14/attachment.htm>
+
+From wlan at mac.com  Fri Feb 13 17:54:40 2009
+From: wlan at mac.com (wlanmac)
+Date: Fri, 13 Feb 2009 18:54:40 +0100
+Subject: Coova Donations?
+In-Reply-To: <d42f029a0902130027q77d5e647w8ae8d810077da9f9@mail.gmail.com>
+References: <d42f029a0902130027q77d5e647w8ae8d810077da9f9@mail.gmail.com>
+Message-ID: <1234547680.7028.32.camel@david-laptop>
+
+Your inquiring about it is reward enough! :) You can always
+sponsor/contribute a feature, some documentation, or the like...
+
+On Fri, 2009-02-13 at 10:27 +0200, Henk Kleynhans wrote:
+> Hi David,
+> 
+> How can I make a small donation to the Coova project? I couldn't find
+> PayPal details on the website. 
+> 
+> Best,
+> Henk
+> 
+
+
+
+From teppic at gmail.com  Mon Feb 16 10:49:18 2009
+From: teppic at gmail.com (William Hoyle)
+Date: Mon, 16 Feb 2009 23:49:18 +1300
+Subject: How do I use Chilli to implement an internet kiosk?
+Message-ID: <4989253c0902160249kc75ed02p4e4c36725262dae2@mail.gmail.com>
+
+I'm trying to set up an internet kiosk. Chilli looks like a good bet
+(I have experience using it to control WiFi access), but I can't
+figure out how to run it on a box with a single nic.
+
+I guess I have to hoist a secondary interface, put chilli between the
+real interface and the secondary interface, and then route everything
+through the secondary interface.
+
+All good in theory, but I can't make it work.
+
+Any pointers?
+
+-- 
+Will
+
+
+From wlan at mac.com  Mon Feb 16 12:20:42 2009
+From: wlan at mac.com (wlanmac)
+Date: Mon, 16 Feb 2009 13:20:42 +0100
+Subject: How do I use Chilli to implement an internet kiosk?
+In-Reply-To: <4989253c0902160249kc75ed02p4e4c36725262dae2@mail.gmail.com>
+References: <4989253c0902160249kc75ed02p4e4c36725262dae2@mail.gmail.com>
+Message-ID: <1234786842.7249.38.camel@david-laptop>
+
+My preferred way to do a kiosk doesn't use chilli. Rather, to use
+XULRunner on ubuntu (or any Linux). Create a XULRunner application, full
+screen, and launched from the guest user X session startup script. If
+you are using chilli, you might control several 'kiosks' from one router
+box. 
+
+On Mon, 2009-02-16 at 23:49 +1300, William Hoyle wrote:
+> I'm trying to set up an internet kiosk. Chilli looks like a good bet
+> (I have experience using it to control WiFi access), but I can't
+> figure out how to run it on a box with a single nic.
+> 
+> I guess I have to hoist a secondary interface, put chilli between the
+> real interface and the secondary interface, and then route everything
+> through the secondary interface.
+> 
+> All good in theory, but I can't make it work.
+> 
+> Any pointers?
+> 
+
+
+
+From derekchilli at hssl.ie  Mon Feb 23 23:18:20 2009
+From: derekchilli at hssl.ie (Derek C)
+Date: Mon, 23 Feb 2009 23:18:20 -0000 (UTC)
+Subject: Weird: unrecognized option --dhcpif=ath2 ?
+Message-ID: <57323.149.5.32.216.1235431100.squirrel@www.rivertowermail.com>
+
+Hi all,
+
+I'm using coova chilli a a number of boxes (10 I think) and it's working,
+on the whole, really well.
+
+I'm using openwrt kamikaze 8.09_rc1 x86 with PC engines WRAP boards.
+
+But one box has gone weird (it was working fine).  Also the box is 40 feet
+off the ground so I don't want to replace the compact flash if I can help
+it :)
+
+I have the chilli configuration items in a config file.  I use the same
+file for every box too.
+
+When I try to start coova chilli with "chilli -c /etc/MYCONFIGFILE" I'm
+getting the following error:
+
+coova-chilli: unrecognized option `--dhcpif=ath2'
+
+This is very weird isn't it?  If I comment the "dhcpif=ath2" in my config
+it just complains about another config item and so on.
+
+I've checked all the other config files and executable programs against
+one of the other [working] boxes and it all looks identical to me?
+
+Does anyone have any ideas on anything I could try?
+
+thanks very much,
+
+Derek
+
+
+
+-- 
+Derek C
+In Ireland
+
+
+
+From Nick at jansoft.co.uk  Mon Feb 23 23:42:37 2009
+From: Nick at jansoft.co.uk (Nick Sharp)
+Date: Mon, 23 Feb 2009 23:42:37 -0000
+Subject: Weird: unrecognized option --dhcpif=ath2 ?
+In-Reply-To: <57323.149.5.32.216.1235431100.squirrel@www.rivertowermail.com>
+References: <57323.149.5.32.216.1235431100.squirrel@www.rivertowermail.com>
+Message-ID: <02836C23ABC1A04BAD526CF24EC349330D1645@jan001.JANsoft.local>
+
+Derek
+
+I saw this once when I had edited my config file in programmers notepad
+on windows and save it back to the coova box.
+
+I had to copy over the defaults file and start from scratch
+
+Nick
+
+
+-----Original Message-----
+From: Derek C [mailto:derekchilli at hssl.ie] 
+Sent: 23 February 2009 23:18
+To: chilli at coova.org
+Subject: Weird: unrecognized option --dhcpif=ath2 ?
+
+Hi all,
+
+I'm using coova chilli a a number of boxes (10 I think) and it's
+working,
+on the whole, really well.
+
+I'm using openwrt kamikaze 8.09_rc1 x86 with PC engines WRAP boards.
+
+But one box has gone weird (it was working fine).  Also the box is 40
+feet
+off the ground so I don't want to replace the compact flash if I can
+help
+it :)
+
+I have the chilli configuration items in a config file.  I use the same
+file for every box too.
+
+When I try to start coova chilli with "chilli -c /etc/MYCONFIGFILE" I'm
+getting the following error:
+
+coova-chilli: unrecognized option `--dhcpif=ath2'
+
+This is very weird isn't it?  If I comment the "dhcpif=ath2" in my
+config
+it just complains about another config item and so on.
+
+I've checked all the other config files and executable programs against
+one of the other [working] boxes and it all looks identical to me?
+
+Does anyone have any ideas on anything I could try?
+
+thanks very much,
+
+Derek
+
+
+
+-- 
+Derek C
+In Ireland
+
+
+---------------------------------------------------------------------
+To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+For additional commands, e-mail: chilli-help at coova.org
+Wiki: http://coova.org/wiki/index.php/CoovaChilli
+Forum: http://coova.org/phpBB3/viewforum.php?f=4
+
+
+
+From derekchilli at hssl.ie  Tue Feb 24 15:17:16 2009
+From: derekchilli at hssl.ie (Derek C)
+Date: Tue, 24 Feb 2009 15:17:16 -0000 (UTC)
+Subject: Weird: unrecognized option --dhcpif=ath2 ?
+In-Reply-To: <02836C23ABC1A04BAD526CF24EC349330D1645@jan001.JANsoft.local>
+References: <57323.149.5.32.216.1235431100.squirrel@www.rivertowermail.com>
+    <02836C23ABC1A04BAD526CF24EC349330D1645@jan001.JANsoft.local>
+Message-ID: <39144.149.5.32.216.1235488636.squirrel@www.rivertowermail.com>
+
+Hi Nick,
+
+It's even stranger than that:  If I run chilli on the command line with
+the argument it still happens: -
+
+root at OpenWrt:~# chilli --dhcpif=ath2
+chilli: unrecognized option `--dhcpif=ath2'
+
+It's like chilli is corrupted somehow.... or, I wonder, could problems
+with other files cause this?
+
+thanks,
+
+Derek
+
+--
+Derek C
+In Ireland
+
+
+
+From Nick at jansoft.co.uk  Tue Feb 24 15:36:35 2009
+From: Nick at jansoft.co.uk (Nick Sharp)
+Date: Tue, 24 Feb 2009 15:36:35 -0000
+Subject: Weird: unrecognized option --dhcpif=ath2 ?
+In-Reply-To: <39144.149.5.32.216.1235488636.squirrel@www.rivertowermail.com>
+References: <57323.149.5.32.216.1235431100.squirrel@www.rivertowermail.com>    <02836C23ABC1A04BAD526CF24EC349330D1645@jan001.JANsoft.local> <39144.149.5.32.216.1235488636.squirrel@www.rivertowermail.com>
+Message-ID: <02836C23ABC1A04BAD526CF24EC349330D165A@jan001.JANsoft.local>
+
+Hmm, "chill corrupted some how" is all I've been saying for the past week
+
+My test system which was working yesterday and was untouched doesn?t work any more.
+
+Im seriously beginning to doubt the reliability of this product.....
+
+
+-----Original Message-----
+From: Derek C [mailto:derekchilli at hssl.ie] 
+Sent: 24 February 2009 15:17
+To: chilli at coova.org
+Cc: chilli at coova.org
+Subject: RE: Weird: unrecognized option --dhcpif=ath2 ?
+
+Hi Nick,
+
+It's even stranger than that:  If I run chilli on the command line with
+the argument it still happens: -
+
+root at OpenWrt:~# chilli --dhcpif=ath2
+chilli: unrecognized option `--dhcpif=ath2'
+
+It's like chilli is corrupted somehow.... or, I wonder, could problems
+with other files cause this?
+
+thanks,
+
+Derek
+
+--
+Derek C
+In Ireland
+
+
+---------------------------------------------------------------------
+To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+For additional commands, e-mail: chilli-help at coova.org
+Wiki: http://coova.org/wiki/index.php/CoovaChilli
+Forum: http://coova.org/phpBB3/viewforum.php?f=4
+
+
+No virus found in this incoming message.
+Checked by AVG. 
+Version: 7.5.552 / Virus Database: 270.11.3/1968 - Release Date: 23/02/2009 18:22
+ 
+
+No virus found in this outgoing message.
+Checked by AVG. 
+Version: 7.5.552 / Virus Database: 270.11.3/1968 - Release Date: 23/02/2009 18:22
+ 
+
+
+From jimmy at dwalliance.com  Tue Feb 24 16:18:27 2009
+From: jimmy at dwalliance.com (Jimmy Brake)
+Date: Tue, 24 Feb 2009 08:18:27 -0800
+Subject: Weird: unrecognized option --dhcpif=ath2 ?
+In-Reply-To: <02836C23ABC1A04BAD526CF24EC349330D165A@jan001.JANsoft.local>
+References: <57323.149.5.32.216.1235431100.squirrel@www.rivertowermail.com>    <02836C23ABC1A04BAD526CF24EC349330D1645@jan001.JANsoft.local> <39144.149.5.32.216.1235488636.squirrel@www.rivertowermail.com> <02836C23ABC1A04BAD526CF24EC349330D165A@jan001.JANsoft.local>
+Message-ID: <49A41DD3.10504@dwalliance.com>
+
+I have been running Linux since 1998. Files don't change by themselves 
+unless they are designed to do that. Chilli is not designed to change 
+itself so you need to look on your system and find out what has 
+changed.   Chilli is quite complex, lots of moving parts lots of places 
+for it to break. We keep everything in the config file and for the last 
+4 years(?) chilli has never changed. We actually still use pretty much 
+the same files to run it as we did when we first setup.
+
+
+Nick Sharp wrote:
+> Hmm, "chill corrupted some how" is all I've been saying for the past week
+>
+> My test system which was working yesterday and was untouched doesn?t work any more.
+>
+> Im seriously beginning to doubt the reliability of this product.....
+>
+>
+> -----Original Message-----
+> From: Derek C [mailto:derekchilli at hssl.ie] 
+> Sent: 24 February 2009 15:17
+> To: chilli at coova.org
+> Cc: chilli at coova.org
+> Subject: RE: Weird: unrecognized option --dhcpif=ath2 ?
+>
+> Hi Nick,
+>
+> It's even stranger than that:  If I run chilli on the command line with
+> the argument it still happens: -
+>
+> root at OpenWrt:~# chilli --dhcpif=ath2
+> chilli: unrecognized option `--dhcpif=ath2'
+>
+> It's like chilli is corrupted somehow.... or, I wonder, could problems
+> with other files cause this?
+>
+> thanks,
+>
+> Derek
+>
+> --
+> Derek C
+> In Ireland
+>
+>
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>
+>
+> No virus found in this incoming message.
+> Checked by AVG. 
+> Version: 7.5.552 / Virus Database: 270.11.3/1968 - Release Date: 23/02/2009 18:22
+>  
+>
+> No virus found in this outgoing message.
+> Checked by AVG. 
+> Version: 7.5.552 / Virus Database: 270.11.3/1968 - Release Date: 23/02/2009 18:22
+>  
+>
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>
+>   
+
+
+
+From derekchilli at hssl.ie  Tue Feb 24 16:21:44 2009
+From: derekchilli at hssl.ie (Derek C)
+Date: Tue, 24 Feb 2009 16:21:44 -0000 (UTC)
+Subject: Weird: unrecognized option --dhcpif=ath2 ?
+In-Reply-To: <49A41DD3.10504@dwalliance.com>
+References: <57323.149.5.32.216.1235431100.squirrel@www.rivertowermail.com>  
+     <02836C23ABC1A04BAD526CF24EC349330D1645@jan001.JANsoft.local>
+    <39144.149.5.32.216.1235488636.squirrel@www.rivertowermail.com>
+    <02836C23ABC1A04BAD526CF24EC349330D165A@jan001.JANsoft.local>
+    <49A41DD3.10504@dwalliance.com>
+Message-ID: <56585.149.5.32.216.1235492504.squirrel@www.rivertowermail.com>
+
+Hi Jimmy,
+
+I'm running coova chilli in about 10 units - all working fine except this
+one that's gone funny.
+
+Its weird.  Other than the coova chilli the AP is still fully operational
+(openwrt, madwifi, etc)
+
+Derek
+
+
+On Tue, February 24, 2009 4:18 pm, Jimmy Brake wrote:
+> I have been running Linux since 1998. Files don't change by themselves
+> unless they are designed to do that. Chilli is not designed to change
+> itself so you need to look on your system and find out what has changed.
+> Chilli is quite complex, lots of moving parts lots of places
+> for it to break. We keep everything in the config file and for the last 4
+> years(?) chilli has never changed. We actually still use pretty much the
+> same files to run it as we did when we first setup.
+>
+>
+> Nick Sharp wrote:
+>
+>> Hmm, "chill corrupted some how" is all I've been saying for the past
+>> week
+>>
+>> My test system which was working yesterday and was untouched doesn?t
+>> work any more.
+>>
+>> Im seriously beginning to doubt the reliability of this product.....
+>>
+>>
+>>
+>> -----Original Message-----
+>> From: Derek C [mailto:derekchilli at hssl.ie]
+>> Sent: 24 February 2009 15:17
+>> To: chilli at coova.org
+>> Cc: chilli at coova.org
+>> Subject: RE: Weird: unrecognized option --dhcpif=ath2 ?
+>>
+>>
+>> Hi Nick,
+>>
+>>
+>> It's even stranger than that:  If I run chilli on the command line with
+>>  the argument it still happens: -
+>>
+>> root at OpenWrt:~# chilli --dhcpif=ath2
+>> chilli: unrecognized option `--dhcpif=ath2'
+>>
+>>
+>> It's like chilli is corrupted somehow.... or, I wonder, could problems
+>> with other files cause this?
+>>
+>> thanks,
+>>
+>> Derek
+>>
+>>
+>> --
+>> Derek C
+>> In Ireland
+>>
+>>
+>>
+>> ---------------------------------------------------------------------
+>> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+>> For additional commands, e-mail: chilli-help at coova.org
+>> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+>> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>>
+>>
+>>
+>> No virus found in this incoming message.
+>> Checked by AVG.
+>> Version: 7.5.552 / Virus Database: 270.11.3/1968 - Release Date:
+>> 23/02/2009 18:22
+>>
+>>
+>>
+>> No virus found in this outgoing message.
+>> Checked by AVG.
+>> Version: 7.5.552 / Virus Database: 270.11.3/1968 - Release Date:
+>> 23/02/2009 18:22
+>>
+>>
+>>
+>> ---------------------------------------------------------------------
+>> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+>> For additional commands, e-mail: chilli-help at coova.org
+>> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+>> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>>
+>>
+>>
+>
+>
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>
+>
+>
+
+
+-- 
+Derek C
+In Ireland
+
+
+
+From Nick at jansoft.co.uk  Tue Feb 24 16:33:12 2009
+From: Nick at jansoft.co.uk (Nick Sharp)
+Date: Tue, 24 Feb 2009 16:33:12 -0000
+Subject: Weird: unrecognized option --dhcpif=ath2 ?
+In-Reply-To: <56585.149.5.32.216.1235492504.squirrel@www.rivertowermail.com>
+References: <57323.149.5.32.216.1235431100.squirrel@www.rivertowermail.com>       <02836C23ABC1A04BAD526CF24EC349330D1645@jan001.JANsoft.local>    <39144.149.5.32.216.1235488636.squirrel@www.rivertowermail.com>    <02836C23ABC1A04BAD526CF24EC349330D165A@jan001.JANsoft.local>    <49A41DD3.10504@dwalliance.com> <56585.149.5.32.216.1235492504.squirrel@www.rivertowermail.com>
+Message-ID: <02836C23ABC1A04BAD526CF24EC349330D165E@jan001.JANsoft.local>
+
+Jimmy,
+
+I totally agree with you but considering my CoovaAP installation was working last night untill I shut it down around 2am this morning, and after I fired it back up around 3pm this afternoon and its no longer working something is very wonky somewhere.
+
+Bearing in mind the only changes I had made to the "out of the box" install was to point it at my radius server, everything else was totally untouched.
+
+Nick
+
+
+
+
+-----Original Message-----
+From: Derek C [mailto:derekchilli at hssl.ie] 
+Sent: 24 February 2009 16:22
+To: chilli at coova.org
+Cc: chilli at coova.org
+Subject: Re: Weird: unrecognized option --dhcpif=ath2 ?
+
+Hi Jimmy,
+
+I'm running coova chilli in about 10 units - all working fine except this
+one that's gone funny.
+
+Its weird.  Other than the coova chilli the AP is still fully operational
+(openwrt, madwifi, etc)
+
+Derek
+
+
+On Tue, February 24, 2009 4:18 pm, Jimmy Brake wrote:
+> I have been running Linux since 1998. Files don't change by themselves
+> unless they are designed to do that. Chilli is not designed to change
+> itself so you need to look on your system and find out what has changed.
+> Chilli is quite complex, lots of moving parts lots of places
+> for it to break. We keep everything in the config file and for the last 4
+> years(?) chilli has never changed. We actually still use pretty much the
+> same files to run it as we did when we first setup.
+>
+>
+> Nick Sharp wrote:
+>
+>> Hmm, "chill corrupted some how" is all I've been saying for the past
+>> week
+>>
+>> My test system which was working yesterday and was untouched doesn?t
+>> work any more.
+>>
+>> Im seriously beginning to doubt the reliability of this product.....
+>>
+>>
+>>
+>> -----Original Message-----
+>> From: Derek C [mailto:derekchilli at hssl.ie]
+>> Sent: 24 February 2009 15:17
+>> To: chilli at coova.org
+>> Cc: chilli at coova.org
+>> Subject: RE: Weird: unrecognized option --dhcpif=ath2 ?
+>>
+>>
+>> Hi Nick,
+>>
+>>
+>> It's even stranger than that:  If I run chilli on the command line with
+>>  the argument it still happens: -
+>>
+>> root at OpenWrt:~# chilli --dhcpif=ath2
+>> chilli: unrecognized option `--dhcpif=ath2'
+>>
+>>
+>> It's like chilli is corrupted somehow.... or, I wonder, could problems
+>> with other files cause this?
+>>
+>> thanks,
+>>
+>> Derek
+>>
+>>
+>> --
+>> Derek C
+>> In Ireland
+>>
+>>
+>>
+>> ---------------------------------------------------------------------
+>> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+>> For additional commands, e-mail: chilli-help at coova.org
+>> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+>> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>>
+>>
+>>
+>> No virus found in this incoming message.
+>> Checked by AVG.
+>> Version: 7.5.552 / Virus Database: 270.11.3/1968 - Release Date:
+>> 23/02/2009 18:22
+>>
+>>
+>>
+>> No virus found in this outgoing message.
+>> Checked by AVG.
+>> Version: 7.5.552 / Virus Database: 270.11.3/1968 - Release Date:
+>> 23/02/2009 18:22
+>>
+>>
+>>
+>> ---------------------------------------------------------------------
+>> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+>> For additional commands, e-mail: chilli-help at coova.org
+>> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+>> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>>
+>>
+>>
+>
+>
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>
+>
+>
+
+
+-- 
+Derek C
+In Ireland
+
+
+---------------------------------------------------------------------
+To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+For additional commands, e-mail: chilli-help at coova.org
+Wiki: http://coova.org/wiki/index.php/CoovaChilli
+Forum: http://coova.org/phpBB3/viewforum.php?f=4
+
+
+No virus found in this incoming message.
+Checked by AVG. 
+Version: 7.5.552 / Virus Database: 270.11.3/1968 - Release Date: 23/02/2009 18:22
+ 
+
+No virus found in this outgoing message.
+Checked by AVG. 
+Version: 7.5.552 / Virus Database: 270.11.3/1968 - Release Date: 23/02/2009 18:22
+ 
+
+
+From jimmy at dwalliance.com  Tue Feb 24 18:13:08 2009
+From: jimmy at dwalliance.com (Jimmy Brake)
+Date: Tue, 24 Feb 2009 10:13:08 -0800
+Subject: Weird: unrecognized option --dhcpif=ath2 ?
+In-Reply-To: <02836C23ABC1A04BAD526CF24EC349330D165E@jan001.JANsoft.local>
+References: <57323.149.5.32.216.1235431100.squirrel@www.rivertowermail.com>       <02836C23ABC1A04BAD526CF24EC349330D1645@jan001.JANsoft.local>    <39144.149.5.32.216.1235488636.squirrel@www.rivertowermail.com>    <02836C23ABC1A04BAD526CF24EC349330D165A@jan001.JANsoft.local>    <49A41DD3.10504@dwalliance.com> <56585.149.5.32.216.1235492504.squirrel@www.rivertowermail.com> <02836C23ABC1A04BAD526CF24EC349330D165E@jan001.JANsoft.local>
+Message-ID: <49A438B4.6020906@dwalliance.com>
+
+Hi,
+
+The only things that come to mind is that one you want to be sure that 
+the enviroment variables have not changed and two that the paths in your 
+enviroment point at the proper chilli binary. Those two things have 
+caused me problems in the past.
+
+Jimmy
+
+
+
+
+Nick Sharp wrote:
+> Jimmy,
+>
+> I totally agree with you but considering my CoovaAP installation was working last night untill I shut it down around 2am this morning, and after I fired it back up around 3pm this afternoon and its no longer working something is very wonky somewhere.
+>
+> Bearing in mind the only changes I had made to the "out of the box" install was to point it at my radius server, everything else was totally untouched.
+>
+> Nick
+>
+>
+>
+>
+> -----Original Message-----
+> From: Derek C [mailto:derekchilli at hssl.ie] 
+> Sent: 24 February 2009 16:22
+> To: chilli at coova.org
+> Cc: chilli at coova.org
+> Subject: Re: Weird: unrecognized option --dhcpif=ath2 ?
+>
+> Hi Jimmy,
+>
+> I'm running coova chilli in about 10 units - all working fine except this
+> one that's gone funny.
+>
+> Its weird.  Other than the coova chilli the AP is still fully operational
+> (openwrt, madwifi, etc)
+>
+> Derek
+>
+>
+> On Tue, February 24, 2009 4:18 pm, Jimmy Brake wrote:
+>   
+>> I have been running Linux since 1998. Files don't change by themselves
+>> unless they are designed to do that. Chilli is not designed to change
+>> itself so you need to look on your system and find out what has changed.
+>> Chilli is quite complex, lots of moving parts lots of places
+>> for it to break. We keep everything in the config file and for the last 4
+>> years(?) chilli has never changed. We actually still use pretty much the
+>> same files to run it as we did when we first setup.
+>>
+>>
+>> Nick Sharp wrote:
+>>
+>>     
+>>> Hmm, "chill corrupted some how" is all I've been saying for the past
+>>> week
+>>>
+>>> My test system which was working yesterday and was untouched doesn?t
+>>> work any more.
+>>>
+>>> Im seriously beginning to doubt the reliability of this product.....
+>>>
+>>>
+>>>
+>>> -----Original Message-----
+>>> From: Derek C [mailto:derekchilli at hssl.ie]
+>>> Sent: 24 February 2009 15:17
+>>> To: chilli at coova.org
+>>> Cc: chilli at coova.org
+>>> Subject: RE: Weird: unrecognized option --dhcpif=ath2 ?
+>>>
+>>>
+>>> Hi Nick,
+>>>
+>>>
+>>> It's even stranger than that:  If I run chilli on the command line with
+>>>  the argument it still happens: -
+>>>
+>>> root at OpenWrt:~# chilli --dhcpif=ath2
+>>> chilli: unrecognized option `--dhcpif=ath2'
+>>>
+>>>
+>>> It's like chilli is corrupted somehow.... or, I wonder, could problems
+>>> with other files cause this?
+>>>
+>>> thanks,
+>>>
+>>> Derek
+>>>
+>>>
+>>> --
+>>> Derek C
+>>> In Ireland
+>>>
+>>>
+>>>
+>>> ---------------------------------------------------------------------
+>>> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+>>> For additional commands, e-mail: chilli-help at coova.org
+>>> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+>>> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>>>
+>>>
+>>>
+>>> No virus found in this incoming message.
+>>> Checked by AVG.
+>>> Version: 7.5.552 / Virus Database: 270.11.3/1968 - Release Date:
+>>> 23/02/2009 18:22
+>>>
+>>>
+>>>
+>>> No virus found in this outgoing message.
+>>> Checked by AVG.
+>>> Version: 7.5.552 / Virus Database: 270.11.3/1968 - Release Date:
+>>> 23/02/2009 18:22
+>>>
+>>>
+>>>
+>>> ---------------------------------------------------------------------
+>>> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+>>> For additional commands, e-mail: chilli-help at coova.org
+>>> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+>>> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>>>
+>>>
+>>>
+>>>       
+>> ---------------------------------------------------------------------
+>> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+>> For additional commands, e-mail: chilli-help at coova.org
+>> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+>> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>>
+>>
+>>
+>>     
+>
+>
+>   
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20090224/0e23c662/attachment.htm>
+
+From derekchilli at hssl.ie  Tue Feb 24 21:08:02 2009
+From: derekchilli at hssl.ie (Derek C)
+Date: Tue, 24 Feb 2009 21:08:02 -0000 (UTC)
+Subject: Weird: unrecognized option --dhcpif=ath2 ?
+In-Reply-To: <49A438B4.6020906@dwalliance.com>
+References: <57323.149.5.32.216.1235431100.squirrel@www.rivertowermail.com>  
+        <02836C23ABC1A04BAD526CF24EC349330D1645@jan001.JANsoft.local>   
+    <39144.149.5.32.216.1235488636.squirrel@www.rivertowermail.com>   
+    <02836C23ABC1A04BAD526CF24EC349330D165A@jan001.JANsoft.local>   
+    <49A41DD3.10504@dwalliance.com>
+    <56585.149.5.32.216.1235492504.squirrel@www.rivertowermail.com>
+    <02836C23ABC1A04BAD526CF24EC349330D165E@jan001.JANsoft.local>
+    <49A438B4.6020906@dwalliance.com>
+Message-ID: <35833.149.5.32.216.1235509682.squirrel@www.rivertowermail.com>
+
+Hi Jimmy,
+
+There is only one chilli executable (/usr/sbin/chilli) but would any other
+files (other executables like chilli_query, etc) or any librarys (like
+libchilli.so.0.0.0) cause this issue?
+
+I'm just trying to work out what to look at and/or compare to other,
+working, boxes I have.
+
+Normally I'd just make a new openwrt setup and replace it but its on an
+antenna on the side of a 3 story building so getting it down would be very
+difficult.
+
+thanks,
+
+Derek
+
+On Tue, February 24, 2009 6:13 pm, Jimmy Brake wrote:
+> Hi,
+>
+>
+> The only things that come to mind is that one you want to be sure that
+> the enviroment variables have not changed and two that the paths in your
+> enviroment point at the proper chilli binary. Those two things have caused
+> me problems in the past.
+>
+> Jimmy
+>
+>
+>
+>
+>
+> Nick Sharp wrote:
+>
+>> Jimmy,
+>>
+>>
+>> I totally agree with you but considering my CoovaAP installation was
+>> working last night untill I shut it down around 2am this morning, and
+>> after I fired it back up around 3pm this afternoon and its no longer
+>> working something is very wonky somewhere.
+>>
+>> Bearing in mind the only changes I had made to the "out of the box"
+>> install was to point it at my radius server, everything else was
+>> totally untouched.
+>>
+>> Nick
+>>
+>>
+>>
+>>
+>>
+>> -----Original Message-----
+>> From: Derek C [mailto:derekchilli at hssl.ie]
+>> Sent: 24 February 2009 16:22
+>> To: chilli at coova.org
+>> Cc: chilli at coova.org
+>> Subject: Re: Weird: unrecognized option --dhcpif=ath2 ?
+>>
+>>
+>> Hi Jimmy,
+>>
+>>
+>> I'm running coova chilli in about 10 units - all working fine except
+>> this one that's gone funny.
+>>
+>> Its weird.  Other than the coova chilli the AP is still fully
+>> operational (openwrt, madwifi, etc)
+>>
+>>
+>> Derek
+>>
+>>
+>>
+>> On Tue, February 24, 2009 4:18 pm, Jimmy Brake wrote:
+>>
+>>
+>>> I have been running Linux since 1998. Files don't change by
+>>> themselves unless they are designed to do that. Chilli is not designed
+>>> to change itself so you need to look on your system and find out what
+>>> has changed. Chilli is quite complex, lots of moving parts lots of
+>>> places for it to break. We keep everything in the config file and for
+>>> the last 4 years(?) chilli has never changed. We actually still use
+>>> pretty much the same files to run it as we did when we first setup.
+>>>
+>>>
+>>> Nick Sharp wrote:
+>>>
+>>>
+>>>
+>>>> Hmm, "chill corrupted some how" is all I've been saying for the
+>>>> past week
+>>>>
+>>>> My test system which was working yesterday and was untouched
+>>>> doesn?t work any more.
+>>>>
+>>>> Im seriously beginning to doubt the reliability of this
+>>>> product.....
+>>>>
+>>>>
+>>>>
+>>>> -----Original Message-----
+>>>> From: Derek C [mailto:derekchilli at hssl.ie]
+>>>> Sent: 24 February 2009 15:17
+>>>> To: chilli at coova.org
+>>>> Cc: chilli at coova.org
+>>>> Subject: RE: Weird: unrecognized option --dhcpif=ath2 ?
+>>>>
+>>>>
+>>>>
+>>>> Hi Nick,
+>>>>
+>>>>
+>>>>
+>>>> It's even stranger than that:  If I run chilli on the command line
+>>>> with the argument it still happens: -
+>>>>
+>>>> root at OpenWrt:~# chilli --dhcpif=ath2
+>>>> chilli: unrecognized option `--dhcpif=ath2'
+>>>>
+>>>>
+>>>>
+>>>> It's like chilli is corrupted somehow.... or, I wonder, could
+>>>> problems with other files cause this?
+>>>>
+>>>> thanks,
+>>>>
+>>>> Derek
+>>>>
+>>>>
+>>>>
+>>>> --
+>>>> Derek C
+>>>> In Ireland
+>>>>
+>>>>
+>>>>
+>>>>
+>>>> -------------------------------------------------------------------
+>>>> --
+>>>> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+>>>> For additional commands, e-mail: chilli-help at coova.org
+>>>> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+>>>> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>>>>
+>>>>
+>>>>
+>>>>
+>>>> No virus found in this incoming message.
+>>>> Checked by AVG.
+>>>> Version: 7.5.552 / Virus Database: 270.11.3/1968 - Release Date:
+>>>> 23/02/2009 18:22
+>>>>
+>>>>
+>>>>
+>>>>
+>>>> No virus found in this outgoing message.
+>>>> Checked by AVG.
+>>>> Version: 7.5.552 / Virus Database: 270.11.3/1968 - Release Date:
+>>>> 23/02/2009 18:22
+>>>>
+>>>>
+>>>>
+>>>>
+>>>> -------------------------------------------------------------------
+>>>> --
+>>>> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+>>>> For additional commands, e-mail: chilli-help at coova.org
+>>>> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+>>>> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>>>>
+>>>>
+>>>>
+>>>>
+>>>>
+>>> ---------------------------------------------------------------------
+>>>  To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+>>> For additional commands, e-mail: chilli-help at coova.org
+>>> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+>>> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>>>
+>>>
+>>>
+>>>
+>>>
+>>
+>>
+>>
+>
+>
+
+
+-- 
+Derek C
+In Ireland
+
+
+
+From jimmy at dwalliance.com  Tue Feb 24 21:20:26 2009
+From: jimmy at dwalliance.com (Jimmy Brake)
+Date: Tue, 24 Feb 2009 13:20:26 -0800
+Subject: Weird: unrecognized option --dhcpif=ath2 ?
+In-Reply-To: <35833.149.5.32.216.1235509682.squirrel@www.rivertowermail.com>
+References: <57323.149.5.32.216.1235431100.squirrel@www.rivertowermail.com>          <02836C23ABC1A04BAD526CF24EC349330D1645@jan001.JANsoft.local>       <39144.149.5.32.216.1235488636.squirrel@www.rivertowermail.com>       <02836C23ABC1A04BAD526CF24EC349330D165A@jan001.JANsoft.local>       <49A41DD3.10504@dwalliance.com>    <56585.149.5.32.216.1235492504.squirrel@www.rivertowermail.com>    <02836C23ABC1A04BAD526CF24EC349330D165E@jan001.JANsoft.local>    <49A438B4.6020906@dwalliance.com> <35833.149.5.32.216.1235509682.squirrel@www.rivertowermail.com>
+Message-ID: <49A4649A.7070900@dwalliance.com>
+
+Hi,
+
+What often helps me is to watch what the program is doing via strace. 
+You might also try some other chilli options such as fg to see if its 
+working at all.
+
+Jimmy
+
+Derek C wrote:
+> Hi Jimmy,
+>
+> There is only one chilli executable (/usr/sbin/chilli) but would any other
+> files (other executables like chilli_query, etc) or any librarys (like
+> libchilli.so.0.0.0) cause this issue?
+>
+> I'm just trying to work out what to look at and/or compare to other,
+> working, boxes I have.
+>
+> Normally I'd just make a new openwrt setup and replace it but its on an
+> antenna on the side of a 3 story building so getting it down would be very
+> difficult.
+>
+> thanks,
+>
+> Derek
+>
+> On Tue, February 24, 2009 6:13 pm, Jimmy Brake wrote:
+>   
+>> Hi,
+>>
+>>
+>> The only things that come to mind is that one you want to be sure that
+>> the enviroment variables have not changed and two that the paths in your
+>> enviroment point at the proper chilli binary. Those two things have caused
+>> me problems in the past.
+>>
+>> Jimmy
+>>
+>>
+>>
+>>
+>>
+>> Nick Sharp wrote:
+>>
+>>     
+>>> Jimmy,
+>>>
+>>>
+>>> I totally agree with you but considering my CoovaAP installation was
+>>> working last night untill I shut it down around 2am this morning, and
+>>> after I fired it back up around 3pm this afternoon and its no longer
+>>> working something is very wonky somewhere.
+>>>
+>>> Bearing in mind the only changes I had made to the "out of the box"
+>>> install was to point it at my radius server, everything else was
+>>> totally untouched.
+>>>
+>>> Nick
+>>>
+>>>
+>>>
+>>>
+>>>
+>>> -----Original Message-----
+>>> From: Derek C [mailto:derekchilli at hssl.ie]
+>>> Sent: 24 February 2009 16:22
+>>> To: chilli at coova.org
+>>> Cc: chilli at coova.org
+>>> Subject: Re: Weird: unrecognized option --dhcpif=ath2 ?
+>>>
+>>>
+>>> Hi Jimmy,
+>>>
+>>>
+>>> I'm running coova chilli in about 10 units - all working fine except
+>>> this one that's gone funny.
+>>>
+>>> Its weird.  Other than the coova chilli the AP is still fully
+>>> operational (openwrt, madwifi, etc)
+>>>
+>>>
+>>> Derek
+>>>
+>>>
+>>>
+>>> On Tue, February 24, 2009 4:18 pm, Jimmy Brake wrote:
+>>>
+>>>
+>>>       
+>>>> I have been running Linux since 1998. Files don't change by
+>>>> themselves unless they are designed to do that. Chilli is not designed
+>>>> to change itself so you need to look on your system and find out what
+>>>> has changed. Chilli is quite complex, lots of moving parts lots of
+>>>> places for it to break. We keep everything in the config file and for
+>>>> the last 4 years(?) chilli has never changed. We actually still use
+>>>> pretty much the same files to run it as we did when we first setup.
+>>>>
+>>>>
+>>>> Nick Sharp wrote:
+>>>>
+>>>>
+>>>>
+>>>>         
+>>>>> Hmm, "chill corrupted some how" is all I've been saying for the
+>>>>> past week
+>>>>>
+>>>>> My test system which was working yesterday and was untouched
+>>>>> doesn't work any more.
+>>>>>
+>>>>> Im seriously beginning to doubt the reliability of this
+>>>>> product.....
+>>>>>
+>>>>>
+>>>>>
+>>>>> -----Original Message-----
+>>>>> From: Derek C [mailto:derekchilli at hssl.ie]
+>>>>> Sent: 24 February 2009 15:17
+>>>>> To: chilli at coova.org
+>>>>> Cc: chilli at coova.org
+>>>>> Subject: RE: Weird: unrecognized option --dhcpif=ath2 ?
+>>>>>
+>>>>>
+>>>>>
+>>>>> Hi Nick,
+>>>>>
+>>>>>
+>>>>>
+>>>>> It's even stranger than that:  If I run chilli on the command line
+>>>>> with the argument it still happens: -
+>>>>>
+>>>>> root at OpenWrt:~# chilli --dhcpif=ath2
+>>>>> chilli: unrecognized option `--dhcpif=ath2'
+>>>>>
+>>>>>
+>>>>>
+>>>>> It's like chilli is corrupted somehow.... or, I wonder, could
+>>>>> problems with other files cause this?
+>>>>>
+>>>>> thanks,
+>>>>>
+>>>>> Derek
+>>>>>
+>>>>>
+>>>>>
+>>>>> --
+>>>>> Derek C
+>>>>> In Ireland
+>>>>>
+>>>>>
+>>>>>
+>>>>>
+>>>>> -------------------------------------------------------------------
+>>>>> --
+>>>>> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+>>>>> For additional commands, e-mail: chilli-help at coova.org
+>>>>> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+>>>>> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>>>>>
+>>>>>
+>>>>>
+>>>>>
+>>>>> No virus found in this incoming message.
+>>>>> Checked by AVG.
+>>>>> Version: 7.5.552 / Virus Database: 270.11.3/1968 - Release Date:
+>>>>> 23/02/2009 18:22
+>>>>>
+>>>>>
+>>>>>
+>>>>>
+>>>>> No virus found in this outgoing message.
+>>>>> Checked by AVG.
+>>>>> Version: 7.5.552 / Virus Database: 270.11.3/1968 - Release Date:
+>>>>> 23/02/2009 18:22
+>>>>>
+>>>>>
+>>>>>
+>>>>>
+>>>>> -------------------------------------------------------------------
+>>>>> --
+>>>>> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+>>>>> For additional commands, e-mail: chilli-help at coova.org
+>>>>> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+>>>>> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>>>>>
+>>>>>
+>>>>>
+>>>>>
+>>>>>
+>>>>>           
+>>>> ---------------------------------------------------------------------
+>>>>  To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+>>>> For additional commands, e-mail: chilli-help at coova.org
+>>>> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+>>>> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>>>>
+>>>>
+>>>>
+>>>>
+>>>>
+>>>>         
+>>>
+>>>       
+>>     
+>
+>
+>   
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20090224/a8498d0c/attachment.htm>
+

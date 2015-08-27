@@ -1,0 +1,281 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> DHCP - WLAN behaviour of Windows Notebooks
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20DHCP%20-%20WLAN%20behaviour%20of%20Windows%20Notebooks&In-Reply-To=%3CED4FDED4-4188-41AD-BAD1-9EA0F5354F59%40silverserver.at%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000050.html">
+   <LINK REL="Next"  HREF="000053.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>DHCP - WLAN behaviour of Windows Notebooks</H1>
+    <B>lc</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20DHCP%20-%20WLAN%20behaviour%20of%20Windows%20Notebooks&In-Reply-To=%3CED4FDED4-4188-41AD-BAD1-9EA0F5354F59%40silverserver.at%3E"
+       TITLE="DHCP - WLAN behaviour of Windows Notebooks">chilli at silverserver.at
+       </A><BR>
+    <I>Sat Sep  8 07:20:08 UTC 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000050.html">Problem with chillispot and dhcp relay
+</A></li>
+        <LI>Next message: <A HREF="000053.html">DHCP - WLAN behaviour of Windows Notebooks
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#51">[ date ]</a>
+              <a href="thread.html#51">[ thread ]</a>
+              <a href="subject.html#51">[ subject ]</a>
+              <a href="author.html#51">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>
+I had also a small e-mail conversation about the following with David  
+(thanks for keeping chilli alive!) - but I still do not know how this  
+&quot;problem&quot; can be dealt with.
+
+
+It seems that there are machines that - for no obvious reason -  
+disassociate and reassociate to the AP even when they signal quality  
+is excellent and no other disturbing radio exists. This seems to  
+happen intentionally because the client seems to release the DHCP  
+address before disassociating. And this is why chilli releases the  
+address and closes the session. If the client would just lose the  
+connection and reassociate, chilli wouldn't know about it unless the  
+DHCP lease time has been reached (=no problem).
+
+After such a client re-associates, chilli hands out a new IP address  
+and the user has to log-in again. While the re-login could be handled  
+automatically (so the user won't notice it) the new IP address is a  
+problem - existing connections (e.g. google mail etc) get interrupted.
+
+I have noticed this behaviour on Windows notebooks. The user can also  
+see it because at the Windows task bar a message pops up telling the  
+user that he is now connected to the WLAN xyz although this is the  
+very same WLAN he has been already using.
+
+I see this behaviour on many locations, and I also see that it does  
+not happen with all clients. e.g. on the same location at the same  
+time one client behaves like in the log below while others stay  
+connected for hours without any interruption. This is why I believe  
+the client's machine is the cause.
+
+Here is a log showing that there are only a few seconds between the  
+releasing of the address and handing out a new address for the same  
+client.
+
+Chilli-Log:
+Jul 26 14:29:20 OpenWRT kern.notice chillispot[841]: chilli.c: 2905:  
+Successful UAM login from username=00-18-DE-77-9B-43 IP=192.168.100.25
+Jul 26 14:33:09 OpenWRT kern.info chillispot[841]: chilli.c: 2690:  
+DHCP addr released by MAC=00-18-DE-77-9B-43 IP=192.168.100.25
+
+Jul 26 14:33:12 OpenWRT kern.notice chillispot[841]: chilli.c: 2608:  
+New DHCP request from MAC=00-18-DE-77-9B-43
+Jul 26 14:33:12 OpenWRT kern.notice chillispot[841]: chilli.c: 2570:  
+Client MAC=00-18-DE-77-9B-43 assigned IP 192.168.100.27
+Jul 26 14:35:42 OpenWRT kern.notice chillispot[841]: chilli.c: 2905:  
+Successful UAM login from username=00-18-DE-77-9B-43 IP=192.168.100.27
+Jul 26 15:03:30 OpenWRT kern.info chillispot[841]: chilli.c: 2690:  
+DHCP addr released by MAC=00-18-DE-77-9B-43 IP=192.168.100.27
+
+Jul 26 15:06:36 OpenWRT kern.notice chillispot[841]: chilli.c: 2608:  
+New DHCP request from MAC=00-18-DE-77-9B-43
+Jul 26 15:06:36 OpenWRT kern.notice chillispot[841]: chilli.c: 2570:  
+Client MAC=00-18-DE-77-9B-43 assigned IP 192.168.100.30
+Jul 26 15:12:55 OpenWRT kern.info chillispot[841]: chilli.c: 2690:  
+DHCP addr released by MAC=00-18-DE-77-9B-43 IP=192.168.100.30
+
+Jul 26 15:13:30 OpenWRT kern.notice chillispot[841]: chilli.c: 2608:  
+New DHCP request from MAC=00-18-DE-77-9B-43
+Jul 26 15:13:30 OpenWRT kern.notice chillispot[841]: chilli.c: 2570:  
+Client MAC=00-18-DE-77-9B-43 assigned IP 192.168.100.31
+Jul 26 15:14:41 OpenWRT kern.notice chillispot[841]: chilli.c: 2905:  
+Successful UAM login from username=00-18-DE-77-9B-43 IP=192.168.100.31
+Jul 26 15:19:49 OpenWRT kern.info chillispot[841]: chilli.c: 2690:  
+DHCP addr released by MAC=00-18-DE-77-9B-43 IP=192.168.100.31
+
+Jul 26 15:23:22 OpenWRT kern.notice chillispot[841]: chilli.c: 2608:  
+New DHCP request from MAC=00-18-DE-77-9B-43
+Jul 26 15:23:22 OpenWRT kern.notice chillispot[841]: chilli.c: 2570:  
+Client MAC=00-18-DE-77-9B-43 assigned IP 192.168.100.33
+Jul 26 15:28:24 OpenWRT kern.info chillispot[841]: chilli.c: 2690:  
+DHCP addr released by MAC=00-18-DE-77-9B-43 IP=192.168.100.33
+
+Jul 26 15:30:42 OpenWRT kern.notice chillispot[841]: chilli.c: 2608:  
+New DHCP request from MAC=00-18-DE-77-9B-43
+Jul 26 15:30:42 OpenWRT kern.notice chillispot[841]: chilli.c: 2570:  
+Client MAC=00-18-DE-77-9B-43 assigned IP 192.168.100.34
+Jul 26 15:32:54 OpenWRT kern.notice chillispot[841]: chilli.c: 2905:  
+Successful UAM login from username=00-18-DE-77-9B-43 IP=192.168.100.34
+Jul 26 15:42:15 OpenWRT kern.info chillispot[841]: chilli.c: 2690:  
+DHCP addr released by MAC=00-18-DE-77-9B-43 IP=192.168.100.34
+
+Jul 26 15:42:17 OpenWRT kern.notice chillispot[841]: chilli.c: 2608:  
+New DHCP request from MAC=00-18-DE-77-9B-43
+Jul 26 15:42:17 OpenWRT kern.notice chillispot[841]: chilli.c: 2570:  
+Client MAC=00-18-DE-77-9B-43 assigned IP 192.168.100.36
+Jul 26 15:44:28 OpenWRT kern.notice chillispot[841]: chilli.c: 2905:  
+Successful UAM login from username=00-18-DE-77-9B-43 IP=192.168.100.36
+Jul 26 15:49:39 OpenWRT kern.info chillispot[841]: chilli.c: 2690:  
+DHCP addr released by MAC=00-18-DE-77-9B-43 IP=192.168.100.36
+
+Jul 26 15:50:00 OpenWRT kern.notice chillispot[841]: chilli.c: 2608:  
+New DHCP request from MAC=00-18-DE-77-9B-43
+Jul 26 15:50:00 OpenWRT kern.notice chillispot[841]: chilli.c: 2570:  
+Client MAC=00-18-DE-77-9B-43 assigned IP 192.168.100.37
+Jul 26 15:52:07 OpenWRT kern.notice chillispot[841]: chilli.c: 2905:  
+Successful UAM login from username=00-18-DE-77-9B-43 IP=192.168.100.37
+Jul 26 16:29:56 OpenWRT kern.info chillispot[841]: chilli.c: 2690:  
+DHCP addr released by MAC=00-18-DE-77-9B-43 IP=192.168.100.37
+
+Jul 26 16:30:18 OpenWRT kern.notice chillispot[841]: chilli.c: 2608:  
+New DHCP request from MAC=00-18-DE-77-9B-43
+Jul 26 16:30:18 OpenWRT kern.notice chillispot[841]: chilli.c: 2570:  
+Client MAC=00-18-DE-77-9B-43 assigned IP 192.168.100.40
+Jul 26 16:36:48 OpenWRT kern.notice chillispot[841]: chilli.c: 2905:  
+Successful UAM login from username=00-18-DE-77-9B-43 IP=192.168.100.40
+Jul 26 16:50:15 OpenWRT kern.info chillispot[841]: chilli.c: 2690:  
+DHCP addr released by MAC=00-18-DE-77-9B-43 IP=192.168.100.40
+
+Jul 26 16:51:42 OpenWRT kern.notice chillispot[841]: chilli.c: 2608:  
+New DHCP request from MAC=00-18-DE-77-9B-43
+Jul 26 16:51:42 OpenWRT kern.notice chillispot[841]: chilli.c: 2570:  
+Client MAC=00-18-DE-77-9B-43 assigned IP 192.168.100.41
+Jul 26 16:55:22 OpenWRT kern.notice chillispot[841]: chilli.c: 2905:  
+Successful UAM login from username=00-18-DE-77-9B-43 IP=192.168.100.41
+
+So the question is:
+
+Does anybody know what triggers this behaviour of Windows (maybe some  
+energy saving issue which works in a weird way)?
+Is there a way to make chilli temporarily bind an IP address to a mac  
+address so that it would re-assign the same IP to the same client MAC  
+within a certain timeframe?
+
+Thanks,
+
+lc
+
+
+Am 15.08.2007 um 10:20 schrieb Yannick Deltroo:
+
+
+&gt;<i> Alex,
+</I>&gt;<i>
+</I>&gt;<i> I've seen that you've changed the DHCP range of IPs from the default.
+</I>&gt;<i> Check that the three parameters net/dynip/statip are correctly set (in
+</I>&gt;<i> particular the netmask part).
+</I>&gt;<i>
+</I>&gt;<i> Also check that the lease parameter is not too short for the client
+</I>&gt;<i> operating system to accept the DHCP lease returned by Chilli.
+</I>&gt;<i>
+</I>&gt;<i> By the way, Chillispot is going to NAT your public addresses in the
+</I>&gt;<i> default configuration.
+</I>&gt;<i> For more info, see this thread,
+</I>&gt;<i> <A HREF="http://coova.org/phpBB3/viewtopic.php?">http://coova.org/phpBB3/viewtopic.php?</A> 
+</I>&gt;<i> f=4&amp;t=157&amp;sid=6d5907c41c5aa11b528345295892dff9
+</I>&gt;<i>
+</I>&gt;<i> Cheers
+</I>&gt;<i>
+</I>&gt;<i> On 8/15/07, Alex Nderitu &lt;<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">anderitu at africaonline.co.ke</A>&gt; wrote:
+</I>&gt;<i>
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i>  Hi All,
+</I>&gt;&gt;<i>  I have a problem where wireless clients are not allocated dhcp  
+</I>&gt;&gt;<i> addresses on accessing chillispot. However from the log files I  
+</I>&gt;&gt;<i> can see chillispot is issuing the addresses on accessing the  
+</I>&gt;&gt;<i> wireless network. Has anyone come across this and whats the work  
+</I>&gt;&gt;<i> around.
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i>  Logs from chilli
+</I>&gt;&gt;<i>  -----------------------
+</I>&gt;&gt;<i>  Aug 14 15:40:03 hotspot chillispot[7333]: chilli.c: 3082: DHCP  
+</I>&gt;&gt;<i> addr released by MAC=00-16-6F-C3-7E-5F IP=41.207.76.34
+</I>&gt;&gt;<i>  Aug 14 15:40:05 hotspot chillispot[7333]: chilli.c: 3041: New  
+</I>&gt;&gt;<i> DHCP request from MAC=00-16-6F-C3-7E-5F
+</I>&gt;&gt;<i>  Aug 14 15:40:05 hotspot chillispot[7333]: chilli.c: 3011: Client  
+</I>&gt;&gt;<i> MAC=00-16-6F-C3-7E-5F assigned IP 41.207.76.35
+</I>&gt;&gt;<i>  Aug 14 15:40:18 hotspot chillispot[7333]: chilli.c: 3082: DHCP  
+</I>&gt;&gt;<i> addr released by MAC=00-16-6F-C3-7E-5F IP=41.207.76.35
+</I>&gt;&gt;<i>  Aug 14 15:40:21 hotspot chillispot[7333]: chilli.c: 3041: New  
+</I>&gt;&gt;<i> DHCP request from MAC=00-16-6F-C3-7E-5F
+</I>&gt;&gt;<i>  Aug 14 15:40:21 hotspot chillispot[7333]: chilli.c: 3011: Client  
+</I>&gt;&gt;<i> MAC=00-16-6F-C3-7E-5F assigned IP 41.207.76.36
+</I>&gt;&gt;<i>  Aug 14 15:41:31 hotspot chillispot[7333]: chilli.c: 3041: New  
+</I>&gt;&gt;<i> DHCP request from MAC=00-19-D2-30-B3-A1
+</I>&gt;&gt;<i>  Aug 14 15:41:31 hotspot chillispot[7333]: chilli.c: 3011: Client  
+</I>&gt;&gt;<i> MAC=00-19-D2-30-B3-A1 assigned IP 41.207.76.37
+</I>&gt;&gt;<i>  Aug 14 15:45:49 hotspot chillispot[7333]: chilli.c: 3082: DHCP  
+</I>&gt;&gt;<i> addr released by MAC=00-16-6F-C3-7E-5F IP=41.207.76.36
+</I>&gt;&gt;<i>  Aug 14 15:45:51 hotspot chillispot[7333]: chilli.c: 3041: New  
+</I>&gt;&gt;<i> DHCP request from MAC=00-16-6F-C3-7E-5F
+</I>&gt;&gt;<i>  Aug 14 15:45:51 hotspot chillispot[7333]: chilli.c: 3011: Client  
+</I>&gt;&gt;<i> MAC=00-16-6F-C3-7E-5F assigned IP 41.207.76.38
+</I>&gt;&gt;<i>  Aug 14 15:48:32 hotspot chillispot[7333]: chilli.c: 3041: New  
+</I>&gt;&gt;<i> DHCP request from MAC=00-16-6F-55-01-21
+</I>&gt;&gt;<i>  Aug 14 15:48:32 hotspot chillispot[7333]: chilli.c: 3011: Client  
+</I>&gt;&gt;<i> MAC=00-16-6F-55-01-21 assigned IP 41.207.76.39
+</I>&gt;&gt;<i>  Aug 14 15:49:10 hotspot chillispot[7333]: chilli.c: 3041: New  
+</I>&gt;&gt;<i> DHCP request from MAC=00-06-F4-0D-4B-DA
+</I>&gt;&gt;<i>  Aug 14 15:49:10 hotspot chillispot[7333]: chilli.c: 3011: Client  
+</I>&gt;&gt;<i> MAC=00-06-F4-0D-4B-DA assigned IP 41.207.76.40
+</I>&gt;&gt;<i>  Aug 14 15:52:12 hotspot chillispot[7333]: chilli.c: 3082: DHCP  
+</I>&gt;&gt;<i> addr released by MAC=00-16-6F-C3-7E-5F IP=41.207.76.38
+</I>&gt;&gt;<i>  Aug 14 15:52:14 hotspot chillispot[7333]: chilli.c: 3041: New  
+</I>&gt;&gt;<i> DHCP request from MAC=00-16-6F-C3-7E-5F
+</I>&gt;&gt;<i>  Aug 14 15:52:14 hotspot chillispot[7333]: chilli.c: 3011: Client  
+</I>&gt;&gt;<i> MAC=00-16-6F-C3-7E-5F assigned IP 41.207.76.41
+</I>&gt;&gt;<i>  Aug 14 15:53:46 hotspot chillispot[7333]: chilli.c: 3082: DHCP  
+</I>&gt;&gt;<i> addr released by MAC=00-16-6F-C3-7E-5F IP=41.207.76.41
+</I>&gt;&gt;<i>  Aug 14 15:53:53 hotspot chillispot[7333]: chilli.c: 3082: DHCP  
+</I>&gt;&gt;<i> addr released by MAC=00-19-D2-30-B3-A1 IP=41.207.76.37
+</I>&gt;&gt;<i>  Aug 14 15:53:59 hotspot chillispot[7333]: chilli.c: 3041: New  
+</I>&gt;&gt;<i> DHCP request from MAC=00-16-6F-C3-7E-5F
+</I>&gt;&gt;<i>  Aug 14 15:53:59 hotspot chillispot[7333]: chilli.c: 3011: Client  
+</I>&gt;&gt;<i> MAC=00-16-6F-C3-7E-5F assigned IP 41.207.76.43
+</I>&gt;&gt;<i>  Aug 14 15:55:04 hotspot chillispot[7333]: chilli.c: 3082: DHCP  
+</I>&gt;&gt;<i> addr released by MAC=00-16-6F-C3-7E-5F IP=41.207.76.43
+</I>&gt;&gt;<i>  Aug 14 15:55:06 hotspot chillispot[7333]: chilli.c: 3041: New  
+</I>&gt;&gt;<i> DHCP request from MAC=00-16-6F-C3-7E-5F
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> --
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i>  Regards,
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i>  Alex Nderitu
+</I>&gt;&gt;<i>  Systems Administration
+</I>&gt;&gt;<i>  Africa Online, Kenya
+</I>&gt;&gt;<i>  Tel: +254 (20) 27 92 253
+</I>&gt;&gt;<i>  Fax: +254 (20) 27 100 10
+</I>&gt;&gt;<i>  Email: <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">anderitu at africaonline.co.ke</A>
+</I>&gt;&gt;<i>  AIM: nderitualex
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i>    A member of the Telkom South Africa Group
+</I>
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000050.html">Problem with chillispot and dhcp relay
+</A></li>
+	<LI>Next message: <A HREF="000053.html">DHCP - WLAN behaviour of Windows Notebooks
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#51">[ date ]</a>
+              <a href="thread.html#51">[ thread ]</a>
+              <a href="subject.html#51">[ subject ]</a>
+              <a href="author.html#51">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

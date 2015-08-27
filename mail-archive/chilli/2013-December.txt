@@ -1,0 +1,3045 @@
+From xoneca at gmail.com  Mon Dec  2 00:32:50 2013
+From: xoneca at gmail.com (Xabier Oneca -- xOneca)
+Date: Mon, 2 Dec 2013 01:32:50 +0100
+Subject: [Chilli] CoovaChilli Kernel Mode issue
+In-Reply-To: <1212986019.4269.1385691940739.JavaMail.root@frontiir.net>
+References: <1561245260.281382.1385376623746.JavaMail.root@frontiir.net>
+ <1547615330.282248.1385378564547.JavaMail.root@frontiir.net>
+ <CACkgH70r=f46RvoS4oMzjVhMS8bN7MKCO71gUBYMCyWaaZ93aQ@mail.gmail.com>
+ <577107616.331030.1385607399941.JavaMail.root@frontiir.net>
+ <CACkgH71Od8xe6KJDV=X3gWTfOtvktOuyj2qbwQjRGOMFe4aTDw@mail.gmail.com>
+ <1212986019.4269.1385691940739.JavaMail.root@frontiir.net>
+Message-ID: <CACkgH73-SXMJCYH4z3aA4gJsq+D7ePAMB0+3VwjyYs5ySUrDfg@mail.gmail.com>
+
+2013/11/29 Phyo Wai Soe <phyo.w.soe at frontiir.net>:
+> Hi Xabier,
+>
+> I am using the default rules (ie., up.sh writes the rules on CoovaChilli startup). With the kernel module mode on, the rules are as follows (eth0 is the WAN and eth1 is the DHCP interface):
+>
+> iptables -L
+>
+> Chain INPUT (policy ACCEPT)
+> target     prot opt source               destination
+>
+> Chain FORWARD (policy DROP)
+> target     prot opt source               destination
+> ACCEPT     all  --  anywhere             anywhere
+> ACCEPT     all  --  anywhere             anywhere
+> ACCEPT     all  --  anywhere             anywhere            coova: name: chilli side: dest
+> ACCEPT     all  --  anywhere             anywhere            coova: name: chilli side: source
+>
+> Chain OUTPUT (policy ACCEPT)
+> target     prot opt source               destination
+> --------------------------------------
+> iptables -S
+>
+> -P INPUT ACCEPT
+> -P FORWARD DROP
+> -P OUTPUT ACCEPT
+> -A FORWARD -o tun0 -j ACCEPT
+> -A FORWARD -i tun0 -j ACCEPT
+> -A FORWARD -o eth1 -m coova --name chilli --dest  -j ACCEPT
+> -A FORWARD -i eth1 -m coova --name chilli --source  -j ACCEPT
+> -------------------------------------
+
+The rules seem ok...
+
+Sorry, but I can't see where can your problem be... I have no
+experience with the kernel module. Maybe someone else in the list?
+
+Cheers,
+
+Xabier Oneca_,,_
+
+From phyo.w.soe at frontiir.net  Mon Dec  2 02:10:56 2013
+From: phyo.w.soe at frontiir.net (Phyo Wai Soe)
+Date: Mon, 2 Dec 2013 02:10:56 +0000 (UTC)
+Subject: [Chilli] CoovaChilli Kernel Mode issue
+In-Reply-To: <CACkgH73-SXMJCYH4z3aA4gJsq+D7ePAMB0+3VwjyYs5ySUrDfg@mail.gmail.com>
+References: <1561245260.281382.1385376623746.JavaMail.root@frontiir.net>
+ <1547615330.282248.1385378564547.JavaMail.root@frontiir.net>
+ <CACkgH70r=f46RvoS4oMzjVhMS8bN7MKCO71gUBYMCyWaaZ93aQ@mail.gmail.com>
+ <577107616.331030.1385607399941.JavaMail.root@frontiir.net>
+ <CACkgH71Od8xe6KJDV=X3gWTfOtvktOuyj2qbwQjRGOMFe4aTDw@mail.gmail.com>
+ <1212986019.4269.1385691940739.JavaMail.root@frontiir.net>
+ <CACkgH73-SXMJCYH4z3aA4gJsq+D7ePAMB0+3VwjyYs5ySUrDfg@mail.gmail.com>
+Message-ID: <637276493.22468.1385950256599.JavaMail.root@frontiir.net>
+
+Hi Xabier,
+
+No worries. I also hope someone in the list can help me out. In the meantime, I am trying to trace the flow with lots of debug statements in redirc.c and dhcp.c
+
+Thanks.
+
+Regards,
+Phyo Wai Soe
+
+
+----- Original Message -----
+From: "Xabier Oneca -- xOneca" <xoneca at gmail.com>
+To: "Phyo Wai Soe" <phyo.w.soe at frontiir.net>, chilli at coova.org
+Sent: Monday, December 2, 2013 7:02:50 AM
+Subject: Re: [Chilli] CoovaChilli Kernel Mode issue
+
+2013/11/29 Phyo Wai Soe <phyo.w.soe at frontiir.net>:
+> Hi Xabier,
+>
+> I am using the default rules (ie., up.sh writes the rules on CoovaChilli startup). With the kernel module mode on, the rules are as follows (eth0 is the WAN and eth1 is the DHCP interface):
+>
+> iptables -L
+>
+> Chain INPUT (policy ACCEPT)
+> target     prot opt source               destination
+>
+> Chain FORWARD (policy DROP)
+> target     prot opt source               destination
+> ACCEPT     all  --  anywhere             anywhere
+> ACCEPT     all  --  anywhere             anywhere
+> ACCEPT     all  --  anywhere             anywhere            coova: name: chilli side: dest
+> ACCEPT     all  --  anywhere             anywhere            coova: name: chilli side: source
+>
+> Chain OUTPUT (policy ACCEPT)
+> target     prot opt source               destination
+> --------------------------------------
+> iptables -S
+>
+> -P INPUT ACCEPT
+> -P FORWARD DROP
+> -P OUTPUT ACCEPT
+> -A FORWARD -o tun0 -j ACCEPT
+> -A FORWARD -i tun0 -j ACCEPT
+> -A FORWARD -o eth1 -m coova --name chilli --dest  -j ACCEPT
+> -A FORWARD -i eth1 -m coova --name chilli --source  -j ACCEPT
+> -------------------------------------
+
+The rules seem ok...
+
+Sorry, but I can't see where can your problem be... I have no
+experience with the kernel module. Maybe someone else in the list?
+
+Cheers,
+
+Xabier Oneca_,,_
+
+From steffen.dettmer at nomadrail.com  Mon Dec  2 11:16:08 2013
+From: steffen.dettmer at nomadrail.com (Steffen Dettmer)
+Date: Mon, 2 Dec 2013 11:16:08 +0000
+Subject: [Chilli] Does option noradallow effect radconf only?
+Message-ID: <d317f058f075429ba2cbee5f6cd435d2@AM3PR05MB323.eurprd05.prod.outlook.com>
+
+Hi,
+
+in short: what is the effect of --noradallow? Also a short and
+rough answer would be appreciated!
+
+I tried the option noradallow but I noticed no effect (I'm not
+using radconfig). Looking to the source, adding a few log
+messages and debugging a bit around I think this option is for
+"configuring chilli parameter using radius" only. Is this
+correct?
+
+Help tells "Allow all sessions when RADIUS is not available" and
+in ChangeLog I read "Added runtime option --noradallow to
+authorize sessions when RADIUS is not available", but I'm not
+sure what kind of sessions are in scope.
+
+The option is checked only in cb_radius_auth_conf(), but not in
+redir_cb_radius_auth_conf(), but I think the latter handles the
+access request response after captive portal redirection and
+login, correct? (I verified by adding log statement in "if
+(_options.noradallow)" and its "else" - but neither one appears
+in debug output).
+
+I noticed that when RADIUS becomes unreachable, authorized
+clients continue to have access.
+
+NB: For me it is hard to see how client sessions could be
+authorized when RADIUS is not available, especially when
+considering what should happen if RADIUS comes back. Clients
+should be checked then, but the details would be complex. I think
+the used captive portal need to support that, too. If I
+understood well, this is exactly the topic of Davids explanation
+at http://www.linkedin.com/groups/Temporarily-allow-access-all-domains-158903.S.165235302.
+
+Regards,
+Steffen
+
+From steffen.dettmer at nomadrail.com  Mon Dec  2 13:17:49 2013
+From: steffen.dettmer at nomadrail.com (Steffen Dettmer)
+Date: Mon, 2 Dec 2013 13:17:49 +0000
+Subject: [Chilli] Does option noradallow effect radconf only?
+In-Reply-To: <d317f058f075429ba2cbee5f6cd435d2@AM3PR05MB323.eurprd05.prod.outlook.com>
+References: <d317f058f075429ba2cbee5f6cd435d2@AM3PR05MB323.eurprd05.prod.outlook.com>
+Message-ID: <fe761d81a6aa430d8a9522b970981597@AM3PR05MB323.eurprd05.prod.outlook.com>
+
+Hi,
+
+> ... the effect of --noradallow ...
+
+when changing redir_cb_radius_auth_conf() to handle timeout as
+REDIR_SUCCESS with session_param_defaults(), what would be bad
+consequences? (Of course it is doubtful whether it makes sense at
+all to authenticate everyone when no RADIUS server is available,
+except maybe for test automation or other really special cases).
+
+Steffen
+
+
+
+--- ../../coova-chilli/coova-chilli-1.3.1-svn/src/redir.c       2013-01-24 01:32:23.000000000 +0100
++++ redir.c     2013-12-02 13:42:48.834270456 +0100
+@@ -2442,6 +2442,13 @@
+   
+   if (!pack) { /* Timeout */
+     log_err(0, "Radius request timed out");
++    if (_options.noradallow) {
++      log_info("RADIUS timeout but noradallow: default redir session.");
++      session_param_defaults(&conn->s_params);
++      conn->response = REDIR_SUCCESS;
++      return 0;
++    }
++    log_info("RADIUS timeout and no noradallow: timeout redir session.");
+     conn->response = REDIR_FAILED_TIMEOUT;
+     return 0;
+   }
+
+
+
+From bergonz at labs.it  Mon Dec  2 17:32:36 2013
+From: bergonz at labs.it (Michele Bergonzoni)
+Date: Mon, 02 Dec 2013 18:32:36 +0100
+Subject: [Chilli] [Layer3] Like uamallowed,
+ but for source address - like macallowed but for IPs - ip source
+ whitelist - server whitelist
+In-Reply-To: <1385661652.12462.2.camel@david-XPS>
+References: <529634E7.3000204@labs.it> <1385661652.12462.2.camel@david-XPS>
+Message-ID: <529CC434.5060409@labs.it>
+
+> Could you resubmit your patches as attachments and "sign-off" on them
+> based acknowledging:
+> http://dev.coova.org/svn/coova-chilli/Contributing ?
+
+Ok, I attach the patches I sent in the last days:
+
+  - edns.diff: Patch to pass EDNS pseudorecords
+  - typo.diff: Trivial patch for MAC_ARG type when compiling with 
+--enable-debug2
+  - l3singledhcp.diff: Patch for having a single DHCP connection when 
+using L3 only
+  - ipsrcallowed.diff: the patch we were talking about
+
+  - all4.diff: The previous 4 patches in a single diff
+
+  - Contribution.txt: The sign-off you asked for.
+
+So you should be able to use whatever combination of pieces as you prefer.
+
+Hope this helps,
+				Bergonz
+
+
+
+-- 
+Ing. Michele Bergonzoni - Laboratori Guglielmo Marconi S.p.a.
+Phone:+39-051-6781926 e-mail: bergonz at labs.it
+alt.advanced.networks.design.configure.operate
+-------------- next part --------------
+Contributions to CoovaChilli
+----------------------------
+
+By making a contribution to this project, I certify that:
+
+(a) The contribution was created in whole or in part by me and I
+    have the right to submit it under the modified BSD license
+    indicated in the file; or
+
+(b) The contribution is based upon previous work that, to the best
+    of my knowledge, is covered under an appropriate open source
+    license and I have the right under that license to submit that
+    work with modifications, whether created in whole or in part
+    by me, under the same modified BSD license (unless I am
+    permitted to submit under a different license), as indicated
+    in the file; or
+
+(c) The contribution was provided directly to me by some other
+    person who certified (a), (b) or (c) and I have not modified
+    it.
+
+(d) I understand and agree that this project and the contribution
+    are public and that a record of the contribution (including all
+    personal information I submit with it, including my sign-off) is
+    maintained indefinitely and may be redistributed consistent with
+    this project or the open source license(s) involved.
+
+Additionally, I certify that:
+
+(e) The contribution can be licensed under the modified BSD license,
+    as shown below, and the GPL license, in LICENSE file, even in 
+    case of files that are currently licensed under other terms.
+
+(f) I understand that my contribution is licensed under the modified
+    BSD license contained in this file, but that the CoovaChilli
+    combined work remains licensed under the GPL license contained
+    in the LICENSE file.
+
+To indicate your acceptance of these terms, please add the following
+line to each contribution you make to the project:
+
+Signed-by: Michele Bergonzoni <bergonz at labs.it>
+
+
+--
+
+Modified BSD license (no advertisement clause) for code contributions:
+
+Copyright (c) Mondru AB, David Bird (Coova Technologies)
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are
+met:
+
+1. Redistributions of source code must retain the above copyright
+   notice, this list of conditions and the following disclaimer.
+
+2. Redistributions in binary form must reproduce the above copyright
+   notice, this list of conditions and the following disclaimer in the
+   documentation and/or other materials provided with the distribution.
+
+3. Neither the name(s) of the above-listed copyright holder(s) nor the
+   names of its contributors may be used to endorse or promote products
+   derived from this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+-------------- next part --------------
+Index: conf/functions.in
+===================================================================
+--- conf/functions.in	(revision 485)
++++ conf/functions.in	(working copy)
+@@ -179,6 +179,9 @@
+     HS_UAMALLOW=$(echo $HS_UAMALLOW|sed 's/ /,/g')
+     uamallow=${HS_UAMALLOW:+",$HS_UAMALLOW"}
+ 
++    HS_IPSRCALLOWED=$(echo $HS_IPSRCALLOWED|sed 's/ /,/g')
++    addconfig1 ${HS_IPSRCALLOWED:+"ipsrcallowed $HS_IPSRCALLOWED"}
++
+     addconfig1 ${HS_MAXCLIENTS:+"maxclients $HS_MAXCLIENTS"}
+     addconfig1 ${HS_RADIUSQSIZE:+"radiusqsize $HS_RADIUSQSIZE"}
+     addconfig1 ${HS_DHCPHASHSIZE:+"dhcphashsize $HS_DHCPHASHSIZE"}
+Index: src/options.h
+===================================================================
+--- src/options.h	(revision 485)
++++ src/options.h	(working copy)
+@@ -302,6 +302,11 @@
+   uint32_t regex_num_pass_throughs;
+ #endif
+ 
++#ifdef ENABLE_LAYER3
++  pass_through ipsrc_pass_throughs[MAX_IPSRC_PASS_THROUGHS];
++  uint32_t ipsrc_num_pass_throughs;
++#endif
++
+   char* uamdomains[MAX_UAM_DOMAINS];
+   int uamdomain_ttl;
+ 
+Index: src/cmdline.ggo
+===================================================================
+--- src/cmdline.ggo	(revision 485)
++++ src/cmdline.ggo	(working copy)
+@@ -266,6 +266,7 @@
+ option "uamdomainfile" - "Load uamdomains (regex) from file" string no
+ 
+ option "layer3" - "Layer3 only" flag off
++option "ipsrcallowed"  - "List of allowed source IP addresses, for Layer3" string no multiple
+ option "patricia" - "Use patricia tries for walled garden lookup" flag off
+ option "redirdnsreq" - "Send DNS query on redirect to pick of DNS based walled garden" flag off
+ 
+Index: src/dhcp.c
+===================================================================
+--- src/dhcp.c	(revision 485)
++++ src/dhcp.c	(working copy)
+@@ -617,6 +617,13 @@
+   struct dhcp_conn_t *p;
+   uint32_t hash;
+ 
++#ifdef ENABLE_LAYER3
++  if (_options.layer3 && this->firstusedconn){
++    /* We want just one dhcp connection, so reuse the same */
++    *conn = this->firstusedconn;
++    return 0;
++  }
++#endif
+   /* Find in hash table */
+   hash = dhcp_hash(hwaddr) & this->hashmask;
+   for (p = this->hash[hash]; p; p = p->nexthash) {
+@@ -904,7 +911,7 @@
+     if (_options.debug) {
+       addr.s_addr = pack_iph->saddr;
+       log_dbg("NFQUEUE: From "MAC_FMT" %s %s", 
+-	      MAC_ACR(hw->hw_addr),
++	      MAC_ARG(hw->hw_addr),
+ 	      inet_ntoa(addr), 
+ 	      result == NF_ACCEPT ? "Accept" : "Drop");
+       
+@@ -2503,6 +2510,26 @@
+     found = 1;
+ #endif
+ 
++#ifdef ENABLE_LAYER3
++  if (!found && _options.ipsrc_pass_throughs){
++#if(_debug_ > 1)
++    log_dbg("Checking ipsrcallowed pass throughs (%d)", _options.ipsrc_num_pass_throughs);
++#endif
++    if (garden_check(_options.ipsrc_pass_throughs,
++                       &_options.ipsrc_num_pass_throughs, &pt,
++                       ipph, !dst
++#ifdef HAVE_PATRICIA
++                       , 0
++#endif
++                       )) {
++      found = 1;
++#if(_debug_ > 1)
++      log_dbg("Packet matches ipsrcallowed");
++#endif
++    }
++  }
++#endif
++
+ #ifdef ENABLE_GARDENACCOUNTING
+   if (_options.uamgardendata) {
+ 
+@@ -5015,7 +5042,7 @@
+     struct pkt_ethhdr_t *ethh = pkt_ethhdr(packet);
+     log_dbg("dhcp_decaps: src="MAC_FMT" "
+ 	    "dst="MAC_FMT" prot=%.4x %d len=%d",
+-	    MAC_ACR(ethh->src),
++	    MAC_ARG(ethh->src),
+ 	    MAC_ARG(ethh->dst),
+ 	    prot, (int)prot, length);
+   }
+Index: src/dns.c
+===================================================================
+--- src/dns.c	(revision 485)
++++ src/dns.c	(working copy)
+@@ -360,6 +360,7 @@
+     break;
+   case 29: log_dbg("LOC record"); break;
+   case 33: log_dbg("SRV record"); break;
++  case 41: log_dbg("EDNS OPT pseudorecord"); break;
+   case 47: log_dbg("NSEC record"); break;
+   }
+ 
+Index: src/main-opt.c
+===================================================================
+--- src/main-opt.c	(revision 485)
++++ src/main-opt.c	(working copy)
+@@ -724,6 +724,18 @@
+ #endif
+       );
+   }
++#ifdef ENABLE_LAYER3
++  for (numargs = 0; numargs < args_info.ipsrcallowed_given; ++numargs) {
++    pass_throughs_from_string(_options.ipsrc_pass_throughs,
++			      MAX_IPSRC_PASS_THROUGHS,
++			      &_options.ipsrc_num_pass_throughs,  
++			      args_info.ipsrcallowed_arg[numargs], 0, 0
++#ifdef HAVE_PATRICIA
++			      , 0
++#endif
++      );
++  }
++#endif
+ 
+   _options.uamauthedallowed = args_info.uamauthedallowed_flag;
+ #ifdef ENABLE_AUTHEDALLOWED
+Index: src/chilli_limits.h
+===================================================================
+--- src/chilli_limits.h	(revision 485)
++++ src/chilli_limits.h	(working copy)
+@@ -134,4 +134,12 @@
+ #define RADIUS_QUEUE_PACKET_PTR 1
+ #endif
+ 
++#ifdef ENABLE_LAYER3
++#ifdef ENABLE_LARGELIMITS
++#define MAX_IPSRC_PASS_THROUGHS               512 /* Max number of allowed IP source addresses, for Layer3 */
++#else
++#define MAX_IPSRC_PASS_THROUGHS               8 /* Max number of allowed IP source addresses, for Layer3 */
+ #endif
++#endif
++
++#endif
+-------------- next part --------------
+Index: src/dns.c
+===================================================================
+--- src/dns.c	(revision 485)
++++ src/dns.c	(working copy)
+@@ -360,6 +360,7 @@
+     break;
+   case 29: log_dbg("LOC record"); break;
+   case 33: log_dbg("SRV record"); break;
++  case 41: log_dbg("EDNS OPT pseudorecord"); break;
+   case 47: log_dbg("NSEC record"); break;
+   }
+ 
+-------------- next part --------------
+Index: conf/functions.in
+===================================================================
+--- conf/functions.in	(revision 485)
++++ conf/functions.in	(working copy)
+@@ -179,6 +179,9 @@
+     HS_UAMALLOW=$(echo $HS_UAMALLOW|sed 's/ /,/g')
+     uamallow=${HS_UAMALLOW:+",$HS_UAMALLOW"}
+ 
++    HS_IPSRCALLOWED=$(echo $HS_IPSRCALLOWED|sed 's/ /,/g')
++    addconfig1 ${HS_IPSRCALLOWED:+"ipsrcallowed $HS_IPSRCALLOWED"}
++
+     addconfig1 ${HS_MAXCLIENTS:+"maxclients $HS_MAXCLIENTS"}
+     addconfig1 ${HS_RADIUSQSIZE:+"radiusqsize $HS_RADIUSQSIZE"}
+     addconfig1 ${HS_DHCPHASHSIZE:+"dhcphashsize $HS_DHCPHASHSIZE"}
+Index: src/dhcp.c
+===================================================================
+--- src/dhcp.c	(revision 485)
++++ src/dhcp.c	(working copy)
+@@ -2503,6 +2503,26 @@
+     found = 1;
+ #endif
+ 
++#ifdef ENABLE_LAYER3
++  if (!found && _options.ipsrc_pass_throughs){
++#if(_debug_ > 1)
++    log_dbg("Checking ipsrcallowed pass throughs (%d)", _options.ipsrc_num_pass_throughs);
++#endif
++    if (garden_check(_options.ipsrc_pass_throughs,
++                       &_options.ipsrc_num_pass_throughs, &pt,
++                       ipph, !dst
++#ifdef HAVE_PATRICIA
++                       , 0
++#endif
++                       )) {
++      found = 1;
++#if(_debug_ > 1)
++      log_dbg("Packet matches ipsrcallowed");
++#endif
++    }
++  }
++#endif
++
+ #ifdef ENABLE_GARDENACCOUNTING
+   if (_options.uamgardendata) {
+ 
+Index: src/main-opt.c
+===================================================================
+--- src/main-opt.c	(revision 485)
++++ src/main-opt.c	(working copy)
+@@ -724,6 +724,18 @@
+ #endif
+       );
+   }
++#ifdef ENABLE_LAYER3
++  for (numargs = 0; numargs < args_info.ipsrcallowed_given; ++numargs) {
++    pass_throughs_from_string(_options.ipsrc_pass_throughs,
++			      MAX_IPSRC_PASS_THROUGHS,
++			      &_options.ipsrc_num_pass_throughs,  
++			      args_info.ipsrcallowed_arg[numargs], 0, 0
++#ifdef HAVE_PATRICIA
++			      , 0
++#endif
++      );
++  }
++#endif
+ 
+   _options.uamauthedallowed = args_info.uamauthedallowed_flag;
+ #ifdef ENABLE_AUTHEDALLOWED
+Index: src/cmdline.ggo
+===================================================================
+--- src/cmdline.ggo	(revision 485)
++++ src/cmdline.ggo	(working copy)
+@@ -266,6 +266,7 @@
+ option "uamdomainfile" - "Load uamdomains (regex) from file" string no
+ 
+ option "layer3" - "Layer3 only" flag off
++option "ipsrcallowed"  - "List of allowed source IP addresses, for Layer3" string no multiple
+ option "patricia" - "Use patricia tries for walled garden lookup" flag off
+ option "redirdnsreq" - "Send DNS query on redirect to pick of DNS based walled garden" flag off
+ 
+Index: src/chilli_limits.h
+===================================================================
+--- src/chilli_limits.h	(revision 485)
++++ src/chilli_limits.h	(working copy)
+@@ -134,4 +134,12 @@
+ #define RADIUS_QUEUE_PACKET_PTR 1
+ #endif
+ 
++#ifdef ENABLE_LAYER3
++#ifdef ENABLE_LARGELIMITS
++#define MAX_IPSRC_PASS_THROUGHS               512 /* Max number of allowed IP source addresses, for Layer3 */
++#else
++#define MAX_IPSRC_PASS_THROUGHS               8 /* Max number of allowed IP source addresses, for Layer3 */
+ #endif
++#endif
++
++#endif
+Index: src/options.h
+===================================================================
+--- src/options.h	(revision 485)
++++ src/options.h	(working copy)
+@@ -302,6 +302,11 @@
+   uint32_t regex_num_pass_throughs;
+ #endif
+ 
++#ifdef ENABLE_LAYER3
++  pass_through ipsrc_pass_throughs[MAX_IPSRC_PASS_THROUGHS];
++  uint32_t ipsrc_num_pass_throughs;
++#endif
++
+   char* uamdomains[MAX_UAM_DOMAINS];
+   int uamdomain_ttl;
+ 
+-------------- next part --------------
+Index: src/dhcp.c
+===================================================================
+--- src/dhcp.c	(revision 485)
++++ src/dhcp.c	(working copy)
+@@ -617,6 +617,13 @@
+   struct dhcp_conn_t *p;
+   uint32_t hash;
+ 
++#ifdef ENABLE_LAYER3
++  if (_options.layer3 && this->firstusedconn){
++    /* We want just one dhcp connection, so reuse the same */
++    *conn = this->firstusedconn;
++    return 0;
++  }
++#endif
+   /* Find in hash table */
+   hash = dhcp_hash(hwaddr) & this->hashmask;
+   for (p = this->hash[hash]; p; p = p->nexthash) {
+-------------- next part --------------
+Index: src/dhcp.c
+===================================================================
+--- src/dhcp.c	(revision 485)
++++ src/dhcp.c	(working copy)
+@@ -904,7 +904,7 @@
+     if (_options.debug) {
+       addr.s_addr = pack_iph->saddr;
+       log_dbg("NFQUEUE: From "MAC_FMT" %s %s", 
+-	      MAC_ACR(hw->hw_addr),
++	      MAC_ARG(hw->hw_addr),
+ 	      inet_ntoa(addr), 
+ 	      result == NF_ACCEPT ? "Accept" : "Drop");
+       
+@@ -5015,7 +5015,7 @@
+     struct pkt_ethhdr_t *ethh = pkt_ethhdr(packet);
+     log_dbg("dhcp_decaps: src="MAC_FMT" "
+ 	    "dst="MAC_FMT" prot=%.4x %d len=%d",
+-	    MAC_ACR(ethh->src),
++	    MAC_ARG(ethh->src),
+ 	    MAC_ARG(ethh->dst),
+ 	    prot, (int)prot, length);
+   }
+
+From xoneca at gmail.com  Mon Dec  2 19:30:33 2013
+From: xoneca at gmail.com (Xabier Oneca -- xOneca)
+Date: Mon, 2 Dec 2013 20:30:33 +0100
+Subject: [Chilli] Does option noradallow effect radconf only?
+In-Reply-To: <d317f058f075429ba2cbee5f6cd435d2@AM3PR05MB323.eurprd05.prod.outlook.com>
+References: <d317f058f075429ba2cbee5f6cd435d2@AM3PR05MB323.eurprd05.prod.outlook.com>
+Message-ID: <CACkgH72SjG1W5UqFJhqXDtEx1ozvqxKkePUZLtQs9sXqMfYg6A@mail.gmail.com>
+
+Hello Steffen,
+
+I did realize the same as you: chilli only checks noradallow when trying to
+download config from RADIUS, but doesn't check it when
+accounting/authorization.
+
+What I don't know is if that option was only intended for the first case,
+or it was "forgotten" to check that also on authorization (help text is
+ambiguous. Doesn't clear it).
+El 02/12/2013 12:16, "Steffen Dettmer" <steffen.dettmer at nomadrail.com>
+escribi?:
+
+> Hi,
+>
+> in short: what is the effect of --noradallow? Also a short and
+> rough answer would be appreciated!
+>
+> I tried the option noradallow but I noticed no effect (I'm not
+> using radconfig). Looking to the source, adding a few log
+> messages and debugging a bit around I think this option is for
+> "configuring chilli parameter using radius" only. Is this
+> correct?
+>
+> Help tells "Allow all sessions when RADIUS is not available" and
+> in ChangeLog I read "Added runtime option --noradallow to
+> authorize sessions when RADIUS is not available", but I'm not
+> sure what kind of sessions are in scope.
+>
+> The option is checked only in cb_radius_auth_conf(), but not in
+> redir_cb_radius_auth_conf(), but I think the latter handles the
+> access request response after captive portal redirection and
+> login, correct? (I verified by adding log statement in "if
+> (_options.noradallow)" and its "else" - but neither one appears
+> in debug output).
+>
+> I noticed that when RADIUS becomes unreachable, authorized
+> clients continue to have access.
+>
+> NB: For me it is hard to see how client sessions could be
+> authorized when RADIUS is not available, especially when
+> considering what should happen if RADIUS comes back. Clients
+> should be checked then, but the details would be complex. I think
+> the used captive portal need to support that, too. If I
+> understood well, this is exactly the topic of Davids explanation
+> at
+> http://www.linkedin.com/groups/Temporarily-allow-access-all-domains-158903.S.165235302
+> .
+>
+> Regards,
+> Steffen
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20131202/b38f451d/attachment-0001.html>
+
+From xoneca at gmail.com  Mon Dec  2 19:53:58 2013
+From: xoneca at gmail.com (Xabier Oneca -- xOneca)
+Date: Mon, 2 Dec 2013 20:53:58 +0100
+Subject: [Chilli] Does option noradallow effect radconf only?
+In-Reply-To: <fe761d81a6aa430d8a9522b970981597@AM3PR05MB323.eurprd05.prod.outlook.com>
+References: <d317f058f075429ba2cbee5f6cd435d2@AM3PR05MB323.eurprd05.prod.outlook.com>
+ <fe761d81a6aa430d8a9522b970981597@AM3PR05MB323.eurprd05.prod.outlook.com>
+Message-ID: <CACkgH721T0mCPuHGc97rt+=A_i9q=rACcS=rOtCa0QJt3dD89A@mail.gmail.com>
+
+> when changing redir_cb_radius_auth_conf() to handle timeout as
+> REDIR_SUCCESS with session_param_defaults(), what would be bad
+> consequences?
+
+The "bad" consecuences (cons) I see are lost statistics and that the user
+gets free connection (in case of a paid service).
+
+The pros are that users won't blame the Wi-Fi not working.
+
+> (Of course it is doubtful whether it makes sense at
+> all to authenticate everyone when no RADIUS server is available,
+> except maybe for test automation or other really special cases).
+
+The correct thing would be to use a backup RADIUS server. But, as I said in
+the "pros", if it/they get out of reach for any reason, hotspot operators
+can continue providing Internet service to their customers.
+
+> --- ../../coova-chilli/coova-chilli-1.3.1-svn/src/redir.c
+2013-01-24 01:32:23.000000000 +0100
+> +++ redir.c     2013-12-02 13:42:48.834270456 +0100
+> @@ -2442,6 +2442,13 @@
+>
+>    if (!pack) { /* Timeout */
+>      log_err(0, "Radius request timed out");
+> +    if (_options.noradallow) {
+> +      log_info("RADIUS timeout but noradallow: default redir session.");
+> +      session_param_defaults(&conn->s_params);
+> +      conn->response = REDIR_SUCCESS;
+> +      return 0;
+> +    }
+> +    log_info("RADIUS timeout and no noradallow: timeout redir session.");
+>      conn->response = REDIR_FAILED_TIMEOUT;
+>      return 0;
+>    }
+
+I will test the patch, but I vote for the inclusion in the mainline version.
+
+Cheers,
+
+Xabier Oneca_,,_
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20131202/d70b1b1a/attachment.html>
+
+From trandatnh at gmail.com  Tue Dec  3 08:01:26 2013
+From: trandatnh at gmail.com (Le Tran Dat)
+Date: Tue, 3 Dec 2013 16:01:26 +0800
+Subject: [Chilli] chilliJSON: request timed out (or reply is not valid JS)
+Message-ID: <CAOyZXpRqNXQ-j6ACRidicS0KAFezDQ2AshFP21PLX-XkZLrNAQ@mail.gmail.com>
+
+Hi all,
+
+I trying to troubleshoot why CoovaChilli can not read radius's reply
+message:
+
+*You are already logged in - access denied*
+
+
+If an account is already logged in to radius and another attempt to use the
+same account to log on then CoovaChilli should show the message  "*You are
+already logged in - access denied".*
+
+In my case, CoovaChilli keeps showing waiting page. This is my CoovaChilli
++ Radius debug log
+
+*Radius: - Rejected "You are already logged in - access denied".*
+
+> rad_recv: Accounting-Request packet from host 192.168.0.101 port 37822,
+> id=65, length=207
+>         ChilliSpot-Version = "1.3.0"
+>         ChilliSpot-Attr-10 = 0x00000002
+>         Event-Timestamp = "Dec  2 2013 14:52:41 GMT"
+>         User-Name = "win"
+>         Acct-Input-Octets = 183
+>         Acct-Output-Octets = 104
+>         Acct-Input-Gigawords = 0
+>         Acct-Output-Gigawords = 0
+>         Acct-Input-Packets = 3
+>         Acct-Output-Packets = 2
+>         Acct-Session-Time = 73
+>         Acct-Terminate-Cause = User-Request
+>         Acct-Status-Type = Stop
+>         Acct-Session-Id = "529d89bb00000001"
+>         Framed-IP-Address = 192.168.1.2
+>         NAS-Port-Type = Wireless-802.11
+>         NAS-Port = 1
+>         NAS-Port-Id = "00000001"
+>         Calling-Station-Id = "00-0E-35-A1-5A-B9"
+>         Called-Station-Id = "04-F0-21-0A-EC-C0"
+>         NAS-IP-Address = 192.168.1.1
+>         NAS-Identifier = "nas01"
+>   WARNING: Empty preacct section.  Using default return values.
+> # Executing section accounting from file /etc/raddb/sites/default
+> +- entering group accounting {...}
+> [sql]   expand: %{User-Name} -> win
+> [sql] sql_set_user escaped user --> 'win'
+> [sql]   expand: %{Acct-Input-Gigawords} -> 0
+> [sql]   expand: %{Acct-Input-Octets} -> 183
+> [sql]   expand: %{Acct-Output-Gigawords} -> 0
+> [sql]   expand: %{Acct-Output-Octets} -> 104
+> [sql]   expand: %{Acct-Delay-Time} ->
+> [sql]   ... expanding second conditional
+> [sql]   expand:            UPDATE radacct SET              acctstoptime
+>     = '%S',              acctsessiontime    = '%{Acct-Session-Time}',
+>        acctinputoctets    = '%{%{Acct-Input-Gigawords}:-0}' << 32 |
+>                           '%{%{Acct-Input-Octets}:-0}',
+>  acctoutputoctets   = '%{%{Acct-Output-Gigawords}:-0}' << 32 |
+>                       '%{%{Acct-Output-Octets}:-0}',
+>  acctterminatecause = '%{Acct-Terminate-Cause}',              acctstopdelay
+>      = '%{%{Acct-Delay-Time}:-0}',              connectinfo_stop   =
+> '%{Connect-Info}'           WHERE acctsessionid   = '%{Acct-Session-Id}'
+>         AND username          = '%{SQL-User-Name}'           AND
+> nasipaddress      = '%{NAS-IP-Address}';           delete FROM kickuser
+>       where user_mac = '%{Calling-Station-Id}'  ->            UPDATE
+> radacct SET              acctstoptime       = '2013-12-03 07:36:37',
+>        acctsessiontime    = '73',              acctinputoctets    = '0' <<
+> 32 |
+> rlm_sql (sql): Reserving sql socket id: 4
+> rlm_sql (sql): Released sql socket id: 4
+> ++[sql] returns ok
+> ++[exec] returns noop
+> Sending Accounting-Response of id 65 to 192.168.0.101 port 37822
+> Finished request 0.
+> Cleaning up request 0 ID 65 with timestamp +8
+> Going to the next request
+> Ready to process requests.
+> rad_recv: Access-Request packet from host 192.168.0.101 port 37474,
+> id=193, length=238
+>         ChilliSpot-Version = "1.3.0"
+>         User-Name = "pc_free"
+>         CHAP-Challenge = 0xbdee061bf023b7419ebf2ab5f72558ef
+>         CHAP-Password = 0x000c106595a19c42d402c69a3e0ef60e14
+>         Service-Type = Login-User
+>         Acct-Session-Id = "529d8a0500000001"
+>         Framed-IP-Address = 192.168.1.2
+>         NAS-Port-Type = Wireless-802.11
+>         NAS-Port = 1
+>         NAS-Port-Id = "00000001"
+>         Calling-Station-Id = "00-0E-35-A1-5A-B9"
+>         Called-Station-Id = "04-F0-21-0A-EC-C0"
+>         NAS-IP-Address = 192.168.1.1
+>         NAS-Identifier = "nas01"
+>         WISPr-Logoff-URL = "http://192.168.1.1:3990/logoff"
+>         Message-Authenticator = 0xd915b0c9f65d05890df3f013da5eb1ff
+> # Executing section authorize from file /etc/raddb/sites/default
+> +- entering group authorize {...}
+> [chap] Setting 'Auth-Type := CHAP'
+> ++[chap] returns ok
+> [sql]   expand: %{User-Name} -> pc_free
+> [sql] sql_set_user escaped user --> 'pc_free'
+> rlm_sql (sql): Reserving sql socket id: 3
+> [sql]   expand: SELECT id, username, attribute, value, op           FROM
+> radcheck           WHERE username = '%{SQL-User-Name}'           ORDER BY
+> id -> SELECT id, username, attribute, value, op           FROM radcheck
+>       WHERE username = 'pc_free'           ORDER BY id
+> [sql] User found in radcheck table
+> [sql]   expand: SELECT id, username, attribute, value, op           FROM
+> radreply           WHERE username = '%{SQL-User-Name}'           ORDER BY
+> id -> SELECT id, username, attribute, value, op           FROM radreply
+>       WHERE username = 'pc_free'           ORDER BY id
+> [sql]   expand: SELECT groupname           FROM radusergroup
+> WHERE username = '%{SQL-User-Name}'           ORDER BY priority -> SELECT
+> groupname           FROM radusergroup           WHERE username = 'pc_free'
+>           ORDER BY priority
+> [sql]   expand: SELECT id, groupname, attribute,           Value, op
+>     FROM radgroupcheck           WHERE groupname = '%{Sql-Group}'
+> ORDER BY id -> SELECT id, groupname, attribute,           Value, op
+>   FROM radgroupcheck           WHERE groupname = '4'           ORDER BY id
+> [sql] User found in group 4
+> [sql]   expand: SELECT id, groupname, attribute,           value, op
+>     FROM radgroupreply           WHERE groupname = '%{Sql-Group}'
+> ORDER BY id -> SELECT id, groupname, attribute,           value, op
+>   FROM radgroupreply           WHERE groupname = '4'           ORDER BY id
+> rlm_sql (sql): Released sql socket id: 3
+> ++[sql] returns ok
+> ++? if (notfound)
+> ? Evaluating (notfound) -> FALSE
+> ++? if (notfound) -> FALSE
+> rlm_sqlcounter: Entering module authorize code
+> rlm_sqlcounter: Could not find Check item value pair
+> ++[max-total-octets] returns noop
+> ++? if (reject)
+> ? Evaluating (reject) -> FALSE
+> ++? if (reject) -> FALSE
+> rlm_sqlcounter: Entering module authorize code
+> rlm_sqlcounter: Could not find Check item value pair
+> ++[max-total-dl-octets] returns noop
+> ++? if (reject)
+> ? Evaluating (reject) -> FALSE
+> ++? if (reject) -> FALSE
+> rlm_sqlcounter: Entering module authorize code
+> rlm_sqlcounter: Could not find Check item value pair
+> ++[max-total-ul-octets] returns noop
+> ++? if (reject)
+> ? Evaluating (reject) -> FALSE
+> ++? if (reject) -> FALSE
+> rlm_sqlcounter: Entering module authorize code
+> rlm_sqlcounter: Could not find Check item value pair
+> ++[max-session-timeout] returns noop
+> ++? if (reject)
+> ? Evaluating (reject) -> FALSE
+> ++? if (reject) -> FALSE
+> rlm_sqlcounter: Entering module authorize code
+> rlm_sqlcounter: Could not find Check item value pair
+> ++[accessperiod] returns noop
+> ++? if (reject)
+> ? Evaluating (reject) -> FALSE
+> ++? if (reject) -> FALSE
+> Found Auth-Type = CHAP
+> # Executing group from file /etc/raddb/sites/default
+> +- entering group CHAP {...}
+> [chap] login attempt by "pc_free" with CHAP password
+> [chap] Using clear text password "123123" for user pc_free authentication.
+> [chap] chap user pc_free authenticated succesfully
+> ++[chap] returns ok
+> ++? if (reject)
+> ? Evaluating (reject) -> FALSE
+> ++? if (reject) -> FALSE
+> # Executing section session from file /etc/raddb/sites/default
+> +- entering group session {...}
+> [sql]   expand: %{User-Name} -> pc_free
+> [sql] sql_set_user escaped user --> 'pc_free'
+> [sql]   expand: SELECT COUNT(*)                              FROM radacct
+>                              WHERE username = '%{SQL-User-Name}'
+>                    AND   calledstationid = '%{Called-Station-Id}'
+>                    AND   calledstationid = '%{Called-Station-Id}'
+>                    AND acctstoptime IS NULL -> SELECT COUNT(*)
+>                  FROM radacct                              WHERE username =
+> 'pc_free'                              AND   calledstationid =
+> '04-F0-21-0A-EC-C0'                              AND   calledstationid =
+> '04-F0-21-0A-EC-C0'                              AND acctstoptime IS NULL
+> rlm_sql (sql): Reserving sql socket id: 2
+> [sql]   expand: SELECT radacctid, acctsessionid, username,
+>                nasipaddress, nasportid, framedipaddress,
+>              callingstationid, framedprotocol
+>  FROM radacct                                WHERE username =
+> '%{SQL-User-Name}'                                AND   calledstationid =
+> '%{Called-Station-Id}'                                AND   calledstationid
+> = '%{Called-Station-Id}'                                AND acctstoptime IS
+> NULL -> SELECT radacctid, acctsessionid, username,
+>        nasipaddress, nasportid, framedipaddress,
+>      callingstationid, framedprotocol                                FROM
+> radacct                                WHERE username = 'pc_free'
+>                      AND   calledstationid = '04-F0-21-0A-EC-C0'
+>                      AND   calledstationid = '04-F0-21-0A-EC-C0'
+>                      AND acctstoptime IS NULL
+> checkrad: No NAS type, or type "other" not checking
+> checkrad: No NAS type, or type "other" not checking
+> rlm_sql (sql): Released sql socket id: 2
+> ++[sql] returns ok
+>
+>
+>
+>
+>
+> *Delaying reject of request 1 for 1 seconds Going to the next
+> requestWaking up in 0.9 seconds.Sending delayed reject for request 1Sending
+> Access-Reject of id 193 to 192.168.0.101 port 37474        Reply-Message :=
+> "\r\nYou are already logged in - access denied\r\n\n"*
+> Waking up in 4.9 seconds.
+> Cleaning up request 1 ID 193 with timestamp +21
+> Ready to process requests.
+
+
+*CoovaChilli log:*
+
+> chilliController.logon( "pc_free" , "123123 " )
+> chilliController.logon: asking for a new challenge
+> chilliJSON: getting http://1.0.0.1/json/status . Waiting for reply ...
+> enter chilliJSON.reply
+> chilliJSON: JSON reply received in 63 ms
+>     version = 1.0
+>     clientState = 0
+>     challenge = bdee061bf023b7419ebf2ab5f72558ef
+>     location = [object Object]
+>       name = HotSpot
+>     redir = [object Object]
+>       originalURL = http://www.google.com.sg/
+>       redirectionURL =
+>       logoutURL = http://192.168.1.1:3990/logoff
+>       ipAddress = 192.168.1.2
+>       macAddress = 00-0E-35-A1-5A-B9
+> Entering logonStep 2
+> chilliController.logonStep2: Got challenge =
+> bdee061bf023b7419ebf2ab5f72558ef
+> chilliController.logonStep2: Calculating CHAP-Password =
+> 0c106595a19c42d402c69a3e0ef60e14
+>
+> *chilliJSON: getting
+> http://1.0.0.1/json/logon?username=pc_free&response=0c106595a19c42d402c69a3e0ef60e14&userurl=http%3a%2f%2fwww.google.com.sg%2f
+> <http://1.0.0.1/json/logon?username=pc_free&response=0c106595a19c42d402c69a3e0ef60e14&userurl=http%3a%2f%2fwww.google.com.sg%2f>
+> . Waiting for reply ... chilliJSON: request timed out (or reply is not
+> valid JS)*
+
+
+I attached logs of successful case as well
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20131203/a89ec16b/attachment-0001.html>
+-------------- next part --------------
+rad_recv: Access-Request packet from host 192.168.0.101 port 41360, id=201, length=234
+        ChilliSpot-Version = "1.3.0"
+        User-Name = "win"
+        CHAP-Challenge = 0x08d4e2b8583eb807d297b3c31d6486d2
+        CHAP-Password = 0x00b646ade54a0a7fcbb2acd99763c4404e
+        Service-Type = Login-User
+        Acct-Session-Id = "529d8b1400000001"
+        Framed-IP-Address = 192.168.1.2
+        NAS-Port-Type = Wireless-802.11
+        NAS-Port = 1
+        NAS-Port-Id = "00000001"
+        Calling-Station-Id = "00-0E-35-A1-5A-B9"
+        Called-Station-Id = "04-F0-21-0A-EC-C0"
+        NAS-IP-Address = 192.168.1.1
+        NAS-Identifier = "nas01"
+        WISPr-Logoff-URL = "http://192.168.1.1:3990/logoff"
+        Message-Authenticator = 0xe8d082a6011655514db2c0943bd7b477
+# Executing section authorize from file /etc/raddb/sites/default
++- entering group authorize {...}
+[chap] Setting 'Auth-Type := CHAP'
+++[chap] returns ok
+[sql]   expand: %{User-Name} -> win
+[sql] sql_set_user escaped user --> 'win'
+rlm_sql (sql): Reserving sql socket id: 0
+[sql]   expand: SELECT id, username, attribute, value, op           FROM radcheck           WHERE username = '%{SQL-User-Name}'           ORDER BY id -> SELECT id, username, attribute, value, op           FROM radcheck           WHERE username = 'win'           ORDER BY id
+[sql] User found in radcheck table
+[sql]   expand: SELECT id, username, attribute, value, op           FROM radreply           WHERE username = '%{SQL-User-Name}'           ORDER BY id -> SELECT id, username, attribute, value, op           FROM radreply           WHERE username = 'win'           ORDER BY id
+[sql]   expand: SELECT groupname           FROM radusergroup           WHERE username = '%{SQL-User-Name}'           ORDER BY priority -> SELECT groupname           FROM radusergroup           WHERE username = 'win'           ORDER BY priority
+[sql]   expand: SELECT id, groupname, attribute,           Value, op           FROM radgroupcheck           WHERE groupname = '%{Sql-Group}'           ORDER BY id -> SELECT id, groupname, attribute,           Value, op           FROM radgroupcheck           WHERE groupname = '4'           ORDER BY id
+[sql] User found in group 4
+[sql]   expand: SELECT id, groupname, attribute,           value, op           FROM radgroupreply           WHERE groupname = '%{Sql-Group}'           ORDER BY id -> SELECT id, groupname, attribute,           value, op           FROM radgroupreply           WHERE groupname = '4'           ORDER BY id
+rlm_sql (sql): Released sql socket id: 0
+++[sql] returns ok
+++? if (notfound)
+? Evaluating (notfound) -> FALSE
+++? if (notfound) -> FALSE
+rlm_sqlcounter: Entering module authorize code
+rlm_sqlcounter: Could not find Check item value pair
+++[max-total-octets] returns noop
+++? if (reject)
+? Evaluating (reject) -> FALSE
+++? if (reject) -> FALSE
+rlm_sqlcounter: Entering module authorize code
+rlm_sqlcounter: Could not find Check item value pair
+++[max-total-dl-octets] returns noop
+++? if (reject)
+? Evaluating (reject) -> FALSE
+++? if (reject) -> FALSE
+rlm_sqlcounter: Entering module authorize code
+rlm_sqlcounter: Could not find Check item value pair
+++[max-total-ul-octets] returns noop
+++? if (reject)
+? Evaluating (reject) -> FALSE
+++? if (reject) -> FALSE
+rlm_sqlcounter: Entering module authorize code
+rlm_sqlcounter: Could not find Check item value pair
+++[max-session-timeout] returns noop
+++? if (reject)
+? Evaluating (reject) -> FALSE
+++? if (reject) -> FALSE
+rlm_sqlcounter: Entering module authorize code
+rlm_sqlcounter: Could not find Check item value pair
+++[accessperiod] returns noop
+++? if (reject)
+? Evaluating (reject) -> FALSE
+++? if (reject) -> FALSE
+Found Auth-Type = CHAP
+# Executing group from file /etc/raddb/sites/default
++- entering group CHAP {...}
+[chap] login attempt by "win" with CHAP password
+[chap] Using clear text password "123123" for user win authentication.
+[chap] chap user win authenticated succesfully
+++[chap] returns ok
+++? if (reject)
+? Evaluating (reject) -> FALSE
+++? if (reject) -> FALSE
+# Executing section session from file /etc/raddb/sites/default
++- entering group session {...}
+[sql]   expand: %{User-Name} -> win
+[sql] sql_set_user escaped user --> 'win'
+[sql]   expand: SELECT COUNT(*)                              FROM radacct                              WHERE username = '%{SQL-User-Name}'                              AND   calledstationid = '%{Called-Station-Id}'                              AND   calledstationid = '%{Called-Station-Id}'                              AND acctstoptime IS NULL -> SELECT COUNT(*)                              FROM radacct                              WHERE username = 'win'                              AND   calledstationid = '04-F0-21-0A-EC-C0'                              AND   calledstationid = '04-F0-21-0A-EC-C0'                              AND acctstoptime IS NULL
+rlm_sql (sql): Reserving sql socket id: 4
+rlm_sql (sql): Released sql socket id: 4
+++[sql] returns ok
+  WARNING: Empty post-auth section.  Using default return values.
+Sending Access-Accept of id 201 to 192.168.0.101 port 41360
+        ChilliSpot-Bandwidth-Max-Up := 102400
+        ChilliSpot-Bandwidth-Max-Down := 102400
+Finished request 3.
+Going to the next request
+Waking up in 4.9 seconds.
+rad_recv: Accounting-Request packet from host 192.168.0.101 port 37822, id=67, length=159
+        ChilliSpot-Version = "1.3.0"
+        ChilliSpot-Attr-10 = 0x00000002
+        Event-Timestamp = "Dec  2 2013 14:57:12 GMT"
+        User-Name = "win"
+        Acct-Status-Type = Start
+        Acct-Session-Id = "529d8b1400000001"
+        Framed-IP-Address = 192.168.1.2
+        NAS-Port-Type = Wireless-802.11
+        NAS-Port = 1
+        NAS-Port-Id = "00000001"
+        Calling-Station-Id = "00-0E-35-A1-5A-B9"
+        Called-Station-Id = "04-F0-21-0A-EC-C0"
+        NAS-IP-Address = 192.168.1.1
+        NAS-Identifier = "nas01"
+  WARNING: Empty preacct section.  Using default return values.
+# Executing section accounting from file /etc/raddb/sites/default
++- entering group accounting {...}
+[sql]   expand: %{User-Name} -> win
+[sql] sql_set_user escaped user --> 'win'
+[sql]   expand: %{Acct-Delay-Time} ->
+[sql]   ... expanding second conditional
+[sql] WARNING: Unknown module "X-Ascend-Session-Svr-Key" in string expansion "%"
+[sql]   ... expanding second conditional
+[sql]   expand: %{Tropos-Average-RSSI} ->
+[sql]   ... expanding second conditional
+[sql]   expand: %{ChilliSpot-DHCP-Hostname} ->
+[sql]   ... expanding second conditional
+[sql]   expand: %{ChilliSpot-DHCP-Vendor-Class-Id} ->
+[sql]   ... expanding second conditional
+[sql]   expand:            INSERT INTO radacct             (acctsessionid,    acctuniqueid,     username,              realm,            nasipaddress,     nasportid,              nasporttype,      acctstarttime,    acctstoptime,              acctsessiontime,  acctauthentic,    connectinfo_start,              connectinfo_stop, acctinputoctets,  acctoutputoctets,              calledstationid,  callingstationid, acctterminatecause,              servicetype,      framedprotocol,   framedipaddress,              acctstartdelay,   acctstopdelay,    xascendsessionsvrkey,              rssi, hostname,         hostarch, groupname )           VALUES             ('%{Acct-Session-Id}', '%{Acct-Unique-Session-Id}',              '%{SQL-User-Name}',              '%{Realm}', '%{NAS-IP-Address}', '%{NAS-Port}',              '%{NAS-Port-Type}', '%S', NULL,              '0', '%{Acct-Authentic}', '%{Connect-Info}',              '', '0', '0',              '%{Called-Station-Id}', '%{Calling-Station-Id}', '',              '%{Service-
+rlm_sql (sql): Reserving sql socket id: 3
+rlm_sql (sql): Released sql socket id: 3
+++[sql] returns ok
+++[exec] returns noop
+Sending Accounting-Response of id 67 to 192.168.0.101 port 37822
+Finished request 4.
+Cleaning up request 4 ID 67 with timestamp +280
+Going to the next request
+Waking up in 4.9 seconds.
+Cleaning up request 3 ID 201 with timestamp +280
+Ready to process requests.
+-------------- next part --------------
+rad_recv: Accounting-Request packet from host 192.168.0.101 port 37822, id=65, length=207
+        ChilliSpot-Version = "1.3.0"
+        ChilliSpot-Attr-10 = 0x00000002
+        Event-Timestamp = "Dec  2 2013 14:52:41 GMT"
+        User-Name = "win"
+        Acct-Input-Octets = 183
+        Acct-Output-Octets = 104
+        Acct-Input-Gigawords = 0
+        Acct-Output-Gigawords = 0
+        Acct-Input-Packets = 3
+        Acct-Output-Packets = 2
+        Acct-Session-Time = 73
+        Acct-Terminate-Cause = User-Request
+        Acct-Status-Type = Stop
+        Acct-Session-Id = "529d89bb00000001"
+        Framed-IP-Address = 192.168.1.2
+        NAS-Port-Type = Wireless-802.11
+        NAS-Port = 1
+        NAS-Port-Id = "00000001"
+        Calling-Station-Id = "00-0E-35-A1-5A-B9"
+        Called-Station-Id = "04-F0-21-0A-EC-C0"
+        NAS-IP-Address = 192.168.1.1
+        NAS-Identifier = "nas01"
+  WARNING: Empty preacct section.  Using default return values.
+# Executing section accounting from file /etc/raddb/sites/default
++- entering group accounting {...}
+[sql]   expand: %{User-Name} -> win
+[sql] sql_set_user escaped user --> 'win'
+[sql]   expand: %{Acct-Input-Gigawords} -> 0
+[sql]   expand: %{Acct-Input-Octets} -> 183
+[sql]   expand: %{Acct-Output-Gigawords} -> 0
+[sql]   expand: %{Acct-Output-Octets} -> 104
+[sql]   expand: %{Acct-Delay-Time} ->
+[sql]   ... expanding second conditional
+[sql]   expand:            UPDATE radacct SET              acctstoptime       = '%S',              acctsessiontime    = '%{Acct-Session-Time}',              acctinputoctets    = '%{%{Acct-Input-Gigawords}:-0}' << 32 |                                   '%{%{Acct-Input-Octets}:-0}',              acctoutputoctets   = '%{%{Acct-Output-Gigawords}:-0}' << 32 |                                   '%{%{Acct-Output-Octets}:-0}',              acctterminatecause = '%{Acct-Terminate-Cause}',              acctstopdelay      = '%{%{Acct-Delay-Time}:-0}',              connectinfo_stop   = '%{Connect-Info}'           WHERE acctsessionid   = '%{Acct-Session-Id}'           AND username          = '%{SQL-User-Name}'           AND nasipaddress      = '%{NAS-IP-Address}';           delete FROM kickuser           where user_mac = '%{Calling-Station-Id}'  ->            UPDATE radacct SET              acctstoptime       = '2013-12-03 07:36:37',              acctsessiontime    = '73',              acctinputoctets    = '0' << 32 |
+rlm_sql (sql): Reserving sql socket id: 4
+rlm_sql (sql): Released sql socket id: 4
+++[sql] returns ok
+++[exec] returns noop
+Sending Accounting-Response of id 65 to 192.168.0.101 port 37822
+Finished request 0.
+Cleaning up request 0 ID 65 with timestamp +8
+Going to the next request
+Ready to process requests.
+rad_recv: Access-Request packet from host 192.168.0.101 port 37474, id=193, length=238
+        ChilliSpot-Version = "1.3.0"
+        User-Name = "pc_free"
+        CHAP-Challenge = 0xbdee061bf023b7419ebf2ab5f72558ef
+        CHAP-Password = 0x000c106595a19c42d402c69a3e0ef60e14
+        Service-Type = Login-User
+        Acct-Session-Id = "529d8a0500000001"
+        Framed-IP-Address = 192.168.1.2
+        NAS-Port-Type = Wireless-802.11
+        NAS-Port = 1
+        NAS-Port-Id = "00000001"
+        Calling-Station-Id = "00-0E-35-A1-5A-B9"
+        Called-Station-Id = "04-F0-21-0A-EC-C0"
+        NAS-IP-Address = 192.168.1.1
+        NAS-Identifier = "nas01"
+        WISPr-Logoff-URL = "http://192.168.1.1:3990/logoff"
+        Message-Authenticator = 0xd915b0c9f65d05890df3f013da5eb1ff
+# Executing section authorize from file /etc/raddb/sites/default
++- entering group authorize {...}
+[chap] Setting 'Auth-Type := CHAP'
+++[chap] returns ok
+[sql]   expand: %{User-Name} -> pc_free
+[sql] sql_set_user escaped user --> 'pc_free'
+rlm_sql (sql): Reserving sql socket id: 3
+[sql]   expand: SELECT id, username, attribute, value, op           FROM radcheck           WHERE username = '%{SQL-User-Name}'           ORDER BY id -> SELECT id, username, attribute, value, op           FROM radcheck           WHERE username = 'pc_free'           ORDER BY id
+[sql] User found in radcheck table
+[sql]   expand: SELECT id, username, attribute, value, op           FROM radreply           WHERE username = '%{SQL-User-Name}'           ORDER BY id -> SELECT id, username, attribute, value, op           FROM radreply           WHERE username = 'pc_free'           ORDER BY id
+[sql]   expand: SELECT groupname           FROM radusergroup           WHERE username = '%{SQL-User-Name}'           ORDER BY priority -> SELECT groupname           FROM radusergroup           WHERE username = 'pc_free'           ORDER BY priority
+[sql]   expand: SELECT id, groupname, attribute,           Value, op           FROM radgroupcheck           WHERE groupname = '%{Sql-Group}'           ORDER BY id -> SELECT id, groupname, attribute,           Value, op           FROM radgroupcheck           WHERE groupname = '4'           ORDER BY id
+[sql] User found in group 4
+[sql]   expand: SELECT id, groupname, attribute,           value, op           FROM radgroupreply           WHERE groupname = '%{Sql-Group}'           ORDER BY id -> SELECT id, groupname, attribute,           value, op           FROM radgroupreply           WHERE groupname = '4'           ORDER BY id
+rlm_sql (sql): Released sql socket id: 3
+++[sql] returns ok
+++? if (notfound)
+? Evaluating (notfound) -> FALSE
+++? if (notfound) -> FALSE
+rlm_sqlcounter: Entering module authorize code
+rlm_sqlcounter: Could not find Check item value pair
+++[max-total-octets] returns noop
+++? if (reject)
+? Evaluating (reject) -> FALSE
+++? if (reject) -> FALSE
+rlm_sqlcounter: Entering module authorize code
+rlm_sqlcounter: Could not find Check item value pair
+++[max-total-dl-octets] returns noop
+++? if (reject)
+? Evaluating (reject) -> FALSE
+++? if (reject) -> FALSE
+rlm_sqlcounter: Entering module authorize code
+rlm_sqlcounter: Could not find Check item value pair
+++[max-total-ul-octets] returns noop
+++? if (reject)
+? Evaluating (reject) -> FALSE
+++? if (reject) -> FALSE
+rlm_sqlcounter: Entering module authorize code
+rlm_sqlcounter: Could not find Check item value pair
+++[max-session-timeout] returns noop
+++? if (reject)
+? Evaluating (reject) -> FALSE
+++? if (reject) -> FALSE
+rlm_sqlcounter: Entering module authorize code
+rlm_sqlcounter: Could not find Check item value pair
+++[accessperiod] returns noop
+++? if (reject)
+? Evaluating (reject) -> FALSE
+++? if (reject) -> FALSE
+Found Auth-Type = CHAP
+# Executing group from file /etc/raddb/sites/default
++- entering group CHAP {...}
+[chap] login attempt by "pc_free" with CHAP password
+[chap] Using clear text password "123123" for user pc_free authentication.
+[chap] chap user pc_free authenticated succesfully
+++[chap] returns ok
+++? if (reject)
+? Evaluating (reject) -> FALSE
+++? if (reject) -> FALSE
+# Executing section session from file /etc/raddb/sites/default
++- entering group session {...}
+[sql]   expand: %{User-Name} -> pc_free
+[sql] sql_set_user escaped user --> 'pc_free'
+[sql]   expand: SELECT COUNT(*)                              FROM radacct                              WHERE username = '%{SQL-User-Name}'                              AND   calledstationid = '%{Called-Station-Id}'                              AND   calledstationid = '%{Called-Station-Id}'                              AND acctstoptime IS NULL -> SELECT COUNT(*)                              FROM radacct                              WHERE username = 'pc_free'                              AND   calledstationid = '04-F0-21-0A-EC-C0'                              AND   calledstationid = '04-F0-21-0A-EC-C0'                              AND acctstoptime IS NULL
+rlm_sql (sql): Reserving sql socket id: 2
+[sql]   expand: SELECT radacctid, acctsessionid, username,                                nasipaddress, nasportid, framedipaddress,                                callingstationid, framedprotocol                                FROM radacct                                WHERE username = '%{SQL-User-Name}'                                AND   calledstationid = '%{Called-Station-Id}'                                AND   calledstationid = '%{Called-Station-Id}'                                AND acctstoptime IS NULL -> SELECT radacctid, acctsessionid, username,                                nasipaddress, nasportid, framedipaddress,                                callingstationid, framedprotocol                                FROM radacct                                WHERE username = 'pc_free'                                AND   calledstationid = '04-F0-21-0A-EC-C0'                                AND   calledstationid = '04-F0-21-0A-EC-C0'                                AND acctstoptime IS NULL
+checkrad: No NAS type, or type "other" not checking
+checkrad: No NAS type, or type "other" not checking
+rlm_sql (sql): Released sql socket id: 2
+++[sql] returns ok
+Delaying reject of request 1 for 1 seconds
+Going to the next request
+Waking up in 0.9 seconds.
+Sending delayed reject for request 1
+Sending Access-Reject of id 193 to 192.168.0.101 port 37474
+        Reply-Message := "\r\nYou are already logged in - access denied\r\n\n"
+Waking up in 4.9 seconds.
+Cleaning up request 1 ID 193 with timestamp +21
+Ready to process requests.
+-------------- next part --------------
+chilliController.logon( "win" , "123123 " )
+chilliController.logon: asking for a new challenge 
+scriptElement: http://1.0.0.1/json/status?callback=chilliJSON.reply&0.8985460929106921
+chilliJSON: getting http://1.0.0.1/json/status . Waiting for reply ...
+enter chilliJSON.reply 
+chilliJSON: JSON reply received in 275 ms
+    version = 1.0
+    clientState = 0
+    challenge = 08d4e2b8583eb807d297b3c31d6486d2
+    location = [object Object]
+      name = HotSpot
+    redir = [object Object]
+      originalURL = 
+      redirectionURL = 
+      logoutURL = http://192.168.1.1:3990/logoff
+      ipAddress = 192.168.1.2
+      macAddress = 00-0E-35-A1-5A-B9
+Entering logonStep 2
+chilliController.logonStep2: Got challenge = 08d4e2b8583eb807d297b3c31d6486d2
+chilliController.logonStep2: Calculating CHAP-Password = b646ade54a0a7fcbb2acd99763c4404e
+scriptElement: http://1.0.0.1/json/logon?username=win&response=b646ade54a0a7fcbb2acd99763c4404e&userurl=http%3a%2f%2fwww.google.com.sg%2f&callback=chilliJSON.reply&0.18908492452464998
+chilliJSON: getting http://1.0.0.1/json/logon?username=win&response=b646ade54a0a7fcbb2acd99763c4404e&userurl=http%3a%2f%2fwww.google.com.sg%2f . Waiting for reply ...
+enter chilliJSON.reply 
+chilliJSON: JSON reply received in 43 ms
+    version = 1.0
+    clientState = 1
+    redir = [object Object]
+      originalURL = http://www.google.com.sg/
+      redirectionURL = 
+      logoutURL = http://192.168.1.1:3990/logoff
+      ipAddress = 192.168.1.2
+      macAddress = 00-0E-35-A1-5A-B9
+    session = [object Object]
+      sessionId = 529d8b1400000001
+      userName = win
+      startTime = 1385996232
+      sessionTimeout = 0
+      idleTimeout = 300
+    accounting = [object Object]
+      sessionTime = 0
+      idleTime = 0
+      inputOctets = 0
+      outputOctets = 0
+      inputGigawords = 0
+      outputGigawords = 0
+      viewPoint = client
+chilliController.processReply: Calling onUpdate. clienState = 1
+Update UI is called. chilliController.clientState = 1
+-------------- next part --------------
+chilliController.processReply: Calling onUpdate. clienState = 0
+Update UI is called. chilliController.clientState = 0
+chilliController.logon( "pc_free" , "123123 " )
+chilliController.logon: asking for a new challenge 
+chilliJSON: getting http://1.0.0.1/json/status . Waiting for reply ...
+enter chilliJSON.reply 
+chilliJSON: JSON reply received in 63 ms
+    version = 1.0
+    clientState = 0
+    challenge = bdee061bf023b7419ebf2ab5f72558ef
+    location = [object Object]
+      name = HotSpot
+    redir = [object Object]
+      originalURL = http://www.google.com.sg/
+      redirectionURL = 
+      logoutURL = http://192.168.1.1:3990/logoff
+      ipAddress = 192.168.1.2
+      macAddress = 00-0E-35-A1-5A-B9
+Entering logonStep 2
+chilliController.logonStep2: Got challenge = bdee061bf023b7419ebf2ab5f72558ef
+chilliController.logonStep2: Calculating CHAP-Password = 0c106595a19c42d402c69a3e0ef60e14
+chilliJSON: getting http://1.0.0.1/json/logon?username=pc_free&response=0c106595a19c42d402c69a3e0ef60e14&userurl=http%3a%2f%2fwww.google.com.sg%2f . Waiting for reply ...
+chilliJSON: request timed out (or reply is not valid JS)
+
+From steffen.dettmer at nomadrail.com  Tue Dec  3 10:06:58 2013
+From: steffen.dettmer at nomadrail.com (Steffen Dettmer)
+Date: Tue, 3 Dec 2013 10:06:58 +0000
+Subject: [Chilli] Does option noradallow effect radconf only?
+In-Reply-To: <CACkgH721T0mCPuHGc97rt+=A_i9q=rACcS=rOtCa0QJt3dD89A@mail.gmail.com>
+References: <d317f058f075429ba2cbee5f6cd435d2@AM3PR05MB323.eurprd05.prod.outlook.com>
+ <fe761d81a6aa430d8a9522b970981597@AM3PR05MB323.eurprd05.prod.outlook.com>
+ <CACkgH721T0mCPuHGc97rt+=A_i9q=rACcS=rOtCa0QJt3dD89A@mail.gmail.com>
+Message-ID: <4d5aa8faacf94b9f943884c81e467236@AM3PR05MB323.eurprd05.prod.outlook.com>
+
+* Xabier Oneca worte:
+> > when changing redir_cb_radius_auth_conf() to handle timeout
+> > as REDIR_SUCCESS with session_param_defaults(), what would be
+> > bad consequences?
+>
+> The "bad" consecuences (cons) I see are lost statistics and
+> that the user gets free connection (in case of a paid service).
+
+yes, I guess they even would be "super clients", because except
+of configured defaults, no bandwidth limits would be applied and
+there could be issues with data retention.
+
+> The pros are that users won't blame the Wi-Fi not working.
+
+> The correct thing would be to use a backup RADIUS server. But,
+> as I said in the "pros", if it/they get out of reach for any
+> reason, hotspot operators can continue providing Internet
+> service to their customers.
+
+Yes, of course, I absolutely agree. I think chances that two
+RADIUS servers fail at the same time are very very low and Coova
+might even support up to four. However, in terms of contracts and
+guarantees it might be worth a though. Of course, alternatives exists.
+
+Nice if you'd play with my hackpatch; would you share the results
+here, please?
+
+Steffen
+
+
+From steffen.dettmer at nomadrail.com  Tue Dec  3 13:37:48 2013
+From: steffen.dettmer at nomadrail.com (Steffen Dettmer)
+Date: Tue, 3 Dec 2013 13:37:48 +0000
+Subject: [Chilli] Point to "Contributing" in CoovaChilli Development web
+ page? (was: RE: [Layer3] Like uamallowed,
+ but for source address - like macallowed but for IPs - ip source whitelist -
+ server whitelist)
+Message-ID: <f9808d4bcb44468f8dcc75380bdf4018@AM3PR05MB323.eurprd05.prod.outlook.com>
+
+> Could you resubmit your patches as attachments and "sign-off" on them based
+> acknowledging:
+> http://dev.coova.org/svn/coova-chilli/Contributing ?
+
+Could someone add this hint to http://coova.org/CoovaChilli/Developers, please?
+
+Thanks,
+Steffen
+
+
+From steffen.dettmer at nomadrail.com  Tue Dec  3 14:07:18 2013
+From: steffen.dettmer at nomadrail.com (Steffen Dettmer)
+Date: Tue, 3 Dec 2013 14:07:18 +0000
+Subject: [Chilli] Two trivial patches for "--with-nfcoova" (kmod-coova /
+	xt_coova)
+Message-ID: <4ef7f0088fd34e38aa3f3157033a8b7f@AM3PR05MB323.eurprd05.prod.outlook.com>
+
+Hi,
+
+two trivial patches for "--with-nfcoova":
+
+
+nfcoova-compile-fix.patch
+
+Makes compilable but commenting out assignment to non-existent
+field "appconn->s_state.last_sent_time".
+Note: there are no other references to "last_sent_time" in all the sources.
+
+
+
+nfcoova-compile-fix.patch
+
+Fixes libxt_coova.c function coova_print() and coova_save() to
+generate correct iptables-save output.
+
+Note: All libxt_samples I found follow the convention that each
+printf starts with blank but does not end with one, so I did
+here.
+
+Note: the option --source cannot be used, it clashes with
+iptables --source (in contrast to --dest, which does not clash
+with --destination), fortunately it is default, so no need to
+specify on command line or show in iptables-save.
+
+This changes the previously wrong iptables-save output from e.g.:
+
+-A FORWARD -s 10.0.0.0/8 -o uplink-tun -m coova--name chilli --dest  -j ACCEPT
+-A FORWARD -s 10.0.0.0/8 -o uplink-tun -m coova--name chilli --source  -j ACCEPT
+
+to e.g.:
+
+-A FORWARD -s 10.0.0.0/8 -o uplink-tun -m coova --name chilli --dest -j ACCEPT
+-A FORWARD -s 10.0.0.0/8 -o uplink-tun -m coova --name chilli -j ACCEPT
+
+Note: the clash of option "--source" is not solved by this patch,
+it still appears e.g. in coova_help(). I think the option could
+be renamed or removed. If advice given I might be able to
+contribute a patch.
+
+Any comments appreciated.
+
+Regards,
+Steffen
+
+
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: Contributing
+Type: application/octet-stream
+Size: 3392 bytes
+Desc: Contributing
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20131203/539cec34/attachment.obj>
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: nfcoova-compile-fix.patch
+Type: application/octet-stream
+Size: 416 bytes
+Desc: nfcoova-compile-fix.patch
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20131203/539cec34/attachment-0001.obj>
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: iptables-save-fix.patch
+Type: application/octet-stream
+Size: 898 bytes
+Desc: iptables-save-fix.patch
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20131203/539cec34/attachment-0002.obj>
+
+From radius.sir at gmail.com  Tue Dec  3 16:58:03 2013
+From: radius.sir at gmail.com (Russell Mike)
+Date: Tue, 3 Dec 2013 16:58:03 +0000
+Subject: [Chilli] Help - Commercial Support
+Message-ID: <CADao4CpaLB_V3k5RxAvBx9xJWqcg2Bn_L4VKE04oEFZoYqZBng@mail.gmail.com>
+
+Dear David Bird Greetings
+
+As you are aware that i asked the following question on the list on
+*25-Nov-2013.* But did not get response from the list expect one person Mr.
+Chuan (Easy HotSpot). He was helping but his ideas were bit complex for me
+to implement. He advised to do the content filtering using iptables. Thanks
+Chuan.
+
+Moreover, we wish to use filter groups function of DG (Pupil, Children,
+Adult) where we can filter content base on the username using filter-group.
+honestly, i have no idea what can i modify so that CoovaChilli can pass the
+username info to DG. So that Dan's can identify the traffic and apply
+correct filter-group.
+
+We wish to seek commercial support to modify CoovaChilli for
+our requirement. i am willing to provide more information. if any other way
+to achieve the same, we have no problem. We would be more than happy to pay
+for your important time. i here by humbly seek your advice and response
+with respect to this.
+
+Thanks / Regards
+RM --
+
+
+On Mon, Nov 25, 2013 at 6:57 PM, Russell Mike <radius.sir at gmail.com> wrote:
+
+> Dear Good Peoples Greetings
+>
+> i understand this list is not appropriate place to ask this question but i
+> tried to google before seeking the help form the list community, please
+> forgive me for this. because you all are highly technical guys. Have
+> someone done this before ?
+>
+> Backend Users Maintained in OpenLDAP || MySQL.
+> Web Content Filtering Base On Username & Activity Reporting, Sites Visited
+> By Users etc?. i am very certain something is must out there but i do not
+> know.
+>
+> Thanks you very much for attending to this materiel
+> RM --
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20131203/c7635619/attachment.html>
+
+From steffen.dettmer at nomadrail.com  Wed Dec  4 16:13:51 2013
+From: steffen.dettmer at nomadrail.com (Steffen Dettmer)
+Date: Wed, 4 Dec 2013 16:13:51 +0000
+Subject: [Chilli] kmod-coova / xt_coova / nfcoova
+Message-ID: <4ced55924bd14bc58e9bfe96c60cdd80@AM3PR05MB323.eurprd05.prod.outlook.com>
+
+Hi,
+
+I played a bit with kmod-coova / xt_coova. I found that the CPU usage of the chilli process reduces by approximately 25% when generating almost only authorized traffic. I had hoped it would save almost 50% (assuming, that coping from/to kernel space are the expensive operations and having half saved, because no need to copy back to kernel space) and I think the additional kernel CPU consumption reduces the 25% gain a bit further.
+
+Does this make sense? Is the order of magnitude of 25% expected/reasonable? Did anyone also made some estimations and could share some figures?
+
+Couldn't a very similar result be generated if Coova would create two rules (one for each direction) for each authorized client?
+
+Using xt_coova as Davids initial announcement mail proposed involves using an alternative client network address range (11/8). Couldn't fwmark rule based routing be used instead? I think some people could have bad feelings about SNAT to 11/8.
+
+As far as I know, iptables rules count packets and bytes as needed for accounting. What would be missing when using such rules instead of xt_coova? I could imaging Coova uses some own table like COOVA_AUTHORIZED that contains all allowed IPs and is maintained by the Coova process. Does xt_coova verify that the MAC address IP pair is valid?
+
+I had the idea to create a "input capture" device with the idea to give it only the data not handled by the kernel module, however this got complicated quickly.
+
+Beside kernel routing the traffic not handled by xt_coova (I used fwmark rule base routing), at least broadcasts have to be bridged to the new device to get DHCP working and MAC addresses known to Coova. So I setup bridging, but bridging filter rules are required to avoid Coova sees the routable packets via bridging. Not sure if this could be made working at all. In theory, handling of authorized packets should need almost no CPU from Coova, but I have no figure how much it saves in total, because as trade kernel needs to filter several times.
+
+Maybe instead of a iptables match filter module a bridge switch filter could be used: whitelisted packets would be bridged to one interface (and further routed by kernel), all others bridged to second interface, which is Coova's capturing device, or archive a similar result by dynamically generated ebtables/iptables rules, but I didn't thought whether this could be feasible.
+
+Any hints or comments appreciated.
+
+Regards,
+Steffen
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20131204/ea70df43/attachment.html>
+
+From steffen.dettmer at nomadrail.com  Wed Dec  4 16:48:00 2013
+From: steffen.dettmer at nomadrail.com (Steffen Dettmer)
+Date: Wed, 4 Dec 2013 16:48:00 +0000
+Subject: [Chilli] CoovaChilli Kernel Mode issue
+In-Reply-To: <826889934.520.1385638567614.JavaMail.root@frontiir.net>
+References: <1561245260.281382.1385376623746.JavaMail.root@frontiir.net>
+ <1547615330.282248.1385378564547.JavaMail.root@frontiir.net>
+ <CACkgH70r=f46RvoS4oMzjVhMS8bN7MKCO71gUBYMCyWaaZ93aQ@mail.gmail.com>
+ <1983365293.330957.1385606680205.JavaMail.root@frontiir.net>
+ <CADao4CpUxeaSj1Q7iDuN1Wo=Of6EZzCPK7Fb7PQX7k5UXJD=2Q@mail.gmail.com>
+ <826889934.520.1385638567614.JavaMail.root@frontiir.net>
+Message-ID: <89dfc8d931a2452488b0c5a4d03406e1@AM3PR05MB323.eurprd05.prod.outlook.com>
+
+Hi,
+
+because it seems no one knew how to solve, I try to add my
+experiences, but unfortunately I can only say that I had a very
+similar situation and didn't solve it.
+
+> Phyo Wai Soe, November 28, 2013 12:36 PM
+> I saw your mails to the list regarding the redir error message
+> and hoped I could get some clues. So far, I am still stuck :(
+> In my case, when I see redir_read messages in the server's
+> syslog, it normally means that clients see "The connection was
+> reset" error in their browsers and can't go anywhere. They
+> don't even see the "redirecting" message with the animated
+> circle (www/wait.gif).
+
+I did some performance tests with kernel mode Coova (but not
+using the original Coova Portal), but I also was not able to get
+the redirects working. To progress, I manually authorized test
+clients using chilli_query command line commands, as you did :)
+
+> I tried different config settings. If I make HS_UAMLISTEN
+> address in the same range as HS_NETWORK, clients do see
+> redirection/login pages but that's all.
+
+I think, following Davids annoucement mail, in main.conf "net"
+should be e.g. in 10.1.1.0 and uamlisten e.g. 11.1.1.0. The up.sh
+script generates different iptables rules; I think in your case
+the traffic to the login page could even be passing by coova.
+
+> I don't see any record in /proc/net/coova/chilli (which should
+> happen if the kernel module mode is on)
+
+I think only authorized clients appear here.
+
+> or issue authorize, log out, etc., commands on the server with
+> chilli_query. It's as if the commands don't have any effect on
+> the clients.
+
+I simply manually called chilli_query on shell command line to
+authenticate my clients, then they appeared in the /proc file
+output. I think this is expected: Coova handles all
+non-authorized traffic. Sorry that I don't know why it is not
+working for the redirects.
+
+> However, if I make HS_UAMLISTEN address to be on
+> another network range like David mentioned, clients get that
+> connection reset error. But /proc/net/coova/chilli is populated
+> and if I manually authorize a client, he/she can browse the
+> web.
+
+Do the counters of the -m coova firewall rules increase (e.g.
+iptables-save -c)? If so, I think this proves the kernel module
+is working (it matches packets, which then are routed by the
+kernel). Maybe verify with "killall -STOP chilli", but I didn't
+try.
+
+> It's possible that there is a config problem or the NAT
+> between UAMLISTEN and DHCPLISTEN has a issue. I am trying out
+> all possible things I can think of but so far, I am not getting
+> it right.
+
+The portal I used responded with a redirect - to the current URL.
+I thought it could be cause by the fact, that the client network
+is within 10/8 as a "default" config may assume, but from 11/8,
+because Coova performs some SNAT (?) of unauthorized clients. I
+think you already tried, traced and verified that. Maybe it helps
+to use a browser debugger like Firebug and check "Network" to see
+what happens or even better tcpdump -w + Wireshark the traffic;
+maybe the redirect works, but not the portal as in my case?
+
+Sorry that I couldn't help you, but at least you know you are not
+the only one who had such an issue :-)
+
+Regards,
+Steffen
+
+
+From lferreira at cabocom.cv  Wed Dec  4 23:00:40 2013
+From: lferreira at cabocom.cv (Luis Ferreira)
+Date: Wed, 4 Dec 2013 22:00:40 -0100
+Subject: [Chilli] Layer 2 & Layer 3 Same deploy
+Message-ID: <022501cef144$a8658a20$f9309e60$@cabocom.cv>
+
+Hi Everyone,
+
+ 
+
+I've got several chillli instances running in several VLAN segments. I would
+like to know if it's possible to change some of them to layer 2, and
+maintain the others in Layer 3.
+
+ 
+
+Regards,
+
+Luis Ferreira
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20131204/38fd5fbb/attachment.html>
+
+From david at coova.com  Thu Dec  5 03:51:27 2013
+From: david at coova.com (David Bird)
+Date: Wed, 04 Dec 2013 19:51:27 -0800
+Subject: [Chilli] [Layer3] Like uamallowed,
+ but for source address - like macallowed but for IPs - ip source
+ whitelist - server whitelist
+In-Reply-To: <529CC434.5060409@labs.it>
+References: <529634E7.3000204@labs.it> <1385661652.12462.2.camel@david-XPS>
+ <529CC434.5060409@labs.it>
+Message-ID: <1386215487.2603.9.camel@david-XPS>
+
+Thanks,
+
+In ipsrcallowed, I changed the line:
++  if (!found && _options.ipsrc_pass_throughs) {
+to read:
++  if (!found && _options.ipsrc_num_pass_throughs) {
+
+Is l3singledhcp really necessary? It is suppose to be able to track
+multiple "routers", not just one.
+
+everything else committed.
+
+David
+
+On Mon, 2013-12-02 at 18:32 +0100, Michele Bergonzoni wrote:
+> > Could you resubmit your patches as attachments and "sign-off" on them
+> > based acknowledging:
+> > http://dev.coova.org/svn/coova-chilli/Contributing ?
+> 
+> Ok, I attach the patches I sent in the last days:
+> 
+>   - edns.diff: Patch to pass EDNS pseudorecords
+>   - typo.diff: Trivial patch for MAC_ARG type when compiling with 
+> --enable-debug2
+>   - l3singledhcp.diff: Patch for having a single DHCP connection when 
+> using L3 only
+>   - ipsrcallowed.diff: the patch we were talking about
+> 
+>   - all4.diff: The previous 4 patches in a single diff
+> 
+>   - Contribution.txt: The sign-off you asked for.
+> 
+> So you should be able to use whatever combination of pieces as you prefer.
+> 
+> Hope this helps,
+> 				Bergonz
+> 
+> 
+> 
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+
+
+From dynamicgl at gmail.com  Thu Dec  5 08:49:31 2013
+From: dynamicgl at gmail.com (Gelin Yan)
+Date: Thu, 5 Dec 2013 16:49:31 +0800
+Subject: [Chilli] how to use http protocol for access provisioning and
+	accounting?
+Message-ID: <CABkOF6TjPNNPP3aXKRnhE7pVJmtRVM5FtNj+_3-8cb2mC4hgbQ@mail.gmail.com>
+
+Hi All
+
+  I noticed coovachilli is able to uses
+RADIUS<http://coova.org/wiki/CoovaChilli_RADIUS> or
+a HTTP protocol <http://coova.org/wiki/CoovaChilli_Proxy> for access
+provisioning and accounting.
+
+   But I didn't get luck to use it. I setup up a simple http server to
+listen data from coovachilli. In config I wrote sth like:
+
+HS_UAMAAAURL=http://localhost:8110/test.php
+
+however, I didn't see anything in the file.
+
+Did I do sth wrong here? or coovachilli must use freeradius to support AAA?
+Thanks.
+
+Regards
+
+gelin yan
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20131205/b1bc600a/attachment-0001.html>
+
+From lferreira at cabocom.cv  Thu Dec  5 10:53:50 2013
+From: lferreira at cabocom.cv (Luis Ferreira)
+Date: Thu, 5 Dec 2013 09:53:50 -0100
+Subject: [Chilli] Layer 2 & Layer 3 Same deploy
+In-Reply-To: <CADao4Cqxu44Pg=P0Uf0-Zd=1BfW30LD93O-sc_4BiF8oV7-ZFQ@mail.gmail.com>
+References: <022501cef144$a8658a20$f9309e60$@cabocom.cv>
+ <CADao4Cqxu44Pg=P0Uf0-Zd=1BfW30LD93O-sc_4BiF8oV7-ZFQ@mail.gmail.com>
+Message-ID: <026601cef1a8$49465970$dbd30c50$@cabocom.cv>
+
+Hi Mike,
+
+ 
+
+Great news. Thank you so much.
+
+ 
+
+ 
+
+ 
+
+De: Russell Mike [mailto:radius.sir at gmail.com] 
+Enviada: 5 de dezembro de 2013 05:54
+Para: Luis Ferreira
+Assunto: Re: [Chilli] Layer 2 & Layer 3 Same deploy
+
+ 
+
+Yes Luis, I have this kind mix environment  L2  & L3. IT WILL WORK.
+Thanks
+
+On Wednesday, December 4, 2013, Luis Ferreira <lferreira at cabocom.cv> wrote:
+> Hi Everyone,
+>
+>  
+>
+> I've got several chillli instances running in several VLAN segments. I
+would like to know if it's possible to change some of them to layer 2, and
+maintain the others in Layer 3.
+>
+>  
+>
+> Regards,
+>
+> Luis Ferreira 
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20131205/0f6ce2db/attachment.html>
+
+From lferreira at cabocom.cv  Thu Dec  5 18:53:11 2013
+From: lferreira at cabocom.cv (Luis Ferreira)
+Date: Thu, 5 Dec 2013 17:53:11 -0100
+Subject: [Chilli] Chilli slow after some time
+Message-ID: <002101cef1eb$475c8f60$d615ae20$@cabocom.cv>
+
+Hi everyone,
+
+ 
+
+In my current setup, chilli is working fine for the past months, with very
+few issues. Starting from a couple of days, the instances starting to became
+really slow (from the client side) in the following way:
+
+dns resolve ( taking up to 5 seconds to resolve google.com)
+
+webpage opening (after resolve the dns, the connection to the http server is
+very slow)
+
+the login page (even that one is extremely slow opening)
+
+ 
+
+since it's in a production environment, I would like your help on how to
+track the issue i.e. Debug.
+
+ 
+
+Kind Regards, 
+
+Luis Ferreira
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20131205/c401bcab/attachment.html>
+
+From phyo.w.soe at frontiir.net  Fri Dec  6 11:23:33 2013
+From: phyo.w.soe at frontiir.net (Phyo Wai Soe)
+Date: Fri, 6 Dec 2013 11:23:33 +0000 (UTC)
+Subject: [Chilli] CoovaChilli Kernel Mode issue
+In-Reply-To: <89dfc8d931a2452488b0c5a4d03406e1@AM3PR05MB323.eurprd05.prod.outlook.com>
+References: <1561245260.281382.1385376623746.JavaMail.root@frontiir.net>
+ <1547615330.282248.1385378564547.JavaMail.root@frontiir.net>
+ <CACkgH70r=f46RvoS4oMzjVhMS8bN7MKCO71gUBYMCyWaaZ93aQ@mail.gmail.com>
+ <1983365293.330957.1385606680205.JavaMail.root@frontiir.net>
+ <CADao4CpUxeaSj1Q7iDuN1Wo=Of6EZzCPK7Fb7PQX7k5UXJD=2Q@mail.gmail.com>
+ <826889934.520.1385638567614.JavaMail.root@frontiir.net>
+ <89dfc8d931a2452488b0c5a4d03406e1@AM3PR05MB323.eurprd05.prod.outlook.com>
+Message-ID: <1896015655.107091.1386329013880.JavaMail.root@frontiir.net>
+
+Hi Steffen,
+
+Your reply does give me some comfort :) . I have tried almost all the things you suggested. When we analyzed traffics on tun0 and eth0 of clients and the server with Wireshark, we saw some fishy things that may or may not indicate issues. Other possible sources of failure we are looking at are the kernel version we are using (Ubuntu 12.04) and the fact that we are running them on virtual machines. Maybe all they are needing are the patches you suggested on 3 Dec :)
+
+Thanks.
+
+Regards,
+Phyo Wai Soe
+
+----- Original Message -----
+From: "Steffen Dettmer" <steffen.dettmer at nomadrail.com>
+To: "Phyo Wai Soe" <phyo.w.soe at frontiir.net>, chilli at coova.org
+Sent: Wednesday, December 4, 2013 11:18:00 PM
+Subject: RE: CoovaChilli Kernel Mode issue
+
+Hi,
+
+because it seems no one knew how to solve, I try to add my
+experiences, but unfortunately I can only say that I had a very
+similar situation and didn't solve it.
+
+> Phyo Wai Soe, November 28, 2013 12:36 PM
+> I saw your mails to the list regarding the redir error message
+> and hoped I could get some clues. So far, I am still stuck :(
+> In my case, when I see redir_read messages in the server's
+> syslog, it normally means that clients see "The connection was
+> reset" error in their browsers and can't go anywhere. They
+> don't even see the "redirecting" message with the animated
+> circle (www/wait.gif).
+
+I did some performance tests with kernel mode Coova (but not
+using the original Coova Portal), but I also was not able to get
+the redirects working. To progress, I manually authorized test
+clients using chilli_query command line commands, as you did :)
+
+> I tried different config settings. If I make HS_UAMLISTEN
+> address in the same range as HS_NETWORK, clients do see
+> redirection/login pages but that's all.
+
+I think, following Davids annoucement mail, in main.conf "net"
+should be e.g. in 10.1.1.0 and uamlisten e.g. 11.1.1.0. The up.sh
+script generates different iptables rules; I think in your case
+the traffic to the login page could even be passing by coova.
+
+> I don't see any record in /proc/net/coova/chilli (which should
+> happen if the kernel module mode is on)
+
+I think only authorized clients appear here.
+
+> or issue authorize, log out, etc., commands on the server with
+> chilli_query. It's as if the commands don't have any effect on
+> the clients.
+
+I simply manually called chilli_query on shell command line to
+authenticate my clients, then they appeared in the /proc file
+output. I think this is expected: Coova handles all
+non-authorized traffic. Sorry that I don't know why it is not
+working for the redirects.
+
+> However, if I make HS_UAMLISTEN address to be on
+> another network range like David mentioned, clients get that
+> connection reset error. But /proc/net/coova/chilli is populated
+> and if I manually authorize a client, he/she can browse the
+> web.
+
+Do the counters of the -m coova firewall rules increase (e.g.
+iptables-save -c)? If so, I think this proves the kernel module
+is working (it matches packets, which then are routed by the
+kernel). Maybe verify with "killall -STOP chilli", but I didn't
+try.
+
+> It's possible that there is a config problem or the NAT
+> between UAMLISTEN and DHCPLISTEN has a issue. I am trying out
+> all possible things I can think of but so far, I am not getting
+> it right.
+
+The portal I used responded with a redirect - to the current URL.
+I thought it could be cause by the fact, that the client network
+is within 10/8 as a "default" config may assume, but from 11/8,
+because Coova performs some SNAT (?) of unauthorized clients. I
+think you already tried, traced and verified that. Maybe it helps
+to use a browser debugger like Firebug and check "Network" to see
+what happens or even better tcpdump -w + Wireshark the traffic;
+maybe the redirect works, but not the portal as in my case?
+
+Sorry that I couldn't help you, but at least you know you are not
+the only one who had such an issue :-)
+
+Regards,
+Steffen
+
+
+From bergonz at labs.it  Fri Dec  6 16:27:14 2013
+From: bergonz at labs.it (Michele Bergonzoni)
+Date: Fri, 06 Dec 2013 17:27:14 +0100
+Subject: [Chilli] [Layer3] Like uamallowed,
+ but for source address - like macallowed but for IPs - ip source
+ whitelist - server whitelist - Layer3: help with connections / dhcp
+ connections
+In-Reply-To: <1386215487.2603.9.camel@david-XPS>
+References: <529634E7.3000204@labs.it> <1385661652.12462.2.camel@david-XPS>
+ <529CC434.5060409@labs.it> <1386215487.2603.9.camel@david-XPS>
+Message-ID: <52A1FAE2.3070502@labs.it>
+
+> Is l3singledhcp really necessary? It is suppose to be able to track
+> multiple "routers", not just one.
+
+l3singledhcp is a "hack" and I understand very well why you won't commit 
+it, but in my environment, without that, redirection doesn't happen 
+(with or without ipsrcallowed).
+
+I observed this sequence of events:
+
+* Client 10.0.0.1 sends a DNS request
+* DNS requests arrives to coova from MAC A
+* Coova makes a dhcp connection for MAC A
+* Coova makes a connection for IP 10.0.0.1
+* Coova answers
+* Client correctly receives the DNS answer
+* Client sends a TCP SYN to 78.46.45.181 port 80
+* TCP SYN arrives to coova from MAC B, different from MAC A
+* Coova makes a second dhcp connection for MAC B
+
+At this point, Coova sends a SYN/ACK to the client, from port 80 to the 
+correct source (high) port, but it doesn't have 78.46.45.181 as the 
+source. It has the source of the DHCP interface, i.e. uamipaddress. The 
+client ignores this, of course, retries, and there is no redirection.
+
+This sequence of events is related to some specific policy routing we 
+are using in our L3 network, that has the side effect of consistently 
+forwarding DNS requests on one path and the SYN on another.
+
+In single-router environments the problem probably doesn't exist, in 
+many redundant router environments with load balancing the problem can 
+be intermittent and difficult to observe. If you decide to ignore it, 
+you probably will not disappoint many people.
+
+If you are interested, in my opinion, given my very limited 
+understanding of coovachilli internals, the right and correct thing to 
+do would be:
+
+* Use a "special" dhcp connection, or no connection at all, for L3 clients
+* When sending packets to an L3 clients, use the MAC address of the 
+router, as found in the ARP table (as the linux kernel would do). The IP 
+address of the router is not in coova configuration, it is in the 
+routing table (of course we can put it also in the config).
+
+Such a strict adherence to IP routing principles is surely better than 
+sending to the same MAC you received from: the MAC that the router uses 
+when transmitting packets to coova is not the same that coova should use 
+when replying.
+
+In all HSRP setups, packets coming from the router have the physical MAC 
+address as the source, but when sending packets to the router, you are 
+supposed to use the virtual MAC address as the destination, which is 
+what the router tells you in ARP replies. This is because the virtual 
+MAC is guaranteed to survive the fault of a single router.
+
+The same is true for many other first-hop redundancy protocols and 
+firewall clustering technologies.
+
+Of course, with ot without a virtual MAC address, sending the SYN/ACK 
+for the redirect with the uamipaddress as the IP source cannot work.
+
+I really would have loved to implement this instead of l3singledhcp, but 
+it was too difficult for me. With this hack, the fault of a router has a 
+rough 50% probability of requiring coova restart.
+
+You might want to forget all this, and when someone with an environment 
+similar to mine will google up all this intricacies, we can hope to have 
+her/him land here.
+
+Best regards, thank you very much and keep up with your good work.
+
+			Michele
+
+-- 
+Ing. Michele Bergonzoni - Laboratori Guglielmo Marconi S.p.a.
+Phone:+39-051-6781926 e-mail: bergonz at labs.it
+alt.advanced.networks.design.configure.operate
+
+From lferreira at cabocom.cv  Sun Dec  8 20:41:57 2013
+From: lferreira at cabocom.cv (Luis Ferreira)
+Date: Sun, 8 Dec 2013 19:41:57 -0100
+Subject: [Chilli] Fixed Login URL
+Message-ID: <013001cef455$f15610b0$d4023210$@cabocom.cv>
+
+Hi,
+
+ 
+
+Once again a little help from all of you.
+
+ 
+
+I would like to know if it is possible for a client to perform login using a
+fixed URL, like:
+
+ 
+
+ <http://192.168.50.2:3990/prelogin?user=client&password=clientpwd>
+http://192.168.50.2:3990/prelogin?user=client&password=clientpwd
+
+ 
+
+or something similar.
+
+ 
+
+Atentamente,
+
+Luis
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20131208/0524b59d/attachment.html>
+
+From lferreira at cabocom.cv  Mon Dec  9 00:09:14 2013
+From: lferreira at cabocom.cv (Luis Ferreira)
+Date: Sun, 8 Dec 2013 23:09:14 -0100
+Subject: [Chilli] Subscriber vanish from list
+Message-ID: <014101cef472$e8e56580$bab03080$@cabocom.cv>
+
+Hi again,
+
+ 
+
+First of all, I'm running chilli in layer 3 mode, just for future reference.
+
+ 
+
+I've got a couple clientes that are not seeing the login page and the
+following command does not work:
+
+ 
+
+chilli_query login ip XXX.XXX.XXX.XXX username <user> password <pass>.
+
+ 
+
+What I've seen is that the client vanish from chilli subscriber list.
+
+ 
+
+If I do "/usr/local/sbin/chilli_query list" it does not return the client.
+
+ 
+
+Does not has the connected client.
+
+I can ping it from chilli box, and also from another client, but
+chilli_query list does not see it. If I restart the connection on the
+client, it's going to become visible for a while, but them it vanish again.
+
+ 
+
+Help appreciated.
+
+ 
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20131208/014c5885/attachment.html>
+
+From lferreira at cabocom.cv  Mon Dec  9 10:46:55 2013
+From: lferreira at cabocom.cv (Luis Ferreira)
+Date: Mon, 9 Dec 2013 09:46:55 -0100
+Subject: [Chilli] Subscriber vanish from list
+In-Reply-To: <CADao4Cr0kMkPDe3kgBjTkGymJkq-=20PttosuAQNvw15XAmyAA@mail.gmail.com>
+References: <014101cef472$e8e56580$bab03080$@cabocom.cv>
+ <CADao4Cr0kMkPDe3kgBjTkGymJkq-=20PttosuAQNvw15XAmyAA@mail.gmail.com>
+Message-ID: <015801cef4cb$fbc456d0$f34d0470$@cabocom.cv>
+
+Hi Russell,
+
+ 
+
+>From the WAN I've already change all MTU to 1400, so when it get's to
+chilli, it's max 1400.
+
+I believe you are telling me to drop MTU in chilli, so that when chilli
+add's vlantag, it will not pass 1500 limit and it will flow trough the
+client side network smooth.
+
+My question is, where can I change the MTU in chilli ?
+
+ 
+
+Kind regards,
+
+Luis
+
+ 
+
+ 
+
+De: Russell Mike [mailto:radius.sir at gmail.com] 
+Enviada: 9 de dezembro de 2013 06:03
+Para: Luis Ferreira
+Assunto: Re: [Chilli] Subscriber vanish from list
+
+ 
+
+Hi Luis
+
+I had got this problem & resolved by reducing mtu to 1400. This is in L3 due
+to vlan tag can make mtu higher than 1500. Some network card does not
+support higher mtu. Please check on that. Thanks
+
+On Monday, December 9, 2013, Luis Ferreira <lferreira at cabocom.cv> wrote:
+> Hi again,
+>
+>  
+>
+> First of all, I'm running chilli in layer 3 mode, just for future
+reference.
+>
+>  
+>
+> I've got a couple clientes that are not seeing the login page and the
+following command does not work:
+>
+>  
+>
+> chilli_query login ip XXX.XXX.XXX.XXX username <user> password <pass>.
+>
+>  
+>
+> What I've seen is that the client vanish from chilli subscriber list.
+>
+>  
+>
+> If I do "/usr/local/sbin/chilli_query list" it does not return the client.
+>
+>  
+>
+> Does not has the connected client.
+>
+> I can ping it from chilli box, and also from another client, but
+chilli_query list does not see it. If I restart the connection on the
+client, it's going to become visible for a while, but them it vanish again.
+>
+>  
+>
+> Help appreciated.
+>
+>   
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20131209/4abfc775/attachment.html>
+
+From xoneca at gmail.com  Mon Dec  9 10:50:57 2013
+From: xoneca at gmail.com (Xabier Oneca -- xOneca)
+Date: Mon, 9 Dec 2013 11:50:57 +0100
+Subject: [Chilli] Fixed Login URL
+In-Reply-To: <013001cef455$f15610b0$d4023210$@cabocom.cv>
+References: <013001cef455$f15610b0$d4023210$@cabocom.cv>
+Message-ID: <CACkgH737OavzWBRk2NjoPgyLFAKUT55AH8foeR=sKOQ8XaBYLw@mail.gmail.com>
+
+Hello Luis,
+
+Are you asking about HS_UAMSERVER and HS_UAMFORMAT ('uamserver if you
+configure Chilli using 'chilli.conf')?
+
+Those config options let you change the UAM to any server/URL you want (you
+only need a web server listening at that address).
+
+HTH,
+
+Xabier Oneca_,,_
+
+08/12/2013 21:42, "Luis Ferreira" <lferreira at cabocom.cv>:
+>
+> Hi,
+>
+>
+>
+> Once again a little help from all of you.
+>
+>
+>
+> I would like to know if it is possible for a client to perform login
+using a fixed URL, like:
+>
+>
+>
+> http://192.168.50.2:3990/prelogin?user=client&password=clientpwd
+>
+>
+>
+> or something similar.
+>
+>
+>
+> Atentamente,
+>
+> Luis
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20131209/512439ba/attachment.html>
+
+From lferreira at cabocom.cv  Mon Dec  9 11:45:09 2013
+From: lferreira at cabocom.cv (Luis Ferreira)
+Date: Mon, 9 Dec 2013 10:45:09 -0100
+Subject: [Chilli] Fixed Login URL
+In-Reply-To: <CACkgH737OavzWBRk2NjoPgyLFAKUT55AH8foeR=sKOQ8XaBYLw@mail.gmail.com>
+References: <013001cef455$f15610b0$d4023210$@cabocom.cv>
+ <CACkgH737OavzWBRk2NjoPgyLFAKUT55AH8foeR=sKOQ8XaBYLw@mail.gmail.com>
+Message-ID: <018801cef4d4$1fe74f60$5fb5ee20$@cabocom.cv>
+
+Hi Xavier,
+
+ 
+
+Yes, but I want something slight different.
+
+ 
+
+The username and password there are hashed with the challenge, and that change every single time a webpage is loaded and the login page is sent. What I was looking for was for either a fixed challenge or no challenge at all.
+
+ 
+
+So in wich part of the login process is that being made, and where could I edit it?
+
+ 
+
+Regards,
+
+Luis
+
+ 
+
+De: Xabier Oneca -- xOneca [mailto:xoneca at gmail.com] 
+Enviada: 9 de dezembro de 2013 09:51
+Para: Luis Ferreira; chilli at coova.org
+Assunto: Re: [Chilli] Fixed Login URL
+
+ 
+
+Hello Luis,
+
+Are you asking about HS_UAMSERVER and HS_UAMFORMAT ('uamserver if you configure Chilli using 'chilli.conf')?
+
+Those config options let you change the UAM to any server/URL you want (you only need a web server listening at that address).
+
+HTH,
+
+Xabier Oneca_,,_
+
+08/12/2013 21:42, "Luis Ferreira" <lferreira at cabocom.cv>:
+>
+> Hi,
+>
+>  
+>
+> Once again a little help from all of you.
+>
+>  
+>
+> I would like to know if it is possible for a client to perform login using a fixed URL, like:
+>
+>  
+>
+> http://192.168.50.2:3990/prelogin?user=client <http://192.168.50.2:3990/prelogin?user=client&password=clientpwd> &password=clientpwd
+>
+>  
+>
+> or something similar.
+>
+>  
+>
+> Atentamente,
+>
+> Luis
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20131209/bf7861b8/attachment-0001.html>
+
+From xoneca at gmail.com  Mon Dec  9 14:44:21 2013
+From: xoneca at gmail.com (Xabier Oneca -- xOneca)
+Date: Mon, 9 Dec 2013 15:44:21 +0100
+Subject: [Chilli] Fixed Login URL
+In-Reply-To: <CACkgH73cMcpCasmN+S4F-iTbE_VAV2YLD0GLKYLQJnTeDB+aaA@mail.gmail.com>
+References: <013001cef455$f15610b0$d4023210$@cabocom.cv>
+ <CACkgH737OavzWBRk2NjoPgyLFAKUT55AH8foeR=sKOQ8XaBYLw@mail.gmail.com>
+ <018801cef4d4$1fe74f60$5fb5ee20$@cabocom.cv>
+ <CACkgH73cMcpCasmN+S4F-iTbE_VAV2YLD0GLKYLQJnTeDB+aaA@mail.gmail.com>
+Message-ID: <CACkgH736NusB5R+at5krEaX4rrX-2fVj-j6D2PMauZw9m+P_sw@mail.gmail.com>
+
+Well, I have never tried this, but I think if you don't set uamsecret,
+Coova would use PAP authentication instead of CHAP.
+
+But I'm not sure so I will see it and confirm, although you can start
+messing with it...
+
+Cheers,
+
+Xabier Oneca_,,_
+
+09/12/2013 12:45, "Luis Ferreira" <lferreira at cabocom.cv>:
+>
+> Hi Xavier,
+>
+>
+>
+> Yes, but I want something slight different.
+>
+>
+>
+> The username and password there are hashed with the challenge, and that
+change every single time a webpage is loaded and the login page is sent.
+What I was looking for was for either a fixed challenge or no challenge at
+all.
+>
+>
+>
+> So in wich part of the login process is that being made, and where could
+I edit it?
+>
+>
+>
+> Regards,
+>
+> Luis
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20131209/c9db3b28/attachment.html>
+
+From dbird at google.com  Mon Dec  9 18:59:46 2013
+From: dbird at google.com (David Bird)
+Date: Mon, 9 Dec 2013 10:59:46 -0800
+Subject: [Chilli] Fixed Login URL
+In-Reply-To: <CACkgH736NusB5R+at5krEaX4rrX-2fVj-j6D2PMauZw9m+P_sw@mail.gmail.com>
+References: <013001cef455$f15610b0$d4023210$@cabocom.cv>
+ <CACkgH737OavzWBRk2NjoPgyLFAKUT55AH8foeR=sKOQ8XaBYLw@mail.gmail.com>
+ <018801cef4d4$1fe74f60$5fb5ee20$@cabocom.cv>
+ <CACkgH73cMcpCasmN+S4F-iTbE_VAV2YLD0GLKYLQJnTeDB+aaA@mail.gmail.com>
+ <CACkgH736NusB5R+at5krEaX4rrX-2fVj-j6D2PMauZw9m+P_sw@mail.gmail.com>
+Message-ID: <CADo9JyWOW6y2YTD06ytY_VS5RkvLOY==B6Vm_yVHhEUxc22+2A@mail.gmail.com>
+
+It isn't a big edit to disable the challenge, but not sure I'd recommend it
+generally.
+
+
+On Mon, Dec 9, 2013 at 6:44 AM, Xabier Oneca -- xOneca <xoneca at gmail.com>wrote:
+
+> Well, I have never tried this, but I think if you don't set uamsecret,
+> Coova would use PAP authentication instead of CHAP.
+>
+> But I'm not sure so I will see it and confirm, although you can start
+> messing with it...
+>
+> Cheers,
+>
+> Xabier Oneca_,,_
+>
+> 09/12/2013 12:45, "Luis Ferreira" <lferreira at cabocom.cv>:
+>
+> >
+> > Hi Xavier,
+> >
+> >
+> >
+> > Yes, but I want something slight different.
+> >
+> >
+> >
+> > The username and password there are hashed with the challenge, and that
+> change every single time a webpage is loaded and the login page is sent.
+> What I was looking for was for either a fixed challenge or no challenge at
+> all.
+> >
+> >
+> >
+> > So in wich part of the login process is that being made, and where could
+> I edit it?
+> >
+> >
+> >
+> > Regards,
+> >
+> > Luis
+>
+>
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20131209/9650895e/attachment.html>
+
+From steffen.dettmer at nomadrail.com  Tue Dec 10 08:56:06 2013
+From: steffen.dettmer at nomadrail.com (Steffen Dettmer)
+Date: Tue, 10 Dec 2013 08:56:06 +0000
+Subject: [Chilli] Two trivial patches for "--with-nfcoova" (kmod-coova /
+	xt_coova)
+Message-ID: <1bec39502c5649dcb66d4037dddb833c@AM3PR05MB323.eurprd05.prod.outlook.com>
+
+Hi,
+
+was the format of the patches described below correct? The second section should have been headlined "iptables-save-fix.patch" of course.
+Any comments appreciated.
+
+Regards,
+Steffen
+
+> -----Original Message-----
+> From: Steffen Dettmer
+> Sent: Tuesday, December 03, 2013 3:07 PM
+> To: chilli at coova.org
+> Subject: Two trivial patches for "--with-nfcoova" (kmod-coova / xt_coova)
+> 
+> Hi,
+> 
+> two trivial patches for "--with-nfcoova":
+> 
+> 
+> nfcoova-compile-fix.patch
+> 
+> Makes compilable but commenting out assignment to non-existent field
+> "appconn->s_state.last_sent_time".
+> Note: there are no other references to "last_sent_time" in all the sources.
+> 
+> 
+> 
+> nfcoova-compile-fix.patch
+
+iptables-save-fix.patch
+
+> Fixes libxt_coova.c function coova_print() and coova_save() to generate correct
+> iptables-save output.
+> 
+> Note: All libxt_samples I found follow the convention that each printf starts with
+> blank but does not end with one, so I did here.
+> 
+> Note: the option --source cannot be used, it clashes with iptables --source (in
+> contrast to --dest, which does not clash with --destination), fortunately it is
+> default, so no need to specify on command line or show in iptables-save.
+> 
+> This changes the previously wrong iptables-save output from e.g.:
+> 
+> -A FORWARD -s 10.0.0.0/8 -o uplink-tun -m coova--name chilli --dest  -j ACCEPT
+> -A FORWARD -s 10.0.0.0/8 -o uplink-tun -m coova--name chilli --source  -j ACCEPT
+> 
+> to e.g.:
+> 
+> -A FORWARD -s 10.0.0.0/8 -o uplink-tun -m coova --name chilli --dest -j ACCEPT
+> -A FORWARD -s 10.0.0.0/8 -o uplink-tun -m coova --name chilli -j ACCEPT
+> 
+> Note: the clash of option "--source" is not solved by this patch, it still appears
+> e.g. in coova_help(). I think the option could be renamed or removed. If advice
+> given I might be able to contribute a patch.
+> 
+> Any comments appreciated.
+> 
+> Regards,
+> Steffen
+> 
+
+
+From steffen.dettmer at nomadrail.com  Tue Dec 10 15:52:27 2013
+From: steffen.dettmer at nomadrail.com (Steffen Dettmer)
+Date: Tue, 10 Dec 2013 15:52:27 +0000
+Subject: [Chilli] Why does Coova Chilli drops all fragmented packets on
+	DHCPIF?
+Message-ID: <b5a6a696d40044a5900f41f0807461ea@AM3PR05MB323.eurprd05.prod.outlook.com>
+
+Hi,
+
+While troubleshooting some client VPN issues I noticed that Coova Chilli seems to drop all fragmented packets received on DHCPIF (see dhcp_receive_ip(), near the log statement "ICMP frag for IP packet with length" - otherwise UDP fragments would be dropped a few lines later near the log statement "dropping udp packet..."). Is my understanding correct? If so, I think there might be a good reason for it, but unfortunately I don't see it.
+
+Why are IP fragments dropped?
+
+Regards,
+Steffen
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20131210/b14b4b5d/attachment.html>
+
+From xoneca at gmail.com  Thu Dec 12 10:21:50 2013
+From: xoneca at gmail.com (Xabier Oneca -- xOneca)
+Date: Thu, 12 Dec 2013 11:21:50 +0100
+Subject: [Chilli] Can't authenticate, challenge expired
+In-Reply-To: <CACkgH70P=FXUgaHG+weoZm8HfPRQQkpd9K+pj6M1k7hdiA0jYQ@mail.gmail.com>
+References: <CACkgH70P=FXUgaHG+weoZm8HfPRQQkpd9K+pj6M1k7hdiA0jYQ@mail.gmail.com>
+Message-ID: <CACkgH73zE0N=tAv+3Lhhm1rY57j4PhftY+99xzYerxFBjT42og@mail.gmail.com>
+
+Hello, I have new information to add.
+
+I am testing in an ARM embedded computer, using Buildroot toolchain
+and uClibc. I tried CoovaChilli 1.2.8 and it worked, but didn't
+v1.2.9.
+
+I have "bisected" the source commits, and I have reached to r455 which
+is the culprit of my errors. But I can't see where can be the error
+happening... (that commit is big!)
+
+I have to investigate more...
+
+--
+Xabier Oneca_,,_
+
+2013/10/28 Xabier Oneca  --  xOneca <xoneca at gmail.com>:
+> Hello list,
+>
+> I am having throuble authenticating with CoovaChilli. I did have it
+> working a while ago, but now It has mysteriously ceased to work. Maybe
+> I touched something in the system I didn't have to...
+>
+> The UAM is displayed correctly, and it redirects to login page after
+> pressing a button, with a default user/pass in a hidden form.
+>
+>> http://10.0.0.1:3990/logon?username=dummyuser&password=[pap_password ("dummypass" ^ challenge)]
+>
+> But chilli always answers with 'res=failed' and 'reason=other'.
+>
+>> [...]?res=failed&reason=other[...]
+>
+> I have noticed that in spite of the user getting the IP correctly,
+> chilli throws messages like this:
+>
+>> chilli.c: 5840: 0 (Debug) UAM login with unknown IP address: 10.0.0.100
+>
+> And it always resets the challenge, *every* time the 'logon' page is
+> requested, because says it's expired (the main reason why it does not
+> authenticate users, I think):
+>
+>> redir.c: 3737: 0 (Debug) redir_accept: challenge expired: 0 : 5537
+>> redir.c: 3739: 0 (Debug) ---->>> resetting challenge: b694f13580a676cd06ee6e0071ba0b26
+>
+> I have searched "challenge expired" and found this Coova thread:
+> http://coova.org/node/4849 that describes the same problem, but he is
+> using more than one instance and I am running only one...
+>
+> Has somebody any idea about how could I botched it?
+>
+> Thanks!
+>
+> --
+> Xabier Oneca_,,_
+
+From alexandre.rubert at gmail.com  Fri Dec 13 07:09:51 2013
+From: alexandre.rubert at gmail.com (Alexandre Rubert)
+Date: Fri, 13 Dec 2013 08:09:51 +0100
+Subject: [Chilli] Allow sub http request
+Message-ID: <52AAB2BF.301@gmail.com>
+
+Hello,
+I'd like to know if someone managed to allow all sub http requests. I'd 
+like to not have to write all ip for a website. Is it possible to allow 
+one site and all call to another ip from this website without configure 
+all this sub website in uamallow parameter ?
+Thanks
+
+From trandatnh at gmail.com  Fri Dec 13 09:19:28 2013
+From: trandatnh at gmail.com (Le Tran Dat)
+Date: Fri, 13 Dec 2013 17:19:28 +0800
+Subject: [Chilli] [chilli] How to modify status page content for blocking
+	user
+Message-ID: <CAOyZXpTab01CzvuKwwSg9XZ8Uygvz_ZH=0wLc52DRtO0TtNXVA@mail.gmail.com>
+
+Hi All,
+
+I am trying to implement a feature that will block clients base on
+their MAC addresses. I allow those clients to log on into the captive
+portal and show a message "You are blocked, please contact
+administrator" in the status page. Then I will logoff the client in
+question.
+
+I've already done the part of allowing a client to logon and logoff it
+right after that if the client's MAC address is in blacklist using
+chilli_query logoff.
+
+Now, I want to show the message on status page. I am new to
+coovachilli so I have no knowledge about how to do it. I guess I can
+check the authorize part in coovachilli's source code.
+And do the following steps:
+
+resp.message = ""
+if authenticate_pass then
+    if mac_is_blocked then
+       resp.message = "you are blocked, Please contact administrator"
+
+Here the resp.message will be present in status page.
+ChilliLibrary.js
+chilliController.processReply = function ( resp ) {
+
+        if ( typeof (resp.message)  == 'string' ) {
+
+                /* The following trick will replace HTML entities with
+the corresponding
+                 * character. This will not work in Flash (no innerHTML)
+                 */
+
+                var fakediv = document.createElement('div');
+                fakediv.innerHTML = resp.message ;
+                chilliController.message = fakediv.innerHTML  ;
+        }
+
+
+I don't know if it can work or not. Or you people can suggest me any
+other approaches that can help to show the message to blocked clients.
+
+Thanks,
+Dat
+
+From radius.sir at gmail.com  Fri Dec 13 11:36:56 2013
+From: radius.sir at gmail.com (Russell Mike)
+Date: Fri, 13 Dec 2013 11:36:56 +0000
+Subject: [Chilli] WARNING: Unprintable characters in the password.
+ Double-check the shared secret on the server and the NAS!
+Message-ID: <CADao4CrHDX-L+NtkZrvbL7u7Xq1+CGj8DT2v5eH2fhHJ9asfDw@mail.gmail.com>
+
+Greetings List
+
+One of my CoovaChilli instance VLAN1550 has about 1800 Users, It works
+fine, rocking !!! but some user reported cannot login problem. i started FR
+in debug mode and released the following. As at now i am writing majority
+of users are able to login alright expaect few.
+
+Have anyone experience this behavior?
+
+
++- entering group PAP {...}
+
+[pap] login attempt with password "#J3a#######
+
+[pap] Using clear text password "3535278245"
+
+[pap] Passwords don't match
+
+++[pap] returns reject
+
+Failed to authenticate the user.
+
+ *WARNING: Unprintable characters in the password.  Double-check the shared
+secret on the server and the NAS!*
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20131213/6378e73d/attachment.html>
+
+From xoneca at gmail.com  Fri Dec 13 14:56:19 2013
+From: xoneca at gmail.com (Xabier Oneca -- xOneca)
+Date: Fri, 13 Dec 2013 15:56:19 +0100
+Subject: [Chilli] Allow sub http request
+In-Reply-To: <52AAB2BF.301@gmail.com>
+References: <52AAB2BF.301@gmail.com>
+Message-ID: <CACkgH73FfVKstS36jy4mzzTj3b-nkfbEjT4H4D2e71mJGO3KpQ@mail.gmail.com>
+
+Hello Alexandre,
+
+13/12/2013 08:35, "Alexandre Rubert" <alexandre.rubert at gmail.com>:
+> Hello,
+> I'd like to know if someone managed to allow all sub http requests. I'd
+like to not have to write all ip for a website. Is it possible to allow one
+site and all call to another ip from this website without configure all
+this sub website in uamallow parameter ?
+> Thanks
+
+This is not possible only with CoovaChilli, because it would have to scrub
+all links of a website, at startup.
+
+(It could also open a hole, if an allowed page contains a link to an
+unexpected page.)
+
+What you should do is enable domains one by one.
+
+What you could also try is using wget/curl in a script to scrub all links
+in a website and get the IP addresses. Then, you configure 'uamallow' with
+those IPs. (You can also use domain names, if you want, but take care if
+the domain can resolve to more than one IP address!)
+
+HTH,
+
+Xabier Oneca_,,_
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20131213/a3472d13/attachment.html>
+
+From trandatnh at gmail.com  Fri Dec 20 00:28:14 2013
+From: trandatnh at gmail.com (Le Tran Dat)
+Date: Fri, 20 Dec 2013 08:28:14 +0800
+Subject: [Chilli] Why does CoovaChilli keep getting issue with VPN,
+ How to debug/troubleshoot this issue?
+Message-ID: <CAOyZXpQC8RXvefKfVrLQr5gseaDUs7insg5n9k6+HfJJtQc6Kg@mail.gmail.com>
+
+ Hi list,
+
+I have been working with CoovaChilli for the past 3 months and I am
+getting used to it. However, I am always get trouble with VPN
+connection.
+
+Last time I used CoovaChilli 1.2.5 and I managed to let the clients
+connecting to Hotspot by marking NOTRACK to raw table as the bellow
+rules.
+
+ipt -t raw -I POSTROUTING -j NOTRACK -o $DHCPIF
+ipt -t raw -I OUTPUT -j NOTRACK -o $DHCPIF
+
+Now I am using CoovaChilli 1.3.0, I found that my development PC and
+another testing PC, both are XP, can create an VPN connection without
+adding the above rules. However, some other PCs can not do the same,
+they are XP too. If I enable CoovaChilli then I can not connect to VPN
+server anymore. I tried to mark NOTRACK to the raw table as well.
+
+I know what I am describing here is so vague since I have no idea why
+CoovaChilli has this issue. I hope anyone in the list who had managed
+to solve this problem might give me some hints to
+debug/troubleshooting this issue.
+
+Currently, what I am doing is just keep changing iptables rules until
+I can connect to the VPN server. Anyway, I have no idea how to debug
+it, which log I should look into or what I should do to trace down the
+issue.
+
+Any of your suggestions are valuable to me.
+
+Thanks,
+Dat
+
+From steffen.dettmer at nomadrail.com  Fri Dec 20 09:15:22 2013
+From: steffen.dettmer at nomadrail.com (Steffen Dettmer)
+Date: Fri, 20 Dec 2013 09:15:22 +0000
+Subject: [Chilli] Why does CoovaChilli keep getting issue with VPN,
+ How to debug/troubleshoot this issue?
+In-Reply-To: <CAOyZXpQC8RXvefKfVrLQr5gseaDUs7insg5n9k6+HfJJtQc6Kg@mail.gmail.com>
+References: <CAOyZXpQC8RXvefKfVrLQr5gseaDUs7insg5n9k6+HfJJtQc6Kg@mail.gmail.com>
+Message-ID: <3a8d9a4104cb43c2b00e8aa0e19f1b88@AM3PR05MB323.eurprd05.prod.outlook.com>
+
+Hi,
+
+> I have been working with CoovaChilli for the past 3 months and I am getting
+> used to it. However, I am always get trouble with VPN connection.
+
+what kind of VPN is it? For PPTP/GRE, did you load the kernel
+modules nf_conntrack_pptp, nf_nat_pptp, nf_conntrack_proto_gre
+and nf_nat_proto_gre? I've read about NOTRACK, but I'm not sure
+why they sometimes seem to be needed (to avoid conntrack getting
+confused about resent packets?).
+
+> I know what I am describing here is so vague since I have no idea why
+> CoovaChilli has this issue. I hope anyone in the list who had managed to solve
+> this problem might give me some hints to debug/troubleshooting this issue.
+
+If you meet a NAT issue it could happen that one VPN connection
+works but no other, this sometimes make testing difficult and may
+lead to misleading observations. I'd also recommend to check the
+VPN traffic before Coova to see if it has IP fragmented packets,
+which are dropped by Coova for a reason I don't know. If you see
+fragments, I think it is most likely causing your problems.
+
+> Currently, what I am doing is just keep changing iptables rules
+> until I can connect to the VPN server. Anyway, I have no idea
+> how to debug it, which log I should look into or what I should
+> do to trace down the issue.
+
+To troubleshoot I think a good start could be using tcpdump at
+each interface one at at time and follow the packets. Start at
+DHCPIF, then the tun dev, output dev, remote side and way back.
+You might use ping -s to generate packets of specified size to
+have at least an idea what packets are about your ping (if you
+ping -s 700 and then suddenly seeing e.g. 730 byte UDP packets,
+it is most likely that they contain the ping). Starting Coova
+with --debug of course. When packets are not forwarded by Coova,
+sometimes even strace -p <coova_pid> may help determining if
+really Coova is an issue or if you have some routing/firewalling
+issue (there are a lot of potential pitfalls).
+
+Steffen
+
+From het.oosten at gmail.com  Sat Dec 21 10:41:43 2013
+From: het.oosten at gmail.com (Rob)
+Date: Sat, 21 Dec 2013 11:41:43 +0100
+Subject: [Chilli] build error
+Message-ID: <CAFmAzYWFTKwz=PpRkH19sLLB2hACsWeTLuyP8Xse1vrhySBasA@mail.gmail.com>
+
+I am trying to build Coova Chilli on Debian. I tried version 1.2.9, 1.3.0
+and svn. With all I have this error:
+
+options.c: In function 'process_options':
+options.c:634: error: array subscript is above array bounds
+
+When I remove -Werror from the Makefile I get this error:
+
+e.Tpo -c -o cmdline.o cmdline.c
+{standard input}: Assembler messages:
+{standard input}:6652: Warning: end of file in string; '"' inserted
+gcc: Internal error: Killed (program cc1)
+Please submit a full bug report.
+
+Running make again results in this error:
+
+main-opt.o: In function `main':
+/usr/src/coova-chilli-1.3.0/src/main-opt.c:252: undefined reference to
+`cmdline_parser2'
+/usr/src/coova-chilli-1.3.0/src/main-opt.c:267: undefined reference to
+`cmdline_parser_configfile'
+/usr/src/coova-chilli-1.3.0/src/main-opt.c:844: undefined reference to
+`gengetopt_args_info_help'
+cmdline.o: In function `cmdline_parser_init':
+/usr/src/coova-chilli-1.3.0/src/cmdline.c:1115: undefined reference to
+`gengetopt_args_info_help'
+cmdline.o: In function `_cmdline_parser_configfile':
+/usr/src/coova-chilli-1.3.0/src/cmdline.c:5480: undefined reference to
+`cmd_line_list'
+/usr/src/coova-chilli-1.3.0/src/cmdline.c:5480: undefined reference to
+`cmd_line_list_tmp'
+cmdline.o: In function `update_arg':
+/usr/src/coova-chilli-1.3.0/src/cmdline.c:2189: undefined reference to
+`package_name'
+
+Any idea?
+
+Rob
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20131221/b25865a9/attachment.html>
+
+From aseaudi at gmail.com  Thu Dec 26 10:31:30 2013
+From: aseaudi at gmail.com (Abdelmuhaimen Seaudi)
+Date: Thu, 26 Dec 2013 12:31:30 +0200
+Subject: [Chilli] coova and dhcp server running on same box
+Message-ID: <CABFmVg7DkTGTrsnUcZpyqy0dKNjM+c4i0cJ1LDhVkbSK1PMDrA@mail.gmail.com>
+
+Hello all,
+I need to run coova on a device that does not easily disable it's
+built-in dhcp server or the ip address on the wifi ap interface facing
+the wifi clients.
+This means both coova dhcp and device built-in dhcp server are now running.
+I can try to use the dhcp relay option, but i understand it's for dhcp
+server located on another 2nd device outside the 1st device mentioned
+above, which is not the case here.
+How can i run coova to not respond to DCHP requests from clients, and
+just accept the ip addresses it sees from the clients ?
+Here's the suggested model that will be running, as you can see coova
+is sitting behind the DHCP-Server of the device.
+
+SCENARIO #1:
+Hotspot client (takes IP address from DHCP-Server) <==> WIFI <==>
+Interface WiFi0 of Access Point (IP address 192.168.1.1 with
+DHCP-Server giving 192.168.1.0/24 to clients) <==> coova with
+LAN:Wifi0 and WAN:Eth0 <==> Interface Eth0 connected to internet with
+public IP assigned by ISP.
+
+SCENARIO #2:
+Hotspot client (takes IP address from DHCP-Server) <==> WIFI <==>
+Interface WiFi0 (No IP) <==> bridge <==> Interface Eth1 (IP address
+192.168.1.1 with DHCP-Server giving 192.168.1.0/24 to WIFI clients)
+<==> coova with LAN:Eth1 and WAN:Eth0 <==> Interface Eth0 connected to
+internet with public IP assigned by ISP.
+
+
+Thanks
+-- 
+Abdel-Muhaimen Seaudi
+CCIE # 25265
+aseaudi at gmail.com
+Tel.: +2010-0538-7426
+
+From dbird at google.com  Mon Dec 30 18:57:18 2013
+From: dbird at google.com (David Bird)
+Date: Mon, 30 Dec 2013 10:57:18 -0800
+Subject: [Chilli] Subversion -> Git
+Message-ID: <CADo9JyWCC6tjkRt7E11JT8SvwZ1fRvq7DEMyioWYgni-uuMBPA@mail.gmail.com>
+
+Greetings,
+
+I've copied the subversion to github where development will continue. The
+subversion may remain on-line for a bit, but there will be no more commits.
+
+See https://github.com/coova
+
+Cheers,
+David
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20131230/6897a268/attachment.html>
+
+From bojan at gajba.net  Tue Dec 31 06:28:13 2013
+From: bojan at gajba.net (Bojan Pogacar)
+Date: Tue, 31 Dec 2013 07:28:13 +0100
+Subject: [Chilli] Subversion -> Git
+In-Reply-To: <CADo9JyWCC6tjkRt7E11JT8SvwZ1fRvq7DEMyioWYgni-uuMBPA@mail.gmail.com>
+References: <CADo9JyWCC6tjkRt7E11JT8SvwZ1fRvq7DEMyioWYgni-uuMBPA@mail.gmail.com>
+Message-ID: <52C263FD.8090906@gajba.net>
+
+Hello!
+
+I've cloned latest version and tried with new option that has been added 
+- enable-authedallowed. When I run make, I get this error:
+
+chilli.c: In function 'chilli_acct_fromsub':
+chilli.c:5663:19: error: 'struct options_t' has no member named 
+'nousergardendata'
+        if (_options.nousergardendata)
+                    ^
+chilli.c: In function 'chilli_acct_tosub':
+chilli.c:5784:19: error: 'struct options_t' has no member named 
+'nousergardendata'
+        if (_options.nousergardendata)
+                    ^
+
+
+I've compiled with this parameters:
+
+./configure --with-openssl  --enable-largelimits --enable-sessgarden 
+--enable-location --enable-proxyvsa --enable-authedallowed
+
+Did I miss smth or there is a bug?
+
+Best regards and happy new year to all!
+
+Bojan
+
+
+
+Dne 30.12.2013 19:57, pi?e David Bird:
+> Greetings,
+>
+> I've copied the subversion to github where development will continue.
+> The subversion may remain on-line for a bit, but there will be no more
+> commits.
+>
+> See https://github.com/coova
+>
+> Cheers,
+> David
+>
+>
+>
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+
+-- 
+Lep pozdrav,
+
+Bojan Poga?ar
+GSM: 031 262 535
+

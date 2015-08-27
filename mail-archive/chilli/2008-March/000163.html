@@ -1,0 +1,98 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> Attempt to re-authenticate at the end of a session
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20Attempt%20to%20re-authenticate%20at%20the%20end%20of%20a%20session&In-Reply-To=%3C47EAB956.7000007%40gmail.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000162.html">
+   
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>Attempt to re-authenticate at the end of a session</H1>
+    <B>Gunther Mayer</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20Attempt%20to%20re-authenticate%20at%20the%20end%20of%20a%20session&In-Reply-To=%3C47EAB956.7000007%40gmail.com%3E"
+       TITLE="Attempt to re-authenticate at the end of a session">gunther.mayer at googlemail.com
+       </A><BR>
+    <I>Wed Mar 26 21:00:06 UTC 2008</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000162.html">Attempt to re-authenticate at the end of a session
+</A></li>
+        
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#163">[ date ]</a>
+              <a href="thread.html#163">[ thread ]</a>
+              <a href="subject.html#163">[ subject ]</a>
+              <a href="author.html#163">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE><A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">wlan at mac.com</A> wrote:
+&gt;<i> You can indeed change session parameters in a CoA too. That method is 
+</I>&gt;<i> preferred over using acctupdate if you can do it (meaning, your chilli 
+</I>&gt;<i> isn't behind a NAT or has port forwarding for RADIUS).
+</I>Ah, seeing that I'm currently implementing a centralised VPN setup for 
+all our nas's perhaps I should aim to use CoA rather.
+
+But the challenge still remains and the more I think about it the more 
+complex it gets. Let me elaborate: A given user gets a certain free 
+daily portion of Internet but also purchased some Internet. The free 
+traffic must be normal but the paid for traffic prioritised (QoS) so 
+that the user is getting value for money.
+
+How do I, without interrupting the session, fire an event (a QoS script) 
+at the time when the free portion has been spent and the paid for 
+portion takes over?
+
+My current thoughts:
+
+    * coa packet sometime before the &quot;free&quot; session times out, patch
+      chilli to let me fire an event upon CoA. Gotcha: easy to do with
+      time based but really tricky with volume accounting (how do you
+      know when the user will run out given a max-octets?)
+    * the original subject: patch chilli so that upon logout it will
+      send accounting stop, followed immediately by a re-authentication
+      attempt (with timeout of, say, 10 seconds) and only if
+      re-authentication unsuccessful place the user back into the
+      unauthenticated(dnat) state. Re-authentication would trigger a
+      conup which can then do the QoS. Minor gotcha: users may get an
+      extra few seconds of Internet should the radius server be slow to
+      react (but perhaps re-authentication can be flagged by radius
+      during session initialisation?)
+
+Any other ideas?
+&gt;<i>
+</I>&gt;<i> also, check out:
+</I>&gt;<i> <A HREF="http://coova.org/phpBB3/viewtopic.php?f=4&amp;t=642&amp;p=2501#p2501">http://coova.org/phpBB3/viewtopic.php?f=4&amp;t=642&amp;p=2501#p2501</A>
+</I>&gt;<i>
+</I>&gt;<i> chilli without a tun/tap interface... what? :)
+</I>Interesting... though not something we would use anytime soon.
+
+Gunther
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: &lt;<A HREF="http://lists.coova.org/pipermail/chilli/attachments/20080326/f97728d6/attachment.htm">http://lists.coova.org/pipermail/chilli/attachments/20080326/f97728d6/attachment.htm</A>&gt;
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000162.html">Attempt to re-authenticate at the end of a session
+</A></li>
+	
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#163">[ date ]</a>
+              <a href="thread.html#163">[ thread ]</a>
+              <a href="subject.html#163">[ subject ]</a>
+              <a href="author.html#163">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

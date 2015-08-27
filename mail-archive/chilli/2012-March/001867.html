@@ -1,0 +1,456 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] Segfault Chilli 1.2.9
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Segfault%20Chilli%201.2.9&In-Reply-To=%3C1331110252.3210.247.camel%40david-laptop%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001866.html">
+   <LINK REL="Next"  HREF="001868.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] Segfault Chilli 1.2.9</H1>
+    <B>David Bird</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Segfault%20Chilli%201.2.9&In-Reply-To=%3C1331110252.3210.247.camel%40david-laptop%3E"
+       TITLE="[Chilli] Segfault Chilli 1.2.9">david at coova.com
+       </A><BR>
+    <I>Wed Mar  7 08:50:52 UTC 2012</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001866.html">[Chilli] Segfault Chilli 1.2.9
+</A></li>
+        <LI>Next message: <A HREF="001868.html">[Chilli] Segfault Chilli 1.2.9
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1867">[ date ]</a>
+              <a href="thread.html#1867">[ thread ]</a>
+              <a href="subject.html#1867">[ subject ]</a>
+              <a href="author.html#1867">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Thanks for helping analyze. Check out the most recent version from
+subversion and please test. I was able to reproduce the problem, which
+only happened when using dhcpopt option and fixed it. 
+
+Best regards,
+David
+
+
+On Tue, 2012-03-06 at 18:38 -0300, Fernando Macedo wrote:
+&gt;<i> length=18446744073709551608
+</I>&gt;<i> lenght = ntohs(pack_udph-&gt;len) - PKT_UDP_HLEN
+</I>&gt;<i> PKT_UDP_HLEN = 8
+</I>&gt;<i> 18446744073709551608 = 2^64 -8 :p
+</I>&gt;<i> 
+</I>&gt;<i> Maybe a zero length UDP packet...
+</I>&gt;<i> 
+</I>&gt;<i> Em 06/03/2012 16:41, Fernando Macedo escreveu:
+</I>&gt;<i> &gt; On next crash... Unfortunately, the server was rebooted. I believe 
+</I>&gt;<i> &gt; it's related to a specific client.
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; Fernando Macedo
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; Em 06/03/2012 16:22, David Bird escreveu:
+</I>&gt;<i> &gt;&gt; Ouch, that isn't a good length. Can you do a backtrace in gdb ('bt'
+</I>&gt;<i> &gt;&gt; command)?
+</I>&gt;<i> &gt;&gt;
+</I>&gt;<i> &gt;&gt; On Tue, 2012-03-06 at 15:57 -0300, Fernando Macedo wrote:
+</I>&gt;<i> &gt;&gt;&gt; GDB output of segfault:
+</I>&gt;<i> &gt;&gt;&gt;
+</I>&gt;<i> &gt;&gt;&gt; root# gdb /usr/local/sbin/chilli
+</I>&gt;<i> &gt;&gt;&gt;
+</I>&gt;<i> &gt;&gt;&gt; GNU gdb (GDB) 7.1-ubuntu
+</I>&gt;<i> &gt;&gt;&gt; Copyright (C) 2010 Free Software Foundation, Inc.
+</I>&gt;<i> &gt;&gt;&gt; License GPLv3+: GNU GPL version 3 or later
+</I>&gt;<i> &gt;&gt;&gt; &lt;<A HREF="http://gnu.org/licenses/gpl.html">http://gnu.org/licenses/gpl.html</A>&gt;
+</I>&gt;<i> &gt;&gt;&gt; This is free software: you are free to change and redistribute it.
+</I>&gt;<i> &gt;&gt;&gt; There is NO WARRANTY, to the extent permitted by law.  Type &quot;show 
+</I>&gt;<i> &gt;&gt;&gt; copying&quot;
+</I>&gt;<i> &gt;&gt;&gt; and &quot;show warranty&quot; for details.
+</I>&gt;<i> &gt;&gt;&gt; This GDB was configured as &quot;x86_64-linux-gnu&quot;.
+</I>&gt;<i> &gt;&gt;&gt; For bug reporting instructions, please see:
+</I>&gt;<i> &gt;&gt;&gt; &lt;<A HREF="http://www.gnu.org/software/gdb/bugs/">http://www.gnu.org/software/gdb/bugs/</A>&gt;...
+</I>&gt;<i> &gt;&gt;&gt; Reading symbols from /usr/local/sbin/chilli...done.
+</I>&gt;<i> &gt;&gt;&gt; (gdb) run  -c /usr/local/etc/chilli.conf --maxclients=1024
+</I>&gt;<i> &gt;&gt;&gt; --dhcpopt=0104FFFFFC00 --fg
+</I>&gt;<i> &gt;&gt;&gt; Starting program: /usr/local/sbin/chilli -c /usr/local/etc/chilli.conf
+</I>&gt;<i> &gt;&gt;&gt; --maxclients=1024 --dhcpopt=0104FFFFFC00 --fg
+</I>&gt;<i> &gt;&gt;&gt; [Thread debugging using libthread_db enabled]
+</I>&gt;<i> &gt;&gt;&gt;
+</I>&gt;<i> &gt;&gt;&gt; Program received signal SIGSEGV, Segmentation fault.
+</I>&gt;<i> &gt;&gt;&gt; dhcp_gettag (pack=0x7ffffffedc00, length=18446744073709551608,
+</I>&gt;<i> &gt;&gt;&gt; tag=0x7ffffffecdc8, tagtype=55 '7') at dhcp.c:2914
+</I>&gt;<i> &gt;&gt;&gt; 2914        if (t-&gt;t == tagtype) {
+</I>&gt;<i> &gt;&gt;&gt; (gdb)
+</I>&gt;<i> &gt;&gt;&gt;
+</I>&gt;<i> &gt;&gt;&gt;
+</I>&gt;<i> &gt;&gt;&gt; Em 02/03/2012 14:13, Fernando Macedo escreveu:
+</I>&gt;<i> &gt;&gt;&gt;&gt; Again:
+</I>&gt;<i> &gt;&gt;&gt;&gt;
+</I>&gt;<i> &gt;&gt;&gt;&gt; recvmsg(5, {msg_name(18)={sa_family=AF_PACKET, proto=0x800, if3,
+</I>&gt;<i> &gt;&gt;&gt;&gt; pkttype=PACKET_HOST, addr(6)={1, 0022fbce29a0},
+</I>&gt;<i> &gt;&gt;&gt;&gt; msg_iov(1)=[{&quot;\232M\&quot;\336X\16\0\&quot;\373\316)\240\10\0E\0\5\2146\273@\0\200\6\317J\2176\250\20\270H&quot;..., 
+</I>&gt;<i> &gt;&gt;&gt;&gt;
+</I>&gt;<i> &gt;&gt;&gt;&gt; 65497}], msg_controllen=40, {cmsg_len=36, cmsg_level=SOL_PACKET,
+</I>&gt;<i> &gt;&gt;&gt;&gt; cmsg_type=, ...}, msg_flags=0}, MSG_TRUNC) = 1434
+</I>&gt;<i> &gt;&gt;&gt;&gt; write(4,
+</I>&gt;<i> &gt;&gt;&gt;&gt; &quot;E\0\5\2146\273@\0\200\6\317J\2176\250\20\270H\377\326\302\354\1\273c\224\3\350~5\365\241&quot;..., 
+</I>&gt;<i> &gt;&gt;&gt;&gt;
+</I>&gt;<i> &gt;&gt;&gt;&gt; 1420) = 1420
+</I>&gt;<i> &gt;&gt;&gt;&gt; select(13, [4 5 6 8 9 10 11 12], [], [4 5 6 8 9 10 11 12], {1, 0}) = 1
+</I>&gt;<i> &gt;&gt;&gt;&gt; (in [5], left {0, 999997})
+</I>&gt;<i> &gt;&gt;&gt;&gt; clock_gettime(CLOCK_MONOTONIC, {170230, 11114377}) = 0
+</I>&gt;<i> &gt;&gt;&gt;&gt; recvmsg(5, {msg_name(18)={sa_family=AF_PACKET, proto=0x800, if3,
+</I>&gt;<i> &gt;&gt;&gt;&gt; pkttype=PACKET_HOST, addr(6)={1, 0022fbce29a0},
+</I>&gt;<i> &gt;&gt;&gt;&gt; msg_iov(1)=[{&quot;\232M\&quot;\336X\16\0\&quot;\373\316)\240\10\0E\0\5\2146\274@\0\200\6\317I\2176\250\20\270H&quot;..., 
+</I>&gt;<i> &gt;&gt;&gt;&gt;
+</I>&gt;<i> &gt;&gt;&gt;&gt; 65497}], msg_controllen=40, {cmsg_len=36, cmsg_level=SOL_PACKET,
+</I>&gt;<i> &gt;&gt;&gt;&gt; cmsg_type=, ...}, msg_flags=0}, MSG_TRUNC) = 1434
+</I>&gt;<i> &gt;&gt;&gt;&gt; write(4,
+</I>&gt;<i> &gt;&gt;&gt;&gt; &quot;E\0\5\2146\274@\0\200\6\317I\2176\250\20\270H\377\326\302\354\1\273c\224\tL~5\365\241&quot;..., 
+</I>&gt;<i> &gt;&gt;&gt;&gt;
+</I>&gt;<i> &gt;&gt;&gt;&gt; 1420) = 1420
+</I>&gt;<i> &gt;&gt;&gt;&gt; select(13, [4 5 6 8 9 10 11 12], [], [4 5 6 8 9 10 11 12], {1, 0}) = 1
+</I>&gt;<i> &gt;&gt;&gt;&gt; (in [5], left {0, 999997})
+</I>&gt;<i> &gt;&gt;&gt;&gt; clock_gettime(CLOCK_MONOTONIC, {170230, 11421407}) = 0
+</I>&gt;<i> &gt;&gt;&gt;&gt; recvmsg(5, {msg_name(18)={sa_family=AF_PACKET, proto=0x800, if3,
+</I>&gt;<i> &gt;&gt;&gt;&gt; pkttype=PACKET_HOST, addr(6)={1, 0022fbce29a0},
+</I>&gt;<i> &gt;&gt;&gt;&gt; msg_iov(1)=[{&quot;\232M\&quot;\336X\16\0\&quot;\373\316)\240\10\0E\0\5\2146\275@\0\200\6\317H\2176\250\20\270H&quot;..., 
+</I>&gt;<i> &gt;&gt;&gt;&gt;
+</I>&gt;<i> &gt;&gt;&gt;&gt; 65497}], msg_controllen=40, {cmsg_len=36, cmsg_level=SOL_PACKET,
+</I>&gt;<i> &gt;&gt;&gt;&gt; cmsg_type=, ...}, msg_flags=0}, MSG_TRUNC) = 1434
+</I>&gt;<i> &gt;&gt;&gt;&gt; write(4,
+</I>&gt;<i> &gt;&gt;&gt;&gt; &quot;E\0\5\2146\275@\0\200\6\317H\2176\250\20\270H\377\326\302\354\1\273c\224\16\260~5\365\241&quot;..., 
+</I>&gt;<i> &gt;&gt;&gt;&gt;
+</I>&gt;<i> &gt;&gt;&gt;&gt; 1420) = 1420
+</I>&gt;<i> &gt;&gt;&gt;&gt; select(13, [4 5 6 8 9 10 11 12], [], [4 5 6 8 9 10 11 12], {1, 0}) = 1
+</I>&gt;<i> &gt;&gt;&gt;&gt; (in [5], left {0, 999997})
+</I>&gt;<i> &gt;&gt;&gt;&gt; clock_gettime(CLOCK_MONOTONIC, {170230, 11759495}) = 0
+</I>&gt;<i> &gt;&gt;&gt;&gt; recvmsg(5, {msg_name(18)={sa_family=AF_PACKET, proto=0x800, if3,
+</I>&gt;<i> &gt;&gt;&gt;&gt; pkttype=PACKET_HOST, addr(6)={1, 0022fbce29a0},
+</I>&gt;<i> &gt;&gt;&gt;&gt; msg_iov(1)=[{&quot;\232M\&quot;\336X\16\0\&quot;\373\316)\240\10\0E\0\00146\276@\0\200\6\323\237\2176\250\20\270H&quot;..., 
+</I>&gt;<i> &gt;&gt;&gt;&gt;
+</I>&gt;<i> &gt;&gt;&gt;&gt; 65497}], msg_controllen=40, {cmsg_len=36, cmsg_level=SOL_PACKET,
+</I>&gt;<i> &gt;&gt;&gt;&gt; cmsg_type=, ...}, msg_flags=0}, MSG_TRUNC) = 322
+</I>&gt;<i> &gt;&gt;&gt;&gt; write(4,
+</I>&gt;<i> &gt;&gt;&gt;&gt; &quot;E\0\00146\276@\0\200\6\323\237\2176\250\20\270H\377\326\302\354\1\273c\224\24\24~5\365\241&quot;..., 
+</I>&gt;<i> &gt;&gt;&gt;&gt;
+</I>&gt;<i> &gt;&gt;&gt;&gt; 308) = 308
+</I>&gt;<i> &gt;&gt;&gt;&gt; select(13, [4 5 6 8 9 10 11 12], [], [4 5 6 8 9 10 11 12], {1, 0}) = 1
+</I>&gt;<i> &gt;&gt;&gt;&gt; (in [5], left {0, 999997})
+</I>&gt;<i> &gt;&gt;&gt;&gt; clock_gettime(CLOCK_MONOTONIC, {170230, 12066338}) = 0
+</I>&gt;<i> &gt;&gt;&gt;&gt; recvmsg(5, {msg_name(18)={sa_family=AF_PACKET, proto=0x800, if3,
+</I>&gt;<i> &gt;&gt;&gt;&gt; pkttype=PACKET_HOST, addr(6)={1, 0022fbce29a0},
+</I>&gt;<i> &gt;&gt;&gt;&gt; msg_iov(1)=[{&quot;\232M\&quot;\336X\16\0\&quot;\373\316)\240\10\0E\0\5\2146\277@\0\200\6\317F\2176\250\20\270H&quot;..., 
+</I>&gt;<i> &gt;&gt;&gt;&gt;
+</I>&gt;<i> &gt;&gt;&gt;&gt; 65497}], msg_controllen=40, {cmsg_len=36, cmsg_level=SOL_PACKET,
+</I>&gt;<i> &gt;&gt;&gt;&gt; cmsg_type=, ...}, msg_flags=0}, MSG_TRUNC) = 1434
+</I>&gt;<i> &gt;&gt;&gt;&gt; write(4,
+</I>&gt;<i> &gt;&gt;&gt;&gt; &quot;E\0\5\2146\277@\0\200\6\317F\2176\250\20\270H\377\326\302\354\1\273c\224\25 
+</I>&gt;<i> &gt;&gt;&gt;&gt;
+</I>&gt;<i> &gt;&gt;&gt;&gt; ~5\365\241&quot;..., 1420) = 1420
+</I>&gt;<i> &gt;&gt;&gt;&gt; select(13, [4 5 6 8 9 10 11 12], [], [4 5 6 8 9 10 11 12], {1, 0}) = 1
+</I>&gt;<i> &gt;&gt;&gt;&gt; (in [5], left {0, 999997})
+</I>&gt;<i> &gt;&gt;&gt;&gt; clock_gettime(CLOCK_MONOTONIC, {170230, 12373554}) = 0
+</I>&gt;<i> &gt;&gt;&gt;&gt; recvmsg(5, {msg_name(18)={sa_family=AF_PACKET, proto=0x800, if3,
+</I>&gt;<i> &gt;&gt;&gt;&gt; pkttype=PACKET_HOST, addr(6)={1, 0022fbce29a0},
+</I>&gt;<i> &gt;&gt;&gt;&gt; msg_iov(1)=[{&quot;\232M\&quot;\336X\16\0\&quot;\373\316)\240\10\0E\0\2\0226\300@\0\200\6\322\277\2176\250\20\270H&quot;..., 
+</I>&gt;<i> &gt;&gt;&gt;&gt;
+</I>&gt;<i> &gt;&gt;&gt;&gt; 65497}], msg_controllen=40, {cmsg_len=36, cmsg_level=SOL_PACKET,
+</I>&gt;<i> &gt;&gt;&gt;&gt; cmsg_type=, ...}, msg_flags=0}, MSG_TRUNC) = 544
+</I>&gt;<i> &gt;&gt;&gt;&gt; write(4,
+</I>&gt;<i> &gt;&gt;&gt;&gt; &quot;E\0\2\0226\300@\0\200\6\322\277\2176\250\20\270H\377\326\302\354\1\273c\224\32\204~5\365\241&quot;..., 
+</I>&gt;<i> &gt;&gt;&gt;&gt;
+</I>&gt;<i> &gt;&gt;&gt;&gt; 530) = 530
+</I>&gt;<i> &gt;&gt;&gt;&gt; select(13, [4 5 6 8 9 10 11 12], [], [4 5 6 8 9 10 11 12], {1, 0}) = 1
+</I>&gt;<i> &gt;&gt;&gt;&gt; (in [5], left {0, 999997})
+</I>&gt;<i> &gt;&gt;&gt;&gt; clock_gettime(CLOCK_MONOTONIC, {170230, 12705270}) = 0
+</I>&gt;<i> &gt;&gt;&gt;&gt; recvmsg(5, {msg_name(18)={sa_family=AF_PACKET, proto=0x800, if3,
+</I>&gt;<i> &gt;&gt;&gt;&gt; pkttype=PACKET_HOST, addr(6)={1, 0022fbce29a0},
+</I>&gt;<i> &gt;&gt;&gt;&gt; msg_iov(1)=[{&quot;\232M\&quot;\336X\16\0\&quot;\373\316)\240\10\0E\0\<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">5 at 6</A>\301@\0\200\6\317\220\2176\250\20\270H&quot;..., 
+</I>&gt;<i> &gt;&gt;&gt;&gt;
+</I>&gt;<i> &gt;&gt;&gt;&gt; 65497}], msg_controllen=40, {cmsg_len=36, cmsg_level=SOL_PACKET,
+</I>&gt;<i> &gt;&gt;&gt;&gt; cmsg_type=, ...}, msg_flags=0}, MSG_TRUNC) = 1358
+</I>&gt;<i> &gt;&gt;&gt;&gt; write(4,
+</I>&gt;<i> &gt;&gt;&gt;&gt; &quot;E\0\<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">5 at 6</A>\301@\0\200\6\317\220\2176\250\20\270H\377\326\302\354\1\273c\224\34n~5\365\241&quot;..., 
+</I>&gt;<i> &gt;&gt;&gt;&gt;
+</I>&gt;<i> &gt;&gt;&gt;&gt; 1344) = 1344
+</I>&gt;<i> &gt;&gt;&gt;&gt; select(13, [4 5 6 8 9 10 11 12], [], [4 5 6 8 9 10 11 12], {1, 0}) = 1
+</I>&gt;<i> &gt;&gt;&gt;&gt; (in [5], left {0, 999997})
+</I>&gt;<i> &gt;&gt;&gt;&gt; clock_gettime(CLOCK_MONOTONIC, {170230, 13015073}) = 0
+</I>&gt;<i> &gt;&gt;&gt;&gt; recvmsg(5, {msg_name(18)={sa_family=AF_PACKET, proto=0x800, if3,
+</I>&gt;<i> &gt;&gt;&gt;&gt; pkttype=PACKET_HOST, addr(6)={1, 0022fbce29a0},
+</I>&gt;<i> &gt;&gt;&gt;&gt; msg_iov(1)=[{&quot;\232M\&quot;\336X\16\0\&quot;\373\316)\240\10\0E\0\5\2146\302@\0\200\6\317C\2176\250\20\270H&quot;..., 
+</I>&gt;<i> &gt;&gt;&gt;&gt;
+</I>&gt;<i> &gt;&gt;&gt;&gt; 65497}], msg_controllen=40, {cmsg_len=36, cmsg_level=SOL_PACKET,
+</I>&gt;<i> &gt;&gt;&gt;&gt; cmsg_type=, ...}, msg_flags=0}, MSG_TRUNC) = 1434
+</I>&gt;<i> &gt;&gt;&gt;&gt; write(4,
+</I>&gt;<i> &gt;&gt;&gt;&gt; &quot;E\0\5\2146\302@\0\200\6\317C\2176\250\20\270H\377\326\302\354\1\273c\224!\206~5\365\241&quot;..., 
+</I>&gt;<i> &gt;&gt;&gt;&gt;
+</I>&gt;<i> &gt;&gt;&gt;&gt; 1420) = 1420
+</I>&gt;<i> &gt;&gt;&gt;&gt; select(13, [4 5 6 8 9 10 11 12], [], [4 5 6 8 9 10 11 12], {1, 0}) = 1
+</I>&gt;<i> &gt;&gt;&gt;&gt; (in [5], left {0, 999997})
+</I>&gt;<i> &gt;&gt;&gt;&gt; clock_gettime(CLOCK_MONOTONIC, {170230, 13360233}) = 0
+</I>&gt;<i> &gt;&gt;&gt;&gt; recvmsg(5, {msg_name(18)={sa_family=AF_PACKET, proto=0x800, if3,
+</I>&gt;<i> &gt;&gt;&gt;&gt; pkttype=PACKET_HOST, addr(6)={1, 0022fbce29a0},
+</I>&gt;<i> &gt;&gt;&gt;&gt; msg_iov(1)=[{&quot;\232M\&quot;\336X\16\0\&quot;\373\316)\240\10\0E\0\5\2146\303@\0\200\6\317B\2176\250\20\270H&quot;..., 
+</I>&gt;<i> &gt;&gt;&gt;&gt;
+</I>&gt;<i> &gt;&gt;&gt;&gt; 65497}], msg_controllen=40, {cmsg_len=36, cmsg_level=SOL_PACKET,
+</I>&gt;<i> &gt;&gt;&gt;&gt; cmsg_type=, ...}, msg_flags=0}, MSG_TRUNC) = 1434
+</I>&gt;<i> &gt;&gt;&gt;&gt; write(4,
+</I>&gt;<i> &gt;&gt;&gt;&gt; &quot;E\0\5\2146\303@\0\200\6\317B\2176\250\20\270H\377\326\302\354\1\273c\224&amp;\352~5\365\241&quot;..., 
+</I>&gt;<i> &gt;&gt;&gt;&gt;
+</I>&gt;<i> &gt;&gt;&gt;&gt; 1420) = 1420
+</I>&gt;<i> &gt;&gt;&gt;&gt; select(13, [4 5 6 8 9 10 11 12], [], [4 5 6 8 9 10 11 12], {1, 0}) = 1
+</I>&gt;<i> &gt;&gt;&gt;&gt; (in [5], left {0, 999997})
+</I>&gt;<i> &gt;&gt;&gt;&gt; clock_gettime(CLOCK_MONOTONIC, {170230, 13667642}) = 0
+</I>&gt;<i> &gt;&gt;&gt;&gt; recvmsg(5, {msg_name(18)={sa_family=AF_PACKET, proto=0x800, if3,
+</I>&gt;<i> &gt;&gt;&gt;&gt; pkttype=PACKET_HOST, addr(6)={1, b407f94804a5},
+</I>&gt;<i> &gt;&gt;&gt;&gt; msg_iov(1)=[{&quot;\232M\&quot;\336X\16\264\7\371H\4\245\10\0E\0\1P\10\26@\0\377\21\2\325\2176\251C\2176&quot;..., 
+</I>&gt;<i> &gt;&gt;&gt;&gt;
+</I>&gt;<i> &gt;&gt;&gt;&gt; 65497}], msg_controllen=40, {cmsg_len=36, cmsg_level=SOL_PACKET,
+</I>&gt;<i> &gt;&gt;&gt;&gt; cmsg_type=, ...}, msg_flags=0}, MSG_TRUNC) = 350
+</I>&gt;<i> &gt;&gt;&gt;&gt; --- SIGSEGV (Segmentation fault) @ 0 (0) ---
+</I>&gt;<i> &gt;&gt;&gt;&gt; Process 20463 detached
+</I>&gt;<i> &gt;&gt;&gt;&gt;
+</I>&gt;<i> &gt;&gt;&gt;&gt; Em 02/03/2012 13:51, Fernando Macedo escreveu:
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt; Strace of my last segfault:
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt;
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt; select(13, [4 5 6 8 9 10 11 12], [], [4 5 6 8 9 10 11 12], {1, 0}) =
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt; 1 (in [4], left {0, 999997})
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt; clock_gettime(CLOCK_MONOTONIC, {156370, 941588185}) = 0
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt; read(4,
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt; &quot;E\0\5\2147y\0\0005\6\361\347\10\376\24\376\2176\251\331\0P\300\230jN\25\223:\26a\316&quot;..., 
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt;
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt; 65497) = 1420
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt; sendto(5,
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt; &quot;h\243\3041\267\320\232M\&quot;\336X\16\10\0E\0\5\2147y\0\0005\6\361\347\10\376\24\376\2176&quot;..., 
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt;
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt; 1434, 0, {sa_family=AF_PACKET, proto=0x03, if3, pkttype=PACKET_HOST,
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt; addr(6)={0, 68a3c431b7d0}, 20) = 1434
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt; select(13, [4 5 6 8 9 10 11 12], [], [4 5 6 8 9 10 11 12], {1, 0}) =
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt; 1 (in [4], left {0, 999997})
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt; clock_gettime(CLOCK_MONOTONIC, {156370, 941877024}) = 0
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt; read(4,
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt; &quot;E\0\5\2147z\0\0005\6\361\346\10\376\24\376\2176\251\331\0P\300\230jN\32\367:\26a\316&quot;..., 
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt;
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt; 65497) = 1420
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt; sendto(5,
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt; &quot;h\243\3041\267\320\232M\&quot;\336X\16\10\0E\0\5\2147z\0\0005\6\361\346\10\376\24\376\2176&quot;..., 
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt;
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt; 1434, 0, {sa_family=AF_PACKET, proto=0x03, if3, pkttype=PACKET_HOST,
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt; addr(6)={0, 68a3c431b7d0}, 20) = 1434
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt; select(13, [4 5 6 8 9 10 11 12], [], [4 5 6 8 9 10 11 12], {1, 0}) =
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt; 1 (in [4], left {0, 996370})
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt; clock_gettime(CLOCK_MONOTONIC, {156370, 945791076}) = 0
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt; read(4,
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt; &quot;E\0\5\2147{\0\0005\6\361\345\10\376\24\376\2176\251\331\0P\300\230jN
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt; [:\26a\316&quot;..., 65497) = 1420
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt; sendto(5,
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt; &quot;h\243\3041\267\320\232M\&quot;\336X\16\10\0E\0\5\2147{\0\0005\6\361\345\10\376\24\376\2176&quot;..., 
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt;
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt; 1434, 0, {sa_family=AF_PACKET, proto=0x03, if3, pkttype=PACKET_HOST,
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt; addr(6)={0, 68a3c431b7d0}, 20) = 1434
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt; select(13, [4 5 6 8 9 10 11 12], [], [4 5 6 8 9 10 11 12], {1, 0}) =
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt; 1 (in [4], left {0, 999997})
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt; clock_gettime(CLOCK_MONOTONIC, {156370, 946070102}) = 0
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt; read(4,
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt; &quot;E\0\5\2147|\0\0005\6\361\344\10\376\24\376\2176\251\331\0P\300\230jN%\277:\26a\316&quot;..., 
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt;
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt; 65497) = 1420
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt; sendto(5,
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt; &quot;h\243\3041\267\320\232M\&quot;\336X\16\10\0E\0\5\2147|\0\0005\6\361\344\10\376\24\376\2176&quot;..., 
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt;
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt; 1434, 0, {sa_family=AF_PACKET, proto=0x03, if3, pkttype=PACKET_HOST,
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt; addr(6)={0, 68a3c431b7d0}, 20) = 1434
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt; select(13, [4 5 6 8 9 10 11 12], [], [4 5 6 8 9 10 11 12], {1, 0}) =
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt; 2 (in [4 5], left {0, 999997})
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt; clock_gettime(CLOCK_MONOTONIC, {156370, 946381872}) = 0
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt; read(4,
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt; &quot;E\0\5\2147}\0\0005\6\361\343\10\376\24\376\2176\251\331\0P\300\230jN+#:\26a\316&quot;..., 
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt;
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt; 65497) = 1420
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt; sendto(5,
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt; &quot;h\243\3041\267\320\232M\&quot;\336X\16\10\0E\0\5\2147}\0\0005\6\361\343\10\376\24\376\2176&quot;..., 
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt;
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt; 1434, 0, {sa_family=AF_PACKET, proto=0x03, if3, pkttype=PACKET_HOST,
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt; addr(6)={0, 68a3c431b7d0}, 20) = 1434
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt; recvmsg(5, {msg_name(18)={sa_family=AF_PACKET, proto=0x800, if3,
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt; pkttype=PACKET_HOST, addr(6)={1, 68a3c431b7d0},
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt; msg_iov(1)=[{&quot;\232M\&quot;\336X\16h\243\3041\267\320\10\0E\0\0(\20M@\0\200\6\223w\2176\251\331\10\376&quot;..., 
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt;
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt; 65497}], msg_controllen=40, {cmsg_len=36, cmsg_level=SOL_PACKET,
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt; cmsg_type=, ...}, msg_flags=0}, MSG_TRUNC) = 60
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt; write(4,
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt; &quot;E\0\0(\20M@\0\200\6\223w\2176\251\331\10\376\24\376\300\230\0P:\26a\316jN\n\313&quot;..., 
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt;
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt; 46) = 46
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt; select(13, [4 5 6 8 9 10 11 12], [], [4 5 6 8 9 10 11 12], {1, 0}) =
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt; 1 (in [4], left {0, 999997})
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt; clock_gettime(CLOCK_MONOTONIC, {156370, 946868309}) = 0
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt; read(4,
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt; &quot;E\0\5\2147~\0\0005\6\361\342\10\376\24\376\2176\251\331\0P\300\230jN0\207:\26a\316&quot;..., 
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt;
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt; 65497) = 1420
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt; sendto(5,
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt; &quot;h\243\3041\267\320\232M\&quot;\336X\16\10\0E\0\5\2147~\0\0005\6\361\342\10\376\24\376\2176&quot;..., 
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt;
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt; 1434, 0, {sa_family=AF_PACKET, proto=0x03, if3, pkttype=PACKET_HOST,
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt; addr(6)={0, 68a3c431b7d0}, 20) = 1434
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt; select(13, [4 5 6 8 9 10 11 12], [], [4 5 6 8 9 10 11 12], {1, 0}) =
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt; 1 (in [5], left {0, 997678})
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt; clock_gettime(CLOCK_MONOTONIC, {156370, 949470668}) = 0
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt; recvmsg(5, {msg_name(18)={sa_family=AF_PACKET, proto=0x800, if3,
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt; pkttype=PACKET_HOST, addr(6)={1, 68a3c431b7d0},
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt; msg_iov(1)=[{&quot;\232M\&quot;\336X\16h\243\3041\267\320\10\0E\0\0(\20N@\0\200\6\223v\2176\251\331\10\376&quot;..., 
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt;
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt; 65497}], msg_controllen=40, {cmsg_len=36, cmsg_level=SOL_PACKET,
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt; cmsg_type=, ...}, msg_flags=0}, MSG_TRUNC) = 60
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt; write(4,
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt; &quot;E\0\0(\20N@\0\200\6\223v\2176\251\331\10\376\24\376\300\230\0P:\26a\316jN\25\223&quot;..., 
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt;
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt; 46) = 46
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt; select(13, [4 5 6 8 9 10 11 12], [], [4 5 6 8 9 10 11 12], {1, 0}) =
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt; 1 (in [5], left {0, 999332})
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt; clock_gettime(CLOCK_MONOTONIC, {156370, 950476429}) = 0
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt; recvmsg(5, {msg_name(18)={sa_family=AF_PACKET, proto=0x800, if3,
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt; pkttype=PACKET_HOST, addr(6)={1, 74f06d058e5a},
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt; msg_iov(1)=[{&quot;\232M\&quot;\336X\16t\360m\5\216Z\10\0E\0\0)e0@\0\200\6~\362\2176\251\22\310[&quot;..., 
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt;
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt; 65497}], msg_controllen=40, {cmsg_len=36, cmsg_level=SOL_PACKET,
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt; cmsg_type=, ...}, msg_flags=0}, MSG_TRUNC) = 60
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt; write(4,
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt; &quot;E\0\0)e0@\0\200\6~\362\2176\251\22\310[\26\10\312H\0P~\314HR\377\5\r\313&quot;..., 
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt;
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt; 46) = 46
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt; select(13, [4 5 6 8 9 10 11 12], [], [4 5 6 8 9 10 11 12], {1, 0}) =
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt; 1 (in [5], left {0, 999285})
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt; clock_gettime(CLOCK_MONOTONIC, {156370, 951522574}) = 0
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt; recvmsg(5, {msg_name(18)={sa_family=AF_PACKET, proto=0x800, if3,
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt; pkttype=PACKET_HOST, addr(6)={1, 68a3c431b7d0},
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt; msg_iov(1)=[{&quot;\232M\&quot;\336X\16h\243\3041\267\320\10\0E\0\0(\20O@\0\200\6\223u\2176\251\331\10\376&quot;..., 
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt;
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt; 65497}], msg_controllen=40, {cmsg_len=36, cmsg_level=SOL_PACKET,
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt; cmsg_type=, ...}, msg_flags=0}, MSG_TRUNC) = 60
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt; write(4,
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt; &quot;E\0\0(\20O@\0\200\6\223u\2176\251\331\10\376\24\376\300\230\0P:\26a\316jN 
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt;
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt; [&quot;..., 46) = 46
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt; select(13, [4 5 6 8 9 10 11 12], [], [4 5 6 8 9 10 11 12], {1, 0}) =
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt; 1 (in [5], left {0, 998912})
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt; clock_gettime(CLOCK_MONOTONIC, {156370, 952930646}) = 0
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt; recvmsg(5, {msg_name(18)={sa_family=AF_PACKET, proto=0x800, if3,
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt; pkttype=PACKET_HOST, addr(6)={1, b407f94804a5},
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt; msg_iov(1)=[{&quot;\232M\&quot;\336X\16\264\7\371H\4\245\10\0E\0\1P\7y@\0\377\21\3\34\2176\251\231\2176&quot;..., 
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt;
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt; 65497}], msg_controllen=40, {cmsg_len=36, cmsg_level=SOL_PACKET,
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt; cmsg_type=, ...}, msg_flags=0}, MSG_TRUNC) = 350
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt; --- SIGSEGV (Segmentation fault) @ 0 (0) ---
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt; Process 25821 detached
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt;
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt; Em 14/02/2012 11:36, Fernando Macedo escreveu:
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt;&gt; Any idea? I'm using chilli_query login toauthenticate the users. It
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt;&gt; can be related to this bug: <A HREF="http://www.coova.org/node/2653.">http://www.coova.org/node/2653.</A>
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt;&gt;
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt;&gt; Em 13/02/2012 17:33, Fernando Macedo escreveu:
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt;&gt;&gt; More crashes:
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt;&gt;&gt;
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt;&gt;&gt; Feb 13 14:16:07 x kernel: [2788498.078399] chilli[893]: segfault at
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt;&gt;&gt; 7ffff6a8b058 ip 00007f5621e96d64 sp 00007ffff6a78088 error 4 in
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt;&gt;&gt; libchilli.so.0.0.0[7f5621e6d000+4a000]
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt;&gt;&gt; Feb 13 16:35:56 x kernel: [2796886.973424] chilli[1317]: segfault
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt;&gt;&gt; at 7fffd306d02d ip 00007f5f14cb4d64 sp 00007fffd305acf8 error 4 in
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt;&gt;&gt; libchilli.so.0.0.0[7f5f14c8b000+4a000]
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt;&gt;&gt; Feb 13 16:36:08 x kernel: [2796899.050379] chilli[31138]: segfault
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt;&gt;&gt; at 7fffeb998019 ip 00007ff00cbdbd64 sp 00007fffeb984cd8 error 4 in
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt;&gt;&gt; libchilli.so.0.0.0[7ff00cbb2000+4a000]
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt;&gt;&gt; Feb 13 16:40:58 x kernel: [2797189.473169] chilli[31371]: segfault
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt;&gt;&gt; at 7fff5258202d ip 00007fd99487fd64 sp 00007fff5256f948 error 4 in
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt;&gt;&gt; libchilli.so.0.0.0[7fd994856000+4a000]
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt;&gt;&gt; Feb 13 16:41:11 x kernel: [2797201.999800] chilli[5316]: segfault
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt;&gt;&gt; at 7ffff7f38019 ip 00007f27c4ae2d64 sp 00007ffff7f24c08 error 4 in
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt;&gt;&gt; libchilli.so.0.0.0[7f27c4ab9000+4a000]
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt;&gt;&gt; Feb 13 16:41:27 x kernel: [2797218.491727] chilli[5601]: segfault
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt;&gt;&gt; at 7fff10237009 ip 00007fbc046d2d64 sp 00007fff10223818 error 4 in
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt;&gt;&gt; libchilli.so.0.0.0[7fbc046a9000+4a000]
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt;&gt;&gt;
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt;&gt;&gt;
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt;&gt;&gt; Em 13/02/2012 14:25, Fernando Macedo escreveu:
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt; Hi, one month after installing chilli we experienced a segfault in
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt; the last version.
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt; kernel: [2788498.078399] chilli[893]: segfault at 7ffff6a8b058 ip
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt; 00007f5621e96d64 sp 00007ffff6a78088 error 4 in
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt; libchilli.so.0.0.0[7f5621e6d000+4a000]
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt; Has anyone the same problem?
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt; Fernando Macedo
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt; _______________________________________________
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt; Chilli mailing list
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt; <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">Chilli at coova.org</A>
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt; <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">http://lists.coova.org/cgi-bin/mailman/listinfo/chilli</A>
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt;&gt;&gt; _______________________________________________
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt;&gt;&gt; Chilli mailing list
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt;&gt;&gt; <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">Chilli at coova.org</A>
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt;&gt;&gt; <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">http://lists.coova.org/cgi-bin/mailman/listinfo/chilli</A>
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt;&gt; _______________________________________________
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt;&gt; Chilli mailing list
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt;&gt; <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">Chilli at coova.org</A>
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt;&gt; <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">http://lists.coova.org/cgi-bin/mailman/listinfo/chilli</A>
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt; _______________________________________________
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt; Chilli mailing list
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt; <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">Chilli at coova.org</A>
+</I>&gt;<i> &gt;&gt;&gt;&gt;&gt; <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">http://lists.coova.org/cgi-bin/mailman/listinfo/chilli</A>
+</I>&gt;<i> &gt;&gt;&gt;&gt; _______________________________________________
+</I>&gt;<i> &gt;&gt;&gt;&gt; Chilli mailing list
+</I>&gt;<i> &gt;&gt;&gt;&gt; <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">Chilli at coova.org</A>
+</I>&gt;<i> &gt;&gt;&gt;&gt; <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">http://lists.coova.org/cgi-bin/mailman/listinfo/chilli</A>
+</I>&gt;<i> &gt;&gt;&gt; _______________________________________________
+</I>&gt;<i> &gt;&gt;&gt; Chilli mailing list
+</I>&gt;<i> &gt;&gt;&gt; <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">Chilli at coova.org</A>
+</I>&gt;<i> &gt;&gt;&gt; <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">http://lists.coova.org/cgi-bin/mailman/listinfo/chilli</A>
+</I>&gt;<i> &gt;&gt;
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; _______________________________________________
+</I>&gt;<i> &gt; Chilli mailing list
+</I>&gt;<i> &gt; <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">Chilli at coova.org</A>
+</I>&gt;<i> &gt; <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">http://lists.coova.org/cgi-bin/mailman/listinfo/chilli</A>
+</I>&gt;<i> 
+</I>&gt;<i> _______________________________________________
+</I>&gt;<i> Chilli mailing list
+</I>&gt;<i> <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">Chilli at coova.org</A>
+</I>&gt;<i> <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">http://lists.coova.org/cgi-bin/mailman/listinfo/chilli</A>
+</I>
+
+</PRE>
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001866.html">[Chilli] Segfault Chilli 1.2.9
+</A></li>
+	<LI>Next message: <A HREF="001868.html">[Chilli] Segfault Chilli 1.2.9
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1867">[ date ]</a>
+              <a href="thread.html#1867">[ thread ]</a>
+              <a href="subject.html#1867">[ subject ]</a>
+              <a href="author.html#1867">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,1688 @@
+From david at coova.com  Thu Dec  1 05:45:39 2011
+From: david at coova.com (David Bird)
+Date: Thu, 01 Dec 2011 06:45:39 +0100
+Subject: [Chilli] Infinite redirect loop
+Message-ID: <y5m9a9oxg0ym862h29o07cqk.1322718339069@email.android.com>
+
+I'm confused.. did radius timeout or did it deliver the WISPr redirection URL? There are some changes in this regard pending in development... generally, a redirect loop means a redirect URL is not in the walled garden (which is bad).
+
+Ryan Day <ryan.day at cirrusworks.net> wrote:
+
+>I've seen a problem with some of my Coova installations where I get an
+>infinite redirect loop, typically after a RADIUS timeout and the user is
+>still making web requests. This happens if there is a WISPr Redirect URL
+>set and the user tries to log back in after the timeout. What seems to
+>be happening is the initial redirect to the UAM page (which is offsite)
+>is being replaced with the previously assigned WISPr Redirect URL. For
+>example when printing out my redirect url in the logs, it looks like:
+>
+>http://my.wispr.redirect.com/?loginurl=http%3a%2f%2my.uam.authentication.com%2fhotspotlogin.php
+>
+>Since my.wispr.redirect.com is not allowed yet in this session(radius
+>timeout has occured and I'm logged out), I am redirected again, and
+>again, and again. I should be redirected to
+>http://my.uam.authentication.com, but it looks like something is getting
+>crossed.
+>
+>I've had this problem across several versions (1.2.2, 1.2.5 and 1.2.8)
+>and I've been working on it with 1.2.8. After some experimentation, I've
+>made a change in redir.c on line ~4035(I've added extra debugging):
+>
+>-    char * base_url = (conn.s_params.flags & REQUIRE_REDIRECT &&
+>-                       conn.s_params.url[0]) ? (char
+>*)conn.s_params.url : redir->homepage;
+>+    char * base_url = redir->homepage;
+>
+>
+>This doesn't cause any redirection issues, and I can't simulate the
+>infinite redirection loop any more. However, I'm not very familiar with
+>the code so I'm not sure if this has any undesirable side effects that I
+>just haven't seen yet.
+>
+>Has anyone else seen this problem? What am I losing by change the
+>conditional when determining the base url?
+>_______________________________________________
+>Chilli mailing list
+>Chilli at coova.org
+>http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+From david at coova.com  Thu Dec  1 05:46:13 2011
+From: david at coova.com (David Bird)
+Date: Thu, 01 Dec 2011 06:46:13 +0100
+Subject: [Chilli] Coova with no authentication
+Message-ID: <yjhp02rfoxn3pw8y0w7calth.1322718373750@email.android.com>
+
+Macauth accept everyone.
+
+Ryan Day <ryan.day at cirrusworks.net> wrote:
+
+>I've gotten a request to setup a Coova instance with no splash page
+>authentication. The primary goal is to rate limit users based on Radius
+>settings. I've tried to find example of how to do this, but haven't had
+>any luck so far. Is this possible?
+>_______________________________________________
+>Chilli mailing list
+>Chilli at coova.org
+>http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+From ryan.day at cirrusworks.net  Thu Dec  1 05:52:41 2011
+From: ryan.day at cirrusworks.net (Ryan Day)
+Date: Thu, 01 Dec 2011 00:52:41 -0500
+Subject: [Chilli] Infinite redirect loop
+In-Reply-To: <y5m9a9oxg0ym862h29o07cqk.1322718339069@email.android.com>
+References: <y5m9a9oxg0ym862h29o07cqk.1322718339069@email.android.com>
+Message-ID: <4ED71629.4070402@cirrusworks.net>
+
+During the initial authentication period RADIUS delivered a WISPr
+redirect. Everything works as expected. However once the session times
+out, the next time I try to access a webpage it looks like my uam page
+is being replaced with that WISPr redirect page because instead of being
+redirected to my UAM login page, I'm redirected to the WISPr login. But
+I'm no longer authenticated, so that redirection leads to a loop.
+
+
+I don't know if that description helps or not...
+
+
+On 12/01/2011 12:45 AM, David Bird wrote:
+> I'm confused.. did radius timeout or did it deliver the WISPr redirection URL? There are some changes in this regard pending in development... generally, a redirect loop means a redirect URL is not in the walled garden (which is bad).
+>
+> Ryan Day <ryan.day at cirrusworks.net> wrote:
+>
+>> I've seen a problem with some of my Coova installations where I get an
+>> infinite redirect loop, typically after a RADIUS timeout and the user is
+>> still making web requests. This happens if there is a WISPr Redirect URL
+>> set and the user tries to log back in after the timeout. What seems to
+>> be happening is the initial redirect to the UAM page (which is offsite)
+>> is being replaced with the previously assigned WISPr Redirect URL. For
+>> example when printing out my redirect url in the logs, it looks like:
+>>
+>> http://my.wispr.redirect.com/?loginurl=http%3a%2f%2my.uam.authentication.com%2fhotspotlogin.php
+>>
+>> Since my.wispr.redirect.com is not allowed yet in this session(radius
+>> timeout has occured and I'm logged out), I am redirected again, and
+>> again, and again. I should be redirected to
+>> http://my.uam.authentication.com, but it looks like something is getting
+>> crossed.
+>>
+>> I've had this problem across several versions (1.2.2, 1.2.5 and 1.2.8)
+>> and I've been working on it with 1.2.8. After some experimentation, I've
+>> made a change in redir.c on line ~4035(I've added extra debugging):
+>>
+>> -    char * base_url = (conn.s_params.flags & REQUIRE_REDIRECT &&
+>> -                       conn.s_params.url[0]) ? (char
+>> *)conn.s_params.url : redir->homepage;
+>> +    char * base_url = redir->homepage;
+>>
+>>
+>> This doesn't cause any redirection issues, and I can't simulate the
+>> infinite redirection loop any more. However, I'm not very familiar with
+>> the code so I'm not sure if this has any undesirable side effects that I
+>> just haven't seen yet.
+>>
+>> Has anyone else seen this problem? What am I losing by change the
+>> conditional when determining the base url?
+>> _______________________________________________
+>> Chilli mailing list
+>> Chilli at coova.org
+>> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+
+From fmacedo at cpd.ufrgs.br  Thu Dec  1 11:20:40 2011
+From: fmacedo at cpd.ufrgs.br (Fernando Macedo)
+Date: Thu, 01 Dec 2011 09:20:40 -0200
+Subject: [Chilli] Missing File in SVN (cmdline.c)
+Message-ID: <4ED76308.1010409@cpd.ufrgs.br>
+
+Why isn't cmdline.c available in svn anymore? I'm getting this error 
+when trying to configure chilli from svn:
+
+configure: error: cannot find sources (src/cmdline.c) in . or ..
+
+Cheers,
+Fernando Macedo
+
+From tm at fwt.fr  Thu Dec  1 11:47:54 2011
+From: tm at fwt.fr (Thierry Museux - www.fwt.fr -)
+Date: Thu, 1 Dec 2011 12:47:54 +0100
+Subject: [Chilli] Missing File in SVN (cmdline.c)
+In-Reply-To: <4ED76308.1010409@cpd.ufrgs.br>
+References: <4ED76308.1010409@cpd.ufrgs.br>
+Message-ID: <035301ccb01f$0fec7050$2fc550f0$@fr>
+
+Same thing
+
+svn info
+Path: .
+URL: http://dev.coova.org/svn/coova-chilli
+Repository Root: http://dev.coova.org/svn/coova-chilli
+Repository UUID: c289a2b3-717e-4f83-9c72-ca9dea9f7ab6
+Revision: 455
+Node Kind: directory
+Schedule: normal
+Last Changed Author: dbird
+Last Changed Rev: 455
+Last Changed Date: 2011-10-03 11:26:52 +0200 (Mon, 03 Oct 2011)
+
+
+./configure
+configure: error: cannot find sources (src/cmdline.c) in . or ..
+
+OK with r454
+
+Thierry Museux
+France Wireless Technologies
+www.fwt.fr
+msn: tm at fwt.fr
+Tel: + 33 (0) 1 41 08 70 78
+Gsm: + 33 (0) 6 15 22 09 62
+
+
+-----Message d'origine-----
+De?: chilli-bounces at coova.org [mailto:chilli-bounces at coova.org] De la part
+de Fernando Macedo
+Envoy??: jeudi 1 d?cembre 2011 12:21
+??: chilli at coova.org
+Objet?: [Chilli] Missing File in SVN (cmdline.c)
+
+Why isn't cmdline.c available in svn anymore? I'm getting this error 
+when trying to configure chilli from svn:
+
+configure: error: cannot find sources (src/cmdline.c) in . or ..
+
+Cheers,
+Fernando Macedo
+_______________________________________________
+Chilli mailing list
+Chilli at coova.org
+http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+
+From david at coova.com  Thu Dec  1 12:06:16 2011
+From: david at coova.com (David Bird)
+Date: Thu, 01 Dec 2011 13:06:16 +0100
+Subject: [Chilli] Missing File in SVN (cmdline.c)
+Message-ID: <snttmkdfrhcwal91dq9gph46.1322741176891@email.android.com>
+
+It is a generated file ... rerun the bootstrap script. 
+
+Fernando Macedo <fmacedo at cpd.ufrgs.br> wrote:
+
+>Why isn't cmdline.c available in svn anymore? I'm getting this error 
+>when trying to configure chilli from svn:
+>
+>configure: error: cannot find sources (src/cmdline.c) in . or ..
+>
+>Cheers,
+>Fernando Macedo
+>_______________________________________________
+>Chilli mailing list
+>Chilli at coova.org
+>http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+From fmacedo at cpd.ufrgs.br  Thu Dec  1 12:23:31 2011
+From: fmacedo at cpd.ufrgs.br (Fernando Macedo)
+Date: Thu, 01 Dec 2011 10:23:31 -0200
+Subject: [Chilli] Missing File in SVN (cmdline.c)
+In-Reply-To: <snttmkdfrhcwal91dq9gph46.1322741176891@email.android.com>
+References: <snttmkdfrhcwal91dq9gph46.1322741176891@email.android.com>
+Message-ID: <4ED771C3.1030107@cpd.ufrgs.br>
+
+Same error. Any idea?
+
+# ./bootstrap2
+
+libtoolize: putting auxiliary files in `.'.
+libtoolize: copying file `./ltmain.sh'
+libtoolize: putting macros in AC_CONFIG_MACRO_DIR, `m4'.
+libtoolize: copying file `m4/libtool.m4'
+libtoolize: copying file `m4/ltoptions.m4'
+libtoolize: copying file `m4/ltsugar.m4'
+libtoolize: copying file `m4/ltversion.m4'
+libtoolize: copying file `m4/lt~obsolete.m4'
+src/Makefile.am:79: SUBDIRS was already defined in condition TRUE, which 
+includes condition WITH_MATRIXSSL_CLI and WITH_MATRIXSSL ...
+src/Makefile.am:3: ... `SUBDIRS' previously defined here
+src/Makefile.am:151: pkglibdir was already defined in condition TRUE, 
+which includes condition WITH_MODULES ...
+/usr/share/automake-1.11/am/header-vars.am: ... `pkglibdir' previously 
+defined here
+src/Makefile.am:79: SUBDIRS was already defined in condition TRUE, which 
+includes condition WITH_MATRIXSSL_CLI and WITH_MATRIXSSL ...
+src/Makefile.am:3: ... `SUBDIRS' previously defined here
+src/Makefile.am:151: pkglibdir was already defined in condition TRUE, 
+which includes condition WITH_MODULES ...
+/usr/share/automake-1.11/am/header-vars.am: ... `pkglibdir' previously 
+defined here
+
+# ./configure --enable-dhcpopt --enable-netbios --enable-mdns 
+--enable-largelimits
+configure: error: cannot find sources (src/cmdline.c) in . or ..
+
+
+Em 01/12/2011 10:06, David Bird escreveu:
+> It is a generated file ... rerun the bootstrap script.
+>
+> Fernando Macedo<fmacedo at cpd.ufrgs.br>  wrote:
+>
+>> Why isn't cmdline.c available in svn anymore? I'm getting this error
+>> when trying to configure chilli from svn:
+>>
+>> configure: error: cannot find sources (src/cmdline.c) in . or ..
+>>
+>> Cheers,
+>> Fernando Macedo
+>> _______________________________________________
+>> Chilli mailing list
+>> Chilli at coova.org
+>> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+
+From tm at fwt.fr  Thu Dec  1 12:35:43 2011
+From: tm at fwt.fr (Thierry Museux - www.fwt.fr -)
+Date: Thu, 1 Dec 2011 13:35:43 +0100
+Subject: [Chilli] Missing File in SVN (cmdline.c)
+In-Reply-To: <snttmkdfrhcwal91dq9gph46.1322741176891@email.android.com>
+References: <snttmkdfrhcwal91dq9gph46.1322741176891@email.android.com>
+Message-ID: <039601ccb025$be74b5a0$3b5e20e0$@fr>
+
+Sorry but same thing
+./bootstrap2 run twice doesn't solve the problem.
+
+:~/coova-chilli# ./bootstrap2
+libtoolize: putting auxiliary files in `.'.
+libtoolize: copying file `./ltmain.sh'
+libtoolize: putting macros in AC_CONFIG_MACRO_DIR, `m4'.
+libtoolize: copying file `m4/libtool.m4'
+libtoolize: copying file `m4/ltoptions.m4'
+libtoolize: copying file `m4/ltsugar.m4'
+libtoolize: copying file `m4/ltversion.m4'
+libtoolize: copying file `m4/lt~obsolete.m4'
+src/Makefile.am:79: SUBDIRS was already defined in condition TRUE, which
+includes condition WITH_MATRIXSSL_CLI and WITH_MATRIXSSL ...
+src/Makefile.am:3: ... `SUBDIRS' previously defined here
+src/Makefile.am:151: pkglibdir was already defined in condition TRUE, which
+includes condition WITH_MODULES ...
+/usr/share/automake-1.11/am/header-vars.am: ... `pkglibdir' previously
+defined here
+src/Makefile.am:79: SUBDIRS was already defined in condition TRUE, which
+includes condition WITH_MATRIXSSL_CLI and WITH_MATRIXSSL ...
+src/Makefile.am:3: ... `SUBDIRS' previously defined here
+src/Makefile.am:151: pkglibdir was already defined in condition TRUE, which
+includes condition WITH_MODULES ...
+/usr/share/automake-1.11/am/header-vars.am: ... `pkglibdir' previously
+defined here
+
+~/coova-chilli# ./configure
+configure: error: cannot find sources (src/cmdline.c) in . or ..
+
+~/coova-chilli# svn info
+Path: .
+URL: http://dev.coova.org/svn/coova-chilli
+Repository Root: http://dev.coova.org/svn/coova-chilli
+Repository UUID: c289a2b3-717e-4f83-9c72-ca9dea9f7ab6
+Revision: 455
+Node Kind: directory
+Schedule: normal
+Last Changed Author: dbird
+Last Changed Rev: 455
+Last Changed Date: 2011-10-03 11:26:52 +0200 (Mon, 03 Oct 2011)
+
+
+
+Thierry Museux
+France Wireless Technologies
+www.fwt.fr
+msn: tm at fwt.fr
+Tel: + 33 (0) 1 41 08 70 78
+Gsm: + 33 (0) 6 15 22 09 62
+
+
+-----Message d'origine-----
+De?: chilli-bounces at coova.org [mailto:chilli-bounces at coova.org] De la part
+de David Bird
+Envoy??: jeudi 1 d?cembre 2011 13:06
+??: Fernando Macedo; chilli at coova.org
+Objet?: Re: [Chilli] Missing File in SVN (cmdline.c)
+
+It is a generated file ... rerun the bootstrap script. 
+
+Fernando Macedo <fmacedo at cpd.ufrgs.br> wrote:
+
+>Why isn't cmdline.c available in svn anymore? I'm getting this error 
+>when trying to configure chilli from svn:
+>
+>configure: error: cannot find sources (src/cmdline.c) in . or ..
+>
+>Cheers,
+>Fernando Macedo
+>_______________________________________________
+>Chilli mailing list
+>Chilli at coova.org
+>http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+_______________________________________________
+Chilli mailing list
+Chilli at coova.org
+http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+
+From fmacedo at cpd.ufrgs.br  Thu Dec  1 13:12:12 2011
+From: fmacedo at cpd.ufrgs.br (Fernando Macedo)
+Date: Thu, 01 Dec 2011 11:12:12 -0200
+Subject: [Chilli] Missing File in SVN (cmdline.c)
+In-Reply-To: <1322745029.17645.1.camel@dingo-D900C>
+References: <snttmkdfrhcwal91dq9gph46.1322741176891@email.android.com>
+	<039601ccb025$be74b5a0$3b5e20e0$@fr>
+	<1322745029.17645.1.camel@dingo-D900C>
+Message-ID: <4ED77D2C.3070003@cpd.ufrgs.br>
+
+It was fixed. Thanks, David.
+
+Em 01/12/2011 11:10, dingo escreveu:
+> On Thu, 2011-12-01 at 13:35 +0100, Thierry Museux - www.fwt.fr - wrote:
+>> svn info
+> Mine shows Rev 457, i have cmdline.c in src/
+>
+> but a build on rev 457 shows
+> chilli.c: In function 'chilli_main':
+> chilli.c:6080:7: error: variable 'i' set but not used
+> [-Werror=unused-but-set-variable]
+> cc1: all warnings being treated as errors
+>
+>
+
+
+From outbackdingo at gmail.com  Thu Dec  1 13:18:07 2011
+From: outbackdingo at gmail.com (dingo)
+Date: Thu, 01 Dec 2011 08:18:07 -0500
+Subject: [Chilli] Missing File in SVN (cmdline.c)
+In-Reply-To: <4ED77D2C.3070003@cpd.ufrgs.br>
+References: <snttmkdfrhcwal91dq9gph46.1322741176891@email.android.com>
+	<039601ccb025$be74b5a0$3b5e20e0$@fr>
+	<1322745029.17645.1.camel@dingo-D900C> <4ED77D2C.3070003@cpd.ufrgs.br>
+Message-ID: <1322745487.17645.2.camel@dingo-D900C>
+
+On Thu, 2011-12-01 at 11:12 -0200, Fernando Macedo wrote:
+> chilli.c:6080:7: error: variable 'i' set but not used
+
+Great now if we can fix chilli.c :)
+
+
+From outbackdingo at gmail.com  Thu Dec  1 13:10:29 2011
+From: outbackdingo at gmail.com (dingo)
+Date: Thu, 01 Dec 2011 08:10:29 -0500
+Subject: [Chilli] Missing File in SVN (cmdline.c)
+In-Reply-To: <039601ccb025$be74b5a0$3b5e20e0$@fr>
+References: <snttmkdfrhcwal91dq9gph46.1322741176891@email.android.com>
+	<039601ccb025$be74b5a0$3b5e20e0$@fr>
+Message-ID: <1322745029.17645.1.camel@dingo-D900C>
+
+On Thu, 2011-12-01 at 13:35 +0100, Thierry Museux - www.fwt.fr - wrote:
+> svn info
+
+Mine shows Rev 457, i have cmdline.c in src/
+
+but a build on rev 457 shows
+chilli.c: In function 'chilli_main':
+chilli.c:6080:7: error: variable 'i' set but not used
+[-Werror=unused-but-set-variable]
+cc1: all warnings being treated as errors
+
+
+
+From tm at fwt.fr  Thu Dec  1 14:32:44 2011
+From: tm at fwt.fr (Thierry Museux - www.fwt.fr -)
+Date: Thu, 1 Dec 2011 15:32:44 +0100
+Subject: [Chilli] Missing File in SVN (cmdline.c)
+In-Reply-To: <1322745487.17645.2.camel@dingo-D900C>
+References: <snttmkdfrhcwal91dq9gph46.1322741176891@email.android.com>	
+	<039601ccb025$be74b5a0$3b5e20e0$@fr>	
+	<1322745029.17645.1.camel@dingo-D900C>
+	<4ED77D2C.3070003@cpd.ufrgs.br>
+	<1322745487.17645.2.camel@dingo-D900C>
+Message-ID: <041c01ccb036$16d9d940$448d8bc0$@fr>
+
+With a fresh install
+svn checkout http://dev.coova.org/svn/coova-chilli/
+cd coova-chilli
+./bootstrap
+./configure --prefix= 
+Make
+
+I have an error:
+
+
+gcc -DHAVE_CONFIG_H -I. -I..    -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF='"/etc/chilli.conf"' -DDEFPIDFILE='"/var/run/chilli.pid"' -DDEFSTATEDIR='"/var/run"' -DSBINDIR='"/sbin"'    -g -O2 -MT main-opt.o -MD -MP -MF .deps/main-opt.Tpo -c -o main-opt.o main-opt.c
+main-opt.c: In function 'options_print_version':
+main-opt.c:208: error: 'CMDLINE_PARSER_PACKAGE' undeclared (first use in this function)
+main-opt.c:208: error: (Each undeclared identifier is reported only once
+main-opt.c:208: error: for each function it appears in.)
+main-opt.c:208: error: 'CMDLINE_PARSER_VERSION' undeclared (first use in this function)
+main-opt.c: In function 'main':
+main-opt.c:231: error: storage size of 'args_info' isn't known
+cc1: warnings being treated as errors
+main-opt.c:241: error: implicit declaration of function 'cmdline_parser2'
+main-opt.c:256: error: implicit declaration of function 'cmdline_parser_configfile'
+main-opt.c:576: error: left-hand operand of comma expression has no effect
+main-opt.c:576: error: value computed is not used
+main-opt.c:576: error: left-hand operand of comma expression has no effect
+main-opt.c:614: error: left-hand operand of comma expression has no effect
+main-opt.c:614: error: value computed is not used
+main-opt.c:614: error: left-hand operand of comma expression has no effect
+main-opt.c:1157: error: implicit declaration of function 'cmdline_parser_free'
+main-opt.c:231: error: unused variable 'args_info'
+make[3]: *** [main-opt.o] Error 1
+make[3]: Leaving directory `/root/coova-chilli/src'
+make[2]: *** [all-recursive] Error 1
+make[2]: Leaving directory `/root/coova-chilli/src'
+make[1]: *** [all-recursive] Error 1
+make[1]: Leaving directory `/root/coova-chilli'
+make: *** [all] Error 2
+
+
+
+
+Thierry Museux
+France Wireless Technologies
+www.fwt.fr
+msn: tm at fwt.fr
+Tel: + 33 (0) 1 41 08 70 78
+Gsm: + 33 (0) 6 15 22 09 62
+
+
+-----Message d'origine-----
+De : dingo [mailto:outbackdingo at gmail.com] 
+Envoy? : jeudi 1 d?cembre 2011 14:18
+? : Fernando Macedo
+Cc : Thierry Museux - www.fwt.fr -; 'David Bird'; chilli at coova.org
+Objet : Re: [Chilli] Missing File in SVN (cmdline.c)
+
+On Thu, 2011-12-01 at 11:12 -0200, Fernando Macedo wrote:
+> chilli.c:6080:7: error: variable 'i' set but not used
+
+Great now if we can fix chilli.c :)
+
+
+
+From miguel.lopes at cabocom.cv  Fri Dec  2 18:17:36 2011
+From: miguel.lopes at cabocom.cv (Miguel Lopes - Cabocom)
+Date: Fri, 2 Dec 2011 17:17:36 -0100
+Subject: [Chilli] Missing File in SVN (cmdline.c)
+In-Reply-To: <041c01ccb036$16d9d940$448d8bc0$@fr>
+References: <snttmkdfrhcwal91dq9gph46.1322741176891@email.android.com>		<039601ccb025$be74b5a0$3b5e20e0$@fr>		<1322745029.17645.1.camel@dingo-D900C>	<4ED77D2C.3070003@cpd.ufrgs.br>	<1322745487.17645.2.camel@dingo-D900C>
+	<041c01ccb036$16d9d940$448d8bc0$@fr>
+Message-ID: <004e01ccb11e$ac6b2520$05416f60$@lopes@cabocom.cv>
+
+Same error here. I am using Ubuntu, I sort it out, all I needed was to install gengetopt. After that it compiled and installed perfectly.
+
+Kind Regards / Atentamente,
+
+Miguel Lopes
+CEO - Director
+
+
+
+Tel - +2382428087
+Fax - +2382428088
+Email - miguel.lopes at cabocom.cv
+Web - www.cabocom.cv
+Facebook - facebook.cabocom.cv
+
+-----Mensagem original-----
+De: chilli-bounces at coova.org [mailto:chilli-bounces at coova.org] Em nome de Thierry Museux - www.fwt.fr -
+Enviada: quinta-feira, 1 de Dezembro de 2011 13:33
+Para: 'dingo'; 'Fernando Macedo'
+Cc: chilli at coova.org
+Assunto: Re: [Chilli] Missing File in SVN (cmdline.c)
+
+With a fresh install
+svn checkout http://dev.coova.org/svn/coova-chilli/
+cd coova-chilli
+./bootstrap
+./configure --prefix= 
+Make
+
+I have an error:
+
+
+gcc -DHAVE_CONFIG_H -I. -I..    -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF='"/etc/chilli.conf"' -DDEFPIDFILE='"/var/run/chilli.pid"' -DDEFSTATEDIR='"/var/run"' -DSBINDIR='"/sbin"'    -g -O2 -MT main-opt.o -MD -MP -MF .deps/main-opt.Tpo -c -o main-opt.o main-opt.c
+main-opt.c: In function 'options_print_version':
+main-opt.c:208: error: 'CMDLINE_PARSER_PACKAGE' undeclared (first use in this function)
+main-opt.c:208: error: (Each undeclared identifier is reported only once
+main-opt.c:208: error: for each function it appears in.)
+main-opt.c:208: error: 'CMDLINE_PARSER_VERSION' undeclared (first use in this function)
+main-opt.c: In function 'main':
+main-opt.c:231: error: storage size of 'args_info' isn't known
+cc1: warnings being treated as errors
+main-opt.c:241: error: implicit declaration of function 'cmdline_parser2'
+main-opt.c:256: error: implicit declaration of function 'cmdline_parser_configfile'
+main-opt.c:576: error: left-hand operand of comma expression has no effect
+main-opt.c:576: error: value computed is not used
+main-opt.c:576: error: left-hand operand of comma expression has no effect
+main-opt.c:614: error: left-hand operand of comma expression has no effect
+main-opt.c:614: error: value computed is not used
+main-opt.c:614: error: left-hand operand of comma expression has no effect
+main-opt.c:1157: error: implicit declaration of function 'cmdline_parser_free'
+main-opt.c:231: error: unused variable 'args_info'
+make[3]: *** [main-opt.o] Error 1
+make[3]: Leaving directory `/root/coova-chilli/src'
+make[2]: *** [all-recursive] Error 1
+make[2]: Leaving directory `/root/coova-chilli/src'
+make[1]: *** [all-recursive] Error 1
+make[1]: Leaving directory `/root/coova-chilli'
+make: *** [all] Error 2
+
+
+
+
+Thierry Museux
+France Wireless Technologies
+www.fwt.fr
+msn: tm at fwt.fr
+Tel: + 33 (0) 1 41 08 70 78
+Gsm: + 33 (0) 6 15 22 09 62
+
+
+-----Message d'origine-----
+De : dingo [mailto:outbackdingo at gmail.com] 
+Envoy? : jeudi 1 d?cembre 2011 14:18
+? : Fernando Macedo
+Cc : Thierry Museux - www.fwt.fr -; 'David Bird'; chilli at coova.org
+Objet : Re: [Chilli] Missing File in SVN (cmdline.c)
+
+On Thu, 2011-12-01 at 11:12 -0200, Fernando Macedo wrote:
+> chilli.c:6080:7: error: variable 'i' set but not used
+
+Great now if we can fix chilli.c :)
+
+
+_______________________________________________
+Chilli mailing list
+Chilli at coova.org
+http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+ 
+
+__________ Information from ESET NOD32 Antivirus, version of virus signature database 6678 (20111202) __________
+
+The message was checked by ESET NOD32 Antivirus.
+
+http://www.eset.com
+ 
+
+
+From tm at fwt.fr  Sat Dec  3 07:52:03 2011
+From: tm at fwt.fr (Thierry Museux - www.fwt.fr -)
+Date: Sat, 3 Dec 2011 08:52:03 +0100
+Subject: [Chilli] Missing File in SVN (cmdline.c)
+In-Reply-To: <004e01ccb11e$ac6b2520$05416f60$@lopes@cabocom.cv>
+References: <snttmkdfrhcwal91dq9gph46.1322741176891@email.android.com>		<039601ccb025$be74b5a0$3b5e20e0$@fr>		<1322745029.17645.1.camel@dingo-D900C>	<4ED77D2C.3070003@cpd.ufrgs.br>	<1322745487.17645.2.camel@dingo-D900C>
+	<041c01ccb036$16d9d940$448d8bc0$@fr>
+	<004e01ccb11e$ac6b2520$05416f60$@lopes@cabocom.cv>
+Message-ID: <001601ccb190$725dd220$57197660$@fr>
+
+Svn r 457
+
+With Unbuntu 11.10 32 bit (with gengetopt )
+Error:
+chilli.c:6080:7: error: variable 'i' set but not used [-Werror=unused-but-set-variable]
+
+
+With debian 6 64bit
+main-opt.c:231: error: unused variable ?args_info?
+
+With voyage Linux 0.8.0
+main-opt.c:208: error: 'CMDLINE_PARSER_PACKAGE' undeclared (first use in this function)
+
+
+
+Thierry Museux
+France Wireless Technologies
+www.fwt.fr
+msn: tm at fwt.fr
+Tel: + 33 (0) 1 41 08 70 78
+Gsm: + 33 (0) 6 15 22 09 62
+
+-----Message d'origine-----
+De : Miguel Lopes - Cabocom [mailto:miguel.lopes at cabocom.cv] 
+Envoy? : vendredi 2 d?cembre 2011 19:18
+? : 'Thierry Museux - www.fwt.fr -'; 'dingo'; 'Fernando Macedo'
+Cc : chilli at coova.org
+Objet : RE: [Chilli] Missing File in SVN (cmdline.c)
+
+Same error here. I am using Ubuntu, I sort it out, all I needed was to install gengetopt. After that it compiled and installed perfectly.
+
+Kind Regards / Atentamente,
+
+Miguel Lopes
+CEO - Director
+
+
+
+Tel - +2382428087
+Fax - +2382428088
+Email - miguel.lopes at cabocom.cv
+Web - www.cabocom.cv
+Facebook - facebook.cabocom.cv
+
+-----Mensagem original-----
+De: chilli-bounces at coova.org [mailto:chilli-bounces at coova.org] Em nome de Thierry Museux - www.fwt.fr -
+Enviada: quinta-feira, 1 de Dezembro de 2011 13:33
+Para: 'dingo'; 'Fernando Macedo'
+Cc: chilli at coova.org
+Assunto: Re: [Chilli] Missing File in SVN (cmdline.c)
+
+With a fresh install
+svn checkout http://dev.coova.org/svn/coova-chilli/
+cd coova-chilli
+./bootstrap
+./configure --prefix= 
+Make
+
+I have an error:
+
+
+gcc -DHAVE_CONFIG_H -I. -I..    -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF='"/etc/chilli.conf"' -DDEFPIDFILE='"/var/run/chilli.pid"' -DDEFSTATEDIR='"/var/run"' -DSBINDIR='"/sbin"'    -g -O2 -MT main-opt.o -MD -MP -MF .deps/main-opt.Tpo -c -o main-opt.o main-opt.c
+main-opt.c: In function 'options_print_version':
+main-opt.c:208: error: 'CMDLINE_PARSER_PACKAGE' undeclared (first use in this function)
+main-opt.c:208: error: (Each undeclared identifier is reported only once
+main-opt.c:208: error: for each function it appears in.)
+main-opt.c:208: error: 'CMDLINE_PARSER_VERSION' undeclared (first use in this function)
+main-opt.c: In function 'main':
+main-opt.c:231: error: storage size of 'args_info' isn't known
+cc1: warnings being treated as errors
+main-opt.c:241: error: implicit declaration of function 'cmdline_parser2'
+main-opt.c:256: error: implicit declaration of function 'cmdline_parser_configfile'
+main-opt.c:576: error: left-hand operand of comma expression has no effect
+main-opt.c:576: error: value computed is not used
+main-opt.c:576: error: left-hand operand of comma expression has no effect
+main-opt.c:614: error: left-hand operand of comma expression has no effect
+main-opt.c:614: error: value computed is not used
+main-opt.c:614: error: left-hand operand of comma expression has no effect
+main-opt.c:1157: error: implicit declaration of function 'cmdline_parser_free'
+main-opt.c:231: error: unused variable 'args_info'
+make[3]: *** [main-opt.o] Error 1
+make[3]: Leaving directory `/root/coova-chilli/src'
+make[2]: *** [all-recursive] Error 1
+make[2]: Leaving directory `/root/coova-chilli/src'
+make[1]: *** [all-recursive] Error 1
+make[1]: Leaving directory `/root/coova-chilli'
+make: *** [all] Error 2
+
+
+
+
+Thierry Museux
+France Wireless Technologies
+www.fwt.fr
+msn: tm at fwt.fr
+Tel: + 33 (0) 1 41 08 70 78
+Gsm: + 33 (0) 6 15 22 09 62
+
+
+-----Message d'origine-----
+De : dingo [mailto:outbackdingo at gmail.com] 
+Envoy? : jeudi 1 d?cembre 2011 14:18
+? : Fernando Macedo
+Cc : Thierry Museux - www.fwt.fr -; 'David Bird'; chilli at coova.org
+Objet : Re: [Chilli] Missing File in SVN (cmdline.c)
+
+On Thu, 2011-12-01 at 11:12 -0200, Fernando Macedo wrote:
+> chilli.c:6080:7: error: variable 'i' set but not used
+
+Great now if we can fix chilli.c :)
+
+
+_______________________________________________
+Chilli mailing list
+Chilli at coova.org
+http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+ 
+
+__________ Information from ESET NOD32 Antivirus, version of virus signature database 6678 (20111202) __________
+
+The message was checked by ESET NOD32 Antivirus.
+
+http://www.eset.com
+ 
+
+
+
+From david at coova.com  Sat Dec  3 07:57:20 2011
+From: david at coova.com (David Bird)
+Date: Sat, 03 Dec 2011 08:57:20 +0100
+Subject: [Chilli] Missing File in SVN (cmdline.c)
+Message-ID: <fv9fftovy35ytqvxyd5ij4ce.1322899040642@email.android.com>
+
+The public subversion is behind our development environment at the moment. As we near 1.2.9 release, we will update the public repository and distribute a pre-release for testing. 
+
+Miguel Lopes - Cabocom <miguel.lopes at cabocom.cv> wrote:
+
+>Same error here. I am using Ubuntu, I sort it out, all I needed was to install gengetopt. After that it compiled and installed perfectly.
+>
+>Kind Regards / Atentamente,
+>
+>Miguel Lopes
+>CEO - Director
+>
+>
+>
+>Tel - +2382428087
+>Fax - +2382428088
+>Email - miguel.lopes at cabocom.cv
+>Web - www.cabocom.cv
+>Facebook - facebook.cabocom.cv
+>
+>-----Mensagem original-----
+>De: chilli-bounces at coova.org [mailto:chilli-bounces at coova.org] Em nome de Thierry Museux - www.fwt.fr -
+>Enviada: quinta-feira, 1 de Dezembro de 2011 13:33
+>Para: 'dingo'; 'Fernando Macedo'
+>Cc: chilli at coova.org
+>Assunto: Re: [Chilli] Missing File in SVN (cmdline.c)
+>
+>With a fresh install
+>svn checkout http://dev.coova.org/svn/coova-chilli/
+>cd coova-chilli
+>./bootstrap
+>./configure --prefix= 
+>Make
+>
+>I have an error:
+>
+>
+>gcc -DHAVE_CONFIG_H -I. -I..    -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF='"/etc/chilli.conf"' -DDEFPIDFILE='"/var/run/chilli.pid"' -DDEFSTATEDIR='"/var/run"' -DSBINDIR='"/sbin"'    -g -O2 -MT main-opt.o -MD -MP -MF .deps/main-opt.Tpo -c -o main-opt.o main-opt.c
+>main-opt.c: In function 'options_print_version':
+>main-opt.c:208: error: 'CMDLINE_PARSER_PACKAGE' undeclared (first use in this function)
+>main-opt.c:208: error: (Each undeclared identifier is reported only once
+>main-opt.c:208: error: for each function it appears in.)
+>main-opt.c:208: error: 'CMDLINE_PARSER_VERSION' undeclared (first use in this function)
+>main-opt.c: In function 'main':
+>main-opt.c:231: error: storage size of 'args_info' isn't known
+>cc1: warnings being treated as errors
+>main-opt.c:241: error: implicit declaration of function 'cmdline_parser2'
+>main-opt.c:256: error: implicit declaration of function 'cmdline_parser_configfile'
+>main-opt.c:576: error: left-hand operand of comma expression has no effect
+>main-opt.c:576: error: value computed is not used
+>main-opt.c:576: error: left-hand operand of comma expression has no effect
+>main-opt.c:614: error: left-hand operand of comma expression has no effect
+>main-opt.c:614: error: value computed is not used
+>main-opt.c:614: error: left-hand operand of comma expression has no effect
+>main-opt.c:1157: error: implicit declaration of function 'cmdline_parser_free'
+>main-opt.c:231: error: unused variable 'args_info'
+>make[3]: *** [main-opt.o] Error 1
+>make[3]: Leaving directory `/root/coova-chilli/src'
+>make[2]: *** [all-recursive] Error 1
+>make[2]: Leaving directory `/root/coova-chilli/src'
+>make[1]: *** [all-recursive] Error 1
+>make[1]: Leaving directory `/root/coova-chilli'
+>make: *** [all] Error 2
+>
+>
+>
+>
+>Thierry Museux
+>France Wireless Technologies
+>www.fwt.fr
+>msn: tm at fwt.fr
+>Tel: + 33 (0) 1 41 08 70 78
+>Gsm: + 33 (0) 6 15 22 09 62
+>
+>
+>-----Message d'origine-----
+>De : dingo [mailto:outbackdingo at gmail.com] 
+>Envoy? : jeudi 1 d?cembre 2011 14:18
+>? : Fernando Macedo
+>Cc : Thierry Museux - www.fwt.fr -; 'David Bird'; chilli at coova.org
+>Objet : Re: [Chilli] Missing File in SVN (cmdline.c)
+>
+>On Thu, 2011-12-01 at 11:12 -0200, Fernando Macedo wrote:
+>> chilli.c:6080:7: error: variable 'i' set but not used
+>
+>Great now if we can fix chilli.c :)
+>
+>
+>_______________________________________________
+>Chilli mailing list
+>Chilli at coova.org
+>http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+> 
+>
+>__________ Information from ESET NOD32 Antivirus, version of virus signature database 6678 (20111202) __________
+>
+>The message was checked by ESET NOD32 Antivirus.
+>
+>http://www.eset.com
+> 
+>
+>_______________________________________________
+>Chilli mailing list
+>Chilli at coova.org
+>http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+From miguel.lopes at cabocom.cv  Sat Dec  3 12:01:48 2011
+From: miguel.lopes at cabocom.cv (Miguel Lopes - Cabocom)
+Date: Sat, 3 Dec 2011 11:01:48 -0100
+Subject: [Chilli] Missing File in SVN (cmdline.c)
+In-Reply-To: <fv9fftovy35ytqvxyd5ij4ce.1322899040642@email.android.com>
+References: <fv9fftovy35ytqvxyd5ij4ce.1322899040642@email.android.com>
+Message-ID: <005b01ccb1b3$57623ce0$0626b6a0$@lopes@cabocom.cv>
+
+Thanks for the warning David. Any idea when the pre-release will be on the public repository?
+
+Kind Regards / Atentamente,
+
+Miguel Lopes
+CEO - Director
+
+
+
+Tel - +2382428087
+Fax - +2382428088
+Email - miguel.lopes at cabocom.cv
+Web - www.cabocom.cv
+Facebook - facebook.cabocom.cv
+
+
+-----Mensagem original-----
+De: David Bird [mailto:david at coova.com] 
+Enviada: s?bado, 3 de Dezembro de 2011 06:57
+Para: Miguel Lopes - Cabocom; 'Thierry Museux - www.fwt.fr -'; 'dingo'; 'Fernando Macedo'
+Cc: chilli at coova.org
+Assunto: Re: [Chilli] Missing File in SVN (cmdline.c)
+
+The public subversion is behind our development environment at the moment. As we near 1.2.9 release, we will update the public repository and distribute a pre-release for testing. 
+
+Miguel Lopes - Cabocom <miguel.lopes at cabocom.cv> wrote:
+
+>Same error here. I am using Ubuntu, I sort it out, all I needed was to install gengetopt. After that it compiled and installed perfectly.
+>
+>Kind Regards / Atentamente,
+>
+>Miguel Lopes
+>CEO - Director
+>
+>
+>
+>Tel - +2382428087
+>Fax - +2382428088
+>Email - miguel.lopes at cabocom.cv
+>Web - www.cabocom.cv
+>Facebook - facebook.cabocom.cv
+>
+>-----Mensagem original-----
+>De: chilli-bounces at coova.org [mailto:chilli-bounces at coova.org] Em nome de Thierry Museux - www.fwt.fr -
+>Enviada: quinta-feira, 1 de Dezembro de 2011 13:33
+>Para: 'dingo'; 'Fernando Macedo'
+>Cc: chilli at coova.org
+>Assunto: Re: [Chilli] Missing File in SVN (cmdline.c)
+>
+>With a fresh install
+>svn checkout http://dev.coova.org/svn/coova-chilli/
+>cd coova-chilli
+>./bootstrap
+>./configure --prefix= 
+>Make
+>
+>I have an error:
+>
+>
+>gcc -DHAVE_CONFIG_H -I. -I..    -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF='"/etc/chilli.conf"' -DDEFPIDFILE='"/var/run/chilli.pid"' -DDEFSTATEDIR='"/var/run"' -DSBINDIR='"/sbin"'    -g -O2 -MT main-opt.o -MD -MP -MF .deps/main-opt.Tpo -c -o main-opt.o main-opt.c
+>main-opt.c: In function 'options_print_version':
+>main-opt.c:208: error: 'CMDLINE_PARSER_PACKAGE' undeclared (first use in this function)
+>main-opt.c:208: error: (Each undeclared identifier is reported only once
+>main-opt.c:208: error: for each function it appears in.)
+>main-opt.c:208: error: 'CMDLINE_PARSER_VERSION' undeclared (first use in this function)
+>main-opt.c: In function 'main':
+>main-opt.c:231: error: storage size of 'args_info' isn't known
+>cc1: warnings being treated as errors
+>main-opt.c:241: error: implicit declaration of function 'cmdline_parser2'
+>main-opt.c:256: error: implicit declaration of function 'cmdline_parser_configfile'
+>main-opt.c:576: error: left-hand operand of comma expression has no effect
+>main-opt.c:576: error: value computed is not used
+>main-opt.c:576: error: left-hand operand of comma expression has no effect
+>main-opt.c:614: error: left-hand operand of comma expression has no effect
+>main-opt.c:614: error: value computed is not used
+>main-opt.c:614: error: left-hand operand of comma expression has no effect
+>main-opt.c:1157: error: implicit declaration of function 'cmdline_parser_free'
+>main-opt.c:231: error: unused variable 'args_info'
+>make[3]: *** [main-opt.o] Error 1
+>make[3]: Leaving directory `/root/coova-chilli/src'
+>make[2]: *** [all-recursive] Error 1
+>make[2]: Leaving directory `/root/coova-chilli/src'
+>make[1]: *** [all-recursive] Error 1
+>make[1]: Leaving directory `/root/coova-chilli'
+>make: *** [all] Error 2
+>
+>
+>
+>
+>Thierry Museux
+>France Wireless Technologies
+>www.fwt.fr
+>msn: tm at fwt.fr
+>Tel: + 33 (0) 1 41 08 70 78
+>Gsm: + 33 (0) 6 15 22 09 62
+>
+>
+>-----Message d'origine-----
+>De : dingo [mailto:outbackdingo at gmail.com] 
+>Envoy? : jeudi 1 d?cembre 2011 14:18
+>? : Fernando Macedo
+>Cc : Thierry Museux - www.fwt.fr -; 'David Bird'; chilli at coova.org
+>Objet : Re: [Chilli] Missing File in SVN (cmdline.c)
+>
+>On Thu, 2011-12-01 at 11:12 -0200, Fernando Macedo wrote:
+>> chilli.c:6080:7: error: variable 'i' set but not used
+>
+>Great now if we can fix chilli.c :)
+>
+>
+>_______________________________________________
+>Chilli mailing list
+>Chilli at coova.org
+>http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+> 
+>
+>__________ Information from ESET NOD32 Antivirus, version of virus signature database 6678 (20111202) __________
+>
+>The message was checked by ESET NOD32 Antivirus.
+>
+>http://www.eset.com
+> 
+>
+>_______________________________________________
+>Chilli mailing list
+>Chilli at coova.org
+>http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+ 
+
+__________ Information from ESET NOD32 Antivirus, version of virus signature database 6680 (20111203) __________
+
+The message was checked by ESET NOD32 Antivirus.
+
+http://www.eset.com
+ 
+
+
+From david at coova.com  Mon Dec  5 06:42:35 2011
+From: david at coova.com (David Bird)
+Date: Mon, 05 Dec 2011 07:42:35 +0100
+Subject: [Chilli] Missing File in SVN (cmdline.c)
+Message-ID: <lmjfbyrt9olr0b87al1jw29o.1323067355823@email.android.com>
+
+We are planning to release this month...
+
+Miguel Lopes - Cabocom <miguel.lopes at cabocom.cv> wrote:
+
+>Thanks for the warning David. Any idea when the pre-release will be on the public repository?
+>
+>Kind Regards / Atentamente,
+>
+>Miguel Lopes
+>CEO - Director
+>
+>
+>
+>Tel - +2382428087
+>Fax - +2382428088
+>Email - miguel.lopes at cabocom.cv
+>Web - www.cabocom.cv
+>Facebook - facebook.cabocom.cv
+>
+>
+>-----Mensagem original-----
+>De: David Bird [mailto:david at coova.com] 
+>Enviada: s?bado, 3 de Dezembro de 2011 06:57
+>Para: Miguel Lopes - Cabocom; 'Thierry Museux - www.fwt.fr -'; 'dingo'; 'Fernando Macedo'
+>Cc: chilli at coova.org
+>Assunto: Re: [Chilli] Missing File in SVN (cmdline.c)
+>
+>The public subversion is behind our development environment at the moment. As we near 1.2.9 release, we will update the public repository and distribute a pre-release for testing. 
+>
+>Miguel Lopes - Cabocom <miguel.lopes at cabocom.cv> wrote:
+>
+>>Same error here. I am using Ubuntu, I sort it out, all I needed was to install gengetopt. After that it compiled and installed perfectly.
+>>
+>>Kind Regards / Atentamente,
+>>
+>>Miguel Lopes
+>>CEO - Director
+>>
+>>
+>>
+>>Tel - +2382428087
+>>Fax - +2382428088
+>>Email - miguel.lopes at cabocom.cv
+>>Web - www.cabocom.cv
+>>Facebook - facebook.cabocom.cv
+>>
+>>-----Mensagem original-----
+>>De: chilli-bounces at coova.org [mailto:chilli-bounces at coova.org] Em nome de Thierry Museux - www.fwt.fr -
+>>Enviada: quinta-feira, 1 de Dezembro de 2011 13:33
+>>Para: 'dingo'; 'Fernando Macedo'
+>>Cc: chilli at coova.org
+>>Assunto: Re: [Chilli] Missing File in SVN (cmdline.c)
+>>
+>>With a fresh install
+>>svn checkout http://dev.coova.org/svn/coova-chilli/
+>>cd coova-chilli
+>>./bootstrap
+>>./configure --prefix= 
+>>Make
+>>
+>>I have an error:
+>>
+>>
+>>gcc -DHAVE_CONFIG_H -I. -I..    -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF='"/etc/chilli.conf"' -DDEFPIDFILE='"/var/run/chilli.pid"' -DDEFSTATEDIR='"/var/run"' -DSBINDIR='"/sbin"'    -g -O2 -MT main-opt.o -MD -MP -MF .deps/main-opt.Tpo -c -o main-opt.o main-opt.c
+>>main-opt.c: In function 'options_print_version':
+>>main-opt.c:208: error: 'CMDLINE_PARSER_PACKAGE' undeclared (first use in this function)
+>>main-opt.c:208: error: (Each undeclared identifier is reported only once
+>>main-opt.c:208: error: for each function it appears in.)
+>>main-opt.c:208: error: 'CMDLINE_PARSER_VERSION' undeclared (first use in this function)
+>>main-opt.c: In function 'main':
+>>main-opt.c:231: error: storage size of 'args_info' isn't known
+>>cc1: warnings being treated as errors
+>>main-opt.c:241: error: implicit declaration of function 'cmdline_parser2'
+>>main-opt.c:256: error: implicit declaration of function 'cmdline_parser_configfile'
+>>main-opt.c:576: error: left-hand operand of comma expression has no effect
+>>main-opt.c:576: error: value computed is not used
+>>main-opt.c:576: error: left-hand operand of comma expression has no effect
+>>main-opt.c:614: error: left-hand operand of comma expression has no effect
+>>main-opt.c:614: error: value computed is not used
+>>main-opt.c:614: error: left-hand operand of comma expression has no effect
+>>main-opt.c:1157: error: implicit declaration of function 'cmdline_parser_free'
+>>main-opt.c:231: error: unused variable 'args_info'
+>>make[3]: *** [main-opt.o] Error 1
+>>make[3]: Leaving directory `/root/coova-chilli/src'
+>>make[2]: *** [all-recursive] Error 1
+>>make[2]: Leaving directory `/root/coova-chilli/src'
+>>make[1]: *** [all-recursive] Error 1
+>>make[1]: Leaving directory `/root/coova-chilli'
+>>make: *** [all] Error 2
+>>
+>>
+>>
+>>
+>>Thierry Museux
+>>France Wireless Technologies
+>>www.fwt.fr
+>>msn: tm at fwt.fr
+>>Tel: + 33 (0) 1 41 08 70 78
+>>Gsm: + 33 (0) 6 15 22 09 62
+>>
+>>
+>>-----Message d'origine-----
+>>De : dingo [mailto:outbackdingo at gmail.com] 
+>>Envoy? : jeudi 1 d?cembre 2011 14:18
+>>? : Fernando Macedo
+>>Cc : Thierry Museux - www.fwt.fr -; 'David Bird'; chilli at coova.org
+>>Objet : Re: [Chilli] Missing File in SVN (cmdline.c)
+>>
+>>On Thu, 2011-12-01 at 11:12 -0200, Fernando Macedo wrote:
+>>> chilli.c:6080:7: error: variable 'i' set but not used
+>>
+>>Great now if we can fix chilli.c :)
+>>
+>>
+>>_______________________________________________
+>>Chilli mailing list
+>>Chilli at coova.org
+>>http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>> 
+>>
+>>__________ Information from ESET NOD32 Antivirus, version of virus signature database 6678 (20111202) __________
+>>
+>>The message was checked by ESET NOD32 Antivirus.
+>>
+>>http://www.eset.com
+>> 
+>>
+>>_______________________________________________
+>>Chilli mailing list
+>>Chilli at coova.org
+>>http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+> 
+>
+>__________ Information from ESET NOD32 Antivirus, version of virus signature database 6680 (20111203) __________
+>
+>The message was checked by ESET NOD32 Antivirus.
+>
+>http://www.eset.com
+> 
+>
+
+From vipkilla at gmail.com  Mon Dec  5 13:51:59 2011
+From: vipkilla at gmail.com (Vik Killa)
+Date: Mon, 5 Dec 2011 08:51:59 -0500
+Subject: [Chilli] Linksys WRT54Gv8 / GSv7
+Message-ID: <CAC-LwPO1fobhMuAT+7V+AjinxrUL6kk-xg-igWNys5QbTEHRiQ@mail.gmail.com>
+
+Has anybody run Coova-AP on the Linksys WRT54Gv8 / GSv7  ?
+If so, which firmware did you use?
+
+From miguel.lopes at cabocom.cv  Mon Dec  5 15:20:39 2011
+From: miguel.lopes at cabocom.cv (Miguel Lopes - Cabocom)
+Date: Mon, 5 Dec 2011 14:20:39 -0100
+Subject: [Chilli] Chilli random crashes since 1.2.7
+Message-ID: <002101ccb361$7317a1f0$5946e5d0$@lopes@cabocom.cv>
+
+Hi,
+
+ 
+
+After many tests, we narrowed down why (in our case) chilli keeps crashing
+with segmentation fault. We use layer 3  mode and have only one central
+instance of chilli running. We use a mesh topology with gateways and nodes
+from Tropos. If any of the node or gateway goes offline chilli crashes. I
+don't know if it is ARP related or if it crashes because the route to a
+specific client no longer exists. Any clues David on what could be done to
+prevent this. Chilli is running is a server compiled with large limits.
+
+ 
+
+The more AP's we have the more often chilli crashes. 
+
+ 
+
+Kind Regards / Atentamente,
+
+ 
+
+Miguel Lopes
+
+CEO - Director
+
+ 
+
+marca_teste
+
+ 
+
+Tel - +2382428087
+
+Fax - +2382428088
+
+Email -  <mailto:miguel.lopes at cabocom.cv> miguel.lopes at cabocom.cv
+
+Web -  <http://www.cabocom.cv/> www.cabocom.cv
+
+Facebook -  <http://facebook.cabocom.cv/> facebook.cabocom.cv
+
+ 
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20111205/ff7f0394/attachment.html>
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: image001.jpg
+Type: image/jpeg
+Size: 9197 bytes
+Desc: not available
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20111205/ff7f0394/attachment.jpg>
+
+From francesco.colista at gmail.com  Mon Dec  5 15:25:49 2011
+From: francesco.colista at gmail.com (Francesco Colista)
+Date: Mon, 05 Dec 2011 16:25:49 +0100
+Subject: [Chilli] Chilli random crashes since 1.2.7
+In-Reply-To: <4edce153.855ce50a.5968.003bSMTPIN_ADDED@mx.google.com>
+References: <4edce153.855ce50a.5968.003bSMTPIN_ADDED@mx.google.com>
+Message-ID: <76f85bd661bac18fec57ea869761588d@bsod.eu>
+
+Il 05.12.2011 16:20 Miguel Lopes - Cabocom ha scritto:
+> Hi,
+>
+> After many tests, we narrowed down why (in our case) chilli keeps
+> crashing with segmentation fault. We use layer 3 mode and have only
+> one central instance of chilli running. We use a mesh topology with
+> gateways and nodes from Tropos. If any of the node or gateway goes
+> offline chilli crashes. I don't know if it is ARP related or if it
+> crashes because the route to a specific client no longer exists. Any
+> clues David on what could be done to prevent this. Chilli is running
+> is a server compiled with large limits.
+
+We are dealing with the same problem.
+chilli segfault with --enable-large-limits and layer-3 mode. We're 
+using working in layer-2 mode with an external dhcp-server. Chilli acts 
+as dhcp-relay.
+After some days of works, bump.segfault.
+Just two examples:
+
+
+
+[1804235.931695] chilli[10258]: segfault at c ip 4fb19eca sp 59641c30 
+error 4 in libchilli.so.0.0.0[4faee000+49000]
+[1804235.931781] grsec: Segmentation fault occurred at 0000000c in 
+/usr/sbin/chilli[chilli:10258] uid/euid:0/0 gid/egid:0/0, parent 
+/bin/busybox[init:1] uid/euid:0/0 gid/egid:0/0
+
+[1884674.687244] chilli[26937]: segfault at c ip 4cd26eca sp 5d35f2c0 
+error 4 in libchilli.so.0.0.0[4ccfb000+49000]
+[1884674.687305] grsec: Segmentation fault occurred at 0000000c in 
+/usr/sbin/chilli[chilli:26937] uid/euid:0/0 gid/egid:0/0, parent 
+/bin/busybox[init:1] uid/euid:0/0 gid/egid:0/0
+
+I can use a stripped chilli package and provide the core dump.
+I'm using svn version release 452.
+Thanks.
+
+-- 
+:: Francesco ::
+Blog: http://fc1979.blogspot.com
+Jabber: francesco at jabber.org
+E-Mail: francesco at bsod.eu
+GnuPG: FE9DDD5F
+
+From miguel.lopes at cabocom.cv  Mon Dec  5 16:40:07 2011
+From: miguel.lopes at cabocom.cv (Miguel Lopes - Cabocom)
+Date: Mon, 5 Dec 2011 15:40:07 -0100
+Subject: [Chilli] Chilli random crashes since 1.2.7
+In-Reply-To: <76f85bd661bac18fec57ea869761588d@bsod.eu>
+References: <4edce153.855ce50a.5968.003bSMTPIN_ADDED@mx.google.com>
+	<76f85bd661bac18fec57ea869761588d@bsod.eu>
+Message-ID: <003001ccb36c$8cbe66b0$a63b3410$@lopes@cabocom.cv>
+
+Please provide the core dump so David can take a look since we can't provide
+with one. The error seems to be the same. Do you use one central chilli and
+then have multiple AP's also? Or is it installed directly on the AP
+firmware?
+
+Kind Regards / Atentamente,
+
+Miguel Lopes
+CEO - Director
+
+
+
+Tel - +2382428087
+Fax - +2382428088
+Email - miguel.lopes at cabocom.cv
+Web - www.cabocom.cv
+Facebook - facebook.cabocom.cv
+
+-----Mensagem original-----
+De: chilli-bounces at coova.org [mailto:chilli-bounces at coova.org] Em nome de
+Francesco Colista
+Enviada: segunda-feira, 5 de Dezembro de 2011 14:26
+Para: chilli at coova.org
+Assunto: Re: [Chilli] Chilli random crashes since 1.2.7
+
+Il 05.12.2011 16:20 Miguel Lopes - Cabocom ha scritto:
+> Hi,
+>
+> After many tests, we narrowed down why (in our case) chilli keeps
+> crashing with segmentation fault. We use layer 3 mode and have only
+> one central instance of chilli running. We use a mesh topology with
+> gateways and nodes from Tropos. If any of the node or gateway goes
+> offline chilli crashes. I don't know if it is ARP related or if it
+> crashes because the route to a specific client no longer exists. Any
+> clues David on what could be done to prevent this. Chilli is running
+> is a server compiled with large limits.
+
+We are dealing with the same problem.
+chilli segfault with --enable-large-limits and layer-3 mode. We're 
+using working in layer-2 mode with an external dhcp-server. Chilli acts 
+as dhcp-relay.
+After some days of works, bump.segfault.
+Just two examples:
+
+
+
+[1804235.931695] chilli[10258]: segfault at c ip 4fb19eca sp 59641c30 
+error 4 in libchilli.so.0.0.0[4faee000+49000]
+[1804235.931781] grsec: Segmentation fault occurred at 0000000c in 
+/usr/sbin/chilli[chilli:10258] uid/euid:0/0 gid/egid:0/0, parent 
+/bin/busybox[init:1] uid/euid:0/0 gid/egid:0/0
+
+[1884674.687244] chilli[26937]: segfault at c ip 4cd26eca sp 5d35f2c0 
+error 4 in libchilli.so.0.0.0[4ccfb000+49000]
+[1884674.687305] grsec: Segmentation fault occurred at 0000000c in 
+/usr/sbin/chilli[chilli:26937] uid/euid:0/0 gid/egid:0/0, parent 
+/bin/busybox[init:1] uid/euid:0/0 gid/egid:0/0
+
+I can use a stripped chilli package and provide the core dump.
+I'm using svn version release 452.
+Thanks.
+
+-- 
+:: Francesco ::
+Blog: http://fc1979.blogspot.com
+Jabber: francesco at jabber.org
+E-Mail: francesco at bsod.eu
+GnuPG: FE9DDD5F
+_______________________________________________
+Chilli mailing list
+Chilli at coova.org
+http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+__________ Information from ESET NOD32 Antivirus, version of virus signature
+database 6684 (20111205) __________
+
+The message was checked by ESET NOD32 Antivirus.
+
+http://www.eset.com
+
+
+ 
+
+__________ Information from ESET NOD32 Antivirus, version of virus signature
+database 6685 (20111205) __________
+
+The message was checked by ESET NOD32 Antivirus.
+
+http://www.eset.com
+ 
+
+
+From vipkilla at gmail.com  Mon Dec  5 17:30:42 2011
+From: vipkilla at gmail.com (Vik Killa)
+Date: Mon, 5 Dec 2011 12:30:42 -0500
+Subject: [Chilli] Linksys WRT54Gv8 / GSv7
+Message-ID: <CAC-LwPMUvgUv59mnd6_NeVm-tBb=Yjh+4x4Y=tGF0JHeLqoQFQ@mail.gmail.com>
+
+Has anybody run Coova-AP on the Linksys WRT54Gv8 / GSv7  ?
+If so, which firmware did you use?
+
+From david at coova.com  Tue Dec  6 05:23:22 2011
+From: david at coova.com (David Bird)
+Date: Tue, 06 Dec 2011 06:23:22 +0100
+Subject: [Chilli] Chilli random crashes since 1.2.7
+Message-ID: <gx5faudb5qtqqc8ngh3qgrun.1323149002514@email.android.com>
+
+The up coming release has been tested extensively with valgrind. Several bugs that could cause the problem have been fixed. The issue you are seeing is likely the bug also recently pointed out in the mailing list concerning mtu and a icmp frag packet .... which we have fixed. Some more work needs doing, but the 1.2.9 release is soon!
+
+Francesco Colista <francesco.colista at gmail.com> wrote:
+
+>Il 05.12.2011 16:20 Miguel Lopes - Cabocom ha scritto:
+>> Hi,
+>>
+>> After many tests, we narrowed down why (in our case) chilli keeps
+>> crashing with segmentation fault. We use layer 3 mode and have only
+>> one central instance of chilli running. We use a mesh topology with
+>> gateways and nodes from Tropos. If any of the node or gateway goes
+>> offline chilli crashes. I don't know if it is ARP related or if it
+>> crashes because the route to a specific client no longer exists. Any
+>> clues David on what could be done to prevent this. Chilli is running
+>> is a server compiled with large limits.
+>
+>We are dealing with the same problem.
+>chilli segfault with --enable-large-limits and layer-3 mode. We're 
+>using working in layer-2 mode with an external dhcp-server. Chilli acts 
+>as dhcp-relay.
+>After some days of works, bump.segfault.
+>Just two examples:
+>
+>
+>
+>[1804235.931695] chilli[10258]: segfault at c ip 4fb19eca sp 59641c30 
+>error 4 in libchilli.so.0.0.0[4faee000+49000]
+>[1804235.931781] grsec: Segmentation fault occurred at 0000000c in 
+>/usr/sbin/chilli[chilli:10258] uid/euid:0/0 gid/egid:0/0, parent 
+>/bin/busybox[init:1] uid/euid:0/0 gid/egid:0/0
+>
+>[1884674.687244] chilli[26937]: segfault at c ip 4cd26eca sp 5d35f2c0 
+>error 4 in libchilli.so.0.0.0[4ccfb000+49000]
+>[1884674.687305] grsec: Segmentation fault occurred at 0000000c in 
+>/usr/sbin/chilli[chilli:26937] uid/euid:0/0 gid/egid:0/0, parent 
+>/bin/busybox[init:1] uid/euid:0/0 gid/egid:0/0
+>
+>I can use a stripped chilli package and provide the core dump.
+>I'm using svn version release 452.
+>Thanks.
+>
+>-- 
+>:: Francesco ::
+>Blog: http://fc1979.blogspot.com
+>Jabber: francesco at jabber.org
+>E-Mail: francesco at bsod.eu
+>GnuPG: FE9DDD5F
+>_______________________________________________
+>Chilli mailing list
+>Chilli at coova.org
+>http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+From miguel.lopes at cabocom.cv  Tue Dec  6 13:17:34 2011
+From: miguel.lopes at cabocom.cv (Miguel Lopes - Cabocom)
+Date: Tue, 6 Dec 2011 12:17:34 -0100
+Subject: [Chilli] Chilli random crashes since 1.2.7
+In-Reply-To: <gx5faudb5qtqqc8ngh3qgrun.1323149002514@email.android.com>
+References: <gx5faudb5qtqqc8ngh3qgrun.1323149002514@email.android.com>
+Message-ID: <002901ccb419$6b8bd510$42a37f30$@lopes@cabocom.cv>
+
+You are a star!!
+
+Kind Regards / Atentamente,
+
+Miguel Lopes
+CEO - Director
+
+
+
+Tel - +2382428087
+Fax - +2382428088
+Email - miguel.lopes at cabocom.cv
+Web - www.cabocom.cv
+Facebook - facebook.cabocom.cv
+
+-----Mensagem original-----
+De: chilli-bounces at coova.org [mailto:chilli-bounces at coova.org] Em nome de
+David Bird
+Enviada: ter?a-feira, 6 de Dezembro de 2011 04:23
+Para: francesco at bsod.eu; chilli at coova.org
+Assunto: Re: [Chilli] Chilli random crashes since 1.2.7
+
+The up coming release has been tested extensively with valgrind. Several
+bugs that could cause the problem have been fixed. The issue you are seeing
+is likely the bug also recently pointed out in the mailing list concerning
+mtu and a icmp frag packet .... which we have fixed. Some more work needs
+doing, but the 1.2.9 release is soon!
+
+Francesco Colista <francesco.colista at gmail.com> wrote:
+
+>Il 05.12.2011 16:20 Miguel Lopes - Cabocom ha scritto:
+>> Hi,
+>>
+>> After many tests, we narrowed down why (in our case) chilli keeps
+>> crashing with segmentation fault. We use layer 3 mode and have only
+>> one central instance of chilli running. We use a mesh topology with
+>> gateways and nodes from Tropos. If any of the node or gateway goes
+>> offline chilli crashes. I don't know if it is ARP related or if it
+>> crashes because the route to a specific client no longer exists. Any
+>> clues David on what could be done to prevent this. Chilli is running
+>> is a server compiled with large limits.
+>
+>We are dealing with the same problem.
+>chilli segfault with --enable-large-limits and layer-3 mode. We're 
+>using working in layer-2 mode with an external dhcp-server. Chilli acts 
+>as dhcp-relay.
+>After some days of works, bump.segfault.
+>Just two examples:
+>
+>
+>
+>[1804235.931695] chilli[10258]: segfault at c ip 4fb19eca sp 59641c30 
+>error 4 in libchilli.so.0.0.0[4faee000+49000]
+>[1804235.931781] grsec: Segmentation fault occurred at 0000000c in 
+>/usr/sbin/chilli[chilli:10258] uid/euid:0/0 gid/egid:0/0, parent 
+>/bin/busybox[init:1] uid/euid:0/0 gid/egid:0/0
+>
+>[1884674.687244] chilli[26937]: segfault at c ip 4cd26eca sp 5d35f2c0 
+>error 4 in libchilli.so.0.0.0[4ccfb000+49000]
+>[1884674.687305] grsec: Segmentation fault occurred at 0000000c in 
+>/usr/sbin/chilli[chilli:26937] uid/euid:0/0 gid/egid:0/0, parent 
+>/bin/busybox[init:1] uid/euid:0/0 gid/egid:0/0
+>
+>I can use a stripped chilli package and provide the core dump.
+>I'm using svn version release 452.
+>Thanks.
+>
+>-- 
+>:: Francesco ::
+>Blog: http://fc1979.blogspot.com
+>Jabber: francesco at jabber.org
+>E-Mail: francesco at bsod.eu
+>GnuPG: FE9DDD5F
+>_______________________________________________
+>Chilli mailing list
+>Chilli at coova.org
+>http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+_______________________________________________
+Chilli mailing list
+Chilli at coova.org
+http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+__________ Information from ESET NOD32 Antivirus, version of virus signature
+database 6686 (20111205) __________
+
+The message was checked by ESET NOD32 Antivirus.
+
+http://www.eset.com
+
+
+ 
+
+__________ Information from ESET NOD32 Antivirus, version of virus signature
+database 6686 (20111205) __________
+
+The message was checked by ESET NOD32 Antivirus.
+
+http://www.eset.com
+ 
+
+
+From francesco.colista at gmail.com  Tue Dec  6 18:43:32 2011
+From: francesco.colista at gmail.com (Francesco Colista)
+Date: Tue, 06 Dec 2011 19:43:32 +0100
+Subject: [Chilli] =?utf-8?q?Chilli_1=2E2=2E8_stable=2C_use_of_CAP=5FNET=5F?=
+ =?utf-8?q?ADMIN_and_some_other_things=2E=2E=2E?=
+Message-ID: <4ff0171416fcc9d234ec1fcb6f659406@bsod.eu>
+
+Hi all.
+I'm just continue about hte coredump saga since 1.2.7, and as david 
+mention the new version should fix.
+
+I'm using a 3.0.10 grsec kernel with patch for SSP on uclibc, the 
+distro is alpine linux (www.alpinelinux.org).
+Those are the flag i used in order to compile 1.2.8 version (stable) 
+that is running atm.
+
+         ./configure --prefix=/usr \
+                 --sysconfdir=/etc \
+                 --mandir=/usr/share/man \
+                 --infodir=/usr/share/info \
+                 --localstatedir=/var/run/chilli \
+                 --libdir=/usr/lib \
+                 --sysconfdir=/etc \
+                 --with-openssl \
+                 --with-poll \
+                 --with-pcap \
+                 --enable-binstatusfile \
+                 --enable-statusfile \
+                 --enable-chillixml \
+                 --enable-ipwhitelist \
+                 --enable-redirinject \
+                 --enable-redirdnsreq \
+                 --enable-debug \
+                 --enable-debug2 \
+                 --enable-sessgarden \
+                 --enable-shared \
+                 --enable-chilliredir \
+                 --enable-chilliscript \
+                 --enable-layer3 \
+                 --enable-dhcpopt \
+                 --enable-largelimits
+
+
+I need a clarification about this errors:
+
+"use of CAP_NET_ADMIN in chroot denied for 
+/usr/sbin/chilli[chilli:1982] uid/euid:0/0 gid/egid:0/0, parent 
+/usr/sb0" <--- logs are plenty of this alert.
+"coova-chilli[1947]: net.c: 114: 13 (Permission denied) 
+ioctl(SIOCSIFFLAGS) failed" <--- also i've a lot of this entry.
+
+Now, i notice that the ioctl error is because coova-chilli is running 
+as root, and would be better use a non-privileged user.
+i create chilli user and group, gives the apporpriate permission on the 
+directory of pidfile ( /var/run/chilli).
+When the daemon starts, i obtaion a permission denied when chilli 
+modify routing table. What can i do ? Chilli is setuid.
+I read about chilli-script, but never used it. Someone can points me to 
+the right direction?
+
+
+About the first error, i tryied to setcap cap_net_admin+ep 
+/usr/sbin/chilli without result. This is what is returned:
+
+Failed to set capabilities on file `/usr/sbin/chilli' (Operation not 
+supported)
+
+Last point: would be very helpful having on the wiki a better 
+documentation about how this flags works and how use it :)
+
+
+-- 
+:: Francesco ::
+Blog: http://fc1979.blogspot.com
+Jabber: francesco at jabber.org
+E-Mail: francesco at bsod.eu
+GnuPG: FE9DDD5F
+
+From tm at fwt.fr  Tue Dec 27 18:15:31 2011
+From: tm at fwt.fr (Thierry Museux - www.fwt.fr -)
+Date: Tue, 27 Dec 2011 19:15:31 +0100
+Subject: [Chilli] WISPr-Redirection-URL
+Message-ID: <110501ccc4c3$8510a870$8f31f950$@fr>
+
+I have a problem with WISPr-Redirection-URL.
+When I use in the radcheck table only:
+MyUserName Cleartext-Password:=MyPassword
+The login do:
+http://10.0.0.1:3990/logon?username=MyUserName&password=911fe992b7f5dfebbb2a
+11554f541246
+
+Redirect to:
+https://10.0.0.1/portal1/hotspotlogin/hotspotlogin.php?res=success&uamip=10.
+0.0.1&uamport=3990&called=00-0D-B9-17-7D-A1&uid=fwt&mac=00-18-F3-40-E8-BC&ip
+=10.0.0.100&nasid=fwt&sessionid=4ef9e88500000001&redirurl=&userurl=http%3a%2
+f%2fwww.google.fr%2f&md=3D43DAB3265ECC2539FBBA14E2621E13
+
+And I can use the popup windows from hotspotlogin.php to display time and
+logout url. (same thing with hotspotlogin.cgi)
+All works fine.
+
+If I had in the radreply table:
+MyUserName WISPr-Redirection-URL:= http://www.coova.org
+The login do:
+http://10.0.0.1:3990/logon?username=fwt&password=122065d4eea17e5abddd43c6f19
+d7f1d
+
+Redirect to: http://www.coova.org
+
+
+There is no possibility to get the popup windows , coova redirect to
+http://www.coova.org instead of fill userurl with http://www.coova.org like
+this
+
+Redirect to:
+https://10.0.0.1/portal1/hotspotlogin/hotspotlogin.php?res=success&uamip=10.
+0.0.1&uamport=3990&called=00-0D-B9-17-7D-A1&uid=fwt&mac=00-18-F3-40-E8-BC&ip
+=10.0.0.100&nasid=fwt&sessionid=4ef9e88500000001&redirurl=&userurl=http%3a%2
+f%2f www.coova.org%2f&md=3D43DAB3265ECC2539FBBA14E2621E13
+
+
+
+Is it a bug ? a functionality, or there is a way to get the popup ? or it's
+normal ?
+
+
+
+Thierry Museux
+France Wireless Technologies
+www.fwt.fr
+msn: tm at fwt.fr
+Tel: + 33 (0) 1 41 08 70 78
+Gsm: + 33 (0) 6 15 22 09 62
+
+
+
+

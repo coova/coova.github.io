@@ -1,0 +1,109 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] RADCONF Options - Need better documentation?
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20RADCONF%20Options%20-%20Need%20better%20documentation%3F&In-Reply-To=%3CCAESLx0Jyo5a1%2BFOJBVT9jkU_ZHJ7XZyVuPA8MZ8cwU57Gz10qw%40mail.gmail.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   
+   <LINK REL="Next"  HREF="001736.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] RADCONF Options - Need better documentation?</H1>
+    <B>Timothy White</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20RADCONF%20Options%20-%20Need%20better%20documentation%3F&In-Reply-To=%3CCAESLx0Jyo5a1%2BFOJBVT9jkU_ZHJ7XZyVuPA8MZ8cwU57Gz10qw%40mail.gmail.com%3E"
+       TITLE="[Chilli] RADCONF Options - Need better documentation?">timwhite88 at gmail.com
+       </A><BR>
+    <I>Sun Oct  9 08:53:47 UTC 2011</I>
+    <P><UL>
+        
+        <LI>Next message: <A HREF="001736.html">[Chilli] Coova Chilli Segfault
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1735">[ date ]</a>
+              <a href="thread.html#1735">[ thread ]</a>
+              <a href="subject.html#1735">[ subject ]</a>
+              <a href="author.html#1735">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hi Everyone.
+
+I've been using the HS_ADMUSR and HS_ADMPWD options for some time now
+to add extra options to the chilli config based on a user in the
+radius database. However it seems the time has come to look at the
+radconf option in more detail.
+
+Basically I need the ability to change more options than ADMUSR is
+letting me. Using adminuser and adminpasswd is great for adding things
+like uamallow as it just adds to the uamallow already defined in
+main.conf. (adminuser is putting the values returned by radius in
+/etc/chilli/local.conf which is included last by /etc/chilli.conf ).
+
+However, trying to change things like uamlisten don't work as then
+chilli complains about duplicate config options. I easily worked
+around this when I was trying to set the macpasswd from radius, but
+disabling the macpassword in /etc/chilli/config, however
+/etc/chilli/functions has defaults for things like uamlisten, so that
+trick doesn't work.
+
+&gt;<i>From my play with HS_RADCONF, it appears that with HS_RADCONF=on, the
+</I>difference for chilli_radconfig (probably the difference is more in
+/etc/chilli/functions) is that it gets the options from radius and now
+stores them in /etc/chilli/hs.conf instead of /etc/chilli/local.conf.
+However, this still doesn't work as /etc/chilli/functions still writes
+the main.conf and now we again have values in main.conf that are in
+hs.conf.
+
+So it would appear that my only option is to edit /etc/chilli.conf to
+exclude main.conf, and then duplicate everything that is normally in
+main.conf, in radius so that hs.conf contains everything. This would
+also mean that NOTHING can be set in /etc/chilli/config except radius
+settings.
+
+Is there no other easy way to &quot;override&quot; values via radius?
+
+I think my only solution is to store the values in another db, and in
+/etc/chilli/config dynamically set the values with scripts. I
+understand that it can be hard to get everything from radius, as
+things like HS_LANIF are used very early on in /etc/chilli/functions
+and so changing that part way through would be difficult, as would
+trying to get it from radius at the start so that it can be set from
+as early as possible.
+
+Any other thoughts on the best way to do this? And can someone who
+understands HS_RADCONF better write some documentation for it?
+
+Thanks
+
+Tim
+</PRE>
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	
+	<LI>Next message: <A HREF="001736.html">[Chilli] Coova Chilli Segfault
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1735">[ date ]</a>
+              <a href="thread.html#1735">[ thread ]</a>
+              <a href="subject.html#1735">[ subject ]</a>
+              <a href="author.html#1735">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

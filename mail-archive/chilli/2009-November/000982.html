@@ -1,0 +1,145 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] Ippool exhaustion bug?
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Ippool%20exhaustion%20bug%3F&In-Reply-To=%3C1258105551.7348.63.camel%40david-laptop%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000978.html">
+   <LINK REL="Next"  HREF="000983.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] Ippool exhaustion bug?</H1>
+    <B>David Bird</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Ippool%20exhaustion%20bug%3F&In-Reply-To=%3C1258105551.7348.63.camel%40david-laptop%3E"
+       TITLE="[Chilli] Ippool exhaustion bug?">david at coova.com
+       </A><BR>
+    <I>Fri Nov 13 09:45:51 UTC 2009</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000978.html">[Chilli] Coova Chilli Version 1.0.14
+</A></li>
+        <LI>Next message: <A HREF="000983.html">[Chilli] Ippool exhaustion bug?
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#982">[ date ]</a>
+              <a href="thread.html#982">[ thread ]</a>
+              <a href="subject.html#982">[ subject ]</a>
+              <a href="author.html#982">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hmm.. 
+
+I think I see how this can happen. I likely added that ability to
+allocate a static IP out of tun_ind() so that truly static IPs would
+work (though, looking at it now, I don't think the code helps that
+situation since as you noted, it's not a fully configured dhcp lease at
+that point, just an entry in the ippool). I'm thinking it'll be wise to
+remove the call to ippool_newip() at this point in the code. Instead,
+perhaps it just goes ahead and accepts the packet if within the statip
+range -- then, presumably, the computer with the statip will reply to
+the packets, which will create the dhcpconn/appconn/etc properly (from
+the packet originating from the dhcpif). 
+
+David
+
+
+On Fri, 2009-11-13 at 08:31 +0200, Gunther Mayer wrote:
+&gt;<i> David Bird wrote:
+</I>&gt;<i> &gt; Hi Gunther,
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; You mention one IP being allocated by tun_ind(), which means it's the
+</I>&gt;<i> &gt; result of packets coming into tun0/tap0, which means it's not the
+</I>&gt;<i> &gt; traffic from the end user side of chilli -- rather it's the WAN side.
+</I>&gt;<i> &gt;   
+</I>&gt;<i> Hmm, could be my openvpn tunnel or other pre-existing connections from 
+</I>&gt;<i> before which still try to pump traffic from the WAN side to my client 
+</I>&gt;<i> but I doubt this - as in the below example cb_tun_ind() acts always a 
+</I>&gt;<i> second before the dhcp request is acted upon (I can send you more logs 
+</I>&gt;<i> to show this if you like).
+</I>&gt;<i> &gt; I'm unclear how this is filling up the pool, however. Is it multiple
+</I>&gt;<i> &gt; entries for the same IP or always allocating new IPs out of tun_ind() ?
+</I>&gt;<i> &gt;   
+</I>&gt;<i> 
+</I>&gt;<i> It's not *always* allocating new IPs out of cb_tun_ind() but seems to do 
+</I>&gt;<i> so most of the time if my client has had connections to chilli before 
+</I>&gt;<i> (even if chilli itself has already released this IP), most likely 
+</I>&gt;<i> because my dhcp client tries to recycle still valid leases though I'm 
+</I>&gt;<i> not sure. The pool is getting filled up by cb_tun_ind() allocating one 
+</I>&gt;<i> IP which never gets &quot;garbage collected&quot; followed shortly by a real dhcp 
+</I>&gt;<i> dynamic ip allocation which does get deallocated properly upon expiry, 
+</I>&gt;<i> that's apparent in my logs.
+</I>&gt;<i> &gt; Are you using --usetap (if so, try without).
+</I>&gt;<i> Nope, standard tun device, no tap.
+</I>&gt;<i> &gt; Are you narrowing your DHCP
+</I>&gt;<i> &gt; pool only for testing or is your real world IP allocation really a
+</I>&gt;<i> &gt; network smaller than /24 ?
+</I>&gt;<i> &gt;   
+</I>&gt;<i> 
+</I>&gt;<i> As I said in my first email I'm narrowing my pool only for testing 
+</I>&gt;<i> purposes, in the real world it goes from 129 to 254 (126 ip's) but to 
+</I>&gt;<i> get such a large pool to be exhausted is impossible to reproduce in a 
+</I>&gt;<i> testing environment.
+</I>&gt;<i> 
+</I>&gt;<i> I have actually made progress on this issue since - seeing that I did 
+</I>&gt;<i> narrow it down to cb_tun_ind() being the culprit I saw that its call to 
+</I>&gt;<i> ippool_newip() wasn't there in 1.0.11 (r147 I think) which is the 
+</I>&gt;<i> previous stable version we used. So I reverted this piece of code to the 
+</I>&gt;<i> old behaviour, taking ippool_newip() totally out of cb_tun_ind() and now 
+</I>&gt;<i> everything works for me 100%.
+</I>&gt;<i> 
+</I>&gt;<i> However, there must be a reason you (or another developer?) added the 
+</I>&gt;<i> ippool_newip() statement in there in the first place. I'm not sure for 
+</I>&gt;<i> which use cases it's required but it seems to me that while it allocates 
+</I>&gt;<i> a new ip for the client, it doesn't properly update the other house 
+</I>&gt;<i> keeping data structures which means that
+</I>&gt;<i> 
+</I>&gt;<i>     a) when it comes to actually processing the dhcp request the code 
+</I>&gt;<i> doesn't pick up that the allocation has already happened
+</I>&gt;<i>     b) when the lease expires the ip is returned back to the pool (inuse 
+</I>&gt;<i> = 0)
+</I>&gt;<i> 
+</I>&gt;<i> Gunther
+</I>
+</PRE>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000978.html">[Chilli] Coova Chilli Version 1.0.14
+</A></li>
+	<LI>Next message: <A HREF="000983.html">[Chilli] Ippool exhaustion bug?
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#982">[ date ]</a>
+              <a href="thread.html#982">[ thread ]</a>
+              <a href="subject.html#982">[ subject ]</a>
+              <a href="author.html#982">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

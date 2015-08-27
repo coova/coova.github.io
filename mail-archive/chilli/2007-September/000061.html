@@ -1,0 +1,139 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> Accessing AP through eth1
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20Accessing%20AP%20through%20eth1&In-Reply-To=%3C46E2D639.9040401%40sriviere.info%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000058.html">
+   <LINK REL="Next"  HREF="000062.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>Accessing AP through eth1</H1>
+    <B>SR Infosyst&#232;mes</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20Accessing%20AP%20through%20eth1&In-Reply-To=%3C46E2D639.9040401%40sriviere.info%3E"
+       TITLE="Accessing AP through eth1">contact at sriviere.info
+       </A><BR>
+    <I>Sat Sep  8 17:04:57 UTC 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000058.html">Accessing AP through eth1
+</A></li>
+        <LI>Next message: <A HREF="000062.html">DHCP - WLAN behaviour of Windows Notebooks
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#61">[ date ]</a>
+              <a href="thread.html#61">[ thread ]</a>
+              <a href="subject.html#61">[ subject ]</a>
+              <a href="author.html#61">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hi David,
+
+&gt;<i> First of all, there are many possible configurations with chilli (plus 
+</I>&gt;<i> iptables, etc) - I can't claim to have tried them all. So, when in 
+</I>&gt;<i> doubt, give it a try! 
+</I>
+Yes this scheme works : no strange logs from Chilli and SSH access OK.
+
+As a guideline for other readers (chilli net=192.168.1.0/24) :
+
+Network interfaces settings
+-------------------------------
+eth0 : 192.168.0.0/24, ip 192.168.0.251 via /etc/network/interfaces
+tun0 : 192.168.1.0/24, ip 192.168.1.1 via chilli.conf
+eth1 : 192.168.2.0/24, ip 192.168.2.251 via /etc/network/interfaces
+-------------------------------
+
+generic ap1/ap2/apx config
+-------------------------------
+ip : 192.168.2.241/242/24x
+mask : 255.255.255.0
+gateway : 192.168.1.1
+-------------------------------
+
+&gt;<i> essentially overlaying two networks on your eth1 network -- which is 
+</I>&gt;<i> cool, if you know what you're doing. 
+</I>
+Good understatement :) I don't know what I'm doing. But I know I don't 
+know, so I'll learn :) And -FIRST OF ALL- follow your advices.
+
+&gt;<i> The cleanest way for chilli to operate is to completely own the dhcpif, 
+</I>&gt;<i> with no routing (forwarding in iptables) for the traffic on that 
+</I>&gt;<i> interface 
+</I>
+OK
+
+ &gt; Some things to watch out
+&gt;<i> for: DHCP responses from something other than chilli on your dhcpif; 
+</I>&gt;<i> duplicate packets on your dhcpif or WAN; the ability to by-pass chilli 
+</I>&gt;<i> altogether; and, proper NAT and conn-tracking (for VPNs, etc, if that is 
+</I>&gt;<i> of any importance to you) in iptables.
+</I>
+OK
+
+May be the wise way, at my skill level, is to avoid AP maintenance at 
+the same time Chilli is running. This can be achieved inside the 
+/etc/init.d/chilli script :
+
+When starting Chilli :
+- rewrite /etc/network/interfaces with proper settings for Chilli
+- /etc/init.d/networking restart
+- run Chilli
+
+When stopping Chilli :
+- stop Chilli
+- rewrite /etc/network/interfaces with proper settings for AP access
+- /etc/init.d/networking restart
+
+This is stupid, but secure and give me time to lear how write safe 
+iptables rules script :)
+
+Thanks for your valuable help !
+
+All the best from Oleron island,
+
+Stephane Riviere
+
+-- 
+LA SOLUTION &#224; vos probl&#232;mes INFORMATIQUES
+
+SR Infosyst&#232;mes
+15, rue du Temple
+17310 St Pierre d'Ol&#233;ron
+Ile d'Ol&#233;ron - France
+
+Mobile : 06 89 29 88 44
+Fixe :   09 54 10 55 60 (appel local)
+Fax :    05 46 36 30 59
+Site :   www.sriviere.info
+Email :  <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">contact at sriviere.info</A>
+Skype :  stephane.riviere
+
+Certificat X509 : disponible sur le site
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000058.html">Accessing AP through eth1
+</A></li>
+	<LI>Next message: <A HREF="000062.html">DHCP - WLAN behaviour of Windows Notebooks
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#61">[ date ]</a>
+              <a href="thread.html#61">[ thread ]</a>
+              <a href="subject.html#61">[ subject ]</a>
+              <a href="author.html#61">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

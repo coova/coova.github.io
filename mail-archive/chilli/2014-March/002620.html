@@ -1,0 +1,115 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] Using external DHCP server with Coova
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Using%20external%20DHCP%20server%20with%20Coova&In-Reply-To=%3C791865386.603547.1394418741896.JavaMail.root%40frontiir.net%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="002619.html">
+   <LINK REL="Next"  HREF="002621.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] Using external DHCP server with Coova</H1>
+    <B>Phyo Wai Soe</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Using%20external%20DHCP%20server%20with%20Coova&In-Reply-To=%3C791865386.603547.1394418741896.JavaMail.root%40frontiir.net%3E"
+       TITLE="[Chilli] Using external DHCP server with Coova">phyo.w.soe at frontiir.net
+       </A><BR>
+    <I>Mon Mar 10 02:32:21 UTC 2014</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="002619.html">[Chilli] [RE] Hotspot in openwrt with coova-chilli
+</A></li>
+        <LI>Next message: <A HREF="002621.html">[Chilli] How to serve JSON interface under SSL?
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2620">[ date ]</a>
+              <a href="thread.html#2620">[ thread ]</a>
+              <a href="subject.html#2620">[ subject ]</a>
+              <a href="author.html#2620">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hi All,
+
+We are using an external DHCP server with a Coova server and the issue we are facing is that sometimes Coova gives out IP addresses to clients without relaying the requests to the external DHCP server and also doesn't inform the clients of the addresses it assigned. When we release/renew the client's IP, Coova sends the request to DHCP server and client gets an address. However, it seems Coova doesn't update its MAC-DHCP address mapping and when the client with DHCP server assigned address comes, it says &quot;Received packet with spoofed source&quot; I have read that some people also had/have that issue but I couldn't find any solution.
+
+It is an intermittent issue and not easily reproducible. But we think that in all those problem cases, the client already has an address, either assigned previously or a private one when it doesn't get a DHCP reply.
+
+Here's our DHCP relay settings. We tested with the settings in local.conf and the defaults config file and they produce the same outcome. Port is not specified because we are using the default port of 67.
+
+HS_DHCPGATEWAY=10.10.0.15
+HS_DHCPRELAYAGENT=10.99.0.1
+
+Thanks all.
+
+Regards,
+Phyo
+
+Debug logs...
+==========OK request/reply===============
+dhcp.c: 5061: 0 (Debug) Layer2 PROT: 0x86dd dropped
+dhcp.c: 3619: 0 (Debug) dhcp/bootps request being processed
+dhcp.c: 3264: 0 (Debug) function dhcp_getreq()
+dhcp.c: 732: 0 (Debug) DHCP newconn: 08:00:27:e3:0f:ff
+chilli.c: 5127: 0 (Debug) New DHCP request from MAC=08-00-27-E3-0F-FF
+chilli.c: 5130: 0 (Debug) New DHCP connection established
+chilli.c: 5086: 0 (Debug) New Chilli Connection
+dhcp.c: 3235: 0 (Debug) Sending DHCP relay packet to 10.10.0.15
+dhcp.c: 3594: 0 (Debug) Not for our MAC or broadcast: 08-00-27-E3-0F-FF
+dhcp.c: 5061: 0 (Debug) Layer2 PROT: 0x86dd dropped
+dhcp.c: 5162: 0 (Debug) DHCP relay response from 10.10.0.15 of length 300 received
+chilli.c: 4879: 0 (Debug) ----&gt; cb_dhcp_request &lt;----
+chilli.c: 4883: 0 (Debug) DHCP request for IP address 10.99.0.10
+chilli.c: 837: 0 (Debug) newip 10.99.0.10
+ippool.c: 456: 0 (Debug) Requesting new static ip: 10.99.0.10
+ippool.c: 479: 0 (Debug) HERE!!! -&gt; 0
+ippool.c: 482: 0 (Debug) Static IP address not allowed
+ippool.c: 456: 0 (Debug) Requesting new dynamic ip: 10.99.0.10
+chilli.c: 5015: 0 (Debug) Client MAC=08-00-27-E3-0F-FF assigned IP 10.99.0.10
+
+====Non-OK request/reply=====
+dhcp.c: 732: 0 (Debug) DHCP newconn: 08:00:27:e3:0f:ff
+chilli.c: 5128: 0 (Debug) New DHCP request from MAC=08-00-27-E3-0F-FF
+chilli.c: 5131: 0 (Debug) New DHCP connection established
+chilli.c: 5087: 0 (Debug) New Chilli Connection
+dhcp.c: 5686: 0 (Debug) ARP: 08-00-27-E3-0F-FF asking about 91.189.89.134
+chilli.c: 4880: 0 (Debug) ----&gt; cb_dhcp_request &lt;----
+chilli.c: 4884: 0 (Debug) DHCP request for IP address 169.254.9.47
+chilli.c: 837: 0 (Debug) newip 169.254.9.47
+ippool.c: 456: 0 (Debug) Requesting new static ip: 169.254.9.47
+ippool.c: 479: 0 (Debug) HERE!!! -&gt; 0
+ippool.c: 482: 0 (Debug) Static IP address not allowed
+ippool.c: 456: 0 (Debug) Requesting new dynamic ip: 169.254.9.47
+chilli.c: 5016: 0 (Debug) Client MAC=08-00-27-E3-0F-FF assigned IP 10.99.0.2
+=============================
+
+</PRE>
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="002619.html">[Chilli] [RE] Hotspot in openwrt with coova-chilli
+</A></li>
+	<LI>Next message: <A HREF="002621.html">[Chilli] How to serve JSON interface under SSL?
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2620">[ date ]</a>
+              <a href="thread.html#2620">[ thread ]</a>
+              <a href="subject.html#2620">[ subject ]</a>
+              <a href="author.html#2620">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

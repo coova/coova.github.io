@@ -1,0 +1,148 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] RADIUS based way to set the per session
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20RADIUS%20based%20way%20to%20set%20the%20per%20session&In-Reply-To=%3C1358535803.6922.1.camel%40david-laptop%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="002092.html">
+   <LINK REL="Next"  HREF="002094.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] RADIUS based way to set the per session</H1>
+    <B>David Bird</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20RADIUS%20based%20way%20to%20set%20the%20per%20session&In-Reply-To=%3C1358535803.6922.1.camel%40david-laptop%3E"
+       TITLE="[Chilli] RADIUS based way to set the per session">david at coova.com
+       </A><BR>
+    <I>Fri Jan 18 19:03:23 UTC 2013</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="002092.html">[Chilli] RADIUS based way to set the per session
+</A></li>
+        <LI>Next message: <A HREF="002094.html">[Chilli] RADIUS based way to set the per session
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2093">[ date ]</a>
+              <a href="thread.html#2093">[ thread ]</a>
+              <a href="subject.html#2093">[ subject ]</a>
+              <a href="author.html#2093">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>You'd want to return the attribute in an Access-Reject. An Accept will
+give them access without injecting the URL (which should point to a j/s
+script). 
+
+
+On Fri, 2013-01-18 at 22:49 +0400, Danny Magat wrote:
+&gt;<i> Thanks David,
+</I>&gt;<i> 
+</I>&gt;<i> I appreciate your response.
+</I>&gt;<i> 
+</I>&gt;<i> I would be more grateful if you can give more specific details on how to achieve this.
+</I>&gt;<i> I trie putting value on radreply username := mac and Attributes := ChilliSpot-Inject-URL Value:= url 
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> On Jan 17, 2013, at 10:34 PM, David Bird &lt;<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">david at coova.com</A>&gt; wrote:
+</I>&gt;<i> 
+</I>&gt;<i> &gt; You have tried the ChilliSpot-Inject-URL attribute? 
+</I>&gt;<i> &gt; 
+</I>&gt;<i> &gt; Also, it is also helpful to --enable-inspect so that chilli_query
+</I>&gt;<i> &gt; inspect mac &lt;mac&gt; gives you more information on per session
+</I>&gt;<i> &gt; configurations. 
+</I>&gt;<i> &gt; 
+</I>&gt;<i> &gt; David
+</I>&gt;<i> &gt; 
+</I>&gt;<i> &gt; 
+</I>&gt;<i> &gt; On Wed, 2013-01-16 at 12:17 +0400, Danny Magat wrote:
+</I>&gt;<i> &gt;&gt; Yes inject url per user wherein the URL is coming from the radius reply.
+</I>&gt;<i> &gt;&gt; 
+</I>&gt;<i> &gt;&gt; 
+</I>&gt;<i> &gt;&gt; -----Original Message-----
+</I>&gt;<i> &gt;&gt; From: Jed Gainer [mailto:<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">jedgainer at gmail.com</A>] 
+</I>&gt;<i> &gt;&gt; Sent: Wednesday, January 16, 2013 8:11 AM
+</I>&gt;<i> &gt;&gt; To: Danny Magat
+</I>&gt;<i> &gt;&gt; Subject: Re: [Chilli] RADIUS based way to set the per session
+</I>&gt;<i> &gt;&gt; 
+</I>&gt;<i> &gt;&gt; I am not sure what you mean. Inject per user you mean?
+</I>&gt;<i> &gt;&gt; 
+</I>&gt;<i> &gt;&gt;    $.getJSON(&quot;<A HREF="http://10.1.0.1:3990/json/status?callback=?">http://10.1.0.1:3990/json/status?callback=?</A>&quot;,
+</I>&gt;<i> &gt;&gt; function(chilli) {
+</I>&gt;<i> &gt;&gt;        console.log(chilli);
+</I>&gt;<i> &gt;&gt;        if ($.inArray(chilli.session.userName, ['Cyndy', 'Chris']) != -1)
+</I>&gt;<i> &gt;&gt;        {
+</I>&gt;<i> &gt;&gt;            var addHeight =
+</I>&gt;<i> &gt;&gt; (/Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent))
+</I>&gt;<i> &gt;&gt; ? 60 : 40;
+</I>&gt;<i> &gt;&gt;            $('body').height($('body').height() + addHeight);
+</I>&gt;<i> &gt;&gt;            $('body').append('&lt;div style=&quot;position: fixed; bottom: 0;
+</I>&gt;<i> &gt;&gt; left: 0; right: 0; height: ' + addHeight + 'px; border-top: 2px solid
+</I>&gt;<i> &gt;&gt; #000; background-color: #fff&quot;&gt;&lt;iframe style=&quot;border: 0; width: 99%&quot;
+</I>&gt;<i> &gt;&gt; src=&quot;<A HREF="http://10.1.0.1/toolbar.php">http://10.1.0.1/toolbar.php</A>&quot;&gt;&lt;/iframe&gt;&lt;/div&gt;');
+</I>&gt;<i> &gt;&gt;        }
+</I>&gt;<i> &gt;&gt;    });
+</I>&gt;<i> &gt;&gt; 
+</I>&gt;<i> &gt;&gt; On Tue, Jan 15, 2013 at 6:07 AM, Danny Magat &lt;<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">danny at sb-ps.ae</A>&gt; wrote:
+</I>&gt;<i> &gt;&gt;&gt; Dear All,
+</I>&gt;<i> &gt;&gt;&gt; 
+</I>&gt;<i> &gt;&gt;&gt; 
+</I>&gt;<i> &gt;&gt;&gt; 
+</I>&gt;<i> &gt;&gt;&gt; <A HREF="http://coova.org/node/4788#comment-9802">http://coova.org/node/4788#comment-9802</A>
+</I>&gt;<i> &gt;&gt;&gt; 
+</I>&gt;<i> &gt;&gt;&gt; 
+</I>&gt;<i> &gt;&gt;&gt; 
+</I>&gt;<i> &gt;&gt;&gt; Based on the above links by David there is a way on how to inject-URL per
+</I>&gt;<i> &gt;&gt;&gt; session.
+</I>&gt;<i> &gt;&gt;&gt; 
+</I>&gt;<i> &gt;&gt;&gt; Can somebody guide me on how to achieve this.
+</I>&gt;<i> &gt;&gt;&gt; 
+</I>&gt;<i> &gt;&gt;&gt; 
+</I>&gt;<i> &gt;&gt;&gt; 
+</I>&gt;<i> &gt;&gt;&gt; Thanks in Advance.
+</I>&gt;<i> &gt;&gt;&gt; 
+</I>&gt;<i> &gt;&gt;&gt; Danny
+</I>&gt;<i> &gt;&gt;&gt; 
+</I>&gt;<i> &gt;&gt;&gt; 
+</I>&gt;<i> &gt;&gt;&gt; _______________________________________________
+</I>&gt;<i> &gt;&gt;&gt; Chilli mailing list
+</I>&gt;<i> &gt;&gt;&gt; <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">Chilli at coova.org</A>
+</I>&gt;<i> &gt;&gt;&gt; <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">http://lists.coova.org/cgi-bin/mailman/listinfo/chilli</A>
+</I>&gt;<i> &gt;&gt; 
+</I>&gt;<i> &gt;&gt; _______________________________________________
+</I>&gt;<i> &gt;&gt; Chilli mailing list
+</I>&gt;<i> &gt;&gt; <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">Chilli at coova.org</A>
+</I>&gt;<i> &gt;&gt; <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">http://lists.coova.org/cgi-bin/mailman/listinfo/chilli</A>
+</I>&gt;<i> &gt; 
+</I>&gt;<i> &gt; 
+</I>
+
+</PRE>
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="002092.html">[Chilli] RADIUS based way to set the per session
+</A></li>
+	<LI>Next message: <A HREF="002094.html">[Chilli] RADIUS based way to set the per session
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2093">[ date ]</a>
+              <a href="thread.html#2093">[ thread ]</a>
+              <a href="subject.html#2093">[ subject ]</a>
+              <a href="author.html#2093">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,2144 @@
+From dbird at google.com  Mon Jan  6 17:19:50 2014
+From: dbird at google.com (David Bird)
+Date: Mon, 6 Jan 2014 09:19:50 -0800
+Subject: [Chilli] Subversion -> Git
+In-Reply-To: <52C263FD.8090906@gajba.net>
+References: <CADo9JyWCC6tjkRt7E11JT8SvwZ1fRvq7DEMyioWYgni-uuMBPA@mail.gmail.com>
+ <52C263FD.8090906@gajba.net>
+Message-ID: <CADo9JyWjuUFPykrkEcrhKgJJgrJWaR=C9b+MKpCqO=oS5i2y8A@mail.gmail.com>
+
+Sorry about that. For the time being, use the
+option --enable-gardenaccounting during ./configure
+
+
+On Mon, Dec 30, 2013 at 10:28 PM, Bojan Pogacar <bojan at gajba.net> wrote:
+
+> Hello!
+>
+> I've cloned latest version and tried with new option that has been added -
+> enable-authedallowed. When I run make, I get this error:
+>
+> chilli.c: In function 'chilli_acct_fromsub':
+> chilli.c:5663:19: error: 'struct options_t' has no member named
+> 'nousergardendata'
+>        if (_options.nousergardendata)
+>                    ^
+> chilli.c: In function 'chilli_acct_tosub':
+> chilli.c:5784:19: error: 'struct options_t' has no member named
+> 'nousergardendata'
+>        if (_options.nousergardendata)
+>                    ^
+>
+>
+> I've compiled with this parameters:
+>
+> ./configure --with-openssl  --enable-largelimits --enable-sessgarden
+> --enable-location --enable-proxyvsa --enable-authedallowed
+>
+> Did I miss smth or there is a bug?
+>
+> Best regards and happy new year to all!
+>
+> Bojan
+>
+>
+>
+> Dne 30.12.2013 19:57, pi?e David Bird:
+>
+>> Greetings,
+>>
+>> I've copied the subversion to github where development will continue.
+>> The subversion may remain on-line for a bit, but there will be no more
+>> commits.
+>>
+>> See https://github.com/coova
+>>
+>> Cheers,
+>> David
+>>
+>>
+>>
+>> _______________________________________________
+>> Chilli mailing list
+>> Chilli at coova.org
+>> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>>
+>>
+> --
+> Lep pozdrav,
+>
+> Bojan Poga?ar
+> GSM: 031 262 535
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20140106/5d57b546/attachment.html>
+
+From bojan at gajba.net  Mon Jan  6 18:53:59 2014
+From: bojan at gajba.net (Bojan Pogacar)
+Date: Mon, 06 Jan 2014 19:53:59 +0100
+Subject: [Chilli] Subversion -> Git
+In-Reply-To: <CADo9JyWjuUFPykrkEcrhKgJJgrJWaR=C9b+MKpCqO=oS5i2y8A@mail.gmail.com>
+References: <CADo9JyWCC6tjkRt7E11JT8SvwZ1fRvq7DEMyioWYgni-uuMBPA@mail.gmail.com>	<52C263FD.8090906@gajba.net>
+ <CADo9JyWjuUFPykrkEcrhKgJJgrJWaR=C9b+MKpCqO=oS5i2y8A@mail.gmail.com>
+Message-ID: <52CAFBC7.9010004@gajba.net>
+
+Hello!
+
+Thanks for your response. Now I've compiled with:
+./configure --with-openssl  --enable-largelimits --enable-sessgarden 
+--enable-location --enable-proxyvsa --enable-authedallowed 
+--enable-gardenaccounting
+
+and I get smth else:
+
+dhcp.c: In function 'dhcp_garden_check_auth':
+dhcp.c:2399:7: error: variable 'found' set but not used 
+[-Werror=unused-but-set-variable]
+    int found = 0;
+        ^
+dhcp.c: At top level:
+dhcp.c:2437:3: error: expected identifier or '(' before 'return'
+    return found;
+    ^
+dhcp.c:2438:1: error: expected identifier or '(' before '}' token
+  }
+  ^
+dhcp.c: In function 'dhcp_garden_check_auth':
+dhcp.c:2435:3: error: control reaches end of non-void function 
+[-Werror=return-type]
+    }
+    ^
+cc1: all warnings being treated as errors
+make[3]: *** [dhcp.lo] Error 1
+make[3]: Leaving directory `/install/coova-chilli/trunk/src'
+make[2]: *** [all-recursive] Error 1
+make[2]: Leaving directory `/install/coova-chilli/trunk/src'
+make[1]: *** [all-recursive] Error 1
+make[1]: Leaving directory `/install/coova-chilli/trunk'
+make: *** [all] Error 2
+
+Did I miss something else?
+
+LP, Bojan
+
+
+Dne 6.1.2014 18:19, pi?e David Bird:
+> Sorry about that. For the time being, use the
+> option --enable-gardenaccounting during ./configure
+>
+>
+> On Mon, Dec 30, 2013 at 10:28 PM, Bojan Pogacar <bojan at gajba.net Hell
+> <mailto:bojan at gajba.net>> wrote:
+>
+>     Hello!
+>
+>     I've cloned latest version and tried with new option that has been
+>     added - enable-authedallowed. When I run make, I get this error:
+>
+>     chilli.c: In function 'chilli_acct_fromsub':
+>     chilli.c:5663:19: error: 'struct options_t' has no member named
+>     'nousergardendata'
+>             if (_options.nousergardendata)
+>                         ^
+>     chilli.c: In function 'chilli_acct_tosub':
+>     chilli.c:5784:19: error: 'struct options_t' has no member named
+>     'nousergardendata'
+>             if (_options.nousergardendata)
+>                         ^
+>
+>
+>     I've compiled with this parameters:
+>
+>     ./configure --with-openssl  --enable-largelimits --enable-sessgarden
+>     --enable-location --enable-proxyvsa --enable-authedallowed
+>
+>     Did I miss smth or there is a bug?
+>
+>     Best regards and happy new year to all!
+>
+>     Bojan
+>
+>
+>
+>     Dne 30.12.2013 19 <tel:30.12.2013%2019>:57, pi?e David Bird:
+>
+>         Greetings,
+>
+>         I've copied the subversion to github where development will
+>         continue.
+>         The subversion may remain on-line for a bit, but there will be
+>         no more
+>         commits.
+>
+>         See https://github.com/coova
+>
+>         Cheers,
+>         David
+>
+>
+>
+>         _________________________________________________
+>         Chilli mailing list
+>         Chilli at coova.org <mailto:Chilli at coova.org>
+>         http://lists.coova.org/cgi-__bin/mailman/listinfo/chilli
+>         <http://lists.coova.org/cgi-bin/mailman/listinfo/chilli>
+>
+>
+>     --
+>     Lep pozdrav,
+>
+>     Bojan Poga?ar
+>     GSM: 031 262 535
+>     _________________________________________________
+>     Chilli mailing list
+>     Chilli at coova.org <mailto:Chilli at coova.org>
+>     http://lists.coova.org/cgi-__bin/mailman/listinfo/chilli
+>     <http://lists.coova.org/cgi-bin/mailman/listinfo/chilli>
+>
+>
+
+From lferreira at cabocom.cv  Sat Jan 11 02:17:23 2014
+From: lferreira at cabocom.cv (Luis Ferreira)
+Date: Sat, 11 Jan 2014 01:17:23 -0100
+Subject: [Chilli] coova - freeradius connection problem
+Message-ID: <02b701cf0e73$4817a210$d846e630$@cabocom.cv>
+
+Hi everyone,
+
+ 
+
+In our setup, we (as many others) are using ADSL routers for internet. 
+
+For centralization purposes , I've got a central Radius server, serving
+requests from several NAS.
+
+For reliability purposes, I've configured a VPN to pass the requests more
+efficiently and reliably (VPN on TCP mode).
+
+ 
+
+The problem I'm experience is that when ADSL is disconnected (every 18
+hours, the connection is reseted by our ISP or if there is a failure), in
+the time that chilli cannot connect to freeradius, online users get stuck (
+chilli fail to send accounting info to radius), and that causes erratic
+behavior on the account, like cannot login sometime after,  mysql radacct
+shows zero bytes of traffic or no change on the actual traffic.
+
+ 
+
+One of the things that I've done was creating a script to zap stalled
+accounts on radius (checking accounting packets and terminating with radzap,
+if disconnect packet is not enough). That is good enough to unlock the
+account on radius, but not on chilli.
+
+ 
+
+The problem is on chilli because if I try to login on other NAS, the account
+works perfectly, so the supposed radius reply "User Already logged in" only
+happen on the erratic NAS.
+
+ 
+
+The only real option that I have to restart chilli to kill those sessions
+and do a clean start.
+
+ 
+
+Is there any toughts on how to fix this or to debug it further?
+
+ 
+
+This is quite annoying, since there is almost every single day locked
+accounts, and my solution has been restart chilli in the morning on a daily
+basis.
+
+ 
+
+Regards,
+
+Luis Ferreira
+
+ 
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20140111/96936f28/attachment.html>
+
+From lferreira at cabocom.cv  Sat Jan 11 10:25:20 2014
+From: lferreira at cabocom.cv (Luis Ferreira)
+Date: Sat, 11 Jan 2014 09:25:20 -0100
+Subject: [Chilli] coova - freeradius connection problem
+In-Reply-To: <CAJc1nuowjV92R80dk121kf1=qZ0oMs4mOp_eyKuZJwx+4TAxPA@mail.gmail.com>
+References: <02b701cf0e73$4817a210$d846e630$@cabocom.cv>
+ <CAJc1nuowjV92R80dk121kf1=qZ0oMs4mOp_eyKuZJwx+4TAxPA@mail.gmail.com>
+Message-ID: <02ca01cf0eb7$705cfce0$5116f6a0$@cabocom.cv>
+
+Hi,
+
+ 
+
+Thanks for the reply.
+
+Knowing that ISP change is not a viable option, what can be actually done on
+chilli to (let's call it) Re-close a session (even if it's not showing on
+radius and chilli)
+
+Is it something that can be done (even if it's on code).
+
+ 
+
+ 
+
+ 
+
+IMO only solution is get a better ISP or host local RADIUS servers. I don't
+know much about RADIUS proxying but look into that maybe it caches when
+disconnected until reconnected.
+
+ 
+
+On Fri, Jan 10, 2014 at 6:17 PM, Luis Ferreira <lferreira at cabocom.cv> wrote:
+
+Hi everyone,
+
+ 
+
+In our setup, we (as many others) are using ADSL routers for internet. 
+
+For centralization purposes , I've got a central Radius server, serving
+requests from several NAS.
+
+For reliability purposes, I've configured a VPN to pass the requests more
+efficiently and reliably (VPN on TCP mode).
+
+ 
+
+The problem I'm experience is that when ADSL is disconnected (every 18
+hours, the connection is reseted by our ISP or if there is a failure), in
+the time that chilli cannot connect to freeradius, online users get stuck (
+chilli fail to send accounting info to radius), and that causes erratic
+behavior on the account, like cannot login sometime after,  mysql radacct
+shows zero bytes of traffic or no change on the actual traffic.
+
+ 
+
+One of the things that I've done was creating a script to zap stalled
+accounts on radius (checking accounting packets and terminating with radzap,
+if disconnect packet is not enough). That is good enough to unlock the
+account on radius, but not on chilli.
+
+ 
+
+The problem is on chilli because if I try to login on other NAS, the account
+works perfectly, so the supposed radius reply "User Already logged in" only
+happen on the erratic NAS.
+
+ 
+
+The only real option that I have to restart chilli to kill those sessions
+and do a clean start.
+
+ 
+
+Is there any toughts on how to fix this or to debug it further?
+
+ 
+
+This is quite annoying, since there is almost every single day locked
+accounts, and my solution has been restart chilli in the morning on a daily
+basis.
+
+ 
+
+Regards,
+
+Luis Ferreira
+
+ 
+
+
+_______________________________________________
+Chilli mailing list
+Chilli at coova.org
+http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+ 
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20140111/24298692/attachment.html>
+
+From danny at sb-ps.ae  Sat Jan 11 15:34:17 2014
+From: danny at sb-ps.ae (Danilo Magat)
+Date: Sat, 11 Jan 2014 19:34:17 +0400
+Subject: [Chilli] Chilli Digest, Vol 50, Issue 2
+In-Reply-To: <mailman.1.1389441601.29698.chilli@coova.org>
+References: <mailman.1.1389441601.29698.chilli@coova.org>
+Message-ID: <001101cf0ee2$972b2a60$c5817f20$@ae>
+
+Hi Luis,
+
+You might wanna use the configuration parameter nasip which gets used in the
+RADIUS NAS-IP-Address attribute
+Using you vpn assign VPNIP for you radius server and set attributes
+nasip=vpnipassign to your nas on your chilli.conf
+
+With this even if the disconnection is frequently happening on the ADSL line
+the connecting between radius and the nas is still the same.
+
+Regards
+Danny
+
+-----Original Message-----
+From: chilli-bounces at coova.org [mailto:chilli-bounces at coova.org] On Behalf
+Of chilli-request at coova.org
+Sent: 11 January 2014 16:00
+To: chilli at coova.org
+Subject: Chilli Digest, Vol 50, Issue 2
+
+Send Chilli mailing list submissions to
+	chilli at coova.org
+
+To subscribe or unsubscribe via the World Wide Web, visit
+	http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+or, via email, send a message with subject or body 'help' to
+	chilli-request at coova.org
+
+You can reach the person managing the list at
+	chilli-owner at coova.org
+
+When replying, please edit your Subject line so it is more specific than
+"Re: Contents of Chilli digest..."
+
+
+Today's Topics:
+
+   1. coova - freeradius connection problem (Luis Ferreira)
+   2. Re: coova - freeradius connection problem (Luis Ferreira)
+
+
+----------------------------------------------------------------------
+
+Message: 1
+Date: Sat, 11 Jan 2014 01:17:23 -0100
+From: "Luis Ferreira" <lferreira at cabocom.cv>
+To: <chilli at coova.org>
+Subject: [Chilli] coova - freeradius connection problem
+Message-ID: <02b701cf0e73$4817a210$d846e630$@cabocom.cv>
+Content-Type: text/plain; charset="us-ascii"
+
+Hi everyone,
+
+ 
+
+In our setup, we (as many others) are using ADSL routers for internet. 
+
+For centralization purposes , I've got a central Radius server, serving
+requests from several NAS.
+
+For reliability purposes, I've configured a VPN to pass the requests more
+efficiently and reliably (VPN on TCP mode).
+
+ 
+
+The problem I'm experience is that when ADSL is disconnected (every 18
+hours, the connection is reseted by our ISP or if there is a failure), in
+the time that chilli cannot connect to freeradius, online users get stuck (
+chilli fail to send accounting info to radius), and that causes erratic
+behavior on the account, like cannot login sometime after,  mysql radacct
+shows zero bytes of traffic or no change on the actual traffic.
+
+ 
+
+One of the things that I've done was creating a script to zap stalled
+accounts on radius (checking accounting packets and terminating with radzap,
+if disconnect packet is not enough). That is good enough to unlock the
+account on radius, but not on chilli.
+
+ 
+
+The problem is on chilli because if I try to login on other NAS, the account
+works perfectly, so the supposed radius reply "User Already logged in" only
+happen on the erratic NAS.
+
+ 
+
+The only real option that I have to restart chilli to kill those sessions
+and do a clean start.
+
+ 
+
+Is there any toughts on how to fix this or to debug it further?
+
+ 
+
+This is quite annoying, since there is almost every single day locked
+accounts, and my solution has been restart chilli in the morning on a daily
+basis.
+
+ 
+
+Regards,
+
+Luis Ferreira
+
+ 
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL:
+<http://lists.coova.org/pipermail/chilli/attachments/20140111/96936f28/attac
+hment-0001.html>
+
+------------------------------
+
+Message: 2
+Date: Sat, 11 Jan 2014 09:25:20 -0100
+From: "Luis Ferreira" <lferreira at cabocom.cv>
+To: <chilli at coova.org>
+Subject: Re: [Chilli] coova - freeradius connection problem
+Message-ID: <02ca01cf0eb7$705cfce0$5116f6a0$@cabocom.cv>
+Content-Type: text/plain; charset="us-ascii"
+
+Hi,
+
+ 
+
+Thanks for the reply.
+
+Knowing that ISP change is not a viable option, what can be actually done on
+chilli to (let's call it) Re-close a session (even if it's not showing on
+radius and chilli)
+
+Is it something that can be done (even if it's on code).
+
+ 
+
+ 
+
+ 
+
+IMO only solution is get a better ISP or host local RADIUS servers. I don't
+know much about RADIUS proxying but look into that maybe it caches when
+disconnected until reconnected.
+
+ 
+
+On Fri, Jan 10, 2014 at 6:17 PM, Luis Ferreira <lferreira at cabocom.cv> wrote:
+
+Hi everyone,
+
+ 
+
+In our setup, we (as many others) are using ADSL routers for internet. 
+
+For centralization purposes , I've got a central Radius server, serving
+requests from several NAS.
+
+For reliability purposes, I've configured a VPN to pass the requests more
+efficiently and reliably (VPN on TCP mode).
+
+ 
+
+The problem I'm experience is that when ADSL is disconnected (every 18
+hours, the connection is reseted by our ISP or if there is a failure), in
+the time that chilli cannot connect to freeradius, online users get stuck (
+chilli fail to send accounting info to radius), and that causes erratic
+behavior on the account, like cannot login sometime after,  mysql radacct
+shows zero bytes of traffic or no change on the actual traffic.
+
+ 
+
+One of the things that I've done was creating a script to zap stalled
+accounts on radius (checking accounting packets and terminating with radzap,
+if disconnect packet is not enough). That is good enough to unlock the
+account on radius, but not on chilli.
+
+ 
+
+The problem is on chilli because if I try to login on other NAS, the account
+works perfectly, so the supposed radius reply "User Already logged in" only
+happen on the erratic NAS.
+
+ 
+
+The only real option that I have to restart chilli to kill those sessions
+and do a clean start.
+
+ 
+
+Is there any toughts on how to fix this or to debug it further?
+
+ 
+
+This is quite annoying, since there is almost every single day locked
+accounts, and my solution has been restart chilli in the morning on a daily
+basis.
+
+ 
+
+Regards,
+
+Luis Ferreira
+
+ 
+
+
+_______________________________________________
+Chilli mailing list
+Chilli at coova.org
+http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+ 
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL:
+<http://lists.coova.org/pipermail/chilli/attachments/20140111/24298692/attac
+hment-0001.html>
+
+------------------------------
+
+_______________________________________________
+Chilli mailing list
+Chilli at coova.org
+http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+
+End of Chilli Digest, Vol 50, Issue 2
+*************************************
+
+
+
+From sourav.chakraborty at netcommwireless.com  Mon Jan 13 01:02:44 2014
+From: sourav.chakraborty at netcommwireless.com (Sourav)
+Date: Mon, 13 Jan 2014 12:02:44 +1100
+Subject: [Chilli] redirecting successfully authenticated clients to a
+	particular website/webpage
+Message-ID: <52D33B34.7020600@netcommwireless.com>
+
+I want to redirect a coovachilli based hotspot client to a particular 
+website/webpage, after the client has successfully logged in to 
+coovachilli......is this possible via some settings in the 
+/etc/chilli/config file?
+If not, then what can be done to achieve this. Please respond asap.
+
+-- 
+Warm Regards,
+Sourav
+
+
+______________________________________________________________________
+This communication contains information which may be confidential or privileged. The information is intended solely for the use of the individual or entity named above.  If you are not the intended recipient, be aware that any disclosure, copying, distribution or use of the contents of this information is prohibited.  If you have received this communication in error, please notify me by telephone immediately.
+______________________________________________________________________
+
+From lferreira at cabocom.cv  Mon Jan 13 10:41:51 2014
+From: lferreira at cabocom.cv (Luis Ferreira)
+Date: Mon, 13 Jan 2014 09:41:51 -0100
+Subject: [Chilli] redirecting successfully authenticated clients to
+	a	particular website/webpage
+In-Reply-To: <52D33B34.7020600@netcommwireless.com>
+References: <52D33B34.7020600@netcommwireless.com>
+Message-ID: <032f01cf104c$1255b740$370125c0$@cabocom.cv>
+
+Hi Sourav,
+
+Here is my 5 cent's:
+
+In chilli, I'm not aware of a "per client" redirect, so probably your best
+aproach would be with the php script on the login page.
+
+Imagine the following table :
+
+chilli_redirurl
+	id 	(PK )		(id the same as username in radcheck)
+	url
+
+make a query on successful login, to check if the id of th user exists
+there. If yes, redirect to that specific page. If not, redirect to a general
+url, or submited url
+
+PS: on the table you could use username as the primary key instead of 'id',
+but for speed and low overhead on sql database, I would recommend this.
+
+Kind regards
+Luis
+
+
+
+-----Mensagem original-----
+De: chilli-bounces at coova.org [mailto:chilli-bounces at coova.org] Em nome de
+Sourav
+Enviada: 13 de janeiro de 2014 00:03
+Para: chilli at coova.org
+Assunto: [Chilli] redirecting successfully authenticated clients to a
+particular website/webpage
+
+I want to redirect a coovachilli based hotspot client to a particular
+website/webpage, after the client has successfully logged in to
+coovachilli......is this possible via some settings in the
+/etc/chilli/config file?
+If not, then what can be done to achieve this. Please respond asap.
+
+--
+Warm Regards,
+Sourav
+
+
+______________________________________________________________________
+This communication contains information which may be confidential or
+privileged. The information is intended solely for the use of the individual
+or entity named above.  If you are not the intended recipient, be aware that
+any disclosure, copying, distribution or use of the contents of this
+information is prohibited.  If you have received this communication in
+error, please notify me by telephone immediately.
+______________________________________________________________________
+_______________________________________________
+Chilli mailing list
+Chilli at coova.org
+http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+
+From dbird at google.com  Mon Jan 13 16:44:39 2014
+From: dbird at google.com (David Bird)
+Date: Mon, 13 Jan 2014 08:44:39 -0800
+Subject: [Chilli] redirecting successfully authenticated clients to a
+ particular website/webpage
+In-Reply-To: <032f01cf104c$1255b740$370125c0$@cabocom.cv>
+References: <52D33B34.7020600@netcommwireless.com>
+ <032f01cf104c$1255b740$370125c0$@cabocom.cv>
+Message-ID: <CADo9JyVP+XUZ_ypGf2TCLRCuGfaTpHVemfKXEofrTE3r6yjaAw@mail.gmail.com>
+
+You can send back the WISPr-Redirection-URL in the access-accept, or have
+the portal control it as suggested.
+
+
+On Mon, Jan 13, 2014 at 2:41 AM, Luis Ferreira <lferreira at cabocom.cv> wrote:
+
+> Hi Sourav,
+>
+> Here is my 5 cent's:
+>
+> In chilli, I'm not aware of a "per client" redirect, so probably your best
+> aproach would be with the php script on the login page.
+>
+> Imagine the following table :
+>
+> chilli_redirurl
+>         id      (PK )           (id the same as username in radcheck)
+>         url
+>
+> make a query on successful login, to check if the id of th user exists
+> there. If yes, redirect to that specific page. If not, redirect to a
+> general
+> url, or submited url
+>
+> PS: on the table you could use username as the primary key instead of 'id',
+> but for speed and low overhead on sql database, I would recommend this.
+>
+> Kind regards
+> Luis
+>
+>
+>
+> -----Mensagem original-----
+> De: chilli-bounces at coova.org [mailto:chilli-bounces at coova.org] Em nome de
+> Sourav
+> Enviada: 13 de janeiro de 2014 00:03
+> Para: chilli at coova.org
+> Assunto: [Chilli] redirecting successfully authenticated clients to a
+> particular website/webpage
+>
+> I want to redirect a coovachilli based hotspot client to a particular
+> website/webpage, after the client has successfully logged in to
+> coovachilli......is this possible via some settings in the
+> /etc/chilli/config file?
+> If not, then what can be done to achieve this. Please respond asap.
+>
+> --
+> Warm Regards,
+> Sourav
+>
+>
+> ______________________________________________________________________
+> This communication contains information which may be confidential or
+> privileged. The information is intended solely for the use of the
+> individual
+> or entity named above.  If you are not the intended recipient, be aware
+> that
+> any disclosure, copying, distribution or use of the contents of this
+> information is prohibited.  If you have received this communication in
+> error, please notify me by telephone immediately.
+> ______________________________________________________________________
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20140113/0de24b05/attachment.html>
+
+From eric at craftti.com.br  Thu Jan 16 19:41:51 2014
+From: eric at craftti.com.br (Eric Chaves)
+Date: Thu, 16 Jan 2014 17:41:51 -0200
+Subject: [Chilli] Does chilli keep a cached configuration somewhere?
+Message-ID: <CAF+USJ4b9WERiM-1ijCQORPQ72fOXo3f0LiDGbX21g85YoE4Aw@mail.gmail.com>
+
+Hi folks,
+
+I'm running Chilli server and it has an ip address of 10.1.0.1 (10.1.0.0 is
+my subscriber network) and my WAN interface has an ip address of
+192.168.1.39. Routes are ok and I can use the internal captive portal fine.
+
+Now, I'd like to move the captive portal to another server at 192.168.1.36
+and use the JSON interface to authenticate users. I also would like to
+avoid the splash screen and just send user to the logon page.
+
+After reading some docs and digging around, I came to the understanding
+that I could it with the following steps:
+
+1) comment HS_UAMSERVER, UAMHOMEPAGE and UAMFORMAT in /etc/chilli/defaults
+2) in /etc/chilli/config set the following values:
+- HS_UAMUIPORT=80
+- HS_UAMSERVER=192.168.1.36
+- HS_UAMFORMAT=http://\$HS_UAMSERVER:\$HS_UAMUIPORT/index.html
+- Comment HS_UAMHOMEPAGE
+
+After doing those changes in config, I'm manually running chilli (chilli
+--debug --fg) but Chilli still serving the portal from it's internal web
+server instead of sending users to my external portal. Also the splash page
+still being used.
+
+Am I missing something here? Why could this configuration be failing?
+
+Thanks for the help,
+
+Eric.
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20140116/9d3431d4/attachment.html>
+
+From dbird at google.com  Thu Jan 16 21:15:07 2014
+From: dbird at google.com (David Bird)
+Date: Thu, 16 Jan 2014 13:15:07 -0800
+Subject: [Chilli] Does chilli keep a cached configuration somewhere?
+In-Reply-To: <CAF+USJ4b9WERiM-1ijCQORPQ72fOXo3f0LiDGbX21g85YoE4Aw@mail.gmail.com>
+References: <CAF+USJ4b9WERiM-1ijCQORPQ72fOXo3f0LiDGbX21g85YoE4Aw@mail.gmail.com>
+Message-ID: <CADo9JyVomy=08fmBAdAYocnCidYX=LY_Y2h0yFm3fan2FMGbVA@mail.gmail.com>
+
+Uncomment the HS_UAMHOMEPAGE=, but leave the value blank (or "none").
+
+
+On Thu, Jan 16, 2014 at 11:41 AM, Eric Chaves <eric at craftti.com.br> wrote:
+
+> Hi folks,
+>
+> I'm running Chilli server and it has an ip address of 10.1.0.1 (10.1.0.0
+> is my subscriber network) and my WAN interface has an ip address of
+> 192.168.1.39. Routes are ok and I can use the internal captive portal fine.
+>
+> Now, I'd like to move the captive portal to another server at 192.168.1.36
+> and use the JSON interface to authenticate users. I also would like to
+> avoid the splash screen and just send user to the logon page.
+>
+> After reading some docs and digging around, I came to the understanding
+> that I could it with the following steps:
+>
+> 1) comment HS_UAMSERVER, UAMHOMEPAGE and UAMFORMAT in /etc/chilli/defaults
+> 2) in /etc/chilli/config set the following values:
+> - HS_UAMUIPORT=80
+> - HS_UAMSERVER=192.168.1.36
+> - HS_UAMFORMAT=http://\$HS_UAMSERVER:\$HS_UAMUIPORT/index.html
+> - Comment HS_UAMHOMEPAGE
+>
+> After doing those changes in config, I'm manually running chilli (chilli
+> --debug --fg) but Chilli still serving the portal from it's internal web
+> server instead of sending users to my external portal. Also the splash page
+> still being used.
+>
+> Am I missing something here? Why could this configuration be failing?
+>
+> Thanks for the help,
+>
+> Eric.
+>
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20140116/aa8b47fa/attachment.html>
+
+From alexander.szlezak at unwired.at  Thu Jan 16 21:40:07 2014
+From: alexander.szlezak at unwired.at (Alexander Szlezak)
+Date: Thu, 16 Jan 2014 22:40:07 +0100
+Subject: [Chilli] Location Based DHCP Responses
+Message-ID: <52D851B7.2080907@unwired.at>
+
+Hi David,
+
+
+Just two strategic questions (i guess you can implement it, but just 
+wanted to know how hard you judge it to implement):
+
+a) Is it imaginable to have chilli hand out different network settings 
+(e.g. dns and or full ip config) based mac/ip/location in the network?
+
+b) is it imaginable to have chilli inspect the traffic and block certain 
+domains / ips / ports based on mac/ip/location
+
+c) can you imagine to extend the json api to provide stateless status 
+information (e.g. the stuff you get from chilli_query)?
+
+thanks,
+Alex
+
+-- 
+Follow us on Twitter @
+http://twitter.com/unwirednetworks
+_____________________________________________________
+Mag. Alexander Szlezak          Unwired Networks GmbH
+Gesch?ftsf?hrer
+
++43 660 1350410
+alexander.szlezak at unwired.at           www.unwired.at
+twitter.com/unwirednetworks
+
+Rechnungsadresse                        B?roanschrift
+Reischergasse 6/2                  Gonzagagasse 11/25
+1130 Vienna, Austria         A-1010 Vienna, Austria
+
+
+From eric at craftti.com.br  Thu Jan 16 22:25:28 2014
+From: eric at craftti.com.br (Eric Chaves)
+Date: Thu, 16 Jan 2014 20:25:28 -0200
+Subject: [Chilli] Browser pop-up limitations
+Message-ID: <CAF+USJ5Bm0ptiGXAg4pzJXu+qcXLUHk06=GZSLFTS9tgUCG+DA@mail.gmail.com>
+
+Hi guys,
+
+This question is a little bit off-topic, but do you guys know what are the
+Browser limitations in the "Browser pop-up" presented by mobile devices
+when connecting into the wifi?
+
+Regards,
+
+Eric.
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20140116/6db78588/attachment.html>
+
+From lferreira at cabocom.cv  Fri Jan 17 00:31:42 2014
+From: lferreira at cabocom.cv (Luis Ferreira)
+Date: Thu, 16 Jan 2014 23:31:42 -0100
+Subject: [Chilli] Browser pop-up limitations
+In-Reply-To: <CAF+USJ5Bm0ptiGXAg4pzJXu+qcXLUHk06=GZSLFTS9tgUCG+DA@mail.gmail.com>
+References: <CAF+USJ5Bm0ptiGXAg4pzJXu+qcXLUHk06=GZSLFTS9tgUCG+DA@mail.gmail.com>
+Message-ID: <050f01cf131b$7f22de30$7d689a90$@cabocom.cv>
+
+>From what I know, the browser pop-up window when connecting to a wifi
+hotspot is the regular browser built in the mobile.
+
+ 
+
+But can you elaborate on what do you mean by "limitations"?
+
+ 
+
+ 
+
+Hi guys,
+
+ 
+
+This question is a little bit off-topic, but do you guys know what are the
+Browser limitations in the "Browser pop-up" presented by mobile devices when
+connecting into the wifi?
+
+ 
+
+Regards,
+
+ 
+
+Eric.
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20140116/d3eda863/attachment.html>
+
+From eric at craftti.com.br  Fri Jan 17 01:44:55 2014
+From: eric at craftti.com.br (Eric Chaves)
+Date: Thu, 16 Jan 2014 23:44:55 -0200
+Subject: [Chilli] Browser pop-up limitations
+In-Reply-To: <050f01cf131b$7f22de30$7d689a90$@cabocom.cv>
+References: <CAF+USJ5Bm0ptiGXAg4pzJXu+qcXLUHk06=GZSLFTS9tgUCG+DA@mail.gmail.com>
+ <050f01cf131b$7f22de30$7d689a90$@cabocom.cv>
+Message-ID: <CAF+USJ5d24+0r9P4+2oSCjLXkDubZxYJ5uDz9qKGPXTiLJSVHw@mail.gmail.com>
+
+Hi Luis,
+
+For example, take a look at the code http://pastebin.com/73NkSUmX where I
+wrote a very simple page that downloads jquery from a CDN  plus jsconsole
+and than when an "on ready" event is fired, I use jquery selector to
+replace an element's content.
+
+If you open this page on safari mobile it will work without problem. But
+when it's served to the "pop-up browser", the jquery's ready event is never
+triggered, nor jsconsole connects to remote end-point. However other JS
+calls that I tested worked without problem.
+
+So as we can see with this simple example the javascript environment
+between "standard safari" and "popup safari" are not exactly the same. But
+since I can't remotely connect to the "popup safari" I can't easily inspect
+it to discover what exactly is failing. And if JS is not fully working I
+assume some HTML or CSS features may also not be working.
+
+So I was wondering if some people has experienced those limitations in the
+past to share with me, helping to save some investigation time. :)
+
+Cheers,
+
+Eric
+
+
+2014/1/16 Luis Ferreira <lferreira at cabocom.cv>
+
+> From what I know, the browser pop-up window when connecting to a wifi
+> hotspot is the regular browser built in the mobile.
+>
+>
+>
+> But can you elaborate on what do you mean by ?limitations??
+>
+>
+>
+>
+>
+> Hi guys,
+>
+>
+>
+> This question is a little bit off-topic, but do you guys know what are the
+> Browser limitations in the "Browser pop-up" presented by mobile devices
+> when connecting into the wifi?
+>
+>
+>
+> Regards,
+>
+>
+>
+> Eric.
+>
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20140116/45ea3371/attachment-0001.html>
+
+From eric at craftti.com.br  Sun Jan 19 17:12:30 2014
+From: eric at craftti.com.br (Eric Chaves)
+Date: Sun, 19 Jan 2014 15:12:30 -0200
+Subject: [Chilli] Does chilli keep a cached configuration somewhere?
+In-Reply-To: <CADo9JyVomy=08fmBAdAYocnCidYX=LY_Y2h0yFm3fan2FMGbVA@mail.gmail.com>
+References: <CAF+USJ4b9WERiM-1ijCQORPQ72fOXo3f0LiDGbX21g85YoE4Aw@mail.gmail.com>
+ <CADo9JyVomy=08fmBAdAYocnCidYX=LY_Y2h0yFm3fan2FMGbVA@mail.gmail.com>
+Message-ID: <CAF+USJ7j5TxVm-PafZFp2thoGftWF5qdSz+yePdLgx64===idw@mail.gmail.com>
+
+Hi David,
+
+I realized that after changing the configuration I need to restart chilli
+using the /etc/init.d/chilli script so it rebuild configurations (hs.conf
+and main.conf).
+
+Thanks!
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20140119/5f58b84c/attachment.html>
+
+From eric at craftti.com.br  Sun Jan 19 17:57:02 2014
+From: eric at craftti.com.br (Eric Chaves)
+Date: Sun, 19 Jan 2014 15:57:02 -0200
+Subject: [Chilli] Help with ChilliController
+Message-ID: <CAF+USJ7_dcH_3kjTRRMp0NtjkXQ3Jt6u5e4TsOiviZKkiBwd2A@mail.gmail.com>
+
+Hi Folks,
+
+I configured mu chilli server to redirect user's to an external captive
+portal, which is nothing more than an HTML page that loads a copy of
+ChilliLibrary.js to instantiate the chilliController JS object.
+
+Then, in the web page I call the logon method informing user and password (
+eg.: chilliController.logon('test','testing') ) but the user never gets
+authenticated.
+
+At this point, my server is performing the following steps:
+
+1) client connects to the open wifi and gets an IP address from chilli
+server (10.1.0.1).
+2) when client tries to access any website it is redirected to my captive
+portal (sample page hosted in a second server but in the same network of
+chilli server - 10.1.0.4)
+3) The javascript from the portal page parses the query string sent in
+redirection and setup uamserver (10.1.0.1) and uamport (3990) of
+chilliController (and also set chilliController.debug = true).
+4) javascript from the portal page calls chilliController.logon with user
+test and password testing.
+
+The output from chilliController debug is:
+
+chilliController.logon( "test" , "testing " )
+ChilliLibrary.js:604<http://10.1.0.4:3333/js/ChilliLibrary.js>
+chilliController.logon: asking for a new challenge
+ChilliLibrary.js:604<http://10.1.0.4:3333/js/ChilliLibrary.js>
+chilliJSON: getting http://10.1.0.1:3990/json/status . Waiting for reply ...
+ChilliLibrary.js:604 <http://10.1.0.4:3333/js/ChilliLibrary.js>
+chilliJSON: JSON reply received in 43 ms version = 1.0 clientState = 0
+challenge = a8565bbb95980b8f9d40c9befcec8863 location = [object Object]
+name = xxxxxxx redir = [object Object] originalURL =
+http://google.com/redirectionURL = logoutURL =
+http://10.1.0.1:3990/logoff ipAddress = 10.1.0.4 macAddress =
+00-26-BB-15-CE-19 ChilliLibrary.js:604<http://10.1.0.4:3333/js/ChilliLibrary.js>
+Entering logonStep 2
+ChilliLibrary.js:604<http://10.1.0.4:3333/js/ChilliLibrary.js>
+chilliController.logonStep2: Got challenge =
+a8565bbb95980b8f9d40c9befcec8863
+ChilliLibrary.js:604<http://10.1.0.4:3333/js/ChilliLibrary.js>
+chilliController.logonStep2: Calculating CHAP-Password =
+dfb74d8e6575c8f94b1dd8327ecea19c
+ChilliLibrary.js:604<http://10.1.0.4:3333/js/ChilliLibrary.js>
+chilliJSON: getting
+http://10.1.0.1:3990/json/logon?username=test&response=dfb74d8e6575c8f94b1dd8327ecea19c.
+Waiting for reply ...
+ChilliLibrary.js:604 <http://10.1.0.4:3333/js/ChilliLibrary.js>
+chilliJSON: JSON reply received in 1025 ms version = 1.0 clientState = 0
+challenge = 63495061fae7607e8ac35e0b05962397 redir = [object Object]
+originalURL = http://google.com/ redirectionURL = logoutURL =
+http://10.1.0.1:3990/logoff ipAddress = 10.1.0.4 macAddress =
+00-26-BB-15-CE-19 ChilliLibrary.js:604<http://10.1.0.4:3333/js/ChilliLibrary.js>
+chilliController.processReply: Calling onUpdate. clienState = 0
+
+Iam sure that username and password is ok so I can't figure what I'm doing
+wrong. Any ideas?
+
+Regards,
+
+Eric Chaves
+(11) 98139-9880
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20140119/dee033a7/attachment.html>
+
+From peter.wagner at unwired.at  Tue Jan 21 16:38:19 2014
+From: peter.wagner at unwired.at (Peter Wagner)
+Date: Tue, 21 Jan 2014 17:38:19 +0100
+Subject: [Chilli] Res Messages
+Message-ID: <52dea296.c6310f0a.5b47.1f28@mx.google.com>
+
+Hello,
+
+i installed coova chilli with FreeRadius.
+
+Everything is working fine, the clients can connect to the chilli and see the splash page.
+
+But the res=success is never send after the client authenticated:
+
+The first temporarily moved answer from chilli is:
+
+http://cap.test.com?res=notyet&uamip=10.0.0.1&uamport=3990&challenge=7f9f0a7fafc20783d9ca6c6349698930&called=92-4F-DB-41-A9-16&mac=04-AA-AA-1E-C1-8A&ip=10.0.0.17&nasid=chilli0&loc=30a&sessionid=52de900e00000003&userurl=http%3a%2f%2fhackaday.com%2f&md=92CEB3613F6DE481104D1A13CB58722E
+
+
+After the client is authenticated:
+
+
+I get this temporarily moved:
+
+http://cap.test.com/?terms=0&loc_state=hostapd&loc=30A
+
+
+It sets the correct location but no res=success parameter.
+
+Alltough this res paramter isn't set, the user is allowed to access the internet.
+
+
+How can i find out what is missing? Or is there an spezial option that i have to enable to get this 
+res=success paramter?
+
+
+With kind regards,
+Peter Wagner
+
+From codelectron at googlemail.com  Thu Jan 23 18:56:11 2014
+From: codelectron at googlemail.com (Krishna Pattabiraman)
+Date: Thu, 23 Jan 2014 19:56:11 +0100
+Subject: [Chilli] Chilli - wlan ssid doesn't get broadcasted
+Message-ID: <CACYw5mA9O0z-M5yZj7gr5C8=b0PUXsEaMpDBOORug58y-woZMg@mail.gmail.com>
+
+Hi everyone,
+
+I am trying to configure an Acer one netbook running Ubuntu as a captive
+portal.The wired ethernet interface eth0 is connected to the internet and
+the wlan0 interface will act as a access point for wifi devices. I am
+unable to see the wlan interface's SSID appear in smartphone or pc. It
+seems something is wrong or missing, Can anyone help me in this?
+
+Here are my configuration files.
+
+----------------------------/etc/network/interfaces----------------------------
+auto lo
+iface lo inet loopback
+
+auto eth0
+iface eth0 inet dhcp
+
+auto wlan0
+-----------------------------------------------------------------------------------------
+-------------------------------/etc/chilli/defaults---------------------------------------
+HS_LANIF=wlan0             # WAN Interface toward the Internet
+HS_WANIF=eth0              # Subscriber Interface for client devices
+HS_NETWORK=192.168.10.0    # HotSpot Network (must include HS_UAMLISTEN)
+HS_NETMASK=255.255.255.0   # HotSpot Network Netmask
+HS_UAMLISTEN=192.168.10.1          # HotSpot IP Address (on subscriber
+network)
+HS_UAMPORT=3990            # HotSpot UAM Port (on subscriber network)
+HS_UAMUIPORT=4990          # HotSpot UAM "UI" Port (on subscriber network,
+for embedded portal)
+
+HS_DNS1=8.8.8.8
+HS_DNS2=208.67.220.220
+
+HS_LOC_ID="2"
+
+HS_NASID="xxxx"
+HS_NASIP=127.0.0.1
+
+HS_RADIUS=127.0.0.1
+HS_RADIUS2=localhost
+HS_UAMALLOW=192.168.10.0/24
+HS_RADSECRET=testing123   # Set to be your RADIUS shared secret
+HS_UAMSECRET=change-me     # Set to be your UAM secret
+HS_UAMALIASNAME=chilli
+
+HS_LOC_NETWORK="My Network"
+HS_LOC_NAME="My HotSpot"
+HS_WWWDIR=/etc/chilli/www
+
+#   Using this option assumes 'haserl' is installed per-default
+#   but, and CGI type program can ran from wwwsh to process requests
+#   to chilli with url /www/filename.chi
+HS_WWWBIN=/etc/chilli/wwwsh
+
+#   Some configurations used in certain user interfaces
+#
+HS_PROVIDER=Coova
+HS_PROVIDER_LINK=http://www.coova.org/
+--------------------------------------------------------------------------------------------------------
+
+Im getting following error messages
+
+----------------------------Chilli-----------------------------
+chilli.c: 379: 0 (Debug) caught 17 via selfpipe
+chilli.c: 310: 0 (Debug) child 7327 terminated
+----------------------------------------------------------------
+
+----------------------------Freeradius--------------------
+Thu Jan 23 17:40:19 2014 : Info: rlm_radutmp: NAS localhost restarted
+(Accounting-On packet seen)
+Thu Jan 23 17:40:19 2014 : Error: rlm_radutmp: Error accessing file
+/var/log/freeradius/radutmp: No such file or directory
+----------------------------------------------------------------
+
+
+Thanks,
+Krishna
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20140123/b53d8170/attachment.html>
+
+From xoneca at gmail.com  Thu Jan 23 21:44:21 2014
+From: xoneca at gmail.com (Xabier Oneca -- xOneca)
+Date: Thu, 23 Jan 2014 22:44:21 +0100
+Subject: [Chilli] Chilli - wlan ssid doesn't get broadcasted
+In-Reply-To: <CACYw5mA9O0z-M5yZj7gr5C8=b0PUXsEaMpDBOORug58y-woZMg@mail.gmail.com>
+References: <CACYw5mA9O0z-M5yZj7gr5C8=b0PUXsEaMpDBOORug58y-woZMg@mail.gmail.com>
+Message-ID: <CACkgH70Y7PoPU=36szRk8HbsqoYzjRP-RSaHg8q+z2hv2GpfnQ@mail.gmail.com>
+
+Hello Krishna,
+
+You have the wlan0 interface as client, and you have to set it up as
+access point.
+
+You have to set-up first an Access Point with hostapd
+(http://hostap.epitest.fi/hostapd/). Then, you can use the interface
+with CoovaChilli.
+
+Cheers,
+
+Xabier Oneca_,,_
+
+
+2014/1/23 Krishna Pattabiraman <codelectron at googlemail.com>:
+> Hi everyone,
+>
+> I am trying to configure an Acer one netbook running Ubuntu as a captive
+> portal.The wired ethernet interface eth0 is connected to the internet and
+> the wlan0 interface will act as a access point for wifi devices. I am unable
+> to see the wlan interface's SSID appear in smartphone or pc. It seems
+> something is wrong or missing, Can anyone help me in this?
+>
+> Here are my configuration files.
+>
+> ----------------------------/etc/network/interfaces----------------------------
+> auto lo
+> iface lo inet loopback
+>
+> auto eth0
+> iface eth0 inet dhcp
+>
+> auto wlan0
+> -----------------------------------------------------------------------------------------
+> -------------------------------/etc/chilli/defaults---------------------------------------
+> HS_LANIF=wlan0             # WAN Interface toward the Internet
+> HS_WANIF=eth0              # Subscriber Interface for client devices
+> HS_NETWORK=192.168.10.0    # HotSpot Network (must include HS_UAMLISTEN)
+> HS_NETMASK=255.255.255.0   # HotSpot Network Netmask
+> HS_UAMLISTEN=192.168.10.1          # HotSpot IP Address (on subscriber
+> network)
+> HS_UAMPORT=3990            # HotSpot UAM Port (on subscriber network)
+> HS_UAMUIPORT=4990          # HotSpot UAM "UI" Port (on subscriber network,
+> for embedded portal)
+>
+> HS_DNS1=8.8.8.8
+> HS_DNS2=208.67.220.220
+>
+> HS_LOC_ID="2"
+>
+> HS_NASID="xxxx"
+> HS_NASIP=127.0.0.1
+>
+> HS_RADIUS=127.0.0.1
+> HS_RADIUS2=localhost
+> HS_UAMALLOW=192.168.10.0/24
+> HS_RADSECRET=testing123   # Set to be your RADIUS shared secret
+> HS_UAMSECRET=change-me     # Set to be your UAM secret
+> HS_UAMALIASNAME=chilli
+>
+> HS_LOC_NETWORK="My Network"
+> HS_LOC_NAME="My HotSpot"
+> HS_WWWDIR=/etc/chilli/www
+>
+> #   Using this option assumes 'haserl' is installed per-default
+> #   but, and CGI type program can ran from wwwsh to process requests
+> #   to chilli with url /www/filename.chi
+> HS_WWWBIN=/etc/chilli/wwwsh
+>
+> #   Some configurations used in certain user interfaces
+> #
+> HS_PROVIDER=Coova
+> HS_PROVIDER_LINK=http://www.coova.org/
+> --------------------------------------------------------------------------------------------------------
+>
+> Im getting following error messages
+>
+> ----------------------------Chilli-----------------------------
+> chilli.c: 379: 0 (Debug) caught 17 via selfpipe
+> chilli.c: 310: 0 (Debug) child 7327 terminated
+> ----------------------------------------------------------------
+>
+> ----------------------------Freeradius--------------------
+> Thu Jan 23 17:40:19 2014 : Info: rlm_radutmp: NAS localhost restarted
+> (Accounting-On packet seen)
+> Thu Jan 23 17:40:19 2014 : Error: rlm_radutmp: Error accessing file
+> /var/log/freeradius/radutmp: No such file or directory
+> ----------------------------------------------------------------
+>
+>
+> Thanks,
+> Krishna
+>
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+
+From eric at craftti.com.br  Mon Jan 27 02:19:23 2014
+From: eric at craftti.com.br (Eric Chaves)
+Date: Mon, 27 Jan 2014 00:19:23 -0200
+Subject: [Chilli] Chilli is not redirecting user to portal
+Message-ID: <CAF+USJ7QnR_3RBdwZ4=Orm_CxzPON_m8S18ob7-FJ-t=-Non1A@mail.gmail.com>
+
+Hi Folks,
+
+After successfully configuring a test server with coova chilli, I trie to
+build a new server so I could validate my steps.
+
+Both my radius server and captive portal are running in an external host,
+so I re-installed ubuntu on the host and than installed chilli from sources
+and restaured the configuration files from the backup of the first server.
+
+This new coova is not redirecting clients to the captive portal. Also when
+I run chilli_query list I can see that chilli is assigning IP address for
+the devices but the original URL is not showing in the output.
+
+Running chilli in debug mode (chilli --deubg --fg) I noticed that there is
+no message from redir.c module, so it seems I left something behind but I
+can't figure out what it was.
+
+The server has ip forwarding enabled, and I can ping the required address
+of all pieces from it (radius, portal, AP).
+
+Any ideas on what I could forget that would prevent the redirection from
+happening?
+
+Thanks for any help,
+
+Eric
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20140127/ce2d5712/attachment.html>
+
+From codelectron at googlemail.com  Mon Jan 27 09:24:14 2014
+From: codelectron at googlemail.com (Krishna Pattabiraman)
+Date: Mon, 27 Jan 2014 10:24:14 +0100
+Subject: [Chilli] Chilli - wlan ssid doesn't get broadcasted
+In-Reply-To: <CACkgH70Y7PoPU=36szRk8HbsqoYzjRP-RSaHg8q+z2hv2GpfnQ@mail.gmail.com>
+References: <CACYw5mA9O0z-M5yZj7gr5C8=b0PUXsEaMpDBOORug58y-woZMg@mail.gmail.com>
+ <CACkgH70Y7PoPU=36szRk8HbsqoYzjRP-RSaHg8q+z2hv2GpfnQ@mail.gmail.com>
+Message-ID: <CACYw5mBT1q-NuthY5xQ3mACE93WV0wRw6Ma9czbQ_jiDNmmdSQ@mail.gmail.com>
+
+> You have the wlan0 interface as client, and you have to set it up as
+> access point.
+>
+> You have to set-up first an Access Point with hostapd
+> (http://hostap.epitest.fi/hostapd/). Then, you can use the interface
+> with CoovaChilli.
+>
+
+Thank you it works.
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20140127/ccdfd6aa/attachment.html>
+
+From codelectron at googlemail.com  Mon Jan 27 09:55:49 2014
+From: codelectron at googlemail.com (Krishna Pattabiraman)
+Date: Mon, 27 Jan 2014 10:55:49 +0100
+Subject: [Chilli] Need help Social WiFi implementation
+Message-ID: <CACYw5mDnH6srpkx9we3hdZ5g2c8PJxBBREezavB7a_RW0MyCbw@mail.gmail.com>
+
+Hi All,
+
+I am running Coova chilli with mysql and freeradius based authentication.
+I want to bring a social wifi in it, where user will "like" a facebook page
+or follow a twitter handle to avail the internet.
+
+Can any one point some information on how to implement it?.
+
+In case of social network login, do I still need mysql+radius running on
+the machine?
+
+Thanks,
+Krishna
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20140127/4d47e131/attachment.html>
+
+From matthew.pideil at teledetection.fr  Mon Jan 27 16:53:34 2014
+From: matthew.pideil at teledetection.fr (Matthew Pideil)
+Date: Mon, 27 Jan 2014 17:53:34 +0100
+Subject: [Chilli] Chilli is not redirecting user to portal
+In-Reply-To: <CAF+USJ7QnR_3RBdwZ4=Orm_CxzPON_m8S18ob7-FJ-t=-Non1A@mail.gmail.com>
+References: <CAF+USJ7QnR_3RBdwZ4=Orm_CxzPON_m8S18ob7-FJ-t=-Non1A@mail.gmail.com>
+Message-ID: <52E68F0E.30403@teledetection.fr>
+
+Le 27/01/2014 03:19, Eric Chaves a ?crit :
+> Hi Folks,
+> 
+Hi
+
+> After successfully configuring a test server with coova chilli, I trie
+> to build a new server so I could validate my steps. 
+> 
+> Both my radius server and captive portal are running in an external
+> host, so I re-installed ubuntu on the host and than installed chilli
+> from sources and restaured the configuration files from the backup of
+> the first server.
+> 
+> This new coova is not redirecting clients to the captive portal. Also
+> when I run chilli_query list I can see that chilli is assigning IP
+> address for the devices but the original URL is not showing in the output.
+> 
+> Running chilli in debug mode (chilli --deubg --fg) I noticed that there
+> is no message from redir.c module, so it seems I left something behind
+> but I can't figure out what it was.
+> 
+> The server has ip forwarding enabled, and I can ping the required
+> address of all pieces from it (radius, portal, AP).
+> 
+> Any ideas on what I could forget that would prevent the redirection from
+> happening? 
+> 
+> Thanks for any help,
+> 
+> Eric
+
+Perhaps this is because the redirection only works with http and not
+with https requests.... ?
+
+
+-- 
+Matthew
+
+From maxxer at ufficyo.com  Mon Jan 27 17:25:18 2014
+From: maxxer at ufficyo.com (Lorenzo Milesi)
+Date: Mon, 27 Jan 2014 18:25:18 +0100 (CET)
+Subject: [Chilli] Need help Social WiFi implementation
+In-Reply-To: <CACYw5mDnH6srpkx9we3hdZ5g2c8PJxBBREezavB7a_RW0MyCbw@mail.gmail.com>
+References: <CACYw5mDnH6srpkx9we3hdZ5g2c8PJxBBREezavB7a_RW0MyCbw@mail.gmail.com>
+Message-ID: <939060238.78618.1390843518669.JavaMail.zimbra@yetopen.it>
+
+> I am running Coova chilli with mysql and freeradius based authentication.
+> I want to bring a social wifi in it, where user will "like" a facebook page
+> or follow a twitter handle to avail the internet.
+> Can any one point some information on how to implement it?.
+
+We developed a similar application, you need to create a Facebook app that retrieves user likes and when you verify you have that you can accept the user.
+
+> In case of social network login, do I still need mysql+radius running on the
+> machine?
+
+Theorically no, you can authorize users using the javascript library or other tricks.
+We still used the full radiust auth in order to store some user informations like email and name/surname.
+-- 
+Lorenzo Milesi - lorenzo.milesi at yetopen.it
+
+YetOpen S.r.l. - http://www.yetopen.it/
+
+
+From phyo.w.soe at frontiir.net  Wed Jan 29 11:26:39 2014
+From: phyo.w.soe at frontiir.net (Phyo Wai Soe)
+Date: Wed, 29 Jan 2014 11:26:39 +0000 (UTC)
+Subject: [Chilli] Using acctupdate option
+In-Reply-To: <856225388.52064.1390992259827.JavaMail.root@frontiir.net>
+Message-ID: <1877440473.53094.1390994799954.JavaMail.root@frontiir.net>
+
+Hi All,
+
+I would like to ask a beginner's question on acctupdate option in Coova. I know this has been asked/answered many times but I still can't get it right. My setup is Coova, FreeRadius (with daloRadius) and MySQL. 
+
+I am trying to set up an ISP environment which will bill customers based on usage (ChilliSpot-Max-Total-Octets). Most customers will be prepaid users. The issue I still can't resolve is how to update a user's data quota (MB) if he tops up his account mid-session. I don't want to terminate a user's session to get the updated data quota for him. After much reading, Radius' CoA messages and Coova's own acctupdate option are most probable solutions. I wish to try acctupdate first because it looks simpler than setting up CoA.
+
+>From the changelog, acctupdate "will allow for session parameter updates with RADIUS Accounting-Response". From David's reply in the mailing list - "the acctupdate option means that accounting responses from the radius server may have session parameter options like bandwidth and time limits. In a way, it is the poor man's CoA which is useful for when you do not have a direct route back to the router to use CoA." Does it mean that Coova will recofigure session attributes at every interim accounting update?
+
+How does one go about configuring acctupdate after enabling it in the config file? Is there any change necessary in FreeRadius? (Sorry, I am also new to FreeRadius.) I specified ChilliSpot-Max-Total-Octets as a radreply attribute for a user. With debug messages, I could see that cb_radius_acct_conf function is called many times during a user's session but changing ChilliSpot-Max-Total-Octets in MySQL (mid-session) doesn't reconfigure that session attribute in Coova. I also tried putting ChilliSpot-Max-Total-Octets as a radcheck attribute but that session attribute doesn't even get set with that value.
+
+Please enlighten me which settings I am missing.
+
+Thanks so much.
+
+Regards,
+Phyo Wai Soe
+
+
+From maxxer at ufficyo.com  Wed Jan 29 16:42:53 2014
+From: maxxer at ufficyo.com (Lorenzo Milesi)
+Date: Wed, 29 Jan 2014 17:42:53 +0100 (CET)
+Subject: [Chilli] Custom Reply-Message for WISPr-Session-Terminate-Time
+In-Reply-To: <1437032160.83307.1391013469779.JavaMail.zimbra@yetopen.it>
+Message-ID: <850131059.83317.1391013773499.JavaMail.zimbra@yetopen.it>
+
+Hi.
+Given the radius attribute in the subject is a reply attribute, so the radius replies with an Access-Accept message, chilli is handling the check for that value, but it is simply rejecting the user with a generic message.
+For some radius check attribute it's possible to customize the radius-reply attribute, can something like this be done via chilli for expired users?
+
+thanks
+-- 
+Lorenzo Milesi - lorenzo.milesi at yetopen.it
+
+YetOpen S.r.l. - http://www.yetopen.it/
+
+
+From eric at craftti.com.br  Thu Jan 30 03:31:38 2014
+From: eric at craftti.com.br (Eric Chaves)
+Date: Thu, 30 Jan 2014 01:31:38 -0200
+Subject: [Chilli] Routing between AP an service network
+Message-ID: <CAF+USJ4ByJZHG3GMifYL_PV5tznV_ALVPpgfssErHhrQn9QJPA@mail.gmail.com>
+
+Hi guys,
+
+I have some doubts regarding how coova will handle routing between multiple
+interfaces in the controller. Is there someone with a similar design that
+could help me?
+
+My controller has 04 interfaces:
+
+- eth0 WAN
+- eth1 LAN SERVICES
+- eth2 LAN SUBSCRIBER - AP 01
+- eth3 LAN SUBSCRIBER - AP 02
+
+I Would like to connect AP-01 and AP-02 in eth2 and eth3. Coova will
+deliver DHCP address on network 172.16.0.0
+
+eth0 is directly connected to internet with a valid IP address.
+
+eth1 has an address 10.1.0.0 which is used for services (log management,
+server monitoring, backups, etc..).
+
+My questions are:
+
+1) When the AP is handed an IP address by coova (172.16.0.100), hosts on
+the service LAN (eg, 10.1.0.7) can ping and access the AP which is what I
+want. But if define a static IP (172.16.0.10) they no longer can access the
+AP. In both cases the AP was not authenticated by coova (users device
+however does). Why?
+
+2) The AP is forwarding syslog messages to the Coova Controller at
+(172.16.0.1) at UDP 514 and the syslog is configure to forward to a
+logserver over internet. I can see the message coming in at the tun
+interface but it is never dispatched to the logserver. Could t be Coova
+stoping it? How do I open up an UDP port on coova?
+
+3) eth2 and eth3 are configured as "auto ethX" but has no address/netmask
+defined for them. Is this correct?
+
+4) Can I add network address (say, from the services network) for the AP
+wired IF, eth2 and eth3? would coova still delivering DHCP address at
+172.16.X.X for client devices and working properly?
+
+Thanks for the information.
+
+Cheers,
+
+
+
+--
+Eric Chaves
+(11) 98139-9880
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20140130/388d08e1/attachment.html>
+
+From achaves at etrex.com.br  Thu Jan 30 13:32:25 2014
+From: achaves at etrex.com.br (Alexandre Tucunduva)
+Date: Thu, 30 Jan 2014 11:32:25 -0200
+Subject: [Chilli] Chillispot-Max-Total-Octets
+Message-ID: <CAJq+_90UyMAJuVrtHgJJEG0m2qdnfN4a7LTKiJEGoYfzypcNzw@mail.gmail.com>
+
+Hello, I made an installation of coovachilli and also suggested changes in
+http://coova.org/node/1039. Everything works fine, but I need to set quotas
+of 10, 20 and 30 gigabytes for my vouchers. The problem is that even by
+setting these quota limits, users are disconnected when they reach exactly
+2Gb and are not able to redo the login (which was actually to be expected).
+This is a limitation of coovachilli? How can I fix this? Thank you.
+
+--
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20140130/b2eef796/attachment.html>
+
+From alexander.szlezak at unwired.at  Thu Jan 30 13:44:27 2014
+From: alexander.szlezak at unwired.at (Alexander Szlezak)
+Date: Thu, 30 Jan 2014 14:44:27 +0100
+Subject: [Chilli] Chillispot-Max-Total-Octets
+In-Reply-To: <CAJq+_90UyMAJuVrtHgJJEG0m2qdnfN4a7LTKiJEGoYfzypcNzw@mail.gmail.com>
+References: <CAJq+_90UyMAJuVrtHgJJEG0m2qdnfN4a7LTKiJEGoYfzypcNzw@mail.gmail.com>
+Message-ID: <52EA573B.50102@unwired.at>
+
+Hi Alexandre,
+
+I suspect, that the max-octet counters are 32bit, I experienced that 
+limit at 4gb - I don't know acutally if chilli supports larger counters, 
+but as for us it was not a pressing problem, we didn't research it 
+further. Please let  me know if you can confirm this.
+
+best,
+Alexander
+Am 30.01.14 14:32, schrieb Alexandre Tucunduva:
+> Hello, I made an installation of coovachilli and also suggested 
+> changes in http://coova.org/node/1039. Everything works fine, but I 
+> need to set quotas of 10, 20 and 30 gigabytes for my vouchers. The 
+> problem is that even by setting these quota limits, users 
+> are disconnected when they reach exactly 2Gb and are not able to redo 
+> the login (which was actually to be expected). This is a limitation of 
+> coovachilli? How can I fix this? Thank you.
+>
+> -- 
+>
+>
+>
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+-- 
+Follow us on Twitter @
+http://twitter.com/unwirednetworks
+_____________________________________________________
+Mag. Alexander Szlezak          Unwired Networks GmbH
+Gesch?ftsf?hrer
+
++43 660 1350410
+alexander.szlezak at unwired.at           www.unwired.at
+twitter.com/unwirednetworks
+
+Rechnungsadresse                        B?roanschrift
+Reischergasse 6/2                  Gonzagagasse 11/25
+1130 Vienna, Austria         A-1010 Vienna, Austria
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20140130/57a04436/attachment.html>
+
+From maxxer at ufficyo.com  Thu Jan 30 13:54:08 2014
+From: maxxer at ufficyo.com (Lorenzo Milesi)
+Date: Thu, 30 Jan 2014 14:54:08 +0100 (CET)
+Subject: [Chilli] Custom Reply-Message for WISPr-Session-Terminate-Time
+In-Reply-To: <850131059.83317.1391013773499.JavaMail.zimbra@yetopen.it>
+References: <850131059.83317.1391013773499.JavaMail.zimbra@yetopen.it>
+Message-ID: <1904693590.84382.1391090048749.JavaMail.zimbra@yetopen.it>
+
+> For some radius check attribute it's possible to customize the radius-reply
+> attribute, can something like this be done via chilli for expired users?
+
+For the record I worked this around by "translating" the reply's WISPr-Session-Terminate-Time attribute to check's Expiration.
+-- 
+Lorenzo Milesi - lorenzo.milesi at yetopen.it
+
+YetOpen S.r.l. - http://www.yetopen.it/
+
+
+From achaves at etrex.com.br  Thu Jan 30 13:56:11 2014
+From: achaves at etrex.com.br (Alexandre Tucunduva)
+Date: Thu, 30 Jan 2014 11:56:11 -0200
+Subject: [Chilli] Chillispot-Max-Total-Octets
+In-Reply-To: <52EA573B.50102@unwired.at>
+References: <CAJq+_90UyMAJuVrtHgJJEG0m2qdnfN4a7LTKiJEGoYfzypcNzw@mail.gmail.com>
+ <52EA573B.50102@unwired.at>
+Message-ID: <CAJq+_92eCp5E6gmBd6eUEDQi07NhA2F-Vaq81F7Bxqu=Lj=SOA@mail.gmail.com>
+
+Yes that's right. Is it possible to increase these values?
+
+
+2014-01-30 Alexander Szlezak <alexander.szlezak at unwired.at>:
+
+>  Hi Alexandre,
+>
+> I suspect, that the max-octet counters are 32bit, I experienced that limit
+> at 4gb - I don't know acutally if chilli supports larger counters, but as
+> for us it was not a pressing problem, we didn't research it further. Please
+> let  me know if you can confirm this.
+>
+> best,
+> Alexander
+> Am 30.01.14 14:32, schrieb Alexandre Tucunduva:
+>
+> Hello, I made an installation of coovachilli and also suggested changes in
+> http://coova.org/node/1039. Everything works fine, but I need to set
+> quotas of 10, 20 and 30 gigabytes for my vouchers. The problem is that even
+> by setting these quota limits, users are disconnected when they reach
+> exactly 2Gb and are not able to redo the login (which was actually to be
+> expected). This is a limitation of coovachilli? How can I fix this? Thank
+> you.
+>
+>  --
+>
+>
+>
+> _______________________________________________
+> Chilli mailing listChilli at coova.orghttp://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+>
+> --
+> Follow us on Twitter @http://twitter.com/unwirednetworks
+> _____________________________________________________
+> Mag. Alexander Szlezak          Unwired Networks GmbH
+> Gesch?ftsf?hrer
+> +43 660 1350410alexander.szlezak at unwired.at           www.unwired.attwitter.com/unwirednetworks
+>
+> Rechnungsadresse                        B?roanschrift
+> Reischergasse 6/2                  Gonzagagasse 11/25
+> 1130 Vienna, Austria         A-1010 Vienna, Austria
+>
+>
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+>
+
+
+--
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20140130/12861500/attachment.html>
+
+From achaves at etrex.com.br  Thu Jan 30 13:57:56 2014
+From: achaves at etrex.com.br (Alexandre Tucunduva)
+Date: Thu, 30 Jan 2014 11:57:56 -0200
+Subject: [Chilli] Chillispot-Max-Total-Octets
+In-Reply-To: <CAJq+_92eCp5E6gmBd6eUEDQi07NhA2F-Vaq81F7Bxqu=Lj=SOA@mail.gmail.com>
+References: <CAJq+_90UyMAJuVrtHgJJEG0m2qdnfN4a7LTKiJEGoYfzypcNzw@mail.gmail.com>
+ <52EA573B.50102@unwired.at>
+ <CAJq+_92eCp5E6gmBd6eUEDQi07NhA2F-Vaq81F7Bxqu=Lj=SOA@mail.gmail.com>
+Message-ID: <CAJq+_917RPTX8eYRccQvyZAwan6cgwwjFsdJqbjVDt7CtDZZ=Q@mail.gmail.com>
+
+Thank you Mike. I'll be reading the documentation and post the results
+here. Thanks for now.
+
+
+2014-01-30 Alexandre Tucunduva <achaves at etrex.com.br>:
+
+> Yes that's right. Is it possible to increase these values?
+>
+>
+> 2014-01-30 Alexander Szlezak <alexander.szlezak at unwired.at>:
+>
+>  Hi Alexandre,
+>>
+>> I suspect, that the max-octet counters are 32bit, I experienced that
+>> limit at 4gb - I don't know acutally if chilli supports larger counters,
+>> but as for us it was not a pressing problem, we didn't research it further.
+>> Please let  me know if you can confirm this.
+>>
+>> best,
+>> Alexander
+>> Am 30.01.14 14:32, schrieb Alexandre Tucunduva:
+>>
+>> Hello, I made an installation of coovachilli and also suggested changes
+>> in http://coova.org/node/1039. Everything works fine, but I need to set
+>> quotas of 10, 20 and 30 gigabytes for my vouchers. The problem is that even
+>> by setting these quota limits, users are disconnected when they reach
+>> exactly 2Gb and are not able to redo the login (which was actually to be
+>> expected). This is a limitation of coovachilli? How can I fix this? Thank
+>> you.
+>>
+>>  --
+>>
+>>
+>>
+>> _______________________________________________
+>> Chilli mailing listChilli at coova.orghttp://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>>
+>>
+>> --
+>> Follow us on Twitter @http://twitter.com/unwirednetworks
+>> _____________________________________________________
+>> Mag. Alexander Szlezak          Unwired Networks GmbH
+>> Gesch?ftsf?hrer
+>> +43 660 1350410alexander.szlezak at unwired.at           www.unwired.attwitter.com/unwirednetworks
+>>
+>> Rechnungsadresse                        B?roanschrift
+>> Reischergasse 6/2                  Gonzagagasse 11/25
+>> 1130 Vienna, Austria         A-1010 Vienna, Austria
+>>
+>>
+>> _______________________________________________
+>> Chilli mailing list
+>> Chilli at coova.org
+>> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>>
+>>
+>
+>
+> --
+>
+>
+
+
+--
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20140130/9bfdfff7/attachment-0001.html>
+
+From puchol at me.com  Thu Jan 30 13:55:19 2014
+From: puchol at me.com (Mike Puchol)
+Date: Thu, 30 Jan 2014 14:55:19 +0100
+Subject: [Chilli] Chillispot-Max-Total-Octets
+In-Reply-To: <CAJq+_90UyMAJuVrtHgJJEG0m2qdnfN4a7LTKiJEGoYfzypcNzw@mail.gmail.com>
+References: <CAJq+_90UyMAJuVrtHgJJEG0m2qdnfN4a7LTKiJEGoYfzypcNzw@mail.gmail.com>
+Message-ID: <1D69888F-445F-4FEE-A578-E75E93ECB161@me.com>
+
+Here is a nice article on using gigawords instead of octets for accounting in order to exceed the 4GB limit of 32-bit counters:
+
+http://www.netexpertise.eu/en/freeradius/gigawords-support.html
+
+Cheers,
+
+Mike
+
+Typos by iPhone
+
+> On Jan 30, 2014, at 14:32, Alexandre Tucunduva <achaves at etrex.com.br> wrote:
+> 
+> Hello, I made an installation of coovachilli and also suggested changes in http://coova.org/node/1039. Everything works fine, but I need to set quotas of 10, 20 and 30 gigabytes for my vouchers. The problem is that even by setting these quota limits, users are disconnected when they reach exactly 2Gb and are not able to redo the login (which was actually to be expected). This is a limitation of coovachilli? How can I fix this? Thank you.
+> 
+> -- 
+> 
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20140130/5b015dd0/attachment.html>
+
+From alexander.szlezak at unwired.at  Thu Jan 30 16:00:27 2014
+From: alexander.szlezak at unwired.at (Szlezak, Alexander)
+Date: Thu, 30 Jan 2014 17:00:27 +0100
+Subject: [Chilli] Chillispot-Max-Total-Octets
+In-Reply-To: <1D69888F-445F-4FEE-A578-E75E93ECB161@me.com>
+References: <CAJq+_90UyMAJuVrtHgJJEG0m2qdnfN4a7LTKiJEGoYfzypcNzw@mail.gmail.com>
+ <1D69888F-445F-4FEE-A578-E75E93ECB161@me.com>
+Message-ID: <CA+jq8kp0LHQX2kxuO3DAjVpXJjRFyQ+CukDWQFOF130FRJ7-hQ@mail.gmail.com>
+
+Thanks!
+Am 30.01.2014 15:55 schrieb "Mike Puchol" <puchol at me.com>:
+
+> Here is a nice article on using gigawords instead of octets for accounting
+> in order to exceed the 4GB limit of 32-bit counters:
+>
+> http://www.netexpertise.eu/en/freeradius/gigawords-support.html
+>
+> Cheers,
+>
+> Mike
+>
+> Typos by iPhone
+>
+> On Jan 30, 2014, at 14:32, Alexandre Tucunduva <achaves at etrex.com.br>
+> wrote:
+>
+> Hello, I made an installation of coovachilli and also suggested changes in
+> http://coova.org/node/1039. Everything works fine, but I need to set
+> quotas of 10, 20 and 30 gigabytes for my vouchers. The problem is that even
+> by setting these quota limits, users are disconnected when they reach
+> exactly 2Gb and are not able to redo the login (which was actually to be
+> expected). This is a limitation of coovachilli? How can I fix this? Thank
+> you.
+>
+> --
+>
+>  _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+>
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20140130/d4eaa7bf/attachment.html>
+
+From dbird at google.com  Thu Jan 30 16:09:50 2014
+From: dbird at google.com (David Bird)
+Date: Thu, 30 Jan 2014 08:09:50 -0800
+Subject: [Chilli] Chillispot-Max-Total-Octets
+In-Reply-To: <1D69888F-445F-4FEE-A578-E75E93ECB161@me.com>
+References: <CAJq+_90UyMAJuVrtHgJJEG0m2qdnfN4a7LTKiJEGoYfzypcNzw@mail.gmail.com>
+ <1D69888F-445F-4FEE-A578-E75E93ECB161@me.com>
+Message-ID: <CADo9JyVTsOZRYyydPxZ4mpH_dU57JxpUJr=6xyG7Ng+qMEfTzw@mail.gmail.com>
+
+Chilli does support the following attributes:
+
+ATTRIBUTE        ChilliSpot-Max-Input-Gigawords               21        integer
+ATTRIBUTE        ChilliSpot-Max-Output-Gigawords               22        integer
+ATTRIBUTE        ChilliSpot-Max-Total-Gigawords               23        integer
+
+https://github.com/coova/coova-chilli/blob/master/doc/dictionary.chillispot
+
+As mentioned, integers in RADIUS are 32bit, so gigawords represent the
+higher 32 bits of a 64bit integer, e.g.
+((ChilliSpot-Max-Total-Gigawords << 32) | ChilliSpot-Max-Total-Octets)
+
+
+
+On Thu, Jan 30, 2014 at 5:55 AM, Mike Puchol <puchol at me.com> wrote:
+
+> Here is a nice article on using gigawords instead of octets for accounting
+> in order to exceed the 4GB limit of 32-bit counters:
+>
+> http://www.netexpertise.eu/en/freeradius/gigawords-support.html
+>
+> Cheers,
+>
+> Mike
+>
+> Typos by iPhone
+>
+> On Jan 30, 2014, at 14:32, Alexandre Tucunduva <achaves at etrex.com.br>
+> wrote:
+>
+> Hello, I made an installation of coovachilli and also suggested changes in
+> http://coova.org/node/1039. Everything works fine, but I need to set
+> quotas of 10, 20 and 30 gigabytes for my vouchers. The problem is that even
+> by setting these quota limits, users are disconnected when they reach
+> exactly 2Gb and are not able to redo the login (which was actually to be
+> expected). This is a limitation of coovachilli? How can I fix this? Thank
+> you.
+>
+> --
+>
+>  _______________________________________________
+>
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+>
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20140130/33adba63/attachment.html>
+
+From dbird at google.com  Thu Jan 30 16:15:14 2014
+From: dbird at google.com (David Bird)
+Date: Thu, 30 Jan 2014 08:15:14 -0800
+Subject: [Chilli] Custom Reply-Message for WISPr-Session-Terminate-Time
+In-Reply-To: <1904693590.84382.1391090048749.JavaMail.zimbra@yetopen.it>
+References: <850131059.83317.1391013773499.JavaMail.zimbra@yetopen.it>
+ <1904693590.84382.1391090048749.JavaMail.zimbra@yetopen.it>
+Message-ID: <CADo9JyVFiAbPbf-SBKT9XqR6=e2NwCNO97+83QHn4PnKxMwJAQ@mail.gmail.com>
+
+In your example, the WISPr-Session-Terminate-Time has already passed? If
+so, then it should be the RADIUS server making that calculation and
+returning the Access-Reject + Reply-Message.
+
+
+On Thu, Jan 30, 2014 at 5:54 AM, Lorenzo Milesi <maxxer at ufficyo.com> wrote:
+
+> > For some radius check attribute it's possible to customize the
+> radius-reply
+> > attribute, can something like this be done via chilli for expired users?
+>
+> For the record I worked this around by "translating" the reply's
+> WISPr-Session-Terminate-Time attribute to check's Expiration.
+> --
+> Lorenzo Milesi - lorenzo.milesi at yetopen.it
+>
+> YetOpen S.r.l. - http://www.yetopen.it/
+>
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20140130/d191da38/attachment.html>
+
+From achaves at etrex.com.br  Thu Jan 30 16:23:07 2014
+From: achaves at etrex.com.br (Alexandre Tucunduva)
+Date: Thu, 30 Jan 2014 14:23:07 -0200
+Subject: [Chilli] Chillispot-Max-Total-Octets
+In-Reply-To: <CADo9JyVTsOZRYyydPxZ4mpH_dU57JxpUJr=6xyG7Ng+qMEfTzw@mail.gmail.com>
+References: <CAJq+_90UyMAJuVrtHgJJEG0m2qdnfN4a7LTKiJEGoYfzypcNzw@mail.gmail.com>
+ <1D69888F-445F-4FEE-A578-E75E93ECB161@me.com>
+ <CADo9JyVTsOZRYyydPxZ4mpH_dU57JxpUJr=6xyG7Ng+qMEfTzw@mail.gmail.com>
+Message-ID: <CAJq+_937j9XE8V6bEisDWG2SmqAxTv1iuh-ifHEKkSSvGHxojw@mail.gmail.com>
+
+yea. I updated the dictionary (
+http://dev.coova.org/svn/coova-chilli/doc/dictionary.chillispot) and
+finally got freeradius exceed 2Gb. Testing this moment somewhere around
+10Gb.
+the next step would be to make the chilli disconnect the user and perform a
+check of quota limits on the next login attempt. Will the "Max-Octets" can
+handle it?
+thanks.
+
+
+2014-01-30 David Bird <dbird at google.com>:
+
+> Chilli does support the following attributes:
+>
+>
+> ATTRIBUTE        ChilliSpot-Max-Input-Gigawords               21        integer
+>
+> ATTRIBUTE        ChilliSpot-Max-Output-Gigawords               22        integer
+>
+> ATTRIBUTE        ChilliSpot-Max-Total-Gigawords               23        integer
+>
+> https://github.com/coova/coova-chilli/blob/master/doc/dictionary.chillispot
+>
+> As mentioned, integers in RADIUS are 32bit, so gigawords represent the higher 32 bits of a 64bit integer, e.g. ((ChilliSpot-Max-Total-Gigawords << 32) | ChilliSpot-Max-Total-Octets)
+>
+>
+>
+> On Thu, Jan 30, 2014 at 5:55 AM, Mike Puchol <puchol at me.com> wrote:
+>
+>> Here is a nice article on using gigawords instead of octets for
+>> accounting in order to exceed the 4GB limit of 32-bit counters:
+>>
+>> http://www.netexpertise.eu/en/freeradius/gigawords-support.html
+>>
+>> Cheers,
+>>
+>> Mike
+>>
+>> Typos by iPhone
+>>
+>> On Jan 30, 2014, at 14:32, Alexandre Tucunduva <achaves at etrex.com.br>
+>> wrote:
+>>
+>> Hello, I made an installation of coovachilli and also suggested changes
+>> in http://coova.org/node/1039. Everything works fine, but I need to set
+>> quotas of 10, 20 and 30 gigabytes for my vouchers. The problem is that even
+>> by setting these quota limits, users are disconnected when they reach
+>> exactly 2Gb and are not able to redo the login (which was actually to be
+>> expected). This is a limitation of coovachilli? How can I fix this? Thank
+>> you.
+>>
+>> --
+>>
+>>  _______________________________________________
+>>
+>> Chilli mailing list
+>> Chilli at coova.org
+>> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>>
+>>
+>> _______________________________________________
+>> Chilli mailing list
+>> Chilli at coova.org
+>> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>>
+>>
+>
+
+
+--
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20140130/aaf92395/attachment-0001.html>
+

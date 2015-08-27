@@ -1,0 +1,107 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli]  [PATCH] Fix: Memory leak on tun_discover()
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20%20%5BPATCH%5D%20Fix%3A%20Memory%20leak%20on%20tun_discover%28%29&In-Reply-To=%3C4B8D02DA.6030902%40ictec.co.jp%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001152.html">
+   <LINK REL="Next"  HREF="001154.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli]  [PATCH] Fix: Memory leak on tun_discover()</H1>
+    <B>Masashi Honma</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20%20%5BPATCH%5D%20Fix%3A%20Memory%20leak%20on%20tun_discover%28%29&In-Reply-To=%3C4B8D02DA.6030902%40ictec.co.jp%3E"
+       TITLE="[Chilli]  [PATCH] Fix: Memory leak on tun_discover()">honma at ictec.co.jp
+       </A><BR>
+    <I>Tue Mar  2 12:21:46 UTC 2010</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001152.html">[Chilli] Failed to make with latest svn
+</A></li>
+        <LI>Next message: <A HREF="001154.html">[Chilli] [PATCH] Fix: Memory leak on tun_discover()
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1153">[ date ]</a>
+              <a href="thread.html#1153">[ thread ]</a>
+              <a href="subject.html#1153">[ subject ]</a>
+              <a href="author.html#1153">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hello.
+
+The ic.ifc_buf field is allocated by calloc() but not freed. This
+patch solves this issue and previous test program issue.
+
+Index: tun.c
+===================================================================
+--- tun.c	(revision 294)
++++ tun.c	(working copy)
+@@ -64,9 +64,16 @@
+   }
+ 
+   ic.ifc_buf = calloc((size_t)ic.ifc_len, 1);
++  if (ic.ifc_buf == NULL) {
++    log_err(errno, &quot;calloc(ic.ifc_buf)&quot;);
++    close(fd);
++    return -1;
++  }
++
+   if (ioctl(fd, SIOCGIFCONF, &amp;ic) &lt; 0) {
+     log_err(errno, &quot;ioctl(SIOCGIFCONF)&quot;);
+     close(fd);
++    free(ic.ifc_buf);
+     return -1;
+   }
+     
+@@ -203,6 +210,7 @@
+     }
+   }
+ 
++  free(ic.ifc_buf);
+   close(fd);
+   return 0;
+ }
+Index: Makefile.am
+===================================================================
+--- Makefile.am	(revision 294)
++++ Makefile.am	(working copy)
+@@ -3,7 +3,7 @@
+ EXTRA_DIST = cmdline.ggo cmdline.patch
+ 
+ lib_LTLIBRARIES = libchilli.la
+-sbin_PROGRAMS = chilli chilli_response chilli_radconfig chilli_query chilli_opt queue
++sbin_PROGRAMS = chilli chilli_response chilli_radconfig chilli_query chilli_opt
+ 
+ libchilli_la_SOURCES = \
+ chilli.c tun.c tun.h ippool.c ippool.h radius.h radius.c \
+
+
+Regards,
+Masashi Honma.
+</PRE>
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001152.html">[Chilli] Failed to make with latest svn
+</A></li>
+	<LI>Next message: <A HREF="001154.html">[Chilli] [PATCH] Fix: Memory leak on tun_discover()
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1153">[ date ]</a>
+              <a href="thread.html#1153">[ thread ]</a>
+              <a href="subject.html#1153">[ subject ]</a>
+              <a href="author.html#1153">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

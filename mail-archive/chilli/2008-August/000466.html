@@ -1,0 +1,106 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> VPN revisited.
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20VPN%20revisited.&In-Reply-To=%3C48ADAFD3.6090701%40endian.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000465.html">
+   <LINK REL="Next"  HREF="000467.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>VPN revisited.</H1>
+    <B>Peter Warasin</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20VPN%20revisited.&In-Reply-To=%3C48ADAFD3.6090701%40endian.com%3E"
+       TITLE="VPN revisited.">peter at endian.com
+       </A><BR>
+    <I>Thu Aug 21 18:11:31 UTC 2008</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000465.html">VPN revisited.
+</A></li>
+        <LI>Next message: <A HREF="000467.html">VPN revisited.
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#466">[ date ]</a>
+              <a href="thread.html#466">[ thread ]</a>
+              <a href="subject.html#466">[ subject ]</a>
+              <a href="author.html#466">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hi Guys
+
+Peter Warasin wrote:
+&gt;&gt;<i> Aaah. That explains things!
+</I>&gt;&gt;<i> I have no DROP rules. I will try it configuring them.
+</I>&gt;<i> Same behaviour with added drop rules. all works fine, except PPTP.
+</I>
+adding the DROP rules to the INPUT and FORWARD chain is not enough for 
+protocols which need a nat helper module, since the nat tables will also 
+be passed through even if the packet is dropped in the filter table. So 
+packets hit the nat helper modules twice.
+
+here's the solution which worked for me:
+
+(br2 is my chilli device)
+
+iptables -I FORWARD -j DROP -i br2
+iptables -I FORWARD -j DROP -o br2
+# iptables -I INPUT -j DROP -i br2 # not really necessary
+iptables -t raw -I PREROUTING -j NOTARCK -i br2
+iptables -t raw -I OUTPUT -j NOTARCK -o br2
+
+# then, the other accept rules.. for me something like:
+iptables -I FORWARD -j ACCEPT -i tun0 -p gre
+iptables -I FORWARD -j ACCEPT -i tun0 -p tcp --dport 1723
+
+
+# helpers need to be loaded:
+modprobe ip_conntrack_pptp
+modprobe ip_nat_pptp
+modprobe nf_nat_proto_gre
+modprobe nf_conntrack_proto_gre
+
+
+I'm continuing with tests, since my uam login script does not return 
+anymore from the login procedure.. there's something still not 100% ok. 
+but that could be also a problem on another part of my system.
+
+@Ianc: could you try and report back if this is working also for you?
+Not that i have been lucky only today and tomorrow it starts refusing to 
+work :)
+
+peter
+
+-- 
+::<i> e n d i a n
+</I>::<i> open source - open minds
+</I>
+::<i> peter warasin
+</I>::<i> <A HREF="http://www.endian.com">http://www.endian.com</A>   :: <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">peter at endian.com</A>
+</I>
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000465.html">VPN revisited.
+</A></li>
+	<LI>Next message: <A HREF="000467.html">VPN revisited.
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#466">[ date ]</a>
+              <a href="thread.html#466">[ thread ]</a>
+              <a href="subject.html#466">[ subject ]</a>
+              <a href="author.html#466">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,2829 @@
+From wichert at wiggy.net  Mon Aug  3 12:12:45 2009
+From: wichert at wiggy.net (Wichert Akkerman)
+Date: Mon, 03 Aug 2009 14:12:45 +0200
+Subject: Password encoding/decoding
+Message-ID: <4A76D43D.5070805@wiggy.net>
+
+I am wondering if something goes wrong in the password handling. I know 
+something goes wrong on my end in the UAM<->Chilli communication which 
+mangles passwords: if I sent ABCDEFGHIJKLMNOPQRSTUVWXYZ as password
+chilli decodes that to ABCDEFGHIJKLMNOPK<lots of binary>. But things go 
+wrong on when that is sent to RADIUS as well. Here is the FreeRadius log 
+output for the same request:
+
+rad_recv: Access-Request packet from host 127.0.0.1 port 56008, id=2, 
+length=269
+	Vendor-14559-Attr-8 = 0x312e302e3134
+	User-Name = "wichert"
+	User-Password = "U\004j,"
+	NAS-IP-Address = 10.1.0.1
+	Service-Type = Login-User
+	Framed-IP-Address = 10.1.0.3
+	Calling-Station-Id = "00-0C-29-27-79-83"
+	Called-Station-Id = "00-0C-29-6C-0F-92"
+	NAS-Identifier = "nas01"
+	Acct-Session-Id = "4a76d33900000002"
+	NAS-Port-Type = Wireless-802.11
+	NAS-Port = 2
+	WISPr-Location-ID = "isocc=NL,cc=31,ac=020,network=Attingo,KLM_Lounge"
+	WISPr-Location-Name = "KLM_Lounge"
+	WISPr-Logoff-URL = "http://10.1.0.1:3990/logoff"
+	Message-Authenticator = 0x4d6f776979e5711baf9ae428338e9bf7
+Login incorrect (rlm_pap: CLEAR TEXT password check failed): 
+[wichert/U\004j,] (from client localhost port 2 cli 00-0C-29-27-79-83)
+   WARNING: Unprintable characters in the password. 	  Double-check the 
+shared secret on the server and the NAS!
+
+which shows that my bad password has become even more corrupted.
+
+Wichert.
+
+
+From timwhite88 at gmail.com  Wed Aug  5 06:51:53 2009
+From: timwhite88 at gmail.com (Timothy White)
+Date: Wed, 5 Aug 2009 14:51:53 +0800
+Subject: Making Coova Chilli not count local (server, not LAN) traffic
+Message-ID: <6bd64e020908042351o7ad5b380qd4029187877d788e@mail.gmail.com>
+
+I apologise in advance if I break any list etiquettes for this list.
+
+I'm basically tired of waiting for a feature to be added, so I'm going
+to work on adding it myself, or at least trying to. (It's been a long
+time since I did any C programming, so I'm a best rusty).
+Having never worked on the Chilli code, I'm not 100% sure how it
+works. From my brief look at the code, chilli.c around line 1464 is
+where the actual "accounting" happens, in the cb_tun_ind function I
+think. I'm not 100% sure on this at all though.
+
+Can someone who knows the code let me know if that is actually where
+the accounting of data happens? From what I can see ether
+appconn->s_state.output_packets or appconn->s_state.input_packets is
+increased for each packet, and the associated octets count depending
+on whether it's in or out. So this suggests to me that I can just wrap
+that small bit of code with an if statement that checks ip address and
+ports, and not count traffic to and from the local server.
+It also appears to my untrained eye, that while it's not supposed to
+count traffic to and from the "uam" service on 3990, it still does
+count it, so here would be a chance to fix that too.
+
+The if statement would look like this.
+
+  if ( ! (ipph->saddr  == options()->uamlisten.s_addr &&
+	  (ipph->sport == htons(options()->uamport) ||
+	   ipph->sport == htons(options()->uamuiport)))) {
+
+You'd also set uamuiport in your config files to be what ever port
+your local webserver runs on. (I have also noticed that wwwui exists
+in the Changelog but can't be found anywhere else.)
+
+I haven't had a chance to test the code (being at Uni atm, and not
+near my testing box), so I'll test it when I get home and have a try.
+If it works, I'll submit the patch.
+
+If I'm totally off track, can someone please point me in the correct
+direction to where the accounting happens, so I can poke around the
+code and try and work out how to get it to not count local server
+traffic.
+
+Hope I can "code" this feature and fix what to me and a few others is a bug.
+
+I'm open to criticism as long as it's constructive to fixing problems
+and not cutting down. I am a programmer, but have a lot to learn so
+any chance to learn I'll take.
+
+Tim White
+http://weirdo.bur.st/
+http://purewhite.id.au/
+
+
+From m.simioni at gmail.com  Wed Aug  5 16:06:37 2009
+From: m.simioni at gmail.com (Marco Simioni)
+Date: Wed, 5 Aug 2009 18:06:37 +0200
+Subject: traffic logging
+Message-ID: <f71cb680908050906i373a9e32mc3b551ec424bd188@mail.gmail.com>
+
+Hi,
+
+i always logged network traffic throught my hotspot using this command in up.sh:
+
+    #(LOGGING)
+    iptables -t nat -I PREROUTING 1 -j LOG -m state --state NEW
+--log-tcp-options --log-ip-options --log-prefix "IPTABLES : "
+
+and this is the ouput in my syslog:
+
+Aug  5 18:01:02 izc kernel: [ 1430.272826] IPTABLES : IN=tun0 OUT=
+MAC= SRC=XX.XX.XX.XX DST=XX.XX.XX.XX LEN=52 TOS=0x00 PREC=0x00 TTL=128
+ID=7897 DF PROTO=TCP SPT=50034 DPT=80 WINDOW=8192 RES=0x00 SYN URGP=0
+OPT (020405B40103030201010402)
+
+The MAC part is always empty.
+
+I am pretty sure that this worked on another machines, with older
+chilli versions (1.0.12 and 1.0.13).
+
+Now i'm using 1.0.14, ubuntu binary build.
+
+Linux izc 2.6.24-24-generic #1 SMP Fri Jul 24 22:46:06 UTC 2009 i686 GNU/Linux
+
+Ubuntu 8.04.3 LTS \n \l
+
+Suggestions?
+
+
+From timwhite88 at gmail.com  Thu Aug  6 00:35:53 2009
+From: timwhite88 at gmail.com (Timothy White)
+Date: Thu, 6 Aug 2009 08:35:53 +0800
+Subject: Issues with libtool in amd64
+Message-ID: <6bd64e020908051735q488b0681ia59a8503e19dc8a7@mail.gmail.com>
+
+Trying to compile under (K)Ubuntu 9.04 on a amd64, I get issues with
+libtool. Replacing the libtool that gets generated by ./configure,
+with the one provided by the system /usr/bin/libtool allows me to get
+it to compile.
+Any ideas why we distribute our own libtool and force it to compile with it?
+
+The errors with the included libtool are below. As said, it compiles
+fine if I force it to use the systems libtool.
+
+Tim
+
+make[3]: Entering directory `/home/tim/coova-chilli/bstring'
+/bin/bash ../libtool --tag=CC   --mode=compile x86_64-linux-gnu-gcc
+-DHAVE_CONFIG_H -I. -I..     -g -O2 -MT bstrlib.lo -MD -MP -MF
+.deps/bstrlib.Tpo -c -o bstrlib.lo bstrlib.c
+../libtool: line 827: X--tag=CC: command not found
+../libtool: line 860: libtool: ignoring unknown tag : command not found
+../libtool: line 827: X--mode=compile: command not found
+../libtool: line 994: *** Warning: inferring the mode of operation is
+deprecated.: command not found
+../libtool: line 995: *** Future versions of Libtool will require
+--mode=MODE be specified.: command not found
+../libtool: line 1138: Xx86_64-linux-gnu-gcc: command not found
+../libtool: line 1138: X-DHAVE_CONFIG_H: command not found
+../libtool: line 1138: X-I.: command not found
+../libtool: line 1138: X-I..: command not found
+../libtool: line 1138: X-g: command not found
+../libtool: line 1138: X-O2: command not found
+../libtool: line 1138: X-MT: command not found
+../libtool: line 1138: Xbstrlib.lo: command not found
+../libtool: line 1138: X-MD: command not found
+../libtool: line 1138: X-MP: command not found
+../libtool: line 1138: X-MF: command not found
+../libtool: line 1138: X.deps/bstrlib.Tpo: No such file or directory
+../libtool: line 1138: X-c: command not found
+../libtool: line 1191: Xbstrlib.lo: command not found
+../libtool: line 1196: libtool: compile: cannot determine name of
+library object from `': command not found
+make[3]: *** [bstrlib.lo] Error 1
+make[3]: Leaving directory `/home/tim/coova-chilli/bstring'
+
+
+From info at easyhorpak.com  Thu Aug  6 10:58:31 2009
+From: info at easyhorpak.com (EasyHorpak.com)
+Date: Thu, 6 Aug 2009 13:58:31 +0300
+Subject: traffic logging
+References: <f71cb680908050906i373a9e32mc3b551ec424bd188@mail.gmail.com>
+Message-ID: <3A9FA2AB4C8C43408CB63B85F222BC4A@pc>
+
+Mac address not appear on interfaces tun0.
+Cause it virtual interfaces on eth1.
+
+wait for another additional..
+
+
+----- Original Message ----- 
+From: "Marco Simioni" <m.simioni at gmail.com>
+To: <chilli at coova.org>
+Sent: Wednesday, August 05, 2009 7:06 PM
+Subject: traffic logging
+
+
+> Hi,
+>
+> i always logged network traffic throught my hotspot using this command in 
+> up.sh:
+>
+>    #(LOGGING)
+>    iptables -t nat -I PREROUTING 1 -j LOG -m state --state NEW
+> --log-tcp-options --log-ip-options --log-prefix "IPTABLES : "
+>
+> and this is the ouput in my syslog:
+>
+> Aug  5 18:01:02 izc kernel: [ 1430.272826] IPTABLES : IN=tun0 OUT=
+> MAC= SRC=XX.XX.XX.XX DST=XX.XX.XX.XX LEN=52 TOS=0x00 PREC=0x00 TTL=128
+> ID=7897 DF PROTO=TCP SPT=50034 DPT=80 WINDOW=8192 RES=0x00 SYN URGP=0
+> OPT (020405B40103030201010402)
+>
+> The MAC part is always empty.
+>
+> I am pretty sure that this worked on another machines, with older
+> chilli versions (1.0.12 and 1.0.13).
+>
+> Now i'm using 1.0.14, ubuntu binary build.
+>
+> Linux izc 2.6.24-24-generic #1 SMP Fri Jul 24 22:46:06 UTC 2009 i686 
+> GNU/Linux
+>
+> Ubuntu 8.04.3 LTS \n \l
+>
+> Suggestions?
+>
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>
+> 
+
+
+
+From ian.coffey at gmail.com  Thu Aug  6 20:53:39 2009
+From: ian.coffey at gmail.com (IanC)
+Date: Thu, 6 Aug 2009 16:53:39 -0400
+Subject: Encrypt passwords
+Message-ID: <3ea93a690908061353m5f881180u778c53c5103a9ddc@mail.gmail.com>
+
+Hello all,
+
+Ive finished rewriting my captive portal logic in Python, and its
+working wonderfully, except one big detail. Im having trouble properly
+binary encrypting the uamsecret and password together to send to the
+Chilli daemon for logins. I think Im close but I have im unsure what
+format Chilli is actually expecting the password to be passed in so it
+can properly encrypt it against the uamsecret.
+
+Could anyone point me to some docs (or explain) what format the Chilli
+daemon is is expecting to get the password in so I can properly write
+this?
+
+Id be very grateful.
+
+Thanks!
+
+Ian
+
+
+From timwhite88 at gmail.com  Fri Aug  7 03:46:58 2009
+From: timwhite88 at gmail.com (Timothy White)
+Date: Fri, 7 Aug 2009 11:46:58 +0800
+Subject: Encrypt passwords
+In-Reply-To: <3ea93a690908061353m5f881180u778c53c5103a9ddc@mail.gmail.com>
+References: <3ea93a690908061353m5f881180u778c53c5103a9ddc@mail.gmail.com>
+Message-ID: <6bd64e020908062046l7313fe74o53da853be4afd168@mail.gmail.com>
+
+There was a PHP example included with Chilli at one stage that had the
+right "hashing"
+
+Have a poke around for that, it's probably on the net too.
+
+Tim
+
+On Fri, Aug 7, 2009 at 4:53 AM, IanC<ian.coffey at gmail.com> wrote:
+> Hello all,
+>
+> Ive finished rewriting my captive portal logic in Python, and its
+> working wonderfully, except one big detail. Im having trouble properly
+> binary encrypting the uamsecret and password together to send to the
+> Chilli daemon for logins. I think Im close but I have im unsure what
+> format Chilli is actually expecting the password to be passed in so it
+> can properly encrypt it against the uamsecret.
+>
+> Could anyone point me to some docs (or explain) what format the Chilli
+> daemon is is expecting to get the password in so I can properly write
+> this?
+>
+> Id be very grateful.
+>
+> Thanks!
+>
+> Ian
+>
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>
+>
+
+
+From oguzhank at bilkent.edu.tr  Fri Aug  7 06:13:48 2009
+From: oguzhank at bilkent.edu.tr (Oguzhan Kayhan)
+Date: Fri, 7 Aug 2009 09:13:48 +0300 (EEST)
+Subject: No peer protocol defined
+Message-ID: <34621.139.179.14.250.1249625628.squirrel@webmail.bilkent.edu.tr>
+
+Hi,
+
+I have a static-dynamic configuration with my chilli
+as 192.168.1.1-128 static
+129-255 as dynamic.
+
+And i got a client with static ip.
+That client was working till yesteday but starting this morning, i got the
+following error msg on chilli logs
+
+chilli.c: 1427: No peer protocol defined for 192.168.1.19
+
+What does this error means.. I restarted chilli, but no effect..still
+getting same msg.
+
+
+
+From wichert at wiggy.net  Fri Aug  7 07:02:01 2009
+From: wichert at wiggy.net (Wichert Akkerman)
+Date: Fri, 07 Aug 2009 09:02:01 +0200
+Subject: Encrypt passwords
+In-Reply-To: <6bd64e020908062046l7313fe74o53da853be4afd168@mail.gmail.com>
+References: <3ea93a690908061353m5f881180u778c53c5103a9ddc@mail.gmail.com> <6bd64e020908062046l7313fe74o53da853be4afd168@mail.gmail.com>
+Message-ID: <4A7BD169.5040902@wiggy.net>
+
+This should be about right, although it seems to go wrong still with 
+passwords over 16 characters in a way that I have not figured out yet:
+
+def ObfuscatePassword(challenge, password):
+     xorpad=challenge.decode("hex")
+     assert len(xorpad)==16
+     uamsecret=pylons.config.get("chilli.uamsecret", None)
+     if uamsecret:
+         xorpad=hashlib.md5(xorpad+uamsecret).digest()
+
+     while len(xorpad)<len(password):
+         xorpad+=xorpad
+     # NUL-pad the password to make it a multiple of the XOR-pad size
+     password+="\x00"*(len(xorpad)-len(password))
+
+     assert len(password)==len(xorpad)
+
+     result=[]
+     for i in range(len(password)):
+         result.append(chr(ord(password[i]) ^ ord(xorpad[i])))
+     result="".join(result)
+     return result.encode("hex")
+
+
+
+On 2009-8-7 05:46, Timothy White wrote:
+> There was a PHP example included with Chilli at one stage that had the
+> right "hashing"
+>
+> Have a poke around for that, it's probably on the net too.
+>
+> Tim
+>
+> On Fri, Aug 7, 2009 at 4:53 AM, IanC<ian.coffey at gmail.com>  wrote:
+>> Hello all,
+>>
+>> Ive finished rewriting my captive portal logic in Python, and its
+>> working wonderfully, except one big detail. Im having trouble properly
+>> binary encrypting the uamsecret and password together to send to the
+>> Chilli daemon for logins. I think Im close but I have im unsure what
+>> format Chilli is actually expecting the password to be passed in so it
+>> can properly encrypt it against the uamsecret.
+>>
+>> Could anyone point me to some docs (or explain) what format the Chilli
+>> daemon is is expecting to get the password in so I can properly write
+>> this?
+>>
+>> Id be very grateful.
+>>
+>> Thanks!
+>>
+>> Ian
+>>
+>> ---------------------------------------------------------------------
+>> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+>> For additional commands, e-mail: chilli-help at coova.org
+>> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+>> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>>
+>>
+>
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>
+
+
+-- 
+Wichert Akkerman <wichert at wiggy.net>   It is simple to make things.
+http://www.wiggy.net/                  It is hard to make things simple.
+
+
+From wichert at wiggy.net  Fri Aug  7 07:04:26 2009
+From: wichert at wiggy.net (Wichert Akkerman)
+Date: Fri, 07 Aug 2009 09:04:26 +0200
+Subject: Encrypt passwords
+In-Reply-To: <4A7BD169.5040902@wiggy.net>
+References: <3ea93a690908061353m5f881180u778c53c5103a9ddc@mail.gmail.com> <6bd64e020908062046l7313fe74o53da853be4afd168@mail.gmail.com> <4A7BD169.5040902@wiggy.net>
+Message-ID: <4A7BD1FA.40901@wiggy.net>
+
+On 2009-8-7 09:02, Wichert Akkerman wrote:
+> This should be about right, although it seems to go wrong still with
+> passwords over 16 characters in a way that I have not figured out yet:
+>
+> def ObfuscatePassword(challenge, password):
+> xorpad=challenge.decode("hex")
+> assert len(xorpad)==16
+> uamsecret=pylons.config.get("chilli.uamsecret", None)
+> if uamsecret:
+> xorpad=hashlib.md5(xorpad+uamsecret).digest()
+>
+> while len(xorpad)<len(password):
+> xorpad+=xorpad
+> # NUL-pad the password to make it a multiple of the XOR-pad size
+> password+="\x00"*(len(xorpad)-len(password))
+>
+> assert len(password)==len(xorpad)
+>
+> result=[]
+> for i in range(len(password)):
+> result.append(chr(ord(password[i]) ^ ord(xorpad[i])))
+> result="".join(result)
+> return result.encode("hex")
+
+And for completeness here are the unit tests that go with it:
+
+class TestObfuscatePassword(unittest.TestCase):
+     def setUp(self):
+         import pylons
+         self._pylons_config=pylons.config
+         pylons.config=dict()
+
+     def tearDown(self):
+         import pylons
+         pylons.config=self._pylons_config
+
+     def setSecret(self, secret):
+         import pylons
+         pylons.config["chilli.uamsecret"]=secret
+
+     def testSimplePasswordNoSecret(self):
+         pw=ObfuscatePassword("0102030405060708090A0B0C0D0E0F00", "AAAA")
+         self.assertEqual(len(pw), 32, "Password padded to challenge 
+length")
+         self.assertEqual(pw, "4043424505060708090a0b0c0d0e0f00")
+
+     def testSimplePasswordWithSecret(self):
+         self.setSecret("secret")
+         pw=ObfuscatePassword("0102030405060708090A0B0C0D0E0F00", "AAAA")
+         self.assertEqual(pw, "417fad1cfde2ffcdab12cf6db574ea9a")
+
+     def testPasswordLongerThanChallenge(self):
+         pw=ObfuscatePassword("01020102010201020102010201020102", 
+"AAAAAAAAAAAAAAAAAAAA")
+         self.assertEqual(len(pw), 64)
+         self.assertEqual(pw, 
+"4043404340434043404340434043404340434043010201020102010201020102")
+
+     def testEvilPassword(self):
+         evil="a`~!@#$%^&*()-_="
+         pw=ObfuscatePassword("00000000000000000000000000000000", evil)
+         self.assertEqual(pw, evil.encode("hex"))
+
+
+Wichert.
+
+
+-- 
+Wichert Akkerman <wichert at wiggy.net>   It is simple to make things.
+http://www.wiggy.net/                  It is hard to make things simple.
+
+
+From m.simioni at gmail.com  Fri Aug  7 07:55:39 2009
+From: m.simioni at gmail.com (Marco Simioni)
+Date: Fri, 7 Aug 2009 09:55:39 +0200
+Subject: traffic logging
+In-Reply-To: <3A9FA2AB4C8C43408CB63B85F222BC4A@pc>
+References: <f71cb680908050906i373a9e32mc3b551ec424bd188@mail.gmail.com>
+	 <3A9FA2AB4C8C43408CB63B85F222BC4A@pc>
+Message-ID: <f71cb680908070055r64400ceem4eb2d3b6a4b2aa60@mail.gmail.com>
+
+You're right.
+
+On my old machine, i am receiving this log:
+
+Aug  7 09:35:53 izc kernel: [26916606.764000] IPTABLES IZC : IN=eth1
+OUT= MAC=X:X:X:X:X:X:X:X:X:X:X:X SRC=X.X.X.X DST=X.X.X.X LEN=89
+TOS=0x00 PREC=0x00 TTL=255 ID=8000 PROTO=UDP SPT=54528 DPT=53 LEN=69
+
+It is logging on interface eth1, not on tun0.
+
+Btw, the iptables command was the same, in up.sh:
+
+iptables -t nat -I PREROUTING 1 -j LOG -m state --state NEW
+--log-tcp-options --log-ip-options --log-prefix "IPTABLES : "
+
+What is the difference? Why on my old machine it logs on eth1, and on
+my new machine it logs on tun0? Something changed on chilli?
+
+Old machine setup:
+
+Linux izc 2.6.15-26-386 #1 PREEMPT Fri Sep 8 19:55:17 UTC 2006 i686 GNU/Linux
+Ubuntu 6.06.1 LTS \n \l
+coova-chilli 1.0.12
+
+New machine setup:
+
+Linux izc.tecnofingroup.it 2.6.24-24-generic #1 SMP Fri Jul 24
+22:46:06 UTC 2009 i686 GNU/Linux
+Ubuntu 8.04.3 LTS \n \l
+coova-chilli 1.0.14
+
+Something changed on chilli? Or on ubuntu? Or whatelse?
+
+
+Thank you i.a.,
+
+Marco
+
+
+
+
+
+2009/8/6 EasyHorpak.com <info at easyhorpak.com>:
+> Mac address not appear on interfaces tun0.
+> Cause it virtual interfaces on eth1.
+>
+> wait for another additional..
+>
+>
+> ----- Original Message ----- From: "Marco Simioni" <m.simioni at gmail.com>
+> To: <chilli at coova.org>
+> Sent: Wednesday, August 05, 2009 7:06 PM
+> Subject: traffic logging
+>
+>
+>> Hi,
+>>
+>> i always logged network traffic throught my hotspot using this command in
+>> up.sh:
+>>
+>> ? #(LOGGING)
+>> ? iptables -t nat -I PREROUTING 1 -j LOG -m state --state NEW
+>> --log-tcp-options --log-ip-options --log-prefix "IPTABLES : "
+>>
+>> and this is the ouput in my syslog:
+>>
+>> Aug ?5 18:01:02 izc kernel: [ 1430.272826] IPTABLES : IN=tun0 OUT=
+>> MAC= SRC=XX.XX.XX.XX DST=XX.XX.XX.XX LEN=52 TOS=0x00 PREC=0x00 TTL=128
+>> ID=7897 DF PROTO=TCP SPT=50034 DPT=80 WINDOW=8192 RES=0x00 SYN URGP=0
+>> OPT (020405B40103030201010402)
+>>
+>> The MAC part is always empty.
+>>
+>> I am pretty sure that this worked on another machines, with older
+>> chilli versions (1.0.12 and 1.0.13).
+>>
+>> Now i'm using 1.0.14, ubuntu binary build.
+>>
+>> Linux izc 2.6.24-24-generic #1 SMP Fri Jul 24 22:46:06 UTC 2009 i686
+>> GNU/Linux
+>>
+>> Ubuntu 8.04.3 LTS \n \l
+>>
+>> Suggestions?
+>>
+>> ---------------------------------------------------------------------
+>> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+>> For additional commands, e-mail: chilli-help at coova.org
+>> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+>> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>>
+>>
+>
+>
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>
+>
+
+
+From timwhite88 at gmail.com  Sat Aug  8 14:49:11 2009
+From: timwhite88 at gmail.com (Timothy White)
+Date: Sat, 8 Aug 2009 22:49:11 +0800
+Subject: Making Coova Chilli not count local (server, not LAN) traffic
+In-Reply-To: <6bd64e020908042351o7ad5b380qd4029187877d788e@mail.gmail.com>
+References: <6bd64e020908042351o7ad5b380qd4029187877d788e@mail.gmail.com>
+Message-ID: <6bd64e020908080749i55699bf7vd51b5e92bc7d87a8@mail.gmail.com>
+
+Ok, some testing done.
+Apparently setting uamuiport doesn't play so nicely if something is
+already running on that port (like apache). It's fine if you are going
+to have an inetd style webserver launched via chilli, but not so good
+otherwise.
+But, I am at the right part of the code. Essentially, we could add a
+bit more code that lists a number of ports to the local server, that
+shouldn't be counted or "leaky bucketed". For now, I've just added one
+port, and hard coded it in, port 80. But adding it as a list of ports,
+and not hard coded but configurable on the command line and config
+files, shouldn't be too much harder.
+
+I've attached my patch.
+
+Tim
+
+On Wed, Aug 5, 2009 at 2:51 PM, Timothy White<timwhite88 at gmail.com> wrote:
+> I apologise in advance if I break any list etiquettes for this list.
+>
+> I'm basically tired of waiting for a feature to be added, so I'm going
+> to work on adding it myself, or at least trying to. (It's been a long
+> time since I did any C programming, so I'm a best rusty).
+> Having never worked on the Chilli code, I'm not 100% sure how it
+> works. From my brief look at the code, chilli.c around line 1464 is
+> where the actual "accounting" happens, in the cb_tun_ind function I
+> think. I'm not 100% sure on this at all though.
+>
+> Can someone who knows the code let me know if that is actually where
+> the accounting of data happens? From what I can see ether
+> appconn->s_state.output_packets or appconn->s_state.input_packets is
+> increased for each packet, and the associated octets count depending
+> on whether it's in or out. So this suggests to me that I can just wrap
+> that small bit of code with an if statement that checks ip address and
+> ports, and not count traffic to and from the local server.
+> It also appears to my untrained eye, that while it's not supposed to
+> count traffic to and from the "uam" service on 3990, it still does
+> count it, so here would be a chance to fix that too.
+>
+> The if statement would look like this.
+>
+> ?if ( ! (ipph->saddr ?== options()->uamlisten.s_addr &&
+> ? ? ? ? ?(ipph->sport == htons(options()->uamport) ||
+> ? ? ? ? ? ipph->sport == htons(options()->uamuiport)))) {
+>
+> You'd also set uamuiport in your config files to be what ever port
+> your local webserver runs on. (I have also noticed that wwwui exists
+> in the Changelog but can't be found anywhere else.)
+>
+> I haven't had a chance to test the code (being at Uni atm, and not
+> near my testing box), so I'll test it when I get home and have a try.
+> If it works, I'll submit the patch.
+>
+> If I'm totally off track, can someone please point me in the correct
+> direction to where the accounting happens, so I can poke around the
+> code and try and work out how to get it to not count local server
+> traffic.
+>
+> Hope I can "code" this feature and fix what to me and a few others is a bug.
+>
+> I'm open to criticism as long as it's constructive to fixing problems
+> and not cutting down. I am a programmer, but have a lot to learn so
+> any chance to learn I'll take.
+>
+> Tim White
+> http://weirdo.bur.st/
+> http://purewhite.id.au/
+>
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: chilli.c.diff
+Type: text/x-patch
+Size: 935 bytes
+Desc: not available
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20090808/d284a7cc/attachment.bin>
+
+From wichert at wiggy.net  Mon Aug 10 09:27:38 2009
+From: wichert at wiggy.net (Wichert Akkerman)
+Date: Mon, 10 Aug 2009 11:27:38 +0200
+Subject: Password encoding/decoding
+In-Reply-To: <4A76D43D.5070805@wiggy.net>
+References: <4A76D43D.5070805@wiggy.net>
+Message-ID: <4A7FE80A.5040005@wiggy.net>
+
+I have been debugging this a bit further. I have a test run with the 
+following settings:
+
+UAM secret: tushaethaihahqui
+challenge: 10a1803a58fea7778e65935fba955185
+raw password: ABCDEFGHIJKLMNOPQRSTUVWXYZ
+
+The PAP obfuscated password becomes: 
+4a8c7b9f70c02ae48da682f0438969c95a9c6b8f60d03af49db6c9bc0ec72699
+
+chilli decodes that and after passing it on FreeRADIUS reports:
+rlm_pap: login attempt with password "??U?"
+
+if I try to decode using a simple decode.c I extracted from redir.c I 
+get the right password:
+
+[fog;..ldout/devel/decode]-224> ./decode 
+10a1803a58fea7778e65935fba955185 
+4a8c7b9f70c02ae48da682f0438969c95a9c6b8f60d03af49db6c9bc0ec72699 
+tushaethaihahqui
+ABCDEFGHIJKLMNOPQRSTUVWXYZ
+
+as far as I can see my obfuscation code looks correct:
+
+def ObfuscatePassword(challenge, password):
+     xorpad=challenge.decode("hex")
+     assert len(xorpad)==16
+     uamsecret=pylons.config.get("chilli.uamsecret", None)
+     if uamsecret:
+         xorpad=hashlib.md5(xorpad+uamsecret).digest()
+
+     while len(xorpad)<len(password):
+         xorpad+=xorpad
+     # NUL-pad the password to make it a multiple of the XOR-pad size
+     password+="\x00"*(len(xorpad)-len(password))
+
+     assert len(password)==len(xorpad)
+
+     result=[]
+     for i in range(len(password)):
+         result.append(chr(ord(password[i]) ^ ord(xorpad[i])))
+     result="".join(result)
+     return result.encode("hex")
+
+
+Does anyone have an idea why this goes wrong?
+
+
+
+On 8/3/09 14:12 , Wichert Akkerman wrote:
+> I am wondering if something goes wrong in the password handling. I know
+> something goes wrong on my end in the UAM<->Chilli communication which
+> mangles passwords: if I sent ABCDEFGHIJKLMNOPQRSTUVWXYZ as password
+> chilli decodes that to ABCDEFGHIJKLMNOPK<lots of binary>. But things go
+> wrong on when that is sent to RADIUS as well. Here is the FreeRadius log
+> output for the same request:
+>
+> rad_recv: Access-Request packet from host 127.0.0.1 port 56008, id=2,
+> length=269
+> Vendor-14559-Attr-8 = 0x312e302e3134
+> User-Name = "wichert"
+> User-Password = "U\004j,"
+> NAS-IP-Address = 10.1.0.1
+> Service-Type = Login-User
+> Framed-IP-Address = 10.1.0.3
+> Calling-Station-Id = "00-0C-29-27-79-83"
+> Called-Station-Id = "00-0C-29-6C-0F-92"
+> NAS-Identifier = "nas01"
+> Acct-Session-Id = "4a76d33900000002"
+> NAS-Port-Type = Wireless-802.11
+> NAS-Port = 2
+> WISPr-Location-ID = "isocc=NL,cc=31,ac=020,network=Attingo,KLM_Lounge"
+> WISPr-Location-Name = "KLM_Lounge"
+> WISPr-Logoff-URL = "http://10.1.0.1:3990/logoff"
+> Message-Authenticator = 0x4d6f776979e5711baf9ae428338e9bf7
+> Login incorrect (rlm_pap: CLEAR TEXT password check failed):
+> [wichert/U\004j,] (from client localhost port 2 cli 00-0C-29-27-79-83)
+> WARNING: Unprintable characters in the password. Double-check the shared
+> secret on the server and the NAS!
+>
+> which shows that my bad password has become even more corrupted.
+>
+> Wichert.
+
+-------------- next part --------------
+An embedded and charset-unspecified text was scrubbed...
+Name: decode.c
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20090810/48c67077/attachment.txt>
+
+From wichert at wiggy.net  Mon Aug 10 09:45:55 2009
+From: wichert at wiggy.net (Wichert Akkerman)
+Date: Mon, 10 Aug 2009 11:45:55 +0200
+Subject: Password encoding/decoding
+In-Reply-To: <4A7FE80A.5040005@wiggy.net>
+References: <4A76D43D.5070805@wiggy.net> <4A7FE80A.5040005@wiggy.net>
+Message-ID: <4A7FEC53.2040102@wiggy.net>
+
+A bit more debugging done I am now confident that this is indeed a bug 
+in chilli. The culprit is the use of redir_hextochar which uses a 
+hardcoded limit of REDIR_MD5LEN, which is never correct for the places 
+it is used in redir.c. I've attached a patch which correct this. After 
+applying the patch passwords > 16 characters work correctly for me.
+
+Wichert.
+-------------- next part --------------
+An embedded and charset-unspecified text was scrubbed...
+Name: pwlength.diff
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20090810/668259ce/attachment.asc>
+
+From wichert at wiggy.net  Mon Aug 10 10:10:09 2009
+From: wichert at wiggy.net (Wichert Akkerman)
+Date: Mon, 10 Aug 2009 12:10:09 +0200
+Subject: amp-handling bug in bstring_buildurl
+Message-ID: <4A7FF201.7000007@wiggy.net>
+
+I found a bug in the handling of ampersands in bstring_buildurl: if base 
+redir_url already has a query string '&' is always inserted instead
+of the amp parameter that is passed in. This breaks environments where
+wisprlogin or uamserver have a predefined query string.
+
+I have attached a patch which fixes this issue.
+
+Wichert.
+-------------- next part --------------
+An embedded and charset-unspecified text was scrubbed...
+Name: amp.diff
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20090810/458b3539/attachment.txt>
+
+From wichert at wiggy.net  Mon Aug 10 10:34:14 2009
+From: wichert at wiggy.net (Wichert Akkerman)
+Date: Mon, 10 Aug 2009 12:34:14 +0200
+Subject: Idle timeout handling fix
+Message-ID: <4A7FF7A6.9050408@wiggy.net>
+
+As was discussed previously on this list and on irc the current idle 
+time handling in chilli uses both incoming and outgoing traffic to 
+measure idle time. This is not ideal, and can be very expensive for 
+environments where people pay for time used.
+
+I've attached a patch which modifies chilli to only take outgoing 
+traffic into account when determining the idle time. To do this I 
+introduced a new last_sent_time timestamp to the session parameters and 
+updated the code to update and check that.
+
+Wichert.
+-------------- next part --------------
+An embedded and charset-unspecified text was scrubbed...
+Name: idle.diff
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20090810/54147036/attachment.asc>
+
+From wichert at wiggy.net  Mon Aug 10 11:56:31 2009
+From: wichert at wiggy.net (Wichert Akkerman)
+Date: Mon, 10 Aug 2009 13:56:31 +0200
+Subject: Passwords of length 16 not handled correctly
+Message-ID: <4A800AEF.8080103@wiggy.net>
+
+I found another corner case in the password handling: normally passwords 
+are NUL-padded to be a multiple of 16 in length before the as part of 
+the PAP-obfuscation. chilli then decodes the obfuscated password and 
+ends up with a proper NUL-terminated string. However if a password is 
+exactly 16 characters, or a multiple thereof, long no NUL-padding 
+happens. As a result the password string chilli gets is never 
+NUL-terminated. The fix is easy: make sure the incoming password is 
+NUL-terminated so we can get a valid length for it and limit the decoded 
+password to strlen(conn->password) characters. I've attached a patch 
+with this change.
+
+Wichert.
+
+
+-------------- next part --------------
+An embedded and charset-unspecified text was scrubbed...
+Name: pw16.diff
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20090810/60585acb/attachment.txt>
+
+From m.simioni at gmail.com  Mon Aug 10 13:39:41 2009
+From: m.simioni at gmail.com (Marco Simioni)
+Date: Mon, 10 Aug 2009 15:39:41 +0200
+Subject: traffic logging
+In-Reply-To: <f71cb680908070055r64400ceem4eb2d3b6a4b2aa60@mail.gmail.com>
+References: <f71cb680908050906i373a9e32mc3b551ec424bd188@mail.gmail.com>
+	 <3A9FA2AB4C8C43408CB63B85F222BC4A@pc>
+	 <f71cb680908070055r64400ceem4eb2d3b6a4b2aa60@mail.gmail.com>
+Message-ID: <f71cb680908100639n155d736dgdd6f04933b473eae@mail.gmail.com>
+
+no ideas ?
+
+2009/8/7 Marco Simioni <m.simioni at gmail.com>:
+> You're right.
+>
+> On my old machine, i am receiving this log:
+>
+> Aug ?7 09:35:53 izc kernel: [26916606.764000] IPTABLES IZC : IN=eth1
+> OUT= MAC=X:X:X:X:X:X:X:X:X:X:X:X SRC=X.X.X.X DST=X.X.X.X LEN=89
+> TOS=0x00 PREC=0x00 TTL=255 ID=8000 PROTO=UDP SPT=54528 DPT=53 LEN=69
+>
+> It is logging on interface eth1, not on tun0.
+>
+> Btw, the iptables command was the same, in up.sh:
+>
+> iptables -t nat -I PREROUTING 1 -j LOG -m state --state NEW
+> --log-tcp-options --log-ip-options --log-prefix "IPTABLES : "
+>
+> What is the difference? Why on my old machine it logs on eth1, and on
+> my new machine it logs on tun0? Something changed on chilli?
+>
+> Old machine setup:
+>
+> Linux izc 2.6.15-26-386 #1 PREEMPT Fri Sep 8 19:55:17 UTC 2006 i686 GNU/Linux
+> Ubuntu 6.06.1 LTS \n \l
+> coova-chilli 1.0.12
+>
+> New machine setup:
+>
+> Linux izc.tecnofingroup.it 2.6.24-24-generic #1 SMP Fri Jul 24
+> 22:46:06 UTC 2009 i686 GNU/Linux
+> Ubuntu 8.04.3 LTS \n \l
+> coova-chilli 1.0.14
+>
+> Something changed on chilli? Or on ubuntu? Or whatelse?
+>
+>
+> Thank you i.a.,
+>
+> Marco
+>
+>
+>
+>
+>
+> 2009/8/6 EasyHorpak.com <info at easyhorpak.com>:
+>> Mac address not appear on interfaces tun0.
+>> Cause it virtual interfaces on eth1.
+>>
+>> wait for another additional..
+>>
+>>
+>> ----- Original Message ----- From: "Marco Simioni" <m.simioni at gmail.com>
+>> To: <chilli at coova.org>
+>> Sent: Wednesday, August 05, 2009 7:06 PM
+>> Subject: traffic logging
+>>
+>>
+>>> Hi,
+>>>
+>>> i always logged network traffic throught my hotspot using this command in
+>>> up.sh:
+>>>
+>>> ? #(LOGGING)
+>>> ? iptables -t nat -I PREROUTING 1 -j LOG -m state --state NEW
+>>> --log-tcp-options --log-ip-options --log-prefix "IPTABLES : "
+>>>
+>>> and this is the ouput in my syslog:
+>>>
+>>> Aug ?5 18:01:02 izc kernel: [ 1430.272826] IPTABLES : IN=tun0 OUT=
+>>> MAC= SRC=XX.XX.XX.XX DST=XX.XX.XX.XX LEN=52 TOS=0x00 PREC=0x00 TTL=128
+>>> ID=7897 DF PROTO=TCP SPT=50034 DPT=80 WINDOW=8192 RES=0x00 SYN URGP=0
+>>> OPT (020405B40103030201010402)
+>>>
+>>> The MAC part is always empty.
+>>>
+>>> I am pretty sure that this worked on another machines, with older
+>>> chilli versions (1.0.12 and 1.0.13).
+>>>
+>>> Now i'm using 1.0.14, ubuntu binary build.
+>>>
+>>> Linux izc 2.6.24-24-generic #1 SMP Fri Jul 24 22:46:06 UTC 2009 i686
+>>> GNU/Linux
+>>>
+>>> Ubuntu 8.04.3 LTS \n \l
+>>>
+>>> Suggestions?
+>>>
+>>> ---------------------------------------------------------------------
+>>> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+>>> For additional commands, e-mail: chilli-help at coova.org
+>>> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+>>> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>>>
+>>>
+>>
+>>
+>> ---------------------------------------------------------------------
+>> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+>> For additional commands, e-mail: chilli-help at coova.org
+>> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+>> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>>
+>>
+>
+
+
+From wichert at wiggy.net  Mon Aug 10 13:43:12 2009
+From: wichert at wiggy.net (Wichert Akkerman)
+Date: Mon, 10 Aug 2009 15:43:12 +0200
+Subject: traffic logging
+In-Reply-To: <f71cb680908100639n155d736dgdd6f04933b473eae@mail.gmail.com>
+References: <f71cb680908050906i373a9e32mc3b551ec424bd188@mail.gmail.com>	 <3A9FA2AB4C8C43408CB63B85F222BC4A@pc>	 <f71cb680908070055r64400ceem4eb2d3b6a4b2aa60@mail.gmail.com> <f71cb680908100639n155d736dgdd6f04933b473eae@mail.gmail.com>
+Message-ID: <4A8023F0.1000505@wiggy.net>
+
+Modify whatever sets the iptables rule to count on the ethernet device 
+instead of the tun device? Should be a fairly trivial change.
+
+On 8/10/09 15:39 , Marco Simioni wrote:
+> no ideas ?
+>
+> 2009/8/7 Marco Simioni<m.simioni at gmail.com>:
+>> You're right.
+>>
+>> On my old machine, i am receiving this log:
+>>
+>> Aug  7 09:35:53 izc kernel: [26916606.764000] IPTABLES IZC : IN=eth1
+>> OUT= MAC=X:X:X:X:X:X:X:X:X:X:X:X SRC=X.X.X.X DST=X.X.X.X LEN=89
+>> TOS=0x00 PREC=0x00 TTL=255 ID=8000 PROTO=UDP SPT=54528 DPT=53 LEN=69
+>>
+>> It is logging on interface eth1, not on tun0.
+>>
+>> Btw, the iptables command was the same, in up.sh:
+>>
+>> iptables -t nat -I PREROUTING 1 -j LOG -m state --state NEW
+>> --log-tcp-options --log-ip-options --log-prefix "IPTABLES : "
+>>
+>> What is the difference? Why on my old machine it logs on eth1, and on
+>> my new machine it logs on tun0? Something changed on chilli?
+>>
+>> Old machine setup:
+>>
+>> Linux izc 2.6.15-26-386 #1 PREEMPT Fri Sep 8 19:55:17 UTC 2006 i686 GNU/Linux
+>> Ubuntu 6.06.1 LTS \n \l
+>> coova-chilli 1.0.12
+>>
+>> New machine setup:
+>>
+>> Linux izc.tecnofingroup.it 2.6.24-24-generic #1 SMP Fri Jul 24
+>> 22:46:06 UTC 2009 i686 GNU/Linux
+>> Ubuntu 8.04.3 LTS \n \l
+>> coova-chilli 1.0.14
+>>
+>> Something changed on chilli? Or on ubuntu? Or whatelse?
+>>
+>>
+>> Thank you i.a.,
+>>
+>> Marco
+>>
+>>
+>>
+>>
+>>
+>> 2009/8/6 EasyHorpak.com<info at easyhorpak.com>:
+>>> Mac address not appear on interfaces tun0.
+>>> Cause it virtual interfaces on eth1.
+>>>
+>>> wait for another additional..
+>>>
+>>>
+>>> ----- Original Message ----- From: "Marco Simioni"<m.simioni at gmail.com>
+>>> To:<chilli at coova.org>
+>>> Sent: Wednesday, August 05, 2009 7:06 PM
+>>> Subject: traffic logging
+>>>
+>>>
+>>>> Hi,
+>>>>
+>>>> i always logged network traffic throught my hotspot using this command in
+>>>> up.sh:
+>>>>
+>>>>    #(LOGGING)
+>>>>    iptables -t nat -I PREROUTING 1 -j LOG -m state --state NEW
+>>>> --log-tcp-options --log-ip-options --log-prefix "IPTABLES : "
+>>>>
+>>>> and this is the ouput in my syslog:
+>>>>
+>>>> Aug  5 18:01:02 izc kernel: [ 1430.272826] IPTABLES : IN=tun0 OUT=
+>>>> MAC= SRC=XX.XX.XX.XX DST=XX.XX.XX.XX LEN=52 TOS=0x00 PREC=0x00 TTL=128
+>>>> ID=7897 DF PROTO=TCP SPT=50034 DPT=80 WINDOW=8192 RES=0x00 SYN URGP=0
+>>>> OPT (020405B40103030201010402)
+>>>>
+>>>> The MAC part is always empty.
+>>>>
+>>>> I am pretty sure that this worked on another machines, with older
+>>>> chilli versions (1.0.12 and 1.0.13).
+>>>>
+>>>> Now i'm using 1.0.14, ubuntu binary build.
+>>>>
+>>>> Linux izc 2.6.24-24-generic #1 SMP Fri Jul 24 22:46:06 UTC 2009 i686
+>>>> GNU/Linux
+>>>>
+>>>> Ubuntu 8.04.3 LTS \n \l
+>>>>
+>>>> Suggestions?
+>>>>
+>>>> ---------------------------------------------------------------------
+>>>> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+>>>> For additional commands, e-mail: chilli-help at coova.org
+>>>> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+>>>> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>>>>
+>>>>
+>>>
+>>>
+>>> ---------------------------------------------------------------------
+>>> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+>>> For additional commands, e-mail: chilli-help at coova.org
+>>> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+>>> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>>>
+>>>
+>>
+>
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>
+
+
+
+From m.simioni at gmail.com  Mon Aug 10 18:22:54 2009
+From: m.simioni at gmail.com (Marco Simioni)
+Date: Mon, 10 Aug 2009 20:22:54 +0200
+Subject: traffic logging
+In-Reply-To: <4A8023F0.1000505@wiggy.net>
+References: <f71cb680908050906i373a9e32mc3b551ec424bd188@mail.gmail.com>
+	 <3A9FA2AB4C8C43408CB63B85F222BC4A@pc>
+	 <f71cb680908070055r64400ceem4eb2d3b6a4b2aa60@mail.gmail.com>
+	 <f71cb680908100639n155d736dgdd6f04933b473eae@mail.gmail.com>
+	 <4A8023F0.1000505@wiggy.net>
+Message-ID: <f71cb680908101122q5940705bp7d8d93025ca855e4@mail.gmail.com>
+
+Ok, ty.
+
+I'll try to force to eth1. I'll let you know.
+
+Regards,
+
+Marco
+
+
+2009/8/10, Wichert Akkerman <wichert at wiggy.net>:
+> Modify whatever sets the iptables rule to count on the ethernet device
+> instead of the tun device? Should be a fairly trivial change.
+>
+> On 8/10/09 15:39 , Marco Simioni wrote:
+>> no ideas ?
+>>
+>> 2009/8/7 Marco Simioni<m.simioni at gmail.com>:
+>>> You're right.
+>>>
+>>> On my old machine, i am receiving this log:
+>>>
+>>> Aug  7 09:35:53 izc kernel: [26916606.764000] IPTABLES IZC : IN=eth1
+>>> OUT= MAC=X:X:X:X:X:X:X:X:X:X:X:X SRC=X.X.X.X DST=X.X.X.X LEN=89
+>>> TOS=0x00 PREC=0x00 TTL=255 ID=8000 PROTO=UDP SPT=54528 DPT=53 LEN=69
+>>>
+>>> It is logging on interface eth1, not on tun0.
+>>>
+>>> Btw, the iptables command was the same, in up.sh:
+>>>
+>>> iptables -t nat -I PREROUTING 1 -j LOG -m state --state NEW
+>>> --log-tcp-options --log-ip-options --log-prefix "IPTABLES : "
+>>>
+>>> What is the difference? Why on my old machine it logs on eth1, and on
+>>> my new machine it logs on tun0? Something changed on chilli?
+>>>
+>>> Old machine setup:
+>>>
+>>> Linux izc 2.6.15-26-386 #1 PREEMPT Fri Sep 8 19:55:17 UTC 2006 i686
+>>> GNU/Linux
+>>> Ubuntu 6.06.1 LTS \n \l
+>>> coova-chilli 1.0.12
+>>>
+>>> New machine setup:
+>>>
+>>> Linux izc.tecnofingroup.it 2.6.24-24-generic #1 SMP Fri Jul 24
+>>> 22:46:06 UTC 2009 i686 GNU/Linux
+>>> Ubuntu 8.04.3 LTS \n \l
+>>> coova-chilli 1.0.14
+>>>
+>>> Something changed on chilli? Or on ubuntu? Or whatelse?
+>>>
+>>>
+>>> Thank you i.a.,
+>>>
+>>> Marco
+>>>
+>>>
+>>>
+>>>
+>>>
+>>> 2009/8/6 EasyHorpak.com<info at easyhorpak.com>:
+>>>> Mac address not appear on interfaces tun0.
+>>>> Cause it virtual interfaces on eth1.
+>>>>
+>>>> wait for another additional..
+>>>>
+>>>>
+>>>> ----- Original Message ----- From: "Marco Simioni"<m.simioni at gmail.com>
+>>>> To:<chilli at coova.org>
+>>>> Sent: Wednesday, August 05, 2009 7:06 PM
+>>>> Subject: traffic logging
+>>>>
+>>>>
+>>>>> Hi,
+>>>>>
+>>>>> i always logged network traffic throught my hotspot using this command
+>>>>> in
+>>>>> up.sh:
+>>>>>
+>>>>>    #(LOGGING)
+>>>>>    iptables -t nat -I PREROUTING 1 -j LOG -m state --state NEW
+>>>>> --log-tcp-options --log-ip-options --log-prefix "IPTABLES : "
+>>>>>
+>>>>> and this is the ouput in my syslog:
+>>>>>
+>>>>> Aug  5 18:01:02 izc kernel: [ 1430.272826] IPTABLES : IN=tun0 OUT=
+>>>>> MAC= SRC=XX.XX.XX.XX DST=XX.XX.XX.XX LEN=52 TOS=0x00 PREC=0x00 TTL=128
+>>>>> ID=7897 DF PROTO=TCP SPT=50034 DPT=80 WINDOW=8192 RES=0x00 SYN URGP=0
+>>>>> OPT (020405B40103030201010402)
+>>>>>
+>>>>> The MAC part is always empty.
+>>>>>
+>>>>> I am pretty sure that this worked on another machines, with older
+>>>>> chilli versions (1.0.12 and 1.0.13).
+>>>>>
+>>>>> Now i'm using 1.0.14, ubuntu binary build.
+>>>>>
+>>>>> Linux izc 2.6.24-24-generic #1 SMP Fri Jul 24 22:46:06 UTC 2009 i686
+>>>>> GNU/Linux
+>>>>>
+>>>>> Ubuntu 8.04.3 LTS \n \l
+>>>>>
+>>>>> Suggestions?
+>>>>>
+>>>>> ---------------------------------------------------------------------
+>>>>> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+>>>>> For additional commands, e-mail: chilli-help at coova.org
+>>>>> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+>>>>> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>>>>>
+>>>>>
+>>>>
+>>>>
+>>>> ---------------------------------------------------------------------
+>>>> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+>>>> For additional commands, e-mail: chilli-help at coova.org
+>>>> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+>>>> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>>>>
+>>>>
+>>>
+>>
+>> ---------------------------------------------------------------------
+>> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+>> For additional commands, e-mail: chilli-help at coova.org
+>> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+>> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>>
+>
+>
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>
+>
+
+
+From wlan at mac.com  Tue Aug 11 05:06:43 2009
+From: wlan at mac.com (wlanmac)
+Date: Tue, 11 Aug 2009 07:06:43 +0200
+Subject: Passwords of length 16 not handled correctly
+In-Reply-To: <4A800AEF.8080103@wiggy.net>
+References: <4A800AEF.8080103@wiggy.net>
+Message-ID: <1249967203.7770.7.camel@david-laptop>
+
+As discussed in IRC, all patches were committed. 
+
+Wichert, if you send me a htpasswd encoded password and your choice of
+usernames, I'll set you up for commit access in SVN.
+
+Also, did you mention you knew off hand how to import this old mailing
+list (based on qmail/ezmlm) to Mailman? I need to do that before this
+server completely dies. 
+
+Thanks,
+David
+
+
+
+On Mon, 2009-08-10 at 13:56 +0200, Wichert Akkerman wrote:
+> I found another corner case in the password handling: normally passwords 
+> are NUL-padded to be a multiple of 16 in length before the as part of 
+> the PAP-obfuscation. chilli then decodes the obfuscated password and 
+> ends up with a proper NUL-terminated string. However if a password is 
+> exactly 16 characters, or a multiple thereof, long no NUL-padding 
+> happens. As a result the password string chilli gets is never 
+> NUL-terminated. The fix is easy: make sure the incoming password is 
+> NUL-terminated so we can get a valid length for it and limit the decoded 
+> password to strlen(conn->password) characters. I've attached a patch 
+> with this change.
+> 
+> Wichert.
+> 
+> 
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+
+
+
+From wlan at mac.com  Tue Aug 11 05:13:49 2009
+From: wlan at mac.com (wlanmac)
+Date: Tue, 11 Aug 2009 07:13:49 +0200
+Subject: No peer protocol defined
+In-Reply-To: <34621.139.179.14.250.1249625628.squirrel@webmail.bilkent.edu.tr>
+References: <34621.139.179.14.250.1249625628.squirrel@webmail.bilkent.edu.tr>
+Message-ID: <1249967629.7770.16.camel@david-laptop>
+
+The client device probably just needs to do DHCP again. You'll see this
+sometimes when chilli was restarted, it sees traffic from a device, but
+the device hasn't DHCP'ed yet (as far as that chilli knows). You can try
+out anyip features, or you can have your client renew the lease. 
+
+
+On Fri, 2009-08-07 at 09:13 +0300, Oguzhan Kayhan wrote:
+> Hi,
+> 
+> I have a static-dynamic configuration with my chilli
+> as 192.168.1.1-128 static
+> 129-255 as dynamic.
+> 
+> And i got a client with static ip.
+> That client was working till yesteday but starting this morning, i got the
+> following error msg on chilli logs
+> 
+> chilli.c: 1427: No peer protocol defined for 192.168.1.19
+> 
+> What does this error means.. I restarted chilli, but no effect..still
+> getting same msg.
+> 
+> 
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+> 
+
+
+
+From wichert at wiggy.net  Tue Aug 11 07:07:48 2009
+From: wichert at wiggy.net (Wichert Akkerman)
+Date: Tue, 11 Aug 2009 09:07:48 +0200
+Subject: Passwords of length 16 not handled correctly
+In-Reply-To: <1249967203.7770.7.camel@david-laptop>
+References: <4A800AEF.8080103@wiggy.net> <1249967203.7770.7.camel@david-laptop>
+Message-ID: <4A8118C4.7050606@wiggy.net>
+
+On 8/11/09 07:06 , wlanmac wrote:
+> As discussed in IRC, all patches were committed.
+>
+> Wichert, if you send me a htpasswd encoded password and your choice of
+> usernames, I'll set you up for commit access in SVN.
+
+That would be very helpful, thanks! Here is a passwd entry:
+
+wichert:urCqh9A2FifWE
+
+> Also, did you mention you knew off hand how to import this old mailing
+> list (based on qmail/ezmlm) to Mailman? I need to do that before this
+> server completely dies.
+
+As long as you have the emails in an mbox format mailbox you can import 
+them into mailman. Mailman uses an mbox file to keep its main archive in 
+/var/lib/mailman/private/<listname>.mbox. If you replace that with an 
+mbox file with the archive you can then run mailman's arch command 
+(/usr/lib/mailman/bin/arch usually) to regenerate the webpages with the 
+list archive.
+
+
+Wichert.
+
+
+From oguzhank at bilkent.edu.tr  Tue Aug 11 07:42:04 2009
+From: oguzhank at bilkent.edu.tr (Oguzhan Kayhan)
+Date: Tue, 11 Aug 2009 10:42:04 +0300 (EEST)
+Subject: No peer protocol defined
+In-Reply-To: <1249967629.7770.16.camel@david-laptop>
+References: <34621.139.179.14.250.1249625628.squirrel@webmail.bilkent.edu.tr>
+    <1249967629.7770.16.camel@david-laptop>
+Message-ID: <51934.139.179.14.250.1249976524.squirrel@webmail.bilkent.edu.tr>
+
+> The client device probably just needs to do DHCP again. You'll see this
+> sometimes when chilli was restarted, it sees traffic from a device, but
+> the device hasn't DHCP'ed yet (as far as that chilli knows). You can try
+> out anyip features, or you can have your client renew the lease.
+>
+>
+Client configuration was static only. No dhcp configs..
+And its ip was given on the static subnet of coova config.
+I tried both anyip enabled and disabled..but got no results so far.
+
+
+
+> On Fri, 2009-08-07 at 09:13 +0300, Oguzhan Kayhan wrote:
+>> Hi,
+>>
+>> I have a static-dynamic configuration with my chilli
+>> as 192.168.1.1-128 static
+>> 129-255 as dynamic.
+>>
+>> And i got a client with static ip.
+>> That client was working till yesteday but starting this morning, i got
+>> the
+>> following error msg on chilli logs
+>>
+>> chilli.c: 1427: No peer protocol defined for 192.168.1.19
+>>
+>> What does this error means.. I restarted chilli, but no effect..still
+>> getting same msg.
+>>
+>>
+>> ---------------------------------------------------------------------
+>> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+>> For additional commands, e-mail: chilli-help at coova.org
+>> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+>> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>>
+>
+>
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>
+>
+
+
+
+
+From theo at ubuntucy.org  Fri Aug 14 04:48:13 2009
+From: theo at ubuntucy.org (Theodotos Andreou)
+Date: Fri, 14 Aug 2009 07:48:13 +0300
+Subject: DHCP not activated on CoovaChilli
+Message-ID: <4A84EC8D.9030702@ubuntucy.org>
+
+I am not sure if this is the correct place to post problems. Anyway...
+
+I have setup CoovaChilli on Ubuntu 8.04 based on the following howto:
+
+https://help.ubuntu.com/community/WifiDocs/CoovaChilli
+
+After I finish the dhcp service from CoovaChilli is not working and even 
+when I put manually an IP on the client in the same subnet as the 
+internal network neither the client or the server are pingable. I used 
+the IP 10.1.0.1 in the internal interface (etrh1) but that IP is 
+actually assigned to the tun0 interface. Is this how is supposed to be?
+
+The dhcpif interface is set to eth1.
+
+
+From wlan at mac.com  Fri Aug 14 04:54:21 2009
+From: wlan at mac.com (wlanmac)
+Date: Fri, 14 Aug 2009 06:54:21 +0200
+Subject: DHCP not activated on CoovaChilli
+In-Reply-To: <4A84EC8D.9030702@ubuntucy.org>
+References: <4A84EC8D.9030702@ubuntucy.org>
+Message-ID: <1250225661.7971.7.camel@david-laptop>
+
+If you have two interfaces with the same IP, it will not work. 
+
+The dhcpif (eth1) should not have an IP usually (ifconfig eth1 0.0.0.0).
+
+David
+
+
+On Fri, 2009-08-14 at 07:48 +0300, Theodotos Andreou wrote:
+> I am not sure if this is the correct place to post problems. Anyway...
+> 
+> I have setup CoovaChilli on Ubuntu 8.04 based on the following howto:
+> 
+> https://help.ubuntu.com/community/WifiDocs/CoovaChilli
+> 
+> After I finish the dhcp service from CoovaChilli is not working and even 
+> when I put manually an IP on the client in the same subnet as the 
+> internal network neither the client or the server are pingable. I used 
+> the IP 10.1.0.1 in the internal interface (etrh1) but that IP is 
+> actually assigned to the tun0 interface. Is this how is supposed to be?
+> 
+> The dhcpif interface is set to eth1.
+> 
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+> 
+
+
+
+From theo at ubuntucy.org  Fri Aug 14 11:14:47 2009
+From: theo at ubuntucy.org (Theodotos Andreou)
+Date: Fri, 14 Aug 2009 14:14:47 +0300
+Subject: DHCP not activated on CoovaChilli
+In-Reply-To: <1250225661.7971.7.camel@david-laptop>
+References: <4A84EC8D.9030702@ubuntucy.org> <1250225661.7971.7.camel@david-laptop>
+Message-ID: <4A854727.50305@ubuntucy.org>
+
+No eth0 is configured through a dhcp client and it has a different IP 
+than the internal one.
+
+O/H wlanmac ??????:
+> If you have two interfaces with the same IP, it will not work. 
+> 
+> The dhcpif (eth1) should not have an IP usually (ifconfig eth1 0.0.0.0).
+> 
+> David
+> 
+> 
+> On Fri, 2009-08-14 at 07:48 +0300, Theodotos Andreou wrote:
+>> I am not sure if this is the correct place to post problems. Anyway...
+>>
+>> I have setup CoovaChilli on Ubuntu 8.04 based on the following howto:
+>>
+>> https://help.ubuntu.com/community/WifiDocs/CoovaChilli
+>>
+>> After I finish the dhcp service from CoovaChilli is not working and even 
+>> when I put manually an IP on the client in the same subnet as the 
+>> internal network neither the client or the server are pingable. I used 
+>> the IP 10.1.0.1 in the internal interface (etrh1) but that IP is 
+>> actually assigned to the tun0 interface. Is this how is supposed to be?
+>>
+>> The dhcpif interface is set to eth1.
+>>
+>> ---------------------------------------------------------------------
+>> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+>> For additional commands, e-mail: chilli-help at coova.org
+>> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+>> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>>
+> 
+> 
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+> 
+
+
+
+From h.pahl at lw-systems.de  Thu Aug 20 06:38:07 2009
+From: h.pahl at lw-systems.de (Hendrik Pahl)
+Date: Thu, 20 Aug 2009 08:38:07 +0200
+Subject: Coova/freeradius issues
+Message-ID: <4A8CEF4F.9020202@lw-systems.de>
+
+Hi everybody,
+
+i've set up a new hotspot system, based on debian lenny. Freeradius is
+running against mysql, which generally works fine, which i can see by
+doing a test authentication using 'radtest'. Now, Coova is configured
+properly (i hope), shared radius secret is the same at all places - and
+nothing happens with the radius server. A user connects via wlan to the
+chillibox, gets that ajax login page, authenticates properly and gets
+"please wait" for ever. Nothing is gonna happen from now on. starting
+freeradius with '-X' flag for debugging purposes shows "ready to accept
+connections..". When the user authenticates at the web frontend, nothing
+else is being transmitted to the radius server - can also be seen with
+tcpdump. What might be the problem here? i have no further idea where to
+look for it.
+
+Thanks in advance,
+
+Freundliche Gr??e,
+
+i.A. Hendrik Pahl
+Systemingenieur
+-- 
+LWsystems GmbH & Co. KG  ++  http://www.lw-systems.de/impressum
+Tel: +49 (0)5403 / 5556  ++  Fax: +49 (0)5403 / 7 95 89 97
+
+Ihr Spezialist f?r Linux, Open Source & IT-Sicherheit
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+LWsystems GmbH & Co. KG
+Sitz der Gesellschaft: Tegelerweg 11, 49186 Bad Iburg
+Telefon +49 (0)5403 5556
+Telefax +49 (0)5403 7958997
+Handelsregister: Amtsgericht Osnabr?ck, HRA 110668
+USt.-ID-Nr. DE244573220
+
+Pers?nlich haftende Gesellschafterin: LWsystems Verwaltungs GmbH
+Sitz der Gesellschaft: Tegelerweg 11, 49186 Bad Iburg
+Handelsregister: Amtsgericht Osnabr?ck, HRB 111163
+
+Gesch?ftsf?hrer:
+Dipl.-Ing. Ansgar H. Licher, Bad Iburg
+Dipl.-Ing. Martin Werthm?ller, Ibbenb?ren 
+
+F?r weitere Firmendetails zu LWsystems siehe / 
+For further company details please look at:
+http://www.lw-systems.de/impressum
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: signature.asc
+Type: application/pgp-signature
+Size: 197 bytes
+Desc: OpenPGP digital signature
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20090820/e3b09d71/attachment.pgp>
+
+From mw at lw-systems.de  Thu Aug 20 12:39:35 2009
+From: mw at lw-systems.de (Martin Werthmoeller)
+Date: Thu, 20 Aug 2009 14:39:35 +0200
+Subject: Coova/freeradius issues
+In-Reply-To: <f1cd8c6d0908200230s4028d3eer7053eb0e40df9c36@mail.gmail.com>
+References: <4A8CEF4F.9020202@lw-systems.de> <f1cd8c6d0908200230s4028d3eer7053eb0e40df9c36@mail.gmail.com>
+Message-ID: <4A8D4407.8090608@lw-systems.de>
+
+kissg schrieb:
+
+Dear Gergely,
+
+> I created a customised, fully functional login system for CoovaChilli.
+> Please see the instructions posted below my message. The template files
+> are attached to this message.
+> 
+Nice. We will give it a try...
+
+> I think, your problem is more likely related to CoovaChilli. Try to run
+> it in debug mode (chilli -f -d) and watch the output as you try to log
+> in from the client computer.
+> First, check if your client can set the
+> wifi interface up correctly (DNS-address, gateway address). If it's
+> okay, try to log in using a valid username/password and watch the
+> terminal for error messages. You can also redirect debug output to a
+> file, which you can post later on the list:
+> 
+> chilli -f -d > chilli_debug.log
+> 
+Done. See Attachment.
+
+
+> Anyway, it's always a good idea to post the debug output and
+> configuration files, if you have problems. That way, it's much easier
+> for the developers to help you.
+> 
+Ok. Also added.
+
+
+Freundliche Gr??e,
+Martin Werthm?ller
+(Gesch?ftsf?hrer)
+
+-- 
+LWsystems GmbH & Co. KG ++ http://www.lw-systems.de/impressum
+Tel: 05455 / 932 132 ++ Fax: 05455 / 932 099 ++ Mobil: 0171 / 37 28 760
+
+Ihr Spezialist f?r Linux, Open Source & IT-Sicherheit
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+LWsystems GmbH & Co. KG
+Sitz der Gesellschaft: Tegelerweg 11, 49186 Bad Iburg
+Telefon +49 (0)5403 5556
+Telefax +49 (0)5403 7958997
+Handelsregister: Amtsgericht Osnabr?ck, HRA 110668
+USt.-ID-Nr. DE23852211
+
+Pers?nlich haftende Gesellschafterin: LWsystems Verwaltungs GmbH
+Sitz der Gesellschaft: Tegelerweg 11, 49186 Bad Iburg
+Handelsregister: Amtsgericht Osnabr?ck, HRB 111163
+
+Gesch?ftsf?hrer:
+Dipl.-Ing. Ansgar H. Licher, Bad Iburg
+Dipl.-Ing. Martin Werthm?ller, Ibbenb?ren
+
+F?r weitere Firmendetails zu LWsystems siehe /
+For further company details please look at:
+http://www.lw-systems.de/impressum
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+-------------- next part --------------
+An embedded and charset-unspecified text was scrubbed...
+Name: chilli-debug.out
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20090820/b51e8377/attachment.txt>
+-------------- next part --------------
+An embedded and charset-unspecified text was scrubbed...
+Name: config
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20090820/b51e8377/attachment.asc>
+-------------- next part --------------
+An embedded and charset-unspecified text was scrubbed...
+Name: defaults
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20090820/b51e8377/attachment-0001.txt>
+-------------- next part --------------
+An embedded and charset-unspecified text was scrubbed...
+Name: hs.conf
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20090820/b51e8377/attachment-0001.asc>
+-------------- next part --------------
+An embedded and charset-unspecified text was scrubbed...
+Name: local.conf
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20090820/b51e8377/attachment-0002.txt>
+-------------- next part --------------
+An embedded and charset-unspecified text was scrubbed...
+Name: main.conf
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20090820/b51e8377/attachment-0002.asc>
+
+From mounir.assaf at weblib.eu  Mon Aug 24 16:41:41 2009
+From: mounir.assaf at weblib.eu (Mounir Assaf)
+Date: Mon, 24 Aug 2009 18:41:41 +0200
+Subject: Problem with Web authenticating and macauth
+Message-ID: <4A92C2C5.5070700@weblib.eu>
+
+Hi,
+
+I am using coova-chilli 1.0.13 with a radius server (sql), and I'm 
+having some troubles with authenticating clients. If anyone could help 
+me, that would be really great.
+
+I configured coova in order to authenticate clients using their mac 
+adress + suffix. Then if the mac adress isn't found in database, it 
+redirects clients to a web portal. But sometimes,
+coova refuses to redirect clients to the web portal. I have to restart 
+the router in order to make it work...
+radius.log :
+Mon Aug 24 18:21:12 2009 : Auth: Login incorrect: 
+[00-1C-16-19-4C-47spelec/macpass] (from client spelec port 1 cli 
+00-1C-16-19-4C-47)
+Mon Aug 24 18:22:39 2009 : Auth: Login incorrect: 
+[00-25-4B-E8-25-73spelec/macpass] (from client spelec port 2 cli 
+00-25-4B-E8-25-73)
+
+ and it continues for a while if i don't restart the router ... if 
+anyone has an idea, i'll be really grateful.
+
+Thanks in advance
+
+Mounir
+
+
+From liran.tal at gmail.com  Mon Aug 24 20:42:23 2009
+From: liran.tal at gmail.com (Liran Tal)
+Date: Mon, 24 Aug 2009 23:42:23 +0300
+Subject: Problem with Web authenticating and macauth
+In-Reply-To: <4A92C2C5.5070700@weblib.eu>
+References: <4A92C2C5.5070700@weblib.eu>
+Message-ID: <81237f640908241342i1da45df9q7def3af77e7aff1c@mail.gmail.com>
+
+Possibly you have added the string "spelec" by mistake to the macsuffix
+directive
+in the config file?
+
+
+Regards,
+Liran.
+
+
+
+On Mon, Aug 24, 2009 at 7:41 PM, Mounir Assaf <mounir.assaf at weblib.eu>wrote:
+
+> Hi,
+>
+> I am using coova-chilli 1.0.13 with a radius server (sql), and I'm having
+> some troubles with authenticating clients. If anyone could help me, that
+> would be really great.
+>
+> I configured coova in order to authenticate clients using their mac adress
+> + suffix. Then if the mac adress isn't found in database, it redirects
+> clients to a web portal. But sometimes,
+> coova refuses to redirect clients to the web portal. I have to restart the
+> router in order to make it work...
+> radius.log :
+> Mon Aug 24 18:21:12 2009 : Auth: Login incorrect:
+> [00-1C-16-19-4C-47spelec/macpass] (from client spelec port 1 cli
+> 00-1C-16-19-4C-47)
+> Mon Aug 24 18:22:39 2009 : Auth: Login incorrect:
+> [00-25-4B-E8-25-73spelec/macpass] (from client spelec port 2 cli
+> 00-25-4B-E8-25-73)
+>
+> and it continues for a while if i don't restart the router ... if anyone
+> has an idea, i'll be really grateful.
+>
+> Thanks in advance
+>
+> Mounir
+>
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>
+>
+
+
+-- 
+-- 
+Sincerely, Liran Tal
+
+Founder and CTO
+Linux and Open Source
+Enginx - http://enginx.com
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20090824/892b9722/attachment.htm>
+
+From cesarsilvaaraujo at gmail.com  Mon Aug 24 23:02:43 2009
+From: cesarsilvaaraujo at gmail.com (=?ISO-8859-1?Q?C=E9sar_Araujo?=)
+Date: Tue, 25 Aug 2009 00:02:43 +0100
+Subject: Problem with Web authenticating and macauth
+In-Reply-To: <4A92C2C5.5070700@weblib.eu>
+References: <4A92C2C5.5070700@weblib.eu>
+Message-ID: <3b8d169a0908241602j56a58776y6abf72ab683bbabf@mail.gmail.com>
+
+Iv being trying to set up ubercart and drupal with coovachilli and im stuck
+on this part!
+How can i create a product and give a username and password after paypal or
+googleaccounts succesfuly acept the payment?
+Is that username and password generated on the our or prestored on the
+database?
+
+Thanks in advance.
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20090825/661ac486/attachment.htm>
+
+From mounir.assaf at weblib.eu  Tue Aug 25 08:25:23 2009
+From: mounir.assaf at weblib.eu (Mounir Assaf)
+Date: Tue, 25 Aug 2009 10:25:23 +0200
+Subject: Problem with Web authenticating and macauth
+In-Reply-To: <81237f640908241342i1da45df9q7def3af77e7aff1c@mail.gmail.com>
+References: <4A92C2C5.5070700@weblib.eu> <81237f640908241342i1da45df9q7def3af77e7aff1c@mail.gmail.com>
+Message-ID: <4A939FF3.8080108@weblib.eu>
+
+
+Yes I have defined a macsuffix "spelec" in coova-chilli's configuration 
+in order to authenticate some clients (it works fine!). But when it 
+fails, clients should  always be redirected to the web portal in order
+to authenticate by chap passwords, and this is not working good because 
+coova sometimes doesn't redirect clients to the web portal. I'm really 
+stuck with this problem..
+
+Thank you for your help..
+
+
+Mon Aug 24 15:46:05 2009 : Auth: Login incorrect: 
+[00-18-DE-0B-91-E9spelec/macpass] (from client spelecport 2 cli 
+00-18-DE-0B-91-E9)
+Mon Aug 24 15:51:58 2009 : Auth: Login OK: [76sdRt80/<CHAP-Password>] 
+(from client spelec port 2 cli 00-18-DE-0B-91-E9)
+...
+Mon Aug 24 22:07:15 2009 : Auth: Login incorrect: 
+[00-25-4B-E8-52-73spelec/macpass] (from client spelec port 5 cli 
+00-25-4B-E8-52-73)
+Mon Aug 24 22:25:35 2009 : Auth: Login OK: 
+[00-21-54-D8-93-41spelec/macpass] (from client spelec port 5 cli 
+00-21-54-D8-93-41)
+Mon Aug 24 22:26:33 2009 : Auth: Login OK: 
+[00-21-C4-41-50-A7spelec/macpass] (from client spelec port 6 cli 
+00-21-C4-41-50-A7)
+Mon Aug 24 22:34:30 2009 : Auth: Login incorrect: 
+[00-1C-26-19-4D-47spelec/macpass] (from client spelec port 2 cli 
+00-1C-26-19-4D-47)
+Mon Aug 24 22:35:32 2009 : Auth: Login incorrect: 
+[00-25-4B-E8-52-73spelec/macpass] (from client spelec port 7 cli 
+00-25-4B-E8-52-73)
+Mon Aug 24 22:50:28 2009 : Auth: Login incorrect: 
+[00-1C-26-19-4D-47spelec/macpass] (from client spelec port 2 cli 
+00-1C-26-19-4D-47)
+Mon Aug 24 23:10:36 2009 : Auth: Login incorrect: 
+[00-25-4B-E8-52-73spelec/macpass] (from client spelec port 2 cli 
+00-25-4B-E8-52-73)
+Mon Aug 24 23:26:30 2009 : Auth: Login incorrect: 
+[00-25-4B-E8-52-73spelec/macpass] (from client spelec port 2 cli 
+00-25-4B-E8-52-73)
+Mon Aug 24 23:41:30 2009 : Auth: Login incorrect: 
+[00-1C-26-19-4D-47spelec/macpass] (from client spelec port 5 cli 
+00-1C-26-19-4D-47)
+Tue Aug 25 01:26:14 2009 : Auth: Login incorrect: 
+[00-25-4B-E8-52-73spelec/macpass] (from client spelec port 5 cli 
+00-25-4B-E8-52-73)
+Tue Aug 25 01:47:35 2009 : Auth: Login incorrect: 
+[00-25-4B-E8-52-73spelec/macpass] (from client spelec port 5 cli 
+00-25-4B-E8-52-73)
+
+
+Mounir
+
+Liran Tal a ?crit :
+>
+> Possibly you have added the string "spelec" by mistake to the 
+> macsuffix directive
+> in the config file?
+>
+>
+> Regards,
+> Liran.
+>
+>
+>
+> On Mon, Aug 24, 2009 at 7:41 PM, Mounir Assaf <mounir.assaf at weblib.eu> 
+> wrote:
+>
+>     Hi,
+>
+>     I am using coova-chilli 1.0.13 with a radius server (sql), and I'm
+>     having some troubles with authenticating clients. If anyone could
+>     help me, that would be really great.
+>
+>     I configured coova in order to authenticate clients using their
+>     mac adress + suffix. Then if the mac adress isn't found in
+>     database, it redirects clients to a web portal. But sometimes,
+>     coova refuses to redirect clients to the web portal. I have to
+>     restart the router in order to make it work...
+>     radius.log :
+>     Mon Aug 24 18:21:12 2009 : Auth: Login incorrect:
+>     [00-1C-16-19-4C-47spelec/macpass] (from client spelec port 1 cli
+>     00-1C-16-19-4C-47)
+>     Mon Aug 24 18:22:39 2009 : Auth: Login incorrect:
+>     [00-25-4B-E8-25-73spelec/macpass] (from client spelec port 2 cli
+>     00-25-4B-E8-25-73)
+>
+>     and it continues for a while if i don't restart the router ... if
+>     anyone has an idea, i'll be really grateful.
+>
+>     Thanks in advance
+>
+>     Mounir
+>
+>     ---------------------------------------------------------------------
+>     To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+>     <mailto:chilli-unsubscribe at coova.org>
+>     For additional commands, e-mail: chilli-help at coova.org
+>     <mailto:chilli-help at coova.org>
+>     Wiki: http://coova.org/wiki/index.php/CoovaChilli
+>     Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>
+>
+>
+>
+> -- 
+> -- 
+> Sincerely, Liran Tal
+>
+> Founder and CTO
+> Linux and Open Source
+> Enginx - http://enginx.com
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20090825/62ed010e/attachment.htm>
+
+From liran.tal at gmail.com  Tue Aug 25 08:34:29 2009
+From: liran.tal at gmail.com (Liran Tal)
+Date: Tue, 25 Aug 2009 11:34:29 +0300
+Subject: Problem with Web authenticating and macauth
+In-Reply-To: <4A939FF3.8080108@weblib.eu>
+References: <4A92C2C5.5070700@weblib.eu> <81237f640908241342i1da45df9q7def3af77e7aff1c@mail.gmail.com> 
+	<4A939FF3.8080108@weblib.eu>
+Message-ID: <81237f640908250134m18cf8abbgc3432c85e415d1a8@mail.gmail.com>
+
+So the problem is that coova isn't redirecting to the web portal some of the
+connected and un-authenticated clients?
+Can you provide a debug log of coova when that happens?
+
+
+
+On Tue, Aug 25, 2009 at 11:25 AM, Mounir Assaf <mounir.assaf at weblib.eu>wrote:
+
+>
+> Yes I have defined a macsuffix "spelec" in coova-chilli's configuration in
+> order to authenticate some clients (it works fine!). But when it fails,
+> clients should  always be redirected to the web portal in order
+> to authenticate by chap passwords, and this is not working good because
+> coova sometimes doesn't redirect clients to the web portal. I'm really stuck
+> with this problem..
+>
+> Thank you for your help..
+>
+>
+> Mon Aug 24 15:46:05 2009 : Auth: Login incorrect:
+> [00-18-DE-0B-91-E9spelec/macpass] (from client spelecport 2 cli
+> 00-18-DE-0B-91-E9)
+> Mon Aug 24 15:51:58 2009 : Auth: Login OK: [76sdRt80/<CHAP-Password>] (from
+> client spelec port 2 cli 00-18-DE-0B-91-E9)
+> ...
+> Mon Aug 24 22:07:15 2009 : Auth: Login incorrect:
+> [00-25-4B-E8-52-73spelec/macpass] (from client spelec port 5 cli
+> 00-25-4B-E8-52-73)
+> Mon Aug 24 22:25:35 2009 : Auth: Login OK:
+> [00-21-54-D8-93-41spelec/macpass] (from client spelec port 5 cli
+> 00-21-54-D8-93-41)
+> Mon Aug 24 22:26:33 2009 : Auth: Login OK:
+> [00-21-C4-41-50-A7spelec/macpass] (from client spelec port 6 cli
+> 00-21-C4-41-50-A7)
+> Mon Aug 24 22:34:30 2009 : Auth: Login incorrect:
+> [00-1C-26-19-4D-47spelec/macpass] (from client spelec port 2 cli
+> 00-1C-26-19-4D-47)
+> Mon Aug 24 22:35:32 2009 : Auth: Login incorrect:
+> [00-25-4B-E8-52-73spelec/macpass] (from client spelec port 7 cli
+> 00-25-4B-E8-52-73)
+> Mon Aug 24 22:50:28 2009 : Auth: Login incorrect:
+> [00-1C-26-19-4D-47spelec/macpass] (from client spelec port 2 cli
+> 00-1C-26-19-4D-47)
+> Mon Aug 24 23:10:36 2009 : Auth: Login incorrect:
+> [00-25-4B-E8-52-73spelec/macpass] (from client spelec port 2 cli
+> 00-25-4B-E8-52-73)
+> Mon Aug 24 23:26:30 2009 : Auth: Login incorrect:
+> [00-25-4B-E8-52-73spelec/macpass] (from client spelec port 2 cli
+> 00-25-4B-E8-52-73)
+> Mon Aug 24 23:41:30 2009 : Auth: Login incorrect:
+> [00-1C-26-19-4D-47spelec/macpass] (from client spelec port 5 cli
+> 00-1C-26-19-4D-47)
+> Tue Aug 25 01:26:14 2009 : Auth: Login incorrect:
+> [00-25-4B-E8-52-73spelec/macpass] (from client spelec port 5 cli
+> 00-25-4B-E8-52-73)
+> Tue Aug 25 01:47:35 2009 : Auth: Login incorrect:
+> [00-25-4B-E8-52-73spelec/macpass] (from client spelec port 5 cli
+> 00-25-4B-E8-52-73)
+>
+>
+> Mounir
+>
+> Liran Tal a ?crit :
+>
+>
+> Possibly you have added the string "spelec" by mistake to the macsuffix
+> directive
+> in the config file?
+>
+>
+> Regards,
+> Liran.
+>
+>
+>
+> On Mon, Aug 24, 2009 at 7:41 PM, Mounir Assaf <mounir.assaf at weblib.eu><mounir.assaf at weblib.eu>wrote:
+>
+>> Hi,
+>>
+>> I am using coova-chilli 1.0.13 with a radius server (sql), and I'm having
+>> some troubles with authenticating clients. If anyone could help me, that
+>> would be really great.
+>>
+>> I configured coova in order to authenticate clients using their mac adress
+>> + suffix. Then if the mac adress isn't found in database, it redirects
+>> clients to a web portal. But sometimes,
+>> coova refuses to redirect clients to the web portal. I have to restart the
+>> router in order to make it work...
+>> radius.log :
+>> Mon Aug 24 18:21:12 2009 : Auth: Login incorrect:
+>> [00-1C-16-19-4C-47spelec/macpass] (from client spelec port 1 cli
+>> 00-1C-16-19-4C-47)
+>> Mon Aug 24 18:22:39 2009 : Auth: Login incorrect:
+>> [00-25-4B-E8-25-73spelec/macpass] (from client spelec port 2 cli
+>> 00-25-4B-E8-25-73)
+>>
+>> and it continues for a while if i don't restart the router ... if anyone
+>> has an idea, i'll be really grateful.
+>>
+>> Thanks in advance
+>>
+>> Mounir
+>>
+>> ---------------------------------------------------------------------
+>> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+>> For additional commands, e-mail: chilli-help at coova.org
+>> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+>> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>>
+>>
+>
+>
+> --
+> --
+> Sincerely, Liran Tal
+>
+> Founder and CTO
+> Linux and Open Source
+> Enginx - http://enginx.com
+>
+>
+>
+
+
+-- 
+-- 
+Sincerely, Liran Tal
+
+Founder and CTO
+Linux and Open Source
+Enginx - http://enginx.com
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20090825/7a3f309a/attachment.htm>
+
+From mounir.assaf at weblib.eu  Tue Aug 25 09:16:31 2009
+From: mounir.assaf at weblib.eu (Mounir Assaf)
+Date: Tue, 25 Aug 2009 11:16:31 +0200
+Subject: Problem with Web authenticating and macauth
+In-Reply-To: <81237f640908250134m18cf8abbgc3432c85e415d1a8@mail.gmail.com>
+References: <4A92C2C5.5070700@weblib.eu> <81237f640908241342i1da45df9q7def3af77e7aff1c@mail.gmail.com> 	<4A939FF3.8080108@weblib.eu> <81237f640908250134m18cf8abbgc3432c85e415d1a8@mail.gmail.com>
+Message-ID: <4A93ABEF.4070804@weblib.eu>
+
+Ok , Thank you very much !! here's what i've got in radius log :
+
+    Tue Aug 25 11:02:19 2009 : Auth: Login incorrect: 
+[00-22-43-97-6D-1Aleyukabeach/macpass] (from client leyukabeach port 1 
+cli 00-22-43-97-6D-1A)
+    Tue Aug 25 11:02:35 2009 : Auth: Login OK: 
+[00-21-63-C8-83-A2leyukabeach/macpass] (from client leyukabeach port 2 
+cli 00-21-63-C8-83-A2)
+
+And in chilli debug info :
+
+
+   
+chilli.c: 3754: 0 (Debug) Waiting for client request...
+iptables v1.3.7: can't initialize iptables table `raw': Table does not 
+exist (do you need to insmod?)
+Perhaps iptables or your kernel needs to be upgraded.
+iptables v1.3.7: can't initialize iptables table `raw': Table does not 
+exist (do you need to insmod?)
+Perhaps iptables or your kernel needs to be upgraded.
+dhcp.c: 2016: 0 (Debug) dhcp/bootps request being processed
+chilli.c: 2822: 0 (Debug) New DHCP request from MAC=00-22-43-97-6D-1A
+chilli.c: 2825: 0 (Debug) New DHCP connection established
+chilli.c: 2700: 0 (Debug) DHCP request for IP address
+chilli.c: 592: 0 (Debug) Starting mac radius authentication
+dhcp.c: 2016: 0 (Debug) dhcp/bootps request being processed
+chilli.c: 2700: 0 (Debug) DHCP request for IP address
+chilli.c: 2773: 0 (Debug) Requested IP address when already allocated
+ippool.c: 324: 0 (Debug) Requesting new static ip: 0.0.0.0
+ippool.c: 324: 0 (Debug) Requesting new dynamic ip: 0.0.0.0
+chilli.c: 2789: 0 (Debug) Client MAC=00-22-43-97-6D-1A assigned IP 
+192.168.182.2
+dhcp.c: 1419: 0 (Debug) !!! dhcp server :  !!!
+dhcp.c: 2016: 0 (Debug) dhcp/bootps request being processed
+dhcp.c: 1419: 0 (Debug) !!! dhcp server :  !!!
+dhcp.c: 2520: 0 (Debug) arp_decaps: dst=ff:ff:ff:ff:ff:ff 
+src=00:22:43:97:6d:1a prot=0806
+dhcp.c: 2520: 0 (Debug) arp_decaps: dst=ff:ff:ff:ff:ff:ff 
+src=00:22:43:97:6d:1a prot=0806
+dhcp.c: 2520: 0 (Debug) arp_decaps: dst=ff:ff:ff:ff:ff:ff 
+src=00:22:43:97:6d:1a prot=0806
+dhcp.c: 2001: 0 (Debug) dropping packet; not for our MAC or broadcast:  
+1: 0:5E: 0: 0:16
+dhcp.c: 2001: 0 (Debug) dropping packet; not for our MAC or broadcast:  
+1: 0:5E: 0: 0:16
+dhcp.c: 2520: 0 (Debug) arp_decaps: dst=ff:ff:ff:ff:ff:ff 
+src=00:22:43:97:6d:1a prot=0806
+chilli.c: 2324: 0 (Debug) Received access request confirmation from 
+radius server
+
+chilli.c: 2346: 0 (Debug) Received access reject from radius server
+chilli.c: 2700: 0 (Debug) DHCP request for IP address
+redir.c: 2113: 0 (Debug) Calling redir_getstate()
+redir.c: 2139: 0 (Debug) Get HTTP Request
+redir.c: 1192: 0 (Debug) http-request: GET /ig?t=2 HTTP/1.1
+redir.c: 1220: 0 (Debug) The path: ig
+redir.c: 1267: 0 (Debug) Query string: t=2
+redir.c: 1289: 0 (Debug) Host: www.google.fr
+redir.c: 1308: 0 (Debug) User-Agent: Mozilla/5.0 (Windows; U; Windows NT 
+5.1; en-US) AppleWebKit/530.5 (KHTML, like Gecko) Chrome/2.0.172.39 
+Safari/530.5
+redir.c: 1319: 0 (Debug) Cookie: Mozilla/5.0 (Windows; U; Windows NT 
+5.1; en-US) AppleWebKit/530.5 (KHTML, like Gecko) Chrome/2.0.172.39 
+Safari/530.5
+redir.c: 1426: 0 (Debug) -->> Setting userurl=[http://www.google.fr/ig?t=2]
+redir.c: 2148: 0 (Debug) Process HTTP Request
+redir.c: 2272: 0 (Debug) Processing received request
+redir.c: 2504: 0 (Debug) redir_accept: Original request
+redir.c: 2510: 0 (Debug) ---->>> resetting challenge: 
+4063aab458bb22a49224bc205c9d2d95
+redir.c: 2521: 0 (Debug) ---->>> challenge: 4063aab458bb22a49224bc205c9d2d95
+redir.c: 898: 0 (Debug) here: 
+https://www.server.com/hotspot.php?res=notyet&uamip=192.168.182.1&uamport=3990&challenge=4063aab458bb22a49224bc205c9d2d95&mac=00-22-43-97-6D-1A&ip=192.168.182.2&called=00-18-84-28-F2-2D&nasid=nas01&userurl=http%3a%2f%2fwww.google.fr%2fig%3ft%3d2&md=62D93AEAE35ECC98D45B226B2B49630A
+
+redir.c: 2113: 0 (Debug) Calling redir_getstate()
+redir.c: 2139: 0 (Debug) Get HTTP Request
+redir.c: 1192: 0 (Debug) http-request: GET /update/1.6.0/map-1.6.0.xml 
+HTTP/1.1
+redir.c: 1220: 0 (Debug) The path: update/1.6.0/map-1.6.0.xml
+redir.c: 1308: 0 (Debug) User-Agent: jupdate
+redir.c: 1289: 0 (Debug) Host: javadl-esd.sun.com
+redir.c: 1426: 0 (Debug) -->> Setting 
+userurl=[http://javadl-esd.sun.com/update/1.6.0/map-1.6.0.xml]
+redir.c: 2148: 0 (Debug) Process HTTP Request
+redir.c: 2272: 0 (Debug) Processing received request
+redir.c: 2504: 0 (Debug) redir_accept: Original request
+redir.c: 2521: 0 (Debug) ---->>> challenge: 4063aab458bb22a49224bc205c9d2d95
+redir.c: 898: 0 (Debug) here: 
+https://www.server.com/hotspot.php?res=notyet&uamip=192.168.182.1&uamport=3990&challenge=4063aab458bb22a49224bc205c9d2d95&mac=00-22-43-97-6D-1A&ip=192.168.182.2&called=00-18-84-28-F2-2D&nasid=nas01&userurl=http%3a%2f%2fjavadl-esd.sun.com%2fupdate%2f1.6.0%2fmap-1.6.0.xml&md=0AB920C3DAC227EA543EF5655DE10EB1
+
+dhcp.c: 2016: 0 (Debug) dhcp/bootps request being processed
+chilli.c: 2822: 0 (Debug) New DHCP request from MAC=00-21-C4-41-50-A7
+chilli.c: 2825: 0 (Debug) New DHCP connection established
+chilli.c: 2700: 0 (Debug) DHCP request for IP address
+chilli.c: 592: 0 (Debug) Starting mac radius authentication
+chilli.c: 2324: 0 (Debug) Received access request confirmation from 
+radius server
+
+ippool.c: 324: 0 (Debug) Requesting new static ip: 192.168.182.11
+ippool.c: 344: 0 (Debug) Static IP address not allowed
+ippool.c: 324: 0 (Debug) Requesting new dynamic ip: 192.168.182.11
+redir.c: 2113: 0 (Debug) Calling redir_getstate()
+redir.c: 2139: 0 (Debug) Get HTTP Request
+redir.c: 1192: 0 (Debug) http-request: GET 
+/tools/pso/ping?as=chrome&brand=GGLS&pid=&hl=fr&events=C1F&rep=1&rlz=C1:1C1GGLS_frFR333FR333,C2:1C2GGLS_frFR333&dcc=C1:1C1GGLS_frFR333FR333,C2:1C2GGLS_frFR333 
+HTTP/1.1
+redir.c: 1220: 0 (Debug) The path: tools/pso/ping
+redir.c: 1267: 0 (Debug) Query string: 
+as=chrome&brand=GGLS&pid=&hl=fr&events=C1F&rep=1&rlz=C1:1C1GGLS_frFR333FR333,C2:1C2GGLS_frFR333&dcc=C1:1C1GGLS_frFR333FR333,C2:1C2GGLS_frFR333
+redir.c: 1308: 0 (Debug) User-Agent: Mozilla/4.0 (compatible; Win32)
+redir.c: 1289: 0 (Debug) Host: clients1.google.com
+redir.c: 1426: 0 (Debug) -->> Setting 
+userurl=[http://clients1.google.com/tools/pso/ping?as=chrome&brand=GGLS&pid=&hl=fr&events=C1F&rep=1&rlz=C1:1C1GGLS_frFR333FR333,C2:1C2GGLS_frFR333&dcc=C1:1C1GGLS_frFR333FR333,C2:1C2GGLS_frFR333]
+redir.c: 2148: 0 (Debug) Process HTTP Request
+redir.c: 2272: 0 (Debug) Processing received request
+redir.c: 2504: 0 (Debug) redir_accept: Original request
+redir.c: 2521: 0 (Debug) ---->>> challenge: 4063aab458bb22a49224bc205c9d2d95
+redir.c: 898: 0 (Debug) here: 
+https://www.server.com/hotspot.php?res=notyet&uamip=192.168.182.1&uamport=3990&challenge=4063aab458bb22a49224bc205c9d2d95&mac=00-22-43-97-6D-1A&ip=192.168.182.2&called=00-18-84-28-F2-2D&nasid=nas01&userurl=http%3a%2f%2fclients1.google.com%2ftools%2fpso%2fping%3fas%3dchrome%26brand%3dGGLS%26pid%3d%26hl%3dfr%26events%3dC1F%26rep%3d1%26rlz%3dC1%3a1C1GGLS_frFR333FR333%2cC2%3a1C2GGLS_frFR333%26dcc%3dC1%3a1C1GGLS_frFR333FR333%2cC2%3a1C2GGLS_frFR333&md=BCEBED7EC08E8D8A7B96BF335E604BAA
+dhcp.c: 2016: 0 (Debug) dhcp/bootps request being processed
+dhcp.c: 1419: 0 (Debug) !!! dhcp server :  !!!
+dhcp.c: 2016: 0 (Debug) dhcp/bootps request being processed
+dhcp.c: 1419: 0 (Debug) !!! dhcp server :  !!!
+chilli.c: 3754: 0 (Debug) Waiting for client request...
+iptables v1.3.7: can't initialize iptables table `raw': Table does not 
+exist (do you need to insmod?)
+Perhaps iptables or your kernel needs to be upgraded.
+iptables v1.3.7: can't initialize iptables table `raw': Table does not 
+exist (do you need to insmod?)
+Perhaps iptables or your kernel needs to be upgraded.
+dhcp.c: 2016: 0 (Debug) dhcp/bootps request being processed
+chilli.c: 2822: 0 (Debug) New DHCP request from MAC=00-22-43-97-6D-1A
+chilli.c: 2825: 0 (Debug) New DHCP connection established
+chilli.c: 2700: 0 (Debug) DHCP request for IP address
+chilli.c: 592: 0 (Debug) Starting mac radius authentication
+dhcp.c: 2016: 0 (Debug) dhcp/bootps request being processed
+chilli.c: 2700: 0 (Debug) DHCP request for IP address
+chilli.c: 2773: 0 (Debug) Requested IP address when already allocated
+ippool.c: 324: 0 (Debug) Requesting new static ip: 0.0.0.0
+ippool.c: 324: 0 (Debug) Requesting new dynamic ip: 0.0.0.0
+chilli.c: 2789: 0 (Debug) Client MAC=00-22-43-97-6D-1A assigned IP 
+192.168.182.2
+dhcp.c: 1419: 0 (Debug) !!! dhcp server :  !!!
+dhcp.c: 2016: 0 (Debug) dhcp/bootps request being processed
+dhcp.c: 1419: 0 (Debug) !!! dhcp server :  !!!
+dhcp.c: 2520: 0 (Debug) arp_decaps: dst=ff:ff:ff:ff:ff:ff 
+src=00:22:43:97:6d:1a prot=0806
+dhcp.c: 2520: 0 (Debug) arp_decaps: dst=ff:ff:ff:ff:ff:ff 
+src=00:22:43:97:6d:1a prot=0806
+dhcp.c: 2520: 0 (Debug) arp_decaps: dst=ff:ff:ff:ff:ff:ff 
+src=00:22:43:97:6d:1a prot=0806
+dhcp.c: 2001: 0 (Debug) dropping packet; not for our MAC or broadcast:  
+1: 0:5E: 0: 0:16
+dhcp.c: 2001: 0 (Debug) dropping packet; not for our MAC or broadcast:  
+1: 0:5E: 0: 0:16
+dhcp.c: 2520: 0 (Debug) arp_decaps: dst=ff:ff:ff:ff:ff:ff 
+src=00:22:43:97:6d:1a prot=0806
+chilli.c: 2324: 0 (Debug) Received access request confirmation from 
+radius server
+
+chilli.c: 2346: 0 (Debug) Received access reject from radius server
+chilli.c: 2700: 0 (Debug) DHCP request for IP address
+redir.c: 2113: 0 (Debug) Calling redir_getstate()
+redir.c: 2139: 0 (Debug) Get HTTP Request
+redir.c: 1192: 0 (Debug) http-request: GET /ig?t=2 HTTP/1.1
+redir.c: 1220: 0 (Debug) The path: ig
+redir.c: 1267: 0 (Debug) Query string: t=2
+redir.c: 1289: 0 (Debug) Host: www.google.fr
+redir.c: 1308: 0 (Debug) User-Agent: Mozilla/5.0 (Windows; U; Windows NT 
+5.1; en-US) AppleWebKit/530.5 (KHTML, like Gecko) Chrome/2.0.172.39 
+Safari/530.5
+redir.c: 1319: 0 (Debug) Cookie: Mozilla/5.0 (Windows; U; Windows NT 
+5.1; en-US) AppleWebKit/530.5 (KHTML, like Gecko) Chrome/2.0.172.39 
+Safari/530.5
+redir.c: 1426: 0 (Debug) -->> Setting userurl=[http://www.google.fr/ig?t=2]
+redir.c: 2148: 0 (Debug) Process HTTP Request
+redir.c: 2272: 0 (Debug) Processing received request
+redir.c: 2504: 0 (Debug) redir_accept: Original request
+redir.c: 2510: 0 (Debug) ---->>> resetting challenge: 
+4063aab458bb22a49224bc205c9d2d95
+redir.c: 2521: 0 (Debug) ---->>> challenge: 4063aab458bb22a49224bc205c9d2d95
+redir.c: 898: 0 (Debug) here: 
+https://www.server.com/hotspot.php?res=notyet&uamip=192.168.182.1&uamport=3990&challenge=4063aab458bb22a49224bc205c9d2d95&mac=00-22-43-97-6D-1A&ip=192.168.182.2&called=00-18-84-28-F2-2D&nasid=nas01&userurl=http%3a%2f%2fwww.google.fr%2fig%3ft%3d2&md=62D93AEAE35ECC98D45B226B2B49630A
+
+redir.c: 2113: 0 (Debug) Calling redir_getstate()
+redir.c: 2139: 0 (Debug) Get HTTP Request
+redir.c: 1192: 0 (Debug) http-request: GET /update/1.6.0/map-1.6.0.xml 
+HTTP/1.1
+redir.c: 1220: 0 (Debug) The path: update/1.6.0/map-1.6.0.xml
+redir.c: 1308: 0 (Debug) User-Agent: jupdate
+redir.c: 1289: 0 (Debug) Host: javadl-esd.sun.com
+redir.c: 1426: 0 (Debug) -->> Setting 
+userurl=[http://javadl-esd.sun.com/update/1.6.0/map-1.6.0.xml]
+redir.c: 2148: 0 (Debug) Process HTTP Request
+redir.c: 2272: 0 (Debug) Processing received request
+redir.c: 2504: 0 (Debug) redir_accept: Original request
+redir.c: 2521: 0 (Debug) ---->>> challenge: 4063aab458bb22a49224bc205c9d2d95
+redir.c: 898: 0 (Debug) here: 
+https://www.server.com/hotspot.php?res=notyet&uamip=192.168.182.1&uamport=3990&cdhcp.c: 
+2001: 0 (Debug) dropping packet; not for our MAC or broadcast:  1: 0:5E: 
+0: 0:16
+dhcp.c: 2001: 0 (Debug) dropping packet; not for our MAC or broadcast:  
+1: 0:5E: 0: 0:FB
+dhcp.c: 2001: 0 (Debug) dropping packet; not for our MAC or broadcast:  
+1: 0:5E: 0: 0:FB
+dhcp.c: 2001: 0 (Debug) dropping packet; not for our MAC or broadcast:  
+1: 0:5E: 0: 0:FB
+dhcp.c: 2520: 0 (Debug) arp_decaps: dst=ff:ff:ff:ff:ff:ff 
+src=00:21:63:c8:83:a2 prot=0806
+dhcp.c: 2001: 0 (Debug) dropping packet; not for our MAC or broadcast:  
+1: 0:5E: 0: 0:FB
+dhcp.c: 2001: 0 (Debug) dropping packet; not for our MAC or broadcast:  
+1: 0:5E: 0: 0:FB
+dhcp.c: 2001: 0 (Debug) dropping packet; not for our MAC or broadcast:  
+1: 0:5E: 0: 0:FB
+dhcp.c: 2001: 0 (Debug) dropping packet; not for our MAC or broadcast:  
+1: 0:5E: 0: 0:FB
+dhcp.c: 2001: 0 (Debug) dropping packet; not for our MAC or broadcast:  
+1: 0:5E: 0: 0:FB
+dhcp.c: 2001: 0 (Debug) dropping packet; not for our MAC or broadcast:  
+1: 0:5E: 0: 0:FB
+dhcp.c: 2001: 0 (Debug) dropping packet; not for our MAC or broadcast:  
+1: 0:5E: 0: 0:FB
+dhcp.c: 2001: 0 (Debug) dropping packet; not for our MAC or broadcast:  
+1: 0:5E: 0: 0:FB
+dhcp.c: 2001: 0 (Debug) dropping packet; not for our MAC or broadcast:  
+1: 0:5E: 0: 0:FB
+dhcp.c: 2001: 0 (Debug) dropping packet; not for our MAC or broadcast:  
+1: 0:5E: 0: 0:FB
+redir.c: 2113: 0 (Debug) Calling redir_getstate()
+redir.c: 2139: 0 (Debug) Get HTTP Request
+redir.c: 1192: 0 (Debug) http-request: GET /ig?t=2 HTTP/1.1
+redir.c: 1220: 0 (Debug) The path: ig
+redir.c: 1267: 0 (Debug) Query string: t=2
+redir.c: 1289: 0 (Debug) Host: www.google.fr
+redir.c: 1308: 0 (Debug) User-Agent: Mozilla/5.0 (Windows; U; Windows NT 
+5.1; en-US) AppleWebKit/530.5 (KHTML, like Gecko) Chrome/2.0.172.39 
+Safari/530.5
+redir.c: 1319: 0 (Debug) Cookie: Mozilla/5.0 (Windows; U; Windows NT 
+5.1; en-US) AppleWebKit/530.5 (KHTML, like Gecko) Chrome/2.0.172.39 
+Safari/530.5
+redir.c: 1426: 0 (Debug) -->> Setting userurl=[http://www.google.fr/ig?t=2]
+redir.c: 2148: 0 (Debug) Process HTTP Request
+redir.c: 2272: 0 (Debug) Processing received request
+redir.c: 2504: 0 (Debug) redir_accept: Original request
+redir.c: 2521: 0 (Debug) ---->>> challenge: 4063aab458bb22a49224bc205c9d2d95
+redir.c: 898: 0 (Debug) here: 
+https://www.server.com/hotspot.php?res=notyet&uamip=192.168.182.1&uamport=3990&challenge=4063aab458bb22a49224bc205c9d2d95&mac=00-22-43-97-6D-1A&ip=192.168.182.2&called=00-18-84-28-F2-2D&nasid=nas01&userurl=http%3a%2f%2fwww.google.fr%2fig%3ft%3d2&md=62D93AEAE35ECC98D45B226B2B49630A
+
+dhcp.c: 2001: 0 (Debug) dropping packet; not for our MAC or broadcast:  
+1: 0:5E: 0: 0:16
+dhcp.c: 2001: 0 (Debug) dropping packet; not for our MAC or broadcast:  
+1: 0:5E: 0: 0:FB
+dhcp.c: 2001: 0 (Debug) dropping packet; not for our MAC or broadcast:  
+1: 0:5E: 0: 0:FB
+dhcp.c: 2001: 0 (Debug) dropping packet; not for our MAC or broadcast:  
+1: 0:5E: 0: 0:FB
+dhcp.c: 2001: 0 (Debug) dropping packet; not for our MAC or broadcast:  
+1: 0:5E: 0: 0:FB
+dhcp.c: 2001: 0 (Debug) dropping packet; not for our MAC or broadcast:  
+1: 0:5E: 0: 0:FB
+dhcp.c: 2001: 0 (Debug) dropping packet; not for our MAC or broadcast:  
+1: 0:5E: 0: 0:FB
+dhcp.c: 2001: 0 (Debug) dropping packet; not for our MAC or broadcast:  
+1: 0:5E: 0: 0:FB
+dhcp.c: 2001: 0 (Debug) dropping packet; not for our MAC or broadcast:  
+1: 0:5E: 0: 0:FB
+dhcp.c: 2001: 0 (Debug) dropping packet; not for our MAC or broadcast:  
+1: 0:5E: 0: 0:FB
+... same message ...
+dhcp.c: 2016: 0 (Debug) dhcp/bootps request being processed
+dhcp.c: 1419: 0 (Debug) !!! dhcp server :  !!!
+dhcp.c: 2016: 0 (Debug) dhcp/bootps request being processed
+dhcp.c: 1419: 0 (Debug) !!! dhcp server :  !!!
+dhcp.c: 2520: 0 (Debug) arp_decaps: dst=ff:ff:ff:ff:ff:ff 
+src=00:22:43:97:6d:1a prot=0806
+dhcp.c: 2520: 0 (Debug) arp_decaps: dst=ff:ff:ff:ff:ff:ff 
+src=00:22:43:97:6d:1a prot=0806
+dhcp.c: 2520: 0 (Debug) arp_decaps: dst=ff:ff:ff:ff:ff:ff 
+src=00:22:43:97:6d:1a prot=0806
+dhcp.c: 2001: 0 (Debug) dropping packet; not for our MAC or broadcast:  
+1: 0:5E: 0: 0:16
+dhcp.c: 2001: 0 (Debug) dropping packet; not for our MAC or broadcast:  
+1: 0:5E: 0: 0:16
+dhcp.c: 2520: 0 (Debug) arp_decaps: dst=ff:ff:ff:ff:ff:ff 
+src=00:22:43:97:6d:1a prot=0806
+dhcp.c: 2001: 0 (Debug) dropping packet; not for our MAC or broadcast:  
+1: 0:5E: 0: 0:FB
+dhcp.c: 2001: 0 (Debug) dropping packet; not for our MAC or broadcast:  
+1: 0:5E: 0: 0:FB
+dhcp.c: 2001: 0 (Debug) dropping packet; not for our MAC or broadcast:  
+1: 0:5E: 0: 0:FB
+redir.c: 2113: 0 (Debug) Calling redir_getstate()
+redir.c: 2139: 0 (Debug) Get HTTP Request
+redir.c: 1192: 0 (Debug) http-request: GET /ig?t=2 HTTP/1.1
+redir.c: 1220: 0 (Debug) The path: ig
+redir.c: 1267: 0 (Debug) Query string: t=2
+redir.c: 1289: 0 (Debug) Host: www.google.fr
+redir.c: 1308: 0 (Debug) User-Agent: Mozilla/5.0 (Windows; U; Windows NT 
+5.1; en-US) AppleWebKit/530.5 (KHTML, like Gecko) Chrome/2.0.172.39 
+Safari/530.5
+redir.c: 1319: 0 (Debug) Cookie: Mozilla/5.0 (Windows; U; Windows NT 
+5.1; en-US) AppleWebKit/530.5 (KHTML, like Gecko) Chrome/2.0.172.39 
+Safari/530.5
+redir.c: 1426: 0 (Debug) -->> Setting userurl=[http://www.google.fr/ig?t=2]
+redir.c: 2148: 0 (Debug) Process HTTP Request
+redir.c: 2272: 0 (Debug) Processing received request
+redir.c: 2504: 0 (Debug) redir_accept: Original request
+redir.c: 2521: 0 (Debug) ---->>> challenge: 4063aab458bb22a49224bc205c9d2d95
+redir.c: 898: 0 (Debug) here: 
+https://www.server.com/hotspot.php?res=notyet&uamip=192.168.182.1&uamport=3990&challenge=4063aab458bb22a49224bc205c9d2d95&mac=00-22-43-97-6D-1A&ip=192.168.182.2&called=00-18-84-28-F2-2D&nasid=nas01&userurl=http%3a%2f%2fwww.google.fr%2fig%3ft%3d2&md=62D93AEAE35ECC98D45B226B2B49630A
+
+dhcp.c: 2001: 0 (Debug) dropping packet; not for our MAC or broadcast:  
+1: 0:5E: 0: 0:FB
+dhcp.c: 2001: 0 (Debug) dropping packet; not for our MAC or broadcast:  
+1: 0:5E: 0: 0:FB
+dhcp.c: 2016: 0 (Debug) dhcp/bootps request being processed
+dhcp.c: 1419: 0 (Debug) !!! dhcp server :  !!!
+dhcp.c: 2001: 0 (Debug) dropping packet; not for our MAC or broadcast:  
+1: 0:5E: 0: 0:FB
+dhcp.c: 2001: 0 (Debug) dropping packet; not for our MAC or broadcast:  
+1: 0:5E: 0: 0:FB
+dhcp.c: 2001: 0 (Debug) dropping packet; not for our MAC or broadcast:  
+1: 0:5E: 0: 0:FB
+dhcp.c: 2001: 0 (Debug) dropping packet; not for our MAC or broadcast:  
+1: 0:5E: 0: 0:FB
+dhcp.c: 2001: 0 (Debug) dropping packet; not for our MAC or broadcast:  
+1: 0:5E: 0: 0:FB
+redir.c: 2113: 0 (Debug) Calling redir_getstate()
+redir.c: 2139: 0 (Debug) Get HTTP Request
+redir.c: 1192: 0 (Debug) http-request: GET 
+/?product=firefox-3.0.12-complete&os=win&lang=fr HTTP/1.1
+redir.c: 1220: 0 (Debug) The path:
+redir.c: 1267: 0 (Debug) Query string: 
+product=firefox-3.0.12-complete&os=win&lang=fr
+redir.c: 1289: 0 (Debug) Host: download.mozilla.org
+redir.c: 1308: 0 (Debug) User-Agent: Mozilla/5.0 (Windows; U; Windows NT 
+5.1; fr; rv:1.9.0.11) Gecko/2009060215 Firefox/3.0.11 (.NET CLR 3.5.30729)
+redir.c: 1319: 0 (Debug) Cookie: Mozilla/5.0 (Windows; U; Windows NT 
+5.1; fr; rv:1.9.0.11) Gecko/2009060215 Firefox/3.0.11 (.NET CLR 3.5.30729)
+redir.c: 1426: 0 (Debug) -->> Setting 
+userurl=[http://download.mozilla.org/?product=firefox-3.0.12-complete&os=win&lang=fr]
+redir.c: 2148: 0 (Debug) Process HTTP Request
+redir.c: 2272: 0 (Debug) Processing received request
+redir.c: 2504: 0 (Debug) redir_accept: Original request
+redir.c: 2521: 0 (Debug) ---->>> challenge: 4063aab458bb22a49224bc205c9d2d95
+redir.c: 898: 0 (Debug) here: 
+https://www.server.com/hotspot.php?res=notyet&uamip=192.168.182.1&uamport=3990&challenge=4063aab458bb22a49224bc205c9d2d95&mac=00-22-43-97-6D-1A&ip=192.168.182.2&called=00-18-84-28-F2-2D&nasid=nas01&userurl=http%3a%2f%2fdownload.mozilla.org%2f%3fproduct%3dfirefox-3.0.12-complete%26os%3dwin%26lang%3dfr&md=3DA450A90670D34F60F501D15229EE73
+
+redir.c: 2113: 0 (Debug) Calling redir_getstate()
+redir.c: 2139: 0 (Debug) Get HTTP Request
+redir.c: 1192: 0 (Debug) http-request: GET / HTTP/1.1
+redir.c: 1220: 0 (Debug) The path:
+redir.c: 1289: 0 (Debug) Host: hattrick.org
+redir.c: 1308: 0 (Debug) User-Agent: Mozilla/5.0 (Windows; U; Windows NT 
+5.1; fr; rv:1.9.0.11) Gecko/2009060215 Firefox/3.0.11 (.NET CLR 3.5.30729)
+redir.c: 1319: 0 (Debug) Cookie: Mozilla/5.0 (Windows; U; Windows NT 
+5.1; fr; rv:1.9.0.11) Gecko/2009060215 Firefox/3.0.11 (.NET CLR 3.5.30729)
+redir.c: 1426: 0 (Debug) -->> Setting userurl=[http://hattrick.org/]
+redir.c: 2148: 0 (Debug) Process HTTP Request
+redir.c: 2272: 0 (Debug) Processing received request
+redir.c: 2504: 0 (Debug) redir_accept: Original request
+redir.c: 2521: 0 (Debug) ---->>> challenge: 4063aab458bb22a49224bc205c9d2d95
+redir.c: 898: 0 (Debug) here: 
+https://www.server.com/hotspot.php?res=notyet&uamip=192.168.182.1&uamport=3990&challenge=4063aab458bb22a49224bc205c9d2d95&mac=00-22-43-97-6D-1A&ip=192.168.182.2&called=00-18-84-28-F2-2D&nasid=nas01&userurl=http%3a%2f%2fhattrick.org%2f&md=A0604596D80A1E0ECC79599B25AABB9E
+
+dhcp.c: 2001: 0 (Debug) dropping packet; not for our MAC or broadcast:  
+1: 0:5E: 0: 0:FB
+dhcp.c: 2001: 0 (Debug) dropping packet; not for our MAC or broadcast:  
+1: 0:5E: 0: 0:FB
+dhcp.c: 2001: 0 (Debug) dropping packet; not for our MAC or broadcast:  
+1: 0:5E: 0: 0:FB
+dhcp.c: 2001: 0 (Debug) dropping packet; not for our MAC or broadcast:  
+1: 0:5E: 0: 0:FB
+dhcp.c: 2001: 0 (Debug) dropping packet; not for our MAC or broadcast:  
+1: 0:5E: 0: 0:FB
+dhcp.c: 2001: 0 (Debug) dropping packet; not for our MAC or broadcast:  
+1: 0:5E: 0: 0:FB
+
+Liran Tal a ?crit :
+>
+> So the problem is that coova isn't redirecting to the web portal some 
+> of the connected and un-authenticated clients?
+> Can you provide a debug log of coova when that happens?
+>
+>
+>
+> On Tue, Aug 25, 2009 at 11:25 AM, Mounir Assaf 
+> <mounir.assaf at weblib.eu> wrote:
+>
+>
+>     Yes I have defined a macsuffix "spelec" in coova-chilli's
+>     configuration in order to authenticate some clients (it works
+>     fine!). But when it fails, clients should  always be redirected to
+>     the web portal in order
+>     to authenticate by chap passwords, and this is not working good
+>     because coova sometimes doesn't redirect clients to the web
+>     portal. I'm really stuck with this problem..
+>
+>     Thank you for your help..
+>
+>
+>     Mon Aug 24 15:46:05 2009 : Auth: Login incorrect:
+>     [00-18-DE-0B-91-E9spelec/macpass] (from client spelecport 2 cli
+>     00-18-DE-0B-91-E9)
+>     Mon Aug 24 15:51:58 2009 : Auth: Login OK:
+>     [76sdRt80/<CHAP-Password>] (from client spelec port 2 cli
+>     00-18-DE-0B-91-E9)
+>     ...
+>     Mon Aug 24 22:07:15 2009 : Auth: Login incorrect:
+>     [00-25-4B-E8-52-73spelec/macpass] (from client spelec port 5 cli
+>     00-25-4B-E8-52-73)
+>     Mon Aug 24 22:25:35 2009 : Auth: Login OK:
+>     [00-21-54-D8-93-41spelec/macpass] (from client spelec port 5 cli
+>     00-21-54-D8-93-41)
+>     Mon Aug 24 22:26:33 2009 : Auth: Login OK:
+>     [00-21-C4-41-50-A7spelec/macpass] (from client spelec port 6 cli
+>     00-21-C4-41-50-A7)
+>     Mon Aug 24 22:34:30 2009 : Auth: Login incorrect:
+>     [00-1C-26-19-4D-47spelec/macpass] (from client spelec port 2 cli
+>     00-1C-26-19-4D-47)
+>     Mon Aug 24 22:35:32 2009 : Auth: Login incorrect:
+>     [00-25-4B-E8-52-73spelec/macpass] (from client spelec port 7 cli
+>     00-25-4B-E8-52-73)
+>     Mon Aug 24 22:50:28 2009 : Auth: Login incorrect:
+>     [00-1C-26-19-4D-47spelec/macpass] (from client spelec port 2 cli
+>     00-1C-26-19-4D-47)
+>     Mon Aug 24 23:10:36 2009 : Auth: Login incorrect:
+>     [00-25-4B-E8-52-73spelec/macpass] (from client spelec port 2 cli
+>     00-25-4B-E8-52-73)
+>     Mon Aug 24 23:26:30 2009 : Auth: Login incorrect:
+>     [00-25-4B-E8-52-73spelec/macpass] (from client spelec port 2 cli
+>     00-25-4B-E8-52-73)
+>     Mon Aug 24 23:41:30 2009 : Auth: Login incorrect:
+>     [00-1C-26-19-4D-47spelec/macpass] (from client spelec port 5 cli
+>     00-1C-26-19-4D-47)
+>     Tue Aug 25 01:26:14 2009 : Auth: Login incorrect:
+>     [00-25-4B-E8-52-73spelec/macpass] (from client spelec port 5 cli
+>     00-25-4B-E8-52-73)
+>     Tue Aug 25 01:47:35 2009 : Auth: Login incorrect:
+>     [00-25-4B-E8-52-73spelec/macpass] (from client spelec port 5 cli
+>     00-25-4B-E8-52-73)
+>
+>
+>     Mounir
+>
+>     Liran Tal a ?crit :
+>>
+>>     Possibly you have added the string "spelec" by mistake to the
+>>     macsuffix directive
+>>     in the config file?
+>>
+>>
+>>     Regards,
+>>     Liran.
+>>
+>>
+>>
+>>     On Mon, Aug 24, 2009 at 7:41 PM, Mounir Assaf
+>>     <mounir.assaf at weblib.eu> <mailto:mounir.assaf at weblib.eu> wrote:
+>>
+>>         Hi,
+>>
+>>         I am using coova-chilli 1.0.13 with a radius server (sql),
+>>         and I'm having some troubles with authenticating clients. If
+>>         anyone could help me, that would be really great.
+>>
+>>         I configured coova in order to authenticate clients using
+>>         their mac adress + suffix. Then if the mac adress isn't found
+>>         in database, it redirects clients to a web portal. But sometimes,
+>>         coova refuses to redirect clients to the web portal. I have
+>>         to restart the router in order to make it work...
+>>         radius.log :
+>>         Mon Aug 24 18:21:12 2009 : Auth: Login incorrect:
+>>         [00-1C-16-19-4C-47spelec/macpass] (from client spelec port 1
+>>         cli 00-1C-16-19-4C-47)
+>>         Mon Aug 24 18:22:39 2009 : Auth: Login incorrect:
+>>         [00-25-4B-E8-25-73spelec/macpass] (from client spelec port 2
+>>         cli 00-25-4B-E8-25-73)
+>>
+>>         and it continues for a while if i don't restart the router
+>>         ... if anyone has an idea, i'll be really grateful.
+>>
+>>         Thanks in advance
+>>
+>>         Mounir
+>>
+>>         ---------------------------------------------------------------------
+>>         To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+>>         <mailto:chilli-unsubscribe at coova.org>
+>>         For additional commands, e-mail: chilli-help at coova.org
+>>         <mailto:chilli-help at coova.org>
+>>         Wiki: http://coova.org/wiki/index.php/CoovaChilli
+>>         Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>>
+>>
+>>
+>>
+>>     -- 
+>>     -- 
+>>     Sincerely, Liran Tal
+>>
+>>     Founder and CTO
+>>     Linux and Open Source
+>>     Enginx - http://enginx.com
+>
+>
+>
+>
+> -- 
+> -- 
+> Sincerely, Liran Tal
+>
+> Founder and CTO
+> Linux and Open Source
+> Enginx - http://enginx.com
+
+
+
+From jmeiring at amobia.com  Tue Aug 25 10:26:14 2009
+From: jmeiring at amobia.com (Johan Meiring)
+Date: Tue, 25 Aug 2009 12:26:14 +0200
+Subject: Log out client when no accounting updates received
+Message-ID: <4A93BC46.7090606@amobia.com>
+
+Hi,
+
+I am running about 150 hotspots with chilli.
+
+Sometimes (twice before) I ran into a situation where accounting packets 
+were not being processed at the radius server anymore.
+
+The reason why accounting is not processed is irrelevant to this 
+conversation.  The assumption is that accounting packets are getting 
+lost somewhere on the way to the radius server.
+
+This makes accounting data (and therefore revenue) disappear.
+
+
+Is it possible (or fairly easy to modify chilli) to log out a user, if 
+e.g. 3 accounting packets have not been acknowledged.
+
+Thanks,
+
+-- 
+
+
+Johan Meiring
+Amobia Communications
+Tel: (0861) AMOBIA / (0861) 266242
+Fax: (0861) AMOFAX / (0861) 266329
+
+
+
+From fahd.kasri at weblib.eu  Wed Aug 26 08:41:02 2009
+From: fahd.kasri at weblib.eu (Fahd Kasri)
+Date: Wed, 26 Aug 2009 10:41:02 +0200
+Subject: Cross compilation for mips on x86
+Message-ID: <ddc827aa0908260141oca9dd7dva5ccdf150dde2889@mail.gmail.com>
+
+Hi,
+
+Is there a guide to create a CoovaChilli OpenWRT .ipkg from sources compiled
+on a x86 architecture? I would like to compile the latest version of
+CoovaChilli for use on a Fonera with OpenWrt. Google wasn't very helpful...
+
+Thanks,
+
+Fahd
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20090826/e0e18f20/attachment.htm>
+
+From jmeiring at amobia.com  Wed Aug 26 08:51:32 2009
+From: jmeiring at amobia.com (Johan Meiring)
+Date: Wed, 26 Aug 2009 10:51:32 +0200
+Subject: Cross compilation for mips on x86
+In-Reply-To: <ddc827aa0908260141oca9dd7dva5ccdf150dde2889@mail.gmail.com>
+References: <ddc827aa0908260141oca9dd7dva5ccdf150dde2889@mail.gmail.com>
+Message-ID: <4A94F794.9070002@amobia.com>
+
+Fahd Kasri wrote:
+> Hi,
+> 
+> Is there a guide to create a CoovaChilli OpenWRT .ipkg from sources 
+> compiled on a x86 architecture? I would like to compile the latest 
+> version of CoovaChilli for use on a Fonera with OpenWrt. Google wasn't 
+> very helpful...
+> 
+
+See the mailing list somewhere if Feb/March.
+
+
+-- 
+
+
+Johan Meiring
+Amobia Communications
+Tel: (0861) AMOBIA / (0861) 266242
+Fax: (0861) AMOFAX / (0861) 266329
+
+
+
+From skreech2 at gmail.com  Wed Aug 26 16:22:04 2009
+From: skreech2 at gmail.com (Roger Pixley)
+Date: Wed, 26 Aug 2009 11:22:04 -0500
+Subject: Mass entry and Mobile Devices
+Message-ID: <3246ed240908260922h3a95acc4y99e8a7a276903576@mail.gmail.com>
+
+Hello I'm currently running on a slightly olde coova the  12 release and I
+have two main issues. I cannot do a mass entry of users with a specified
+expiry date and I have a number of  newer mobile devices (New iPhones, PSPs
+and some Windows Mobile 6.1 devices) either simply will not authenticate or
+they will authenticate and sit waiting forever.
+First would an upgrade to the 14 release assist with some of those issues? I
+saw that there was some work in getting Safari to work better which I hope
+would help the iPhones but has there been anywork in mobile device
+compatibitly in general? What kind of logs could I provide to assist in
+helping?
+
+Second how can I set a list of created users to be made with a expiry date
+of say 3 weeks from now so that at that time they can no longer
+authenticate?
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20090826/3e504cd6/attachment.htm>
+
+From cesarsilvaaraujo at gmail.com  Wed Aug 26 16:32:16 2009
+From: cesarsilvaaraujo at gmail.com (=?ISO-8859-1?Q?C=E9sar_Araujo?=)
+Date: Wed, 26 Aug 2009 17:32:16 +0100
+Subject: Mass entry and Mobile Devices
+In-Reply-To: <3246ed240908260922h3a95acc4y99e8a7a276903576@mail.gmail.com>
+References: <3246ed240908260922h3a95acc4y99e8a7a276903576@mail.gmail.com>
+Message-ID: <3b8d169a0908260932g1bf6b212j2f925ed65dd9d991@mail.gmail.com>
+
+Dear roger, to solve the problem on the iphone and on safari, you have to
+abandon the javascript login, and use only plain html login, i had the same
+issue with PlayStation Portable.
+
+Second regarding the batch add user if you have mysql and dalouradius
+working, it can be farly easy to do, go to users and batch add user, and
+there you can add as many as you want. But remember you can always play with
+the mysql database. So as you can see unlimited fun with coova.
+
+Glad to help. Im no pro on coova but i lilke to learn ;)
+
+-- 
+--------------------------------------------------------------------
+Contactem-me para anima??o musical de eventos!
+--------------------------------------------------------------------
+AveFm - www.avefm.net
+--------------------------------------------------------------------
+Http://www.CesarAraujo.Net
+--------------------------------------------------------------------
+Msn: messenger at CesarAraujo.net
+--------------------------------------------------------------------
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20090826/e93b05ae/attachment.htm>
+
+From fahd.kasri at weblib.eu  Fri Aug 28 13:10:10 2009
+From: fahd.kasri at weblib.eu (Fahd Kasri)
+Date: Fri, 28 Aug 2009 15:10:10 +0200
+Subject: CoovaAP on a La Fonera
+Message-ID: <ddc827aa0908280610l323c7057jdc72f1a7eceb8c23@mail.gmail.com>
+
+Hi all,
+
+Does anyone know if it's possible to install the CoovaAP firmware on a La
+Fonera router?
+
+Fahd Kasri
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20090828/2064fdad/attachment.htm>
+
+From cesarsilvaaraujo at gmail.com  Fri Aug 28 15:33:01 2009
+From: cesarsilvaaraujo at gmail.com (=?ISO-8859-1?Q?C=E9sar_Araujo?=)
+Date: Fri, 28 Aug 2009 16:33:01 +0100
+Subject: CoovaAP on a La Fonera
+In-Reply-To: <ddc827aa0908280610l323c7057jdc72f1a7eceb8c23@mail.gmail.com>
+References: <ddc827aa0908280610l323c7057jdc72f1a7eceb8c23@mail.gmail.com>
+Message-ID: <3b8d169a0908280833o308ae65ft77d7028c378db75f@mail.gmail.com>
+
+That is something i would like to know my self :)
+
+
+
+2009/8/28 Fahd Kasri <fahd.kasri at weblib.eu>
+
+> Hi all,
+>
+> Does anyone know if it's possible to install the CoovaAP firmware on a La
+> Fonera router?
+>
+> Fahd Kasri
+>
+
+
+
+-- 
+--------------------------------------------------------------------
+Contactem-me para anima??o musical de eventos!
+--------------------------------------------------------------------
+AveFm - www.avefm.net
+--------------------------------------------------------------------
+Http://www.CesarAraujo.Net
+--------------------------------------------------------------------
+Msn: messenger at CesarAraujo.net
+--------------------------------------------------------------------
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20090828/e945119f/attachment.htm>
+

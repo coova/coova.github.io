@@ -1,0 +1,189 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> uamanyip patch
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20uamanyip%20patch&In-Reply-To=%3C3F0F4C38-D5DB-49F5-9364-5D1A13BA5F94%40mac.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000237.html">
+   <LINK REL="Next"  HREF="000238.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>uamanyip patch</H1>
+    <B>wlan at mac.com</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20uamanyip%20patch&In-Reply-To=%3C3F0F4C38-D5DB-49F5-9364-5D1A13BA5F94%40mac.com%3E"
+       TITLE="uamanyip patch">wlan at mac.com
+       </A><BR>
+    <I>Mon May  5 08:31:53 UTC 2008</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000237.html">uamanyip patch
+</A></li>
+        <LI>Next message: <A HREF="000238.html">Addressing APIPA/IPv4LL issues with uamanyip
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#240">[ date ]</a>
+              <a href="thread.html#240">[ thread ]</a>
+              <a href="subject.html#240">[ subject ]</a>
+              <a href="author.html#240">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hi Gunther,
+
+Thanks for that. And, sorry for the delay in replying -- I was  
+traveling. As for the options, the procedure is as follows:
+
+- Add the option to cmdline.ggo - use an existing option as an example
+- Run &quot;gengetopt -C &lt; cmdline.ggo&quot; to generate the cmdline.[ch] files
+- Add your data structures for your option in options.h's struct  
+options_t
+- Do your mapping of gengetopt option to options_t in options.c's  
+process_options()
+(careful with memory here, and note the &quot;reconfiguring&quot; sections --  
+some stuff _only_ happens at startup)
+- Now you have your option data in the global options structure.
+
+I know... it's a bit of a process. It's because Chilli has always  
+used gengetopt -- which is nice, but also very repetitive code and  
+limiting in certain ways.
+
+For this option, you could take uamallowed as your template -- taking  
+a string and parsing out networks.
+
+David
+
+
+On May 3, 2008, at 9:16 PM, Gunther Mayer wrote:
+
+&gt;<i> lc wrote:
+</I>&gt;&gt;<i> Hi,
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> This is an interesting point. I use a different subnet to have  
+</I>&gt;&gt;<i> access to access points on the chilli network. So I think the  
+</I>&gt;&gt;<i> suggested uamanyipignorelan option would be excellent if the  
+</I>&gt;&gt;<i> network to be ignored could be defined.
+</I>&gt;<i> I rewrote my previous patch which wasn't working too well and  
+</I>&gt;<i> submitted the now tested and working version as r168. As originally  
+</I>&gt;<i> advertised it ignores (i.e. doesn't spoof) all arp requests within  
+</I>&gt;<i> chilli's own subnet. I'm busy rolling this out to a couple of live  
+</I>&gt;<i> sites but I don't expect any issues as I've tested it quite  
+</I>&gt;<i> substantially, it's a very minor patch as well.
+</I>&gt;<i>
+</I>&gt;<i> Regarding an option to specify such a subnet to ignore, I've  
+</I>&gt;<i> started on a customisable &quot;noarp &lt;subnet&gt;,&lt;subnet&gt;,...&quot; option but  
+</I>&gt;<i> gave up soon after I realised just how many source files need to be  
+</I>&gt;<i> changed in order to add a new option. I don't have time right now  
+</I>&gt;<i> for such an extensive patch but I'm willing to assist anyone who does.
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> Am 04.04.2008 um 00:07 schrieb Gunther Mayer:
+</I>&gt;&gt;<i>
+</I>&gt;&gt;&gt;<i> Hi David,
+</I>&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;<i> I've recently tried out the uamanyip option in coova and was very  
+</I>&gt;&gt;&gt;<i> pleased at how well it works. I want to use it all the time in  
+</I>&gt;&gt;&gt;<i> future across our network to simplify troubleshooting, should  
+</I>&gt;&gt;&gt;<i> save a couple of support calls ;-)
+</I>&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;<i> However, I found a very annoying side effect of uamanyip: It  
+</I>&gt;&gt;&gt;<i> spoofs ARP requests for just about anything. While that's the  
+</I>&gt;&gt;&gt;<i> point of uamanyip, it makes it impossible to have other devices  
+</I>&gt;&gt;&gt;<i> such as access points that you have to access for management  
+</I>&gt;&gt;&gt;<i> purposes on the chilli network. Say chilli listens on  
+</I>&gt;&gt;&gt;<i> 192.168.182.1 and there's another access point with static ip  
+</I>&gt;&gt;&gt;<i> 192.168.182.2 (of course not part of the dynip range) to increase  
+</I>&gt;&gt;&gt;<i> wireless coverage. As soon as anybody tries to ping or otherwise  
+</I>&gt;&gt;&gt;<i> access 192.168.182.2 because chilli will immediately claim it  
+</I>&gt;&gt;&gt;<i> through arp before the real device has a chance to answer - it  
+</I>&gt;&gt;&gt;<i> creates a race condition. Putting such devices on entirely  
+</I>&gt;&gt;&gt;<i> different subnets makes no difference as their ip's will be  
+</I>&gt;&gt;&gt;<i> stolen too. The only though somewhat ugly way I found around that  
+</I>&gt;&gt;&gt;<i> was to clear the arp cache on my client and then force a mapping  
+</I>&gt;&gt;&gt;<i> with arp -s.
+</I>&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;<i> So, I thought wouldn't it be cool to let chilli ignore arp  
+</I>&gt;&gt;&gt;<i> requests for anything other than itself but only on its own  
+</I>&gt;&gt;&gt;<i> subnet. Anything else will still be caught and spoofed as usual.  
+</I>&gt;&gt;&gt;<i> Hence I came up with the below patch, I created it against 1.0.11- 
+</I>&gt;&gt;&gt;<i> stable but applying it to svn (r161) proved trivial, as it's a  
+</I>&gt;&gt;&gt;<i> very short patch.
+</I>&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;<i> I think this should be done by default as it allows devices on  
+</I>&gt;&gt;&gt;<i> the chilli subnet to talk to each other properly (of course for  
+</I>&gt;&gt;&gt;<i> real isolation one would use something like ebtables or a/p  
+</I>&gt;&gt;&gt;<i> isolation). But of course the patch could be extended to make  
+</I>&gt;&gt;&gt;<i> this optional (uamanyipignorelan?) if people wanted to keep the  
+</I>&gt;&gt;&gt;<i> current behaviour. Thoughts?
+</I>&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;<i> Gunther
+</I>&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;<i> Index: dhcp.c
+</I>&gt;&gt;&gt;<i> ===================================================================
+</I>&gt;&gt;&gt;<i> --- dhcp.c      (revision 161)
+</I>&gt;&gt;&gt;<i> +++ dhcp.c      (working copy)
+</I>&gt;&gt;&gt;<i> @@ -2595,6 +2595,14 @@
+</I>&gt;&gt;&gt;<i>      return 0; /* Only reply if he asked for his router address */
+</I>&gt;&gt;&gt;<i>    }
+</I>&gt;&gt;&gt;<i>  }
+</I>&gt;&gt;&gt;<i> +  else if ((taraddr.s_addr != options.dhcplisten.s_addr) &amp;&amp;
+</I>&gt;&gt;&gt;<i> +        ((conn-&gt;hisip.s_addr &amp; conn-&gt;hismask.s_addr) ==
+</I>&gt;&gt;&gt;<i> +        (reqaddr.s_addr &amp; conn-&gt;hismask.s_addr))) {
+</I>&gt;&gt;&gt;<i> +    /* when uamanyip is on we should ignore arp requests that  
+</I>&gt;&gt;&gt;<i> ARE within our subnet except of course the ones for ourselves*/
+</I>&gt;&gt;&gt;<i> +    if (options.debug)
+</I>&gt;&gt;&gt;<i> +      log_dbg(&quot;ARP: request for ip other than us within our  
+</I>&gt;&gt;&gt;<i> subnet(uamanyip on), ignoring&quot;);
+</I>&gt;&gt;&gt;<i> +    return 0;
+</I>&gt;&gt;&gt;<i> +  }
+</I>&gt;&gt;&gt;<i>  conn-&gt;lasttime = mainclock;
+</I>&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;<i> -------------------------------------------------------------------- 
+</I>&gt;&gt;&gt;<i> -
+</I>&gt;&gt;&gt;<i> To unsubscribe, e-mail: <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli-unsubscribe at coova.org</A>
+</I>&gt;&gt;&gt;<i> For additional commands, e-mail: <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli-help at coova.org</A>
+</I>&gt;&gt;&gt;<i> Wiki: <A HREF="http://coova.org/wiki/index.php/CoovaChilli">http://coova.org/wiki/index.php/CoovaChilli</A>
+</I>&gt;&gt;&gt;<i> Forum: <A HREF="http://coova.org/phpBB3/viewforum.php?f=4">http://coova.org/phpBB3/viewforum.php?f=4</A>
+</I>&gt;&gt;&gt;<i>
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> ---------------------------------------------------------------------
+</I>&gt;&gt;<i> To unsubscribe, e-mail: <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli-unsubscribe at coova.org</A>
+</I>&gt;&gt;<i> For additional commands, e-mail: <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli-help at coova.org</A>
+</I>&gt;&gt;<i> Wiki: <A HREF="http://coova.org/wiki/index.php/CoovaChilli">http://coova.org/wiki/index.php/CoovaChilli</A>
+</I>&gt;&gt;<i> Forum: <A HREF="http://coova.org/phpBB3/viewforum.php?f=4">http://coova.org/phpBB3/viewforum.php?f=4</A>
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> ---------------------------------------------------------------------
+</I>&gt;<i> To unsubscribe, e-mail: <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli-unsubscribe at coova.org</A>
+</I>&gt;<i> For additional commands, e-mail: <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli-help at coova.org</A>
+</I>&gt;<i> Wiki: <A HREF="http://coova.org/wiki/index.php/CoovaChilli">http://coova.org/wiki/index.php/CoovaChilli</A>
+</I>&gt;<i> Forum: <A HREF="http://coova.org/phpBB3/viewforum.php?f=4">http://coova.org/phpBB3/viewforum.php?f=4</A>
+</I>&gt;<i>
+</I>
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000237.html">uamanyip patch
+</A></li>
+	<LI>Next message: <A HREF="000238.html">Addressing APIPA/IPv4LL issues with uamanyip
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#240">[ date ]</a>
+              <a href="thread.html#240">[ thread ]</a>
+              <a href="subject.html#240">[ subject ]</a>
+              <a href="author.html#240">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

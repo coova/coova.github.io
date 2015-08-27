@@ -1,0 +1,76 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> JRadius svn update
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:jradius%40coova.org?Subject=Re%3A%20JRadius%20svn%20update&In-Reply-To=%3CEE207600-D563-47CE-8DA5-51E5E95008AA%40mac.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000001.html">
+   <LINK REL="Next"  HREF="000003.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>JRadius svn update</H1>
+    <B>David Bird</B> 
+    <A HREF="mailto:jradius%40coova.org?Subject=Re%3A%20JRadius%20svn%20update&In-Reply-To=%3CEE207600-D563-47CE-8DA5-51E5E95008AA%40mac.com%3E"
+       TITLE="JRadius svn update">dwbird at mac.com
+       </A><BR>
+    <I>Sat Sep 15 06:55:49 UTC 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000001.html">[Jradius-users] Fix for missed possible values in VSAs
+</A></li>
+        <LI>Next message: <A HREF="000003.html">a release and new domain
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2">[ date ]</a>
+              <a href="thread.html#2">[ thread ]</a>
+              <a href="subject.html#2">[ subject ]</a>
+              <a href="author.html#2">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hello,
+
+I am committing some change to JRadius in the SVN. I got rid of the  
+ObjectQueue and replaced it with a Java 5 BlockingQueue (anyone still  
+use Java 1.4??). I also revisited the use of ServerSocketChannel and  
+Selector in the main Listener class (used for 'keepAlive' connection  
+with FreeRADIUS, etc). Since there are just a small finite number of  
+these connections, I switched to using Threads and blocking Sockets  
+instead of cycling through a select loop. In doing so, I moved the  
+protocol parsing code into the Listener classes (FreeRadiusListener,  
+for instance) instead of it being in the Processor classes (like  
+FreeRadiusProcessor). This way, the listener can block and wait for a  
+request, parse it, and put it onto the processing queue before going  
+back to sit on the socket read. I got rid of the Channel/Selector way  
+of doing things because I found it rather temperamental and probably  
+less efficient (in Java, anyway) than a small number of blocking  
+threads... Anyways, committing now.
+
+Cheers,
+David
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000001.html">[Jradius-users] Fix for missed possible values in VSAs
+</A></li>
+	<LI>Next message: <A HREF="000003.html">a release and new domain
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2">[ date ]</a>
+              <a href="thread.html#2">[ thread ]</a>
+              <a href="subject.html#2">[ subject ]</a>
+              <a href="author.html#2">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/jradius">More information about the Jradius
+mailing list</a><br>
+</body></html>

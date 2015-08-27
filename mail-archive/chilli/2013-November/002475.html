@@ -1,0 +1,130 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] CoovaChilli Kernel Mode issue
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20CoovaChilli%20Kernel%20Mode%20issue&In-Reply-To=%3C1212986019.4269.1385691940739.JavaMail.root%40frontiir.net%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="002474.html">
+   <LINK REL="Next"  HREF="002460.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] CoovaChilli Kernel Mode issue</H1>
+    <B>Phyo Wai Soe</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20CoovaChilli%20Kernel%20Mode%20issue&In-Reply-To=%3C1212986019.4269.1385691940739.JavaMail.root%40frontiir.net%3E"
+       TITLE="[Chilli] CoovaChilli Kernel Mode issue">phyo.w.soe at frontiir.net
+       </A><BR>
+    <I>Fri Nov 29 02:25:40 UTC 2013</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="002474.html">[Chilli] CoovaChilli Kernel Mode issue
+</A></li>
+        <LI>Next message: <A HREF="002460.html">[Chilli] Help
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2475">[ date ]</a>
+              <a href="thread.html#2475">[ thread ]</a>
+              <a href="subject.html#2475">[ subject ]</a>
+              <a href="author.html#2475">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hi Xabier,
+
+I am using the default rules (ie., up.sh writes the rules on CoovaChilli startup). With the kernel module mode on, the rules are as follows (eth0 is the WAN and eth1 is the DHCP interface):
+
+iptables -L
+
+Chain INPUT (policy ACCEPT)
+target     prot opt source               destination         
+
+Chain FORWARD (policy DROP)
+target     prot opt source               destination         
+ACCEPT     all  --  anywhere             anywhere            
+ACCEPT     all  --  anywhere             anywhere            
+ACCEPT     all  --  anywhere             anywhere            coova: name: chilli side: dest 
+ACCEPT     all  --  anywhere             anywhere            coova: name: chilli side: source
+
+Chain OUTPUT (policy ACCEPT)
+target     prot opt source               destination
+--------------------------------------
+iptables -S
+
+-P INPUT ACCEPT
+-P FORWARD DROP
+-P OUTPUT ACCEPT
+-A FORWARD -o tun0 -j ACCEPT
+-A FORWARD -i tun0 -j ACCEPT
+-A FORWARD -o eth1 -m coova --name chilli --dest  -j ACCEPT
+-A FORWARD -i eth1 -m coova --name chilli --source  -j ACCEPT
+-------------------------------------
+Thank you.
+
+Regards,
+Phyo Wai Soe
+
+----- Original Message ----- 
+From: &quot;Xabier Oneca -- xOneca&quot; &lt;<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">xoneca at gmail.com</A>&gt; 
+To: &quot;Phyo Wai Soe&quot; &lt;<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">phyo.w.soe at frontiir.net</A>&gt;, <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli at coova.org</A> 
+Sent: Friday, November 29, 2013 6:06:25 AM 
+Subject: Re: [Chilli] CoovaChilli Kernel Mode issue 
+
+
+Hello Phyo, 
+&gt;<i> I am following these instructions from David on how to enable the kernel module. <A HREF="http://lists.coova.org/pipermail/chilli/2010-April/001239.html">http://lists.coova.org/pipermail/chilli/2010-April/001239.html</A> 
+</I>&gt;<i> 
+</I>&gt;<i> According to him, &quot;Chilli is then also configured with 'uamlisten' of 11.0.0.1 and 
+</I>&gt;<i> this is the IP address that gets assigned to tun0 (so note that 
+</I>&gt;<i> dhcplisten and uamlisten are different!). The high level concept is that 
+</I>&gt;<i> subscribers get a 10.1.0.0/24 IP address which is routed (when 
+</I>&gt;<i> authenticated) through the kernel.&quot; 
+</I>&gt;<i> 
+</I>&gt;<i> So, I guess my setup is ok. 
+</I>Yes, you're right. Sorry! I didn't know about kernel-module-specific configuration quirks... 
+
+&gt;<i> Btw, when I looked at the syslogs, I saw the following lines when the clients got the resetting issue. 
+</I>&gt;<i> 
+</I>&gt;<i> redir.c: 2020: 104 (Connection reset by peer) redir_read(0) failed! 
+</I>&gt;<i> 
+</I>&gt;<i> Doing tcpdump on a client (10.99.0.30) when the issue occurred gave me the followings. 
+</I>&gt;<i> ======================== 
+</I>&gt;<i> 16:54:09.921330 IP (tos 0x0, ttl 64, id 0, offset 0, flags [DF], proto TCP (6), length 40) 
+</I>&gt;<i> 192.168.99.1.3990 &gt; 10.99.0.30.57235: Flags [R], cksum 0xcb11 (correct), seq 2598775956, win 0, length 0 
+</I>&gt;<i> 16:54:09.922202 IP (tos 0x0, ttl 64, id 0, offset 0, flags [DF], proto TCP (6), length 40) 
+</I>&gt;<i> 10.99.0.30.57235 &gt; 192.168.99.1.3990: Flags [R], cksum 0xb372 (correct), seq 524533718, win 0, length 0 
+</I>&gt;<i> 16:54:09.922646 IP (tos 0x0, ttl 64, id 0, offset 0, flags [DF], proto TCP (6), length 40) 
+</I>&gt;<i> 10.99.0.30.57235 &gt; 192.168.99.1.3990: Flags [R], cksum 0xb372 (correct), seq 524533718, win 0, length 0 
+</I>&gt;<i> =============== 
+</I>&gt;<i> I think it probably indicates that the server ( 192.168.99.1:3990 ) is resetting the connections even before showing the redirection page. 
+</I>Maybe it has to do with your iptables rules. What rules are you applying? Cheers, 
+
+Xabier Oneca_,,_ 
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="002474.html">[Chilli] CoovaChilli Kernel Mode issue
+</A></li>
+	<LI>Next message: <A HREF="002460.html">[Chilli] Help
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2475">[ date ]</a>
+              <a href="thread.html#2475">[ thread ]</a>
+              <a href="subject.html#2475">[ subject ]</a>
+              <a href="author.html#2475">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,756 @@
+From bidnaseem at gmail.com  Sun Nov  2 10:43:32 2014
+From: bidnaseem at gmail.com (Abid Naseem)
+Date: Sun, 2 Nov 2014 15:43:32 +0500
+Subject: [Chilli] ChilliSplash
+Message-ID: <CAMN68dPLPi4_4w3=HwsrEmCjrsKFiADLBXiF-HJLJt3f1VodKA@mail.gmail.com>
+
+Hi !
+
+I want some help in doing the following:
+
+> Users redirected to remotely hosted Splash Page
+> Users click on " I Agree" button and then internet access is allowed
+> no radius, just splash, click and go.
+
+this should be quite basic for you all, i am just a new comer
+kindly show me the right direction to make this happen. Thanks!
+p.s. chillisplash could be a different project for users like me..similar
+to nocatsplash.
+
+-abi
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20141102/9b7f489d/attachment.html>
+
+From giovanni.bezicheri at nethesis.it  Tue Nov  4 16:12:02 2014
+From: giovanni.bezicheri at nethesis.it (Giovanni Bezicheri)
+Date: Tue, 04 Nov 2014 17:12:02 +0100
+Subject: [Chilli] Assign ip to HS_LANIF interface
+Message-ID: <5458FAD2.7020502@nethesis.it>
+
+The coova chilli init script removes the ip address from HS_LANIF interface.
+Anyone experiments any side effects by assigning an ip to the HS_LANIF 
+interface (commenting "ifconfig $HS_LANIF 0.0.0.0" line)? Is that a good 
+practice?
+> start() {
+>      echo -n $"Starting $prog: "
+>
+>      check_required
+>
+>      /sbin/modprobe tun >/dev/null 2>&1
+>      echo 1 > /proc/sys/net/ipv4/ip_forward
+>
+>      [ -e /dev/net/tun ] || {
+>          (cd /dev; mkdir net; cd net; mknod tun c 10 200)
+>      }
+>
+>      writeconfig
+>      radiusconfig
+>
+>      test ${HS_ADMINTERVAL:-0} -gt 0 && {
+>          (crontab -l 2>&- | grep -v $0
+>          echo "*/$HS_ADMINTERVAL * * * * $0 radconfig") | crontab - 2>&-
+>      }
+>
+>      ifconfig $HS_LANIF 0.0.0.0
+>
+>      daemon $exec -c $CONFIG
+>      retval=$?
+>      echo
+>      [ $retval -eq 0 ] && touch $lockfile
+>      return $retval
+> }
+
+From alghe.global at gmail.com  Tue Nov  4 16:28:48 2014
+From: alghe.global at gmail.com (Alexandru Gheorghe)
+Date: Tue, 04 Nov 2014 18:28:48 +0200
+Subject: [Chilli] Assign ip to HS_LANIF interface
+In-Reply-To: <5458FAD2.7020502@nethesis.it>
+References: <5458FAD2.7020502@nethesis.it>
+Message-ID: <5458FEC0.50004@gmail.com>
+
+On 11/04/2014 06:12 PM, Giovanni Bezicheri wrote:
+> The coova chilli init script removes the ip address from HS_LANIF
+> interface.
+> Anyone experiments any side effects by assigning an ip to the HS_LANIF
+> interface (commenting "ifconfig $HS_LANIF 0.0.0.0" line)? Is that a good
+> practice?
+
+HS_LANIF interface shouldn't have any ip assigned to it, it's merely
+used as an interface to the kernel in order to capture the traffic (tun
+driver)
+
+the 0.0.0.0 is a good practice, yes
+
+
+>> start() {
+>>      echo -n $"Starting $prog: "
+>>
+>>      check_required
+>>
+>>      /sbin/modprobe tun >/dev/null 2>&1
+>>      echo 1 > /proc/sys/net/ipv4/ip_forward
+>>
+>>      [ -e /dev/net/tun ] || {
+>>          (cd /dev; mkdir net; cd net; mknod tun c 10 200)
+>>      }
+>>
+>>      writeconfig
+>>      radiusconfig
+>>
+>>      test ${HS_ADMINTERVAL:-0} -gt 0 && {
+>>          (crontab -l 2>&- | grep -v $0
+>>          echo "*/$HS_ADMINTERVAL * * * * $0 radconfig") | crontab - 2>&-
+>>      }
+>>
+>>      ifconfig $HS_LANIF 0.0.0.0
+>>
+>>      daemon $exec -c $CONFIG
+>>      retval=$?
+>>      echo
+>>      [ $retval -eq 0 ] && touch $lockfile
+>>      return $retval
+>> }
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+-- 
+; Alexandru Gheorghe
+; alghe.global {at} gmail {dot} com
+; OpenPGP key ID 0xCAF985D2
+
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: signature.asc
+Type: application/pgp-signature
+Size: 836 bytes
+Desc: OpenPGP digital signature
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20141104/61615952/attachment.pgp>
+
+From xoneca at gmail.com  Fri Nov  7 19:44:29 2014
+From: xoneca at gmail.com (Xabier Oneca -- xOneca)
+Date: Fri, 7 Nov 2014 20:44:29 +0100
+Subject: [Chilli] coovachilli for splash only
+In-Reply-To: <CAMN68dNjcKCtp1-BQdUL7faROUR90Lv2Svzraquce3OxGYzKug@mail.gmail.com>
+References: <CAMN68dNjcKCtp1-BQdUL7faROUR90Lv2Svzraquce3OxGYzKug@mail.gmail.com>
+Message-ID: <CACkgH718WkmzBR9UAM7DL5c5gzjYcgNOjCmFaPu8uZ87CkCtrA@mail.gmail.com>
+
+Hello Abid,
+
+2014-11-06 18:06 GMT+01:00 Abid Naseem <bidnaseem at gmail.com>:
+> Hi sir
+>
+> this is with reference to your thread:
+>
+> http://lists.coova.org/pipermail/chilli/2013-February/002186.html
+>
+> I am trying to do the same, can you help me?
+> thanks a lot!
+
+Sorry for not answering earlier.
+
+I wanted to point you to that thread but didn't have time to search
+it. Good job!
+
+Now, if you have configured CoovaChilli with a 'localusers' file and a
+dummy 'radiusserver1', you only have to add to configuration
+'uamserver', 'wwwdir' and 'wwwbin' parameters.
+
+The first one (uamserver) must be something like
+'http://${ip}:${port}/www/uam.chi'
+
+${ip} and ${port} are from your CoovaChilli configuration (10.0.0.1
+and 3990 by default).
+
+'wwwdir' is the folder where static content is saved.
+
+And 'wwwbin' is a CGI binary (or script) which is called when
+'uamserver' URL is requested.
+
+You have to write wwwbin so it will display the splash with your "I
+accept..." checkbox, processes it and then redirects the user to:
+
+  http://${ip}:${port}/logon?username=${username}&password=${password}
+
+${username} and ${password} must exist in your 'localusers' file.
+
+HTH,
+
+Xabier Oneca_,,_
+
+From sales at sanitycomputers.com.au  Sun Nov  9 21:42:02 2014
+From: sales at sanitycomputers.com.au (Sanity)
+Date: Mon, 10 Nov 2014 07:42:02 +1000
+Subject: [Chilli] uam redirect fail
+Message-ID: <129301cffc66$004c2e10$00e48a30$@sanitycomputers.com.au>
+
+Hi all,   Some of our hotspot users are not been redirected to a radius
+server from a coova chilli nas. The default coova  redirect page with the
+wireless hotspot logo just stops and eventually the browser times out.
+
+ 
+
+The most common device to have the issue is a Samsung tablet, and often IOS
+devices. It does not seem to happen on most other OS's. 
+
+ 
+
+And it does not always happen.  I've seen many coova-chilli redirect threads
+but not specifically like this. 
+
+ 
+
+Any ideas on what could stop the redirect like this? 
+
+ 
+
+Regards 
+
+
+Jim
+
+ 
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20141110/9fe3b2db/attachment.html>
+
+From dbird at google.com  Tue Nov 11 20:27:52 2014
+From: dbird at google.com (David Bird)
+Date: Tue, 11 Nov 2014 12:27:52 -0800
+Subject: [Chilli] uam redirect fail
+In-Reply-To: <129301cffc66$004c2e10$00e48a30$@sanitycomputers.com.au>
+References: <129301cffc66$004c2e10$00e48a30$@sanitycomputers.com.au>
+Message-ID: <CADo9JyULSexS6Hn3cZrNY3AsyptywOZKK3VGFFYe1r2iTimDFQ@mail.gmail.com>
+
+Use wireshark (or tcpdump) to get a better picture of what's happening with
+that specific client...
+
+Are you redirecting to a HTTPS portal page? if so, make sure your cert
+provider's CRL server (where it checks to see if the server cert was
+revoked) is in your walled garden.
+
+On Sun, Nov 9, 2014 at 1:42 PM, Sanity <sales at sanitycomputers.com.au> wrote:
+
+> Hi all,   Some of our hotspot users are not been redirected to a radius
+> server from a coova chilli nas. The default coova  redirect page with the
+> wireless hotspot logo just stops and eventually the browser times out.
+>
+>
+>
+> The most common device to have the issue is a Samsung tablet, and often
+> IOS devices. It does not seem to happen on most other OS?s.
+>
+>
+>
+> And it does not always happen?  I?ve seen many coova-chilli redirect
+> threads but not specifically like this.
+>
+>
+>
+> Any ideas on what could stop the redirect like this?
+>
+>
+>
+> Regards
+>
+>
+> Jim
+>
+>
+>
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20141111/55633ee6/attachment.html>
+
+From sales at sanitycomputers.com.au  Tue Nov 11 22:21:23 2014
+From: sales at sanitycomputers.com.au (Sanity)
+Date: Wed, 12 Nov 2014 08:21:23 +1000
+Subject: [Chilli] uam redirect fail
+In-Reply-To: <CADo9JyULSexS6Hn3cZrNY3AsyptywOZKK3VGFFYe1r2iTimDFQ@mail.gmail.com>
+References: <129301cffc66$004c2e10$00e48a30$@sanitycomputers.com.au>
+ <CADo9JyULSexS6Hn3cZrNY3AsyptywOZKK3VGFFYe1r2iTimDFQ@mail.gmail.com>
+Message-ID: <162701cffdfd$d434d860$7c9e8920$@sanitycomputers.com.au>
+
+Thanks David, the problem is I can?t replicate the error? the site is not local to me and hundreds of users have no problem. 
+
+ 
+
+It?s not an ssl enabled radius server.
+
+It happens on coovachilli 1.28 & 1.29 on openwrt (using Cloudtrax firmware and the old Robin).
+
+I?ve considered it may be a DNS problem yet the radius server can be accessed by these clients ? just not via the redirect.
+
+ 
+
+I will check whether I can setup tcpdump on one of the routers.
+
+Are you able to explain the pre requisites or process for the redirect to happen?
+
+ 
+
+Cheers.
+
+ 
+
+From: David Bird [mailto:dbird at google.com] 
+Sent: Wednesday, 12 November 2014 6:28 AM
+To: Sanity
+Cc: chilli at coova.org
+Subject: Re: [Chilli] uam redirect fail
+
+ 
+
+Use wireshark (or tcpdump) to get a better picture of what's happening with that specific client... 
+
+ 
+
+Are you redirecting to a HTTPS portal page? if so, make sure your cert provider's CRL server (where it checks to see if the server cert was revoked) is in your walled garden.
+
+ 
+
+On Sun, Nov 9, 2014 at 1:42 PM, Sanity <sales at sanitycomputers.com.au <mailto:sales at sanitycomputers.com.au> > wrote:
+
+Hi all,   Some of our hotspot users are not been redirected to a radius server from a coova chilli nas. The default coova  redirect page with the wireless hotspot logo just stops and eventually the browser times out.
+
+ 
+
+The most common device to have the issue is a Samsung tablet, and often IOS devices. It does not seem to happen on most other OS?s. 
+
+ 
+
+And it does not always happen?  I?ve seen many coova-chilli redirect threads but not specifically like this. 
+
+ 
+
+Any ideas on what could stop the redirect like this? 
+
+ 
+
+Regards 
+
+
+Jim
+
+ 
+
+
+_______________________________________________
+Chilli mailing list
+Chilli at coova.org <mailto:Chilli at coova.org> 
+http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+ 
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20141112/2548b979/attachment.html>
+
+From sourav.chakraborty at netcommwireless.com  Wed Nov 12 05:51:54 2014
+From: sourav.chakraborty at netcommwireless.com (Sourav)
+Date: Wed, 12 Nov 2014 16:51:54 +1100
+Subject: [Chilli] landing page redirection query
+Message-ID: <5462F57A.90607@netcommwireless.com>
+
+My landing page is stored in /etc/chilli/www directory.......since / is 
+getting full, we have decided to put the landing pages inside 
+/usr/local/etc/chilli/www and have a softlink "custom" inside 
+/etc/chilli/www directory, pointing to /usr/local/etc/chilli/www. I 
+tried that out and coovachilli is not redirecting to the landing page 
+anymore. Is there some kind of blocking to softlinks? Please suggest a 
+way out.
+
+-- 
+Warm Regards,
+Sourav
+
+
+______________________________________________________________________
+This communication contains information which may be confidential or privileged. The information is intended solely for the use of the individual or entity named above.  If you are not the intended recipient, be aware that any disclosure, copying, distribution or use of the contents of this information is prohibited.  If you have received this communication in error, please notify me by telephone immediately.
+______________________________________________________________________
+
+From sourav.chakraborty at netcommwireless.com  Wed Nov 12 06:07:14 2014
+From: sourav.chakraborty at netcommwireless.com (Sourav)
+Date: Wed, 12 Nov 2014 17:07:14 +1100
+Subject: [Chilli] Fwd:  landing page redirection query
+In-Reply-To: <5462F57A.90607@netcommwireless.com>
+References: <5462F57A.90607@netcommwireless.com>
+Message-ID: <5462F912.3000705@netcommwireless.com>
+
+
+Is it possible to allow multiple entries to HS_WWW in the chilli config 
+file...like-
+HS_WWWDIR=/etc/chilli/www,/usr/local/etc/chilli/www
+
+warm Regards,
+Sourav
+
+-------- Original Message --------
+Subject: 	[Chilli] landing page redirection query
+Date: 	Wed, 12 Nov 2014 16:51:54 +1100
+From: 	Sourav <sourav.chakraborty at netcommwireless.com>
+To: 	chilli at coova.org <chilli at coova.org>
+
+
+
+My landing page is stored in /etc/chilli/www directory.......since / is
+getting full, we have decided to put the landing pages inside
+/usr/local/etc/chilli/www and have a softlink "custom" inside
+/etc/chilli/www directory, pointing to /usr/local/etc/chilli/www. I
+tried that out and coovachilli is not redirecting to the landing page
+anymore. Is there some kind of blocking to softlinks? Please suggest a
+way out.
+
+-- 
+Warm Regards,
+Sourav
+
+
+______________________________________________________________________
+This communication contains information which may be confidential or privileged. The information is intended solely for the use of the individual or entity named above.  If you are not the intended recipient, be aware that any disclosure, copying, distribution or use of the contents of this information is prohibited.  If you have received this communication in error, please notify me by telephone immediately.
+______________________________________________________________________
+_______________________________________________
+Chilli mailing list
+Chilli at coova.org
+http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+
+-- 
+Warm Regards,
+Sourav
+
+
+
+
+
+______________________________________________________________________
+This communication contains information which may be confidential or privileged. The information is intended solely for the use of the individual or entity named above.  If you are not the intended recipient, be aware that any disclosure, copying, distribution or use of the contents of this information is prohibited.  If you have received this communication in error, please notify me by telephone immediately.
+______________________________________________________________________
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20141112/9a0a8dbd/attachment-0001.html>
+
+From giovanni.bezicheri at nethesis.it  Wed Nov 12 08:10:27 2014
+From: giovanni.bezicheri at nethesis.it (Giovanni Bezicheri)
+Date: Wed, 12 Nov 2014 09:10:27 +0100
+Subject: [Chilli] Fwd:  landing page redirection query
+In-Reply-To: <5462F912.3000705@netcommwireless.com>
+References: <5462F57A.90607@netcommwireless.com>
+ <5462F912.3000705@netcommwireless.com>
+Message-ID: <546315F3.1080107@nethesis.it>
+
+Il 12/11/2014 07:07, Sourav ha scritto:
+>
+> Is it possible to allow multiple entries to HS_WWW in the chilli 
+> config file...like-
+> HS_WWWDIR=/etc/chilli/www,/usr/local/etc/chilli/www
+>
+> warm Regards,
+> Sourav
+>
+> -------- Original Message --------
+> Subject: 	[Chilli] landing page redirection query
+> Date: 	Wed, 12 Nov 2014 16:51:54 +1100
+> From: 	Sourav <sourav.chakraborty at netcommwireless.com>
+> To: 	chilli at coova.org <chilli at coova.org>
+>
+>
+>
+> My landing page is stored in /etc/chilli/www directory.......since / is
+> getting full, we have decided to put the landing pages inside
+> /usr/local/etc/chilli/www and have a softlink "custom" inside
+> /etc/chilli/www directory, pointing to /usr/local/etc/chilli/www. I
+> tried that out and coovachilli is not redirecting to the landing page
+> anymore. Is there some kind of blocking to softlinks? Please suggest a
+> way out.
+>
+> -- 
+> Warm Regards,
+> Sourav
+>
+>
+> ______________________________________________________________________
+> This communication contains information which may be confidential or privileged. The information is intended solely for the use of the individual or entity named above.  If you are not the intended recipient, be aware that any disclosure, copying, distribution or use of the contents of this information is prohibited.  If you have received this communication in error, please notify me by telephone immediately.
+> ______________________________________________________________________
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+> -- 
+> Warm Regards,
+> Sourav
+>
+>
+>
+> ______________________________________________________________________
+> This communication contains information which may be confidential or 
+> privileged. The information is intended solely for the use of the 
+> individual or entity named above. If you are not the intended 
+> recipient, be aware that any disclosure, copying, distribution or use 
+> of the contents of this information is prohibited. If you have 
+> received this communication in error, please notify me by telephone 
+> immediately.
+> ______________________________________________________________________
+>
+>
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+No, it isn't. HS_WWWDIR must be a single directory.
+
+-- 
+Giovanni
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20141112/8895c59f/attachment.html>
+
+From radius.sir at gmail.com  Wed Nov 12 13:51:07 2014
+From: radius.sir at gmail.com (Russell Mike)
+Date: Wed, 12 Nov 2014 13:51:07 +0000
+Subject: [Chilli] uam redirect fail
+In-Reply-To: <162701cffdfd$d434d860$7c9e8920$@sanitycomputers.com.au>
+References: <129301cffc66$004c2e10$00e48a30$@sanitycomputers.com.au>
+ <CADo9JyULSexS6Hn3cZrNY3AsyptywOZKK3VGFFYe1r2iTimDFQ@mail.gmail.com>
+ <162701cffdfd$d434d860$7c9e8920$@sanitycomputers.com.au>
+Message-ID: <CADao4Co2KMFOgETq3Dk0R367rNsm91MRmCiR4AQDtEegZCDCQw@mail.gmail.com>
+
+i had similar issue when i launched CoovaChilli in hosted environment from
+ISP data center. Approximately 35% devices were not getting login page at
+all, hence others were able to.The NIC for those devices were unable to
+handle MTU of 1504 becomes after VLAN Tag (4Bytes) because NIC do not
+support jumbo frame. i did it by setting following directive and never had
+the problem again. COOVA is up for over two year since, nearly 5000
+concurrent user browse during peak hours.
+
+Of course solution is only applicable if it is VLAN setup.
+
+I configured tcpmss in config file
+HS_TCPMSS=1400
+
+i configured mtu in chilli.conf
+mtu=1400
+
+You would need to restart instance(s) to take effect. lets see if this
+helps.
+
+Thanks / Prabhpal Singh
+
+
+
+
+
+
+
+
+On Tue, Nov 11, 2014 at 10:21 PM, Sanity <sales at sanitycomputers.com.au>
+wrote:
+
+> Thanks David, the problem is I can?t replicate the error? the site is not
+> local to me and hundreds of users have no problem.
+>
+>
+>
+> It?s not an ssl enabled radius server.
+>
+> It happens on coovachilli 1.28 & 1.29 on openwrt (using Cloudtrax firmware
+> and the old Robin).
+>
+> I?ve considered it may be a DNS problem yet the radius server can be
+> accessed by these clients ? just not via the redirect.
+>
+>
+>
+> I will check whether I can setup tcpdump on one of the routers.
+>
+> Are you able to explain the pre requisites or process for the redirect to
+> happen?
+>
+>
+>
+> Cheers.
+>
+>
+>
+> *From:* David Bird [mailto:dbird at google.com]
+> *Sent:* Wednesday, 12 November 2014 6:28 AM
+> *To:* Sanity
+> *Cc:* chilli at coova.org
+> *Subject:* Re: [Chilli] uam redirect fail
+>
+>
+>
+> Use wireshark (or tcpdump) to get a better picture of what's happening
+> with that specific client...
+>
+>
+>
+> Are you redirecting to a HTTPS portal page? if so, make sure your cert
+> provider's CRL server (where it checks to see if the server cert was
+> revoked) is in your walled garden.
+>
+>
+>
+> On Sun, Nov 9, 2014 at 1:42 PM, Sanity <sales at sanitycomputers.com.au>
+> wrote:
+>
+> Hi all,   Some of our hotspot users are not been redirected to a radius
+> server from a coova chilli nas. The default coova  redirect page with the
+> wireless hotspot logo just stops and eventually the browser times out.
+>
+>
+>
+> The most common device to have the issue is a Samsung tablet, and often
+> IOS devices. It does not seem to happen on most other OS?s.
+>
+>
+>
+> And it does not always happen?  I?ve seen many coova-chilli redirect
+> threads but not specifically like this.
+>
+>
+>
+> Any ideas on what could stop the redirect like this?
+>
+>
+>
+> Regards
+>
+>
+> Jim
+>
+>
+>
+>
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+>
+>
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20141112/4a9e452e/attachment.html>
+
+From radius.sir at gmail.com  Wed Nov 12 14:00:47 2014
+From: radius.sir at gmail.com (Russell Mike)
+Date: Wed, 12 Nov 2014 14:00:47 +0000
+Subject: [Chilli] Fwd: landing page redirection query
+In-Reply-To: <546315F3.1080107@nethesis.it>
+References: <5462F57A.90607@netcommwireless.com>
+ <5462F912.3000705@netcommwireless.com>
+ <546315F3.1080107@nethesis.it>
+Message-ID: <CADao4Cqc6W89FpYUyiRieX02jmDmBbe_Ke1zS8_9hq=UDO3LOw@mail.gmail.com>
+
+i do not see the problem, where ever you put files just point *HS_WWWDIR *to
+that folder should work. Check your configuration, you have not done
+something right. how about permissions on new destination to apache ?
+
+
+*HS_WWWDIR=/usr/local/etc/chilli/coova-c-media-tech-vlan423/www-cafeclub*
+HS_UAMFORMAT=http://\$HS_UAMLISTEN:\$HS_UAMUIPORT/www/login.chi
+HS_UAMHOMEPAGE=http://\$HS_UAMLISTEN:\$HS_UAMPORT/www/coova.html
+
+
+
+Thanks / Prabhpal Singh
+
+
+
+
+
+On Wed, Nov 12, 2014 at 8:10 AM, Giovanni Bezicheri <
+giovanni.bezicheri at nethesis.it> wrote:
+
+>  Il 12/11/2014 07:07, Sourav ha scritto:
+>
+>
+> Is it possible to allow multiple entries to HS_WWW in the chilli config
+> file...like-
+> HS_WWWDIR=/etc/chilli/www,/usr/local/etc/chilli/www
+>
+> warm Regards,
+> Sourav
+>
+> -------- Original Message --------  Subject: [Chilli] landing page
+> redirection query  Date: Wed, 12 Nov 2014 16:51:54 +1100  From: Sourav
+> <sourav.chakraborty at netcommwireless.com>
+> <sourav.chakraborty at netcommwireless.com>  To: chilli at coova.org
+> <chilli at coova.org> <chilli at coova.org>
+>
+> My landing page is stored in /etc/chilli/www directory.......since / is
+> getting full, we have decided to put the landing pages inside
+> /usr/local/etc/chilli/www and have a softlink "custom" inside
+> /etc/chilli/www directory, pointing to /usr/local/etc/chilli/www. I
+> tried that out and coovachilli is not redirecting to the landing page
+> anymore. Is there some kind of blocking to softlinks? Please suggest a
+> way out.
+>
+> --
+> Warm Regards,
+> Sourav
+>
+>
+> ______________________________________________________________________
+> This communication contains information which may be confidential or privileged. The information is intended solely for the use of the individual or entity named above.  If you are not the intended recipient, be aware that any disclosure, copying, distribution or use of the contents of this information is prohibited.  If you have received this communication in error, please notify me by telephone immediately.
+> ______________________________________________________________________
+> _______________________________________________
+> Chilli mailing listChilli at coova.orghttp://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+>
+> --
+> Warm Regards,
+> Sourav
+>
+>
+>
+>
+> ______________________________________________________________________
+> This communication contains information which may be confidential or
+> privileged. The information is intended solely for the use of the
+> individual or entity named above. If you are not the intended recipient, be
+> aware that any disclosure, copying, distribution or use of the contents of
+> this information is prohibited. If you have received this communication in
+> error, please notify me by telephone immediately.
+> ______________________________________________________________________
+>
+>
+> _______________________________________________
+> Chilli mailing listChilli at coova.orghttp://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+>
+> No, it isn't. HS_WWWDIR must be a single directory.
+>
+> --
+> Giovanni
+>
+>
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20141112/20aa2880/attachment.html>
+

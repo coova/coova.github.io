@@ -1,0 +1,188 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] kmod-coova - Shaping rules
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20kmod-coova%20-%20Shaping%20rules&In-Reply-To=%3C4BBC48B3.1040702%40amobia.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001246.html">
+   <LINK REL="Next"  HREF="001248.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] kmod-coova - Shaping rules</H1>
+    <B>Johan Meiring</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20kmod-coova%20-%20Shaping%20rules&In-Reply-To=%3C4BBC48B3.1040702%40amobia.com%3E"
+       TITLE="[Chilli] kmod-coova - Shaping rules">jmeiring at amobia.com
+       </A><BR>
+    <I>Wed Apr  7 08:56:19 UTC 2010</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001246.html">[Chilli] kmod-coova
+</A></li>
+        <LI>Next message: <A HREF="001248.html">[Chilli] kmod-coova - Shaping rules
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1247">[ date ]</a>
+              <a href="thread.html#1247">[ thread ]</a>
+              <a href="subject.html#1247">[ subject ]</a>
+              <a href="author.html#1247">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>David Bird wrote:
+&gt;&gt;<i> What would be the implication of this change with respect to rate limit ?
+</I>&gt;&gt;<i> Will per-user chilli attributes ( eg WISPr-Bandwidth-Max-Down ) continues to work in user mode ?
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> Will it make &quot;group rate limit&quot; ( verses per-user rate limit ) easier to implement ?  
+</I>&gt;&gt;<i>
+</I>
+The HTB below could be extended to do something like this...
+
+&gt;<i> 
+</I>&gt;<i> It isn't there yet, but the simplistic &quot;leaky bucket&quot; rate shaping of
+</I>&gt;<i> chilli could easily be also implemented in the kernel module. Or, as
+</I>&gt;<i> Wichert mentioned, it could tap into more sophisticated kernel features
+</I>&gt;<i> (any examples Wichert?). This would be required as chilli does not route
+</I>&gt;<i> packets for authenticated traffic in this scenario. Chilli sees the
+</I>&gt;<i> packets, but just ignores them. 
+</I>&gt;<i> 
+</I>&gt;<i> Also, similar to how the 'recent' module, you can interact with the
+</I>&gt;<i> kernel module in the /proc file system. This is also how chilli itself
+</I>&gt;<i> updates client status and fetches up/down octets/packets for
+</I>&gt;<i> accounting. 
+</I>&gt;<i> 
+</I>
+Here are some &quot;working&quot; examples.
+
+You need to create a unique ID for each client.
+You need the ID again when &quot;deleting&quot; the shaping if the client goes down.
+
+Maybe chilli could use the last octect of the /24 ip?
+(No idea what to do if bigger than /24, anyway
+each client needs a unique ID)
+
+
+The shaping implementation uses a HTB, with a SFQ at every leaf.
+
+For the example the assumption is that the clients connect to tun1 and eth0 
+is the upstream interface
+
+
+Setup the &quot;base&quot; when chilli starts as follows:
+------------------------------------------------
+#!/bin/sh
+
+# Delete any old shaping
+tc qdisc del dev eth0 root
+tc qdisc del dev tun1 root
+
+# Set interface to use htb and send unclassified traffic to class 1:10
+tc qdisc add dev eth0 root handle 1: htb default 10 r2q 5
+tc qdisc add dev tun1 root handle 1: htb default 10 r2q 5
+
+# Default class - No speed limit (100mbit)
+tc class add dev eth0 parent 1: classid 1:10 htb \
+   rate 100000kbit ceil 100000kbit
+tc class add dev tun1 parent 1: classid 1:10 htb \
+   rate 100000kbit ceil 100000kbit
+
+# New qdisc for better traffic below default class
+tc qdisc add dev eth0 parent 1:10 handle 10: sfq perturb 10
+tc qdisc add dev tun1 parent 1:10 handle 10: sfq perturb 10
+
+
+Run this for each client that connects:
+---------------------------------------
+#!/bin/sh
+
+# $(id) = unique client identifier (minimum 2)
+# $(ip) = client ip address
+# $(speedup) = client upload speed in bits/s
+# $(speeddown) = client download speed in bits/s
+
+# Classes
+tc class add dev eth0 parent 1: classid 1:$(id)0 htb \
+   rate $(speedup)bit ceil $(speedup)bit
+tc class add dev tun1 parent 1: classid 1:$(id)0 htb \
+   rate $(speeddown)bit ceil $(speeddown)bit
+
+# Qdiscs
+tc qdisc add dev eth0 parent 1:$(id)0 handle $(id)0: sfq perturb 10
+tc qdisc add dev tun1 parent 1:$(id)0 handle $(id)0: sfq perturb 10
+
+# Filters (can be repeated if client has more routes)
+tc filter add dev eth0 protocol ip parent 1:0 \
+   prio $(id)0 u32 match ip src $(ip)/32 flowid 1:$(id)0
+tc filter add dev tun1 protocol ip parent 1:0 \
+   prio $(id)0 u32 match ip dst $(ip)/32 flowid 1:$(id)0
+
+
+Run this for each client that disconnects:
+------------------------------------------
+#!/bin/sh
+
+# $(id) = unique client identifier
+
+# Filters (Does not need to be repeated for more routes)
+tc filter del dev eth0 protocol ip parent 1:0 prio $(id)0
+tc filter del dev tun1 protocol ip parent 1:0 prio $(id)0
+
+# Qdiscs
+tc qdisc del dev eth0 parent 1:$(id)0 handle $(id)0:
+tc qdisc del dev tun1 parent 1:$(id)0 handle $(id)0:
+
+# Classes
+tc class del dev eth0 parent 1: classid 1:$(id)0
+tc class del dev tun1 parent 1: classid 1:$(id)0
+
+
+
+In the examples above a client with in $(id) if 1 gets a handle of 10.
+
+e.g.
+
+Client id     = 2
+Speed up/down = 1MBit/s
+
+# Classes
+tc class add dev eth0 parent 1: classid 1:20 htb \
+   rate 1000000bit ceil 1000000bit
+
+
+Cheers,
+
+-- 
+
+
+Johan Meiring
+Amobia Communications
+Tel: (0861) AMOBIA / (0861) 266242
+Fax: (0861) AMOFAX / (0861) 266329
+
+</PRE>
+
+
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001246.html">[Chilli] kmod-coova
+</A></li>
+	<LI>Next message: <A HREF="001248.html">[Chilli] kmod-coova - Shaping rules
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1247">[ date ]</a>
+              <a href="thread.html#1247">[ thread ]</a>
+              <a href="subject.html#1247">[ subject ]</a>
+              <a href="author.html#1247">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

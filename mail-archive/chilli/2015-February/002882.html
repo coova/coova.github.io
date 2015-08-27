@@ -1,0 +1,177 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] Apparent intrusion attempt on AP running
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Apparent%20intrusion%20attempt%20on%20AP%20running&In-Reply-To=%3C008f01d049c8%24e5bb2b40%24b13181c0%24%40stjerno.dk%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="002880.html">
+   <LINK REL="Next"  HREF="002883.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] Apparent intrusion attempt on AP running</H1>
+    <B>Claus Stjern&#248;</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Apparent%20intrusion%20attempt%20on%20AP%20running&In-Reply-To=%3C008f01d049c8%24e5bb2b40%24b13181c0%24%40stjerno.dk%3E"
+       TITLE="[Chilli] Apparent intrusion attempt on AP running">claus at stjerno.dk
+       </A><BR>
+    <I>Mon Feb 16 09:13:58 UTC 2015</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="002880.html">[Chilli] Apparent intrusion attempt on AP running	coova-chilli	1.2.9, ways to mitigate?
+</A></li>
+        <LI>Next message: <A HREF="002883.html">[Chilli] How to adjust the wall garden with Access-Reject from	radius.
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2882">[ date ]</a>
+              <a href="thread.html#2882">[ thread ]</a>
+              <a href="subject.html#2882">[ subject ]</a>
+              <a href="author.html#2882">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hi Ben,
+
+ 
+
+My guess is that you got a virus infected client.
+
+The client is trying to reach a site and is requesting a tasklist from a
+predefined server. Your Chilli daemon is redirecting his http call&#146;s but the
+users request for the particular php code throws an error in the redir.c
+code.
+
+ 
+
+See the request for that particular php code here:
+<A HREF="http://lists.clean-mx.com/pipermail/viruswatch/20120206/031018.html">http://lists.clean-mx.com/pipermail/viruswatch/20120206/031018.html</A>
+
+ 
+
+The other could php calls could also be part of the virus but like others
+have said, Google did not help here :)
+
+ 
+
+Kind regards,
+
+Claus
+
+ 
+
+A Nanostation M2 running Openwrt AA with coova-chilli v1.2.9 stopped its
+periodic heartbeat, and I had a chance to SSH in locally w/in 1 hour of the
+last heartbeat.
+
+ 
+
+I didn't get a chance to inspect the APs local state very well before having
+to issue a &quot;reboot -f&quot; after the initial SSH session appeared to freeze.
+
+ 
+
+Besides, the device only have 1Mbyte of remaining free memory, I did notice
+these log messages from coova-chilli (trimmed and anonymized):
+
+ 
+
+Feb 15 20:43:56 Openwrt local6.notice coova-chilli[2056]: chilli.c: 5005:
+
+Client MAC=8C-84-01-XX-XX-XX assigned IP 101.209.43.124 Feb 15 20:44:16
+Openwrt local6.err coova-chilli[18240]: redir.c: 3462:
+
+invalid file extension! [wwwroot/apkupdate.php] Feb 15 20:44:19 Openwrt
+local6.err coova-chilli[18243]: redir.c: 3462:
+
+invalid file extension! [wwwroot/xmlupdate.php] ...
+
+Feb 15 20:44:42 Openwrt local6.err coova-chilli[18283]: redir.c: 3462:
+
+invalid file extension! [getTasklist.php] Feb 15 20:44:42 Openwrt local6.err
+coova-chilli[18284]: redir.c: 3462:
+
+invalid file extension! [getAccountNum.php] Feb 15 20:44:46 Openwrt
+daemon.info hostapd: wlan0: STA 8c:84:01:XX:XX:XX IEEE 802.11: authenticated
+Feb 15 20:44:48 Openwrt daemon.info hostapd: wlan0: STA 8c:84:01:XX:XX:XX
+IEEE 802.11: authenticated Feb 15 20:44:48 Openwrt daemon.info hostapd:
+wlan0: STA 8c:84:01:XX:XX:XX IEEE 802.11: associated (aid 3) Feb 15 20:44:48
+Openwrt daemon.info hostapd: wlan0: STA 8c:84:01:XX:XX:XX
+
+RADIUS: starting accounting session 0000002F-000001AD Feb 15 20:59:46
+Openwrt local6.err coova-chilli[18919]: redir.c: 3462:
+
+invalid file extension! [getTasklist.php] ...
+
+Feb 15 20:59:49 Openwrt local6.err coova-chilli[18923]: redir.c: 3462:
+
+invalid file extension! [getTasklist2.php] ...
+
+ 
+
+The &quot;invalid file extension&quot; instances, if which there are a couple dozen,
+are only a few seconds apart.  The URL parts like &quot;getTasklist.php&quot; and
+&quot;getAccountNum.php&quot; seem to suggest whatever the client is doing (i.e.
+
+hammering the chilli agent with lots of bogus port 80 requests) is abusive.
+These log messages did coincide with this particular Nanostation verging on
+unresponsive, although I didn't get a chance to run &quot;top&quot; or &quot;uptime&quot; before
+needing to force a reboot.
+
+ 
+
+Besides simply blocking this particular MAC from associating, are the other
+measures to ward off intrusions like this?
+
+ 
+
+--
+
+Ben West
+
+<A HREF="http://gowasabi.net">http://gowasabi.net</A>
+
+<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">ben at gowasabi.net</A> &lt;mailto:<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">ben at gowasabi.net</A>&gt; 
+
+314-246-9434
+
+ 
+
+ 
+
+ 
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: &lt;<A HREF="http://lists.coova.org/pipermail/chilli/attachments/20150216/56138eb4/attachment.html">http://lists.coova.org/pipermail/chilli/attachments/20150216/56138eb4/attachment.html</A>&gt;
+</PRE>
+
+
+
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="002880.html">[Chilli] Apparent intrusion attempt on AP running	coova-chilli	1.2.9, ways to mitigate?
+</A></li>
+	<LI>Next message: <A HREF="002883.html">[Chilli] How to adjust the wall garden with Access-Reject from	radius.
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2882">[ date ]</a>
+              <a href="thread.html#2882">[ thread ]</a>
+              <a href="subject.html#2882">[ subject ]</a>
+              <a href="author.html#2882">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

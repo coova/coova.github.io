@@ -1,0 +1,255 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> Coova / Mesh - clients nodes not functional, gateway nodes are fine
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20Coova%20/%20Mesh%20-%20clients%20nodes%20not%20functional%2C%20gateway%20nodes%20are%20fine&In-Reply-To=%3C5635aa0d0812300939m3f7f8566tece4e693c618943a%40mail.gmail.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000540.html">
+   
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>Coova / Mesh - clients nodes not functional, gateway nodes are fine</H1>
+    <B>Outback Dingo</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20Coova%20/%20Mesh%20-%20clients%20nodes%20not%20functional%2C%20gateway%20nodes%20are%20fine&In-Reply-To=%3C5635aa0d0812300939m3f7f8566tece4e693c618943a%40mail.gmail.com%3E"
+       TITLE="Coova / Mesh - clients nodes not functional, gateway nodes are fine">outbackdingo at gmail.com
+       </A><BR>
+    <I>Tue Dec 30 17:39:48 UTC 2008</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000540.html">Configuration Question
+</A></li>
+        
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#539">[ date ]</a>
+              <a href="thread.html#539">[ thread ]</a>
+              <a href="subject.html#539">[ subject ]</a>
+              <a href="author.html#539">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>attached some debug out put for people to look thru see if they have any
+insight, i started a basic chilli config on br-lan
+using
+HS_LANIF=br-lan
+HS_NETWORK=192.168.1.0
+HS_NETMASK=255.255.255.0
+HS_UAMLISTEN=192.168.1.1
+HS_UAMPORT=3990
+HS_UAMFORMAT=<A HREF="https://coova.org/app/uam/chilli">https://coova.org/app/uam/chilli</A>
+HS_RADSECRET=coova-anonymous
+# HS_RADSECRET is the RADIUS shared secret
+# see /etc/chilli/defaults for more settings
+
+in a simple mesh network, gateway nodes work fine, client nodes however
+refuse to function
+ive dealt with the before mentioned MTU issues, using
+tcpmss --mss 1400:1536 -j TCPMSS --clamp-mss-to-pmtu as recommeded, still to
+no avail
+it will not work... thoughts ?
+
+
+/etc/init.d/chilli start
+chilli: Starting...
+options.c: 357: 0 (Debug) DHCP Listen: 192.168.1.1
+options.c: 358: 0 (Debug) UAM Listen: 192.168.1.1
+garden.c: 61: 0 (Debug) Uamallowed coova.org
+garden.c: 45: 0 (Debug) Uamallowed IP address #0:128: proto=0
+host=208.70.90.95 port=0
+garden.c: 61: 0 (Debug)
+Uamallowed
+garden.c: 125: 0 (Debug) Invalid uamallowed domain or address:
+!
+garden.c: 61: 0 (Debug) Uamallowed rad01.coova.org
+
+garden.c: 38: 0 (Debug) Uamallowed already exists #0:128: proto=0
+host=208.70.90.95 port=0
+garden.c: 61: 0 (Debug) Uamallowed coova.org
+
+garden.c: 38: 0 (Debug) Uamallowed already exists #0:128: proto=0
+host=208.70.90.95 port=0
+chilli.c: 3409: 0 (Debug) ChilliSpot version 1.0.12
+started.
+
+tun.c: 482: 0 (Debug) TX queue length set to 100
+ippool.c: 218: 0 (Debug) Hashlog 8 253 256
+
+chilli.c: 3564: 0 (Debug) Waiting for client request...
+chilli.c: 2195: 0 (Debug) Received access request confirmation from radius
+server
+
+Bad argument `DROP'
+Try `iptables -h' or 'iptables --help' for more information.
+
+dhcp.c: 1857: 0 (Debug) dhcp/bootps request being processed
+chilli.c: 2694: 0 (Debug) New DHCP request from MAC=00-0D-0B-E0-20-AF
+chilli.c: 2697: 0 (Debug) New DHCP connection established
+chilli.c: 2573: 0 (Debug) DHCP request for IP address
+ippool.c: 324: 0 (Debug) Requesting new static ip: 0.0.0.0
+ippool.c: 324: 0 (Debug) Requesting new dynamic ip: 0.0.0.0
+chilli.c: 2661: 0 (Debug) Client MAC=00-0D-0B-E0-20-AF assigned IP
+192.168.1.2
+dhcp.c: 1290: 0 (Debug) !!! dhcp server :  !!!
+
+dhcp.c: 1857: 0 (Debug) dhcp/bootps request being processed
+
+dhcp.c: 1290: 0 (Debug) !!! dhcp server :  !!!
+
+dhcp.c: 2359: 0 (Debug) arp_decaps: dst=ff:ff:ff:ff:ff:ff
+src=00:0d:0b:e0:20:af prot=0806
+dhcp.c: 2359: 0 (Debug) arp_decaps: dst=ff:ff:ff:ff:ff:ff
+src=00:0d:0b:e0:20:af prot=0806
+dhcp.c: 2359: 0 (Debug) arp_decaps: dst=ff:ff:ff:ff:ff:ff
+src=00:0d:0b:e0:20:af prot=0806
+dhcp.c: 1842: 0 (Debug) dropping packet; not for our MAC or
+broadcast
+dhcp.c: 1842: 0 (Debug) dropping packet; not for our MAC or
+broadcast
+dhcp.c: 1842: 0 (Debug) dropping packet; not for our MAC or
+broadcast
+dhcp.c: 2359: 0 (Debug) arp_decaps: dst=ff:ff:ff:ff:ff:ff
+src=00:0d:0b:e0:20:af prot=0806
+chilli.c: 2573: 0 (Debug) DHCP request for IP
+address
+dhcp.c: 1842: 0 (Debug) dropping packet; not for our MAC or
+broadcast
+dhcp.c: 1842: 0 (Debug) dropping packet; not for our MAC or
+broadcast
+dhcp.c: 2359: 0 (Debug) arp_decaps: dst=ff:ff:ff:ff:ff:ff
+src=00:0d:0b:e0:20:af prot=0806
+chilli.c: 2573: 0 (Debug) DHCP request for IP
+address
+dhcp.c: 2359: 0 (Debug) arp_decaps: dst=ff:ff:ff:ff:ff:ff
+src=00:0d:0b:e0:20:af prot=0806
+chilli.c: 2573: 0 (Debug) DHCP request for IP
+address
+dhcp.c: 1842: 0 (Debug) dropping packet; not for our MAC or
+broadcast
+dhcp.c: 1842: 0 (Debug) dropping packet; not for our MAC or
+broadcast
+dhcp.c: 1842: 0 (Debug) dropping packet; not for our MAC or
+broadcast
+dhcp.c: 1842: 0 (Debug) dropping packet; not for our MAC or
+broadcast
+dhcp.c: 1842: 0 (Debug) dropping packet; not for our MAC or
+broadcast
+dhcp.c: 2359: 0 (Debug) arp_decaps: dst=ff:ff:ff:ff:ff:ff
+src=00:0d:0b:e0:20:af prot=0806
+dhcp.c: 2359: 0 (Debug) arp_decaps: dst=ff:ff:ff:ff:ff:ff
+src=00:0d:0b:e0:20:af prot=0806
+dhcp.c: 2359: 0 (Debug) arp_decaps: dst=ff:ff:ff:ff:ff:ff
+src=00:0d:0b:e0:20:af prot=0806
+dhcp.c: 2359: 0 (Debug) arp_decaps: dst=ff:ff:ff:ff:ff:ff
+src=00:0d:0b:e0:20:af prot=0806
+dhcp.c: 1842: 0 (Debug) dropping packet; not for our MAC or
+broadcast
+dhcp.c: 1842: 0 (Debug) dropping packet; not for our MAC or
+broadcast
+dhcp.c: 1842: 0 (Debug) dropping packet; not for our MAC or
+broadcast
+dhcp.c: 1842: 0 (Debug) dropping packet; not for our MAC or
+broadcast
+dhcp.c: 1842: 0 (Debug) dropping packet; not for our MAC or
+broadcast
+dhcp.c: 1842: 0 (Debug) dropping packet; not for our MAC or
+broadcast
+dhcp.c: 1842: 0 (Debug) dropping packet; not for our MAC or
+broadcast
+dhcp.c: 1842: 0 (Debug) dropping packet; not for our MAC or
+broadcast
+dhcp.c: 1842: 0 (Debug) dropping packet; not for our MAC or
+broadcast
+dhcp.c: 1842: 0 (Debug) dropping packet; not for our MAC or
+broadcast
+dhcp.c: 1857: 0 (Debug) dhcp/bootps request being
+processed
+dhcp.c: 1290: 0 (Debug) !!! dhcp server :
+!!!
+dhcp.c: 2359: 0 (Debug) arp_decaps: dst=ff:ff:ff:ff:ff:ff
+src=00:0d:0b:e0:20:af prot=0806
+dhcp.c: 2359: 0 (Debug) arp_decaps: dst=ff:ff:ff:ff:ff:ff
+src=00:0d:0b:e0:20:af prot=0806
+dhcp.c: 2359: 0 (Debug) arp_decaps: dst=ff:ff:ff:ff:ff:ff
+src=00:0d:0b:e0:20:af prot=0806
+chilli.c: 2573: 0 (Debug) DHCP request for IP
+address
+dhcp.c: 2359: 0 (Debug) arp_decaps: dst=ff:ff:ff:ff:ff:ff
+src=00:0d:0b:e0:20:af prot=0806
+chilli.c: 2573: 0 (Debug) DHCP request for IP
+address
+dhcp.c: 1842: 0 (Debug) dropping packet; not for our MAC or
+broadcast
+dhcp.c: 1842: 0 (Debug) dropping packet; not for our MAC or
+broadcast
+dhcp.c: 2359: 0 (Debug) arp_decaps: dst=ff:ff:ff:ff:ff:ff
+src=00:0d:0b:e0:20:af prot=0806
+dhcp.c: 1842: 0 (Debug) dropping packet; not for our MAC or
+broadcast
+dhcp.c: 1842: 0 (Debug) dropping packet; not for our MAC or
+broadcast
+dhcp.c: 1842: 0 (Debug) dropping packet; not for our MAC or
+broadcast
+dhcp.c: 2359: 0 (Debug) arp_decaps: dst=ff:ff:ff:ff:ff:ff
+src=00:0d:0b:e0:20:af prot=0806
+chilli.c: 2573: 0 (Debug) DHCP request for IP
+address
+dhcp.c: 2359: 0 (Debug) arp_decaps: dst=ff:ff:ff:ff:ff:ff
+src=00:0d:0b:e0:20:af prot=0806
+dhcp.c: 1842: 0 (Debug) dropping packet; not for our MAC or
+broadcast
+dhcp.c: 1842: 0 (Debug) dropping packet; not for our MAC or
+broadcast
+dhcp.c: 1842: 0 (Debug) dropping packet; not for our MAC or
+broadcast
+dhcp.c: 1842: 0 (Debug) dropping packet; not for our MAC or
+broadcast
+dhcp.c: 1842: 0 (Debug) dropping packet; not for our MAC or
+broadcast
+dhcp.c: 2359: 0 (Debug) arp_decaps: dst=ff:ff:ff:ff:ff:ff
+src=00:0d:0b:e0:20:af prot=0806
+dhcp.c: 1875: 0 (Debug) Address not found
+(169.254.196.179)
+chilli.c: 2694: 0 (Debug) New DHCP request from
+MAC=00-17-C4-22-0A-8E
+chilli.c: 2697: 0 (Debug) New DHCP connection
+established
+chilli.c: 2573: 0 (Debug) DHCP request for IP
+address
+ippool.c: 324: 0 (Debug) Requesting new static ip:
+169.254.196.179
+ippool.c: 344: 0 (Debug) Static IP address not
+allowed
+ippool.c: 324: 0 (Debug) Requesting new dynamic ip:
+169.254.196.179
+chilli.c: 2661: 0 (Debug) Client MAC=00-17-C4-22-0A-8E assigned IP
+192.168.1.3
+^Cchilli.c: 66: 0 (Debug) SIGTERM
+received!
+
+chilli.c: 3698: 0 (Debug) Terminating ChilliSpot!
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: &lt;<A HREF="http://lists.coova.org/pipermail/chilli/attachments/20081231/4037aff6/attachment.htm">http://lists.coova.org/pipermail/chilli/attachments/20081231/4037aff6/attachment.htm</A>&gt;
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000540.html">Configuration Question
+</A></li>
+	
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#539">[ date ]</a>
+              <a href="thread.html#539">[ thread ]</a>
+              <a href="subject.html#539">[ subject ]</a>
+              <a href="author.html#539">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

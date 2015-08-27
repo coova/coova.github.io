@@ -1,0 +1,1732 @@
+From fahd.kasri at weblib.eu  Thu Feb  4 15:56:29 2010
+From: fahd.kasri at weblib.eu (Fahd Kasri)
+Date: Thu, 4 Feb 2010 16:56:29 +0100
+Subject: [Chilli]  Redirect after login
+Message-ID: <ddc827aa1002040756u2815c398ye717b2c0e9c8d70f@mail.gmail.com>
+
+Hi,
+
+Is there a way to have Coova redirect a user to a specific web page after a
+succesful login?
+
+Thanks.
+
+Fahd
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20100204/9b451657/attachment.htm>
+
+From jason at theallens.id.au  Thu Feb 11 03:51:44 2010
+From: jason at theallens.id.au (Jason Allen)
+Date: Thu, 11 Feb 2010 14:51:44 +1100
+Subject: [Chilli] Limiting user total time and/or downloads? ... and some
+	other questions, including JSON
+In-Reply-To: <3e888d0e1002091812l495dcc90hb84c7758e40a7d4d@mail.gmail.com>
+References: <3e888d0e1002091812l495dcc90hb84c7758e40a7d4d@mail.gmail.com>
+Message-ID: <3e888d0e1002101951s99178eag903ae8534ec210a7@mail.gmail.com>
+
+Hi,
+
+Using Coova v1.2.1 on Ubuntu 9.10 (Karmic) with FreeRadius v2.1.0 and mySQL
+v5.1.37.
+
+Coova is setup as a captive portal, using http://[UAMIP]:[UAMPORT]/logon.....
+for authentication (which is working successfully). The portal allows
+existing users to logon, or new users to purchase an account type with
+different time, downloads, and bandwidth limitations (eg 1 hour and 100Mb at
+256Kb/s) on each purchased account type. On successful (res=success) or
+already (res=already), the portal displays account details to the user from
+javascript with JSON to Coova.
+
+I have the following Radius attributes set to manage this; Session-Timeout,
+ChilliSpot-Max-Input-Octets, WISPr-Bandwidth-Max-Up, and
+WISPr-Bandwidth-Max-Down.
+
+Coova is successfully kicking a user after their session time (eg 1 hour) is
+complete (with caveat question below), but not when the data download
+limitation has been reached.
+
+Now my questions ...
+
+1. How do I configure Radius and/or Coova so that the user is also kicked
+when the ChilliSpot-Max-Input-Octets attribute has been reached?
+
+2. If a user has a Session-Timeout of 1 hour, then they can logout before
+that time is reached and then re-login again to get another 1 hour of time.
+What configuration/action/attribute do I need to take/use so that the user
+is kicked after a total time period (eg 1 hour) regardless of what they're
+session-time is and how many times the have logged-out/logged-in?
+
+3. When using the javascript JSON to Coova I am currently retrieving
+json.session.startTime but am not sure what this is representing? Is it the
+date/time that the user last logged-in (ie. the login time for their current
+session)? And how do I correctly display/manipulate this in javascript -
+using 'var sessionStartTime = new Date(json.session.startTime);" and thus
+json.session.startTime contains the number of milliseconds since 1970/01/01?
+
+4. Related to question #2 above, what JSON value can I retrieve to get a
+users total online time. I am currently retrieving
+json.accounting.sessionTime but this is only giving me the online time for
+the users current session. I would like to retrieve either a total online
+time (either inclusive of json.accounting.sessionTime, or total_online_time
++ json.accounting.sessionTime). Likewise for total downloads -
+json.accounting.inputOctets is only giving me current session downloads.
+
+If you've come this far, thanks for reading :) And Thanks! in advance for
+any assistance.
+
+
+-- 
+Cheers,
+Jason
+Samuel Goldwyn<http://www.brainyquote.com/quotes/authors/s/samuel_goldwyn.html>
+- "I'm willing to admit that I may not always be right, but I am never
+wrong."
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20100211/2f0bfc5e/attachment.htm>
+
+From devinder at palettemm.com  Thu Feb 11 04:24:52 2010
+From: devinder at palettemm.com (Devinder Singh)
+Date: Thu, 11 Feb 2010 12:24:52 +0800
+Subject: [Chilli] Total Volume Traffic Limit
+Message-ID: <6bdd03c51002102024w59831f13g4101b97a4b0ca418@mail.gmail.com>
+
+Hi
+
+I have tried this and get an error
+
+ Module: Instantiating noresetBytecounter
+  sqlcounter noresetBytecounter {
+        counter-name = "Total-Max-Octets"
+        check-name = "Max-Octets"
+        reply-name = "ChilliSpot-Max-Total-Octets"
+        key = "User-Name"
+        sqlmod-inst = "sql"
+        query = "SELECT (SUM(AcctInputOctets)+SUM(AcctOutputOctets)) FROM
+radacct WHERE UserName='%{%k}'"
+        reset = "never"
+        safe-characters =
+"@abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.-_: /"
+  }
+rlm_sqlcounter: No such attribute ChilliSpot-Max-Total-Octets
+/etc/freeradius/sql/mysql/counter.conf[120]: Instantiation failed for module
+"noresetBytecounter"
+/etc/freeradius/sites-enabled/default[176]: Failed to find module
+"noresetBytecounter".
+/etc/freeradius/sites-enabled/default[62]: Errors parsing authorize section.
+ }
+
+
+
+Devinder
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20100211/2ad82fe1/attachment.htm>
+
+From vanniekerki at gmail.com  Thu Feb 11 04:51:26 2010
+From: vanniekerki at gmail.com (Izak van Niekerk)
+Date: Thu, 11 Feb 2010 06:51:26 +0200
+Subject: [Chilli] Total Volume Traffic Limit
+In-Reply-To: <6bdd03c51002102024w59831f13g4101b97a4b0ca418@mail.gmail.com>
+References: <6bdd03c51002102024w59831f13g4101b97a4b0ca418@mail.gmail.com>
+Message-ID: <4B738CCE.9060605@gmail.com>
+
+> rlm_sqlcounter: No such attribute ChilliSpot-Max-Total-Octets
+
+You need to include the Chillispot dictionary (dictionary.chillispot) in 
+the freeradius dictionary file.
+
+
+-------- Original Message  --------
+Subject: [Chilli] Total Volume Traffic Limit
+From: Devinder Singh <devinder at palettemm.com>
+To: david at coova.com, chilli at coova.org
+Date: 11/02/2010 06:24
+> Hi
+> I have tried this and get an error
+>  Module: Instantiating noresetBytecounter
+>   sqlcounter noresetBytecounter {
+>         counter-name = "Total-Max-Octets"
+>         check-name = "Max-Octets"
+>         reply-name = "ChilliSpot-Max-Total-Octets"
+>         key = "User-Name"
+>         sqlmod-inst = "sql"
+>         query = "SELECT (SUM(AcctInputOctets)+SUM(AcctOutputOctets)) 
+> FROM radacct WHERE UserName='%{%k}'"
+>         reset = "never"
+>         safe-characters = 
+> "@abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.-_: /"
+>   }
+> rlm_sqlcounter: No such attribute ChilliSpot-Max-Total-Octets
+> /etc/freeradius/sql/mysql/counter.conf[120]: Instantiation failed for 
+> module "noresetBytecounter"
+> /etc/freeradius/sites-enabled/default[176]: Failed to find module 
+> "noresetBytecounter".
+> /etc/freeradius/sites-enabled/default[62]: Errors parsing authorize 
+> section.
+>  }
+>
+>
+> Devinder
+>
+>
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>    
+
+
+From devinder at palettemm.com  Thu Feb 11 06:26:11 2010
+From: devinder at palettemm.com (Devinder Singh)
+Date: Thu, 11 Feb 2010 14:26:11 +0800
+Subject: [Chilli] Total Volume Traffic Limit
+In-Reply-To: <6bdd03c51002102217i666b177jf55dc7bcbcc5cc7a@mail.gmail.com>
+References: <6bdd03c51002102024w59831f13g4101b97a4b0ca418@mail.gmail.com>
+	<4B738CCE.9060605@gmail.com>
+	<6bdd03c51002102217i666b177jf55dc7bcbcc5cc7a@mail.gmail.com>
+Message-ID: <6bdd03c51002102226y6d19b5e8g9f2296efe5554d44@mail.gmail.com>
+
+But still get the same error message
+
+
+
+On 11 February 2010 14:17, Devinder Singh <devinder at palettemm.com> wrote:
+
+> Hi
+>
+> I have the following
+> $INCLUDE        /usr/share/freeradius/dictionary
+> in that directory i can see dictionary.chillispot
+>
+>
+> VENDOR          ChilliSpot                      14559
+> BEGIN-VENDOR    ChilliSpot
+> ATTRIBUTE       ChilliSpot-Max-Input-Octets             1       integer
+> ATTRIBUTE       ChilliSpot-Max-Output-Octets            2       integer
+> ATTRIBUTE       ChilliSpot-Max-Total-Octets             3       integer
+> ATTRIBUTE       ChilliSpot-Bandwidth-Max-Up             4       integer
+> ATTRIBUTE       ChilliSpot-Bandwidth-Max-Down           5       integer
+> ATTRIBUTE       ChilliSpot-Config                       6       string
+> ATTRIBUTE       ChilliSpot-Lang                         7       string
+> ATTRIBUTE       ChilliSpot-Version                      8       string
+> ATTRIBUTE       ChilliSpot-OriginalURL                  9       string
+>
+> # Configuration management parameters (ChilliSpot Only)
+> ATTRIBUTE       ChilliSpot-UAM-Allowed                  100     string
+> ATTRIBUTE       ChilliSpot-MAC-Allowed                  101     string
+> ATTRIBUTE       ChilliSpot-Interval                     102     integer
+> # Inline with RFC 2882 use of VSE-Authorize-Only for remote config
+> # Note that 14559 = 0x38df is used as prefix for the VSE.
+> # This is recognized as the best (but bad) way of doing VSEs.
+> # (ChilliSpot Only - CoovaChilli uses Service-Type = Administrative-User)
+> VALUE   Service-Type                    ChilliSpot-Authorize-Only
+> 0x38df0001
+> END-VENDOR      ChilliSpot
+> ~
+>
+>
+> On 11 February 2010 12:51, Izak van Niekerk <vanniekerki at gmail.com> wrote:
+>
+>>  rlm_sqlcounter: No such attribute ChilliSpot-Max-Total-Octets
+>>>
+>>
+>> You need to include the Chillispot dictionary (dictionary.chillispot) in
+>> the freeradius dictionary file.
+>>
+>>
+>>
+>> -------- Original Message  --------
+>> Subject: [Chilli] Total Volume Traffic Limit
+>> From: Devinder Singh <devinder at palettemm.com>
+>> To: david at coova.com, chilli at coova.org
+>> Date: 11/02/2010 06:24
+>>
+>>>  Hi
+>>> I have tried this and get an error
+>>>  Module: Instantiating noresetBytecounter
+>>>  sqlcounter noresetBytecounter {
+>>>        counter-name = "Total-Max-Octets"
+>>>        check-name = "Max-Octets"
+>>>        reply-name = "ChilliSpot-Max-Total-Octets"
+>>>        key = "User-Name"
+>>>        sqlmod-inst = "sql"
+>>>        query = "SELECT (SUM(AcctInputOctets)+SUM(AcctOutputOctets)) FROM
+>>> radacct WHERE UserName='%{%k}'"
+>>>        reset = "never"
+>>>        safe-characters =
+>>> "@abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.-_: /"
+>>>  }
+>>> rlm_sqlcounter: No such attribute ChilliSpot-Max-Total-Octets
+>>> /etc/freeradius/sql/mysql/counter.conf[120]: Instantiation failed for
+>>> module "noresetBytecounter"
+>>> /etc/freeradius/sites-enabled/default[176]: Failed to find module
+>>> "noresetBytecounter".
+>>> /etc/freeradius/sites-enabled/default[62]: Errors parsing authorize
+>>> section.
+>>>  }
+>>>
+>>>
+>>> Devinder
+>>>
+>>>
+>>> _______________________________________________
+>>> Chilli mailing list
+>>> Chilli at coova.org
+>>> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>>>
+>>>
+>>
+>>
+>>
+>
+>
+> --
+> Devinder Singh   |   R&D Manager
+> ______________________________
+> Palette Multimedia Berhad (420056-K)
+> 6 Floor, Unit 4,
+> KPMG Tower
+> 8 First Avenue,
+> Bandar Utama,
+> 47800 Petaling Jaya, Selangor
+> Malaysia
+>
+> m. +60122248306
+> p.  +60377289880 Ext 502
+> f.   +60377281080
+> @ devinder at palettemm.com
+> www.palettemm.com
+>
+>
+>
+
+
+-- 
+Devinder Singh   |   R&D Manager
+______________________________
+Palette Multimedia Berhad (420056-K)
+6 Floor, Unit 4,
+KPMG Tower
+8 First Avenue,
+Bandar Utama,
+47800 Petaling Jaya, Selangor
+Malaysia
+
+m. +60122248306
+p.  +60377289880 Ext 502
+f.   +60377281080
+@ devinder at palettemm.com
+www.palettemm.com
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20100211/9e920ed9/attachment-0001.htm>
+
+From devinder at palettemm.com  Thu Feb 11 06:17:23 2010
+From: devinder at palettemm.com (Devinder Singh)
+Date: Thu, 11 Feb 2010 14:17:23 +0800
+Subject: [Chilli] Total Volume Traffic Limit
+In-Reply-To: <4B738CCE.9060605@gmail.com>
+References: <6bdd03c51002102024w59831f13g4101b97a4b0ca418@mail.gmail.com>
+	<4B738CCE.9060605@gmail.com>
+Message-ID: <6bdd03c51002102217i666b177jf55dc7bcbcc5cc7a@mail.gmail.com>
+
+Hi
+
+I have the following
+$INCLUDE        /usr/share/freeradius/dictionary
+in that directory i can see dictionary.chillispot
+
+
+VENDOR          ChilliSpot                      14559
+BEGIN-VENDOR    ChilliSpot
+ATTRIBUTE       ChilliSpot-Max-Input-Octets             1       integer
+ATTRIBUTE       ChilliSpot-Max-Output-Octets            2       integer
+ATTRIBUTE       ChilliSpot-Max-Total-Octets             3       integer
+ATTRIBUTE       ChilliSpot-Bandwidth-Max-Up             4       integer
+ATTRIBUTE       ChilliSpot-Bandwidth-Max-Down           5       integer
+ATTRIBUTE       ChilliSpot-Config                       6       string
+ATTRIBUTE       ChilliSpot-Lang                         7       string
+ATTRIBUTE       ChilliSpot-Version                      8       string
+ATTRIBUTE       ChilliSpot-OriginalURL                  9       string
+
+# Configuration management parameters (ChilliSpot Only)
+ATTRIBUTE       ChilliSpot-UAM-Allowed                  100     string
+ATTRIBUTE       ChilliSpot-MAC-Allowed                  101     string
+ATTRIBUTE       ChilliSpot-Interval                     102     integer
+# Inline with RFC 2882 use of VSE-Authorize-Only for remote config
+# Note that 14559 = 0x38df is used as prefix for the VSE.
+# This is recognized as the best (but bad) way of doing VSEs.
+# (ChilliSpot Only - CoovaChilli uses Service-Type = Administrative-User)
+VALUE   Service-Type                    ChilliSpot-Authorize-Only 0x38df0001
+END-VENDOR      ChilliSpot
+~
+
+
+On 11 February 2010 12:51, Izak van Niekerk <vanniekerki at gmail.com> wrote:
+
+>  rlm_sqlcounter: No such attribute ChilliSpot-Max-Total-Octets
+>>
+>
+> You need to include the Chillispot dictionary (dictionary.chillispot) in
+> the freeradius dictionary file.
+>
+>
+>
+> -------- Original Message  --------
+> Subject: [Chilli] Total Volume Traffic Limit
+> From: Devinder Singh <devinder at palettemm.com>
+> To: david at coova.com, chilli at coova.org
+> Date: 11/02/2010 06:24
+>
+>>  Hi
+>> I have tried this and get an error
+>>  Module: Instantiating noresetBytecounter
+>>  sqlcounter noresetBytecounter {
+>>        counter-name = "Total-Max-Octets"
+>>        check-name = "Max-Octets"
+>>        reply-name = "ChilliSpot-Max-Total-Octets"
+>>        key = "User-Name"
+>>        sqlmod-inst = "sql"
+>>        query = "SELECT (SUM(AcctInputOctets)+SUM(AcctOutputOctets)) FROM
+>> radacct WHERE UserName='%{%k}'"
+>>        reset = "never"
+>>        safe-characters =
+>> "@abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.-_: /"
+>>  }
+>> rlm_sqlcounter: No such attribute ChilliSpot-Max-Total-Octets
+>> /etc/freeradius/sql/mysql/counter.conf[120]: Instantiation failed for
+>> module "noresetBytecounter"
+>> /etc/freeradius/sites-enabled/default[176]: Failed to find module
+>> "noresetBytecounter".
+>> /etc/freeradius/sites-enabled/default[62]: Errors parsing authorize
+>> section.
+>>  }
+>>
+>>
+>> Devinder
+>>
+>>
+>> _______________________________________________
+>> Chilli mailing list
+>> Chilli at coova.org
+>> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>>
+>>
+>
+>
+>
+
+
+-- 
+Devinder Singh   |   R&D Manager
+______________________________
+Palette Multimedia Berhad (420056-K)
+6 Floor, Unit 4,
+KPMG Tower
+8 First Avenue,
+Bandar Utama,
+47800 Petaling Jaya, Selangor
+Malaysia
+
+m. +60122248306
+p.  +60377289880 Ext 502
+f.   +60377281080
+@ devinder at palettemm.com
+www.palettemm.com
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20100211/298cb9a4/attachment.htm>
+
+From devinder at palettemm.com  Thu Feb 11 07:57:39 2010
+From: devinder at palettemm.com (Devinder Singh)
+Date: Thu, 11 Feb 2010 15:57:39 +0800
+Subject: [Chilli] Total Volume Traffic Limit
+In-Reply-To: <6bdd03c51002102226y6d19b5e8g9f2296efe5554d44@mail.gmail.com>
+References: <6bdd03c51002102024w59831f13g4101b97a4b0ca418@mail.gmail.com>
+	<4B738CCE.9060605@gmail.com>
+	<6bdd03c51002102217i666b177jf55dc7bcbcc5cc7a@mail.gmail.com>
+	<6bdd03c51002102226y6d19b5e8g9f2296efe5554d44@mail.gmail.com>
+Message-ID: <6bdd03c51002102357m59b18c17i5a22f73ba44e472@mail.gmail.com>
+
+Hi
+I have been trying for few hours now  and still no luck
+
+
+
+On 11 February 2010 14:26, Devinder Singh <devinder at palettemm.com> wrote:
+
+> But still get the same error message
+>
+>
+>
+> On 11 February 2010 14:17, Devinder Singh <devinder at palettemm.com> wrote:
+>
+>> Hi
+>>
+>> I have the following ing
+>> $INCLUDE        /usr/share/freeradius/dictionary
+>> in that directory i can see dictionary.chillispot
+>>
+>>
+>> VENDOR          ChilliSpot                      14559
+>> BEGIN-VENDOR    ChilliSpot
+>> ATTRIBUTE       ChilliSpot-Max-Input-Octets             1       integer
+>> ATTRIBUTE       ChilliSpot-Max-Output-Octets            2       integer
+>> ATTRIBUTE       ChilliSpot-Max-Total-Octets             3       integer
+>> ATTRIBUTE       ChilliSpot-Bandwidth-Max-Up             4       integer
+>> ATTRIBUTE       ChilliSpot-Bandwidth-Max-Down           5       integer
+>> ATTRIBUTE       ChilliSpot-Config                       6       string
+>> ATTRIBUTE       ChilliSpot-Lang                         7       string
+>> ATTRIBUTE       ChilliSpot-Version                      8       string
+>> ATTRIBUTE       ChilliSpot-OriginalURL                  9       string
+>>
+>> # Configuration management parameters (ChilliSpot Only)
+>> ATTRIBUTE       ChilliSpot-UAM-Allowed                  100     string
+>> ATTRIBUTE       ChilliSpot-MAC-Allowed                  101     string
+>> ATTRIBUTE       ChilliSpot-Interval                     102     integer
+>> # Inline with RFC 2882 use of VSE-Authorize-Only for remote config
+>> # Note that 14559 = 0x38df is used as prefix for the VSE.
+>> # This is recognized as the best (but bad) way of doing VSEs.
+>> # (ChilliSpot Only - CoovaChilli uses Service-Type = Administrative-User)
+>> VALUE   Service-Type                    ChilliSpot-Authorize-Only
+>> 0x38df0001
+>> END-VENDOR      ChilliSpot
+>> ~
+>>
+>>
+>> On 11 February 2010 12:51, Izak van Niekerk <vanniekerki at gmail.com>wrote:
+>>
+>>>  rlm_sqlcounter: No such attribute ChilliSpot-Max-Total-Octets
+>>>>
+>>>
+>>> You need to include the Chillispot dictionary (dictionary.chillispot) in
+>>> the freeradius dictionary file.
+>>>
+>>>
+>>>
+>>> -------- Original Message  --------
+>>> Subject: [Chilli] Total Volume Traffic Limit
+>>> From: Devinder Singh <devinder at palettemm.com>
+>>> To: david at coova.com, chilli at coova.org
+>>> Date: 11/02/2010 06:24
+>>>
+>>>>  Hi
+>>>> I have tried this and get an error
+>>>>  Module: Instantiating noresetBytecounter
+>>>>  sqlcounter noresetBytecounter {
+>>>>        counter-name = "Total-Max-Octets"
+>>>>        check-name = "Max-Octets"
+>>>>        reply-name = "ChilliSpot-Max-Total-Octets"
+>>>>        key = "User-Name"
+>>>>        sqlmod-inst = "sql"
+>>>>        query = "SELECT (SUM(AcctInputOctets)+SUM(AcctOutputOctets)) FROM
+>>>> radacct WHERE UserName='%{%k}'"
+>>>>        reset = "never"
+>>>>        safe-characters =
+>>>> "@abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.-_: /"
+>>>>  }
+>>>> rlm_sqlcounter: No such attribute ChilliSpot-Max-Total-Octets
+>>>> /etc/freeradius/sql/mysql/counter.conf[120]: Instantiation failed for
+>>>> module "noresetBytecounter"
+>>>> /etc/freeradius/sites-enabled/default[176]: Failed to find module
+>>>> "noresetBytecounter".
+>>>> /etc/freeradius/sites-enabled/default[62]: Errors parsing authorize
+>>>> section.
+>>>>  }
+>>>>
+>>>>
+>>>> Devinder
+>>>>
+>>>>
+>>>> _______________________________________________
+>>>> Chilli mailing list
+>>>> Chilli at coova.org
+>>>> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>>>>
+>>>>
+>>>
+>>>
+>>>
+>>
+>>
+>> --
+>> Devinder Singh   |   R&D Manager
+>> ______________________________
+>> Palette Multimedia Berhad (420056-K)
+>> 6 Floor, Unit 4,
+>> KPMG Tower
+>> 8 First Avenue,
+>> Bandar Utama,
+>> 47800 Petaling Jaya, Selangor
+>> Malaysia
+>>
+>> m. +60122248306
+>> p.  +60377289880 Ext 502
+>> f.   +60377281080
+>> @ devinder at palettemm.com
+>> www.palettemm.com
+>>
+>>
+>>
+>
+>
+> --
+> Devinder Singh   |   R&D Manager
+> ______________________________
+> Palette Multimedia Berhad (420056-K)
+> 6 Floor, Unit 4,
+> KPMG Tower
+> 8 First Avenue,
+> Bandar Utama,
+> 47800 Petaling Jaya, Selangor
+> Malaysia
+>
+> m. +60122248306
+> p.  +60377289880 Ext 502
+> f.   +60377281080
+> @ devinder at palettemm.com
+> www.palettemm.com
+>
+>
+>
+
+
+-- 
+Devinder Singh   |   R&D Manager
+______________________________
+Palette Multimedia Berhad (420056-K)
+6 Floor, Unit 4,
+KPMG Tower
+8 First Avenue,
+Bandar Utama,
+47800 Petaling Jaya, Selangor
+Malaysia
+
+m. +60122248306
+p.  +60377289880 Ext 502
+f.   +60377281080
+@ devinder at palettemm.com
+www.palettemm.com
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20100211/2b409e39/attachment.htm>
+
+From devinder at palettemm.com  Thu Feb 11 08:00:46 2010
+From: devinder at palettemm.com (Devinder Singh)
+Date: Thu, 11 Feb 2010 16:00:46 +0800
+Subject: [Chilli] Total Volume Traffic Limit
+In-Reply-To: <4B738CCE.9060605@gmail.com>
+References: <6bdd03c51002102024w59831f13g4101b97a4b0ca418@mail.gmail.com>
+	<4B738CCE.9060605@gmail.com>
+Message-ID: <6bdd03c51002110000of9d6140j6faf7f1df6d576a5@mail.gmail.com>
+
+ok i think i get what u mean :))
+
+On 11 February 2010 12:51, Izak van Niekerk <vanniekerki at gmail.com> wrote:
+
+>  rlm_sqlcounter: No such attribute ChilliSpot-Max-Total-Octets
+>>
+>
+> You need to include the Chillispot dictionary (dictionary.chillispot) in
+> the freeradius dictionary file.
+>
+>
+>
+> -------- Original Message  --------
+> Subject: [Chilli] Total Volume Traffic Limit
+> From: Devinder Singh <devinder at palettemm.com>
+> To: david at coova.com, chilli at coova.org
+> Date: 11/02/2010 06:24
+>
+>>  Hi
+>> I have tried this and get an error
+>>  Module: Instantiating noresetBytecounter
+>>  sqlcounter noresetBytecounter {
+>>        counter-name = "Total-Max-Octets"
+>>        check-name = "Max-Octets"
+>>        reply-name = "ChilliSpot-Max-Total-Octets"
+>>        key = "User-Name"
+>>        sqlmod-inst = "sql"
+>>        query = "SELECT (SUM(AcctInputOctets)+SUM(AcctOutputOctets)) FROM
+>> radacct WHERE UserName='%{%k}'"
+>>        reset = "never"
+>>        safe-characters =
+>> "@abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.-_: /"
+>>  }
+>> rlm_sqlcounter: No such attribute ChilliSpot-Max-Total-Octets
+>> /etc/freeradius/sql/mysql/counter.conf[120]: Instantiation failed for
+>> module "noresetBytecounter"
+>> /etc/freeradius/sites-enabled/default[176]: Failed to find module
+>> "noresetBytecounter".
+>> /etc/freeradius/sites-enabled/default[62]: Errors parsing authorize
+>> section.
+>>  }
+>>
+>>
+>> Devinder
+>>
+>>
+>> _______________________________________________
+>> Chilli mailing list
+>> Chilli at coova.org
+>> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>>
+>>
+>
+>
+>
+
+
+-- 
+Devinder Singh   |   R&D Manager
+______________________________
+Palette Multimedia Berhad (420056-K)
+6 Floor, Unit 4,
+KPMG Tower
+8 First Avenue,
+Bandar Utama,
+47800 Petaling Jaya, Selangor
+Malaysia
+
+m. +60122248306
+p.  +60377289880 Ext 502
+f.   +60377281080
+@ devinder at palettemm.com
+www.palettemm.com
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20100211/b5d0a3e3/attachment-0001.htm>
+
+From felipe.wiel at hpp.org.br  Thu Feb 11 15:17:58 2010
+From: felipe.wiel at hpp.org.br (Felipe Augusto van de Wiel)
+Date: Thu, 11 Feb 2010 13:17:58 -0200
+Subject: [Chilli] Captive portal: IE gets a blank page
+Message-ID: <4B741FA6.70105@hpp.org.br>
+
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA512
+
+Hi,
+
+	We are using the captive portal with the 1.2.1
+and it is great! :)
+
+	There are two things we recently detected as
+recurrent, specially with Internet Explorer (version IE6
+and IE7).
+
+	I already mentioned that we use a slightly
+modified portal, we don't really require any login, we
+just put the Terms of Use as mandatory, then embed the
+user and password as hidden fields.
+
+	One thing is that sometimes, after clicking on
+"I accept the terms", the button disappears or a message
+of invalid login/pass shows up. This is usually related
+with coova-chilli needing a restart (still not sure why).
+
+	The other thing that happens is getting a blank
+page, then IE reports it may be offline or with problems.
+I couldn't debug as much as I want, we are planning to
+take a deeper look into this, but I would like to share
+it before, so I could get some ideas and/or feedback. :)
+
+Kind regards,
+- -- 
+Felipe Augusto van de Wiel <felipe.wiel at hpp.org.br>
+Tecnologia da Informa??o (TI) - Complexo Pequeno Pr?ncipe
+http://www.pequenoprincipe.org.br/    T: +55 41 3310 1747
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.10 (GNU/Linux)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
+
+iQIcBAEBCgAGBQJLdB+gAAoJECCPPxLgxLxPPEkP/jaWc3ED5QBPNb2yyK6seBcV
+O7mX/I2aLaWTYmrndgSjj835Ec4xVVvwmuFVQulkPzwV9cCfa8W7LJgsFR9sEtAo
+G5aJ+c0pAqplB2eEHqXy9gVjJZ5fbxi7O2SPkgm+7otqRZkrvO+EPN0Wlydeblpi
+nRgXo8gXiCrPgFOZJGP47ddTLkz88UZOdBlJ0ejIPsAOI6YS0B+43BuUltdtkxFN
+9YEw1gKzl8KchPZfPUCsQ6s2jPKIKiILaPK3xkxaFbDVN49bw6wP0uRN4zVUOwhD
+MHF9LzeuyfD2pqiPiKvXYBKwkk+xakvNIe96Pp8Oj8wTaQDqtbYQS3BqGsp2hpww
+q13NpldLzHm+XLYzSSF08kzgeJUA8FV1rgjBxE7C4TSeJena3QrCfgdpVUw1jJRc
+jL27CUHvoLp2bIqWKDT9+fCWHE6IK/uBH3nRpvq8CyGE0FMN8H4dwYJiITuSJsns
+FJs2TZOJF7lTuN9JTYE5juXAf/cVg0HLhiA/jaQOKQIfKQcHd4ni6sj7f/TEkeG/
+d0fho2ZqEiMQQo0yTif19yHRbZ4P2afcOf8kaHZ2z3oR5EtzhGkk1QPdAwwhFewy
+ghkETS2ZgITAkqeN6/7YAYqwMRKTxkpEgyMkE2vMX4OlOOg9/6PXS0cldZ2b0l0D
+t2pdG1QePfJyWRnz4cMc
+=M8wy
+-----END PGP SIGNATURE-----
+
+From jmeiring at amobia.com  Fri Feb 12 00:25:26 2010
+From: jmeiring at amobia.com (Johan Meiring)
+Date: Fri, 12 Feb 2010 02:25:26 +0200
+Subject: [Chilli] Radius attributes
+Message-ID: <4B749FF6.5020603@amobia.com>
+
+Hi all,
+
+There used to be a page on the coova-chilli web site that detailed exactly
+what attributes were allowed in the Access Request/Response, Accounting
+request/response and COA packet.
+
+It had 5 or 6 colums with allowed/required/ etc... in each column.
+
+I cannot find that page to save my life....
+
+Does anyone have a link to it?
+
+Thanks!
+
+
+-- 
+
+
+Johan Meiring
+Amobia Communications
+Tel: (0861) AMOBIA / (0861) 266242
+Fax: (0861) AMOFAX / (0861) 266329
+
+
+From david at coova.com  Fri Feb 12 06:28:13 2010
+From: david at coova.com (David Bird)
+Date: Fri, 12 Feb 2010 07:28:13 +0100
+Subject: [Chilli] Radius attributes
+In-Reply-To: <4B749FF6.5020603@amobia.com>
+References: <4B749FF6.5020603@amobia.com>
+Message-ID: <1265956093.4042.216.camel@david-laptop>
+
+I believe you are looking for this:
+http://dev.coova.org/svn/coova-chilli/doc/attributes
+
+Yes, I used to have this also in the wiki, I will give that another shot
+(time permitting) now that we are using Drupal. 
+
+David
+
+On Fri, 2010-02-12 at 02:25 +0200, Johan Meiring wrote:
+> Hi all,
+> 
+> There used to be a page on the coova-chilli web site that detailed exactly
+> what attributes were allowed in the Access Request/Response, Accounting
+> request/response and COA packet.
+> 
+> It had 5 or 6 colums with allowed/required/ etc... in each column.
+> 
+> I cannot find that page to save my life....
+> 
+> Does anyone have a link to it?
+> 
+> Thanks!
+> 
+> 
+
+
+
+From jmeiring at amobia.com  Fri Feb 12 06:48:35 2010
+From: jmeiring at amobia.com (Johan Meiring)
+Date: Fri, 12 Feb 2010 08:48:35 +0200
+Subject: [Chilli] Radius attributes
+In-Reply-To: <1265956093.4042.216.camel@david-laptop>
+References: <4B749FF6.5020603@amobia.com>
+	<1265956093.4042.216.camel@david-laptop>
+Message-ID: <4B74F9C3.2000603@amobia.com>
+
+David Bird wrote:
+> I believe you are looking for this:
+> http://dev.coova.org/svn/coova-chilli/doc/attributes
+> 
+> Yes, I used to have this also in the wiki, I will give that another shot
+> (time permitting) now that we are using Drupal. 
+> 
+> David
+> 
+
+Yep!!
+That's it.
+Thanks!!!
+
+-- 
+
+
+Johan Meiring
+Amobia Communications
+Tel: (0861) AMOBIA / (0861) 266242
+Fax: (0861) AMOFAX / (0861) 266329
+
+
+From david at coova.com  Fri Feb 12 06:59:45 2010
+From: david at coova.com (David Bird)
+Date: Fri, 12 Feb 2010 07:59:45 +0100
+Subject: [Chilli] Captive portal: IE gets a blank page
+In-Reply-To: <4B741FA6.70105@hpp.org.br>
+References: <4B741FA6.70105@hpp.org.br>
+Message-ID: <1265957985.4042.221.camel@david-laptop>
+
+Thanks for the feedback. Are you able to try out the subversion version?
+There is also a somewhat recent svn snapshot at:
+
+http://coova-chilli.s3.amazonaws.com/coova-chilli-1.2.2-pre1.tar.gz
+
+Also interested in hearing if you have more information on these
+issues. 
+
+David
+
+
+On Thu, 2010-02-11 at 13:17 -0200, Felipe Augusto van de Wiel wrote:
+> -----BEGIN PGP SIGNED MESSAGE-----
+> Hash: SHA512
+> 
+> Hi,
+> 
+> 	We are using the captive portal with the 1.2.1
+> and it is great! :)
+> 
+> 	There are two things we recently detected as
+> recurrent, specially with Internet Explorer (version IE6
+> and IE7).
+> 
+> 	I already mentioned that we use a slightly
+> modified portal, we don't really require any login, we
+> just put the Terms of Use as mandatory, then embed the
+> user and password as hidden fields.
+> 
+> 	One thing is that sometimes, after clicking on
+> "I accept the terms", the button disappears or a message
+> of invalid login/pass shows up. This is usually related
+> with coova-chilli needing a restart (still not sure why).
+> 
+> 	The other thing that happens is getting a blank
+> page, then IE reports it may be offline or with problems.
+> I couldn't debug as much as I want, we are planning to
+> take a deeper look into this, but I would like to share
+> it before, so I could get some ideas and/or feedback. :)
+> 
+> Kind regards,
+> - -- 
+> Felipe Augusto van de Wiel <felipe.wiel at hpp.org.br>
+> Tecnologia da Informa??o (TI) - Complexo Pequeno Pr?ncipe
+> http://www.pequenoprincipe.org.br/    T: +55 41 3310 1747
+> -----BEGIN PGP SIGNATURE-----
+> Version: GnuPG v1.4.10 (GNU/Linux)
+> Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
+> 
+> iQIcBAEBCgAGBQJLdB+gAAoJECCPPxLgxLxPPEkP/jaWc3ED5QBPNb2yyK6seBcV
+> O7mX/I2aLaWTYmrndgSjj835Ec4xVVvwmuFVQulkPzwV9cCfa8W7LJgsFR9sEtAo
+> G5aJ+c0pAqplB2eEHqXy9gVjJZ5fbxi7O2SPkgm+7otqRZkrvO+EPN0Wlydeblpi
+> nRgXo8gXiCrPgFOZJGP47ddTLkz88UZOdBlJ0ejIPsAOI6YS0B+43BuUltdtkxFN
+> 9YEw1gKzl8KchPZfPUCsQ6s2jPKIKiILaPK3xkxaFbDVN49bw6wP0uRN4zVUOwhD
+> MHF9LzeuyfD2pqiPiKvXYBKwkk+xakvNIe96Pp8Oj8wTaQDqtbYQS3BqGsp2hpww
+> q13NpldLzHm+XLYzSSF08kzgeJUA8FV1rgjBxE7C4TSeJena3QrCfgdpVUw1jJRc
+> jL27CUHvoLp2bIqWKDT9+fCWHE6IK/uBH3nRpvq8CyGE0FMN8H4dwYJiITuSJsns
+> FJs2TZOJF7lTuN9JTYE5juXAf/cVg0HLhiA/jaQOKQIfKQcHd4ni6sj7f/TEkeG/
+> d0fho2ZqEiMQQo0yTif19yHRbZ4P2afcOf8kaHZ2z3oR5EtzhGkk1QPdAwwhFewy
+> ghkETS2ZgITAkqeN6/7YAYqwMRKTxkpEgyMkE2vMX4OlOOg9/6PXS0cldZ2b0l0D
+> t2pdG1QePfJyWRnz4cMc
+> =M8wy
+> -----END PGP SIGNATURE-----
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+
+
+From david at coova.com  Fri Feb 12 07:46:54 2010
+From: david at coova.com (David Bird)
+Date: Fri, 12 Feb 2010 08:46:54 +0100
+Subject: [Chilli] Building RadSec into CoovaChilli
+Message-ID: <1265960814.4042.231.camel@david-laptop>
+
+Hello all,
+
+Just a heads-up.. I will be building RadSec support directly into
+CoovaChilli. What is RadSec? It is, essentially, RADIUS tunneling over
+SSL. Why not use radsecproxy? Because it is actually very large (using
+pthreads and with realm based routing features) where we just need
+something a bit more simplistic for a single chilli RADIUS stream.
+Radsecproxy or JRadius can be used server-side to terminate the tunnel. 
+
+Cheers,
+David
+
+
+
+From felipe.wiel at hpp.org.br  Sat Feb 13 00:35:19 2010
+From: felipe.wiel at hpp.org.br (Felipe Augusto van de Wiel)
+Date: Fri, 12 Feb 2010 22:35:19 -0200
+Subject: [Chilli] Captive portal: IE gets a blank page
+In-Reply-To: <1265957985.4042.221.camel@david-laptop>
+References: <4B741FA6.70105@hpp.org.br>
+	<1265957985.4042.221.camel@david-laptop>
+Message-ID: <4B75F3C7.9060104@hpp.org.br>
+
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA512
+
+On 12-02-2010 04:59, David Bird wrote:
+> Thanks for the feedback. Are you able to try out 
+> the subversion version?
+
+	Yes, I am. But it will need a few days to
+sort it out. :)
+
+
+> There is also a somewhat recent svn snapshot at:
+> http://coova-chilli.s3.amazonaws.com/coova-chilli-1.2.2-pre1.tar.gz
+
+	I'm following it closely, I was waiting
+for some news indicating it was not so experimental.
+:-)
+
+
+> Also interested in hearing if you have more information
+> on these issues.
+
+	I could investigate a little bit further, it
+seems to be related with Internet Explorer and some
+sort of MSN setup that makes IE try to connect to
+g.ceipmsn.com
+
+	I will try the version from SVN, let's see
+what happens. :)
+
+
+Kind regards,
+- -- 
+Felipe Augusto van de Wiel <felipe.wiel at hpp.org.br>
+Tecnologia da Informa??o (TI) - Complexo Pequeno Pr?ncipe
+http://www.pequenoprincipe.org.br/    T: +55 41 3310 1747
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.10 (GNU/Linux)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
+
+iQIcBAEBCgAGBQJLdfPEAAoJECCPPxLgxLxPjfAQAKZnJA8S0ruI8QcRn2P1ZsaF
+LtGA/Ur+CwGBDji9zEROMr2O8bdr25166BxB/dmrK2oqRbSWrbZ5stszAigDL6Tc
+BfA3rD1T2I34CJw4nnE6a0Fay0sm+uVjAhabq05bqZURJLuoBrKSxf//UGeJNSlx
+xgB9X3Ot8ZbIbTGbwUKTTrYzFkU9Tb1Y5B/o0xl2e8TjVkbgZi7xySyjf96Z3YhC
+RtncxHXMuFFGXWf+zrMYSrb12A9FwSspHX9TlXhSKMREkZny/O3ScuhyBYY3hjeG
+hsr89JkuS2ZpnOqCKyPy6F2qUU7ZOkp0+1/8QQ+yw7eRJZKA8BX39q2i7gKKJLUp
+ON+nYGwlA2k9rt+8d+zfy9OjistvpM+CgbFhufhjQnHZt1zOO6Q4LYKM0+85ORzX
+dk8UxETf1rFxJpa+dTLj6PbDe1zGjisdnuMUhR1Gk0n/NbGbG0qyqI/NeXTRYWM5
+c08mUBAv+T8vCMu5ePJOi44Au9UN07sCSJki4LExs6zTYQ4fG/E68CvXkxB8x78A
+V7I/S27OzGbwq9AIePDe76FPolG3Kllqz2iXduM6nprxbdlIGBSW8YGd3sk7H2M/
+Wc4M+qTRm9yhrO+x6lK5DcOCy2DgiCIeP5YeZyQznHxA5GlnKRBTn+iyQGIQk/PO
+d2UdWSzFYT8gzwTPpOsD
+=UJAm
+-----END PGP SIGNATURE-----
+
+From dgarcia at globalgossip.net  Mon Feb 15 01:27:33 2010
+From: dgarcia at globalgossip.net (Daniel Garcia)
+Date: Mon, 15 Feb 2010 12:27:33 +1100
+Subject: [Chilli] Too much data in http request! Error
+Message-ID: <d028e25a1002141727w25209cb2xc01f36fe6712e8a1@mail.gmail.com>
+
+Hi All,
+
+We have coova chilli version 13 I believe, and we see constant error
+messages in our logs that shows the following:
+
+Feb 15 12:18:55 pxe coova-chilli[30212]: redir.c: 1161: Too much data in
+http request!
+Feb 15 12:18:57 pxe coova-chilli[30213]: redir.c: 1161: Too much data in
+http request!
+Feb 15 12:18:57 pxe coova-chilli[30214]: redir.c: 1161: Too much data in
+http request!
+Feb 15 12:18:57 pxe coova-chilli[30215]: redir.c: 1161: Too much data in
+http request!
+Feb 15 12:19:00 pxe coova-chilli[30218]: redir.c: 1161: Too much data in
+http request!
+Feb 15 12:19:00 pxe coova-chilli[30219]: redir.c: 1161: Too much data in
+http request!
+Feb 15 12:19:00 pxe coova-chilli[30220]: redir.c: 1161: Too much data in
+http request!
+Feb 15 12:19:03 pxe coova-chilli[30224]: redir.c: 1161: Too much data in
+http request!
+Feb 15 12:19:03 pxe coova-chilli[30225]: redir.c: 1161: Too much data in
+http request!
+Feb 15 12:19:06 pxe coova-chilli[30228]: redir.c: 1161: Too much data in
+http request!
+
+Does anyone know what this means and how to fix it? Users are still able to
+log in but we get some people saying they can not and I am not sure if this
+is the cause. Can anyone explain to me what this is?
+
+Thanks in advance, regards.
+
+-- 
+Daniel Garcia
+IT Manager, Core Infrastructure
+Global Gossip
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20100215/e29953e0/attachment.htm>
+
+From adamanov at gmail.com  Sat Feb 20 22:41:38 2010
+From: adamanov at gmail.com (=?UTF-8?B?0JLRj9GH0LXRgdC70LDQsiDQkNC00LDQvNCw0L3QvtCy?=)
+Date: Sun, 21 Feb 2010 00:41:38 +0200
+Subject: [Chilli] Eap auth
+Message-ID: <7a50ad141002201441h6098013fk3f91c6ef44203348@mail.gmail.com>
+
+I want to try to set up authorization via eap. How strange is the
+authorization process. Do not log in correctly, but sometimes after
+the process is successful.
+What could be the reason for such behavior?
+
+chilli.c: 1943: 0 (Debug) RADIUS Access-Request received
+chilli.c: 1971: 0 (Debug) Calling Station ID is: 00-1D-4F-AC-36-DD
+dhcp.c: 389: 0 (Debug) DHCP newconn: 00:1d:4f:ac:36:dd
+chilli.c: 3225: 0 (Debug) New DHCP request from MAC=00-1D-4F-AC-36-DD
+chilli.c: 3228: 0 (Debug) New DHCP connection established
+radius.c: 1415: 0 (Debug) RADIUS to 192.168.1.4:1812
+radius.c: 330: 0 (Debug) No such id in radius queue: id=12!
+radius.c: 1666: 0 (Debug) Matching request was not found in queue: 12!
+chilli.c: 1943: 0 (Debug) RADIUS Access-Request received
+chilli.c: 1971: 0 (Debug) Calling Station ID is: 00-1D-4F-AC-36-DD
+chilli.c: 2045: 0 (Debug) Dropping RADIUS while waiting
+chilli.c: 3568: 0 (Debug) EAP Packet received
+chilli.c: 3589: 0 (Debug) Received EAP message, processing for authentication
+chilli.c: 1943: 0 (Debug) RADIUS Access-Request received
+chilli.c: 1971: 0 (Debug) Calling Station ID is: 00-1D-4F-AC-36-DD
+chilli.c: 2042: 0 (Debug) Giving up on previous packet.. not dropping this one
+radius.c: 1415: 0 (Debug) RADIUS to 192.168.1.4:1812
+radius.c: 330: 0 (Debug) No such id in radius queue: id=12!
+radius.c: 1666: 0 (Debug) Matching request was not found in queue: 12!
+radius.c: 330: 0 (Debug) No such id in radius queue: id=12!
+radius.c: 1666: 0 (Debug) Matching request was not found in queue: 12!
+
+
+
+-- 
+__________________________
+Adamanov Vyacheslav
+87500, Ukraine, Mariupol,
+st. Apatova 136?
+mob: +38 (067) 621 32 61
+email: adamanov at gmail.com
+www: http://hl.ua
+
+From fmacedo at cpd.ufrgs.br  Mon Feb 22 17:09:21 2010
+From: fmacedo at cpd.ufrgs.br (Fernando Dutra Fagundes Macedo)
+Date: Mon, 22 Feb 2010 14:09:21 -0300
+Subject: [Chilli] Using valid ips on Coova Chilli
+Message-ID: <87C8AADF9E20C14C811B0AFA1747DA541B2F24@filipides.ad.ufrgs.br>
+
+Hi,
+
+ 
+
+How can I use Coova Chilli with valid IPs and without nat?
+
+ 
+
+Thanks.
+
+ 
+
+Fernando Macedo
+
+ 
+
+ 
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20100222/8319e636/attachment.htm>
+
+From oguzhank at bilkent.edu.tr  Tue Feb 23 07:24:56 2010
+From: oguzhank at bilkent.edu.tr (Oguzhan Kayhan)
+Date: Tue, 23 Feb 2010 09:24:56 +0200
+Subject: [Chilli] Using valid ips on Coova Chilli
+In-Reply-To: <87C8AADF9E20C14C811B0AFA1747DA541B2F24@filipides.ad.ufrgs.br>
+References: <87C8AADF9E20C14C811B0AFA1747DA541B2F24@filipides.ad.ufrgs.br>
+Message-ID: <201002230924.56282.oguzhank@bilkent.edu.tr>
+
+On Monday 22 February 2010 07:09:21 pm Fernando Dutra Fagundes Macedo wrote:
+> Hi,
+> 
+> 
+> 
+> How can I use Coova Chilli with valid IPs and without nat?
+> 
+> 
+> 
+> Thanks.
+> 
+> 
+> 
+> Fernando Macedo
+> 
+
+remove masquerade from iptables configuration..
+So you can use real ips with coova (both works with coovaap and coova-chilli)
+
+From felipe.wiel at hpp.org.br  Wed Feb 24 00:59:32 2010
+From: felipe.wiel at hpp.org.br (Felipe Augusto van de Wiel)
+Date: Tue, 23 Feb 2010 21:59:32 -0300
+Subject: [Chilli] Captive portal: IE gets a blank page
+In-Reply-To: <4B75F3C7.9060104@hpp.org.br>
+References: <4B741FA6.70105@hpp.org.br>	<1265957985.4042.221.camel@david-laptop>
+	<4B75F3C7.9060104@hpp.org.br>
+Message-ID: <4B8479F4.6070205@hpp.org.br>
+
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA512
+
+On 12-02-2010 22:35, Felipe Augusto van de Wiel wrote:
+> On 12-02-2010 04:59, David Bird wrote:
+>> Thanks for the feedback. Are you able to try out
+>> the subversion version?
+> 
+> 	Yes, I am. But it will need a few days to
+> sort it out. :)
+
+	I had some more time to test it, I tried the
+Debian package for 1.2.2. The same problem happened.
+A computer with IE8 on the same network works fine,
+a computer with IE7 gets the blank screen.
+
+	I'm attaching two TCP Streams from the POST,
+right after you authenticate, the IE7 stream strangely
+dies right after the "HTTP/1.0 200 OK", the only thing
+I could identify as different is a ^M after the last
+line of the client part.
+
+	I didn't had time to debug further, from what
+I could see, the "HTTP/1.0 200 OK" comes from the
+http_header() inside config-local.sh.
+
+	It is not clear to me why the stream died
+after it, I still have plans to debug it further,
+maybe add something in the headers, I didn't think
+the wwwsh script died and IE7 didn't gave any useful
+information.
+
+	If anybody has any hints or ideas, I may be
+able to try it out during the week, we are deploying
+Coova on a new location and it is still in beta, so
+I can play around. :)
+
+Kind regards,
+- -- 
+Felipe Augusto van de Wiel <felipe.wiel at hpp.org.br>
+Tecnologia da Informa??o (TI) - Complexo Pequeno Pr?ncipe
+http://www.pequenoprincipe.org.br/    T: +55 41 3310 1747
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.10 (GNU/Linux)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
+
+iQIcBAEBCgAGBQJLhHnxAAoJECCPPxLgxLxP2MQP/3Pl2yx3D9EvXmUE267AmXfe
+bH8pKBZcSWDNsFa8ItzZ0ZQwzG5/XV5WLTz4BA9jGDsTVx7gXxk9hv7ycB8Kgb67
+I3dX+lXDd0UQCbIHkOUfEjfmPdFYyzWuFK94xJ8NkRJbhhTybcPsII3nV3XAeNOq
+cK9Ftp4ivezCmBrEcu8lh9fyxR/tlbPOBmTRD5v/Wf8ZSYEuf/FuEaSdKrUPDjZh
+24pCgcbIQcVwHODHnM9aQ18R6orvGOlXGXeXIxwQG//QlI5yCi+2yONF3zy5jiSl
+5WVE11rQbf6NuOln9B1ce3WU8pnQAXkaDe/eP8UMpGSEF4D0Hxy96gSrD0rTq7hB
+kOlxeJuic3NLm9MW7PLii4ZkDblp0HTDRUaV1rJpBhwAHMwpnsfIPBR3HJAt9Mup
+JjzxA2dn+UqGaHtwKmFVDa1V7HAjSaqKEteQ1IpnRdmfpErsJbPVgUYCF1UBz5Po
+k5Rrp8xe8XLG+0N42mnXPZVH5IBylKymX59ii8EpWFJpyHwo2jSJrXOoE1SfLEQ4
+j1axwtR0gjx2VM77wW9N0EdDz0lkaj9SeZOmp4LyY+XWDlu7RV4suvflT2R8CUes
+7Ul6HYuiiv3r4kZdX1v+XI4t5PCqyw6OvqT3+ymI5vaKeGaAfL0pDvWKaQhIf+8t
+VRzxKZ2aaLO/X62oo5RZ
+=piK3
+-----END PGP SIGNATURE-----
+-------------- next part --------------
+An embedded and charset-unspecified text was scrubbed...
+Name: ie7-post
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20100223/ec5731bd/attachment.txt>
+-------------- next part --------------
+An embedded and charset-unspecified text was scrubbed...
+Name: ie8-post
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20100223/ec5731bd/attachment.asc>
+
+From david at coova.com  Wed Feb 24 06:03:23 2010
+From: david at coova.com (David Bird)
+Date: Wed, 24 Feb 2010 07:03:23 +0100
+Subject: [Chilli] Captive portal: IE gets a blank page
+In-Reply-To: <4B8479F4.6070205@hpp.org.br>
+References: <4B741FA6.70105@hpp.org.br>
+	<1265957985.4042.221.camel@david-laptop> <4B75F3C7.9060104@hpp.org.br>
+	<4B8479F4.6070205@hpp.org.br>
+Message-ID: <1266991403.2483.701.camel@david-laptop>
+
+>From the time stamps in your trace, how long is the request taking for
+both browsers (what time elapses from the first packet to the last)? The
+embedded portal has a pretty short "alarm" put on the process to help
+prevent possible DoS attacks. Perhaps it is a bit too short. It could
+also have something to do with that extra newline you speak of... the
+script will read the content (based on Content-Length) and if there is
+extra then it could be timing out on the read (and thereafter failing
+because of the SIGALRM). 
+
+
+On Tue, 2010-02-23 at 21:59 -0300, Felipe Augusto van de Wiel wrote:
+> -----BEGIN PGP SIGNED MESSAGE-----
+> Hash: SHA512
+> 
+> On 12-02-2010 22:35, Felipe Augusto van de Wiel wrote:
+> > On 12-02-2010 04:59, David Bird wrote:
+> >> Thanks for the feedback. Are you able to try out
+> >> the subversion version?
+> > 
+> > 	Yes, I am. But it will need a few days to
+> > sort it out. :)
+> 
+> 	I had some more time to test it, I tried the
+> Debian package for 1.2.2. The same problem happened.
+> A computer with IE8 on the same network works fine,
+> a computer with IE7 gets the blank screen.
+> 
+> 	I'm attaching two TCP Streams from the POST,
+> right after you authenticate, the IE7 stream strangely
+> dies right after the "HTTP/1.0 200 OK", the only thing
+> I could identify as different is a ^M after the last
+> line of the client part.
+> 
+> 	I didn't had time to debug further, from what
+> I could see, the "HTTP/1.0 200 OK" comes from the
+> http_header() inside config-local.sh.
+> 
+> 	It is not clear to me why the stream died
+> after it, I still have plans to debug it further,
+> maybe add something in the headers, I didn't think
+> the wwwsh script died and IE7 didn't gave any useful
+> information.
+> 
+> 	If anybody has any hints or ideas, I may be
+> able to try it out during the week, we are deploying
+> Coova on a new location and it is still in beta, so
+> I can play around. :)
+> 
+> Kind regards,
+> - -- 
+> Felipe Augusto van de Wiel <felipe.wiel at hpp.org.br>
+> Tecnologia da Informa??o (TI) - Complexo Pequeno Pr?ncipe
+> http://www.pequenoprincipe.org.br/    T: +55 41 3310 1747
+> -----BEGIN PGP SIGNATURE-----
+> Version: GnuPG v1.4.10 (GNU/Linux)
+> Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
+> 
+> iQIcBAEBCgAGBQJLhHnxAAoJECCPPxLgxLxP2MQP/3Pl2yx3D9EvXmUE267AmXfe
+> bH8pKBZcSWDNsFa8ItzZ0ZQwzG5/XV5WLTz4BA9jGDsTVx7gXxk9hv7ycB8Kgb67
+> I3dX+lXDd0UQCbIHkOUfEjfmPdFYyzWuFK94xJ8NkRJbhhTybcPsII3nV3XAeNOq
+> cK9Ftp4ivezCmBrEcu8lh9fyxR/tlbPOBmTRD5v/Wf8ZSYEuf/FuEaSdKrUPDjZh
+> 24pCgcbIQcVwHODHnM9aQ18R6orvGOlXGXeXIxwQG//QlI5yCi+2yONF3zy5jiSl
+> 5WVE11rQbf6NuOln9B1ce3WU8pnQAXkaDe/eP8UMpGSEF4D0Hxy96gSrD0rTq7hB
+> kOlxeJuic3NLm9MW7PLii4ZkDblp0HTDRUaV1rJpBhwAHMwpnsfIPBR3HJAt9Mup
+> JjzxA2dn+UqGaHtwKmFVDa1V7HAjSaqKEteQ1IpnRdmfpErsJbPVgUYCF1UBz5Po
+> k5Rrp8xe8XLG+0N42mnXPZVH5IBylKymX59ii8EpWFJpyHwo2jSJrXOoE1SfLEQ4
+> j1axwtR0gjx2VM77wW9N0EdDz0lkaj9SeZOmp4LyY+XWDlu7RV4suvflT2R8CUes
+> 7Ul6HYuiiv3r4kZdX1v+XI4t5PCqyw6OvqT3+ymI5vaKeGaAfL0pDvWKaQhIf+8t
+> VRzxKZ2aaLO/X62oo5RZ
+> =piK3
+> -----END PGP SIGNATURE-----
+
+
+
+From felipe.wiel at hpp.org.br  Wed Feb 24 17:43:09 2010
+From: felipe.wiel at hpp.org.br (Felipe Augusto van de Wiel)
+Date: Wed, 24 Feb 2010 14:43:09 -0300
+Subject: [Chilli] Captive portal: IE gets a blank page
+In-Reply-To: <1266991403.2483.701.camel@david-laptop>
+References: <4B741FA6.70105@hpp.org.br>	
+	<1265957985.4042.221.camel@david-laptop>
+	<4B75F3C7.9060104@hpp.org.br>	 <4B8479F4.6070205@hpp.org.br>
+	<1266991403.2483.701.camel@david-laptop>
+Message-ID: <4B85652D.3040003@hpp.org.br>
+
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA512
+
+On 24-02-2010 03:03, David Bird wrote:
+> From the time stamps in your trace, how long is
+> the request taking for both browsers (what time
+> elapses from the first packet to the last)? The
+> embedded portal has a pretty short "alarm" put
+> on the process to help prevent possible DoS
+> attacks. Perhaps it is a bit too short. It could
+> also have something to do with that extra newline
+> you speak of... the script will read the content
+> (based on Content-Length) and if there is extra
+> then it could be timing out on the read (and
+> thereafter failing because of the SIGALRM).
+
+	The streams I sent it is just a subpart of
+a larger stream, because we also have VNC and other
+protocols, so I isolated the last part on wireshark
+and used "Follow TCP Stream".
+
+	I can send you the full stream if you think
+it may help you to debug it.
+
+Kind regards,
+- -- 
+Felipe Augusto van de Wiel <felipe.wiel at hpp.org.br>
+Tecnologia da Informa??o (TI) - Complexo Pequeno Pr?ncipe
+http://www.pequenoprincipe.org.br/    T: +55 41 3310 1747
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.10 (GNU/Linux)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
+
+iQIcBAEBCgAGBQJLhWUpAAoJECCPPxLgxLxPm7gP/1TKshsnEZ9yfWZ1tsnHdOQz
+LDTFjW4IyKEtSllb0sluGQpbCIYL86t1TKgZUpO8ffFYwpOy8H1wMmZKS6qucyoH
+2eLqOjpWggixXUTdGnVZalsQCNCannu5B1/EgSzsMBPKlV6uY2+HqYGNsue7u92E
+8LN+aE7jgc4yBogsvCEaGAA5FJ5W5qQpr0EFv8/f89why4drZALZoxs/eIxDpsmR
+YZS0aq9C6xbSE1eW5V81Eu5tIw/ORBbW6lahL10M/wF9kaL3L/dlZ8hvdoxgqGVe
+CeXLkwy5wkGSXFwat46hwiycRu+7mFcsDGfhzari/eUqr4bcmAJ0riG6wrQHVdsM
+JJj3a8VA2zcD5JNVqxP/g5A+4bG7s5cZTIEPaYfe5B5wJX99RnOVKfZZxiZJfYxm
+PdTkWV2xMuRxxfxTyWUPbLeX+02qNPPpyPxoJ5wf6v9EaRp0isV2dM6laXPDn8pO
+qNZ6mT9bmd8TTT86fq6YcywhUCRncBCohajIyOSnxOqvpwZ9VSd3+xcktcgseYEU
+kqJ+pg/O19v9b8POIDb09k4bYXdwzuCkA8dM0ciCF3vwgSIO+DWv3eZaeEUfkfqE
+eglbSzPiQS38tEi5bDj1T0APz/POi4T7E4gU4uhXx4Ctgi9ZS9KCOT4ATFAMf8ef
+XdFmU758fyMu9dPG/M8u
+=itgS
+-----END PGP SIGNATURE-----
+
+From serverinfo at iast.it  Wed Feb 24 18:56:28 2010
+From: serverinfo at iast.it (Iacopo Spalletti)
+Date: Wed, 24 Feb 2010 19:56:28 +0100
+Subject: [Chilli] Problems with Chilli + Dansguardian
+Message-ID: <201002241956.32489.serverinfo@iast.it>
+
+Hello,  we use coova and recently we started integrating Dansguardian on our 
+captive-portal solution.
+We implemented using HS_POSTAUTH_PROXY/HS_POSTAUTH_PROXYPORT coova-chilli 
+directives, dansguardian+polipo (a lightweight proxy) as filter/proxy and 
+shorewall as firewall.
+We tested such setup with both Linux and Windows clients without issues, but 
+we found out that Mac OS (at least Tiger and Leopard, I don't have a Snow 
+Leopard to try, both with Safari and Firefox 3.5) systems have a strange 
+behavior: after login client cannot reach some (legitimate) websites with 
+system waiting forever for the page to appear, while blacklisted websites are 
+blocked by dansguardian.
+I've tried many alternative setup to pinpoint the exact problem (e.g. removing 
+alternatively chillispot or dansguardian) but i couldn't figure out where the 
+problem is, except that it appears only when both chillispot and dansguardian 
+are up.
+I tried with coova 1.0.14 and 1.2.2.
+What strike me most is the fact that only Mac OS is affected.
+Any suggestion?
+
+-- 
+
+Regards
+Iacopo Spalletti
+
+Nephila sas
+i.spalletti at nephila.it
+PGP key block: http://www.nephila.it/pgp
+
+From david at coova.com  Thu Feb 25 06:55:12 2010
+From: david at coova.com (David Bird)
+Date: Thu, 25 Feb 2010 07:55:12 +0100
+Subject: [Chilli] Problems with Chilli + Dansguardian
+In-Reply-To: <201002241956.32489.serverinfo@iast.it>
+References: <201002241956.32489.serverinfo@iast.it>
+Message-ID: <1267080912.2483.745.camel@david-laptop>
+
+You could try to use wireshark to see if that reveals any clues. I've
+seen similar issues (where only some sites have issues, while others
+don't) when you have a reduced MTU in your network - but this wasn't
+just an issue for macosx. 
+
+
+On Wed, 2010-02-24 at 19:56 +0100, Iacopo Spalletti wrote:
+> Hello,  we use coova and recently we started integrating Dansguardian on our 
+> captive-portal solution.
+> We implemented using HS_POSTAUTH_PROXY/HS_POSTAUTH_PROXYPORT coova-chilli 
+> directives, dansguardian+polipo (a lightweight proxy) as filter/proxy and 
+> shorewall as firewall.
+> We tested such setup with both Linux and Windows clients without issues, but 
+> we found out that Mac OS (at least Tiger and Leopard, I don't have a Snow 
+> Leopard to try, both with Safari and Firefox 3.5) systems have a strange 
+> behavior: after login client cannot reach some (legitimate) websites with 
+> system waiting forever for the page to appear, while blacklisted websites are 
+> blocked by dansguardian.
+> I've tried many alternative setup to pinpoint the exact problem (e.g. removing 
+> alternatively chillispot or dansguardian) but i couldn't figure out where the 
+> problem is, except that it appears only when both chillispot and dansguardian 
+> are up.
+> I tried with coova 1.0.14 and 1.2.2.
+> What strike me most is the fact that only Mac OS is affected.
+> Any suggestion?
+> 
+
+
+
+From honma at ictec.co.jp  Fri Feb 26 02:21:52 2010
+From: honma at ictec.co.jp (Masashi Honma)
+Date: Fri, 26 Feb 2010 11:21:52 +0900
+Subject: [Chilli]  [PATCH] Fix: Null termination of the excev argument
+Message-ID: <4B873040.20006@ictec.co.jp>
+
+Hello.
+
+I am new to this list.
+
+This patch null terminate the excev argument when reload flag is true.
+And check the return value of calloc.
+
+
+Index: options.c
+===================================================================
+--- options.c	(revision 292)
++++ options.c	(working copy)
+@@ -134,6 +134,10 @@
+   }
+ 
+   newargs = calloc(1, sizeof(char *) * (argc + 4));
++  if (newargs == NULL) {
++    log_err(errno, "calloc() failed!");
++    return -1;
++  }
+ 
+   for (i=1; i < argc; i++) {
+     newargs[i] = argv[i];
+@@ -143,6 +147,7 @@
+   newargs[i++] = "-b";
+   newargs[i++] = file;
+   newargs[i++] = reload ? "-r" : NULL;
++  newargs[i++] = NULL;
+ 
+   log_dbg("running chilli_opt on %s", file);
+ 
+
+Regards,
+Masashi Honma.
+
+From david at coova.com  Fri Feb 26 06:26:37 2010
+From: david at coova.com (David Bird)
+Date: Fri, 26 Feb 2010 07:26:37 +0100
+Subject: [Chilli] [PATCH] Fix: Null termination of the excev argument
+In-Reply-To: <4B873040.20006@ictec.co.jp>
+References: <4B873040.20006@ictec.co.jp>
+Message-ID: <1267165598.9628.8.camel@david-laptop>
+
+Thanks, however, calloc will already ensure that newargs is initialized
+to zero, so the newargs[i++] = NULL should not be required. 
+
+
+On Fri, 2010-02-26 at 11:21 +0900, Masashi Honma wrote:
+> Hello.
+> 
+> I am new to this list.
+> 
+> This patch null terminate the excev argument when reload flag is true.
+> And check the return value of calloc.
+> 
+> 
+> Index: options.c
+> ===================================================================
+> --- options.c	(revision 292)
+> +++ options.c	(working copy)
+> @@ -134,6 +134,10 @@
+>    }
+>  
+>    newargs = calloc(1, sizeof(char *) * (argc + 4));
+> +  if (newargs == NULL) {
+> +    log_err(errno, "calloc() failed!");
+> +    return -1;
+> +  }
+>  
+>    for (i=1; i < argc; i++) {
+>      newargs[i] = argv[i];
+> @@ -143,6 +147,7 @@
+>    newargs[i++] = "-b";
+>    newargs[i++] = file;
+>    newargs[i++] = reload ? "-r" : NULL;
+> +  newargs[i++] = NULL;
+>  
+>    log_dbg("running chilli_opt on %s", file);
+>  
+> 
+> Regards,
+> Masashi Honma.
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+
+
+From honma at ictec.co.jp  Fri Feb 26 07:13:19 2010
+From: honma at ictec.co.jp (Masashi Honma)
+Date: Fri, 26 Feb 2010 16:13:19 +0900
+Subject: [Chilli] [PATCH] Fix: Null termination of the excev argument
+In-Reply-To: <1267165598.9628.8.camel@david-laptop>
+References: <4B873040.20006@ictec.co.jp> <1267165598.9628.8.camel@david-laptop>
+Message-ID: <4B87748F.9020007@ictec.co.jp>
+
+(2010/02/26 15:26), David Bird wrote:
+> calloc will already ensure that newargs is initialized
+> to zero, so the newargs[i++] = NULL should not be required.
+
+I got it.
+
+Regards,
+Masashi Honma.
+
+From honma at ictec.co.jp  Fri Feb 26 07:21:41 2010
+From: honma at ictec.co.jp (Masashi Honma)
+Date: Fri, 26 Feb 2010 16:21:41 +0900
+Subject: [Chilli] [PATCH] Fix: Compilation fails when HAVE_NETFILTER_QUEUE
+ is not defined
+Message-ID: <4B877685.5060303@ictec.co.jp>
+
+Hello.
+
+The latest svn tree can't be compiled when HAVE_NETFILTER_QUEUE is
+not defined. This patch solves this issue.
+
+
+Index: net.c
+===================================================================
+--- net.c	(revision 292)
++++ net.c	(working copy)
+@@ -669,7 +669,7 @@
+ 
+   return 0;
+ #else
+-  log_error(0, "Not implemeneted; build with --with-nfqueue");
++  log_err(0, "Not implemeneted; build with --with-nfqueue");
+ #endif
+ }
+ 
+Regards,
+Masashi Honma.
+
+From honma at ictec.co.jp  Fri Feb 26 07:28:23 2010
+From: honma at ictec.co.jp (Masashi Honma)
+Date: Fri, 26 Feb 2010 16:28:23 +0900
+Subject: [Chilli] [PATCH] Fix: Compilation fails when
+ HAVE_NETFILTER_QUEUE is not defined
+In-Reply-To: <4B877685.5060303@ictec.co.jp>
+References: <4B877685.5060303@ictec.co.jp>
+Message-ID: <4B877817.50108@ictec.co.jp>
+
+(2010/02/26 16:21), Masashi Honma wrote:
+> Hello.
+>
+> The latest svn tree can't be compiled when HAVE_NETFILTER_QUEUE is
+> not defined. This patch solves this issue.
+>
+>
+> Index: net.c
+> ===================================================================
+> --- net.c	(revision 292)
+> +++ net.c	(working copy)
+> @@ -669,7 +669,7 @@
+>
+>     return 0;
+>   #else
+> -  log_error(0, "Not implemeneted; build with --with-nfqueue");
+> +  log_err(0, "Not implemeneted; build with --with-nfqueue");
+>   #endif
+>   }
+
+Oops. I missed to insert return. Discard previous patch.
+
+Index: net.c
+===================================================================
+--- net.c	(revision 292)
++++ net.c	(working copy)
+@@ -669,7 +669,8 @@
+  
+    return 0;
+  #else
+-  log_error(0, "Not implemeneted; build with --with-nfqueue");
++  log_err(0, "Not implemeneted; build with --with-nfqueue");
++  return -1;
+  #endif
+  }
+
+Regards,
+Masashi Honma.
+
+From david at coova.com  Fri Feb 26 07:35:40 2010
+From: david at coova.com (David Bird)
+Date: Fri, 26 Feb 2010 08:35:40 +0100
+Subject: [Chilli] [PATCH] Fix: Compilation fails when
+ HAVE_NETFILTER_QUEUE is not defined
+In-Reply-To: <4B877817.50108@ictec.co.jp>
+References: <4B877685.5060303@ictec.co.jp>  <4B877817.50108@ictec.co.jp>
+Message-ID: <1267169740.9628.16.camel@david-laptop>
+
+Thanks. committed as revision 293.
+
+
+On Fri, 2010-02-26 at 16:28 +0900, Masashi Honma wrote:
+> (2010/02/26 16:21), Masashi Honma wrote:
+> > Hello.
+> >
+> > The latest svn tree can't be compiled when HAVE_NETFILTER_QUEUE is
+> > not defined. This patch solves this issue.
+> >
+> >
+> > Index: net.c
+> > ===================================================================
+> > --- net.c	(revision 292)
+> > +++ net.c	(working copy)
+> > @@ -669,7 +669,7 @@
+> >
+> >     return 0;
+> >   #else
+> > -  log_error(0, "Not implemeneted; build with --with-nfqueue");
+> > +  log_err(0, "Not implemeneted; build with --with-nfqueue");
+> >   #endif
+> >   }
+> 
+> Oops. I missed to insert return. Discard previous patch.
+> 
+> Index: net.c
+> ===================================================================
+> --- net.c	(revision 292)
+> +++ net.c	(working copy)
+> @@ -669,7 +669,8 @@
+>   
+>     return 0;
+>   #else
+> -  log_error(0, "Not implemeneted; build with --with-nfqueue");
+> +  log_err(0, "Not implemeneted; build with --with-nfqueue");
+> +  return -1;
+>   #endif
+>   }
+> 
+> Regards,
+> Masashi Honma.
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+
+
+From serverinfo at iast.it  Fri Feb 26 11:41:20 2010
+From: serverinfo at iast.it (Iacopo Spalletti)
+Date: Fri, 26 Feb 2010 12:41:20 +0100
+Subject: [Chilli] Problems with Chilli + Dansguardian
+In-Reply-To: <1267080912.2483.745.camel@david-laptop>
+References: <201002241956.32489.serverinfo@iast.it>
+	<1267080912.2483.745.camel@david-laptop>
+Message-ID: <201002261241.32525.serverinfo@iast.it>
+
+Alle 07:55 di gioved? 25 febbraio 2010, David Bird ha scritto:
+> You could try to use wireshark to see if that reveals any clues. I've
+> seen similar issues (where only some sites have issues, while others
+> don't) when you have a reduced MTU in your network - but this wasn't
+> just an issue for macosx.
+> 
+All in all in seemed like a shorewall configuration problem.
+Using shorewall-configured masquerading makes some packets bypass postauthproxy 
+setting...
+
+Thanks
+
+-- 
+
+Regards
+Iacopo Spalletti
+
+Nephila sas
+i.spalletti at nephila.it
+PGP key block: http://www.nephila.it/pgp
+

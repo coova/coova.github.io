@@ -1,0 +1,120 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> handle initial requests to http proxy
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20handle%20initial%20requests%20to%20http%20proxy&In-Reply-To=%3CEA05D815-626F-4026-AEE8-C9F0C127AA8D%40mac.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000316.html">
+   <LINK REL="Next"  HREF="000320.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>handle initial requests to http proxy</H1>
+    <B>wlan at mac.com</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20handle%20initial%20requests%20to%20http%20proxy&In-Reply-To=%3CEA05D815-626F-4026-AEE8-C9F0C127AA8D%40mac.com%3E"
+       TITLE="handle initial requests to http proxy">wlan at mac.com
+       </A><BR>
+    <I>Sat May 17 07:21:55 UTC 2008</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000316.html">handle initial requests to http proxy
+</A></li>
+        <LI>Next message: <A HREF="000320.html">handle initial requests to http proxy
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#317">[ date ]</a>
+              <a href="thread.html#317">[ thread ]</a>
+              <a href="subject.html#317">[ subject ]</a>
+              <a href="author.html#317">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Working contributions are welcome!
+
+On May 16, 2008, at 4:26 PM, Ivano Cristofolini wrote:
+
+&gt;<i> just solved it by myself, sorry for the bother.
+</I>&gt;<i>
+</I>&gt;<i> Ivano
+</I>&gt;<i>
+</I>&gt;<i> On Fri, 2008-05-16 at 13:54 +0200, Ivano Cristofolini wrote:
+</I>&gt;&gt;<i> Hello,
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> I need to modify coova-chilli to capture http requests directed to a
+</I>&gt;&gt;<i> (NON transparent) http proxy running on port 3128 (keeping current
+</I>&gt;&gt;<i> functionality as well).
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> I have successfully modified the http parsing functions in redir.c  
+</I>&gt;&gt;<i> (very
+</I>&gt;&gt;<i> simple: only redirurl changes).
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> I'm trying to modify the DNAT routines in dhcp.c so that requests to
+</I>&gt;&gt;<i> port 3128 are handled in the same way as regular requests to http
+</I>&gt;&gt;<i> servers (i.e. they are NATted to uamserver).
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> This is easy for dhcp_doDNAT() (I added the last line):
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> ...
+</I>&gt;&gt;<i>   /* Was it a http request for another server? */
+</I>&gt;&gt;<i>   /* We are changing dest IP and dest port to local UAM server */
+</I>&gt;&gt;<i>   if ((pack-&gt;iph.protocol == PKT_IP_PROTO_TCP) &amp;&amp;
+</I>&gt;&gt;<i>       ((tcph-&gt;dst == htons(DHCP_HTTP)) ||
+</I>&gt;&gt;<i>        (tcph-&gt;dst == htons(3128)))) {
+</I>&gt;&gt;<i> ...
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> I don't know how to do it for dhcp_undoDNAT().
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> ...
+</I>&gt;&gt;<i> /* Was it a reply from redir server? */
+</I>&gt;&gt;<i> ...
+</I>&gt;&gt;<i> if (something???) {
+</I>&gt;&gt;<i>   tcph-&gt;src = htons(DHCP_HTTP);
+</I>&gt;&gt;<i> else
+</I>&gt;&gt;<i>   tcph-&gt;src = htons(3128);
+</I>&gt;&gt;<i> ...
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> Any suggestions?
+</I>&gt;&gt;<i>
+</I>&gt;<i> -- 
+</I>&gt;<i> Ivano Cristofolini
+</I>&gt;<i> Presidio Informatico Ingegneria
+</I>&gt;<i> Direzione Informatica e Telecomunicazioni
+</I>&gt;<i> Universita' degli Studi di Trento
+</I>&gt;<i> Via Mesiano 77,
+</I>&gt;<i> 38050 Povo(TN), Italy
+</I>&gt;<i> Tel: +39 0461/881940
+</I>&gt;<i> Fax: +39 0461/882628
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> ---------------------------------------------------------------------
+</I>&gt;<i> To unsubscribe, e-mail: <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli-unsubscribe at coova.org</A>
+</I>&gt;<i> For additional commands, e-mail: <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli-help at coova.org</A>
+</I>&gt;<i> Wiki: <A HREF="http://coova.org/wiki/index.php/CoovaChilli">http://coova.org/wiki/index.php/CoovaChilli</A>
+</I>&gt;<i> Forum: <A HREF="http://coova.org/phpBB3/viewforum.php?f=4">http://coova.org/phpBB3/viewforum.php?f=4</A>
+</I>&gt;<i>
+</I>
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000316.html">handle initial requests to http proxy
+</A></li>
+	<LI>Next message: <A HREF="000320.html">handle initial requests to http proxy
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#317">[ date ]</a>
+              <a href="thread.html#317">[ thread ]</a>
+              <a href="subject.html#317">[ subject ]</a>
+              <a href="author.html#317">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

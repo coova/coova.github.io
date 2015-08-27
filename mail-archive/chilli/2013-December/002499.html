@@ -1,0 +1,136 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] [Layer3] Like uamallowed, but for source address - like macallowed but for IPs - ip source whitelist - server whitelist - Layer3: help with connections / dhcp connections
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20%5BLayer3%5D%20Like%20uamallowed%2C%0A%20but%20for%20source%20address%20-%20like%20macallowed%20but%20for%20IPs%20-%20ip%20source%0A%20whitelist%20-%20server%20whitelist%20-%20Layer3%3A%20help%20with%20connections%20/%20dhcp%0A%20connections&In-Reply-To=%3C52A1FAE2.3070502%40labs.it%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="002494.html">
+   <LINK REL="Next"  HREF="002486.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] [Layer3] Like uamallowed, but for source address - like macallowed but for IPs - ip source whitelist - server whitelist - Layer3: help with connections / dhcp connections</H1>
+    <B>Michele Bergonzoni</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20%5BLayer3%5D%20Like%20uamallowed%2C%0A%20but%20for%20source%20address%20-%20like%20macallowed%20but%20for%20IPs%20-%20ip%20source%0A%20whitelist%20-%20server%20whitelist%20-%20Layer3%3A%20help%20with%20connections%20/%20dhcp%0A%20connections&In-Reply-To=%3C52A1FAE2.3070502%40labs.it%3E"
+       TITLE="[Chilli] [Layer3] Like uamallowed, but for source address - like macallowed but for IPs - ip source whitelist - server whitelist - Layer3: help with connections / dhcp connections">bergonz at labs.it
+       </A><BR>
+    <I>Fri Dec  6 16:27:14 UTC 2013</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="002494.html">[Chilli] [Layer3] Like uamallowed, but for source address - like macallowed but for IPs - ip source whitelist - server whitelist
+</A></li>
+        <LI>Next message: <A HREF="002486.html">[Chilli] chilliJSON: request timed out (or reply is not valid JS)
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2499">[ date ]</a>
+              <a href="thread.html#2499">[ thread ]</a>
+              <a href="subject.html#2499">[ subject ]</a>
+              <a href="author.html#2499">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>&gt;<i> Is l3singledhcp really necessary? It is suppose to be able to track
+</I>&gt;<i> multiple &quot;routers&quot;, not just one.
+</I>
+l3singledhcp is a &quot;hack&quot; and I understand very well why you won't commit 
+it, but in my environment, without that, redirection doesn't happen 
+(with or without ipsrcallowed).
+
+I observed this sequence of events:
+
+* Client 10.0.0.1 sends a DNS request
+* DNS requests arrives to coova from MAC A
+* Coova makes a dhcp connection for MAC A
+* Coova makes a connection for IP 10.0.0.1
+* Coova answers
+* Client correctly receives the DNS answer
+* Client sends a TCP SYN to 78.46.45.181 port 80
+* TCP SYN arrives to coova from MAC B, different from MAC A
+* Coova makes a second dhcp connection for MAC B
+
+At this point, Coova sends a SYN/ACK to the client, from port 80 to the 
+correct source (high) port, but it doesn't have 78.46.45.181 as the 
+source. It has the source of the DHCP interface, i.e. uamipaddress. The 
+client ignores this, of course, retries, and there is no redirection.
+
+This sequence of events is related to some specific policy routing we 
+are using in our L3 network, that has the side effect of consistently 
+forwarding DNS requests on one path and the SYN on another.
+
+In single-router environments the problem probably doesn't exist, in 
+many redundant router environments with load balancing the problem can 
+be intermittent and difficult to observe. If you decide to ignore it, 
+you probably will not disappoint many people.
+
+If you are interested, in my opinion, given my very limited 
+understanding of coovachilli internals, the right and correct thing to 
+do would be:
+
+* Use a &quot;special&quot; dhcp connection, or no connection at all, for L3 clients
+* When sending packets to an L3 clients, use the MAC address of the 
+router, as found in the ARP table (as the linux kernel would do). The IP 
+address of the router is not in coova configuration, it is in the 
+routing table (of course we can put it also in the config).
+
+Such a strict adherence to IP routing principles is surely better than 
+sending to the same MAC you received from: the MAC that the router uses 
+when transmitting packets to coova is not the same that coova should use 
+when replying.
+
+In all HSRP setups, packets coming from the router have the physical MAC 
+address as the source, but when sending packets to the router, you are 
+supposed to use the virtual MAC address as the destination, which is 
+what the router tells you in ARP replies. This is because the virtual 
+MAC is guaranteed to survive the fault of a single router.
+
+The same is true for many other first-hop redundancy protocols and 
+firewall clustering technologies.
+
+Of course, with ot without a virtual MAC address, sending the SYN/ACK 
+for the redirect with the uamipaddress as the IP source cannot work.
+
+I really would have loved to implement this instead of l3singledhcp, but 
+it was too difficult for me. With this hack, the fault of a router has a 
+rough 50% probability of requiring coova restart.
+
+You might want to forget all this, and when someone with an environment 
+similar to mine will google up all this intricacies, we can hope to have 
+her/him land here.
+
+Best regards, thank you very much and keep up with your good work.
+
+			Michele
+
+-- 
+Ing. Michele Bergonzoni - Laboratori Guglielmo Marconi S.p.a.
+Phone:+39-051-6781926 e-mail: <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">bergonz at labs.it</A>
+alt.advanced.networks.design.configure.operate
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="002494.html">[Chilli] [Layer3] Like uamallowed, but for source address - like macallowed but for IPs - ip source whitelist - server whitelist
+</A></li>
+	<LI>Next message: <A HREF="002486.html">[Chilli] chilliJSON: request timed out (or reply is not valid JS)
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2499">[ date ]</a>
+              <a href="thread.html#2499">[ thread ]</a>
+              <a href="subject.html#2499">[ subject ]</a>
+              <a href="author.html#2499">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,127 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] Almost there.
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Almost%20there.&In-Reply-To=%3CCAF%2BUSJ5FqEBw-LPRC5%3DdLW0_%2BLW3PwGBVAajtQf-h1aZ-ySByg%40mail.gmail.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="002594.html">
+   <LINK REL="Next"  HREF="002601.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] Almost there.</H1>
+    <B>Eric Chaves</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Almost%20there.&In-Reply-To=%3CCAF%2BUSJ5FqEBw-LPRC5%3DdLW0_%2BLW3PwGBVAajtQf-h1aZ-ySByg%40mail.gmail.com%3E"
+       TITLE="[Chilli] Almost there.">eric at craftti.com.br
+       </A><BR>
+    <I>Fri Feb 14 16:29:20 UTC 2014</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="002594.html">[Chilli] [SOLVED!!!] CoovaChilli FreeRADIUS Setup With UAM	[SOLVED!!!]
+</A></li>
+        <LI>Next message: <A HREF="002601.html">[Chilli] Radsec config
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2598">[ date ]</a>
+              <a href="thread.html#2598">[ thread ]</a>
+              <a href="subject.html#2598">[ subject ]</a>
+              <a href="author.html#2598">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hi guys,
+
+I'm coming closer to the deployment off my Coova chilli in production. I
+got almost everything in place except for a few things that I haven't
+managed to make it work. If some of the experts in here could help me out
+I'll greatly appreciate that.
+
+My environment is made of two servers:
+    1) controller - has four ethernet interfaces being two of them used by
+chilli (with aid of moreif option), one is my uplink to a roxy/router
+server and the remaining one is used as a &quot;services network&quot; although most
+of the time it's down.
+    2) proxy - also has four ethernet interfaces being two of them my WAN
+links (dedicated links with public IPs, not DSL) configured for load
+balance and fail-over, one is the downlink to coova and the last one also
+in services network.
+
+Coova is configured to use network 172.16.x.x (subscriber network) while,
+the uplink network is 10.1.0.x and services is 10.0.1.x. As far as I can
+tell all routes are properly configured on both servers and proxy server
+does SNAT masquerading on outgoing traffic. Our authentication portal is
+hosted on the cloud. We have 2 Access Points in place and soon we will
+expand those to a lot more.
+
+So far soo god. The problems I'm facing are:
+
+1) I'm performing NAT from coova to proxy and if I turn it off (which I'd
+like to) clients on subscriber network stop being redirected to the
+authentication portal.
+
+2) Clients connected on coova can access local network (10.1.1.x) and
+services (10.1.0.x) even when HS_LAN_ACCESS is commented.
+
+3) Access Points on subscriber network are getting IP address before being
+mac authenticated, which prevent them to receive the IP address provided on
+the authentication response.
+
+4) When I'm logged on the controller host using ssh I can ping AP addresses
+but I cannot access them via telnet, ssh or http, even when the AP is
+successfully authenticated.
+
+5) chilli_query lists AP as authenticated (status pass) however only in one
+of them the username matches the mac address, the other one has a username
+of '-'. Not really a problem but could this be a bug?
+
+For now, my major concern is item number 1. Does anyone knows what could be
+the problem?
+
+Also, a last question so I can understood coova chilli's role a bit better.
+when a packet reaches coova via the tun0 interface, does coova read it and
+drop/forward it like a firewall (his decision what to do), or does it only
+perform some accounting like a pcap tool (all decisions are left for
+kernel)?
+
+Once again thanks for the patience and help with all my questions and
+troubles so far. You guys have being great I'm certainly in debt of several
+beers here. ;)
+
+Cheers,
+
+Eric
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: &lt;<A HREF="http://lists.coova.org/pipermail/chilli/attachments/20140214/e6b0fe64/attachment.html">http://lists.coova.org/pipermail/chilli/attachments/20140214/e6b0fe64/attachment.html</A>&gt;
+</PRE>
+
+
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="002594.html">[Chilli] [SOLVED!!!] CoovaChilli FreeRADIUS Setup With UAM	[SOLVED!!!]
+</A></li>
+	<LI>Next message: <A HREF="002601.html">[Chilli] Radsec config
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2598">[ date ]</a>
+              <a href="thread.html#2598">[ thread ]</a>
+              <a href="subject.html#2598">[ subject ]</a>
+              <a href="author.html#2598">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

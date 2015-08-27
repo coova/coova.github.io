@@ -1,0 +1,3029 @@
+From claus at stjerno.dk  Fri Nov  1 12:45:07 2013
+From: claus at stjerno.dk (=?iso-8859-1?Q?Claus_Stjern=F8?=)
+Date: Fri, 1 Nov 2013 13:45:07 +0100
+Subject: [Chilli] noradallow in vesion 1.3.1-svn
+Message-ID: <01d401ced700$320233a0$96069ae0$@stjerno.dk>
+
+Hi,
+
+ 
+
+I?m running Coova Chilli v. 1.3.1-svn version.
+
+ 
+
+If I start Chilli with runtime option ?noradallow and then disable my radius
+server I get the following in debug mode:
+
+ 
+
+radius.c: 465: 0 (Debug) Rescheduling RADIUS request id=10 idx=0
+
+radius.c: 465: 0 (Debug) Rescheduling RADIUS request id=10 idx=0
+
+radius.c: 465: 0 (Debug) Rescheduling RADIUS request id=10 idx=0
+
+radius.c: 465: 0 (Debug) Rescheduling RADIUS request id=10 idx=0
+
+radius.c: 465: 0 (Debug) Rescheduling RADIUS request id=3 idx=3
+
+radius.c: 427: 0 (Debug) RADIUS queue-out id=10 idx=0
+
+redir.c: 2431: 0 (Debug) Received RADIUS response
+
+redir.c: 2440: 0 (Debug) Radius request timed out
+
+redir.c: 3834: 0 (Debug) redir_main handling Access-Reject
+
+redir.c: 3838: 0 (Debug) ---->>> resetting challenge:
+d6e917f8254b4c297f752f2a15dc94ed
+
+redir.c: 777: 0 (Debug) redir_wispr1_reply
+
+redir.c: 3854: 0 (Debug) -->> Msg userurl=[]
+
+ 
+
+My user is not allowed internet access as the option ??noradallow? should
+give and the redir handling is set to Access-Reject and not the timeout as
+expected.
+
+ 
+
+Is anyone using this option successfully??
+
+ 
+
+Best regards
+
+Claus
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20131101/58a4f5e7/attachment.html>
+
+From danny at sb-ps.ae  Fri Nov  1 20:27:22 2013
+From: danny at sb-ps.ae (Danilo Magat)
+Date: Sat, 02 Nov 2013 00:27:22 +0400
+Subject: [Chilli] Gigabit network card no upload
+Message-ID: <007d01ced740$c558e820$500ab860$@ae>
+
+Hi guys,
+
+ 
+
+I am facing issue on a gigabit network card. 
+
+i am having 100mbps adsl line. 
+
+setup: 
+
+server is having 2  gigabit network card ( eth0 and eth1 ) --- connected to
+PC with gigabit port
+
+chilli_query authorize mac $mac ---> to allow with unlimited bandwidth
+
+now during the testing ... DOWNLOAD is reaching NOT less than 100mbps but no
+value on UPLOAD.
+
+ 
+
+i did some workaround:
+
+on PC with 10/100/1000 network card i set the Speed Duplex on network
+setting into 100Mbps instead of default config which is Auto Negotiation. 
+
+With this workaround i am getting a value on upload not more than 20mbps
+which is still less.
+
+ 
+
+while on a pc with 10/100 packet from download is more that 80mbps but not
+more than 100mbps while on upload it is going up to 70 to 80.
+
+ 
+
+question is why im not able to get an upload on a gigabit card? 
+
+is there any config require on chilli ? is this something to do with the
+driver on the network card.
+
+ 
+
+Danny
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20131102/14baff7b/attachment.html>
+
+From bojan at gajba.net  Fri Nov  1 20:51:09 2013
+From: bojan at gajba.net (Bojan Pogacar)
+Date: Fri, 01 Nov 2013 21:51:09 +0100
+Subject: [Chilli] Gigabit network card no upload
+Message-ID: <g6tu7xdwwsvh7uuges6esmft.1383339069372@email.android.com>
+
+
+
+-------- Izvirno sporo?ilo --------
+Zadeva:Odg: [Chilli] Gigabit network card no upload
+Od:Bojan Pogacar <bojan at gajba.net>
+Za:danny at sb-ps.ae
+Kp:
+
+Hello!
+
+I had the same problem. I solved it the same way as you did - set 100mbps full duplex .
+
+I've also wrote to the forum and nobody responded.
+
+BR, Bojan
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20131101/3659d244/attachment.html>
+
+From richard at rexy.fr  Fri Nov  1 22:30:44 2013
+From: richard at rexy.fr (Richard REY)
+Date: Fri, 01 Nov 2013 23:30:44 +0100
+Subject: [Chilli] Gigabit network card no upload
+In-Reply-To: <007d01ced740$c558e820$500ab860$@ae>
+References: <007d01ced740$c558e820$500ab860$@ae>
+Message-ID: <52742B94.5000704@rexy.fr>
+
+Hi coova users,
+
+In our ALCASAR project, we use coova and we have seen the same problem 
+on the coova listening card when it's connected on a Gb switch (the flow 
+is very low and a lot of "interupt" messages are written in journalctl). 
+The only workaround we have found is to fix the speed and 
+autonegociation of the NIC. (ETHTOOL_OPTS='"autoneg off speed 100 duplex 
+full"'. The Linux is Mageia2 (kernel 3.4.52).
+
+Rexy
+
+
+Le 01/11/2013 21:27, Danilo Magat a ?crit :
+> Hi guys,
+>
+> I am facing issue on a gigabit network card.
+>
+> i am having 100mbps adsl line.
+>
+> setup:
+>
+> server is having 2  gigabit network card ( eth0 and eth1 ) --- connected
+> to PC with gigabit port
+>
+> chilli_query authorize mac $mac ---> to allow with unlimited bandwidth
+>
+> now during the testing ... DOWNLOAD is reaching NOT less than 100mbps
+> but no value on UPLOAD.
+>
+> i did some workaround:
+>
+> on PC with 10/100/1000 network card i set the Speed Duplex on network
+> setting into 100Mbps instead of default config which is Auto Negotiation.
+>
+> With this workaround i am getting a value on upload not more than 20mbps
+> which is still less.
+>
+> while on a pc with 10/100 packet from download is more that 80mbps but
+> not more than 100mbps while on upload it is going up to 70 to 80.
+>
+> *question is why im not able to get an upload on a gigabit card? *
+>
+> *is there any config require on chilli ? is this something to do with
+> the driver on the network card.*
+>
+> **
+>
+> *Danny*
+>
+>
+>
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+
+From bojan at gajba.net  Sun Nov  3 14:00:32 2013
+From: bojan at gajba.net (Bojan Pogacar)
+Date: Sun, 03 Nov 2013 15:00:32 +0100
+Subject: [Chilli] Odg: RE:  Gigabit network card no upload
+Message-ID: <165q5kkqb0lrbj2ag3805rr0.1383487232726@email.android.com>
+
+Hello!
+
+Permanent solution is that we kindly ask David to look into the problem :)
+
+Br, Bojan
+
+
+Danilo Magat <danny at sb-ps.ae> je napisal(a):Hi Bojan,
+
+?
+
+So what do you think is the permanent solution to this?
+
+as per you post http://www.coova.org/node/5171
+
+changing manually the speed duplex of the nic or changing the kernel or even removing the upload limit at all is not a solution.
+
+there is something on the code that does not handle the gigabit.
+
+?
+
+Regards,
+
+Danny
+
+?
+
+From: Bojan Pogacar [mailto:bojan at gajba.net] 
+Sent: 02 November 2013 00:48
+To: danny at sb-ps.ae
+Subject: Odg: [Chilli] Gigabit network card no upload
+
+?
+
+Hello!
+
+?
+
+I had the same problem. I solved it the same way as you did - set 100mbps full duplex .
+
+?
+
+I've also wrote to the forum and nobody responded.
+
+?
+
+BR, Bojan.
+
+?
+
+?
+
+?
+
+?
+
+?
+
+Poslano iz tabli?nega ra?unalnika Samsung
+
+
+Danilo Magat <danny at sb-ps.ae> je napisal(a):
+
+
+Hi guys,
+
+?
+
+I am facing issue on a gigabit network card.
+
+i am having 100mbps adsl line.
+
+setup:
+
+server is having 2 ?gigabit network card ( eth0 and eth1 ) --- connected to PC with gigabit port
+
+chilli_query authorize mac $mac ---> to allow with unlimited bandwidth
+
+now during the testing ... DOWNLOAD is reaching NOT less than 100mbps but no value on UPLOAD.
+
+?
+
+i did some workaround:
+
+on PC with 10/100/1000 network card i set the Speed Duplex on network setting into 100Mbps instead of default config which is Auto Negotiation.
+
+With this workaround i am getting a value on upload not more than 20mbps which is still less.
+
+?
+
+while on a pc with 10/100 packet from download is more that 80mbps but not more than 100mbps while on upload it is going up to 70 to 80.
+
+?
+
+question is why im not able to get an upload on a gigabit card?
+
+is there any config require on chilli ? is this something to do with the driver on the network card.
+
+?
+
+Danny
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20131103/25b4bf81/attachment.html>
+
+From chilli at inti.inka.de  Sun Nov  3 18:47:34 2013
+From: chilli at inti.inka.de (Bernd Strehhuber)
+Date: Sun, 3 Nov 2013 19:47:34 +0100
+Subject: [Chilli] CoovaChilli IPv6 Starting Point
+Message-ID: <20131103184734.GA22389@inti.inka.de>
+
+Hi,
+
+are there any hints or config snippets for IPv6 & CoovaChilli?
+Like to play arround with that experimental feature.
+
+TIA
+Bernd
+
+From danny at sb-ps.ae  Mon Nov  4 07:54:30 2013
+From: danny at sb-ps.ae (Danilo Magat)
+Date: Mon, 04 Nov 2013 11:54:30 +0400
+Subject: [Chilli] Chilli Digest, Vol 48, Issue 1
+In-Reply-To: <mailman.1.1383393602.2782.chilli@coova.org>
+References: <mailman.1.1383393602.2782.chilli@coova.org>
+Message-ID: <000001ced933$181127a0$483376e0$@ae>
+
+Hi Guys, its me again. having a configuration on NIC with
+ETHTOOL_OPTS='"autoneg off speed 100 duplex full"' 
+if this is the case then having 4 adsl lines with 
+100mbps each equal to 400mbps will not utilize bandwidth and will remain
+into 100mbps is it?
+
+Regards,
+Danny
+
+
+-----Original Message-----
+From: chilli-bounces at coova.org [mailto:chilli-bounces at coova.org] On Behalf
+Of chilli-request at coova.org
+Sent: 02 November 2013 16:00
+To: chilli at coova.org
+Subject: Chilli Digest, Vol 48, Issue 1
+
+Send Chilli mailing list submissions to
+	chilli at coova.org
+
+To subscribe or unsubscribe via the World Wide Web, visit
+	http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+or, via email, send a message with subject or body 'help' to
+	chilli-request at coova.org
+
+You can reach the person managing the list at
+	chilli-owner at coova.org
+
+When replying, please edit your Subject line so it is more specific than
+"Re: Contents of Chilli digest..."
+
+
+Today's Topics:
+
+   1. noradallow in vesion 1.3.1-svn (Claus Stjern?)
+   2. Gigabit network card no upload (Danilo Magat)
+   3. Re: Gigabit network card no upload (Bojan Pogacar)
+   4. Re: Gigabit network card no upload (Richard REY)
+
+
+----------------------------------------------------------------------
+
+Message: 1
+Date: Fri, 1 Nov 2013 13:45:07 +0100
+From: Claus Stjern? <claus at stjerno.dk>
+To: <chilli at coova.org>
+Subject: [Chilli] noradallow in vesion 1.3.1-svn
+Message-ID: <01d401ced700$320233a0$96069ae0$@stjerno.dk>
+Content-Type: text/plain; charset="iso-8859-1"
+
+Hi,
+
+ 
+
+I?m running Coova Chilli v. 1.3.1-svn version.
+
+ 
+
+If I start Chilli with runtime option ?noradallow and then disable my radius
+server I get the following in debug mode:
+
+ 
+
+radius.c: 465: 0 (Debug) Rescheduling RADIUS request id=10 idx=0
+
+radius.c: 465: 0 (Debug) Rescheduling RADIUS request id=10 idx=0
+
+radius.c: 465: 0 (Debug) Rescheduling RADIUS request id=10 idx=0
+
+radius.c: 465: 0 (Debug) Rescheduling RADIUS request id=10 idx=0
+
+radius.c: 465: 0 (Debug) Rescheduling RADIUS request id=3 idx=3
+
+radius.c: 427: 0 (Debug) RADIUS queue-out id=10 idx=0
+
+redir.c: 2431: 0 (Debug) Received RADIUS response
+
+redir.c: 2440: 0 (Debug) Radius request timed out
+
+redir.c: 3834: 0 (Debug) redir_main handling Access-Reject
+
+redir.c: 3838: 0 (Debug) ---->>> resetting challenge:
+d6e917f8254b4c297f752f2a15dc94ed
+
+redir.c: 777: 0 (Debug) redir_wispr1_reply
+
+redir.c: 3854: 0 (Debug) -->> Msg userurl=[]
+
+ 
+
+My user is not allowed internet access as the option ??noradallow? should
+give and the redir handling is set to Access-Reject and not the timeout as
+expected.
+
+ 
+
+Is anyone using this option successfully??
+
+ 
+
+Best regards
+
+Claus
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL:
+<http://lists.coova.org/pipermail/chilli/attachments/20131101/58a4f5e7/attac
+hment-0001.html>
+
+------------------------------
+
+Message: 2
+Date: Sat, 02 Nov 2013 00:27:22 +0400
+From: Danilo Magat <danny at sb-ps.ae>
+To: Chilli at coova.org
+Subject: [Chilli] Gigabit network card no upload
+Message-ID: <007d01ced740$c558e820$500ab860$@ae>
+Content-Type: text/plain; charset="us-ascii"
+
+Hi guys,
+
+ 
+
+I am facing issue on a gigabit network card. 
+
+i am having 100mbps adsl line. 
+
+setup: 
+
+server is having 2  gigabit network card ( eth0 and eth1 ) --- connected to
+PC with gigabit port
+
+chilli_query authorize mac $mac ---> to allow with unlimited bandwidth
+
+now during the testing ... DOWNLOAD is reaching NOT less than 100mbps but no
+value on UPLOAD.
+
+ 
+
+i did some workaround:
+
+on PC with 10/100/1000 network card i set the Speed Duplex on network
+setting into 100Mbps instead of default config which is Auto Negotiation. 
+
+With this workaround i am getting a value on upload not more than 20mbps
+which is still less.
+
+ 
+
+while on a pc with 10/100 packet from download is more that 80mbps but not
+more than 100mbps while on upload it is going up to 70 to 80.
+
+ 
+
+question is why im not able to get an upload on a gigabit card? 
+
+is there any config require on chilli ? is this something to do with the
+driver on the network card.
+
+ 
+
+Danny
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL:
+<http://lists.coova.org/pipermail/chilli/attachments/20131102/14baff7b/attac
+hment-0001.html>
+
+------------------------------
+
+Message: 3
+Date: Fri, 01 Nov 2013 21:51:09 +0100
+From: Bojan Pogacar <bojan at gajba.net>
+To: chilli at coova.org
+Subject: Re: [Chilli] Gigabit network card no upload
+Message-ID: <g6tu7xdwwsvh7uuges6esmft.1383339069372 at email.android.com>
+Content-Type: text/plain; charset="utf-8"
+
+
+
+-------- Izvirno sporo?ilo --------
+Zadeva:Odg: [Chilli] Gigabit network card no upload Od:Bojan Pogacar
+<bojan at gajba.net> Za:danny at sb-ps.ae
+Kp:
+
+Hello!
+
+I had the same problem. I solved it the same way as you did - set 100mbps
+full duplex .
+
+I've also wrote to the forum and nobody responded.
+
+BR, Bojan
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL:
+<http://lists.coova.org/pipermail/chilli/attachments/20131101/3659d244/attac
+hment-0001.html>
+
+------------------------------
+
+Message: 4
+Date: Fri, 01 Nov 2013 23:30:44 +0100
+From: Richard REY <richard at rexy.fr>
+To: chilli at coova.org
+Subject: Re: [Chilli] Gigabit network card no upload
+Message-ID: <52742B94.5000704 at rexy.fr>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+
+Hi coova users,
+
+In our ALCASAR project, we use coova and we have seen the same problem on
+the coova listening card when it's connected on a Gb switch (the flow is
+very low and a lot of "interupt" messages are written in journalctl). 
+The only workaround we have found is to fix the speed and autonegociation of
+the NIC. (ETHTOOL_OPTS='"autoneg off speed 100 duplex full"'. The Linux is
+Mageia2 (kernel 3.4.52).
+
+Rexy
+
+
+Le 01/11/2013 21:27, Danilo Magat a ?crit :
+> Hi guys,
+>
+> I am facing issue on a gigabit network card.
+>
+> i am having 100mbps adsl line.
+>
+> setup:
+>
+> server is having 2  gigabit network card ( eth0 and eth1 ) --- 
+> connected to PC with gigabit port
+>
+> chilli_query authorize mac $mac ---> to allow with unlimited bandwidth
+>
+> now during the testing ... DOWNLOAD is reaching NOT less than 100mbps 
+> but no value on UPLOAD.
+>
+> i did some workaround:
+>
+> on PC with 10/100/1000 network card i set the Speed Duplex on network 
+> setting into 100Mbps instead of default config which is Auto Negotiation.
+>
+> With this workaround i am getting a value on upload not more than 
+> 20mbps which is still less.
+>
+> while on a pc with 10/100 packet from download is more that 80mbps but 
+> not more than 100mbps while on upload it is going up to 70 to 80.
+>
+> *question is why im not able to get an upload on a gigabit card? *
+>
+> *is there any config require on chilli ? is this something to do with 
+> the driver on the network card.*
+>
+> **
+>
+> *Danny*
+>
+>
+>
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+
+
+------------------------------
+
+_______________________________________________
+Chilli mailing list
+Chilli at coova.org
+http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+
+End of Chilli Digest, Vol 48, Issue 1
+*************************************
+
+
+
+From maxxer at ufficyo.com  Thu Nov  7 11:19:23 2013
+From: maxxer at ufficyo.com (Lorenzo Milesi)
+Date: Thu, 7 Nov 2013 12:19:23 +0100 (CET)
+Subject: [Chilli] iOS7 and facebook.com
+In-Reply-To: <1105176205.37783.1383822706934.JavaMail.zimbra@yetopen.it>
+Message-ID: <1048019747.37808.1383823163680.JavaMail.zimbra@yetopen.it>
+
+Hi
+We're having some troubles with the latest iPad and facebook login.
+We placed in uamallowed every fb domain (akamai and so on), but the iOS captive portal page doesn't seem to load facebook.com.
+The welcome page (in uamallow) is loaded fine, when the user is redirected to facebook the page remains blank and no step forward is made.
+
+>From "chilli -f -d" it seems that instead of facebook the tablet is trying to load apple's own test domains (airport.us, appleiphonecell.com and so on).
+
+Anyone else ran into the same problem?
+
+thanks
+-- 
+Lorenzo Milesi - lorenzo.milesi at yetopen.it
+
+YetOpen S.r.l. - http://www.yetopen.it/
+
+
+From francesc at socialandbeyond.com  Thu Nov  7 13:09:03 2013
+From: francesc at socialandbeyond.com (=?ISO-8859-1?Q?Francesc_Rom=E0_i_Frigol=E9?=)
+Date: Thu, 7 Nov 2013 14:09:03 +0100
+Subject: [Chilli] iOS7 and facebook.com
+In-Reply-To: <1048019747.37808.1383823163680.JavaMail.zimbra@yetopen.it>
+References: <1105176205.37783.1383822706934.JavaMail.zimbra@yetopen.it>
+ <1048019747.37808.1383823163680.JavaMail.zimbra@yetopen.it>
+Message-ID: <CAJaV1AxjmYcMLtbb7C6JKWHtmW6Ps12vWyHkOrmGoM9kdrwp=Q@mail.gmail.com>
+
+Hi Lorenzo,
+
+This is a known incompatibility problem between facebook and some iOS7
+devices. It is not specific of Chilli it happens also with other captive
+portals like mikrotik and unifi
+
+Here is a discussion at facebook with 36 subscribers. You can subscribe as
+well to give more visibility to the issue:
+
+https://developers.facebook.com/bugs/241563039327966/
+
+
+
+
+
+
+
+Francesc Rom? i Frigol?
+
+CTO Social & Beyond
+
++34 93.1234.962
+
+Torre Telef?nica Diagonal 00, planta 11, Wayra
+
+Pla?a Ernest Lluch i Mart?n, 5
+
+08019 Barcelona
+
+
+On Thu, Nov 7, 2013 at 12:19 PM, Lorenzo Milesi <maxxer at ufficyo.com> wrote:
+
+> Hi
+> We're having some troubles with the latest iPad and facebook login.
+> We placed in uamallowed every fb domain (akamai and so on), but the iOS
+> captive portal page doesn't seem to load facebook.com.
+> The welcome page (in uamallow) is loaded fine, when the user is redirected
+> to facebook the page remains blank and no step forward is made.
+>
+> From "chilli -f -d" it seems that instead of facebook the tablet is trying
+> to load apple's own test domains (airport.us, appleiphonecell.com and so
+> on).
+>
+> Anyone else ran into the same problem?
+>
+> thanks
+> --
+> Lorenzo Milesi - lorenzo.milesi at yetopen.it
+>
+> YetOpen S.r.l. - http://www.yetopen.it/
+>
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20131107/ebb683ea/attachment.html>
+
+From maxxer at ufficyo.com  Thu Nov  7 13:34:29 2013
+From: maxxer at ufficyo.com (Lorenzo Milesi)
+Date: Thu, 7 Nov 2013 14:34:29 +0100 (CET)
+Subject: [Chilli] iOS7 and facebook.com
+In-Reply-To: <CAJaV1AxjmYcMLtbb7C6JKWHtmW6Ps12vWyHkOrmGoM9kdrwp=Q@mail.gmail.com>
+References: <1105176205.37783.1383822706934.JavaMail.zimbra@yetopen.it>
+ <1048019747.37808.1383823163680.JavaMail.zimbra@yetopen.it>
+ <CAJaV1AxjmYcMLtbb7C6JKWHtmW6Ps12vWyHkOrmGoM9kdrwp=Q@mail.gmail.com>
+Message-ID: <1439353400.38227.1383831269873.JavaMail.zimbra@yetopen.it>
+
+> This is a known incompatibility problem between facebook and some iOS7
+> devices. It is not specific of Chilli it happens also with other captive
+> portals like mikrotik and unifi
+
+Thanks!
+If you're interested I found a temporary workaround: enabling akamai.net and akamaiedge.net prevents the ios captive portal assistant from popping up, so users can login using Safari (which works).
+-- 
+Lorenzo Milesi - lorenzo.milesi at yetopen.it
+
+YetOpen S.r.l. - http://www.yetopen.it/
+
+
+From francesc at socialandbeyond.com  Thu Nov  7 15:57:52 2013
+From: francesc at socialandbeyond.com (=?ISO-8859-1?Q?Francesc_Rom=E0_i_Frigol=E9?=)
+Date: Thu, 7 Nov 2013 16:57:52 +0100
+Subject: [Chilli] iOS7 and facebook.com
+In-Reply-To: <1439353400.38227.1383831269873.JavaMail.zimbra@yetopen.it>
+References: <1105176205.37783.1383822706934.JavaMail.zimbra@yetopen.it>
+ <1048019747.37808.1383823163680.JavaMail.zimbra@yetopen.it>
+ <CAJaV1AxjmYcMLtbb7C6JKWHtmW6Ps12vWyHkOrmGoM9kdrwp=Q@mail.gmail.com>
+ <1439353400.38227.1383831269873.JavaMail.zimbra@yetopen.it>
+Message-ID: <CAJaV1AxyVqxxdvFYbbquQa=GuThW4Z6PJprmAH2dfPzkwWo9ZA@mail.gmail.com>
+
+Hi Lorenzo,
+
+thanks for the tip. I thought preventing the captive network assistant to
+pop up would be more difficult, as it checks a different site every time.
+
+
+Francesc Rom? i Frigol?
+
+CTO Social & Beyond
+
++34 93.1234.962
+
+Torre Telef?nica Diagonal 00, planta 11, Wayra
+
+Pla?a Ernest Lluch i Mart?n, 5
+
+08019 Barcelona
+
+
+On Thu, Nov 7, 2013 at 2:34 PM, Lorenzo Milesi <maxxer at ufficyo.com> wrote:
+
+> > This is a known incompatibility problem between facebook and some iOS7
+> > devices. It is not specific of Chilli it happens also with other captive
+> > portals like mikrotik and unifi
+>
+> Thanks!
+> If you're interested I found a temporary workaround: enabling akamai.netand
+> akamaiedge.net prevents the ios captive portal assistant from popping up,
+> so users can login using Safari (which works).
+> --
+> Lorenzo Milesi - lorenzo.milesi at yetopen.it
+>
+> YetOpen S.r.l. - http://www.yetopen.it/
+>
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20131107/ea7d9d82/attachment.html>
+
+From maxxer at ufficyo.com  Thu Nov  7 17:02:00 2013
+From: maxxer at ufficyo.com (Lorenzo Milesi)
+Date: Thu, 7 Nov 2013 18:02:00 +0100 (CET)
+Subject: [Chilli] iOS7 and facebook.com
+In-Reply-To: <CAJaV1AxyVqxxdvFYbbquQa=GuThW4Z6PJprmAH2dfPzkwWo9ZA@mail.gmail.com>
+References: <1105176205.37783.1383822706934.JavaMail.zimbra@yetopen.it>
+ <1048019747.37808.1383823163680.JavaMail.zimbra@yetopen.it>
+ <CAJaV1AxjmYcMLtbb7C6JKWHtmW6Ps12vWyHkOrmGoM9kdrwp=Q@mail.gmail.com>
+ <1439353400.38227.1383831269873.JavaMail.zimbra@yetopen.it>
+ <CAJaV1AxyVqxxdvFYbbquQa=GuThW4Z6PJprmAH2dfPzkwWo9ZA@mail.gmail.com>
+Message-ID: <1460373463.44015.1383840181925.JavaMail.zimbra@yetopen.it>
+
+> thanks for the tip. I thought preventing the captive network assistant to pop
+> up would be more difficult, as it checks a different site every time.
+
+Indeed, me as well, but apparently all the hosts checked by ios are on akamai.net so just "one" domain captures them all!
+
+-- 
+Lorenzo Milesi - lorenzo.milesi at yetopen.it
+
+YetOpen S.r.l. - http://www.yetopen.it/
+
+
+From xoneca at gmail.com  Tue Nov 12 12:42:28 2013
+From: xoneca at gmail.com (Xabier Oneca -- xOneca)
+Date: Tue, 12 Nov 2013 13:42:28 +0100
+Subject: [Chilli] noradallow in vesion 1.3.1-svn
+In-Reply-To: <01d401ced700$320233a0$96069ae0$@stjerno.dk>
+References: <01d401ced700$320233a0$96069ae0$@stjerno.dk>
+Message-ID: <CACkgH70i0zeJu9jbcnzEkiRthWPTxTpCveKsU8CDdP8L17Jm2Q@mail.gmail.com>
+
+Hello Claus,
+
+I'm not sure, but I think that option is only checked when CoovaChilli
+wants to download the configuration from RADIUS server. If can't
+download it, then access is granted to all.
+
+At least, that's what I have got from the source...
+
+HTH,
+
+Xabier Oneca_,,_
+
+
+2013/11/1 Claus Stjern? <claus at stjerno.dk>:
+> Hi,
+>
+>
+>
+> I?m running Coova Chilli v. 1.3.1-svn version.
+>
+>
+>
+> If I start Chilli with runtime option ?noradallow and then disable my radius
+> server I get the following in debug mode:
+>
+>
+>
+> radius.c: 465: 0 (Debug) Rescheduling RADIUS request id=10 idx=0
+>
+> radius.c: 465: 0 (Debug) Rescheduling RADIUS request id=10 idx=0
+>
+> radius.c: 465: 0 (Debug) Rescheduling RADIUS request id=10 idx=0
+>
+> radius.c: 465: 0 (Debug) Rescheduling RADIUS request id=10 idx=0
+>
+> radius.c: 465: 0 (Debug) Rescheduling RADIUS request id=3 idx=3
+>
+> radius.c: 427: 0 (Debug) RADIUS queue-out id=10 idx=0
+>
+> redir.c: 2431: 0 (Debug) Received RADIUS response
+>
+> redir.c: 2440: 0 (Debug) Radius request timed out
+>
+> redir.c: 3834: 0 (Debug) redir_main handling Access-Reject
+>
+> redir.c: 3838: 0 (Debug) ---->>> resetting challenge:
+> d6e917f8254b4c297f752f2a15dc94ed
+>
+> redir.c: 777: 0 (Debug) redir_wispr1_reply
+>
+> redir.c: 3854: 0 (Debug) -->> Msg userurl=[]
+>
+>
+>
+> My user is not allowed internet access as the option ??noradallow? should
+> give and the redir handling is set to Access-Reject and not the timeout as
+> expected.
+>
+>
+>
+> Is anyone using this option successfully??
+>
+>
+>
+> Best regards
+>
+> Claus
+>
+>
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+
+From radius.sir at gmail.com  Wed Nov 13 11:10:34 2013
+From: radius.sir at gmail.com (Russell Mike)
+Date: Wed, 13 Nov 2013 11:10:34 +0000
+Subject: [Chilli] Dynamic VLAN Assign Per User || Group
+Message-ID: <CADao4CpVJA0v7C3-nV9tP8J9fyqwbNSGJ=zYBj855wnpUKHV8Q@mail.gmail.com>
+
+Greetings Chilli daemon Admins,
+
+We wish to use web content filtering for sales department. Asking
+advice if this
+do able like such.
+
+1.) i have chili running in multi tenancy mode using VLANs.
+ VLAN10, VLAN20, VLAN30, VLAN40, VLAN50 - Working !!
+
+2.) VLAN30 CoovaChilli Instance is using parent proxy as Dansgurdian For
+Filtering - Working!!
+
+3.) I am thinking to create a radius group "Content-Filtered-Users"  which
+has following attribute.
+
+Reply-Item: ChilliSpot-Vlan-ID := 30"
+Check-Item: As_Need
+
+4.) Sales users are part of "Content-Filtered-Users" group
+
+5.) When a user tries to authenticate which is part of
+"Content-Filtered-Users" group. Chilli should put || provide access to
+those use through VLAN30 so that their traffic is filtered.
+
+Have anyone done such or similar for content filtering? i would very
+grateful for sharing idea one has done so.
+
+Thanks / Regards
+RM--
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20131113/2a22977d/attachment.html>
+
+From steffen.dettmer at nomadrail.com  Wed Nov 13 15:37:08 2013
+From: steffen.dettmer at nomadrail.com (Steffen Dettmer)
+Date: Wed, 13 Nov 2013 15:37:08 +0000
+Subject: [Chilli] patch adding LSB "INIT INFO" to /etc/init.d/chilli (e.g.
+ for Debian 7)
+Message-ID: <2b6b076cb19f45d1942830723c379b17@DBXPR05MB127.eurprd05.prod.outlook.com>
+
+Hi,
+
+I got a warning when installing Coova Chilli and solved it by adding the LSB "INIT INFO" shown below to /etc/init.d/chilli.
+
+Regards,
+Steffen
+
+diff -Nur coova-chilli-1.3.1-svn.dist/debian/coova-chilli.chilli.init coova-chilli-1.3.1-svn/debian/coova-chilli.chilli.init
+--- coova-chilli-1.3.1-svn.dist/debian/coova-chilli.chilli.init 2013-11-13 10:59:26.035517922 +0100
++++ coova-chilli-1.3.1-svn/debian/coova-chilli.chilli.init      2013-11-13 10:59:47.183520242 +0100
+@@ -1,4 +1,23 @@
+ #! /bin/sh
++### BEGIN INIT INFO
++# Provides:          chilli
++# Required-Start:
++# Required-Stop:
++# Should-Start:      $syslog $network
++# Should-Stop:       $syslog $network
++# Default-Start:     2 3 4 5
++# Default-Stop:      0 1 6
++# Short-Description: Starts and stops Coova Chilli access controller.
++# Description:       CoovaChilli is an open-source software access controller
++#                    for captive portal (UAM) and 802.1X access provisioning,
++#                    based on the popular (but now defunct) ChilliSpot
++#                    project. It is a feature rich software access controller
++#                    that provides a captive portal / walled-garden
++#                    environment and uses RADIUS or a HTTP protocol for access
++#                    provisioning and accounting.
++### END INIT INFO
++       
++# Do NOT "set -e"
+ 
+ PATH=/sbin:/bin:/usr/sbin:/usr/bin
+ DAEMON=/usr/sbin/chilli
+
+From timwhite88 at gmail.com  Thu Nov 14 00:15:32 2013
+From: timwhite88 at gmail.com (Timothy White)
+Date: Thu, 14 Nov 2013 10:15:32 +1000
+Subject: [Chilli] rlm_perl
+In-Reply-To: <CADao4Cp4YeLg46Dpt7tVqkQ2a7Yi0izcvPky34vNEASKF=xAQA@mail.gmail.com>
+References: <CADao4Cp4YeLg46Dpt7tVqkQ2a7Yi0izcvPky34vNEASKF=xAQA@mail.gmail.com>
+Message-ID: <CAESLx0LvCuXW4M2A6m4cuVsWcmgPm6kZP7nb2irQAGMw1+od2g@mail.gmail.com>
+
+Yfi Hotcakes has an example. I modified it for the Grase Hotspot project.
+
+http://grase.bzr.sourceforge.net/bzr/grase/grase-conf-freeradius/files/head%3A/freeradius/perl_modules/
+
+Tim
+
+
+On Wed, Oct 23, 2013 at 1:42 AM, Russell Mike <radius.sir at gmail.com> wrote:
+
+> Hi List,
+>
+> i have working rlm_sqlcounter but have limitation of 4GB. I found that
+> rlm_perl is a solution for this problem but i cant find any example of perl
+> data counter. someone please help
+>
+> Thanks
+> RM --
+>
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20131114/d0a40c40/attachment.html>
+
+From feanpg at gmail.com  Thu Nov 14 08:41:40 2013
+From: feanpg at gmail.com (Fernando Pizarro)
+Date: Thu, 14 Nov 2013 09:41:40 +0100
+Subject: [Chilli] Dynamic VLAN and 8021x
+Message-ID: <52848CC4.4090805@gmail.com>
+
+Hi all!
+
+I'm trying to create captive portal with dynamic VLAN and 8021x. I found 
+this post of 2010 [1].
+
+- It's possible to do this configuration?
+- Coova is able to send DHCP Nack request?
+
+Thanks for all.
+Regards. Fernando.
+
+[1] - http://lists.coova.org/pipermail/chilli/2010-April/001231.html
+
+From bergonz at labs.it  Thu Nov 14 13:07:15 2013
+From: bergonz at labs.it (Michele Bergonzoni)
+Date: Thu, 14 Nov 2013 14:07:15 +0100
+Subject: [Chilli] [PATCH] Failed to compile with --enable-debug2
+Message-ID: <5284CB03.4000408@labs.it>
+
+I tried to compile SVN revision 485 with --enable-debug2 and it failed with:
+
+dhcp.c:5016:5: error: implicit declaration of function 'MAC_ACR' 
+[-Werror=implicit-function-declaration]
+
+I think MAC_ACR is a misspelling of MAC_ARG, so I substituted it in the 
+source.
+
+It now compiles OK and apparently works, but I still didn't happen to 
+trigger one of those two particular debug lines.
+
+Regards,
+				Bergonz
+
+Index: src/dhcp.c
+===================================================================
+--- src/dhcp.c  (revision 485)
++++ src/dhcp.c  (working copy)
+@@ -904,7 +904,7 @@
+      if (_options.debug) {
+        addr.s_addr = pack_iph->saddr;
+        log_dbg("NFQUEUE: From "MAC_FMT" %s %s",
+-             MAC_ACR(hw->hw_addr),
++             MAC_ARG(hw->hw_addr),
+               inet_ntoa(addr),
+               result == NF_ACCEPT ? "Accept" : "Drop");
+
+@@ -5015,7 +5015,7 @@
+      struct pkt_ethhdr_t *ethh = pkt_ethhdr(packet);
+      log_dbg("dhcp_decaps: src="MAC_FMT" "
+             "dst="MAC_FMT" prot=%.4x %d len=%d",
+-           MAC_ACR(ethh->src),
++           MAC_ARG(ethh->src),
+             MAC_ARG(ethh->dst),
+             prot, (int)prot, length);
+    }
+
+
+-- 
+Ing. Michele Bergonzoni - Laboratori Guglielmo Marconi S.p.a.
+Phone:+39-051-6781926 e-mail: bergonz at labs.it
+alt.advanced.networks.design.configure.operate
+
+From xoneca at gmail.com  Thu Nov 14 13:34:03 2013
+From: xoneca at gmail.com (Xabier Oneca -- xOneca)
+Date: Thu, 14 Nov 2013 14:34:03 +0100
+Subject: [Chilli] [PATCH] Failed to compile with --enable-debug2
+In-Reply-To: <5284CB03.4000408@labs.it>
+References: <5284CB03.4000408@labs.it>
+Message-ID: <CACkgH700Xe_i0WwiQUENfoXFwOJ4WSvASVEftEnOdzkHVqihKg@mail.gmail.com>
+
+Hello Michelle,
+
+> I think MAC_ACR is a misspelling of MAC_ARG, so I substituted it in the
+source.
+
+Yes, you are right. It should be 'MAC_ARG.'
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20131114/242d0df3/attachment.html>
+
+From bergonz at labs.it  Thu Nov 14 14:28:40 2013
+From: bergonz at labs.it (Michele Bergonzoni)
+Date: Thu, 14 Nov 2013 15:28:40 +0100
+Subject: [Chilli] [PATCH] Issue with EDNS
+Message-ID: <5284DE18.9060405@labs.it>
+
+I have a patch to submit for dealing with EDNS requests.
+
+I am trying to setup a layer3-only environment, and in my tests I got 
+inconsistent results, some clients working and some other not working.
+
+I discovered that a PC with a brand-new freshly-installed ubuntu, 
+querying a DNS server with bind 9.8.4 (debian 7.2) consistently fails to 
+receive a DNS answer, with a "Record type 41" debug message. No DNS 
+means no redirection, no login page, just browser error.
+
+Record type 41 is a pseudo record used in EDNS requests. So I am now 
+using this patch (relative to svn revision 485):
+
+Index: src/dns.c
+===================================================================
+--- src/dns.c   (revision 485)
++++ src/dns.c   (working copy)
+@@ -360,6 +360,7 @@
+      break;
+    case 29: log_dbg("LOC record"); break;
+    case 33: log_dbg("SRV record"); break;
++  case 41: log_dbg("EDNS OPT pseudorecord"); break;
+    case 47: log_dbg("NSEC record"); break;
+    }
+
+This patch makes my client happy and working with many sites (all the 
+sites that I tried), but Coovachilli's code is complex and EDNS is 
+complex as well, so I am not really sure that this is the right thing to do.
+
+In fact I am almost sure that this isn't a proper EDNS support, because 
+the command (a standard test for EDNS):
+
+dig tcf.rs.dns-oarc.net txt
+
+fails (timeouts) on the connected client, and works on the chilli 
+machine. When the client tries it, the debug says (previous patch applied):
+
+dhcp.c: 5020: 0 (Debug) dhcp_decaps: src=<MAC of first router fronting 
+chilli's DHCP interface> dst=<mac of chilli's DHCP interface> prot=0800 
+2048 len=90
+dhcp.c: 3551: 0 (Debug) function dhcp_receive_ip()
+dhcp.c: 238: 0 (Debug) Looking up appconn for 198.18.253.1 (IP of client 
+machine)
+dhcp.c: 1703: 0 (Debug) dhcp_dns plen=90 dlen=36 olen=36
+dhcp.c: 1704: 0 (Debug) DNS ID:    40833
+dhcp.c: 1705: 0 (Debug) DNS Flags: 256
+dns.c: 156: 0 (Debug) dns_copy_res: left=36 olen=36 qsize=512
+dns.c: 40: 0 (Debug) dns_fullname dlen=1499 reslen=36 olen=36 lvl=0
+dns.c: 80: 0 (Debug) part[tcf] reslen=35 l=3 dlen=1499
+dns.c: 80: 0 (Debug) part[rs] reslen=31 l=2 dlen=1495
+dns.c: 80: 0 (Debug) part[dns-oarc] reslen=28 l=8 dlen=1492
+dns.c: 80: 0 (Debug) part[net] reslen=19 l=3 dlen=1483
+dns.c: 187: 0 (Debug) It was a dns record type: 16 class: 1
+dns.c: 40: 0 (Debug) dns_fullname dlen=512 reslen=36 olen=36 lvl=0
+dns.c: 80: 0 (Debug) part[tcf] reslen=35 l=3 dlen=512
+dns.c: 80: 0 (Debug) part[rs] reslen=31 l=2 dlen=508
+dns.c: 80: 0 (Debug) part[dns-oarc] reslen=28 l=8 dlen=505
+dns.c: 80: 0 (Debug) part[net] reslen=19 l=3 dlen=496
+dns.c: 194: 0 (Debug) DNS: tcf.rs.dns-oarc.net
+dns.c: 156: 0 (Debug) dns_copy_res: left=11 olen=36 qsize=512
+dns.c: 40: 0 (Debug) dns_fullname dlen=1499 reslen=11 olen=36 lvl=0
+dns.c: 187: 0 (Debug) It was a dns record type: 41 class: 4096
+dns.c: 280: 0 (Debug) -> w ttl: 0 rdlength: 0/0
+dns.c: 363: 0 (Debug) EDNS OPT pseudorecord
+dhcp.c: 1787: 0 (Debug) left (should be zero): 0 q=tcf.rs.dns-oarc.net
+dhcp.c: 238: 0 (Debug) Looking up appconn for 198.18.253.1
+tun.c: 1089: 0 (Debug) tun_encaps(tun0) len=76
+tun.c: 802: 0 (Debug) tun_decaps(idx=0, len=1500)
+chilli.c: 2664: 0 (Debug) invalid UDP packet 1500 / 4062 / 1500
+tun.c: 802: 0 (Debug) tun_decaps(idx=0, len=1500)
+chilli.c: 2664: 0 (Debug) invalid UDP packet 1500 / 29494 / 1500
+tun.c: 802: 0 (Debug) tun_decaps(idx=0, len=1122)
+chilli.c: 2677: 0 (Debug) sending to : 198.18.253.1
+dhcp.c: 5376: 0 (Debug) adding 14 to IP frame length 1136
+dhcp.c: 238: 0 (Debug) Looking up appconn for 198.18.253.1
+dhcp.c: 411: 0 (Debug) dhcp_send() len=1136
+
+I really don't know if this can be a real issue in a production 
+environment or is just a overzaelous test, but hope this helps somehow.
+
+BTW, I found that if I use the chilli machine as a DNS resolver, I have 
+to use the WAN IP address and not the DHCP interface IP address, that 
+gives only UDP port unreachable on UDP 53. Since the workaround is so 
+straightforward, I didnt' test and dig this very much.
+
+Best regards and thanks everybody for your patience,
+
+			Bergonz
+
+-- 
+Ing. Michele Bergonzoni - Laboratori Guglielmo Marconi S.p.a.
+Phone:+39-051-6781926 e-mail: bergonz at labs.it
+alt.advanced.networks.design.configure.operate
+
+From radius.sir at gmail.com  Thu Nov 14 14:52:59 2013
+From: radius.sir at gmail.com (Russell Mike)
+Date: Thu, 14 Nov 2013 14:52:59 +0000
+Subject: [Chilli] Dynamic VLAN and 8021x
+In-Reply-To: <52848CC4.4090805@gmail.com>
+References: <52848CC4.4090805@gmail.com>
+Message-ID: <CADao4CpK6ZjAR90ooLVbfy4Xw=_N+hxum5VCm-d8CoUh1=5qww@mail.gmail.com>
+
+Hi Femando
+
+i am also looking for same setup. i will share if i got something working.
+But i have asked list members for their ideas but did not receive any
+response. i am just asking for their idea not configuration model. I do not
+mind if the idea did not work. i am ready to give attempt. Also, can anyone
+please tell me what is the use for ChilliSpot-Vlan-ID ? in which case it
+can be used ?
+
+
+<><><><><><><><><> My Setup <><><><><><><><><>
+
+We wish to use web content filtering for sales department. Asking
+advice if this
+do able like such.
+
+1.) i have chili running in multi tenancy mode using VLANs.
+ VLAN10, VLAN20, VLAN30, VLAN40, VLAN50 - Working !!
+
+2.) VLAN30 CoovaChilli Instance is using parent proxy as Dansgurdian For
+Filtering - Working!!
+
+3.) I am thinking to create a radius group "Content-Filtered-Users"  which
+has following attribute.
+
+Reply-Item: ChilliSpot-Vlan-ID := 30"
+Check-Item: As_Need
+
+4.) Sales users are part of "Content-Filtered-Users" group
+
+5.) When a user tries to authenticate which is part of
+"Content-Filtered-Users" group. Chilli should put || provide access to
+those use through VLAN30 so that their traffic is filtered.
+
+Have anyone done such or similar for content filtering? i would very
+grateful for sharing idea one has done so.
+<><><><><><><><><>
+
+Regards / RM--
+
+On Thu, Nov 14, 2013 at 8:41 AM, Fernando Pizarro <feanpg at gmail.com> wrote:
+
+> Hi all!
+>
+> I'm trying to create captive portal with dynamic VLAN and 8021x. I found
+> this post of 2010 [1].
+>
+> - It's possible to do this configuration?
+> - Coova is able to send DHCP Nack request?
+>
+> Thanks for all.
+> Regards. Fernando.
+>
+> [1] - http://lists.coova.org/pipermail/chilli/2010-April/001231.html
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20131114/7227fa95/attachment.html>
+
+From feanpg at gmail.com  Thu Nov 14 15:40:11 2013
+From: feanpg at gmail.com (Fernando Pizarro)
+Date: Thu, 14 Nov 2013 16:40:11 +0100
+Subject: [Chilli] Dynamic VLAN and 8021x
+In-Reply-To: <CADao4CpK6ZjAR90ooLVbfy4Xw=_N+hxum5VCm-d8CoUh1=5qww@mail.gmail.com>
+References: <52848CC4.4090805@gmail.com>
+ <CADao4CpK6ZjAR90ooLVbfy4Xw=_N+hxum5VCm-d8CoUh1=5qww@mail.gmail.com>
+Message-ID: <5284EEDB.4030300@gmail.com>
+
+Hi Russel,
+
+I have configured hostapd with dynamic VLAN (8021x) and Coovachilli give 
+me IP address of this VLAN using Tunnel-Type, Tunnel-Medium-Type and 
+Tunnel-Private-Group-Id attributes. But in captive portal I can't 
+autheticated with the same user and password, sure I misconfigured 
+something.
+
+By default, Freeradius 2.1.10 doesn't contains all attributes of 
+ChilliSpot (ChilliSpot-VLAN-Id for example) so I copy update dictionary 
+[1] in /usr/share/freeradius/dictionay.chillispot. If the 
+ChilliSpot-VLAN-Id attribute exist, Radius reply that but I want my 
+clients reconfiguring their DHCP address with this VLAN. I don't know if 
+possible to do.
+
+Now I'm trying to use Coovachilli to proxy request of hostapd and use 
+ChilliSpot VSA attributes, but still I can't do work it.
+
+Thanks for reply.
+Regards. Fernando.
+
+[1] - 
+<https://dev.coova.org/svn/cjradius/tags/jradius-1.1.4/freeradius/dict/dictionary.chillispot>http://dev.coova.org/svn/coova-chilli/doc/dictionary.chillispot
+
+El 14/11/13 15:52, Russell Mike escribi?:
+> Hi Femando
+>
+> i am also looking for same setup. i will share if i got something 
+> working. But i have asked list members for their ideas but did not 
+> receive any response. i am just asking for their idea not 
+> configuration model. I do not mind if the idea did not work. i am 
+> ready to give attempt. Also, can anyone please tell me what is the use 
+> for ChilliSpot-Vlan-ID ? in which case it can be used ?
+>
+>
+> <><><><><><><><><> My Setup <><><><><><><><><>
+>
+> We wish to use web content filtering for sales department. Asking 
+> advice if this do able like such.
+>
+> 1.) i have chili running in multi tenancy mode using VLANs. 
+>  VLAN10, VLAN20, VLAN30, VLAN40, VLAN50 - Working !!
+>
+> 2.) VLAN30 CoovaChilli Instance is using parent proxy as Dansgurdian 
+> For Filtering - Working!!
+>
+> 3.) I am thinking to create a radius group "Content-Filtered-Users" 
+>  which has following attribute.
+>
+> Reply-Item: ChilliSpot-Vlan-ID := 30"
+> Check-Item: As_Need
+>
+> 4.) Sales users are part of "Content-Filtered-Users" group
+>
+> 5.) When a user tries to authenticate which is part of 
+> "Content-Filtered-Users" group. Chilli should put || provide access to 
+> those use through VLAN30 so that their traffic is filtered.
+>
+> Have anyone done such or similar for content filtering? i would very 
+> grateful for sharing idea one has done so.
+> <><><><><><><><><>
+>
+> Regards / RM--
+>
+> On Thu, Nov 14, 2013 at 8:41 AM, Fernando Pizarro <feanpg at gmail.com 
+> <mailto:feanpg at gmail.com>> wrote:
+>
+>     Hi all!
+>
+>     I'm trying to create captive portal with dynamic VLAN and 8021x. I
+>     found this post of 2010 [1].
+>
+>     - It's possible to do this configuration?
+>     - Coova is able to send DHCP Nack request?
+>
+>     Thanks for all.
+>     Regards. Fernando.
+>
+>     [1] - http://lists.coova.org/pipermail/chilli/2010-April/001231.html
+>     _______________________________________________
+>     Chilli mailing list
+>     Chilli at coova.org <mailto:Chilli at coova.org>
+>     http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+>
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20131114/69af743a/attachment-0001.html>
+
+From info at easyhorpak.com  Fri Nov 15 04:11:10 2013
+From: info at easyhorpak.com (EasyHorpak.com)
+Date: Fri, 15 Nov 2013 11:11:10 +0700
+Subject: [Chilli] Dynamic VLAN and 8021x
+In-Reply-To: <CADao4CpK6ZjAR90ooLVbfy4Xw=_N+hxum5VCm-d8CoUh1=5qww@mail.gmail.com>
+References: <52848CC4.4090805@gmail.com>
+ <CADao4CpK6ZjAR90ooLVbfy4Xw=_N+hxum5VCm-d8CoUh1=5qww@mail.gmail.com>
+Message-ID: <52859EDE.6080406@easyhorpak.com>
+
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20131115/409d804f/attachment.html>
+
+From trandatnh at gmail.com  Tue Nov 19 07:59:00 2013
+From: trandatnh at gmail.com (Le Tran Dat)
+Date: Tue, 19 Nov 2013 15:59:00 +0800
+Subject: [Chilli] CoovaChilli 1.3.0 does not call dhcp release mac after
+	idle timeout
+Message-ID: <CAOyZXpQaA82tQHb-17twvcUHEZhZWW7tzAY==+S8BdkNo+d_Ug@mail.gmail.com>
+
+Hi everyone,
+
+In my previous coovachilli (1.2.5) , I observed after a client has been
+forced to log out due to idle timeout, coovachilli will release dhcp ip to
+the client in question.
+
+However, in my current coovachilli(1.3.0), coovachilli didn't release dhcp
+ip to the client after forcing client logged out.
+
+Do I need to change any settings to make coovachilli release dhcp ip ?
+
+Many thanks for your help.
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20131119/e6f18256/attachment.html>
+
+From trandatnh at gmail.com  Tue Nov 19 09:05:01 2013
+From: trandatnh at gmail.com (Le Tran Dat)
+Date: Tue, 19 Nov 2013 17:05:01 +0800
+Subject: [Chilli] CoovaChilli 1.3.0 does not call dhcp release mac after
+ idle timeout
+In-Reply-To: <CAOyZXpQaA82tQHb-17twvcUHEZhZWW7tzAY==+S8BdkNo+d_Ug@mail.gmail.com>
+References: <CAOyZXpQaA82tQHb-17twvcUHEZhZWW7tzAY==+S8BdkNo+d_Ug@mail.gmail.com>
+Message-ID: <CAOyZXpTXN0AcjeRSu9yh9U2j27pESpJ0pvaKF1wi+jVG_fO6bw@mail.gmail.com>
+
+I also have problem when trying to change client's ip address, CoovaChilli
+somehow doesn't detect the ip has changed.
+
+I have to run chilli_query dhcp-release xx-xx-xx-xx-xx-xx (mac address of
+the changed ip client) to release the ip.
+
+I think I have done something wrongly in configuration the network.
+
+Any suggestion or which log should I share to troubleshoot this issue?
+
+Many thanks
+
+
+On Tue, Nov 19, 2013 at 3:59 PM, Le Tran Dat <trandatnh at gmail.com> wrote:
+
+> Hi everyone,
+>
+> In my previous coovachilli (1.2.5) , I observed after a client has been
+> forced to log out due to idle timeout, coovachilli will release dhcp ip to
+> the client in question.
+>
+> However, in my current coovachilli(1.3.0), coovachilli didn't release dhcp
+> ip to the client after forcing client logged out.
+>
+> Do I need to change any settings to make coovachilli release dhcp ip ?
+>
+> Many thanks for your help.
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20131119/d1c914b2/attachment.html>
+
+From bergonz at labs.it  Thu Nov 21 15:43:22 2013
+From: bergonz at labs.it (Michele Bergonzoni)
+Date: Thu, 21 Nov 2013 16:43:22 +0100
+Subject: [Chilli] Layer3: help with connections / dhcp connections
+Message-ID: <528E2A1A.80104@labs.it>
+
+I have a problem in a Layer3 setup, where in front of the DHCP interface 
+what I have is not one router but two redundant routers.
+
+They have two physical MACs and one virtual MAC (typical HSRP setup).
+
+Packets from the same client are coming sometimes from the first 
+physical MAC, sometimes from the second.
+
+This means that Coovachilli creates a DHCP connection for the first mac, 
+and then a subsequent packet creates a new DHCP connection.
+
+If I force all traffic to come from the same MAC things do work, but 
+that would mean giving up redundancy in the aggregation network.
+
+Is there any kind person who can suggest how to decouple the IP source 
+from the MAC source, always replying to what's in the ARP cache for the 
+gateway (in this case, the virtual MAC address)?
+
+If it isn't a configuration switch that I'm missing, I am willing to 
+change the source, so a generic guidance about what file/functions 
+should be hacked is very welcome.
+
+Regards,
+				Bergonz
+
+From phyo.w.soe at frontiir.net  Mon Nov 25 11:22:44 2013
+From: phyo.w.soe at frontiir.net (Phyo Wai Soe)
+Date: Mon, 25 Nov 2013 11:22:44 +0000 (UTC)
+Subject: [Chilli] CoovaChilli Kernel Mode issue
+In-Reply-To: <1561245260.281382.1385376623746.JavaMail.root@frontiir.net>
+Message-ID: <1547615330.282248.1385378564547.JavaMail.root@frontiir.net>
+
+Greetings all,
+
+I am very much new to CoovaChilli and testing it out to use it in an ISP environment. I am using CoovaChilli 1.3 under Ubuntu 12.04. I compiled CoovaChilli from the source and could run it successfully (clients will see the log in page) in user mode. I then recompiled it with kernel mode on and started having a redirection issue. But if I authorize that client IP manually with chilli_query, he can surf the web. 
+
+The issue is that when an authorized client goes to any webpage, he will only see -
+
+          The connection was reset    The connection to the server was reset while the page was loading.
+
+He won't see the redirection or the log in page. This is the address - http://192.168.99.1:3990/www/coova.html?loginurl=http%3a%2f%2f192.168.99.1%3a4990%2fwww%2flogin.chi%3fres%3dnotyet%26uamip%3d192.168.99.1%26uamport%3d3990%26challenge%3db925a8a4434c2ba0653b10ee47c01c96%26called%3d08-00-27-0D-27-23%26mac%3d08-00-27-E3-0F-FF%26ip%3d10.99.0.2%26nasid%3dnas01%26sessionid%3d52777de000000001%26userurl%3dhttp%253a%252f%252fwww.fnb.co.za%252f%26md%3dE1A65E6DF23FB0912CFD754A7E4F9E6C
+
+If I run the server in debug mode, here is what it shows when client goes to www.fnb.co.za:
+
+dhcp.c: 3632: 0 (Debug) Address found
+dns.c: 187: 0 (Debug) It was a dns record type: 1 class: 1
+dns.c: 194: 0 (Debug) DNS: www.fnb.co.za
+dns.c: 187: 0 (Debug) It was a dns record type: 1 class: 1
+dns.c: 194: 0 (Debug) DNS: www.fnb.co.za
+dns.c: 187: 0 (Debug) It was a dns record type: 1 class: 1
+dns.c: 187: 0 (Debug) It was a dns record type: 1 class: 1
+dhcp.c: 3632: 0 (Debug) Address found
+dhcp.c: 3632: 0 (Debug) Address found
+dhcp.c: 3632: 0 (Debug) Address found
+redir.c: 2103: 0 (Debug) The path: 
+redir.c: 2413: 0 (Debug) -->> Setting userurl=[http://www.fnb.co.za/]
+redir.c: 3962: 0 (Debug) redir_accept: Original request host=www.fnb.co.za
+redir.c: 987: 0 (Debug) redir_wispr2_reply
+========================================================
+On the CoovaChilli server, eth0 is the WAN interface and eth1 is the DHCP interface. I am not using any Radius server yet and most settings are the defaults. Here is the config -
+
+HS_WANIF=eth0            # WAN Interface toward the Internet
+HS_NETWORK=10.99.0.0       # HotSpot Network (must include HS_UAMLISTEN)
+HS_NETMASK=255.255.255.0   # HotSpot Network Netmask
+HS_UAMLISTEN=192.168.99.1  # HotSpot IP Address (on subscriber network)
+HS_UAMPORT=3990            # HotSpot UAM Port (on subscriber network)
+HS_UAMUIPORT=4990   
+#Added for Coova Kernel module config
+HS_DHCPLISTEN=10.99.0.1
+HS_KNAME=chilli
+
+Here are my configs from the /tmp
+
+uamserver       "http://192.168.99.1:4990/www/login.chi"
+radiusnasid     "nas01"
+papalwaysok
+uamaliasname "chilli"
+adminupdatefile "/etc/chilli/eth1/local.conf"
+
+net             10.99.0.0/255.255.255.0
+uamlisten       192.168.99.1
+uamport         3990
+dhcpif          eth1
+uamallowed      "www.coova.org"
+uamanydns
+kname "chilli"
+dhcplisten "10.99.0.1"
+domain "lan"
+uamhomepage http://192.168.99.1:3990/www/coova.html
+wwwdir /etc/chilli/www
+wwwbin /etc/chilli/wwwsh
+============================
+One strange thing I noted was that when using CoovaChilli in user mode, it would "take over" eth1 which will not have an IP address anymore. But in kernel mode, eth1 gets an address with a wrong subnet mask. It won't make a difference if I assign 10.99.0.1 to eth1 in /etc/network/interfaces or if I change the mask while CoovaChilli is running.
+
+eth0      Link encap:Ethernet  HWaddr 08:00:27:75:e6:48  
+          inet addr:10.0.2.15  Bcast:10.0.2.255  Mask:255.255.255.0
+          inet6 addr: fe80::a00:27ff:fe75:e648/64 Scope:Link
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          RX packets:465 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:476 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000 
+          RX bytes:73656 (73.6 KB)  TX bytes:34508 (34.5 KB)
+
+eth1      Link encap:Ethernet  HWaddr 08:00:27:0d:27:23  
+          inet addr:10.99.0.1  Bcast:10.255.255.255  Mask:255.0.0.0
+          inet6 addr: fe80::a00:27ff:fe0d:2723/64 Scope:Link
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          RX packets:3305 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:2465 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000 
+          RX bytes:364761 (364.7 KB)  TX bytes:452642 (452.6 KB)
+
+tun0      Link encap:UNSPEC  HWaddr 00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00  
+          inet addr:192.168.99.1  P-t-P:192.168.99.1  Mask:255.255.255.0
+          UP POINTOPOINT RUNNING  MTU:1500  Metric:1
+          RX packets:0 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:100 
+          RX bytes:0 (0.0 B)  TX bytes:0 (0.0 B)
+
+I am really sorry about the long email. I wish to include all relevant info so that someone can easily spot where I am doing wrong.
+I would truly appreciate any help or tip.
+
+Many thanks.
+
+Regards,
+Phyo Wai Soe
+
+From radius.sir at gmail.com  Mon Nov 25 18:57:35 2013
+From: radius.sir at gmail.com (Russell Mike)
+Date: Mon, 25 Nov 2013 18:57:35 +0000
+Subject: [Chilli] Help
+Message-ID: <CADao4CrECk8zc37=pn8BeKefEpt06xELrsBmA2FrsE1QJ233+Q@mail.gmail.com>
+
+Dear Good Peoples Greetings
+
+i understand this list is not appropriate place to ask this question but i
+tried to google before seeking the help form the list community, please
+forgive me for this. because you all are highly technical guys. Have
+someone done this before ?
+
+Backend Users Maintained in OpenLDAP || MySQL.
+Web Content Filtering Base On Username & Activity Reporting, Sites Visited
+By Users etc?. i am very certain something is must out there but i do not
+know.
+
+Thanks you very much for attending to this materiel
+RM --
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20131125/b97f7768/attachment.html>
+
+From james at adsl24.co.uk  Mon Nov 25 20:37:58 2013
+From: james at adsl24.co.uk (James)
+Date: Mon, 25 Nov 2013 20:37:58 +0000
+Subject: [Chilli] Unable to compile with MatrixSSL for SSL redir support
+Message-ID: <5293B526.6030202@adsl24.co.uk>
+
+I'm compiling CoovaChilli 1.3.0 with OpenWRT (buildroot) and all is well 
+until when I try to compile coova with --with-matrixssl
+
+I get the following error:
+
+[snip]
+checking for matrixSslOpen in -lmatrixssl... no
+configure: error: in 
+`/home/james/openwrt/openwrt/build_dir/target-mips_34kc_uClibc-0.9.33.2/coova-chilli-1.3.0':
+configure: error: --with-matrixssl was given, but test for matrixssl failed
+make[4]: *** 
+[/home/james/openwrt/openwrt/build_dir/target-mips_34kc_uClibc-0.9.33.2/coova-chilli-1.3.0/.configured_nnnnnn] 
+Error 1
+make[4]: Leaving directory 
+`/home/james/openwrt/openwrt/feeds/packages/net/coova-chilli'
+make[3]: *** [package/feeds/packages/coova-chilli/compile] Error 2
+make[3]: Leaving directory `/home/james/openwrt/openwrt'
+make[2]: *** 
+[/home/james/openwrt/openwrt/staging_dir/target-mips_34kc_uClibc-0.9.33.2/stamp/.package_compile] 
+Error 2
+make[2]: Leaving directory `/home/james/openwrt/openwrt'
+make[1]: *** [world] Error 2
+make[1]: Leaving directory `/home/james/openwrt/openwrt'
+make: *** [firmware] Error 2
+
+
+I have selected matrixssl and libmatrixssl within the OpenWRT buildroot 
+program to ensure that is compiled/enabled.
+
+Might anyone be able to point me in the right direction?
+
+Thanks
+
+James
+
+
+From james at adsl24.co.uk  Mon Nov 25 23:11:09 2013
+From: james at adsl24.co.uk (James)
+Date: Mon, 25 Nov 2013 23:11:09 +0000
+Subject: [Chilli] Unable to compile with MatrixSSL for SSL redir support
+In-Reply-To: <5293B526.6030202@adsl24.co.uk>
+References: <5293B526.6030202@adsl24.co.uk>
+Message-ID: <5293D90D.1020904@adsl24.co.uk>
+
+So I've got past that but now stuck on:
+
+Package coova-chilli is missing dependencies for the following libraries:
+libmatrixssl.so.1
+make[4]: *** 
+[/home/james/openwrt/openwrt/bin/ar71xx/packages/coova-chilli_1.3.0-2_ar71xx.ipk] 
+Error 1
+make[4]: Leaving directory 
+`/home/james/openwrt/openwrt/feeds/packages/net/coova-chilli'
+make[3]: *** [package/feeds/packages/coova-chilli/compile] Error 2
+make[3]: Leaving directory `/home/james/openwrt/openwrt'
+make[2]: *** 
+[/home/james/openwrt/openwrt/staging_dir/target-mips_34kc_uClibc-0.9.33.2/stamp/.package_compile] 
+Error 2
+make[2]: Leaving directory `/home/james/openwrt/openwrt'
+make[1]: *** [world] Error 2
+make[1]: Leaving directory `/home/james/openwrt/openwrt'
+make: *** [firmware] Error 2
+
+
+When I search, libmatrixssl.so.1 is present, so not sure why Coova can't 
+use this?
+
+James
+
+On 25/11/2013 20:37, James wrote:
+> I'm compiling CoovaChilli 1.3.0 with OpenWRT (buildroot) and all is 
+> well until when I try to compile coova with --with-matrixssl
+>
+> I get the following error:
+>
+> [snip]
+> checking for matrixSslOpen in -lmatrixssl... no
+> configure: error: in 
+> `/home/james/openwrt/openwrt/build_dir/target-mips_34kc_uClibc-0.9.33.2/coova-chilli-1.3.0':
+> configure: error: --with-matrixssl was given, but test for matrixssl 
+> failed
+> make[4]: *** 
+> [/home/james/openwrt/openwrt/build_dir/target-mips_34kc_uClibc-0.9.33.2/coova-chilli-1.3.0/.configured_nnnnnn] 
+> Error 1
+> make[4]: Leaving directory 
+> `/home/james/openwrt/openwrt/feeds/packages/net/coova-chilli'
+> make[3]: *** [package/feeds/packages/coova-chilli/compile] Error 2
+> make[3]: Leaving directory `/home/james/openwrt/openwrt'
+> make[2]: *** 
+> [/home/james/openwrt/openwrt/staging_dir/target-mips_34kc_uClibc-0.9.33.2/stamp/.package_compile] 
+> Error 2
+> make[2]: Leaving directory `/home/james/openwrt/openwrt'
+> make[1]: *** [world] Error 2
+> make[1]: Leaving directory `/home/james/openwrt/openwrt'
+> make: *** [firmware] Error 2
+>
+>
+> I have selected matrixssl and libmatrixssl within the OpenWRT 
+> buildroot program to ensure that is compiled/enabled.
+>
+> Might anyone be able to point me in the right direction?
+>
+> Thanks
+>
+> James
+>
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+
+
+From info at easyhorpak.com  Tue Nov 26 02:48:26 2013
+From: info at easyhorpak.com (EasyHorpak.com)
+Date: Tue, 26 Nov 2013 09:48:26 +0700
+Subject: [Chilli] Help
+In-Reply-To: <CADao4CrECk8zc37=pn8BeKefEpt06xELrsBmA2FrsE1QJ233+Q@mail.gmail.com>
+References: <CADao4CrECk8zc37=pn8BeKefEpt06xELrsBmA2FrsE1QJ233+Q@mail.gmail.com>
+Message-ID: <52940BFA.8080301@easyhorpak.com>
+
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20131126/ed26dd10/attachment.html>
+
+From feanpg at gmail.com  Tue Nov 26 09:36:22 2013
+From: feanpg at gmail.com (Fernando Pizarro)
+Date: Tue, 26 Nov 2013 10:36:22 +0100
+Subject: [Chilli] CoovaChilli Proxy + Access-Accept attributes
+Message-ID: <52946B96.6090508@gmail.com>
+
+Hi all!
+
+I have configure CoovaChilli as a Radius proxy and I can't send VLANs 
+attributes from Coova to the AP, hostapd with dynamic vlan option. This 
+is my stage:
+
+Supplicant  <-> Hostapd <-> CoovaChilli <-> FreeRadius
+
+FreeRadius send correctly Access-Accept packet with all reply attributes 
+and Coova also send start accounting request to Radius
+
+++[sql] returns ok
+++[exec] returns noop
+Sending Access-Accept of id 10 to 127.0.0.1 port 56315
+         Tunnel-Type:0 := VLAN
+         Tunnel-Medium-Type:0 := IEEE-802
+         Tunnel-Private-Group-Id:0 := "2"
+         Acct-Interim-Interval := 600
+         ChilliSpot-VLAN-Id := 2
+         User-Name = "alguno"
+         MS-MPPE-Recv-Key = 
+0x71a39faf593569327a770c2ec42fb1ab375054244b4ee7491dcbb28deb372020
+         MS-MPPE-Send-Key = 
+0x4439da8413f8a3b66ec395b8e1f9ec2f4e1e3cc484cf65c3b94c59e631e36f2e
+         EAP-Message = 0x03cf0004
+         Message-Authenticator = 0x00000000000000000000000000000000
+Finished request 10.
+Going to the next request
+Waking up in 4.8 seconds.
+rad_recv: Accounting-Request packet from host 127.0.0.1 port 56315, 
+id=11, length=236
+         ChilliSpot-Version = "1.3.0"
+         ChilliSpot-Acct-View-Point = ChilliSpot-Client-View-Point
+         Event-Timestamp = "Nov 26 2013 09:54:50 CET"
+         User-Name = "alguno"
+         Acct-Status-Type = Start
+         Acct-Session-Id = "529461da00000001"
+         Framed-IP-Address = 10.2.0.10
+         NAS-Port-Type = Wireless-802.11
+         NAS-Port = 1
+         NAS-Port-Id = "00000001"
+         Calling-Station-Id = "00-15-6D-85-38-90"
+         Called-Station-Id = "00-00-21-C9-A5-FE"
+         NAS-IP-Address = 10.2.0.1
+         NAS-Identifier = "nas-2"
+         WISPr-Location-ID = 
+"isocc=ES,cc=34,ac=927,network=Prueba,My_Network"
+         WISPr-Location-Name = "HotSpot_Lab"
+# Executing section preacct from file /etc/freeradius/sites-enabled/default
++- entering group preacct {...}
+
+but Hostapd doesn't receive all attributes.
+
+RADIUS message: code=2 (Access-Accept) identifier=10 length=160
+    Attribute 79 (EAP-Message) length=6
+       Value: 03 cf 00 04
+    Attribute 26 (Vendor-Specific) length=58
+       Value: 00 00 01 37 10 34 38 62 67 38 5b b4 76 f2 75 c6 06 4e 3f 
+87 7c 76 d4 9d 3c 47 2c 30 4c d1 d3 f0 45 43 7f 64 84 75 26 46 c2 00 9d 
+83 3e e9 fa fd fb 1c 90 be d4 15 4b 36
+    Attribute 26 (Vendor-Specific) length=58
+       Value: 00 00 01 37 11 34 00 ca 63 89 66 94 45 8f 87 60 3a 75 8a 
+fc 98 27 08 42 9e 87 4a e7 05 0a 75 76 6a bb aa 09 11 e4 44 a1 09 8d d9 
+4d 73 74 51 8f 42 92 1f 1d 5b 21 9a f2
+    Attribute 80 (Message-Authenticator) length=18
+       Value: 24 2a 61 f5 9c 09 25 34 66 99 eb 13 02 7d 4b f1
+wClose: STA 00:15:6d:85:38:90 IEEE 802.1X: authentication server did not 
+include required VLAN ID in Access-Accept
+wClose: STA 00:15:6d:85:38:90 IEEE 802.1X: authentication failed - EAP 
+type: 25 (PEAP)
+
+If I change dynamic vlan options in hostapd, supplicant is authenticated 
+but It's doesn't receive IP address.
+
+wClose: RADIUS Accounting server 172.16.0.1:1645
+wClose: STA 00:15:6d:85:38:90 IEEE 802.11: authenticated
+wClose: STA 00:15:6d:85:38:90 IEEE 802.11: associated (aid 1)
+wOpen: CTRL-EVENT-EAP-STARTED 00:15:6d:85:38:90
+wOpen: CTRL-EVENT-EAP-PROPOSED-METHOD vendor=0 method=1
+wClose: STA 00:15:6d:85:38:90 WPA: pairwise key handshake completed (RSN)
+wOpen: AP-STA-CONNECTED 00:15:6d:85:38:90
+wClose: STA 00:15:6d:85:38:90 RADIUS: starting accounting session 
+386E3A67-00000000
+wClose: STA 00:15:6d:85:38:90 IEEE 802.1X: authenticated - EAP type: 25 
+(PEAP)
+
+This is debug output of CoovaChilli:
+
+main-opt.c: 605: 0 (Debug) DHCP Listen: 10.2.0.1
+main-opt.c: 606: 0 (Debug) UAM Listen: 10.2.0.1
+garden.c: 414: 0 (Debug) Uamallowed IP address #0:1024: proto=0 
+host=10.2.0.1 port=4200
+garden.c: 443: 0 (Debug) Uamallowed www.coova.org
+garden.c: 414: 0 (Debug) Uamallowed IP address #1:1024: proto=0 
+host=174.129.195.118 port=0
+garden.c: 443: 0 (Debug) Uamallowed 10.2.0.1
+garden.c: 414: 0 (Debug) Uamallowed IP address #2:1024: proto=0 
+host=10.2.0.1 port=0
+garden.c: 443: 0 (Debug) Uamallowed www.coova.org
+garden.c: 387: 0 (Debug) Uamallowed already exists #1:1024: proto=0 
+host=174.129.195.118 port=0
+options.c: 443: 0 (Debug) PID 1831 saving options to 
+/var/run/chilli.1830.cfg.bin
+options.c: 411: 0 (Debug) Loading modules
+options.c: 652: 0 (Debug) PID 1830 reloaded binary options file
+chilli.c: 7143: 0 (Debug) clock realtime sec 1385456076 nsec 546392592
+chilli.c: 7148: 0 (Debug) clock monotonic sec 519137 nsec 376142391
+tun.c: 605: 0 (Debug) TX queue length set to 100
+tun.c: 1108: 0 (Debug) Running /etc/chilli/up.sh
+ippool.c: 338: 0 (Debug) Hashlog 3 5 8
+net.c: 1239: 0 (Debug) Net SNDBUF 163840
+net.c: 1242: 0 (Debug) Net RCVBUF 163840
+net.c: 1295: 0 (Debug) device eth4.2 ifindex 6
+net.c: 1311: 0 (Debug) lo  address family: 17 (AF_PACKET)
+net.c: 1311: 0 (Debug) eth2  address family: 17 (AF_PACKET)
+net.c: 1311: 0 (Debug) eth4  address family: 17 (AF_PACKET)
+net.c: 1311: 0 (Debug) eth3  address family: 17 (AF_PACKET)
+net.c: 1311: 0 (Debug) eth4.1  address family: 17 (AF_PACKET)
+net.c: 1311: 0 (Debug) eth4.2  address family: 17 (AF_PACKET)
+net.c: 1311: 0 (Debug) eth4.3  address family: 17 (AF_PACKET)
+net.c: 1311: 0 (Debug) eth4.254  address family: 17 (AF_PACKET)
+net.c: 1311: 0 (Debug) lo  address family: 2 (AF_INET)
+net.c: 1311: 0 (Debug) eth2  address family: 2 (AF_INET)
+net.c: 1311: 0 (Debug) eth3  address family: 2 (AF_INET)
+net.c: 1311: 0 (Debug) eth4.1  address family: 2 (AF_INET)
+net.c: 1311: 0 (Debug) eth4.3  address family: 2 (AF_INET)
+net.c: 1311: 0 (Debug) eth4.254  address family: 2 (AF_INET)
+net.c: 1311: 0 (Debug) tun0  address family: 2 (AF_INET)
+net.c: 1311: 0 (Debug) lo  address family: 10 (AF_INET6)
+net.c: 1311: 0 (Debug) eth2  address family: 10 (AF_INET6)
+net.c: 1311: 0 (Debug) eth4  address family: 10 (AF_INET6)
+net.c: 1311: 0 (Debug) eth3  address family: 10 (AF_INET6)
+net.c: 1311: 0 (Debug) eth4.1  address family: 10 (AF_INET6)
+net.c: 1311: 0 (Debug) eth4.2  address family: 10 (AF_INET6)
+net.c: 1326: 0 (Debug) address: <fe80::200:21ff:fec9:a5fe%eth4.2>
+
+net.c: 1311: 0 (Debug) eth4.3  address family: 10 (AF_INET6)
+net.c: 1311: 0 (Debug) eth4.254  address family: 10 (AF_INET6)
+dhcp.c: 481: 0 (Debug) hash table size 64 (56)
+dhcp.c: 333: 0 (Debug) GARP: Replying to broadcast
+dhcp.c: 1173: 0 (Debug) dhcpif (eth4.2) IPv6 address 
+fe80::200:21ff:fec9:a5fe
+radius.c: 1315: 0 (Debug) RADIUS client 0.0.0.0:0
+options.c: 411: 0 (Debug) Loading modules
+main-script.c: 76: 0 (Debug) USER root(0/0), GROUP root(0/0) CHILLI[UID 
+125, GID 134]
+chilli.c: 7303: 0 (Debug) Waiting for client request...
+main-script.c: 94: 0 (Debug) Running /etc/chilli/up.sh (0/0)
+net.c: 388: 0 (Debug) net select count: 1
+net.c: 388: 0 (Debug) net select count: 2
+net.c: 388: 0 (Debug) net select count: 3
+net.c: 388: 0 (Debug) net select count: 4
+net.c: 388: 0 (Debug) net select count: 5
+net.c: 388: 0 (Debug) net select count: 6
+net.c: 388: 0 (Debug) net select count: 7
+net.c: 388: 0 (Debug) net select count: 8
+rtmon.c: 462: 0 (Debug) i=0 sz=1
+rtmon.c: 462: 0 (Debug) i=0 sz=2
+rtmon.c: 462: 0 (Debug) i=1 sz=2
+rtmon.c: 462: 0 (Debug) i=0 sz=3
+rtmon.c: 462: 0 (Debug) i=1 sz=3
+rtmon.c: 462: 0 (Debug) i=2 sz=3
+rtmon.c: 462: 0 (Debug) i=0 sz=4
+rtmon.c: 462: 0 (Debug) i=1 sz=4
+rtmon.c: 462: 0 (Debug) i=2 sz=4
+rtmon.c: 462: 0 (Debug) i=3 sz=4
+rtmon.c: 462: 0 (Debug) i=0 sz=5
+rtmon.c: 462: 0 (Debug) i=1 sz=5
+rtmon.c: 462: 0 (Debug) i=2 sz=5
+rtmon.c: 462: 0 (Debug) i=3 sz=5
+rtmon.c: 462: 0 (Debug) i=4 sz=5
+rtmon.c: 462: 0 (Debug) i=0 sz=6
+rtmon.c: 462: 0 (Debug) i=1 sz=6
+rtmon.c: 462: 0 (Debug) i=2 sz=6
+rtmon.c: 462: 0 (Debug) i=3 sz=6
+rtmon.c: 462: 0 (Debug) i=4 sz=6
+rtmon.c: 462: 0 (Debug) i=5 sz=6
+
+System Interfaces
+0) lo (1) ip=127.0.0.1 net=127.0.0.0 mask=255.0.0.0 
+mac=00-00-00-00-00-00 mtu=16436
+1) eth2 (2) ip=192.168.0.1 net=192.168.0.0 mask=255.255.255.192 
+bcase=192.168.0.63 mac=00-E0-4C-B0-25-d3 mtu=1500
+2) eth3 (4) ip=192.168.1.223 net=192.168.1.0 mask=255.255.255.0 
+bcase=192.168.1.255 mac=00-11-43-1B-0F-62 mtu=1500
+3) eth4.1 (5) ip=10.1.0.1 net=10.1.0.0 mask=255.255.0.0 
+bcase=10.1.255.255 mac=00-00-21-C9-A5-fe mtu=1500
+4) eth4.3 (7) ip=10.3.0.1 net=10.3.0.0 mask=255.255.0.0 
+bcase=10.3.255.255 mac=00-00-21-C9-A5-fe mtu=1500
+5) eth4.254 (8) ip=172.16.0.1 net=172.16.0.0 mask=255.255.248.0 
+bcase=172.16.7.255 mac=00-00-21-C9-A5-fe mtu=1500
+6) tun0 (70) ip=10.2.0.1 net=10.2.0.0 mask=255.255.0.0 peer=10.2.0.1 
+mac=00-00-00-00-00-00 mtu=1500
+
+System Routes
+0) dst=0.0.0.0 mask=0.0.0.0 gw=192.168.1.1 dev=eth3 (4)
+1) dst=10.1.0.0 mask=255.255.0.0 dev=eth4.1 (5)
+2) dst=10.2.0.0 mask=255.255.0.0 dev=tun0 (70)
+3) dst=10.3.0.0 mask=255.255.0.0 dev=eth4.3 (7)
+4) dst=172.16.0.0 mask=255.255.248.0 dev=eth4.254 (8)
+5) dst=192.168.0.0 mask=255.255.255.192 dev=eth2 (2)
+6) dst=192.168.1.0 mask=255.255.255.0 dev=eth3 (4)
+rtmon.c: 384: 0 (Debug) Default Route 192.168.1.1
+rtmon.c: 393: 0 (Debug) Route Interface eth3
+rtmon.c: 434: 0 (Debug) MAC 00:11:0a:59:da:00
+net.c: 388: 0 (Debug) net select count: 9
+net.c: 388: 0 (Debug) net select count: 10
+dhcp.c: 3593: 0 (Debug) Not for our MAC or broadcast: 3C-97-0E-39-05-10
+radius.c: 1898: 0 (Debug) Received RADIUS packet id=0
+radius.c: 426: 0 (Debug) RADIUS queue-out id=0 idx=0
+dhcp.c: 3593: 0 (Debug) Not for our MAC or broadcast: 3C-97-0E-39-05-10
+dhcp.c: 3593: 0 (Debug) Not for our MAC or broadcast: 3C-97-0E-39-05-10
+dhcp.c: 3593: 0 (Debug) Not for our MAC or broadcast: 00-11-43-1B-0F-62
+dhcp.c: 3593: 0 (Debug) Not for our MAC or broadcast: 00-11-43-1B-0F-62
+dhcp.c: 3593: 0 (Debug) Not for our MAC or broadcast: 00-11-43-1B-0F-62
+dhcp.c: 3593: 0 (Debug) Not for our MAC or broadcast: 3C-97-0E-39-05-10
+dhcp.c: 3593: 0 (Debug) Not for our MAC or broadcast: 3C-97-0E-39-05-10
+dhcp.c: 3593: 0 (Debug) Not for our MAC or broadcast: 3C-97-0E-39-05-10
+dhcp.c: 3593: 0 (Debug) Not for our MAC or broadcast: 3C-97-0E-39-05-10
+dhcp.c: 3593: 0 (Debug) Not for our MAC or broadcast: 00-11-43-1B-0F-62
+dhcp.c: 3593: 0 (Debug) Not for our MAC or broadcast: 3C-97-0E-39-05-10
+dhcp.c: 3593: 0 (Debug) Not for our MAC or broadcast: 00-11-43-1B-0F-62
+dhcp.c: 3593: 0 (Debug) Not for our MAC or broadcast: 3C-97-0E-39-05-10
+dhcp.c: 3593: 0 (Debug) Not for our MAC or broadcast: 3C-97-0E-39-05-10
+dhcp.c: 3593: 0 (Debug) Not for our MAC or broadcast: 3C-97-0E-39-05-10
+dhcp.c: 3593: 0 (Debug) Not for our MAC or broadcast: 00-11-43-1B-0F-62
+dhcp.c: 3593: 0 (Debug) Not for our MAC or broadcast: 00-11-43-1B-0F-62
+dhcp.c: 3593: 0 (Debug) Not for our MAC or broadcast: 3C-97-0E-39-05-10
+dhcp.c: 3593: 0 (Debug) Not for our MAC or broadcast: 3C-97-0E-39-05-10
+dhcp.c: 3593: 0 (Debug) Not for our MAC or broadcast: 00-11-43-1B-0F-62
+dhcp.c: 3593: 0 (Debug) Not for our MAC or broadcast: 3C-97-0E-39-05-10
+dhcp.c: 3593: 0 (Debug) Not for our MAC or broadcast: 3C-97-0E-39-05-10
+chilli.c: 379: 0 (Debug) caught 17 via selfpipe
+chilli.c: 310: 0 (Debug) child 1838 terminated
+dhcp.c: 5543: 0 (Debug) ARP: Received other ARP than request!
+radius.c: 2034: 0 (Debug) Received RADIUS proxy packet id=0
+dhcp.c: 5543: 0 (Debug) ARP: Received other ARP than request!
+radius.c: 2034: 0 (Debug) Received RADIUS proxy packet id=1
+chilli.c: 3364: 0 (Debug) RADIUS Access-Request received
+chilli.c: 3396: 0 (Debug) Calling Station ID is: 000000000bffb9773
+dhcp.c: 730: 0 (Debug) DHCP newconn: 00:15:6d:85:38:90
+chilli.c: 5117: 0 (Debug) New DHCP request from MAC=00-15-6D-85-38-90
+chilli.c: 5120: 0 (Debug) New DHCP connection established
+chilli.c: 5076: 0 (Debug) New Chilli Connection
+radius.c: 1898: 0 (Debug) Received RADIUS packet id=1
+radius.c: 426: 0 (Debug) RADIUS queue-out id=1 idx=1
+chilli.c: 4393: 0 (Debug) Received RADIUS response id=1
+chilli.c: 4549: 0 (Debug) Received RADIUS Access-Challenge
+chilli.c: 1628: 0 (Debug) Sending RADIUS AccessChallenge to client
+radius.c: 2034: 0 (Debug) Received RADIUS proxy packet id=2
+chilli.c: 3364: 0 (Debug) RADIUS Access-Request received
+chilli.c: 3396: 0 (Debug) Calling Station ID is: 000000000bffb9773
+chilli.c: 1366: 0 (Debug) RADIUS Request + State(16)
+radius.c: 1898: 0 (Debug) Received RADIUS packet id=2
+radius.c: 426: 0 (Debug) RADIUS queue-out id=2 idx=2
+chilli.c: 4393: 0 (Debug) Received RADIUS response id=2
+chilli.c: 4549: 0 (Debug) Received RADIUS Access-Challenge
+chilli.c: 1628: 0 (Debug) Sending RADIUS AccessChallenge to client
+radius.c: 2034: 0 (Debug) Received RADIUS proxy packet id=3
+chilli.c: 3364: 0 (Debug) RADIUS Access-Request received
+chilli.c: 3396: 0 (Debug) Calling Station ID is: 000000000bffb9773
+chilli.c: 1366: 0 (Debug) RADIUS Request + State(16)
+radius.c: 1898: 0 (Debug) Received RADIUS packet id=3
+radius.c: 426: 0 (Debug) RADIUS queue-out id=3 idx=3
+chilli.c: 4393: 0 (Debug) Received RADIUS response id=3
+chilli.c: 4549: 0 (Debug) Received RADIUS Access-Challenge
+chilli.c: 1628: 0 (Debug) Sending RADIUS AccessChallenge to client
+radius.c: 2034: 0 (Debug) Received RADIUS proxy packet id=4
+chilli.c: 3364: 0 (Debug) RADIUS Access-Request received
+chilli.c: 3396: 0 (Debug) Calling Station ID is: 000000000bffb9773
+chilli.c: 1366: 0 (Debug) RADIUS Request + State(16)
+radius.c: 1898: 0 (Debug) Received RADIUS packet id=4
+radius.c: 426: 0 (Debug) RADIUS queue-out id=4 idx=4
+chilli.c: 4393: 0 (Debug) Received RADIUS response id=4
+chilli.c: 4549: 0 (Debug) Received RADIUS Access-Challenge
+chilli.c: 1628: 0 (Debug) Sending RADIUS AccessChallenge to client
+radius.c: 2034: 0 (Debug) Received RADIUS proxy packet id=5
+chilli.c: 3364: 0 (Debug) RADIUS Access-Request received
+chilli.c: 3396: 0 (Debug) Calling Station ID is: 000000000bffb9773
+chilli.c: 1366: 0 (Debug) RADIUS Request + State(16)
+radius.c: 1898: 0 (Debug) Received RADIUS packet id=5
+radius.c: 426: 0 (Debug) RADIUS queue-out id=5 idx=5
+chilli.c: 4393: 0 (Debug) Received RADIUS response id=5
+chilli.c: 4549: 0 (Debug) Received RADIUS Access-Challenge
+chilli.c: 1628: 0 (Debug) Sending RADIUS AccessChallenge to client
+radius.c: 2034: 0 (Debug) Received RADIUS proxy packet id=6
+chilli.c: 3364: 0 (Debug) RADIUS Access-Request received
+chilli.c: 3396: 0 (Debug) Calling Station ID is: 000000000bffb9773
+chilli.c: 1366: 0 (Debug) RADIUS Request + State(16)
+radius.c: 1898: 0 (Debug) Received RADIUS packet id=6
+radius.c: 426: 0 (Debug) RADIUS queue-out id=6 idx=6
+chilli.c: 4393: 0 (Debug) Received RADIUS response id=6
+chilli.c: 4549: 0 (Debug) Received RADIUS Access-Challenge
+chilli.c: 1628: 0 (Debug) Sending RADIUS AccessChallenge to client
+radius.c: 2034: 0 (Debug) Received RADIUS proxy packet id=7
+chilli.c: 3364: 0 (Debug) RADIUS Access-Request received
+chilli.c: 3396: 0 (Debug) Calling Station ID is: 000000000bffb9773
+chilli.c: 1366: 0 (Debug) RADIUS Request + State(16)
+radius.c: 1898: 0 (Debug) Received RADIUS packet id=7
+radius.c: 426: 0 (Debug) RADIUS queue-out id=7 idx=7
+chilli.c: 4393: 0 (Debug) Received RADIUS response id=7
+chilli.c: 4549: 0 (Debug) Received RADIUS Access-Challenge
+chilli.c: 1628: 0 (Debug) Sending RADIUS AccessChallenge to client
+radius.c: 2034: 0 (Debug) Received RADIUS proxy packet id=8
+chilli.c: 3364: 0 (Debug) RADIUS Access-Request received
+chilli.c: 3396: 0 (Debug) Calling Station ID is: 000000000bffb9773
+chilli.c: 1366: 0 (Debug) RADIUS Request + State(16)
+radius.c: 1898: 0 (Debug) Received RADIUS packet id=8
+radius.c: 426: 0 (Debug) RADIUS queue-out id=8 idx=8
+chilli.c: 4393: 0 (Debug) Received RADIUS response id=8
+chilli.c: 4549: 0 (Debug) Received RADIUS Access-Challenge
+chilli.c: 1628: 0 (Debug) Sending RADIUS AccessChallenge to client
+radius.c: 2034: 0 (Debug) Received RADIUS proxy packet id=9
+chilli.c: 3364: 0 (Debug) RADIUS Access-Request received
+chilli.c: 3396: 0 (Debug) Calling Station ID is: 000000000bffb9773
+chilli.c: 1366: 0 (Debug) RADIUS Request + State(16)
+radius.c: 1898: 0 (Debug) Received RADIUS packet id=9
+radius.c: 426: 0 (Debug) RADIUS queue-out id=9 idx=9
+chilli.c: 4393: 0 (Debug) Received RADIUS response id=9
+chilli.c: 4549: 0 (Debug) Received RADIUS Access-Challenge
+chilli.c: 1628: 0 (Debug) Sending RADIUS AccessChallenge to client
+radius.c: 2034: 0 (Debug) Received RADIUS proxy packet id=10
+chilli.c: 3364: 0 (Debug) RADIUS Access-Request received
+chilli.c: 3396: 0 (Debug) Calling Station ID is: 000000000bffb9773
+chilli.c: 1366: 0 (Debug) RADIUS Request + State(16)
+radius.c: 1898: 0 (Debug) Received RADIUS packet id=10
+radius.c: 426: 0 (Debug) RADIUS queue-out id=10 idx=10
+chilli.c: 4393: 0 (Debug) Received RADIUS response id=10
+chilli.c: 4582: 0 (Debug) Received RADIUS Access-Accept
+chilli.c: 835: 0 (Debug) newip 0.0.0.0
+ippool.c: 456: 0 (Debug) Requesting new static ip: 0.0.0.0
+ippool.c: 456: 0 (Debug) Requesting new dynamic ip: 0.0.0.0
+radius.c: 1898: 0 (Debug) Received RADIUS packet id=11
+radius.c: 426: 0 (Debug) RADIUS queue-out id=11 idx=11
+radius.c: 2034: 0 (Debug) Received RADIUS proxy packet id=11
+
+Could someone help me to understand why Coova doesn't send all 
+attributes of Access-Accept request?
+
+Thanks for all.
+King regards. Fernando.
+
+From xoneca at gmail.com  Tue Nov 26 18:51:50 2013
+From: xoneca at gmail.com (Xabier Oneca -- xOneca)
+Date: Tue, 26 Nov 2013 19:51:50 +0100
+Subject: [Chilli] CoovaChilli Kernel Mode issue
+In-Reply-To: <1547615330.282248.1385378564547.JavaMail.root@frontiir.net>
+References: <1561245260.281382.1385376623746.JavaMail.root@frontiir.net>
+ <1547615330.282248.1385378564547.JavaMail.root@frontiir.net>
+Message-ID: <CACkgH70r=f46RvoS4oMzjVhMS8bN7MKCO71gUBYMCyWaaZ93aQ@mail.gmail.com>
+
+Hello Phyo,
+
+Are you sure you posted the configuration that you used?
+
+> HS_NETWORK=10.99.0.0       # HotSpot Network (must include HS_UAMLISTEN)
+> HS_NETMASK=255.255.255.0   # HotSpot Network Netmask
+> HS_UAMLISTEN=192.168.99.1  # HotSpot IP Address (on subscriber network
+
+As the comments say, 'HS_UAMLISTEN' must be in 'HS_NEWORK' and your isn't...
+
+Cheers,
+
+Xabier Oneca_,,_
+
+From bergonz at labs.it  Wed Nov 27 17:52:25 2013
+From: bergonz at labs.it (Michele Bergonzoni)
+Date: Wed, 27 Nov 2013 18:52:25 +0100
+Subject: [Chilli] Layer3: help with connections / dhcp connections
+In-Reply-To: <528E2A1A.80104@labs.it>
+References: <528E2A1A.80104@labs.it>
+Message-ID: <52963159.4090304@labs.it>
+
+> If it isn't a configuration switch that I'm missing, I am willing to
+> change the source
+
+I forced just one "dhcp connection", with this simple patch, that 
+appears to work for me. It is not perfect, because it seems to me that 
+it can actually use the wrong MAC address to talk to the client, but at 
+least it "usually" works.
+
+THis is relative to current SVN, with my previous EDNS patch applied and 
+one more patch that I'll share shortly.
+
+Regards,
+
+                         Bergonz
+
+
+Index: src/dhcp.c
+===================================================================
+--- src/dhcp.c  (revision 485)
++++ src/dhcp.c  (working copy)
+@@ -617,6 +617,13 @@
+    struct dhcp_conn_t *p;
+    uint32_t hash;
+
++#ifdef ENABLE_LAYER3
++  if (_options.layer3 && this->firstusedconn){
++    /* We want just one dhcp connection, so reuse the same */
++    *conn = this->firstusedconn;
++    return 0;
++  }
++#endif
+    /* Find in hash table */
+    hash = dhcp_hash(hwaddr) & this->hashmask;
+    for (p = this->hash[hash]; p; p = p->nexthash) {
+
+
+From bergonz at labs.it  Wed Nov 27 18:07:35 2013
+From: bergonz at labs.it (Michele Bergonzoni)
+Date: Wed, 27 Nov 2013 19:07:35 +0100
+Subject: [Chilli] [Layer3] Like uamallowed,
+ but for source address - like macallowed but for IPs - ip source
+ whitelist - server whitelist
+Message-ID: <529634E7.3000204@labs.it>
+
+In a Layer3 environment where there are servers and "special" devices in 
+the same network as the guests, you might need to whitelist some source IPs.
+
+I found no usable solution for this (an old thread in this list ends 
+with a cron job that uses chilli_query, something that is not quite 
+perfect), so I wrote the following. It defines a new configuration 
+parameter and command-line switch ipsrcallowed, that you can control in 
+chilli/config with HS_IPSRCALLOWED, with the same syntax as uamallowed: 
+comma separated list of single IP addresses or IP prefixes (also domain 
+names, but that is not intended to work nor tested and will probably break).
+
+Clients with IPs in that list will not be redirected. Sessions will not 
+be created, so you will not see them in "chilli_query list".
+
+This patch is relative to current SVN, with EDNS and previous patch applied.
+
+My first try was with a layer3 version of macauth, to query a RADIUS 
+server with the IP address before redirecting, but it was too hard 
+(Coovachilli in my opinion would benefit from some refactoring). If 
+someone knows how to do that, please tell.
+
+Regards,
+				Bergonz
+
+Index: conf/functions.in
+===================================================================
+--- conf/functions.in   (revision 485)
++++ conf/functions.in   (working copy)
+@@ -179,6 +179,9 @@
+      HS_UAMALLOW=$(echo $HS_UAMALLOW|sed 's/ /,/g')
+      uamallow=${HS_UAMALLOW:+",$HS_UAMALLOW"}
+
++    HS_IPSRCALLOWED=$(echo $HS_IPSRCALLOWED|sed 's/ /,/g')
++    addconfig1 ${HS_IPSRCALLOWED:+"ipsrcallowed $HS_IPSRCALLOWED"}
++
+      addconfig1 ${HS_MAXCLIENTS:+"maxclients $HS_MAXCLIENTS"}
+      addconfig1 ${HS_RADIUSQSIZE:+"radiusqsize $HS_RADIUSQSIZE"}
+      addconfig1 ${HS_DHCPHASHSIZE:+"dhcphashsize $HS_DHCPHASHSIZE"}
+Index: src/options.h
+===================================================================
+--- src/options.h       (revision 485)
++++ src/options.h       (working copy)
+@@ -302,6 +302,11 @@
+    uint32_t regex_num_pass_throughs;
+  #endif
+
++#ifdef ENABLE_LAYER3
++  pass_through ipsrc_pass_throughs[MAX_IPSRC_PASS_THROUGHS];
++  uint32_t ipsrc_num_pass_throughs;
++#endif
++
+    char* uamdomains[MAX_UAM_DOMAINS];
+    int uamdomain_ttl;
+
+Index: src/cmdline.ggo
+===================================================================
+--- src/cmdline.ggo     (revision 485)
++++ src/cmdline.ggo     (working copy)
+@@ -266,6 +266,7 @@
+  option "uamdomainfile" - "Load uamdomains (regex) from file" string no
+
+  option "layer3" - "Layer3 only" flag off
++option "ipsrcallowed"  - "List of allowed source IP addresses, for 
+Layer3" string no multiple
+  option "patricia" - "Use patricia tries for walled garden lookup" flag off
+  option "redirdnsreq" - "Send DNS query on redirect to pick of DNS 
+based walled garden" flag off
+
+Index: src/dhcp.c
+===================================================================
+--- src/dhcp.c  (revision 485)
++++ src/dhcp.c  (working copy)
+@@ -2503,6 +2503,23 @@
+      found = 1;
+  #endif
+
++#ifdef ENABLE_LAYER3
++  if (!found && _options.ipsrc_pass_throughs){
++    if (garden_check(_options.ipsrc_pass_throughs,
++                       &_options.ipsrc_num_pass_throughs, &pt,
++                       ipph, !dst
++#ifdef HAVE_PATRICIA
++                       , 0
++#endif
++                       )) {
++      found = 1;
++#if(_debug_ > 1)
++      log_dbg("Packet matches ipsrcallowed");
++#endif
++    }
++  }
++#endif
++
+  #ifdef ENABLE_GARDENACCOUNTING
+    if (_options.uamgardendata) {
+
+
+Index: src/main-opt.c
+===================================================================
+--- src/main-opt.c      (revision 485)
++++ src/main-opt.c      (working copy)
+@@ -724,6 +724,18 @@
+  #endif
+        );
+    }
++#ifdef ENABLE_LAYER3
++  for (numargs = 0; numargs < args_info.ipsrcallowed_given; ++numargs) {
++    pass_throughs_from_string(_options.ipsrc_pass_throughs,
++                             MAX_IPSRC_PASS_THROUGHS,
++                             &_options.ipsrc_num_pass_throughs,
++                             args_info.ipsrcallowed_arg[numargs], 0, 0
++#ifdef HAVE_PATRICIA
++                             , 0
++#endif
++      );
++  }
++#endif
+
+    _options.uamauthedallowed = args_info.uamauthedallowed_flag;
+  #ifdef ENABLE_AUTHEDALLOWED
+Index: src/chilli_limits.h
+===================================================================
+--- src/chilli_limits.h (revision 485)
++++ src/chilli_limits.h (working copy)
+@@ -134,4 +134,12 @@
+  #define RADIUS_QUEUE_PACKET_PTR 1
+  #endif
+
++#ifdef ENABLE_LAYER3
++#ifdef ENABLE_LARGELIMITS
++#define MAX_IPSRC_PASS_THROUGHS               512 /* Max number of 
+allowed IP source addresses, for Layer3 */
++#else
++#define MAX_IPSRC_PASS_THROUGHS               8 /* Max number of 
+allowed IP source addresses, for Layer3 */
+  #endif
++#endif
++
++#endif
+
+
+From phyo.w.soe at frontiir.net  Thu Nov 28 02:44:40 2013
+From: phyo.w.soe at frontiir.net (Phyo Wai Soe)
+Date: Thu, 28 Nov 2013 02:44:40 +0000 (UTC)
+Subject: [Chilli] CoovaChilli Kernel Mode issue
+In-Reply-To: <CACkgH70r=f46RvoS4oMzjVhMS8bN7MKCO71gUBYMCyWaaZ93aQ@mail.gmail.com>
+References: <1561245260.281382.1385376623746.JavaMail.root@frontiir.net>
+ <1547615330.282248.1385378564547.JavaMail.root@frontiir.net>
+ <CACkgH70r=f46RvoS4oMzjVhMS8bN7MKCO71gUBYMCyWaaZ93aQ@mail.gmail.com>
+Message-ID: <1983365293.330957.1385606680205.JavaMail.root@frontiir.net>
+
+Hi Xabier, 
+
+I am following these instructions from David on how to enable the kernel module. http://lists.coova.org/pipermail/chilli/2010-April/001239.html 
+
+According to him, "Chilli is then also configured with 'uamlisten' of 11.0.0.1 and 
+this is the IP address that gets assigned to tun0 (so note that 
+dhcplisten and uamlisten are different!). The high level concept is that 
+subscribers get a 10.1.0.0/24 IP address which is routed (when 
+authenticated) through the kernel." 
+
+So, I guess my setup is ok. When I installed CoovaChilli in normal mode and made UAMLISTEN part of HS_NETWORK, it was ok. This issue happens only if I enable the kernel module mode. 
+
+Btw, when I looked at the syslogs, I saw the following lines when the clients got the resetting issue. 
+
+redir.c: 2020: 104 (Connection reset by peer) redir_read(0) failed! 
+
+Doing tcpdump on a client (10.99.0.30) when the issue occurred gave me the followings. 
+======================== 
+16:54:09.921330 IP (tos 0x0, ttl 64, id 0, offset 0, flags [DF], proto TCP (6), length 40) 
+192.168.99.1.3990 > 10.99.0.30.57235: Flags [R], cksum 0xcb11 (correct), seq 2598775956, win 0, length 0 
+16:54:09.922202 IP (tos 0x0, ttl 64, id 0, offset 0, flags [DF], proto TCP (6), length 40) 
+10.99.0.30.57235 > 192.168.99.1.3990: Flags [R], cksum 0xb372 (correct), seq 524533718, win 0, length 0 
+16:54:09.922646 IP (tos 0x0, ttl 64, id 0, offset 0, flags [DF], proto TCP (6), length 40) 
+10.99.0.30.57235 > 192.168.99.1.3990: Flags [R], cksum 0xb372 (correct), seq 524533718, win 0, length 0 
+=============== 
+I think it probably indicates that the server (192.168.99.1:3990) is resetting the connections even before showing the redirection page. I tested by creating a test page and put it in /www. A client won't even see the contents of that test page. 
+HS_UAMHOMEPAGE=http://\$HS_UAMLISTEN:\$HS_UAMPORT/www/testpage.html 
+
+I searched the forum and web for solving redir_read issue but didn't get any clue. 
+
+Thank you. 
+
+Regards, 
+Phyo 
+
+Regards, 
+Phyo Wai Soe 
+
+
+----- Original Message -----
+
+From: "Xabier Oneca -- xOneca" <xoneca at gmail.com> 
+To: "Phyo Wai Soe" <phyo.w.soe at frontiir.net>, chilli at coova.org 
+Sent: Wednesday, November 27, 2013 1:21:50 AM 
+Subject: Re: [Chilli] CoovaChilli Kernel Mode issue 
+
+Hello Phyo, 
+
+Are you sure you posted the configuration that you used? 
+
+> HS_NETWORK=10.99.0.0 # HotSpot Network (must include HS_UAMLISTEN) 
+> HS_NETMASK=255.255.255.0 # HotSpot Network Netmask 
+> HS_UAMLISTEN=192.168.99.1 # HotSpot IP Address (on subscriber network 
+
+As the comments say, 'HS_UAMLISTEN' must be in 'HS_NEWORK' and your isn't... 
+
+Cheers, 
+
+Xabier Oneca_,,_ 
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20131128/fcff85a6/attachment.html>
+
+From phyo.w.soe at frontiir.net  Thu Nov 28 02:56:39 2013
+From: phyo.w.soe at frontiir.net (Phyo Wai Soe)
+Date: Thu, 28 Nov 2013 02:56:39 +0000 (UTC)
+Subject: [Chilli] CoovaChilli Kernel Mode issue
+In-Reply-To: <CACkgH70r=f46RvoS4oMzjVhMS8bN7MKCO71gUBYMCyWaaZ93aQ@mail.gmail.com>
+References: <1561245260.281382.1385376623746.JavaMail.root@frontiir.net>
+ <1547615330.282248.1385378564547.JavaMail.root@frontiir.net>
+ <CACkgH70r=f46RvoS4oMzjVhMS8bN7MKCO71gUBYMCyWaaZ93aQ@mail.gmail.com>
+Message-ID: <577107616.331030.1385607399941.JavaMail.root@frontiir.net>
+
+I just realized that I replied in HTML. Some mailing lists don't like HTML emails and I am reposting this. Thanks.
+------------------------------
+Hi Xabier,
+
+I am following these instructions from David on how to enable the kernel module. http://lists.coova.org/pipermail/chilli/2010-April/001239.html
+
+According to him, "Chilli is then also configured with 'uamlisten' of 11.0.0.1 and
+this is the IP address that gets assigned to tun0 (so note that
+dhcplisten and uamlisten are different!). The high level concept is that
+subscribers get a 10.1.0.0/24 IP address which is routed (when
+authenticated) through the kernel."
+
+So, I guess my setup is ok. When I installed CoovaChilli in normal mode and made UAMLISTEN part of HS_NETWORK, it was ok. This issue happens only if I enable the kernel module mode.
+
+Btw, when I looked at the syslogs, I saw the following lines when the clients got the resetting issue.
+
+redir.c: 2020: 104 (Connection reset by peer) redir_read(0) failed!
+
+Doing tcpdump on a client (10.99.0.30) when the issue occurred gave me the followings.
+========================
+16:54:09.921330 IP (tos 0x0, ttl 64, id 0, offset 0, flags [DF], proto TCP (6), length 40)
+192.168.99.1.3990 > 10.99.0.30.57235: Flags [R], cksum 0xcb11 (correct), seq 2598775956, win 0, length 0
+16:54:09.922202 IP (tos 0x0, ttl 64, id 0, offset 0, flags [DF], proto TCP (6), length 40)
+10.99.0.30.57235 > 192.168.99.1.3990: Flags [R], cksum 0xb372 (correct), seq 524533718, win 0, length 0
+16:54:09.922646 IP (tos 0x0, ttl 64, id 0, offset 0, flags [DF], proto TCP (6), length 40)
+10.99.0.30.57235 > 192.168.99.1.3990: Flags [R], cksum 0xb372 (correct), seq 524533718, win 0, length 0
+===============
+I think it probably indicates that the server (192.168.99.1:3990) is resetting the connections even before showing the redirection page. I tested by creating a test page and put it in /www. A client won't even see the contents of that test page.
+HS_UAMHOMEPAGE=http://\$HS_UAMLISTEN:\$HS_UAMPORT/www/testpage.html
+
+I searched the forum and web for solving redir_read issue but didn't get any clue.
+
+Thank you.
+
+Regards,
+Phyo Wai Soe
+
+----- Original Message ----- 
+From: "Xabier Oneca -- xOneca" <xoneca at gmail.com> 
+To: "Phyo Wai Soe" <phyo.w.soe at frontiir.net>, chilli at coova.org 
+Sent: Wednesday, November 27, 2013 1:21:50 AM 
+Subject: Re: [Chilli] CoovaChilli Kernel Mode issue 
+
+Hello Phyo, 
+
+Are you sure you posted the configuration that you used? 
+
+> HS_NETWORK=10.99.0.0 # HotSpot Network (must include HS_UAMLISTEN) 
+> HS_NETMASK=255.255.255.0 # HotSpot Network Netmask 
+> HS_UAMLISTEN=192.168.99.1 # HotSpot IP Address (on subscriber network 
+
+As the comments say, 'HS_UAMLISTEN' must be in 'HS_NEWORK' and your isn't... 
+
+Cheers, 
+
+Xabier Oneca_,,_ 
+
+From mohsen.saeedi at gmail.com  Thu Nov 28 08:09:15 2013
+From: mohsen.saeedi at gmail.com (Mohsen Saeedi)
+Date: Thu, 28 Nov 2013 11:39:15 +0330
+Subject: [Chilli] net.c Resource temporarily unavailable
+Message-ID: <5296FA2B.10709@gmail.com>
+
+Hi
+I upgrade coovachilli 1.2.8 to 1.3.0 on my server with many users and 
+high network traffic about 200Mb/s. everything works but every other day 
+chilli generates a very large number event and fills disk space. our 
+/var partition has 200GB free space but it fill in a few hours.
+
+Nov 28 09:59:26 localhost coova-chilli[6143]: net.c: 780: 11 (Resource 
+temporarily unavailable) could not read packet
+Nov 28 09:59:26 localhost coova-chilli[6143]: net.c: 806: 11 (Resource 
+temporarily unavailable) net_read_eth(fd=5, len=65497, mtu=1500) == -1
+
+I added necessary parameters to out sysctl.conf and load it. parameters are:
+
+net.ipv4.tcp_rmem= 110240 187380 112582912
+net.ipv4.tcp_wmem= 110240 187380 112582912
+net.core.wmem_max=1212582912
+net.core.rmem_max=1212582912
+net.ipv4.tcp_window_scaling = 1
+net.ipv4.tcp_timestamps = 1
+net.ipv4.tcp_sack = 1
+net.core.netdev_max_backlog = 50000
+
+
+What is the problem?
+
+Thanks
+
+From phyo.w.soe at frontiir.net  Thu Nov 28 11:36:07 2013
+From: phyo.w.soe at frontiir.net (Phyo Wai Soe)
+Date: Thu, 28 Nov 2013 11:36:07 +0000 (UTC)
+Subject: [Chilli] CoovaChilli Kernel Mode issue
+In-Reply-To: <CADao4CpUxeaSj1Q7iDuN1Wo=Of6EZzCPK7Fb7PQX7k5UXJD=2Q@mail.gmail.com>
+References: <1561245260.281382.1385376623746.JavaMail.root@frontiir.net>
+ <1547615330.282248.1385378564547.JavaMail.root@frontiir.net>
+ <CACkgH70r=f46RvoS4oMzjVhMS8bN7MKCO71gUBYMCyWaaZ93aQ@mail.gmail.com>
+ <1983365293.330957.1385606680205.JavaMail.root@frontiir.net>
+ <CADao4CpUxeaSj1Q7iDuN1Wo=Of6EZzCPK7Fb7PQX7k5UXJD=2Q@mail.gmail.com>
+Message-ID: <826889934.520.1385638567614.JavaMail.root@frontiir.net>
+
+Hi Russell,
+
+I saw your mails to the list regarding the redir error message and hoped I could get some clues. So far, I am still stuck :( In my case, when I see redir_read messages in the server's syslog, it normally means that clients see "The connection was reset" error in their browsers and can't go anywhere. They don't even see the "redirecting" message with the animated circle (www/wait.gif).
+
+I tried different config settings. If I make HS_UAMLISTEN address in the same range as HS_NETWORK, clients do see redirection/login pages but that's all. I don't see any record in /proc/net/coova/chilli (which should happen if the kernel module mode is on) or issue authorize, log out, etc., commands on the server with chilli_query. It's as if the commands don't have any effect on the clients. However, if I make HS_UAMLISTEN address to be on another network range like David mentioned, clients get that connection reset error. But /proc/net/coova/chilli is populated and if I manually authorize a client, he/she can browse the web. It's possible that there is a config problem or the NAT between UAMLISTEN and DHCPLISTEN has a issue. I am trying out all possible things I can think of but so far, I am not getting it right.
+
+Thanks so much for your advice and help.
+
+Regards,
+Phyo Wai Soe
+
+----- Original Message -----
+From: "Russell Mike" <radius.sir at gmail.com>
+To: "Phyo Wai Soe" <phyo.w.soe at frontiir.net>
+Sent: Thursday, November 28, 2013 2:04:05 PM
+Subject: Re: [Chilli] CoovaChilli Kernel Mode issue
+
+Hi
+
+i use CoovaChilli 1.3.0 in ISP HOSTING environment in multi tenancy mode
+using VALNs. I have 27 instances running for chilli on single server. This
+message is normal
+
+* (Connection reset by peer) redir_read(0) failed!*
+
+
+i do serve 230 hotspots across the city from my data center. i also see the
+same (* (Connection reset by peer)*) in my logs as well, but cause nothing.
+Moreover, i did not even received one trouble ticket in last one year from
+any hotspot client, whereas above message is always there.
+
+"Connection reset by peer" is often seen when a TCP communication partner
+("peer") resets an initiated or established TCP connection. if a TCP packet
+was received, but the peer has no matching socket associated As a result, a
+locally invoked TCP receive
+
+When user close browser, shutdown computer, take off network cable or walk
+out side the network range with his iPhone, this would be logged. Can you
+tell what is actual problem?
+
+Thanks / Regards
+RM --
+
+
+
+On Thu, Nov 28, 2013 at 2:44 AM, Phyo Wai Soe <phyo.w.soe at frontiir.net>wrote:
+
+> Hi Xabier,
+>
+> I am following these instructions from David on how to enable the kernel
+> module. http://lists.coova.org/pipermail/chilli/2010-April/001239.html
+>
+> According to him, "Chilli is then also configured with 'uamlisten' of
+> 11.0.0.1 and
+> this is the IP address that gets assigned to tun0 (so note that
+> dhcplisten and uamlisten are different!). The high level concept is that
+> subscribers get a 10.1.0.0/24 IP address which is routed (when
+> authenticated) through the kernel."
+>
+> So, I guess my setup is ok. When I installed CoovaChilli in normal mode
+> and made UAMLISTEN part of HS_NETWORK, it was ok. This issue happens only
+> if I enable the kernel module mode.
+>
+> Btw, when I looked at the syslogs, I saw the following lines when the
+> clients got the resetting issue.
+>
+> redir.c: 2020: 104 (Connection reset by peer) redir_read(0) failed!
+>
+> Doing tcpdump on a client (10.99.0.30) when the issue occurred gave me the
+> followings.
+> ========================
+> 16:54:09.921330 IP (tos 0x0, ttl 64, id 0, offset 0, flags [DF], proto TCP
+> (6), length 40)
+> 192.168.99.1.3990 > 10.99.0.30.57235: Flags [R], cksum 0xcb11 (correct),
+> seq 2598775956, win 0, length 0
+> 16:54:09.922202 IP (tos 0x0, ttl 64, id 0, offset 0, flags [DF], proto TCP
+> (6), length 40)
+> 10.99.0.30.57235 > 192.168.99.1.3990: Flags [R], cksum 0xb372 (correct),
+> seq 524533718, win 0, length 0
+> 16:54:09.922646 IP (tos 0x0, ttl 64, id 0, offset 0, flags [DF], proto TCP
+> (6), length 40)
+> 10.99.0.30.57235 > 192.168.99.1.3990: Flags [R], cksum 0xb372 (correct),
+> seq 524533718, win 0, length 0
+> ===============
+> I think it probably indicates that the server (192.168.99.1:3990) is
+> resetting the connections even before showing the redirection page. I
+> tested by creating a test page and put it in /www. A client won't even see
+> the contents of that test page.
+> HS_UAMHOMEPAGE=http://\$HS_UAMLISTEN:\$HS_UAMPORT/www/testpage.html
+>
+> I searched the forum and web for solving redir_read issue but didn't get
+> any clue.
+>
+> Thank you.
+>
+> Regards,
+> Phyo
+>
+> Regards,
+> Phyo Wai Soe
+>
+>
+> ------------------------------
+> *From: *"Xabier Oneca -- xOneca" <xoneca at gmail.com>
+> *To: *"Phyo Wai Soe" <phyo.w.soe at frontiir.net>, chilli at coova.org
+> *Sent: *Wednesday, November 27, 2013 1:21:50 AM
+> *Subject: *Re: [Chilli] CoovaChilli Kernel Mode issue
+>
+>
+> Hello Phyo,
+>
+> Are you sure you posted the configuration that you used?
+>
+> > HS_NETWORK=10.99.0.0       # HotSpot Network (must include HS_UAMLISTEN)
+> > HS_NETMASK=255.255.255.0   # HotSpot Network Netmask
+> > HS_UAMLISTEN=192.168.99.1  # HotSpot IP Address (on subscriber network
+>
+> As the comments say, 'HS_UAMLISTEN' must be in 'HS_NEWORK' and your
+> isn't...
+>
+> Cheers,
+>
+> Xabier Oneca_,,_
+>
+>
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+>
+
+From Maik.Wortmann at stuttgart.de  Thu Nov 28 15:40:40 2013
+From: Maik.Wortmann at stuttgart.de (Maik.Wortmann at stuttgart.de)
+Date: Thu, 28 Nov 2013 16:40:40 +0100
+Subject: [Chilli] Antwort:  [Layer3] Like uamallowed,
+ but for source address - like macallowed but for IPs - ip source
+ whitelist - server whitelist
+In-Reply-To: <529634E7.3000204@labs.it>
+References: <529634E7.3000204@labs.it>
+Message-ID: <OF558CB0DF.7C2140D9-ONC1257C31.00561F0E-C1257C31.00561F10@stuttgart.de>
+
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20131128/0b90fc5f/attachment.html>
+
+From david at coova.com  Thu Nov 28 18:00:52 2013
+From: david at coova.com (David Bird)
+Date: Thu, 28 Nov 2013 10:00:52 -0800
+Subject: [Chilli] [Layer3] Like uamallowed,
+ but for source address - like macallowed but for IPs - ip source
+ whitelist - server whitelist
+In-Reply-To: <529634E7.3000204@labs.it>
+References: <529634E7.3000204@labs.it>
+Message-ID: <1385661652.12462.2.camel@david-XPS>
+
+Thanks! 
+
+Could you resubmit your patches as attachments and "sign-off" on them
+based acknowledging:
+http://dev.coova.org/svn/coova-chilli/Contributing ?
+
+That would be appreciated. 
+
+Doing an "ipauth" similar to macauth shouldn't be too hard, but you'd
+want to maintain a session for the device so that accounting would
+follow the auth. 
+
+Thanks!
+David
+
+
+
+On Wed, 2013-11-27 at 19:07 +0100, Michele Bergonzoni wrote:
+> In a Layer3 environment where there are servers and "special" devices in 
+> the same network as the guests, you might need to whitelist some source IPs.
+> 
+> I found no usable solution for this (an old thread in this list ends 
+> with a cron job that uses chilli_query, something that is not quite 
+> perfect), so I wrote the following. It defines a new configuration 
+> parameter and command-line switch ipsrcallowed, that you can control in 
+> chilli/config with HS_IPSRCALLOWED, with the same syntax as uamallowed: 
+> comma separated list of single IP addresses or IP prefixes (also domain 
+> names, but that is not intended to work nor tested and will probably break).
+> 
+> Clients with IPs in that list will not be redirected. Sessions will not 
+> be created, so you will not see them in "chilli_query list".
+> 
+> This patch is relative to current SVN, with EDNS and previous patch applied.
+> 
+> My first try was with a layer3 version of macauth, to query a RADIUS 
+> server with the IP address before redirecting, but it was too hard 
+> (Coovachilli in my opinion would benefit from some refactoring). If 
+> someone knows how to do that, please tell.
+> 
+> Regards,
+> 				Bergonz
+> 
+> Index: conf/functions.in
+> ===================================================================
+> --- conf/functions.in   (revision 485)
+> +++ conf/functions.in   (working copy)
+> @@ -179,6 +179,9 @@
+>       HS_UAMALLOW=$(echo $HS_UAMALLOW|sed 's/ /,/g')
+>       uamallow=${HS_UAMALLOW:+",$HS_UAMALLOW"}
+> 
+> +    HS_IPSRCALLOWED=$(echo $HS_IPSRCALLOWED|sed 's/ /,/g')
+> +    addconfig1 ${HS_IPSRCALLOWED:+"ipsrcallowed $HS_IPSRCALLOWED"}
+> +
+>       addconfig1 ${HS_MAXCLIENTS:+"maxclients $HS_MAXCLIENTS"}
+>       addconfig1 ${HS_RADIUSQSIZE:+"radiusqsize $HS_RADIUSQSIZE"}
+>       addconfig1 ${HS_DHCPHASHSIZE:+"dhcphashsize $HS_DHCPHASHSIZE"}
+> Index: src/options.h
+> ===================================================================
+> --- src/options.h       (revision 485)
+> +++ src/options.h       (working copy)
+> @@ -302,6 +302,11 @@
+>     uint32_t regex_num_pass_throughs;
+>   #endif
+> 
+> +#ifdef ENABLE_LAYER3
+> +  pass_through ipsrc_pass_throughs[MAX_IPSRC_PASS_THROUGHS];
+> +  uint32_t ipsrc_num_pass_throughs;
+> +#endif
+> +
+>     char* uamdomains[MAX_UAM_DOMAINS];
+>     int uamdomain_ttl;
+> 
+> Index: src/cmdline.ggo
+> ===================================================================
+> --- src/cmdline.ggo     (revision 485)
+> +++ src/cmdline.ggo     (working copy)
+> @@ -266,6 +266,7 @@
+>   option "uamdomainfile" - "Load uamdomains (regex) from file" string no
+> 
+>   option "layer3" - "Layer3 only" flag off
+> +option "ipsrcallowed"  - "List of allowed source IP addresses, for 
+> Layer3" string no multiple
+>   option "patricia" - "Use patricia tries for walled garden lookup" flag off
+>   option "redirdnsreq" - "Send DNS query on redirect to pick of DNS 
+> based walled garden" flag off
+> 
+> Index: src/dhcp.c
+> ===================================================================
+> --- src/dhcp.c  (revision 485)
+> +++ src/dhcp.c  (working copy)
+> @@ -2503,6 +2503,23 @@
+>       found = 1;
+>   #endif
+> 
+> +#ifdef ENABLE_LAYER3
+> +  if (!found && _options.ipsrc_pass_throughs){
+> +    if (garden_check(_options.ipsrc_pass_throughs,
+> +                       &_options.ipsrc_num_pass_throughs, &pt,
+> +                       ipph, !dst
+> +#ifdef HAVE_PATRICIA
+> +                       , 0
+> +#endif
+> +                       )) {
+> +      found = 1;
+> +#if(_debug_ > 1)
+> +      log_dbg("Packet matches ipsrcallowed");
+> +#endif
+> +    }
+> +  }
+> +#endif
+> +
+>   #ifdef ENABLE_GARDENACCOUNTING
+>     if (_options.uamgardendata) {
+> 
+> 
+> Index: src/main-opt.c
+> ===================================================================
+> --- src/main-opt.c      (revision 485)
+> +++ src/main-opt.c      (working copy)
+> @@ -724,6 +724,18 @@
+>   #endif
+>         );
+>     }
+> +#ifdef ENABLE_LAYER3
+> +  for (numargs = 0; numargs < args_info.ipsrcallowed_given; ++numargs) {
+> +    pass_throughs_from_string(_options.ipsrc_pass_throughs,
+> +                             MAX_IPSRC_PASS_THROUGHS,
+> +                             &_options.ipsrc_num_pass_throughs,
+> +                             args_info.ipsrcallowed_arg[numargs], 0, 0
+> +#ifdef HAVE_PATRICIA
+> +                             , 0
+> +#endif
+> +      );
+> +  }
+> +#endif
+> 
+>     _options.uamauthedallowed = args_info.uamauthedallowed_flag;
+>   #ifdef ENABLE_AUTHEDALLOWED
+> Index: src/chilli_limits.h
+> ===================================================================
+> --- src/chilli_limits.h (revision 485)
+> +++ src/chilli_limits.h (working copy)
+> @@ -134,4 +134,12 @@
+>   #define RADIUS_QUEUE_PACKET_PTR 1
+>   #endif
+> 
+> +#ifdef ENABLE_LAYER3
+> +#ifdef ENABLE_LARGELIMITS
+> +#define MAX_IPSRC_PASS_THROUGHS               512 /* Max number of 
+> allowed IP source addresses, for Layer3 */
+> +#else
+> +#define MAX_IPSRC_PASS_THROUGHS               8 /* Max number of 
+> allowed IP source addresses, for Layer3 */
+>   #endif
+> +#endif
+> +
+> +#endif
+> 
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+
+
+From xoneca at gmail.com  Thu Nov 28 23:36:25 2013
+From: xoneca at gmail.com (Xabier Oneca -- xOneca)
+Date: Fri, 29 Nov 2013 00:36:25 +0100
+Subject: [Chilli] CoovaChilli Kernel Mode issue
+In-Reply-To: <577107616.331030.1385607399941.JavaMail.root@frontiir.net>
+References: <1561245260.281382.1385376623746.JavaMail.root@frontiir.net>
+ <1547615330.282248.1385378564547.JavaMail.root@frontiir.net>
+ <CACkgH70r=f46RvoS4oMzjVhMS8bN7MKCO71gUBYMCyWaaZ93aQ@mail.gmail.com>
+ <577107616.331030.1385607399941.JavaMail.root@frontiir.net>
+Message-ID: <CACkgH71Od8xe6KJDV=X3gWTfOtvktOuyj2qbwQjRGOMFe4aTDw@mail.gmail.com>
+
+Hello Phyo,
+
+> I am following these instructions from David on how to enable the kernel
+module. http://lists.coova.org/pipermail/chilli/2010-April/001239.html
+>
+> According to him, "Chilli is then also configured with 'uamlisten' of
+11.0.0.1 and
+> this is the IP address that gets assigned to tun0 (so note that
+> dhcplisten and uamlisten are different!). The high level concept is that
+> subscribers get a 10.1.0.0/24 IP address which is routed (when
+> authenticated) through the kernel."
+>
+> So, I guess my setup is ok.
+
+Yes, you're right. Sorry! I didn't know about kernel-module-specific
+configuration quirks...
+
+> Btw, when I looked at the syslogs, I saw the following lines when the
+clients got the resetting issue.
+>
+> redir.c: 2020: 104 (Connection reset by peer) redir_read(0) failed!
+>
+> Doing tcpdump on a client (10.99.0.30) when the issue occurred gave me
+the followings.
+> ========================
+> 16:54:09.921330 IP (tos 0x0, ttl 64, id 0, offset 0, flags [DF], proto
+TCP (6), length 40)
+> 192.168.99.1.3990 > 10.99.0.30.57235: Flags [R], cksum 0xcb11 (correct),
+seq 2598775956, win 0, length 0
+> 16:54:09.922202 IP (tos 0x0, ttl 64, id 0, offset 0, flags [DF], proto
+TCP (6), length 40)
+> 10.99.0.30.57235 > 192.168.99.1.3990: Flags [R], cksum 0xb372 (correct),
+seq 524533718, win 0, length 0
+> 16:54:09.922646 IP (tos 0x0, ttl 64, id 0, offset 0, flags [DF], proto
+TCP (6), length 40)
+> 10.99.0.30.57235 > 192.168.99.1.3990: Flags [R], cksum 0xb372 (correct),
+seq 524533718, win 0, length 0
+> ===============
+> I think it probably indicates that the server (192.168.99.1:3990) is
+resetting the connections even before showing the redirection page.
+
+Maybe it has to do with your iptables rules. What rules are you applying?
+Cheers,
+
+Xabier Oneca_,,_
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20131129/7ed443be/attachment.html>
+
+From phyo.w.soe at frontiir.net  Fri Nov 29 02:25:40 2013
+From: phyo.w.soe at frontiir.net (Phyo Wai Soe)
+Date: Fri, 29 Nov 2013 02:25:40 +0000 (UTC)
+Subject: [Chilli] CoovaChilli Kernel Mode issue
+In-Reply-To: <CACkgH71Od8xe6KJDV=X3gWTfOtvktOuyj2qbwQjRGOMFe4aTDw@mail.gmail.com>
+References: <1561245260.281382.1385376623746.JavaMail.root@frontiir.net>
+ <1547615330.282248.1385378564547.JavaMail.root@frontiir.net>
+ <CACkgH70r=f46RvoS4oMzjVhMS8bN7MKCO71gUBYMCyWaaZ93aQ@mail.gmail.com>
+ <577107616.331030.1385607399941.JavaMail.root@frontiir.net>
+ <CACkgH71Od8xe6KJDV=X3gWTfOtvktOuyj2qbwQjRGOMFe4aTDw@mail.gmail.com>
+Message-ID: <1212986019.4269.1385691940739.JavaMail.root@frontiir.net>
+
+Hi Xabier,
+
+I am using the default rules (ie., up.sh writes the rules on CoovaChilli startup). With the kernel module mode on, the rules are as follows (eth0 is the WAN and eth1 is the DHCP interface):
+
+iptables -L
+
+Chain INPUT (policy ACCEPT)
+target     prot opt source               destination         
+
+Chain FORWARD (policy DROP)
+target     prot opt source               destination         
+ACCEPT     all  --  anywhere             anywhere            
+ACCEPT     all  --  anywhere             anywhere            
+ACCEPT     all  --  anywhere             anywhere            coova: name: chilli side: dest 
+ACCEPT     all  --  anywhere             anywhere            coova: name: chilli side: source
+
+Chain OUTPUT (policy ACCEPT)
+target     prot opt source               destination
+--------------------------------------
+iptables -S
+
+-P INPUT ACCEPT
+-P FORWARD DROP
+-P OUTPUT ACCEPT
+-A FORWARD -o tun0 -j ACCEPT
+-A FORWARD -i tun0 -j ACCEPT
+-A FORWARD -o eth1 -m coova --name chilli --dest  -j ACCEPT
+-A FORWARD -i eth1 -m coova --name chilli --source  -j ACCEPT
+-------------------------------------
+Thank you.
+
+Regards,
+Phyo Wai Soe
+
+----- Original Message ----- 
+From: "Xabier Oneca -- xOneca" <xoneca at gmail.com> 
+To: "Phyo Wai Soe" <phyo.w.soe at frontiir.net>, chilli at coova.org 
+Sent: Friday, November 29, 2013 6:06:25 AM 
+Subject: Re: [Chilli] CoovaChilli Kernel Mode issue 
+
+
+Hello Phyo, 
+> I am following these instructions from David on how to enable the kernel module. http://lists.coova.org/pipermail/chilli/2010-April/001239.html 
+> 
+> According to him, "Chilli is then also configured with 'uamlisten' of 11.0.0.1 and 
+> this is the IP address that gets assigned to tun0 (so note that 
+> dhcplisten and uamlisten are different!). The high level concept is that 
+> subscribers get a 10.1.0.0/24 IP address which is routed (when 
+> authenticated) through the kernel." 
+> 
+> So, I guess my setup is ok. 
+Yes, you're right. Sorry! I didn't know about kernel-module-specific configuration quirks... 
+
+> Btw, when I looked at the syslogs, I saw the following lines when the clients got the resetting issue. 
+> 
+> redir.c: 2020: 104 (Connection reset by peer) redir_read(0) failed! 
+> 
+> Doing tcpdump on a client (10.99.0.30) when the issue occurred gave me the followings. 
+> ======================== 
+> 16:54:09.921330 IP (tos 0x0, ttl 64, id 0, offset 0, flags [DF], proto TCP (6), length 40) 
+> 192.168.99.1.3990 > 10.99.0.30.57235: Flags [R], cksum 0xcb11 (correct), seq 2598775956, win 0, length 0 
+> 16:54:09.922202 IP (tos 0x0, ttl 64, id 0, offset 0, flags [DF], proto TCP (6), length 40) 
+> 10.99.0.30.57235 > 192.168.99.1.3990: Flags [R], cksum 0xb372 (correct), seq 524533718, win 0, length 0 
+> 16:54:09.922646 IP (tos 0x0, ttl 64, id 0, offset 0, flags [DF], proto TCP (6), length 40) 
+> 10.99.0.30.57235 > 192.168.99.1.3990: Flags [R], cksum 0xb372 (correct), seq 524533718, win 0, length 0 
+> =============== 
+> I think it probably indicates that the server ( 192.168.99.1:3990 ) is resetting the connections even before showing the redirection page. 
+Maybe it has to do with your iptables rules. What rules are you applying? Cheers, 
+
+Xabier Oneca_,,_ 
+
+From mohsen.saeedi at gmail.com  Fri Nov 29 07:13:36 2013
+From: mohsen.saeedi at gmail.com (Mohsen Saeedi)
+Date: Fri, 29 Nov 2013 10:43:36 +0330
+Subject: [Chilli] net.c Resource temporarily unavailable
+In-Reply-To: <5296FA2B.10709@gmail.com>
+References: <5296FA2B.10709@gmail.com>
+Message-ID: <52983EA0.4020403@gmail.com>
+
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20131129/3128f102/attachment.html>
+
+From jbglaw at getslash.de  Fri Nov 29 10:27:37 2013
+From: jbglaw at getslash.de (Jan-Benedict Glaw)
+Date: Fri, 29 Nov 2013 11:27:37 +0100
+Subject: [Chilli] [PATCH] redir.c: Additional file extensions / mime types
+ for redir_main()
+Message-ID: <20131129102736.GA5839@pluto.office.getslash.de>
+
+Hi!
+
+I'm currently doing some tests with Chilli and couldn't serve an
+already existing login page without this patch:
+
+Index: src/redir.c
+===================================================================
+--- src/redir.c	(revision 490)
++++ src/redir.c	(working copy)
+@@ -3483,6 +3483,10 @@
+ 	else if (!strcmp(filename + (namelen - 4), ".ogv"))  ctype = "video/ogg";
+ 	else if (!strcmp(filename + (namelen - 4), ".png"))  ctype = "image/png";
+ 	else if (!strcmp(filename + (namelen - 4), ".swf"))  ctype = "application/x-shockwave-flash";
++	else if (!strcmp(filename + (namelen - 4), ".svg"))  ctype = "image/svg+xml";
++	else if (!strcmp(filename + (namelen - 5), ".woff")) ctype = "application/font-woff";
++	else if (!strcmp(filename + (namelen - 4), ".ttf"))  ctype = "application/x-font-ttf";
++	else if (!strcmp(filename + (namelen - 4), ".eot"))  ctype = "application/vnd.ms-fontobject";
+ 	else if (!strcmp(filename + (namelen - 4), ".chi")){ ctype = "text/html"; parse = 1; }
+ 	else if (!strcmp(filename + (namelen - 4), ".cjs")){ ctype = "text/javascript"; parse = 1; }
+ 	else if (!strcmp(filename + (namelen - 4), ".dat")){ ctype = "application/x-ns-proxy-autoconfig";
+
+Could be useful for other people, too. (Though in the long term, it
+would probably be an advantage to have this table as a plain
+configuration file...)
+
+MfG, JBG
+
+-- 
+Getslash GmbH, Bahnhofstra?e 16, 59302 Oelde
+Tel: +49-2522-834349-5    Fax:   +49-2522-834349-1
+http://www.getslash.de    Mobil: +49-152-33822499
+Sitz der Gesellschaft: Oelde
+Handelsregister: Amtsgericht M?nster, HRB 11911
+Ust-Id-Nr.: DE 815060326
+Gesch?ftsf?hrung: Andre Peitz, Tobias Hanisch
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: signature.asc
+Type: application/pgp-signature
+Size: 836 bytes
+Desc: Digital signature
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20131129/3f8f0e9d/attachment.pgp>
+
+From xoneca at gmail.com  Fri Nov 29 15:58:55 2013
+From: xoneca at gmail.com (Xabier Oneca -- xOneca)
+Date: Fri, 29 Nov 2013 16:58:55 +0100
+Subject: [Chilli] [PATCH] redir.c: Additional file extensions / mime
+ types for redir_main()
+In-Reply-To: <20131129102736.GA5839@pluto.office.getslash.de>
+References: <20131129102736.GA5839@pluto.office.getslash.de>
+Message-ID: <CACkgH71KajV0kH=vs-TFnGBkPKNBM5r2Cnu19b-LUK3Cg93_zA@mail.gmail.com>
+
+Hello Jan-Benedict,
+
+> Though in the long term, it
+> would probably be an advantage to have this table as a plain
+> configuration file...
+
+Or let in the source a couple of basic types (html, chi, js) and use
+libmagic to test the rest of types.
+
+Cheers,
+
+Xabier Oneca_,,_
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20131129/733ac34a/attachment.html>
+

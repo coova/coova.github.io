@@ -1,0 +1,127 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] chilli_redir hung on reading from unavailable socket
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20chilli_redir%20hung%20on%20reading%20from%20unavailable%20socket&In-Reply-To=%3C4C0A3B9D.6000903%40wiggy.net%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001418.html">
+   <LINK REL="Next"  HREF="001414.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] chilli_redir hung on reading from unavailable socket</H1>
+    <B>Wichert Akkerman</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20chilli_redir%20hung%20on%20reading%20from%20unavailable%20socket&In-Reply-To=%3C4C0A3B9D.6000903%40wiggy.net%3E"
+       TITLE="[Chilli] chilli_redir hung on reading from unavailable socket">wichert at wiggy.net
+       </A><BR>
+    <I>Sat Jun  5 11:57:17 UTC 2010</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001418.html">[Chilli] chilli issues
+</A></li>
+        <LI>Next message: <A HREF="001414.html">[Chilli] chilli_redir hung on reading from unavailable socket
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1413">[ date ]</a>
+              <a href="thread.html#1413">[ thread ]</a>
+              <a href="subject.html#1413">[ subject ]</a>
+              <a href="author.html#1413">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>We had another instance of chilli_redir stopping to respond today. An 
+strace showed the same output we've seen earlier: a busy loop trying to 
+read from an unavailable filedescriptor:
+
+time(NULL)                              = 1275738485
+read(25, 0x897e468, 11)                 = -1 EAGAIN (Resource 
+temporarily unavailable)
+time(NULL)                              = 1275738485
+read(25, 0x897e468, 11)                 = -1 EAGAIN (Resource 
+temporarily unavailable)
+time(NULL)                              = 1275738485
+
+This is the list of open filedescriptors for the chilli_redir process:
+
+lr-x------ 1 root root 64 2010-06-05 13:48 0 -&gt; pipe:[37194254]
+l-wx------ 1 root root 64 2010-06-05 13:48 1 -&gt; pipe:[37194255]
+lrwx------ 1 root root 64 2010-06-05 13:48 10 -&gt; socket:[37194893]
+lrwx------ 1 root root 64 2010-06-05 13:48 11 -&gt; anon_inode:[eventpoll]
+lrwx------ 1 root root 64 2010-06-05 13:48 12 -&gt; socket:[2343658067]
+lrwx------ 1 root root 64 2010-06-05 13:48 13 -&gt; socket:[2342518623]
+lrwx------ 1 root root 64 2010-06-05 13:48 14 -&gt; socket:[2343704926]
+lrwx------ 1 root root 64 2010-06-05 13:48 15 -&gt; socket:[2343205790]
+lrwx------ 1 root root 64 2010-06-05 13:48 16 -&gt; socket:[2343240766]
+lrwx------ 1 root root 64 2010-06-05 13:48 17 -&gt; socket:[2343733035]
+lrwx------ 1 root root 64 2010-06-05 13:48 18 -&gt; socket:[2343871860]
+lrwx------ 1 root root 64 2010-06-05 13:48 19 -&gt; socket:[2343872794]
+l-wx------ 1 root root 64 2010-06-05 13:48 2 -&gt; pipe:[37194256]
+lrwx------ 1 root root 64 2010-06-05 13:48 20 -&gt; socket:[2343899518]
+lrwx------ 1 root root 64 2010-06-05 13:48 21 -&gt; socket:[2344155630]
+lrwx------ 1 root root 64 2010-06-05 13:48 22 -&gt; socket:[101733818]
+lrwx------ 1 root root 64 2010-06-05 13:48 23 -&gt; socket:[2344215297]
+lrwx------ 1 root root 64 2010-06-05 13:48 24 -&gt; socket:[2344292072]
+lrwx------ 1 root root 64 2010-06-05 13:48 25 -&gt; socket:[2344474331]
+lrwx------ 1 root root 64 2010-06-05 13:48 3 -&gt; socket:[37194892]
+lrwx------ 1 root root 64 2010-06-05 13:48 30 -&gt; socket:[2342619478]
+lrwx------ 1 root root 64 2010-06-05 13:48 31 -&gt; socket:[2342619647]
+lrwx------ 1 root root 64 2010-06-05 13:48 32 -&gt; socket:[2342630816]
+lrwx------ 1 root root 64 2010-06-05 13:48 33 -&gt; socket:[2342673196]
+lrwx------ 1 root root 64 2010-06-05 13:48 37 -&gt; socket:[2342750246]
+lrwx------ 1 root root 64 2010-06-05 13:48 38 -&gt; socket:[2342819623]
+lrwx------ 1 root root 64 2010-06-05 13:48 39 -&gt; socket:[2343164358]
+lrwx------ 1 root root 64 2010-06-05 13:48 4 -&gt; /dev/net/tun
+lrwx------ 1 root root 64 2010-06-05 13:48 40 -&gt; socket:[2343173350]
+lrwx------ 1 root root 64 2010-06-05 13:48 5 -&gt; socket:[37194878]
+lr-x------ 1 root root 64 2010-06-05 13:48 6 -&gt; /dev/urandom
+lrwx------ 1 root root 64 2010-06-05 13:48 7 -&gt; socket:[37194881]
+lrwx------ 1 root root 64 2010-06-05 13:48 8 -&gt; socket:[37194883]
+lrwx------ 1 root root 64 2010-06-05 13:48 9 -&gt; socket:[37194885]
+
+So filedescriptor 25 is one of the sockets. Looking at the open files 
+for the chilli process I do not see the same socket in the list:
+
+lr-x------ 1 root root 64 2010-06-05 13:49 0 -&gt; pipe:[37194254]
+l-wx------ 1 root root 64 2010-06-05 13:49 1 -&gt; pipe:[37194255]
+lrwx------ 1 root root 64 2010-06-05 13:49 10 -&gt; anon_inode:[eventpoll]
+l-wx------ 1 root root 64 2010-06-05 13:49 2 -&gt; pipe:[37194256]
+lrwx------ 1 root root 64 2010-06-05 13:49 3 -&gt; socket:[37194871]
+lrwx------ 1 root root 64 2010-06-05 13:49 4 -&gt; /dev/net/tun
+lrwx------ 1 root root 64 2010-06-05 13:49 5 -&gt; socket:[37194878]
+lr-x------ 1 root root 64 2010-06-05 13:49 6 -&gt; /dev/urandom
+lrwx------ 1 root root 64 2010-06-05 13:49 7 -&gt; socket:[37194881]
+lrwx------ 1 root root 64 2010-06-05 13:49 8 -&gt; socket:[37194883]
+lrwx------ 1 root root 64 2010-06-05 13:49 9 -&gt; socket:[37194885]
+
+I'm not sure what socket 25 should be.
+
+Wichert.
+
+</PRE>
+
+
+
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001418.html">[Chilli] chilli issues
+</A></li>
+	<LI>Next message: <A HREF="001414.html">[Chilli] chilli_redir hung on reading from unavailable socket
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1413">[ date ]</a>
+              <a href="thread.html#1413">[ thread ]</a>
+              <a href="subject.html#1413">[ subject ]</a>
+              <a href="author.html#1413">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

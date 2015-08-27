@@ -1,0 +1,97 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] Does option noradallow effect radconf only?
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Does%20option%20noradallow%20effect%20radconf%20only%3F&In-Reply-To=%3Cfe761d81a6aa430d8a9522b970981597%40AM3PR05MB323.eurprd05.prod.outlook.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="002481.html">
+   <LINK REL="Next"  HREF="002485.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] Does option noradallow effect radconf only?</H1>
+    <B>Steffen Dettmer</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Does%20option%20noradallow%20effect%20radconf%20only%3F&In-Reply-To=%3Cfe761d81a6aa430d8a9522b970981597%40AM3PR05MB323.eurprd05.prod.outlook.com%3E"
+       TITLE="[Chilli] Does option noradallow effect radconf only?">steffen.dettmer at nomadrail.com
+       </A><BR>
+    <I>Mon Dec  2 13:17:49 UTC 2013</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="002481.html">[Chilli] Does option noradallow effect radconf only?
+</A></li>
+        <LI>Next message: <A HREF="002485.html">[Chilli] Does option noradallow effect radconf only?
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2482">[ date ]</a>
+              <a href="thread.html#2482">[ thread ]</a>
+              <a href="subject.html#2482">[ subject ]</a>
+              <a href="author.html#2482">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hi,
+
+&gt;<i> ... the effect of --noradallow ...
+</I>
+when changing redir_cb_radius_auth_conf() to handle timeout as
+REDIR_SUCCESS with session_param_defaults(), what would be bad
+consequences? (Of course it is doubtful whether it makes sense at
+all to authenticate everyone when no RADIUS server is available,
+except maybe for test automation or other really special cases).
+
+Steffen
+
+
+
+--- ../../coova-chilli/coova-chilli-1.3.1-svn/src/redir.c       2013-01-24 01:32:23.000000000 +0100
++++ redir.c     2013-12-02 13:42:48.834270456 +0100
+@@ -2442,6 +2442,13 @@
+   
+   if (!pack) { /* Timeout */
+     log_err(0, &quot;Radius request timed out&quot;);
++    if (_options.noradallow) {
++      log_info(&quot;RADIUS timeout but noradallow: default redir session.&quot;);
++      session_param_defaults(&amp;conn-&gt;s_params);
++      conn-&gt;response = REDIR_SUCCESS;
++      return 0;
++    }
++    log_info(&quot;RADIUS timeout and no noradallow: timeout redir session.&quot;);
+     conn-&gt;response = REDIR_FAILED_TIMEOUT;
+     return 0;
+   }
+
+
+</PRE>
+
+
+
+
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="002481.html">[Chilli] Does option noradallow effect radconf only?
+</A></li>
+	<LI>Next message: <A HREF="002485.html">[Chilli] Does option noradallow effect radconf only?
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2482">[ date ]</a>
+              <a href="thread.html#2482">[ thread ]</a>
+              <a href="subject.html#2482">[ subject ]</a>
+              <a href="author.html#2482">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

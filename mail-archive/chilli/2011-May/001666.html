@@ -1,0 +1,155 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] coova chilli and dnsmasq on same box
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20coova%20chilli%20and%20dnsmasq%20on%20same%20box&In-Reply-To=%3C50020.149.5.32.254.1305709845.squirrel%40www.rivertowermail.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001663.html">
+   <LINK REL="Next"  HREF="001667.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] coova chilli and dnsmasq on same box</H1>
+    <B>Derek C</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20coova%20chilli%20and%20dnsmasq%20on%20same%20box&In-Reply-To=%3C50020.149.5.32.254.1305709845.squirrel%40www.rivertowermail.com%3E"
+       TITLE="[Chilli] coova chilli and dnsmasq on same box">derekchilli at hssl.ie
+       </A><BR>
+    <I>Wed May 18 09:10:45 UTC 2011</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001663.html">[Chilli] coova chilli and dnsmasq on same box
+</A></li>
+        <LI>Next message: <A HREF="001667.html">[Chilli] coova chilli and dnsmasq on same box
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1666">[ date ]</a>
+              <a href="thread.html#1666">[ thread ]</a>
+              <a href="subject.html#1666">[ subject ]</a>
+              <a href="author.html#1666">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hi Ming-Ching,
+
+In dnsmasq.conf I either 1) *disabled* listening on the ath2 interface
+(with the &quot;bind-interfaces&quot; and &quot;except-interface&quot; options or 2) *only*
+made dnsmasq listen on the lo (127.0.0.1) interface with &quot;bind-interfaces&quot;
+and &quot;interface&quot; options.  I found that if dnsmasq was listening on ath2,
+even if the dhcp port was say 6700, chilli would give an error (I don't
+know why).
+
+If I have dnsmasq listening on lo (127.0.0.1) and in chilli I set the
+dhcpgateway to be 127.0.0.1, dhcpgatewayport to be 67 and dhcprelayagent
+to be my internal IP (I'm using 192.168.1.1 but I could use 192.168.182.1
+etc) then when I connect with a notebook it looks good (dnsmasq tries to
+serve an IP which can only mean that coova chilli is relaying I guess) but
+the IP never actually makes it to the device
+
+Example /var/log/messages output with the configuration above (a little
+cropped off at the end because I'm on a serial cable to the box) - you can
+see that it just keeps cycling over and over again:
+
+May 18 02:37:01 OpenWrt dnsmasq-dhcp[1160]: DHCPDISCOVER(lo)
+d8:a2:5e:00:17:58
+May 18 02:37:01 OpenWrt dnsmasq-dhcp[1160]: DHCPOFFER(lo) 192.168.1.244
+d8:a2:5e
+May 18 02:37:56 OpenWrt dnsmasq-dhcp[1160]: DHCPDISCOVER(lo)
+d8:a2:5e:00:17:58
+May 18 02:37:56 OpenWrt dnsmasq-dhcp[1160]: DHCPOFFER(lo) 192.168.1.244
+d8:a2:5e
+May 18 02:38:51 OpenWrt dnsmasq-dhcp[1160]: DHCPDISCOVER(lo)
+d8:a2:5e:00:17:58
+May 18 02:38:51 OpenWrt dnsmasq-dhcp[1160]: DHCPOFFER(lo) 192.168.1.244
+d8:a2:5e
+May 18 02:39:46 OpenWrt dnsmasq-dhcp[1160]: DHCPDISCOVER(lo)
+d8:a2:5e:00:17:58
+May 18 02:39:46 OpenWrt dnsmasq-dhcp[1160]: DHCPOFFER(lo) 192.168.1.244
+d8:a2:5e
+May 18 02:39:46 OpenWrt dnsmasq-dhcp[1160]: DHCPDISCOVER(lo)
+d8:a2:5e:00:17:58
+May 18 02:39:46 OpenWrt dnsmasq-dhcp[1160]: DHCPOFFER(lo) 192.168.1.244
+d8:a2:5e
+
+
+
+
+On Wed, May 18, 2011 8:35 am, Ming-Ching Tiew wrote:
+&gt;<i>
+</I>
+&gt;<i> I think dnsmasq has to listen to tun0 interface in order
+</I>&gt;<i> for it to serve the users. What is the dnsmasq -i parameter you used ?
+</I>&gt;<i>
+</I>&gt;<i> --- On Wed, 5/18/11, Derek C &lt;<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">derekchilli at hssl.ie</A>&gt; wrote:
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;&gt;<i> From: Derek C &lt;<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">derekchilli at hssl.ie</A>&gt;
+</I>&gt;&gt;<i> Subject: [Chilli] coova chilli and dnsmasq on same box
+</I>&gt;&gt;<i> To: <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli at coova.org</A>
+</I>&gt;&gt;<i> Date: Wednesday, May 18, 2011, 7:27 AM
+</I>&gt;&gt;<i> Hi all,
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> Is it possible to run dnsmasq and coova chilli (with
+</I>&gt;&gt;<i> dhcp-relaying) on the same physical box?&#160; I'm seeing that messages from
+</I>&gt;&gt;<i> dnsmasq (on 127.0.0.1) don't seem to be getting back to coova chilli - I
+</I>&gt;&gt;<i> don't see this issue when dnsmasq is running on a physically different
+</I>&gt;&gt;<i> computer so I wonder is it something to do with local routing and
+</I>&gt;&gt;<i> multicast UDP packets?
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> Derek
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> --
+</I>&gt;&gt;<i> Derek C
+</I>&gt;&gt;<i> In Ireland
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> _______________________________________________
+</I>&gt;&gt;<i> Chilli mailing list
+</I>&gt;&gt;<i> <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">Chilli at coova.org</A>
+</I>&gt;&gt;<i> <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">http://lists.coova.org/cgi-bin/mailman/listinfo/chilli</A>
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i>
+</I>&gt;<i> _______________________________________________
+</I>&gt;<i> Chilli mailing list
+</I>&gt;<i> <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">Chilli at coova.org</A>
+</I>&gt;<i> <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">http://lists.coova.org/cgi-bin/mailman/listinfo/chilli</A>
+</I>&gt;<i>
+</I>&gt;<i>
+</I>
+
+-- 
+Derek C
+In Ireland
+
+</PRE>
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001663.html">[Chilli] coova chilli and dnsmasq on same box
+</A></li>
+	<LI>Next message: <A HREF="001667.html">[Chilli] coova chilli and dnsmasq on same box
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1666">[ date ]</a>
+              <a href="thread.html#1666">[ thread ]</a>
+              <a href="subject.html#1666">[ subject ]</a>
+              <a href="author.html#1666">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

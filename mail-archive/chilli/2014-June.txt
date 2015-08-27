@@ -1,0 +1,1105 @@
+From steffen.dettmer at nomadrail.com  Mon Jun  2 07:55:08 2014
+From: steffen.dettmer at nomadrail.com (Steffen Dettmer)
+Date: Mon, 2 Jun 2014 07:55:08 +0000
+Subject: [Chilli] IPTABLES
+In-Reply-To: <53863100.9080707@base-it.co.uk>
+References: <53863100.9080707@base-it.co.uk>
+Message-ID: <8ea69b84f95c4af59f769c0dadb98e91@AM3PR05MB323.eurprd05.prod.outlook.com>
+
+Hi,
+
+Maybe add something like "/sbin/iptables -I FORWARD -i tun -d 192.168.1.0/24 -j DROP" to "/etc/chilli/ipup.sh" (creating it, if needed)?
+Instead of "/sbin/iptables" using the function "ipt" (from /etc/chilli/up.sh) could be suited:
+
+/etc/chilli/ipup.sh:
+ipt -I FORWARD -i tun -d 192.168.1.0/24 -j DROP
+
+Steffen
+
+
+From steffen.dettmer at nomadrail.com  Mon Jun  2 09:47:33 2014
+From: steffen.dettmer at nomadrail.com (Steffen Dettmer)
+Date: Mon, 2 Jun 2014 09:47:33 +0000
+Subject: [Chilli] IPTABLES
+In-Reply-To: <538C3E6F.10408@base-it.co.uk>
+References: <53863100.9080707@base-it.co.uk>
+ <8ea69b84f95c4af59f769c0dadb98e91@AM3PR05MB323.eurprd05.prod.outlook.com>
+ <538C3E6F.10408@base-it.co.uk>
+Message-ID: <26f465191cb34396a20c6e3cad9caf97@AM3PR05MB323.eurprd05.prod.outlook.com>
+
+Hi,
+
+good that you found a working setup!
+However, maybe there are some details that still could be
+improved.
+
+* Stephen Davies [mailto:steve at base-it.co.uk]:
+> This was added at the top of the script to get the gateway address
+>
+> # Get gateway IP for IPTABLES rules
+> GATEWAYIP=$(netstat -rn | grep 0.0.0.0 | awk '{print $2}' | grep -v "0.0.0.0")
+
+not sure it this is robust (e.g. when having multiple default routes)?
+
+> Then I added the rules and included the gateway address variable so that
+> access would not be blocked.
+
+Are you sure your clients shall have access to the gateway? Maybe
+you'd like to allow ICMP only? Or do you really offer services
+for clients that run on the gateway?
+
+> # Default
+>      ipt -I FORWARD -i $TUNTAP -o $HS_WANIF -j ACCEPT
+>
+>      # Prevent access to SSH on Coovachilli router
+>      ipt -I FORWARD -i $TUNTAP -p tcp --dport 22 -d 10.1.0.1 -j DROP
+
+I think this normally should not be needed (see HS_TCP_PORTS, in
+your case it should not include 22).
+
+>      # Prevent access to private subnets
+>      ipt -I FORWARD -d 192.0.0.0/255.0.0.0 -j DROP
+>      ipt -I FORWARD -d 10.0.0.0/255.0.0.0 -j DROP
+>      ipt -I FORWARD -d 172.0.0.0/255.0.0.0 -j DROP
+
+I think this should be:
+
+ipt -I FORWARD -d 192.168.0.0/255.255.0.0 -j DROP
+ipt -I FORWARD -d 10.0.0.0/255.0.0.0 -j DROP
+ipt -I FORWARD -d 172.16.0.0/255.240.0.0 -j DROP
+
+(http://en.wikipedia.org/wiki/Private_network#Private_IPv4_address_spaces).
+
+otherwise you'd block a lot of public internet sites :-)
+
+>      # Allow access to gateway
+>      ipt -I FORWARD -d $GATEWAYIP -j ACCEPT
+
+I think this should be double-checked...
+
+Regards,
+Steffen
+
+From phyo.w.soe at frontiir.net  Tue Jun  3 05:18:52 2014
+From: phyo.w.soe at frontiir.net (Phyo Wai Soe)
+Date: Tue, 3 Jun 2014 05:18:52 +0000 (UTC)
+Subject: [Chilli] Coova multi-session accounting
+In-Reply-To: <991136378.55816.1401772092125.JavaMail.root@frontiir.net>
+Message-ID: <1056972505.55996.1401772732424.JavaMail.root@frontiir.net>
+
+Hi All,
+
+I am using Coova 1.3.0 with FreeRadius/MySQL. We are using ChilliSpot-Max-Total-Octets attribute to manage users' usage quotas. All is well if we allow only 1 simultaneous session per user. However, if we allow multiple simultaneous sessions for each user, each session gets its own ChilliSpot-Max-Total-Octets value and Coova treats them as separate/different sessions. For example, if a user is allowed 1GB, he can open 2 simultaneous sessions and use 1 GB in each session.
+
+I remember reading somewhere that if there are multiple sessions for the same user, a unique multi-session ID is created to track two or more sessions. I can't recall whether it's related to Coova or some other NAS.
+
+I would like to know if Coova supports multi-session accounting like I described above. If it does, can you please tell me how/where I need to configure that.
+
+Many thanks.
+
+Regards,
+Phyo Wai Soe
+
+
+From Liam.Dennehy at paperlinx.com  Wed Jun  4 09:33:12 2014
+From: Liam.Dennehy at paperlinx.com (Dennehy, Liam)
+Date: Wed, 4 Jun 2014 10:33:12 +0100
+Subject: [Chilli] CoovaChilli not redirecting
+In-Reply-To: <5375C7F5.7020604@base-it.co.uk>
+References: <5375C7F5.7020604@base-it.co.uk>
+Message-ID: <6239A24C38D2594FB682374DF81215836A51157F02@GBDCCCR01.PaperlinX-EU.Local>
+
+Steve
+
+I just went through what I hope is something similar to your situation.
+
+Coova intercepts a HTTP request from the client and redirects them to the portal. To do this the client needs to:
+1. Have an IP address
+2. Know that the coova IP is the DNS server
+3. Send a DNS request to coova
+4. Coova will resolve the IP with DNS and return it to the client
+5. The client makes a HTTP request to the returned IP
+6. Coova spoofs a response to that request, directing users to the portal URL
+
+My fresh-build config was failing on 4 since I was dropping DNS requests, and the IP used by coova was not routed so I needed to MASQUERADE them. If your DNS server is not local to Coova this may be your cause.
+
+Liam Dennehy
+Technical Design Authority
+PaperlinX Europe
+M: +31 621 877 185
+
+
+-----Original Message-----
+From: chilli-bounces at coova.org [mailto:chilli-bounces at coova.org] On Behalf Of Stephen Davies
+Sent: 16 May 2014 10:10
+To: chilli at coova.org
+Subject: [Chilli] CoovaChilli not redirecting
+
+Hello all,
+
+Having finally got to grips with Coova, my final unsolved problem is
+that before authentication, users are not redirected to the login page
+when they request a URL. If I manually enter the Coova server address
+"http://10.1.0.1:3990" it then redirects? Does anyone know why it is
+failing. I have seen a few posts regarding this. I am running Coova on
+OpenWRT which could be the problem and not Coova.
+
+Thanks
+Steve
+
+
+_______________________________________________
+Chilli mailing list
+Chilli at coova.org
+http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+This email is privileged and confidential and is intended only for those to whom it is addressed. If you are not the intended recipient then any disclosure, dissemination, copying or use of the information is strictly prohibited. If you have received this email in error, please notify this office immediately by return email.
+
+Before opening any attachments please make sure they have been checked for viruses and defects.
+
+From Liam.Dennehy at paperlinx.com  Wed Jun  4 10:00:18 2014
+From: Liam.Dennehy at paperlinx.com (Dennehy, Liam)
+Date: Wed, 4 Jun 2014 11:00:18 +0100
+Subject: [Chilli] miniportal: wwwsh wrapper not receiving POST via stdin
+ for login.chi
+Message-ID: <6239A24C38D2594FB682374DF81215836A51157F1E@GBDCCCR01.PaperlinX-EU.Local>
+
+Hi all
+
+I haven't heard anything on this topic at all. As far as I can see the miniportal simply doesn't work, since the user's POST data (username + password) never reaches login.chi, indeed it is never even passed to wwwsh for it to give over to login.chi.
+
+Has anyone actually got this working on OpenWRT or anywhere else? What is the format login.chi expects, how does it actually work?
+
+Until this is sorted, the product is pretty useless and it appears I need to be something of a java coder to set up any other portal since there are no ready-made solutions. I was drawn to this product specifically because it has a radius-compatible portal built-in, and it just doesn't work.
+
+Liam Dennehy
+Technical Design Authority
+PaperlinX Europe
+M: +31 621 877 185
+
+From: Dennehy, Liam
+Sent: 24 April 2014 12:39
+To: 'Chilli at coova.org'
+Subject: miniportal: wwwsh wrapper not receiving POST via stdin for login.chi
+
+Hi all
+
+I've been trying to figure out how to get this issue solved for some time, hopefully this is the right forum.
+
+I'm running CoovaChilli on OpenWRT Barrier Breaker (trunk). The miniportal's wwwsh wrapper does not seem to have the client's POST response to login.chi either in stdin or as a shell variable which haserl is expecting to see when handling login.chi. As a result, the connection is terminated as soon as login.chi fails, citing a lack of input.
+
+A packet trace shows POST data in the client's submission of 106 bytes, and a shell variable CONTENT_LENGTH inside the wwwsh image also 106 bytes, but the actual POST data is neither in stdin nor any shell variable. From my limited knowledge of C I can't see how this is ever submitted to the execv calling _options.wwwbin, so I have no idea where else to look.
+
+All other functions appear to be working fine - DHCP, DNS forwarding, even opening the status.chi page and authenticating there passes to RADIUS just fine (that script has no stdin requirement apparently).
+
+This is the last piece before I declare everything functional and can start rollout, and I've kept all my changes ready to publish to upstream to both OpenWRT and anyone else so I'm keen to get this solved.
+
+Liam Dennehy
+PaperlinX Europe
+
+
+________________________________
+This email is privileged and confidential and is intended only for those to whom it is addressed. If you are not the intended recipient then any disclosure, dissemination, copying or use of the information is strictly prohibited. If you have received this email in error, please notify this office immediately by return email.
+
+Before opening any attachments please make sure they have been checked for viruses and defects.
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20140604/a73f4f04/attachment.html>
+
+From sachin0235 at yahoo.com  Wed Jun  4 13:08:20 2014
+From: sachin0235 at yahoo.com (Sachin Yadav)
+Date: Wed, 4 Jun 2014 06:08:20 -0700 (PDT)
+Subject: [Chilli] CoovaChilli behind ADSL2+ router
+Message-ID: <1401887300.93156.YahooMailNeo@web161301.mail.bf1.yahoo.com>
+
+Hi,
+
+I have a configuration where my Chilli wifi router is behind ISP provided ADSL2 modem+router. So final configuration is like -
+
+client (192.168.182.x) ===> coovachilli router (192.168.1.99) ==> ISP ADSL2 modem (192.168.1.1) ==> (public IP) Internet
+
+Sometimes what happen is due to electricity fluctuation ISP ADSL2 modem reboots along with coova chilli router. Coova chilli router reboots faster while modem is still trying to get a stable link. After this once WAN link is stable, if client tries to connect our UAM portal opens up for taking username and password but coovachilli request to radius for access gets failed due to timed out. We have to reboot coovachilli router and only then the problem resolves. Following are the logs -
+
+Log - 1
+----------------------------------------
+
+redir.c: 2103: 0 (Debug) The path: ncsi.txt
+redir.c: 2413: 0 (Debug) -->> Setting userurl=[http://www.msftncsi.com/ncsi.txt]
+redir.c: 3962: 0 (Debug) redir_accept: Original request host=www.msftncsi.com
+redir.c: 987: 0 (Debug) redir_wispr2_reply
+chilli.c: 379: 0 (Debug) caught 18 via selfpipe
+chilli.c: 310: 0 (Debug) child 1334 terminated
+chilli.c: 135: 0 (Debug) Freed child process 1334 [[redir]]
+redir.c: 2020: 131 (Connection reset by peer) redir_read(0) failed!
+redir.c: 3383: 0 (Debug) Error calling get_req. Terminating -1
+chilli.c: 379: 0 (Debug) caught 18 via selfpipe
+chilli.c: 310: 0 (Debug) child 1335 terminated
+chilli.c: 135: 0 (Debug) Freed child process 1335 [[redir]]
+
+
+Log 2
+==================================================================-
+
+
+dhcp.c: 1173: 0 (Debug) dhcpif (wlan0) IPv6 address fe80::cad3:a3ff:fe6e:32b0
+radius.c: 1315: 0 (Debug) RADIUS client 0.0.0.0:0
+chilli.c: 7303: 0 (Debug) Waiting for client request...
+radius.c: 321: 0 (Debug) Allocating RADIUS packet
+net.c: 388: 0 (Debug) net select count: 1
+net.c: 388: 0 (Debug) net select count: 2
+net.c: 388: 0 (Debug) net select count: 3
+net.c: 388: 0 (Debug) net select count: 4
+net.c: 388: 0 (Debug) net select count: 5
+net.c: 388: 0 (Debug) net select count: 6
+net.c: 388: 0 (Debug) net select count: 7
+net.c: 388: 0 (Debug) net select count: 8
+dhcp.c: 3555: 0 (Debug) chopping off trailer length 6
+dhcp.c: 3555: 0 (Debug) chopping off trailer length 6
+
+dhcp.c: 3640: 0 (Debug) Address not found (192.168.182.5)
+dhcp.c: 730: 0 (Debug) DHCP newconn: dc:85:de:52:41:f4
+chilli.c: 5117: 0 (Debug) New DHCP request from MAC=DC-85-DE-52-41-F4
+chilli.c: 5120: 0 (Debug) New DHCP connection established
+chilli.c: 5076: 0 (Debug) New Chilli Connection
+chilli.c: 4869: 0 (Debug) ----> cb_dhcp_request <----
+chilli.c: 4873: 0 (Debug) DHCP request for IP address 192.168.182.5
+chilli.c: 835: 0 (Debug) newip 192.168.182.5
+ippool.c: 456: 0 (Debug) Requesting new static ip: 192.168.182.5
+ippool.c: 479: 0 (Debug) HERE!!! -> 0
+ippool.c: 482: 0 (Debug) Static IP address not allowed
+ippool.c: 456: 0 (Debug) Requesting new dynamic ip: 192.168.182.5
+chilli.c: 5005: 0 (Debug) Client MAC=DC-85-DE-52-41-F4 assigned IP 192.168.182.5
+dhcp.c: 3921: 0 (Debug) dropping packet; unhandled auth state 0
+chilli.c: 310: 0 (Debug) child 1260 terminated
+
+radius.c: 1898: 0 (Debug) Received RADIUS packet id=0
+radius.c: 421: 0 (Debug) Freeing RADIUS packet
+radius.c: 426: 0 (Debug) RADIUS queue-out id=0 idx=0
+dhcp.c: 3509: 0 (Debug) dropping non-IPv4
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20140604/234f7640/attachment.html>
+
+From baguio.ivan at yahoo.com  Wed Jun  4 14:00:15 2014
+From: baguio.ivan at yahoo.com (Ivan dominic Baguio)
+Date: Wed, 4 Jun 2014 22:00:15 +0800 (SGT)
+Subject: [Chilli] HTTPS JSON
+Message-ID: <1401890415.7981.YahooMailNeo@web192706.mail.sg3.yahoo.com>
+
+is it possible to have the json http server to be https?
+?like?
+https:192.168.182.1:3990/json/status/
+
+thanks
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20140604/7159a8fc/attachment.html>
+
+From Liam.Dennehy at paperlinx.com  Thu Jun  5 08:04:52 2014
+From: Liam.Dennehy at paperlinx.com (Dennehy, Liam)
+Date: Thu, 5 Jun 2014 09:04:52 +0100
+Subject: [Chilli] IPTABLES
+In-Reply-To: <53863100.9080707@base-it.co.uk>
+References: <53863100.9080707@base-it.co.uk>
+Message-ID: <6239A24C38D2594FB682374DF81215836A51158129@GBDCCCR01.PaperlinX-EU.Local>
+
+Has anyone got back to you on this?
+
+Simply:
+iptables -I FORWARD 1 -s 10.1.0.0/24 -d 192.168.1.0/24 -j DROP
+
+To prevent people on your LAN talking to you guests:
+iptables -I FORWARD 1 -d 10.1.0.0/24 -s 192.168.1.0/24 -j DROP
+
+This inserts a rule on the first line of the FORWARD (routing) iptable dropping packets from and then to the subnets in question (-s for "source" and -d for "destination").
+
+The best starting point is a decent understanding of how IP does routing, and from there take a look at the diagram here that explains how packets flow through the kernel's various tables:
+http://l7-filter.sourceforge.net/PacketFlow.png
+
+Without any parameters, the iptables command acts on the "filter" table, as with the two commands above. The NAT table is the one that does your address translation and is specified using "-t nat".
+
+Liam Dennehy
+Technical Design Authority
+PaperlinX Europe
+M: +31 621 877 185
+
+-----Original Message-----
+From: chilli-bounces at coova.org [mailto:chilli-bounces at coova.org] On Behalf Of Stephen Davies
+Sent: 28 May 2014 20:55
+To: chilli at coova.org
+Subject: [Chilli] IPTABLES
+
+Hello all,
+
+Does anyone have any experience with IPTABLES and setting up rules to
+prevent access from the captive portal clients to the local LAN. My
+wireless Coovachilli access point is plugged into my LAN and is assigned
+(HS_WANIF) an IP in the range of 192.168.1.x. The wireless captive
+portal side (HS_LANIF) is running a subnet of 10.1.0.x.
+
+When a client is authenticated and granted internet access, the client
+can access services or ping any device in the private LAN of
+192.168.1.x. I want to prevent this for security reasons. I have tried
+and tried with various settings in IPTABLES but I am not getting very
+far. Does anyone have any pointers or rules examples. I am guessing this
+is a very important subject for public access Coovachilli installations.
+
+Thanks
+Steve
+
+_______________________________________________
+Chilli mailing list
+Chilli at coova.org
+http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+This email is privileged and confidential and is intended only for those to whom it is addressed. If you are not the intended recipient then any disclosure, dissemination, copying or use of the information is strictly prohibited. If you have received this email in error, please notify this office immediately by return email.
+
+Before opening any attachments please make sure they have been checked for viruses and defects.
+
+From maxxer at ufficyo.com  Wed Jun 11 10:57:33 2014
+From: maxxer at ufficyo.com (Lorenzo Milesi)
+Date: Wed, 11 Jun 2014 12:57:33 +0200 (CEST)
+Subject: [Chilli] Weird times in AcctSessionTime (and in AcctStartTime)
+In-Reply-To: <960907388.10008.1402483562932.JavaMail.zimbra@yetopen.it>
+Message-ID: <286784680.11972.1402484253891.JavaMail.zimbra@yetopen.it>
+
+Hi.
+I just realized some (very few, honestly) rows in Radacct contains weird AcctSessionTime, and some even start in 1970!
+>From what I understand searching online this is not a server problem (I had this on FreeRadius1, and still today with FR2) but a NAS issue sending the wrong times.
+Luckily I'm experiencing this only on 3 devices (out of ~150 other nases), and they're all DD-WRT.
+What can cause this? Is this just a problem of time setting of the WRT?
+
+Can this be fixed by just enabling NTP client?
+thanks
+-- 
+Lorenzo Milesi - lorenzo.milesi at yetopen.it
+
+YetOpen S.r.l. - http://www.yetopen.it/
+
+
+From andrew at polkaspots.com  Wed Jun 11 11:45:08 2014
+From: andrew at polkaspots.com (andrew@PolkaSpots.com)
+Date: Wed, 11 Jun 2014 12:45:08 +0100
+Subject: [Chilli] Weird times in AcctSessionTime (and in AcctStartTime)
+In-Reply-To: <286784680.11972.1402484253891.JavaMail.zimbra@yetopen.it>
+References: <286784680.11972.1402484253891.JavaMail.zimbra@yetopen.it>
+Message-ID: <53984144.9050302@polkaspots.com>
+
+NTP Client out of sync? not running at boot? or just servers down?
+
+
+On 11/06/14 11:57, Lorenzo Milesi wrote:
+> Hi.
+> I just realized some (very few, honestly) rows in Radacct contains weird AcctSessionTime, and some even start in 1970!
+>  From what I understand searching online this is not a server problem (I had this on FreeRadius1, and still today with FR2) but a NAS issue sending the wrong times.
+> Luckily I'm experiencing this only on 3 devices (out of ~150 other nases), and they're all DD-WRT.
+> What can cause this? Is this just a problem of time setting of the WRT?
+>
+> Can this be fixed by just enabling NTP client?
+> thanks
+
+---------------------------------------------------------------------------------------
+
+The information contained in this email and its attachments is confidential and may be the subject of legal, professional or other privilege. It is intended only for the named addressees and may not be disclosed to anyone else without consent from PolkaSpots Limited. If you are not the named addressee you must not use, disclose, distribute, copy, print or rely on the contents of this email and should destroy it immediately. Whilst PolkaSpots Limited takes care to protect its systems from electronic virus attack or other harmful event, the firm gives no warranty that this email message (including any attachments to it) is free of any virus or other harmful matter and accepts no responsibility for any loss or damage resulting from the recipient receiving, opening or using it. If you need any further information, please contact the originator of this message on +44 (0)20 7183 1471.
+
+PolkaSpots is a limited company registered in the UK (registered number 05508105). Registered Office: 204 Buspace Studios, Conlan Street, London W10 5AP
+
+Website: www.polkaspots.com
+WiFi Hotspot Blog: www.polkaspots.com/blog
+
+---------------------------------------------------------------------------------------
+
+
+
+From andrew at polkaspots.com  Wed Jun 11 13:11:58 2014
+From: andrew at polkaspots.com (andrew@PolkaSpots.com)
+Date: Wed, 11 Jun 2014 14:11:58 +0100
+Subject: [Chilli] Weird times in AcctSessionTime (and in AcctStartTime)
+In-Reply-To: <286784680.11972.1402484253891.JavaMail.zimbra@yetopen.it>
+References: <286784680.11972.1402484253891.JavaMail.zimbra@yetopen.it>
+Message-ID: <5398559E.7050603@polkaspots.com>
+
+I've seen this with OpenWRT, some times, at boot, the ntpclient does not update? Strange and random behaviour, but still happens. Could be that the eth interface is slower than the init.d/ntpclient process.
+
+
+
+NTP Client out of sync? not running at boot? or just servers down?
+
+you mean on the Chilli host? Could be, it's a wrt, maybe when it was started there was no WAN and time failed to sync...
+-- Lorenzo Milesi - lorenzo.milesi at yetopen.it YetOpen S.r.l. - 
+http://www.yetopen.it/
+
+On 11/06/14 11:57, Lorenzo Milesi wrote:
+> Hi.
+> I just realized some (very few, honestly) rows in Radacct contains weird AcctSessionTime, and some even start in 1970!
+>  From what I understand searching online this is not a server problem (I had this on FreeRadius1, and still today with FR2) but a NAS issue sending the wrong times.
+> Luckily I'm experiencing this only on 3 devices (out of ~150 other nases), and they're all DD-WRT.
+> What can cause this? Is this just a problem of time setting of the WRT?
+>
+> Can this be fixed by just enabling NTP client?
+> thanks
+
+---------------------------------------------------------------------------------------
+
+The information contained in this email and its attachments is confidential and may be the subject of legal, professional or other privilege. It is intended only for the named addressees and may not be disclosed to anyone else without consent from PolkaSpots Limited. If you are not the named addressee you must not use, disclose, distribute, copy, print or rely on the contents of this email and should destroy it immediately. Whilst PolkaSpots Limited takes care to protect its systems from electronic virus attack or other harmful event, the firm gives no warranty that this email message (including any attachments to it) is free of any virus or other harmful matter and accepts no responsibility for any loss or damage resulting from the recipient receiving, opening or using it. If you need any further information, please contact the originator of this message on +44 (0)20 7183 1471.
+
+PolkaSpots is a limited company registered in the UK (registered number 05508105). Registered Office: 204 Buspace Studios, Conlan Street, London W10 5AP
+
+Website: www.polkaspots.com
+WiFi Hotspot Blog: www.polkaspots.com/blog
+
+---------------------------------------------------------------------------------------
+
+
+
+From maxxer at ufficyo.com  Thu Jun 12 12:29:09 2014
+From: maxxer at ufficyo.com (Lorenzo Milesi)
+Date: Thu, 12 Jun 2014 14:29:09 +0200 (CEST)
+Subject: [Chilli] Weird times in AcctSessionTime (and in AcctStartTime)
+In-Reply-To: <5398559E.7050603@polkaspots.com>
+References: <286784680.11972.1402484253891.JavaMail.zimbra@yetopen.it>
+ <5398559E.7050603@polkaspots.com>
+Message-ID: <112493804.44337.1402576149415.JavaMail.zimbra@yetopen.it>
+
+> I've seen this with OpenWRT, some times, at boot, the ntpclient does not
+> update? Strange and random behaviour, but still happens. Could be that the
+> eth interface is slower than the init.d/ntpclient process.
+
+I tried reconfiguring the NTP client, let's see if this fixes. thanks.
+So you believe the problem is just the NAS clock?
+-- 
+Lorenzo Milesi - lorenzo.milesi at yetopen.it
+
+YetOpen S.r.l. - http://www.yetopen.it/
+
+
+From eric at craftti.com.br  Mon Jun 16 16:41:32 2014
+From: eric at craftti.com.br (Eric Chaves)
+Date: Mon, 16 Jun 2014 13:41:32 -0300
+Subject: [Chilli] Trouble with SSL and Ajax inside the pop-up browsers
+Message-ID: <CAF+USJ6P-GF5nwkKaXuULN9aggfxSvH3E84yEtirY7+uE4+Uaw@mail.gmail.com>
+
+Hi Folks,
+
+I'm working on rich HTML5 application to used in my captive portal but I'm
+facing several problems with this app when it is accessed inside the pop-up
+browser on MacOS and iOS devices.
+
+In our architecture the controller are hosted on dedicated on-premises
+servers while the captive portal is hosted on a website in the cloud.
+
+One of those troubles happens when we start making use of SSL on both ends
+(controllers and captive portal). We recently replaced old certificates by
+new ones, being the old PositiveSSL certs while the new is regular Comodo
+SSL.
+
+When our portal is accessed inside the pop-up browser on osx or ios
+devices, the pop-up shows the old certificates, even thou they were wiped
+from the servers. It's like if the pop-up has cached the old certificate
+and binded it to the controller no matter what.
+
+Has anyone ever faced similar issue?
+
+Also we have tons of trouble regarding ajax calls, which I assumed should
+work fine in the pop-up. Most of them happens only in those pop-up
+browsers, which makes it very hard to be investigate since I can't debug
+those pop-ups.
+
+I know those pop-up browsers are restricted version of regular browsersm
+for example, safari, but I cant find information regarding what kind of
+restrictions are in place. Does anyone knows what kind of limitations are
+applied?
+
+I really appreciate any help on this matter.
+
+Thanks in advance,
+
+Eric.
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20140616/d00e4b7b/attachment.html>
+
+From eric at craftti.com.br  Tue Jun 17 17:40:10 2014
+From: eric at craftti.com.br (Eric Chaves)
+Date: Tue, 17 Jun 2014 14:40:10 -0300
+Subject: [Chilli] Can I use nginx to serve web content on coova's tun
+	interface?
+Message-ID: <CAF+USJ7=TZDnLk9bm1a8RDijsknT0rytHTYmkweVR6+Y_U5xyg@mail.gmail.com>
+
+Hi Folks,
+
+I'd like to use nginx as my controllers webserver and have it forward
+ requests related to coova as upstream but I can't figure out how to do so.
+
+Nginx is listening on 0.0.0.0 but clients on the hotspot side cannot access
+it nor it can forward requests to coova's internal web server (uam_port).
+
+Can anyone help me out with this?
+
+Regards,
+
+Eric
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20140617/15ae04a4/attachment.html>
+
+From augustus_meyer at yahoo.de  Tue Jun 17 21:53:50 2014
+From: augustus_meyer at yahoo.de (reiner otto)
+Date: Tue, 17 Jun 2014 22:53:50 +0100
+Subject: [Chilli] Content-injection
+Message-ID: <1403042030.9537.YahooMailNeo@web172703.mail.ir2.yahoo.com>
+
+Hi, in case of serious interest: I have a working solution, in production already, on an airport with ruckus equipment, for example. 
+
+However, not within chilli, which I just start to use as a front-end for cheaper hotspots.
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20140617/7e06910e/attachment.html>
+
+From derek at hssl.ie  Tue Jun 17 22:09:27 2014
+From: derek at hssl.ie (Derek Conniffe)
+Date: Tue, 17 Jun 2014 23:09:27 +0100
+Subject: [Chilli] Content-injection
+In-Reply-To: <1403042030.9537.YahooMailNeo@web172703.mail.ir2.yahoo.com>
+References: <1403042030.9537.YahooMailNeo@web172703.mail.ir2.yahoo.com>
+Message-ID: <53A0BC97.2030101@hssl.ie>
+
+Sounds great Reiner.  I'm not sure that the Coova Chilli mailing list is 
+exactly the right place to post a "not within chilli" product though :)  
+But maybe you are giving it away for free ?
+
+Derek
+
+On 17/06/2014 22:53, reiner otto wrote:
+> Hi, in case of serious interest: I have a working solution, in 
+> production already, on an airport with ruckus equipment, for example.
+> However, not within chilli, which I just start to use as a front-end 
+> for cheaper hotspots.
+>
+>
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20140617/be8a6e0d/attachment.html>
+
+From augustus_meyer at yahoo.de  Wed Jun 18 08:58:56 2014
+From: augustus_meyer at yahoo.de (reiner otto)
+Date: Wed, 18 Jun 2014 09:58:56 +0100
+Subject: [Chilli] Any freelancers for a special chilli installation around ?
+Message-ID: <1403081936.84435.YahooMailNeo@web172706.mail.ir2.yahoo.com>
+
+I am struggeling to install coova-chilli on an embedded Debian, as coova-chilli must? be tailored to use a special web service for AAA. This special web service gives instructions how to be used on openwrt, DD-wrt etc. only, so it "simply" needs to be adapted. Payment could be done using freelancer.com, for example. Or paypal etc., of course.
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20140618/68e53da0/attachment.html>
+
+From jedgainer at gmail.com  Wed Jun 18 17:18:56 2014
+From: jedgainer at gmail.com (Jed Gainer)
+Date: Wed, 18 Jun 2014 10:18:56 -0700
+Subject: [Chilli] Content-injection
+In-Reply-To: <53A0BC97.2030101@hssl.ie>
+References: <1403042030.9537.YahooMailNeo@web172703.mail.ir2.yahoo.com>
+ <53A0BC97.2030101@hssl.ie>
+Message-ID: <CAJc1nup5wMY0BFQy8Ktw4pfG5aB-4SHJnZjy8L1b0ArquxcPCQ@mail.gmail.com>
+
+Yeah... this is king of like asking if you can ask a question.
+
+Just post your working solution if you're willing to share it.
+
+
+
+On Tue, Jun 17, 2014 at 3:09 PM, Derek Conniffe <derek at hssl.ie> wrote:
+
+>  Sounds great Reiner.  I'm not sure that the Coova Chilli mailing list is
+> exactly the right place to post a "not within chilli" product though :)
+> But maybe you are giving it away for free ?
+>
+> Derek
+>
+>
+> On 17/06/2014 22:53, reiner otto wrote:
+>
+>  Hi, in case of serious interest: I have a working solution, in
+> production already, on an airport with ruckus equipment, for example.
+>  However, not within chilli, which I just start to use as a front-end for
+> cheaper hotspots.
+>
+>
+> _______________________________________________
+> Chilli mailing listChilli at coova.orghttp://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+>
+>
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20140618/08bdf1da/attachment.html>
+
+From jedgainer at gmail.com  Wed Jun 18 17:34:58 2014
+From: jedgainer at gmail.com (Jed Gainer)
+Date: Wed, 18 Jun 2014 10:34:58 -0700
+Subject: [Chilli] Can I use nginx to serve web content on coova's tun
+	interface?
+In-Reply-To: <CAF+USJ7=TZDnLk9bm1a8RDijsknT0rytHTYmkweVR6+Y_U5xyg@mail.gmail.com>
+References: <CAF+USJ7=TZDnLk9bm1a8RDijsknT0rytHTYmkweVR6+Y_U5xyg@mail.gmail.com>
+Message-ID: <CAJc1nup9ZbhUYTDTXkmtF=4-+wsPsVUzFxq9sG2H-W2udraD8g@mail.gmail.com>
+
+I use Nginx
+
+*HS_TCP_PORTS*="80 443"
+
+is what you're looking for.
+
+
+On Tue, Jun 17, 2014 at 10:40 AM, Eric Chaves <eric at craftti.com.br> wrote:
+
+> Hi Folks,
+>
+> I'd like to use nginx as my controllers webserver and have it forward
+>  requests related to coova as upstream but I can't figure out how to do so.
+>
+> Nginx is listening on 0.0.0.0 but clients on the hotspot side cannot
+> access it nor it can forward requests to coova's internal web server
+> (uam_port).
+>
+> Can anyone help me out with this?
+>
+> Regards,
+>
+> Eric
+>
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20140618/47beb744/attachment.html>
+
+From jedgainer at gmail.com  Wed Jun 18 18:40:34 2014
+From: jedgainer at gmail.com (Jed Gainer)
+Date: Wed, 18 Jun 2014 11:40:34 -0700
+Subject: [Chilli] Can I use nginx to serve web content on coova's tun
+	interface?
+In-Reply-To: <CAJc1nup9ZbhUYTDTXkmtF=4-+wsPsVUzFxq9sG2H-W2udraD8g@mail.gmail.com>
+References: <CAF+USJ7=TZDnLk9bm1a8RDijsknT0rytHTYmkweVR6+Y_U5xyg@mail.gmail.com>
+ <CAJc1nup9ZbhUYTDTXkmtF=4-+wsPsVUzFxq9sG2H-W2udraD8g@mail.gmail.com>
+Message-ID: <CAJc1nupLtH5Ax3dg7Hhqbt9ghHRmHvsUL0JgSgb1wrpnbL561g@mail.gmail.com>
+
+If you are looking for a UAM/ACP I have one almost complete.
+
+http://imgur.com/9g1W0Ph,evu0iX6,tvIgJDD,WTaJvJ6,gR8S80C,2kDMaUm,kP1QrL3,If1vRI6,PwXokjC,LhTqj6k,rY3SPSY,f61yezV,OSTRTqD,I9LnHWf,i3Pduwo,P0PONJj,sPIEZa2,KFvHvri,6v0TEAz
+
+Some screen shots above... everything in it the images is 100% functional.
+I used pure PHP no frameworks just bootstrap for css as I am a programmer
+not a designer. All HTML is in external template files though and can be
+easily replaced with better design. I'll paste some code below so you can
+see if its clean enough to use.
+
+https://gist.github.com/anonymous/accadfa85717ef8dcc92
+
+
+On Wed, Jun 18, 2014 at 10:34 AM, Jed Gainer <jedgainer at gmail.com> wrote:
+
+> I use Nginx
+>
+> *HS_TCP_PORTS*="80 443"
+>
+> is what you're looking for.
+>
+>
+> On Tue, Jun 17, 2014 at 10:40 AM, Eric Chaves <eric at craftti.com.br> wrote:
+>
+>> Hi Folks,
+>>
+>> I'd like to use nginx as my controllers webserver and have it forward
+>>  requests related to coova as upstream but I can't figure out how to do so.
+>>
+>> Nginx is listening on 0.0.0.0 but clients on the hotspot side cannot
+>> access it nor it can forward requests to coova's internal web server
+>> (uam_port).
+>>
+>> Can anyone help me out with this?
+>>
+>> Regards,
+>>
+>> Eric
+>>
+>> _______________________________________________
+>> Chilli mailing list
+>> Chilli at coova.org
+>> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>>
+>>
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20140618/f2bf26b7/attachment.html>
+
+From eric at craftti.com.br  Wed Jun 18 21:32:06 2014
+From: eric at craftti.com.br (Eric Chaves)
+Date: Wed, 18 Jun 2014 18:32:06 -0300
+Subject: [Chilli] Can I use nginx to serve web content on coova's tun
+	interface?
+In-Reply-To: <CAJc1nupLtH5Ax3dg7Hhqbt9ghHRmHvsUL0JgSgb1wrpnbL561g@mail.gmail.com>
+References: <CAF+USJ7=TZDnLk9bm1a8RDijsknT0rytHTYmkweVR6+Y_U5xyg@mail.gmail.com>
+ <CAJc1nup9ZbhUYTDTXkmtF=4-+wsPsVUzFxq9sG2H-W2udraD8g@mail.gmail.com>
+ <CAJc1nupLtH5Ax3dg7Hhqbt9ghHRmHvsUL0JgSgb1wrpnbL561g@mail.gmail.com>
+Message-ID: <CAF+USJ6Y+RNOH0n8RAja5FV-KDjN8msvwnFgQxOgewkJJ_b_HA@mail.gmail.com>
+
+Hi Jed, thanks for your help. I'm myself a programmer too with some
+knowledge on linux and networking and it's great to have someone to
+exchange ideas and experience. ;)
+
+Do you use nginx as reverse proxy for coova (like you probably do for
+example with php-fpm)? My coova config file already has ports 80 and 443
+listed in HS_TCP_PORTS, but nginx still not able to forward request to
+coova (on "HS_UAMLISTEN" interface).
+
+Your pages looks great, but we have certain requirements which are very
+particular, which imposes the need to write our own app. We did it using
+AngularJS (HTML5/JS) which talks with our REST API backend. The problem is
+that in this setup we are facing several problems when the html5 app is
+loaded inside apple's pseudo browser used for them in they're automatic
+popup, and since we can't debug this pop-up this has becoming a real
+challenge. Worst yet is the fact that in our development environment (which
+also has a coova setup) the issues we face in production are not happening.
+
+Any hints or ideas you could share?
+
+Cheers,
+
+--
+Eric Chaves
+(11) 98139-9880
+
+
+2014-06-18 15:40 GMT-03:00 Jed Gainer <jedgainer at gmail.com>:
+
+> If you are looking for a UAM/ACP I have one almost complete.
+>
+>
+> http://imgur.com/9g1W0Ph,evu0iX6,tvIgJDD,WTaJvJ6,gR8S80C,2kDMaUm,kP1QrL3,If1vRI6,PwXokjC,LhTqj6k,rY3SPSY,f61yezV,OSTRTqD,I9LnHWf,i3Pduwo,P0PONJj,sPIEZa2,KFvHvri,6v0TEAz
+>
+> Some screen shots above... everything in it the images is 100% functional.
+> I used pure PHP no frameworks just bootstrap for css as I am a programmer
+> not a designer. All HTML is in external template files though and can be
+> easily replaced with better design. I'll paste some code below so you can
+> see if its clean enough to use.
+>
+> https://gist.github.com/anonymous/accadfa85717ef8dcc92
+>
+>
+> On Wed, Jun 18, 2014 at 10:34 AM, Jed Gainer <jedgainer at gmail.com> wrote:
+>
+>> I use Nginx
+>>
+>> *HS_TCP_PORTS*="80 443"
+>>
+>> is what you're looking for.
+>>
+>>
+>> On Tue, Jun 17, 2014 at 10:40 AM, Eric Chaves <eric at craftti.com.br>
+>> wrote:
+>>
+>>> Hi Folks,
+>>>
+>>> I'd like to use nginx as my controllers webserver and have it forward
+>>>  requests related to coova as upstream but I can't figure out how to do so.
+>>>
+>>> Nginx is listening on 0.0.0.0 but clients on the hotspot side cannot
+>>> access it nor it can forward requests to coova's internal web server
+>>> (uam_port).
+>>>
+>>> Can anyone help me out with this?
+>>>
+>>> Regards,
+>>>
+>>> Eric
+>>>
+>>> _______________________________________________
+>>> Chilli mailing list
+>>> Chilli at coova.org
+>>> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>>>
+>>>
+>>
+>
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20140618/a7e2ce17/attachment.html>
+
+From augustus_meyer at yahoo.de  Thu Jun 19 17:11:27 2014
+From: augustus_meyer at yahoo.de (reiner otto)
+Date: Thu, 19 Jun 2014 18:11:27 +0100
+Subject: [Chilli] Open port 22 in walled garden ?
+Message-ID: <1403197887.8165.YahooMailNeo@web172706.mail.ir2.yahoo.com>
+
+For maintenance, is there a possibility to configure (WiFi) port 22 to be always open, to? bypass chili completely ?
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20140619/5d8b8b24/attachment.html>
+
+From augustus_meyer at yahoo.de  Thu Jun 19 17:09:48 2014
+From: augustus_meyer at yahoo.de (reiner otto)
+Date: Thu, 19 Jun 2014 18:09:48 +0100
+Subject: [Chilli] Any freelancers for a special chilli installation
+	around ?
+Message-ID: <1403197788.75679.YahooMailNeo@web172704.mail.ir2.yahoo.com>
+
+Thanx, but
+
+request not valid any more: "Help? yourself".
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20140619/22927760/attachment.html>
+
+From giovanni.bezicheri at nethesis.it  Wed Jun 25 13:40:52 2014
+From: giovanni.bezicheri at nethesis.it (Giovanni Bezicheri)
+Date: Wed, 25 Jun 2014 15:40:52 +0200
+Subject: [Chilli]  Build troubles
+Message-ID: <53AAD164.7020807@nethesis.it>
+
+Hello,
+I have some troubles when building coova-chilli from 
+https://github.com/coova/coova-chilli.git (commit 
+9d5257b4a6ece85765088faf77af8c7ec62896c8). It seems that rreq variable 
+used at redir.c:3201 in the function redir_main_exit was not previous 
+declared!
+
+Making all in src
+make[2]: Entering directory `/tmp/coova-chilli/src'
+make[3]: Entering directory `/tmp/coova-chilli/src'
+/bin/sh ../libtool --tag=CC --mode=compile gcc -DHAVE_CONFIG_H -I. -I.. 
+-D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 
+-fomit-frame-pointer -funroll-loops -pipe -I../bstring 
+-DDEFCHILLICONF='"/usr/local/etc/chilli.conf"' 
+-DDEFPIDFILE='"/usr/local/var/run/chilli.pid"' 
+-DDEFSTATEDIR='"/usr/local/var/run"' -DSBINDIR='"/usr/local/sbin"' -g 
+-O2 -MT redir.lo -MD -MP -MF .deps/redir.Tpo -c -o redir.lo redir.c
+libtool: compile: gcc -DHAVE_CONFIG_H -I. -I.. -D_GNU_SOURCE -Wall 
+-Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer 
+-funroll-loops -pipe -I../bstring 
+-DDEFCHILLICONF=\"/usr/local/etc/chilli.conf\" 
+-DDEFPIDFILE=\"/usr/local/var/run/chilli.pid\" 
+-DDEFSTATEDIR=\"/usr/local/var/run\" -DSBINDIR=\"/usr/local/sbin\" -g 
+-O2 -MT redir.lo -MD -MP -MF .deps/redir.Tpo -c redir.c -fPIC -DPIC -o 
+.libs/redir.o
+redir.c: In function ?redir_main_exit?:
+redir.c:3201: error: ?rreq? undeclared (first use in this function)
+redir.c:3201: error: (Each undeclared identifier is reported only once
+redir.c:3201: error: for each function it appears in.)
+
+
+From asilva at wirelessmundi.com  Fri Jun 27 10:35:40 2014
+From: asilva at wirelessmundi.com (Anonio Silva)
+Date: Fri, 27 Jun 2014 12:35:40 +0200
+Subject: [Chilli] Problem upload data using latest coovachilli git
+Message-ID: <1403865340.27381.216.camel@marces.madrid.commsmundi.com>
+
+Hi,
+
+With last git 9b7138f4d85a88e6e7e0b1cb5d3202d1a3bbad27, I've a problem
+with data upload.  The connection is very inconstant going from 400Kbps
+to 0Kpbs, then to 50Kbps,  150Kbps and sometimes it just freezes...
+
+My scenario is very simple:
+
+WAN --- Server running Chilli (eth1: e1000e: 100Mb/s) ------ PC (windows
+7)
+
+Once the pc is authenticate (by MAC), i try to upload a file to the ftp
+server running on the same server where the chilli is running. It also
+happens if i upload data to WAN. 
+With the download there is no problem.
+
+
+My configuration:
+
+chilli.conf
+fg
+debug
+unixipc=chilli2.ipc
+tundev=tuneth1
+nasmac="portal2"
+pidfile=/var/run/chilli/chilli2.pid
+dhcpif=eth1
+net=192.168.30.0/24
+statip=192.168.30.0/24
+dynip=192.168.30.0/24
+dhcpstart=2
+dhcpend=10
+lease=1800
+dns1=192.168.10.254
+domain=local.local
+radiusserver1=localhost
+radiusserver2=localhost
+radiusauthport=1812
+radiusacctport=1813
+radiussecret=secret
+coaport=3771
+uamlisten=192.168.30.1
+uamserver=https://192.168.10.254
+uamlogoutip=5.5.5.1
+uamsecret=secret
+uamport=3990
+uamuiport=3992
+macauth
+strictmacauth
+
+i run it with:
+/usr/sbin/chilli --conf chilli.conf --pidfile /var/run/chilli/chilli.pid
+--cmdsock /var/run/chilli/chilli.sock
+
+for iptables i have:
+-A INPUT --in-interface eth1 -j DROP
+-A FORWARD --in-interface eth1 -j DROP
+
+
+If i drop the iptables rules that block the traffic on the dhcpif the
+upload is fine. There is no radius attribute to limit the speed.
+
+I'm running debian wheezy. I download the coova-chilli from the git
+repos, and compile it using the debian package, in the trunk directory i
+did dpkg-buildpackage.  then i install de coova-chilli.deb
+
+Can you help me to figure out where is the problem?
+
+
+Thanks,
+Ant?nio
+
+
+
+LOG of chilli:
+
+main-opt.c: 453: 0 (Debug) IPv6 disabled 
+main-opt.c: 640: 0 (Debug) DHCP Listen: 192.168.30.1
+main-opt.c: 641: 0 (Debug) UAM Listen: 192.168.30.1
+garden.c: 439: 0 (Debug) Uamallowed IP address #0:1024: proto=0
+host=192.168.10.254 port=443
+options.c: 446: 0 (Debug) PID 7669 saving options
+to /var/run/chilli.7668.cfg.bin
+options.c: 414: 0 (Debug) Loading modules
+options.c: 658: 0 (Debug) PID 7668 reloaded binary options file
+chilli.c: 7270: 0 (Debug) clock realtime sec 1403863345 nsec 332183759
+chilli.c: 7275: 0 (Debug) clock monotonic sec 7232 nsec 305988264
+tun.c: 605: 0 (Debug) TX queue length set to 100
+ippool.c: 338: 0 (Debug) Hashlog 9 264 512
+net.c: 1279: 0 (Debug) Net SNDBUF 212992
+net.c: 1282: 0 (Debug) Net RCVBUF 212992
+net.c: 1337: 0 (Debug) device eth1 ifindex 4
+net.c: 1353: 0 (Debug) lo  address family: 17 (AF_PACKET)
+net.c: 1353: 0 (Debug) eth3  address family: 17 (AF_PACKET)
+net.c: 1353: 0 (Debug) eth0  address family: 17 (AF_PACKET)
+net.c: 1353: 0 (Debug) eth1  address family: 17 (AF_PACKET)
+net.c: 1353: 0 (Debug) lo  address family: 2 (AF_INET)
+net.c: 1353: 0 (Debug) eth0  address family: 2 (AF_INET)
+net.c: 1353: 0 (Debug) eth1  address family: 2 (AF_INET)
+net.c: 1353: 0 (Debug) tuneth3  address family: 2 (AF_INET)
+net.c: 1353: 0 (Debug) tuneth1  address family: 2 (AF_INET)
+dhcp.c: 481: 0 (Debug) hash table size 64 (56)
+dhcp.c: 333: 0 (Debug) GARP: Replying to broadcast
+dhcp.c: 1169: 0 (Debug) dhcpif (eth1) IPv6 address ::
+radius.c: 1316: 0 (Debug) RADIUS client 0.0.0.0:3771
+chilli.c: 7430: 0 (Debug) Waiting for client request...
+net.c: 416: 0 (Debug) net select count: 1
+net.c: 416: 0 (Debug) net select count: 2
+net.c: 416: 0 (Debug) net select count: 3
+net.c: 416: 0 (Debug) net select count: 4
+net.c: 416: 0 (Debug) net select count: 5
+net.c: 416: 0 (Debug) net select count: 6
+net.c: 416: 0 (Debug) net select count: 7
+rtmon.c: 465: 0 (Debug) i=0 sz=1
+rtmon.c: 465: 0 (Debug) i=0 sz=2
+rtmon.c: 465: 0 (Debug) i=1 sz=2
+rtmon.c: 465: 0 (Debug) i=0 sz=3
+rtmon.c: 465: 0 (Debug) i=1 sz=3
+rtmon.c: 465: 0 (Debug) i=2 sz=3
+rtmon.c: 465: 0 (Debug) i=0 sz=4
+rtmon.c: 465: 0 (Debug) i=1 sz=4
+rtmon.c: 465: 0 (Debug) i=2 sz=4
+rtmon.c: 465: 0 (Debug) i=3 sz=4
+
+System Interfaces
+0) lo (1) ip=127.0.0.1 net=127.0.0.0 mask=255.0.0.0
+mac=00-00-00-00-00-00 mtu=65536
+1) eth0 (3) ip=192.168.10.254 net=192.168.10.0 mask=255.255.255.0
+bcase=192.168.10.255 mac=00-15-17-DA-4A-cd mtu=1500
+2) eth1 (4) ip=10.10.1.1 net=10.10.1.0 mask=255.255.255.0
+bcase=10.10.1.255 mac=00-15-17-DA-4A-cc mtu=1500
+3) tuneth3 (26) ip=192.168.20.1 net=192.168.20.0 mask=255.255.255.0
+peer=192.168.20.1 mac=00-00-00-00-00-00 mtu=1500
+4) tuneth1 (30) ip=192.168.30.1 net=192.168.30.0 mask=255.255.255.0
+peer=192.168.30.1 mac=00-00-00-00-00-00 mtu=1500
+
+System Routes
+0) dst=10.10.1.0 mask=255.255.255.0 dev=eth1 (4)
+1) dst=192.168.10.0 mask=255.255.255.0 dev=eth0 (3)
+2) dst=192.168.20.0 mask=255.255.255.0 dev=tuneth3 (26)
+3) dst=192.168.30.0 mask=255.255.255.0 dev=tuneth1 (30)
+net.c: 416: 0 (Debug) net select count: 8
+net.c: 416: 0 (Debug) net select count: 9
+radius.c: 1907: 0 (Debug) Received RADIUS packet id=0
+radius.c: 427: 0 (Debug) RADIUS queue-out id=0 idx=0
+dhcp.c: 3713: 0 (Debug) Address not found (192.168.30.2)
+dhcp.c: 728: 0 (Debug) DHCP newconn: 68-B5-99-DB-72-AC
+chilli.c: 5137: 0 (Debug) New DHCP request from MAC=68-B5-99-DB-72-AC
+chilli.c: 5140: 0 (Debug) New DHCP connection established
+chilli.c: 5098: 0 (Debug) New Chilli Connection
+chilli.c: 4896: 0 (Debug) ----> cb_dhcp_request <----
+chilli.c: 4900: 0 (Debug) DHCP request for IP address 192.168.30.2
+chilli.c: 1542: 0 (Debug) Starting radius authentication
+dhcp.c: 3965: 0 (Debug) dropping packet; ip not known: 192.168.30.2
+radius.c: 1907: 0 (Debug) Received RADIUS packet id=1
+radius.c: 427: 0 (Debug) RADIUS queue-out id=1 idx=1
+chilli.c: 4419: 0 (Debug) Received RADIUS response id=1
+chilli.c: 4608: 0 (Debug) Received RADIUS Access-Accept
+chilli.c: 865: 0 (Debug) newip 192.168.30.2
+ippool.c: 456: 0 (Debug) Requesting new static ip: 192.168.30.2
+radius.c: 1907: 0 (Debug) Received RADIUS packet id=2
+radius.c: 427: 0 (Debug) RADIUS queue-out id=2 idx=2
+dhcp.c: 3785: 0 (Debug) ICMP frag forbidden for IP packet with length
+2560 > 1500
+dhcp.c: 3785: 0 (Debug) ICMP frag forbidden for IP packet with length
+2560 > 1500
+dhcp.c: 3785: 0 (Debug) ICMP frag forbidden for IP packet with length
+2560 > 1500
+dhcp.c: 3785: 0 (Debug) ICMP frag forbidden for IP packet with length
+2560 > 1500
+dhcp.c: 3785: 0 (Debug) ICMP frag forbidden for IP packet with length
+2560 > 1500
+(... continues until the transfer is complete, when i remote the
+firewall rule the ouput speed of this messages is faster) 
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20140627/b2c1f333/attachment.html>
+
+From mohsen.saeedi at gmail.com  Fri Jun 27 13:19:37 2014
+From: mohsen.saeedi at gmail.com (Mohsen Saeedi)
+Date: Fri, 27 Jun 2014 17:49:37 +0430
+Subject: [Chilli] Problem upload data using latest coovachilli git
+In-Reply-To: <1403865340.27381.216.camel@marces.madrid.commsmundi.com>
+References: <1403865340.27381.216.camel@marces.madrid.commsmundi.com>
+Message-ID: <53AD6F69.7070906@gmail.com>
+
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20140627/7d8ceff3/attachment.html>
+

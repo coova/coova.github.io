@@ -1,0 +1,130 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] Missing defines when compiling Coova Chilli 1.2.5 net.c on Backfire 10.03
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Missing%20defines%20when%20compiling%20Coova%20Chilli%201.2.5%0A%20net.c%20on%20Backfire%2010.03&In-Reply-To=%3C1300968046.31095.137.camel%40david-laptop%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001600.html">
+   <LINK REL="Next"  HREF="001607.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] Missing defines when compiling Coova Chilli 1.2.5 net.c on Backfire 10.03</H1>
+    <B>David Bird</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Missing%20defines%20when%20compiling%20Coova%20Chilli%201.2.5%0A%20net.c%20on%20Backfire%2010.03&In-Reply-To=%3C1300968046.31095.137.camel%40david-laptop%3E"
+       TITLE="[Chilli] Missing defines when compiling Coova Chilli 1.2.5 net.c on Backfire 10.03">david at coova.com
+       </A><BR>
+    <I>Thu Mar 24 12:00:46 UTC 2011</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001600.html">[Chilli] Missing defines when compiling Coova Chilli 1.2.5 net.c on	Backfire 10.03
+</A></li>
+        <LI>Next message: <A HREF="001607.html">[Chilli] Missing defines when compiling Coova Chilli 1.2.5 net.c on Backfire 10.03
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1601">[ date ]</a>
+              <a href="thread.html#1601">[ thread ]</a>
+              <a href="subject.html#1601">[ subject ]</a>
+              <a href="author.html#1601">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hi,
+
+Don't use configure --with-mmap 
+
+And, you might upgrade to 1.2.6.
+
+Cheers,
+David
+
+On Thu, 2011-03-24 at 13:33 +0200, Simon Perkins wrote:
+&gt;<i> Hi all
+</I>&gt;<i> 
+</I>&gt;<i> I'm trying to compile Coova Chilli 1.2.5 on Backfire 10.03. I
+</I>&gt;<i> encounter the following errors when compiling net.c:
+</I>&gt;<i> 
+</I>&gt;<i> net.c: In function `net_open_eth':
+</I>&gt;<i> net.c:982: warning: unused variable `mr'
+</I>&gt;<i> net.c:984: warning: unused variable `option'
+</I>&gt;<i> net.c: In function `rx_ring':
+</I>&gt;<i> net.c:1331: error: dereferencing pointer to incomplete type
+</I>&gt;<i> net.c:1337: error: dereferencing pointer to incomplete type
+</I>&gt;<i> net.c:1352: error: dereferencing pointer to incomplete type
+</I>&gt;<i> net.c:1352: error: dereferencing pointer to incomplete type
+</I>&gt;<i> net.c:1354: error: dereferencing pointer to incomplete type
+</I>&gt;<i> net.c:1354: error: dereferencing pointer to incomplete type
+</I>&gt;<i> net.c:1356: error: dereferencing pointer to incomplete type
+</I>&gt;<i> net.c:1359: error: dereferencing pointer to incomplete type
+</I>&gt;<i> net.c: In function `tx_ring':
+</I>&gt;<i> net.c:1405: error: dereferencing pointer to incomplete type
+</I>&gt;<i> net.c:1406: error: dereferencing pointer to incomplete type
+</I>&gt;<i> net.c:1423: error: dereferencing pointer to incomplete type
+</I>&gt;<i> net.c:1429: error: dereferencing pointer to incomplete type
+</I>&gt;<i> net.c:1431: error: dereferencing pointer to incomplete type
+</I>&gt;<i> net.c:1438: error: dereferencing pointer to incomplete type
+</I>&gt;<i> net.c: In function `setup_rings':
+</I>&gt;<i> net.c:1588: error: `TPACKET_V2' undeclared (first use in this
+</I>&gt;<i> function)
+</I>&gt;<i> net.c:1588: error: (Each undeclared identifier is reported only once
+</I>&gt;<i> net.c:1588: error: for each function it appears in.)
+</I>&gt;<i> net.c:1589: error: `PACKET_VERSION' undeclared (first use in this
+</I>&gt;<i> function)
+</I>&gt;<i> net.c:1598: error: `PACKET_HDRLEN' undeclared (first use in this
+</I>&gt;<i> function)
+</I>&gt;<i> net.c:1570: warning: unused variable `unit'
+</I>&gt;<i> net.c: In function `set_buffer':
+</I>&gt;<i> net.c:1659: warning: unused variable `unit'
+</I>&gt;<i> net.c: At top level:
+</I>&gt;<i> net.c:1679: warning: 'setup_filter' defined but not used
+</I>&gt;<i> 
+</I>&gt;<i> This issue has cropped up previously in this mailing list, but I
+</I>&gt;<i> couldn't find a response to it, so I've decided to ask about it again.
+</I>&gt;<i> The defines TPACKET_V2, and PACKET_HDRLEN are defined in
+</I>&gt;<i> linux-2.4.37.9/include/linux/if_packet.h. So I'm guessing there might
+</I>&gt;<i> be a problem with my .config. However, I can't find any definition of
+</I>&gt;<i> PACKET_VERSION in the 2.4 kernel that ships with Backfire 10.03. In
+</I>&gt;<i> fact, a google search for PACKET_VERSION indicates that it is present
+</I>&gt;<i> in versions of if_packet.h in the linux 2.6.x kernels. Does Coova
+</I>&gt;<i> Chilli depend on the 2.6.x kernel versions now? Or is it possible that
+</I>&gt;<i> I am setting up my config file incorrectly?
+</I>&gt;<i> 
+</I>&gt;<i> thanks!
+</I>&gt;<i>   Simon
+</I>&gt;<i> _______________________________________________
+</I>&gt;<i> Chilli mailing list
+</I>&gt;<i> <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">Chilli at coova.org</A>
+</I>&gt;<i> <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">http://lists.coova.org/cgi-bin/mailman/listinfo/chilli</A>
+</I>
+
+</PRE>
+
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001600.html">[Chilli] Missing defines when compiling Coova Chilli 1.2.5 net.c on	Backfire 10.03
+</A></li>
+	<LI>Next message: <A HREF="001607.html">[Chilli] Missing defines when compiling Coova Chilli 1.2.5 net.c on Backfire 10.03
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1601">[ date ]</a>
+              <a href="thread.html#1601">[ thread ]</a>
+              <a href="subject.html#1601">[ subject ]</a>
+              <a href="author.html#1601">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

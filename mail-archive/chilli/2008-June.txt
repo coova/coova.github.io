@@ -1,0 +1,2063 @@
+From wlan at mac.com  Sun Jun  1 05:51:30 2008
+From: wlan at mac.com (wlan at mac.com)
+Date: Sun, 01 Jun 2008 07:51:30 +0200
+Subject: dynip/statip IP overflow
+In-Reply-To: <4841CCE5.7000801@ollisnet.de>
+References: <4841CCE5.7000801@ollisnet.de>
+Message-ID: <462B5526-D299-4A15-8F4D-6A846A88DA83@mac.com>
+
+Hi Oliver,
+
+Are you by chance using either dhcpstart or dhcpend options? What  
+version of chilli are you using? Check "chilli --help" to see if  
+dhcpstart/dhcpend have default values (in the current svn, they  
+default to '0' for disabled). If you are indeed using dhcpstart/ 
+dhcpstop, make sure the range does NOT include the uamlisten IP...  
+(so, if that is .1, use dhcpstart=2 and dhcpend=127).
+
+David
+
+On Jun 1, 2008, at 12:10 AM, Oliver Hinckel wrote:
+
+> Hello,
+>
+> we're using dynip and statip in our chilli setup and noticed a  
+> strange behaviour. When clients connect to our access point they'll  
+> get a dynip from chilli. When another client connects to the access  
+> point he'll get the next free IP address from the dynip network.  
+> That all is OK.
+>
+> The problem is, that in case a client get's the last free dynip  
+> from the dynip network and another client connects to the access  
+> point, he'll get an IP address out of the dynip range.
+>
+> E.g. we have the following setup
+> dynip 192.168.174.128/25
+> statip 192.168.174.0/25
+>
+> In case a client will get the dynip address 192.168.174.128, the  
+> next client will get 192.168.175.1. It seems that the IP address is  
+> just increased by one without checking against the dynip network  
+> mask. This seems like an "overflow" too me.
+>
+> Anyone noticed this already? Is there a fix for it?
+>
+> Thanks for feedback.
+>
+> Greetings
+> Oliver Hinckel
+>
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>
+
+
+
+From gunther.mayer at googlemail.com  Sun Jun  1 13:57:35 2008
+From: gunther.mayer at googlemail.com (Gunther Mayer)
+Date: Sun, 01 Jun 2008 15:57:35 +0200
+Subject: dynip/statip IP overflow
+In-Reply-To: <4841CCE5.7000801@ollisnet.de>
+References: <4841CCE5.7000801@ollisnet.de>
+Message-ID: <4842AACF.6070006@gmail.com>
+
+Oliver Hinckel wrote:
+> Hello,
+>
+> we're using dynip and statip in our chilli setup and noticed a strange 
+> behaviour. When clients connect to our access point they'll get a 
+> dynip from chilli. When another client connects to the access point 
+> he'll get the next free IP address from the dynip network. That all is 
+> OK.
+>
+> The problem is, that in case a client get's the last free dynip from 
+> the dynip network and another client connects to the access point, 
+> he'll get an IP address out of the dynip range.
+>
+> E.g. we have the following setup
+> dynip 192.168.174.128/25
+> statip 192.168.174.0/25
+>
+> In case a client will get the dynip address 192.168.174.128, the next 
+> client will get 192.168.175.1. It seems that the IP address is just 
+> increased by one without checking against the dynip network mask. This 
+> seems like an "overflow" too me.
+That makes no sense. According to the above 192.168.174.128 is neither 
+in the dynip range nor the last one. .129 would be the very first one 
+and .254 the last. Could you please give us a real example of "wrong" ip 
+address assignment?
+
+I'm operating a large network on v0.9.11 with almost identical setups 
+(also a statip .0/25 subnet with dynip .128/25), have experienced no 
+issues to date and in fact have just verified with one of the logfiles 
+of a busy site that indeed chilli wraps around correctly.
+
+Gunther
+
+
+From info at ollisnet.de  Sun Jun  1 19:29:02 2008
+From: info at ollisnet.de (Oliver Hinckel)
+Date: Sun, 01 Jun 2008 21:29:02 +0200
+Subject: dynip/statip IP overflow
+In-Reply-To: <4842AACF.6070006@gmail.com>
+References: <4841CCE5.7000801@ollisnet.de> <4842AACF.6070006@gmail.com>
+Message-ID: <4842F87E.3020406@ollisnet.de>
+
+Hello,
+
+Gunther Mayer wrote on 06/01/2008 03:57 PM:
+[...]
+>> E.g. we have the following setup
+>> dynip 192.168.174.128/25
+>> statip 192.168.174.0/25
+>>
+>> In case a client will get the dynip address 192.168.174.128, the next 
+>> client will get 192.168.175.1. It seems that the IP address is just 
+>> increased by one without checking against the dynip network mask. This 
+>> seems like an "overflow" too me.
+> That makes no sense. According to the above 192.168.174.128 is neither 
+> in the dynip range nor the last one.
+
+.128 is the network number for the second network (like .0 for first 
+network). You're right, that's not a real IP address which can be used.
+
+> .129 would be the very first one 
+> and .254 the last. Could you please give us a real example of "wrong" ip 
+> address assignment?
+
+Yes, .129 is the first IP address of this range. But I was in hurry and 
+didn't realized that I have this typo in my mail. Anyway, thanks for 
+noticing :)
+
+> I'm operating a large network on v0.9.11 with almost identical setups 
+> (also a statip .0/25 subnet with dynip .128/25), have experienced no 
+> issues to date and in fact have just verified with one of the logfiles 
+> of a busy site that indeed chilli wraps around correctly.
+
+We'll check this again with a newer version of chilli as David suggested 
+already.
+
+Greetings
+Oliver Hinckel
+
+
+
+From oguzhank at bilkent.edu.tr  Mon Jun  2 06:03:45 2008
+From: oguzhank at bilkent.edu.tr (Oguzhan Kayhan)
+Date: Mon, 2 Jun 2008 09:03:45 +0300 (EEST)
+Subject: coaport on coovaap
+Message-ID: <49473.139.179.14.250.1212386625.squirrel@webmail.bilkent.edu.tr>
+
+Hello,
+I couldnt see and entry for coaport on website of the coova-ap
+Does it have a default port or do we have to add this lines manually to
+configfiles?
+And if yes, which conf file ? :)
+
+
+
+
+From gunther.mayer at googlemail.com  Tue Jun  3 20:32:59 2008
+From: gunther.mayer at googlemail.com (Gunther Mayer)
+Date: Tue, 03 Jun 2008 22:32:59 +0200
+Subject: coaport on coovaap
+In-Reply-To: <49473.139.179.14.250.1212386625.squirrel@webmail.bilkent.edu.tr>
+References: <49473.139.179.14.250.1212386625.squirrel@webmail.bilkent.edu.tr>
+Message-ID: <4845AA7B.4090501@gmail.com>
+
+Oguzhan Kayhan wrote:
+> Hello,
+> I couldnt see and entry for coaport on website of the coova-ap
+>   
+http://coova.org/wiki/index.php/CoovaChilli/chilli.conf%285%29 - the man 
+page for chilli.conf on the manual page section of the Coova Chilli 
+Documentation wiki, everything's there.
+> Does it have a default port or do we have to add this lines manually to
+> configfiles?
+>   
+By default it's OFF. If you want it, specify "coaport <myport>" in 
+chilli's config file. Do note that this will also cause chilli to send 
+all radius packets from that port.
+> And if yes, which conf file ? :)
+>   
+Any of the ones which are included ;-)
+
+Gunther
+
+
+From oguzhank at bilkent.edu.tr  Wed Jun  4 06:10:58 2008
+From: oguzhank at bilkent.edu.tr (Oguzhan Kayhan)
+Date: Wed, 4 Jun 2008 09:10:58 +0300 (EEST)
+Subject: coaport on coovaap
+In-Reply-To: <4845AA7B.4090501@gmail.com>
+References: <49473.139.179.14.250.1212386625.squirrel@webmail.bilkent.edu.tr>
+    <4845AA7B.4090501@gmail.com>
+Message-ID: <47803.139.179.14.250.1212559858.squirrel@webmail.bilkent.edu.tr>
+
+> Oguzhan Kayhan wrote:
+>> Hello,
+>> I couldnt see and entry for coaport on website of the coova-ap
+>>
+> http://coova.org/wiki/index.php/CoovaChilli/chilli.conf%285%29 - the man
+> page for chilli.conf on the manual page section of the Coova Chilli
+> Documentation wiki, everything's there.
+Sorry my mistake, i meant no entry on coovaap configuration page. Sure it
+can be editable via ssh. Maybe it might be nice to add this option on
+config page too on next release.
+
+
+
+
+
+>> Does it have a default port or do we have to add this lines manually to
+>> configfiles?
+>>
+> By default it's OFF. If you want it, specify "coaport <myport>" in
+> chilli's config file. Do note that this will also cause chilli to send
+> all radius packets from that port.
+>> And if yes, which conf file ? :)
+>>
+> Any of the ones which are included ;-)
+>
+> Gunther
+>
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>
+>
+
+
+
+
+From oguzhank at bilkent.edu.tr  Thu Jun  5 13:15:33 2008
+From: oguzhank at bilkent.edu.tr (Oguzhan Kayhan)
+Date: Thu, 5 Jun 2008 16:15:33 +0300 (EEST)
+Subject: coaport on coovaap
+In-Reply-To: 
+     <47803.139.179.14.250.1212559858.squirrel@webmail.bilkent.edu.tr>
+References: <49473.139.179.14.250.1212386625.squirrel@webmail.bilkent.edu.tr>
+    <4845AA7B.4090501@gmail.com>
+    <47803.139.179.14.250.1212559858.squirrel@webmail.bilkent.edu.tr>
+Message-ID: <57669.139.179.14.250.1212671733.squirrel@webmail.bilkent.edu.tr>
+
+Hello, finally i tried coaport on coovaap today.
+Frist from my freeradius table i tried to disconnect the user with
+
+
+echo "User-Name=username" | /usr/bin/radclient coovaapip:1820 disconnect
+radsecret
+
+But it waited waited and waited... then i realized i have to modify the
+firewall too..
+And added 1820 port as i entered in local.conf file too as coaport.
+
+Then when i try again i got the response
+
+Received response ID 33, code 41, length = 34 Vendor-14559-Attr-8 =
+0x312e302e3131
+
+It successfully deleted from radius, and even marked as admin disconnect
+at radacct table.
+But!!!  when i check the webpage of coovaap, the users were still there..
+and connected as i figuredout with tcpdump.
+
+So what do i miss?
+Or is there another way of disconnecting users that i dont know (except
+webpage of coovaap)
+
+>> Oguzhan Kayhan wrote:
+>>> Hello,
+>>> I couldnt see and entry for coaport on website of the coova-ap
+>>>
+>> http://coova.org/wiki/index.php/CoovaChilli/chilli.conf%285%29 - the man
+>> page for chilli.conf on the manual page section of the Coova Chilli
+>> Documentation wiki, everything's there.
+> Sorry my mistake, i meant no entry on coovaap configuration page. Sure it
+> can be editable via ssh. Maybe it might be nice to add this option on
+> config page too on next release.
+>
+>
+>
+>
+>
+>>> Does it have a default port or do we have to add this lines manually to
+>>> configfiles?
+>>>
+>> By default it's OFF. If you want it, specify "coaport <myport>" in
+>> chilli's config file. Do note that this will also cause chilli to send
+>> all radius packets from that port.
+>>> And if yes, which conf file ? :)
+>>>
+>> Any of the ones which are included ;-)
+>>
+>> Gunther
+>>
+>> ---------------------------------------------------------------------
+>> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+>> For additional commands, e-mail: chilli-help at coova.org
+>> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+>> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>>
+>>
+>
+>
+>
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>
+>
+
+
+
+
+From wlan at mac.com  Fri Jun  6 04:29:09 2008
+From: wlan at mac.com (wlan at mac.com)
+Date: Fri, 06 Jun 2008 06:29:09 +0200
+Subject: coaport on coovaap
+In-Reply-To: <57669.139.179.14.250.1212671733.squirrel@webmail.bilkent.edu.tr>
+References: <49473.139.179.14.250.1212386625.squirrel@webmail.bilkent.edu.tr>
+ <4845AA7B.4090501@gmail.com>
+ <47803.139.179.14.250.1212559858.squirrel@webmail.bilkent.edu.tr>
+ <57669.139.179.14.250.1212671733.squirrel@webmail.bilkent.edu.tr>
+Message-ID: <2891B927-740D-4275-B156-AF047DE9991F@mac.com>
+
+> It successfully deleted from radius, and even marked as admin  
+> disconnect
+> at radacct table.
+> But!!!  when i check the webpage of coovaap, the users were still  
+> there..
+> and connected as i figuredout with tcpdump.
+>
+> So what do i miss?
+> Or is there another way of disconnecting users that i dont know  
+> (except
+> webpage of coovaap)
+
+Is the user still authenticated (i.e. able to browse the Internet)?  
+Or, do they just have a DHCP lease still (which makes them show up in  
+the web interface list with auth-state 'dnat' instead of 'pass')?
+
+
+
+From oguzhank at bilkent.edu.tr  Fri Jun  6 06:50:07 2008
+From: oguzhank at bilkent.edu.tr (Oguzhan Kayhan)
+Date: Fri, 6 Jun 2008 09:50:07 +0300 (EEST)
+Subject: coaport on coovaap
+In-Reply-To: <2891B927-740D-4275-B156-AF047DE9991F@mac.com>
+References: <49473.139.179.14.250.1212386625.squirrel@webmail.bilkent.edu.tr>
+    <4845AA7B.4090501@gmail.com>
+    <47803.139.179.14.250.1212559858.squirrel@webmail.bilkent.edu.tr>
+    <57669.139.179.14.250.1212671733.squirrel@webmail.bilkent.edu.tr>
+    <2891B927-740D-4275-B156-AF047DE9991F@mac.com>
+Message-ID: <49711.139.179.14.250.1212735007.squirrel@webmail.bilkent.edu.tr>
+
+>> It successfully deleted from radius, and even marked as admin
+>> disconnect
+>> at radacct table.
+>> But!!!  when i check the webpage of coovaap, the users were still
+>> there..
+>> and connected as i figuredout with tcpdump.
+>>
+>> So what do i miss?
+>> Or is there another way of disconnecting users that i dont know
+>> (except
+>> webpage of coovaap)
+>
+> Is the user still authenticated (i.e. able to browse the Internet)?
+> Or, do they just have a DHCP lease still (which makes them show up in
+> the web interface list with auth-state 'dnat' instead of 'pass')?
+My mistake,
+As i see the username on coova page, i thought the user is still
+authenticated.. And the tcpdump traffic was thru one of the "walled
+garden" servers.
+Ok it works.
+But anyway, it might be good to see coaport option on web interface:)
+
+
+
+>
+>
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>
+>
+
+
+
+
+From wlan at mac.com  Sat Jun  7 13:31:36 2008
+From: wlan at mac.com (wlan at mac.com)
+Date: Sat, 07 Jun 2008 15:31:36 +0200
+Subject: v1.0.12
+Message-ID: <E298EE2C-2F4B-4E81-B3AC-F7396EA0F5B1@mac.com>
+
+Hi,
+
+Is it time to release the current svn as 1.0.12? I think so... last  
+call for bugs.
+
+David
+
+
+From wlan at mac.com  Sun Jun  8 05:21:27 2008
+From: wlan at mac.com (wlan at mac.com)
+Date: Sun, 08 Jun 2008 07:21:27 +0200
+Subject: coova-chilli 1.0.12 released
+Message-ID: <7F1CA34A-08F6-4EF6-9A97-FF2F6DA0B7CF@mac.com>
+
+Downloads are on the website. 
+
+
+From outbackdingo at gmail.com  Sun Jun  8 06:03:28 2008
+From: outbackdingo at gmail.com (Outback Dingo)
+Date: Sun, 8 Jun 2008 13:03:28 +0700
+Subject: coova-chilli 1.0.12 released
+In-Reply-To: <7F1CA34A-08F6-4EF6-9A97-FF2F6DA0B7CF@mac.com>
+References: <7F1CA34A-08F6-4EF6-9A97-FF2F6DA0B7CF@mac.com>
+Message-ID: <5635aa0d0806072303l39684410wdb1f17d550ce6487@mail.gmail.com>
+
+will it work with kamikaze ???
+
+On Sun, Jun 8, 2008 at 12:21 PM, <wlan at mac.com> wrote:
+
+> Downloads are on the website.
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20080608/5fad9a3b/attachment.htm>
+
+From outbackdingo at gmail.com  Sun Jun  8 06:06:35 2008
+From: outbackdingo at gmail.com (Outback Dingo)
+Date: Sun, 8 Jun 2008 13:06:35 +0700
+Subject: coova-chilli 1.0.12 released
+In-Reply-To: <7F1CA34A-08F6-4EF6-9A97-FF2F6DA0B7CF@mac.com>
+References: <7F1CA34A-08F6-4EF6-9A97-FF2F6DA0B7CF@mac.com>
+Message-ID: <5635aa0d0806072306x3b444b84p191e61f0cef1e4a9@mail.gmail.com>
+
+broken kamikaze link
+Not Found
+
+The requested URL /kamikaze/mips/coova-chilli_1.0.12-1_mips.ipk was not
+found on this server.
+
+
+On Sun, Jun 8, 2008 at 12:21 PM, <wlan at mac.com> wrote:
+
+> Downloads are on the website.
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20080608/3d7b1748/attachment.htm>
+
+From wlan at mac.com  Sun Jun  8 06:23:39 2008
+From: wlan at mac.com (wlan at mac.com)
+Date: Sun, 08 Jun 2008 08:23:39 +0200
+Subject: coova-chilli 1.0.12 released
+In-Reply-To: <5635aa0d0806072306x3b444b84p191e61f0cef1e4a9@mail.gmail.com>
+References: <7F1CA34A-08F6-4EF6-9A97-FF2F6DA0B7CF@mac.com>
+ <5635aa0d0806072306x3b444b84p191e61f0cef1e4a9@mail.gmail.com>
+Message-ID: <6CEA19AF-CF2C-40CF-B6B3-8D318129FCC0@mac.com>
+
+Oops, sorry, I had put it in the wrong directory.
+
+Yes, it will work just fine on kamikaze; this link is to the mips  
+version
+
+David
+
+
+On Jun 8, 2008, at 8:06 AM, Outback Dingo wrote:
+
+>
+> broken kamikaze link
+> Not Found
+>
+> The requested URL /kamikaze/mips/coova-chilli_1.0.12-1_mips.ipk was  
+> not found on this server.
+>
+>
+>
+> On Sun, Jun 8, 2008 at 12:21 PM, <wlan at mac.com> wrote:
+> Downloads are on the website.
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>
+>
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20080608/5a77d712/attachment.htm>
+
+From outbackdingo at gmail.com  Sun Jun  8 06:32:24 2008
+From: outbackdingo at gmail.com (Outback Dingo)
+Date: Sun, 8 Jun 2008 13:32:24 +0700
+Subject: coova-chilli 1.0.12 released
+In-Reply-To: <6CEA19AF-CF2C-40CF-B6B3-8D318129FCC0@mac.com>
+References: <7F1CA34A-08F6-4EF6-9A97-FF2F6DA0B7CF@mac.com>
+	 <5635aa0d0806072306x3b444b84p191e61f0cef1e4a9@mail.gmail.com>
+	 <6CEA19AF-CF2C-40CF-B6B3-8D318129FCC0@mac.com>
+Message-ID: <5635aa0d0806072332g45f2801fj9e5be4daa6e7dace@mail.gmail.com>
+
+ok, great thanks, is this whats in the openwrt kamikaze svn trunk also ??
+meaning is this whats built during an openwrt kamikaze trunk build if
+included
+or maybe i should be asking is there going to be a Kamikaze CoovaAP
+
+On Sun, Jun 8, 2008 at 1:23 PM, <wlan at mac.com> wrote:
+
+> Oops, sorry, I had put it in the wrong directory.
+>
+> Yes, it will work just fine on kamikaze; this link is to the mips version
+>
+> David
+>
+>
+> On Jun 8, 2008, at 8:06 AM, Outback Dingo wrote:
+>
+>
+> broken kamikaze link
+> Not Found
+>
+> The requested URL /kamikaze/mips/coova-chilli_1.0.12-1_mips.ipk was not
+> found on this server.
+>
+>
+> On Sun, Jun 8, 2008 at 12:21 PM, <wlan at mac.com> wrote:
+>
+>> Downloads are on the website.
+>> ---------------------------------------------------------------------
+>> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+>> For additional commands, e-mail: chilli-help at coova.org
+>> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+>> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>>
+>>
+>
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20080608/b8d3fbaf/attachment.htm>
+
+From ian.coffey at gmail.com  Mon Jun  9 14:42:07 2008
+From: ian.coffey at gmail.com (IanC)
+Date: Mon, 9 Jun 2008 10:42:07 -0400
+Subject: maxbwup + maxbwdown.
+Message-ID: <3ea93a690806090742p6a6a21btc1d3249a0ae9a5d5@mail.gmail.com>
+
+Im testing the bandwidth limits in CoovaChilli in hopes of implementing it,
+however, no matter what limit I set it to, bandwidth is always limited to
+90-110kbps.
+
+When I set the limit to 0 for both maxbwup + maxbwdown, my speeds shoot up
+to around 3000-5000kbps. If I set it to anything else, its always
+90-110kbps, no matter what.
+
+Is there a known issue or can anyone help me troubleshoot this one?
+
+Thanks!
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20080609/89ad0e69/attachment.htm>
+
+From davies147 at gmail.com  Mon Jun  9 15:11:43 2008
+From: davies147 at gmail.com (Steve Davies)
+Date: Mon, 9 Jun 2008 16:11:43 +0100
+Subject: maxbwup + maxbwdown.
+In-Reply-To: <3ea93a690806090742p6a6a21btc1d3249a0ae9a5d5@mail.gmail.com>
+References: <3ea93a690806090742p6a6a21btc1d3249a0ae9a5d5@mail.gmail.com>
+Message-ID: <5caa9b870806090811y189bb660pa516e0f156cf28f6@mail.gmail.com>
+
+2008/6/9 IanC <ian.coffey at gmail.com>:
+> Im testing the bandwidth limits in CoovaChilli in hopes of implementing it,
+> however, no matter what limit I set it to, bandwidth is always limited to
+> 90-110kbps.
+>
+> When I set the limit to 0 for both maxbwup + maxbwdown, my speeds shoot up
+> to around 3000-5000kbps. If I set it to anything else, its always
+> 90-110kbps, no matter what.
+>
+> Is there a known issue or can anyone help me troubleshoot this one?
+>
+> Thanks!
+>
+
+We just implemented it here, and in basic testing, it seems to work -
+The throughput needs to be averaged over a reasonable period and a
+reasonable amount of data before you can see the actual results
+though...
+
+We are using Linux (FC9), and a Postgres based Radius install to set
+the WISPr-* values.
+
+Cheers,
+Steve
+
+
+From oguzhank at bilkent.edu.tr  Thu Jun 12 07:33:01 2008
+From: oguzhank at bilkent.edu.tr (Oguzhan Kayhan)
+Date: Thu, 12 Jun 2008 10:33:01 +0300 (EEST)
+Subject: coovafx
+Message-ID: <46796.139.179.14.250.1213255981.squirrel@webmail.bilkent.edu.tr>
+
+Hello,
+i tried to use coovafx today. First i installed it on xp-firefox 2.0.14
+But then when i restart firefox a window opens...and jus written "alert"
+on it.
+And the coovafx icon seem disabled, and cant be enabled.
+Then i tried to install it on a linux, ubuntu with firefox 3..but it
+refused to install this plugin because of not finding a secure update??
+
+So in which version of firefox this plugin works?
+
+
+
+
+From wlan at mac.com  Thu Jun 12 07:43:26 2008
+From: wlan at mac.com (wlan at mac.com)
+Date: Thu, 12 Jun 2008 09:43:26 +0200
+Subject: coovafx
+In-Reply-To: <46796.139.179.14.250.1213255981.squirrel@webmail.bilkent.edu.tr>
+References: <46796.139.179.14.250.1213255981.squirrel@webmail.bilkent.edu.tr>
+Message-ID: <CF062FA4-1994-419D-BA47-8EA5042B9ED6@mac.com>
+
+Make sure your firefox supports Java... I get something similar to  
+what you are describing with Firefox on Linux because I don't have it  
+setup for Java.
+
+
+On Jun 12, 2008, at 9:33 AM, Oguzhan Kayhan wrote:
+
+> Hello,
+> i tried to use coovafx today. First i installed it on xp-firefox  
+> 2.0.14
+> But then when i restart firefox a window opens...and jus written  
+> "alert"
+> on it.
+> And the coovafx icon seem disabled, and cant be enabled.
+> Then i tried to install it on a linux, ubuntu with firefox 3..but it
+> refused to install this plugin because of not finding a secure  
+> update??
+>
+> So in which version of firefox this plugin works?
+>
+>
+>
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>
+
+
+
+From oguzhank at bilkent.edu.tr  Thu Jun 12 08:05:16 2008
+From: oguzhank at bilkent.edu.tr (Oguzhan Kayhan)
+Date: Thu, 12 Jun 2008 11:05:16 +0300 (EEST)
+Subject: coovafx
+In-Reply-To: <CF062FA4-1994-419D-BA47-8EA5042B9ED6@mac.com>
+References: <46796.139.179.14.250.1213255981.squirrel@webmail.bilkent.edu.tr>
+    <CF062FA4-1994-419D-BA47-8EA5042B9ED6@mac.com>
+Message-ID: <36679.139.179.14.250.1213257916.squirrel@webmail.bilkent.edu.tr>
+
+> Make sure your firefox supports Java... I get something similar to
+> what you are describing with Firefox on Linux because I don't have it
+> setup for Java.
+>
+>
+Java is uptodate and enabled on both operating systems.
+And this is the java console error report when restarting firefox and
+getting the undefined error.
+
+Java Plug-in 1.6.0_06
+Using JRE version 1.6.0_05 Java HotSpot(TM) Client VM
+User home directory = C:\Documents and Settings\bcc
+
+
+10:50:36.937 [classloader] java.lang.Object
+10:50:36.937 [classloader] edu.mit.simile.firefoxClassLoader.Packages
+10:50:36.937 [classloader] java.lang.Throwable
+10:50:36.937 [classloader] java.lang.ClassNotFoundException
+10:50:36.937 [classloader] java.lang.Class
+10:50:36.937 [classloader] java.lang.String
+10:50:36.937 [classloader] edu.mit.simile.firefoxClassLoader.ClassWrapper
+10:50:36.953 [classloader] WISPrClient
+10:50:36.953 [classloader] java.security.PrivilegedAction
+10:50:36.953 [classloader] java.lang.NoSuchMethodError
+10:50:36.953 [classloader] java.lang.Exception
+10:50:36.953 [classloader] java.io.IOException
+10:50:36.953 [classloader] java.net.MalformedURLException
+10:50:36.953 [classloader] javax.net.ssl.TrustManager
+10:50:36.953 [classloader] javax.net.ssl.HostnameVerifier
+10:50:36.968 [classloader] java.io.Reader
+10:50:36.968 [classloader] java.io.InputStreamReader
+10:50:36.968 [classloader] java.lang.RuntimeException
+10:50:36.968 [classloader] java.net.URL
+10:50:36.968 [classloader] java.lang.NoClassDefFoundError
+10:50:36.968 [classloader] java.util.Set
+10:50:36.968 [classloader] java.lang.Boolean
+10:50:36.968 [classloader] java.lang.Byte
+10:50:36.968 [classloader] java.lang.Character
+10:50:36.968 [classloader] java.lang.Double
+10:50:36.968 [classloader] java.lang.Float
+10:50:36.968 [classloader] java.lang.Integer
+10:50:36.968 [classloader] java.lang.Long
+10:50:36.968 [classloader] java.lang.Short
+10:50:36.968 [classloader] java.lang.IllegalArgumentException
+10:50:36.968 [classloader] java.lang.IllegalAccessException
+10:50:36.968 [classloader] java.lang.reflect.InvocationTargetException
+10:50:36.968 [classloader] java.lang.InstantiationException
+10:50:36.968 [classloader] java.lang.SecurityException
+10:50:36.968 [classloader] java.lang.NoSuchFieldException
+10:50:36.984 [classloader] PageResult
+10:50:36.984 [classloader] java.lang.reflect.Method
+java.security.PrivilegedActionException:
+java.lang.reflect.InvocationTargetException
+	at java.security.AccessController.doPrivileged(Native Method)
+	at sun.plugin.liveconnect.SecureInvocation$2.run(Unknown Source)
+	at java.security.AccessController.doPrivileged(Native Method)
+	at sun.plugin.liveconnect.SecureInvocation.CallMethod(Unknown Source)
+Caused by: java.lang.reflect.InvocationTargetException
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(Unknown Source)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(Unknown Source)
+	at java.lang.reflect.Method.invoke(Unknown Source)
+	at sun.plugin.javascript.JSInvoke.invoke(Unknown Source)
+	at sun.reflect.GeneratedMethodAccessor1.invoke(Unknown Source)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(Unknown Source)
+	at java.lang.reflect.Method.invoke(Unknown Source)
+	at sun.plugin.javascript.JSClassLoader.invoke(Unknown Source)
+	at sun.plugin.liveconnect.PrivilegedCallMethodAction.run(Unknown Source)
+	... 4 more
+Caused by: java.lang.NullPointerException
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(Unknown Source)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(Unknown Source)
+	at java.lang.reflect.Method.invoke(Unknown Source)
+	at
+edu.mit.simile.firefoxClassLoader.ClassWrapper.callMethod(ClassWrapper.java:135)
+	... 14 more
+
+
+
+
+
+
+
+> On Jun 12, 2008, at 9:33 AM, Oguzhan Kayhan wrote:
+>
+>> Hello,
+>> i tried to use coovafx today. First i installed it on xp-firefox
+>> 2.0.14
+>> But then when i restart firefox a window opens...and jus written
+>> "alert"
+>> on it.
+>> And the coovafx icon seem disabled, and cant be enabled.
+>> Then i tried to install it on a linux, ubuntu with firefox 3..but it
+>> refused to install this plugin because of not finding a secure
+>> update??
+>>
+>> So in which version of firefox this plugin works?
+>>
+>>
+>>
+>> ---------------------------------------------------------------------
+>> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+>> For additional commands, e-mail: chilli-help at coova.org
+>> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+>> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>>
+>
+>
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>
+>
+
+
+
+
+From javi.larrea at gmail.com  Fri Jun 13 08:44:25 2008
+From: javi.larrea at gmail.com (=?ISO-8859-1?Q?Javier_Larrea_Arma=F1anzas?=)
+Date: Fri, 13 Jun 2008 10:44:25 +0200
+Subject: Another Radius server for Accounting
+Message-ID: <48523369.6080101@gmail.com>
+
+Hi list,
+is there a way to configure one Radius server to manage the 
+authentication and another Radius server to receive the accounting?
+
+
+From liran.tal at gmail.com  Fri Jun 13 09:07:02 2008
+From: liran.tal at gmail.com (Liran Tal)
+Date: Fri, 13 Jun 2008 12:07:02 +0300
+Subject: Another Radius server for Accounting
+In-Reply-To: <48523369.6080101@gmail.com>
+References: <48523369.6080101@gmail.com>
+Message-ID: <81237f640806130207m25747d55pca8c33c6182f3d88@mail.gmail.com>
+
+Hey Javier,
+
+On Fri, Jun 13, 2008 at 11:44 AM, Javier Larrea Arma?anzas <
+javi.larrea at gmail.com> wrote:
+
+> Hi list,
+> is there a way to configure one Radius server to manage the authentication
+> and another Radius server to receive the accounting?
+>
+
+Simply configure different radius server IPs for that.
+
+
+
+-- 
+-- 
+Sincerely, Liran Tal
+
+Research and Development
+Linux Team - Enginx.com
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20080613/cce3dc7c/attachment.htm>
+
+From henk at skyrove.com  Fri Jun 13 09:07:23 2008
+From: henk at skyrove.com (Henk Kleynhans)
+Date: Fri, 13 Jun 2008 11:07:23 +0200
+Subject: Another Radius server for Accounting
+In-Reply-To: <48523369.6080101@gmail.com>
+References: <48523369.6080101@gmail.com>
+Message-ID: <d42f029a0806130207q24a3cc14p4ed410391476fb23@mail.gmail.com>
+
+If there's a WILL, there's a WAY.
+
+The question is: WHY?  ;-)
+
+henk
+
+
+On Fri, Jun 13, 2008 at 10:44 AM, Javier Larrea Arma?anzas <
+javi.larrea at gmail.com> wrote:
+
+> Hi list,
+> is there a way to configure one Radius server to manage the authentication
+> and another Radius server to receive the accounting?
+>
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>
+>
+
+
+-- 
+Henk Kleynhans
+Skyrove (Pty) Ltd
+Technology Top 100 - Most Promising Emerging Enterprise 2006
+Tel: +27 (21) 4488843
+Cell: +27 (84) 3073451
+Fax: +27 (86) 6204077
+henk at skyrove.com
+blog: www.yeahfi.com
+
+------
+
+"A person with ubuntu is open and available to others, affirming of others,
+does not feel threatened that others are able and good, for he or she has a
+proper self-assurance that comes from knowing that he or she belongs in a
+greater whole and is diminished when others are humiliated or diminished,
+when others are tortured or oppressed." - Desmond Tutu
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20080613/53d87522/attachment.htm>
+
+From javi.larrea at gmail.com  Fri Jun 13 11:41:26 2008
+From: javi.larrea at gmail.com (=?ISO-8859-1?Q?Javier_Larrea_Arma=F1anzas?=)
+Date: Fri, 13 Jun 2008 13:41:26 +0200
+Subject: Another Radius server for Accounting
+In-Reply-To: <81237f640806130207m25747d55pca8c33c6182f3d88@mail.gmail.com>
+References: <48523369.6080101@gmail.com> <81237f640806130207m25747d55pca8c33c6182f3d88@mail.gmail.com>
+Message-ID: <48525CE6.8090709@gmail.com>
+
+I think I'm going to solve this problem using freeradius proxying.
+Thanks!
+
+
+From jos at xos.nl  Sun Jun 15 17:28:51 2008
+From: jos at xos.nl (Jos Vos)
+Date: Sun, 15 Jun 2008 19:28:51 +0200
+Subject: Chilli should not redirect to 1.1.1.1
+Message-ID: <200806151728.m5FHSpJx021644@jasmine.xos.nl>
+
+Hi,
+
+When you explicitly log out using the 1.1.1.1 address, you get the
+login screen back.  When you then login again, chilli redirects you
+to 1.1.1.1 and this immediately logs you out again!
+
+I think that chilli should never redirect to 1.1.1.1, as this
+behavior may cause a lot of confusion for "normal" hotspot users.
+
+--
+--    Jos Vos <jos at xos.nl>
+--    X/OS Experts in Open Systems BV   |   Phone: +31 20 6938364
+--    Amsterdam, The Netherlands        |     Fax: +31 20 6948204
+
+
+From venture37 at hotmail.com  Wed Jun 18 09:26:39 2008
+From: venture37 at hotmail.com (Sevan / Venture37)
+Date: Wed, 18 Jun 2008 10:26:39 +0100
+Subject: FreeBSD port
+Message-ID: <BAY138-W1584AC1156CB140A80CA26A0AB0@phx.gbl>
+
+
+I've finished the 1st revision of the freebsd port, I still need to write documentation, redo the up/down shell scripts & write some template configs.
+I'd appreciate it if people could do some testing both on 6.x & 7.x releases.
+
+http://www.geeklan.co.uk/files/coova-freebsd-port-mk1.tgz
+
+If you need a main.conf to mod out here's one I pinched from a linux install:
+http://geeklan.co.uk/files/coova-main.conf
+
+I think there is more work involved code wise as chilli keeps on coredumping on a test box, though I'm not certain if its the machine I'm trying it thats having problems.
+
+Sevan / Venture37
+_________________________________________________________________
+
+http://clk.atdmt.com/UKM/go/msnnkmgl0010000009ukm/direct/01/
+
+From chilli at silverserver.at  Wed Jun 18 13:52:40 2008
+From: chilli at silverserver.at (lc)
+Date: Wed, 18 Jun 2008 15:52:40 +0200
+Subject: https UAM server - non https chilli
+In-Reply-To: <CF062FA4-1994-419D-BA47-8EA5042B9ED6@mac.com>
+References: <46796.139.179.14.250.1213255981.squirrel@webmail.bilkent.edu.tr> <CF062FA4-1994-419D-BA47-8EA5042B9ED6@mac.com>
+Message-ID: <F3976186-78E4-4E53-A16C-7C236890E442@silverserver.at>
+
+Hi,
+
+I noticed that especially the web-browser of Nokia products keeps  
+complaining about switching from a secured to a non-secured website.  
+This browser behaviour complicates the login for a user since he has  
+to click through the warning message everytime he logs on.
+
+How do you deal with this? Using a non-https connection to the UAM  
+server is not a real alternative, is it? Are there any known measures  
+to avoid those warning messages?
+
+
+
+
+
+
+From gunther.mayer at googlemail.com  Wed Jun 18 15:46:58 2008
+From: gunther.mayer at googlemail.com (Gunther Mayer)
+Date: Wed, 18 Jun 2008 17:46:58 +0200
+Subject: https UAM server - non https chilli
+In-Reply-To: <F3976186-78E4-4E53-A16C-7C236890E442@silverserver.at>
+References: <46796.139.179.14.250.1213255981.squirrel@webmail.bilkent.edu.tr> <CF062FA4-1994-419D-BA47-8EA5042B9ED6@mac.com> <F3976186-78E4-4E53-A16C-7C236890E442@silverserver.at>
+Message-ID: <48592DF2.7010807@gmail.com>
+
+lc wrote:
+> Hi,
+>
+> I noticed that especially the web-browser of Nokia products keeps 
+> complaining about switching from a secured to a non-secured website. 
+> This browser behaviour complicates the login for a user since he has 
+> to click through the warning message everytime he logs on.
+>
+> How do you deal with this? Using a non-https connection to the UAM 
+> server is not a real alternative, is it? Are there any known measures 
+> to avoid those warning messages?
+Thought about how to deal with this problem many times myself. Only 
+solution I can think of at this stage is to get a professionally signed 
+SSL certificate for your uamip (e.g. 192.168.182.1) and run an ssl 
+tunnel in front of your chilli process (e.g. matrixtunnel). This 
+requires firmware changes though (if you use coova ap or any other 
+embedded platform).
+
+Gunther
+
+
+From wlan at mac.com  Wed Jun 18 16:05:33 2008
+From: wlan at mac.com (wlanmac)
+Date: Wed, 18 Jun 2008 18:05:33 +0200
+Subject: https UAM server - non https chilli
+In-Reply-To: <48592DF2.7010807@gmail.com>
+References: <46796.139.179.14.250.1213255981.squirrel@webmail.bilkent.edu.tr>
+ <CF062FA4-1994-419D-BA47-8EA5042B9ED6@mac.com>
+ <F3976186-78E4-4E53-A16C-7C236890E442@silverserver.at>
+ <48592DF2.7010807@gmail.com>
+Message-ID: <1213805133.6633.28.camel@david-laptop>
+
+Personally, I use CoovaSX on my nokia instead of the browser to login. I
+don't think using http is the right answer for many hotspots - perhaps
+for some where account security isn't so important. 
+
+You probably wouldn't get the error if you used the JSON interface or if
+you always redirected the user to a 'start' page. If the user is
+clicking on a http link from a https page (as opposed to being
+redirected to http from a https URL), maybe you will not have the issue.
+
+David
+
+
+On Wed, 2008-06-18 at 17:46 +0200, Gunther Mayer wrote:
+> lc wrote:
+> > Hi,
+> >
+> > I noticed that especially the web-browser of Nokia products keeps 
+> > complaining about switching from a secured to a non-secured website. 
+> > This browser behaviour complicates the login for a user since he has 
+> > to click through the warning message everytime he logs on.
+> >
+> > How do you deal with this? Using a non-https connection to the UAM 
+> > server is not a real alternative, is it? Are there any known measures 
+> > to avoid those warning messages?
+> Thought about how to deal with this problem many times myself. Only 
+> solution I can think of at this stage is to get a professionally signed 
+> SSL certificate for your uamip (e.g. 192.168.182.1) and run an ssl 
+> tunnel in front of your chilli process (e.g. matrixtunnel). This 
+> requires firmware changes though (if you use coova ap or any other 
+> embedded platform).
+> 
+> Gunther
+> 
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+> 
+
+
+
+From oguzhank at bilkent.edu.tr  Thu Jun 19 13:24:53 2008
+From: oguzhank at bilkent.edu.tr (Oguzhan Kayhan)
+Date: Thu, 19 Jun 2008 16:24:53 +0300 (EEST)
+Subject: upgrading coovaap
+Message-ID: <46837.139.179.14.250.1213881893.squirrel@webmail.bilkent.edu.tr>
+
+Hello,
+I was using coovaap 1.0-beta-7d for a while with WRT54GL..
+And i wanted to upgrade the files.
+I SSH'ed...and gave the command ipkg update and ipkg upgrade..
+While it was downloading and updating the files..
+It started giving no space left on device error.
+And it wasnt accepting any other comands later.
+I tried my only chance and rebooted..
+And i reset the system.
+Now when i connect to web interface it asks me to enter a new password but
+when it is writing it it gives the error. It seems the flash is still
+full.
+To tdelete some files i try to ssh to system but.
+It doesnt accept blank/admin/root etc passwords as i know for default.
+What can i do now.. how can i make it work again? :)
+
+
+
+
+From outbackdingo at gmail.com  Thu Jun 19 14:09:01 2008
+From: outbackdingo at gmail.com (OutBackDingo)
+Date: Thu, 19 Jun 2008 21:09:01 +0700
+Subject: upgrading coovaap
+In-Reply-To: <46837.139.179.14.250.1213881893.squirrel@webmail.bilkent.edu.tr>
+References: 
+	 <46837.139.179.14.250.1213881893.squirrel@webmail.bilkent.edu.tr>
+Message-ID: <1213884541.20035.11.camel@dingo-laptop>
+
+LOL for fun i just tested that and same result, file system full errors
+everywhere and completely unresponsive later, even a reset to factory
+default pushing of the button did not resolv the issue, it did reset the
+ssid to Coova but refused to give a wireless IP via dhcp. so we go to
+the lan side, and nothing there either, so id consider it pretty
+briicked try TFTPing a new image and start over i guess
+
+On Thu, 2008-06-19 at 16:24 +0300, Oguzhan Kayhan wrote:
+> Hello,
+> I was using coovaap 1.0-beta-7d for a while with WRT54GL..
+> And i wanted to upgrade the files.
+> I SSH'ed...and gave the command ipkg update and ipkg upgrade..
+> While it was downloading and updating the files..
+> It started giving no space left on device error.
+> And it wasnt accepting any other comands later.
+> I tried my only chance and rebooted..
+> And i reset the system.
+> Now when i connect to web interface it asks me to enter a new password but
+> when it is writing it it gives the error. It seems the flash is still
+> full.
+> To tdelete some files i try to ssh to system but.
+> It doesnt accept blank/admin/root etc passwords as i know for default.
+> What can i do now.. how can i make it work again? :)
+> 
+> 
+> 
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+> 
+
+
+
+From oguzhank at bilkent.edu.tr  Thu Jun 19 15:22:30 2008
+From: oguzhank at bilkent.edu.tr (Oguzhan Kayhan)
+Date: Thu, 19 Jun 2008 18:22:30 +0300 (EEST)
+Subject: upgrading coovaap
+In-Reply-To: <1213884541.20035.11.camel@dingo-laptop>
+References: <46837.139.179.14.250.1213881893.squirrel@webmail.bilkent.edu.tr>
+    <1213884541.20035.11.camel@dingo-laptop>
+Message-ID: <59143.139.179.14.250.1213888950.squirrel@webmail.bilkent.edu.tr>
+
+Ok next time i better write " To not try this at home" warning in my
+emails :)
+
+So..what if i want to update to latest version of coova-chilli for example
+with coovaap firmware.
+removing and reinstalling it will redownload the updated image from the
+souce-list of coova?
+
+> LOL for fun i just tested that and same result, file system full errors
+> everywhere and completely unresponsive later, even a reset to factory
+> default pushing of the button did not resolv the issue, it did reset the
+> ssid to Coova but refused to give a wireless IP via dhcp. so we go to
+> the lan side, and nothing there either, so id consider it pretty
+> briicked try TFTPing a new image and start over i guess
+>
+> On Thu, 2008-06-19 at 16:24 +0300, Oguzhan Kayhan wrote:
+>> Hello,
+>> I was using coovaap 1.0-beta-7d for a while with WRT54GL..
+>> And i wanted to upgrade the files.
+>> I SSH'ed...and gave the command ipkg update and ipkg upgrade..
+>> While it was downloading and updating the files..
+>> It started giving no space left on device error.
+>> And it wasnt accepting any other comands later.
+>> I tried my only chance and rebooted..
+>> And i reset the system.
+>> Now when i connect to web interface it asks me to enter a new password
+>> but
+>> when it is writing it it gives the error. It seems the flash is still
+>> full.
+>> To tdelete some files i try to ssh to system but.
+>> It doesnt accept blank/admin/root etc passwords as i know for default.
+>> What can i do now.. how can i make it work again? :)
+>>
+>>
+>>
+>> ---------------------------------------------------------------------
+>> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+>> For additional commands, e-mail: chilli-help at coova.org
+>> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+>> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>>
+>
+>
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>
+>
+
+
+
+
+From outbackdingo at gmail.com  Thu Jun 19 15:51:32 2008
+From: outbackdingo at gmail.com (OutBackDingo)
+Date: Thu, 19 Jun 2008 22:51:32 +0700
+Subject: upgrading coovaap
+In-Reply-To: <59143.139.179.14.250.1213888950.squirrel@webmail.bilkent.edu.tr>
+References: 
+	 <46837.139.179.14.250.1213881893.squirrel@webmail.bilkent.edu.tr>
+	 <1213884541.20035.11.camel@dingo-laptop>
+	 <59143.139.179.14.250.1213888950.squirrel@webmail.bilkent.edu.tr>
+Message-ID: <1213890692.20035.15.camel@dingo-laptop>
+
+Im going to reload the router and try it package by package see if that
+might work
+
+On Thu, 2008-06-19 at 18:22 +0300, Oguzhan Kayhan wrote:
+> Ok next time i better write " To not try this at home" warning in my
+> emails :)
+> 
+> So..what if i want to update to latest version of coova-chilli for example
+> with coovaap firmware.
+> removing and reinstalling it will redownload the updated image from the
+> souce-list of coova?
+> 
+> > LOL for fun i just tested that and same result, file system full errors
+> > everywhere and completely unresponsive later, even a reset to factory
+> > default pushing of the button did not resolv the issue, it did reset the
+> > ssid to Coova but refused to give a wireless IP via dhcp. so we go to
+> > the lan side, and nothing there either, so id consider it pretty
+> > briicked try TFTPing a new image and start over i guess
+> >
+> > On Thu, 2008-06-19 at 16:24 +0300, Oguzhan Kayhan wrote:
+> >> Hello,
+> >> I was using coovaap 1.0-beta-7d for a while with WRT54GL..
+> >> And i wanted to upgrade the files.
+> >> I SSH'ed...and gave the command ipkg update and ipkg upgrade..
+> >> While it was downloading and updating the files..
+> >> It started giving no space left on device error.
+> >> And it wasnt accepting any other comands later.
+> >> I tried my only chance and rebooted..
+> >> And i reset the system.
+> >> Now when i connect to web interface it asks me to enter a new password
+> >> but
+> >> when it is writing it it gives the error. It seems the flash is still
+> >> full.
+> >> To tdelete some files i try to ssh to system but.
+> >> It doesnt accept blank/admin/root etc passwords as i know for default.
+> >> What can i do now.. how can i make it work again? :)
+> >>
+> >>
+> >>
+> >> ---------------------------------------------------------------------
+> >> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> >> For additional commands, e-mail: chilli-help at coova.org
+> >> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> >> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+> >>
+> >
+> >
+> > ---------------------------------------------------------------------
+> > To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> > For additional commands, e-mail: chilli-help at coova.org
+> > Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> > Forum: http://coova.org/phpBB3/viewforum.php?f=4
+> >
+> >
+> 
+> 
+> 
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+> 
+
+
+
+From wlan at mac.com  Fri Jun 20 06:23:10 2008
+From: wlan at mac.com (wlanmac)
+Date: Fri, 20 Jun 2008 08:23:10 +0200
+Subject: upgrading coovaap
+In-Reply-To: <46837.139.179.14.250.1213881893.squirrel@webmail.bilkent.edu.tr>
+References: <46837.139.179.14.250.1213881893.squirrel@webmail.bilkent.edu.tr>
+Message-ID: <1213942990.6651.27.camel@david-laptop>
+
+I'll build a 1.0.12 ipkg for CoovaAP/broadcom in the next couple days.
+I've been away on a trip. 
+
+On Thu, 2008-06-19 at 16:24 +0300, Oguzhan Kayhan wrote:
+> Hello,
+> I was using coovaap 1.0-beta-7d for a while with WRT54GL..
+> And i wanted to upgrade the files.
+> I SSH'ed...and gave the command ipkg update and ipkg upgrade..
+> While it was downloading and updating the files..
+> It started giving no space left on device error.
+> And it wasnt accepting any other comands later.
+> I tried my only chance and rebooted..
+> And i reset the system.
+> Now when i connect to web interface it asks me to enter a new password but
+> when it is writing it it gives the error. It seems the flash is still
+> full.
+> To tdelete some files i try to ssh to system but.
+> It doesnt accept blank/admin/root etc passwords as i know for default.
+> What can i do now.. how can i make it work again? :)
+> 
+> 
+> 
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+> 
+
+
+
+From oguzhank at bilkent.edu.tr  Fri Jun 20 07:33:56 2008
+From: oguzhank at bilkent.edu.tr (Oguzhan Kayhan)
+Date: Fri, 20 Jun 2008 10:33:56 +0300 (EEST)
+Subject: upgrading coovaap
+In-Reply-To: <1213942990.6651.27.camel@david-laptop>
+References: <46837.139.179.14.250.1213881893.squirrel@webmail.bilkent.edu.tr>
+    <1213942990.6651.27.camel@david-laptop>
+Message-ID: <60875.139.179.14.250.1213947236.squirrel@webmail.bilkent.edu.tr>
+
+Ok i saved my bricked modem.
+First i tried to enter to failsafe mode..By pressing reset button just
+after the DMZ light goes on.
+But even in this screen it didnt allow me to write password.
+So i downloaded the coova firmware with wget and used mtk command to
+rewrite flash..
+But it failed and turned into a total brick. Just with a blinking power led.
+But i noticed it replies to ping requests on 192.168.1.1
+So i tried to upload image by tftp and voila..it works now.
+:)
+
+
+> I'll build a 1.0.12 ipkg for CoovaAP/broadcom in the next couple days.
+> I've been away on a trip.
+>
+> On Thu, 2008-06-19 at 16:24 +0300, Oguzhan Kayhan wrote:
+>> Hello,
+>> I was using coovaap 1.0-beta-7d for a while with WRT54GL..
+>> And i wanted to upgrade the files.
+>> I SSH'ed...and gave the command ipkg update and ipkg upgrade..
+>> While it was downloading and updating the files..
+>> It started giving no space left on device error.
+>> And it wasnt accepting any other comands later.
+>> I tried my only chance and rebooted..
+>> And i reset the system.
+>> Now when i connect to web interface it asks me to enter a new password
+>> but
+>> when it is writing it it gives the error. It seems the flash is still
+>> full.
+>> To tdelete some files i try to ssh to system but.
+>> It doesnt accept blank/admin/root etc passwords as i know for default.
+>> What can i do now.. how can i make it work again? :)
+>>
+>>
+>>
+>> ---------------------------------------------------------------------
+>> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+>> For additional commands, e-mail: chilli-help at coova.org
+>> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+>> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>>
+>
+>
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>
+>
+
+
+
+
+From jos at xos.nl  Mon Jun 23 12:13:46 2008
+From: jos at xos.nl (Jos Vos)
+Date: Mon, 23 Jun 2008 14:13:46 +0200
+Subject: How to change map.chi to avoid CSS conflicts?
+Message-ID: <200806231213.m5NCDkqq005413@jasmine.xos.nl>
+
+Hi,
+
+Did someone find out how to change map.chi in such a way, that the
+Google map does not interfere with custom CSS settings (like
+background color etc.)?
+
+I hope it is be possible to have a correct Google map (equal to
+what you get when you don't have custom CSS settings) in an own 
+style page, e.g. with an own background color.  If I do that now,
+all kinds of items (like the text balloon, +/- sliders, etc.)
+look wrong.
+
+Any suggestions?
+
+-- 
+--    Jos Vos <jos at xos.nl>
+--    X/OS Experts in Open Systems BV   |   Phone: +31 20 6938364
+--    Amsterdam, The Netherlands        |     Fax: +31 20 6948204
+
+
+From oguzhank at bilkent.edu.tr  Wed Jun 25 12:23:18 2008
+From: oguzhank at bilkent.edu.tr (Oguzhan Kayhan)
+Date: Wed, 25 Jun 2008 15:23:18 +0300 (EEST)
+Subject: coovafx plugin
+Message-ID: <51615.139.179.14.250.1214396598.squirrel@webmail.bilkent.edu.tr>
+
+
+
+Hello,
+as i see there's a new update for coovafx. Previously i was getting a java
+error but in this new version it seem fixed.
+Ok.. here we go..
+I am not sure if it is only working with coovaap or not but,
+I am testing it with a coova version running on linux...
+Anyway,
+i installed the plugin to a client and tried to test it..
+Plugin loaded successfully..And my hotstop name seen on the right
+bottomside of the firefox as expected..
+But.... not logging in...In debug mode i can see the uamlogin information
+correctly, i mean the url... but when i clik on auto-login or manual
+login.. no error no connection..nothing..
+Do i have to make additional configs in coova to accept coovafx plugin?
+Or does it suppose to work automatically?
+
+
+PS: I am not using the default login screen of coova or chilli. We have
+our own login screen for that.
+
+
+
+
+From wlan at mac.com  Wed Jun 25 13:55:51 2008
+From: wlan at mac.com (wlanmac)
+Date: Wed, 25 Jun 2008 15:55:51 +0200
+Subject: coovafx plugin
+In-Reply-To: <51615.139.179.14.250.1214396598.squirrel@webmail.bilkent.edu.tr>
+References: <51615.139.179.14.250.1214396598.squirrel@webmail.bilkent.edu.tr>
+Message-ID: <1214402151.6655.12.camel@david-laptop>
+
+Your using your own captive portal? If so, I would suggest looking in
+the logs for the authentication requests. Your portal also needs to
+"support WISPr" in some respects. If you have a special URL you want to
+send WISPr clients to, you can set that as option 'wisprlogin' in
+coovachilli. 
+
+David
+
+
+On Wed, 2008-06-25 at 15:23 +0300, Oguzhan Kayhan wrote:
+> 
+> Hello,
+> as i see there's a new update for coovafx. Previously i was getting a java
+> error but in this new version it seem fixed.
+> Ok.. here we go..
+> I am not sure if it is only working with coovaap or not but,
+> I am testing it with a coova version running on linux...
+> Anyway,
+> i installed the plugin to a client and tried to test it..
+> Plugin loaded successfully..And my hotstop name seen on the right
+> bottomside of the firefox as expected..
+> But.... not logging in...In debug mode i can see the uamlogin information
+> correctly, i mean the url... but when i clik on auto-login or manual
+> login.. no error no connection..nothing..
+> Do i have to make additional configs in coova to accept coovafx plugin?
+> Or does it suppose to work automatically?
+> 
+> 
+> PS: I am not using the default login screen of coova or chilli. We have
+> our own login screen for that.
+> 
+> 
+> 
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+> 
+
+
+
+From wlan at mac.com  Thu Jun 26 16:44:29 2008
+From: wlan at mac.com (wlanmac)
+Date: Thu, 26 Jun 2008 18:44:29 +0200
+Subject: Drupal hotspot
+Message-ID: <1214498669.6903.19.camel@david-laptop>
+
+Hey,
+
+If you haven't already, checkout CoovaFX 1.2 - now working on windows
+and linux (at least ubuntu hardy). Test your hotspot for WISPr support!
+
+http://coova.org/wiki/index.php/CoovaFX
+
+Also, have committed some changes to the Drupal hotspot module to
+include browser redirect logins, in addition to the Javascript
+controller. With browser redirects, you can setup your UAM secret in the
+drupal admin.
+
+http://cvs.drupal.org/viewvc.py/drupal/contributions/modules/hotspot/
+
+David
+
+
+
+From ccesario at tecnomega.com.br  Fri Jun 27 18:09:38 2008
+From: ccesario at tecnomega.com.br (Carlos Cesario)
+Date: Fri, 27 Jun 2008 15:09:38 -0300
+Subject: Bandwidth manager
+Message-ID: <1214590178.6941.6.camel@ccesario-laptop>
+
+Hello all,
+
+I'm using CoovaChilli in 3 Hotspots, with 200 user's simultaneous, it's
+cool! But I'm having problems with bandwidth manager.
+
+See my problem
+
+HTTP: Downloads and Uploads is limited perfect
+WISPr-Bandwidth-Max-Down and WISPr-Bandwidth-Max-Up
+
+
+P2P: Downloads and Uploads isn't limited :(
+
+This is killing my network...
+
+I'm using iptables + layer-7 + ipp2p but any programs continue using
+VERY bandwidth.
+
+Somebody have the same problem ? Any idea about solve this ?
+
+thank you
+
+Carlos
+
+
+
+
+From wlan at mac.com  Sun Jun 29 07:53:40 2008
+From: wlan at mac.com (wlanmac)
+Date: Sun, 29 Jun 2008 09:53:40 +0200
+Subject: Bandwidth manager
+In-Reply-To: <1214590178.6941.6.camel@ccesario-laptop>
+References: <1214590178.6941.6.camel@ccesario-laptop>
+Message-ID: <1214726020.6738.11.camel@david-laptop>
+
+The bandwidth shaping in chilli doesn't care about the protocol, so your
+findings are interesting. What do your iptables rules look like? 
+
+David
+
+On Fri, 2008-06-27 at 15:09 -0300, Carlos Cesario wrote:
+> Hello all,
+> 
+> I'm using CoovaChilli in 3 Hotspots, with 200 user's simultaneous, it's
+> cool! But I'm having problems with bandwidth manager.
+> 
+> See my problem
+> 
+> HTTP: Downloads and Uploads is limited perfect
+> WISPr-Bandwidth-Max-Down and WISPr-Bandwidth-Max-Up
+> 
+> 
+> P2P: Downloads and Uploads isn't limited :(
+> 
+> This is killing my network...
+> 
+> I'm using iptables + layer-7 + ipp2p but any programs continue using
+> VERY bandwidth.
+> 
+> Somebody have the same problem ? Any idea about solve this ?
+> 
+> thank you
+> 
+> Carlos
+> 
+> 
+> 
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+> 
+
+
+
+From ccesario at tecnomega.com.br  Sun Jun 29 11:29:07 2008
+From: ccesario at tecnomega.com.br (Carlos Cesario)
+Date: Sun, 29 Jun 2008 08:29:07 -0300
+Subject: RES: Bandwidth manager
+In-Reply-To: <1214726020.6738.11.camel@david-laptop>
+References: <1214590178.6941.6.camel@ccesario-laptop>,<1214726020.6738.11.camel@david-laptop>
+Message-ID: <9483DCA53A320C458F2590C37D891A6E095C7E2F65@serv2003r2.Tecnomega.local>
+
+Hi Wlanmac,
+
+My rules is attached, this rules working perfect with kazaa, emule, bittorrent, but new versions os limewire, ares, continue working, and the users discover this and killing my network....
+
+thanks
+
+Carlos
+
+________________________________________
+De: wlanmac [wlan at mac.com]
+Enviado: domingo, 29 de junho de 2008 4:53
+Para: chilli at coova.org
+Assunto: Re: Bandwidth manager
+
+The bandwidth shaping in chilli doesn't care about the protocol, so your
+findings are interesting. What do your iptables rules look like?
+
+David
+
+On Fri, 2008-06-27 at 15:09 -0300, Carlos Cesario wrote:
+> Hello all,
+>
+> I'm using CoovaChilli in 3 Hotspots, with 200 user's simultaneous, it's
+> cool! But I'm having problems with bandwidth manager.
+>
+> See my problem
+>
+> HTTP: Downloads and Uploads is limited perfect
+> WISPr-Bandwidth-Max-Down and WISPr-Bandwidth-Max-Up
+>
+>
+> P2P: Downloads and Uploads isn't limited :(
+>
+> This is killing my network...
+>
+> I'm using iptables + layer-7 + ipp2p but any programs continue using
+> VERY bandwidth.
+>
+> Somebody have the same problem ? Any idea about solve this ?
+>
+> thank you
+>
+> Carlos
+>
+>
+>
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>
+
+
+---------------------------------------------------------------------
+To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+For additional commands, e-mail: chilli-help at coova.org
+Wiki: http://coova.org/wiki/index.php/CoovaChilli
+Forum: http://coova.org/phpBB3/viewforum.php?f=4
+-------------- next part --------------
+An embedded and charset-unspecified text was scrubbed...
+Name: firewall.txt
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20080629/08c76086/attachment.txt>
+
+From oguzhank at bilkent.edu.tr  Mon Jun 30 11:40:09 2008
+From: oguzhank at bilkent.edu.tr (Oguzhan Kayhan)
+Date: Mon, 30 Jun 2008 14:40:09 +0300 (EEST)
+Subject: Bandwidth manager
+In-Reply-To: <1214726020.6738.11.camel@david-laptop>
+References: <1214590178.6941.6.camel@ccesario-laptop>
+    <1214726020.6738.11.camel@david-laptop>
+Message-ID: <45826.139.179.14.250.1214826009.squirrel@webmail.bilkent.edu.tr>
+
+We have a similar problem but i dont think it is smthing about the chilli
+or iptables.
+SOmetimes ..some ip's appear on arp table of the ethernet interface of the
+chilli..
+These IP's are bypassing speed limitations of the chilli.We couldnt find
+what causes this problems but even rarely..it happens..
+Maybe the Tun driver can not handle the requests sometimes..
+
+
+> The bandwidth shaping in chilli doesn't care about the protocol, so your
+> findings are interesting. What do your iptables rules look like?
+>
+> David
+>
+> On Fri, 2008-06-27 at 15:09 -0300, Carlos Cesario wrote:
+>> Hello all,
+>>
+>> I'm using CoovaChilli in 3 Hotspots, with 200 user's simultaneous, it's
+>> cool! But I'm having problems with bandwidth manager.
+>>
+>> See my problem
+>>
+>> HTTP: Downloads and Uploads is limited perfect
+>> WISPr-Bandwidth-Max-Down and WISPr-Bandwidth-Max-Up
+>>
+>>
+>> P2P: Downloads and Uploads isn't limited :(
+>>
+>> This is killing my network...
+>>
+>> I'm using iptables + layer-7 + ipp2p but any programs continue using
+>> VERY bandwidth.
+>>
+>> Somebody have the same problem ? Any idea about solve this ?
+>>
+>> thank you
+>>
+>> Carlos
+>>
+>>
+>>
+>> ---------------------------------------------------------------------
+>> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+>> For additional commands, e-mail: chilli-help at coova.org
+>> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+>> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>>
+>
+>
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>
+>
+
+
+
+
+From ccesario at tecnomega.com.br  Mon Jun 30 12:06:44 2008
+From: ccesario at tecnomega.com.br (Carlos Cesario)
+Date: Mon, 30 Jun 2008 09:06:44 -0300
+Subject: Bandwidth manager
+In-Reply-To: <45826.139.179.14.250.1214826009.squirrel@webmail.bilkent.edu.tr>
+References: <1214590178.6941.6.camel@ccesario-laptop>
+	 <1214726020.6738.11.camel@david-laptop>
+	 <45826.139.179.14.250.1214826009.squirrel@webmail.bilkent.edu.tr>
+Message-ID: <1214827604.7900.5.camel@ccesario-laptop>
+
+Hi Oguzhan,
+
+This is very stranger.... :/
+
+Do you have any solution ? What do you make to fix this ?
+
+thank you
+
+Carlos
+
+Em Seg, 2008-06-30 ?s 08:40 -0300, Oguzhan Kayhan escreveu:
+> We have a similar problem but i dont think it is smthing about the chilli
+> or iptables.
+> SOmetimes ..some ip's appear on arp table of the ethernet interface of the
+> chilli..
+> These IP's are bypassing speed limitations of the chilli.We couldnt find
+> what causes this problems but even rarely..it happens..
+> Maybe the Tun driver can not handle the requests sometimes..
+> 
+> 
+> > The bandwidth shaping in chilli doesn't care about the protocol, so your
+> > findings are interesting. What do your iptables rules look like?
+> >
+> > David
+> >
+> > On Fri, 2008-06-27 at 15:09 -0300, Carlos Cesario wrote:
+> >> Hello all,
+> >>
+> >> I'm using CoovaChilli in 3 Hotspots, with 200 user's simultaneous, it's
+> >> cool! But I'm having problems with bandwidth manager.
+> >>
+> >> See my problem
+> >>
+> >> HTTP: Downloads and Uploads is limited perfect
+> >> WISPr-Bandwidth-Max-Down and WISPr-Bandwidth-Max-Up
+> >>
+> >>
+> >> P2P: Downloads and Uploads isn't limited :(
+> >>
+> >> This is killing my network...
+> >>
+> >> I'm using iptables + layer-7 + ipp2p but any programs continue using
+> >> VERY bandwidth.
+> >>
+> >> Somebody have the same problem ? Any idea about solve this ?
+> >>
+> >> thank you
+> >>
+> >> Carlos
+> >>
+> >>
+> >>
+> >> ---------------------------------------------------------------------
+> >> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> >> For additional commands, e-mail: chilli-help at coova.org
+> >> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> >> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+> >>
+> >
+> >
+> > ---------------------------------------------------------------------
+> > To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> > For additional commands, e-mail: chilli-help at coova.org
+> > Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> > Forum: http://coova.org/phpBB3/viewforum.php?f=4
+> >
+> >
+> 
+> 
+> 
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+
+
+
+
+From oguzhank at bilkent.edu.tr  Mon Jun 30 12:36:29 2008
+From: oguzhank at bilkent.edu.tr (Oguzhan Kayhan)
+Date: Mon, 30 Jun 2008 15:36:29 +0300 (EEST)
+Subject: Bandwidth manager
+In-Reply-To: <1214827604.7900.5.camel@ccesario-laptop>
+References: <1214590178.6941.6.camel@ccesario-laptop>
+    <1214726020.6738.11.camel@david-laptop>
+    <45826.139.179.14.250.1214826009.squirrel@webmail.bilkent.edu.tr>
+    <1214827604.7900.5.camel@ccesario-laptop>
+Message-ID: <40422.139.179.14.250.1214829389.squirrel@webmail.bilkent.edu.tr>
+
+I simply disconnect that users :)
+And when they reconnected they start using in the limits (till it fails
+again) :D
+
+
+
+
+> Hi Oguzhan,
+>
+> This is very stranger.... :/
+>
+> Do you have any solution ? What do you make to fix this ?
+>
+> thank you
+>
+> Carlos
+>
+> Em Seg, 2008-06-30 ??s 08:40 -0300, Oguzhan Kayhan escreveu:
+>> We have a similar problem but i dont think it is smthing about the
+>> chilli
+>> or iptables.
+>> SOmetimes ..some ip's appear on arp table of the ethernet interface of
+>> the
+>> chilli..
+>> These IP's are bypassing speed limitations of the chilli.We couldnt find
+>> what causes this problems but even rarely..it happens..
+>> Maybe the Tun driver can not handle the requests sometimes..
+>>
+>>
+>> > The bandwidth shaping in chilli doesn't care about the protocol, so
+>> your
+>> > findings are interesting. What do your iptables rules look like?
+>> >
+>> > David
+>> >
+>> > On Fri, 2008-06-27 at 15:09 -0300, Carlos Cesario wrote:
+>> >> Hello all,
+>> >>
+>> >> I'm using CoovaChilli in 3 Hotspots, with 200 user's simultaneous,
+>> it's
+>> >> cool! But I'm having problems with bandwidth manager.
+>> >>
+>> >> See my problem
+>> >>
+>> >> HTTP: Downloads and Uploads is limited perfect
+>> >> WISPr-Bandwidth-Max-Down and WISPr-Bandwidth-Max-Up
+>> >>
+>> >>
+>> >> P2P: Downloads and Uploads isn't limited :(
+>> >>
+>> >> This is killing my network...
+>> >>
+>> >> I'm using iptables + layer-7 + ipp2p but any programs continue using
+>> >> VERY bandwidth.
+>> >>
+>> >> Somebody have the same problem ? Any idea about solve this ?
+>> >>
+>> >> thank you
+>> >>
+>> >> Carlos
+>> >>
+>> >>
+>> >>
+>> >> ---------------------------------------------------------------------
+>> >> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+>> >> For additional commands, e-mail: chilli-help at coova.org
+>> >> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+>> >> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>> >>
+>> >
+>> >
+>> > ---------------------------------------------------------------------
+>> > To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+>> > For additional commands, e-mail: chilli-help at coova.org
+>> > Wiki: http://coova.org/wiki/index.php/CoovaChilli
+>> > Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>> >
+>> >
+>>
+>>
+>>
+>> ---------------------------------------------------------------------
+>> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+>> For additional commands, e-mail: chilli-help at coova.org
+>> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+>> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>
+>
+>
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>
+>
+
+
+
+
+From ccesario at tecnomega.com.br  Mon Jun 30 13:05:48 2008
+From: ccesario at tecnomega.com.br (Carlos Cesario)
+Date: Mon, 30 Jun 2008 10:05:48 -0300
+Subject: Bandwidth manager
+In-Reply-To: <40422.139.179.14.250.1214829389.squirrel@webmail.bilkent.edu.tr>
+References: <1214590178.6941.6.camel@ccesario-laptop>
+	 <1214726020.6738.11.camel@david-laptop>
+	 <45826.139.179.14.250.1214826009.squirrel@webmail.bilkent.edu.tr>
+	 <1214827604.7900.5.camel@ccesario-laptop>
+	 <40422.139.179.14.250.1214829389.squirrel@webmail.bilkent.edu.tr>
+Message-ID: <1214831148.7900.7.camel@ccesario-laptop>
+
+Hmmm sstranger, this is a big problem :(
+
+
+Em Seg, 2008-06-30 ?s 09:36 -0300, Oguzhan Kayhan escreveu:
+> I simply disconnect that users :)
+> And when they reconnected they start using in the limits (till it fails
+> again) :D
+> 
+> 
+> 
+> 
+> > Hi Oguzhan,
+> >
+> > This is very stranger.... :/
+> >
+> > Do you have any solution ? What do you make to fix this ?
+> >
+> > thank you
+> >
+> > Carlos
+> >
+> > Em Seg, 2008-06-30 ? s 08:40 -0300, Oguzhan Kayhan escreveu:
+> >> We have a similar problem but i dont think it is smthing about the
+> >> chilli
+> >> or iptables.
+> >> SOmetimes ..some ip's appear on arp table of the ethernet interface of
+> >> the
+> >> chilli..
+> >> These IP's are bypassing speed limitations of the chilli.We couldnt find
+> >> what causes this problems but even rarely..it happens..
+> >> Maybe the Tun driver can not handle the requests sometimes..
+> >>
+> >>
+> >> > The bandwidth shaping in chilli doesn't care about the protocol, so
+> >> your
+> >> > findings are interesting. What do your iptables rules look like?
+> >> >
+> >> > David
+> >> >
+> >> > On Fri, 2008-06-27 at 15:09 -0300, Carlos Cesario wrote:
+> >> >> Hello all,
+> >> >>
+> >> >> I'm using CoovaChilli in 3 Hotspots, with 200 user's simultaneous,
+> >> it's
+> >> >> cool! But I'm having problems with bandwidth manager.
+> >> >>
+> >> >> See my problem
+> >> >>
+> >> >> HTTP: Downloads and Uploads is limited perfect
+> >> >> WISPr-Bandwidth-Max-Down and WISPr-Bandwidth-Max-Up
+> >> >>
+> >> >>
+> >> >> P2P: Downloads and Uploads isn't limited :(
+> >> >>
+> >> >> This is killing my network...
+> >> >>
+> >> >> I'm using iptables + layer-7 + ipp2p but any programs continue using
+> >> >> VERY bandwidth.
+> >> >>
+> >> >> Somebody have the same problem ? Any idea about solve this ?
+> >> >>
+> >> >> thank you
+> >> >>
+> >> >> Carlos
+> >> >>
+> >> >>
+> >> >>
+> >> >> ---------------------------------------------------------------------
+> >> >> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> >> >> For additional commands, e-mail: chilli-help at coova.org
+> >> >> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> >> >> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+> >> >>
+> >> >
+> >> >
+> >> > ---------------------------------------------------------------------
+> >> > To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> >> > For additional commands, e-mail: chilli-help at coova.org
+> >> > Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> >> > Forum: http://coova.org/phpBB3/viewforum.php?f=4
+> >> >
+> >> >
+> >>
+> >>
+> >>
+> >> ---------------------------------------------------------------------
+> >> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> >> For additional commands, e-mail: chilli-help at coova.org
+> >> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> >> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+> >
+> >
+> >
+> > ---------------------------------------------------------------------
+> > To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> > For additional commands, e-mail: chilli-help at coova.org
+> > Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> > Forum: http://coova.org/phpBB3/viewforum.php?f=4
+> >
+> >
+> 
+> 
+> 
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+> 
+-- 
+?_______________________________________________________________
+
+Carlos Ces?rio  - Analista de Suporte
+Tecnomega Tecnologia em Redes/Telecom e Seguran?a da Informa??o
+Fone: (18) 36089192 
+ccesario at tecnomega.com.br
+http://www.tecnomega.com.br
+
+
+
+

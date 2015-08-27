@@ -1,0 +1,236 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] Coova-chilli-1.2.4 &amp; SSL Problem
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Coova-chilli-1.2.4%20%26%20SSL%20Problem&In-Reply-To=%3CFAE03BDC-890F-49D8-A50B-30CFE7DF2D90%40freerunr.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001497.html">
+   <LINK REL="Next"  HREF="001496.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] Coova-chilli-1.2.4 &amp; SSL Problem</H1>
+    <B>Adam Hammond</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Coova-chilli-1.2.4%20%26%20SSL%20Problem&In-Reply-To=%3CFAE03BDC-890F-49D8-A50B-30CFE7DF2D90%40freerunr.com%3E"
+       TITLE="[Chilli] Coova-chilli-1.2.4 &amp; SSL Problem">adam at freerunr.com
+       </A><BR>
+    <I>Wed Sep 29 13:19:47 UTC 2010</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001497.html">[Chilli] Coova-chilli-1.2.4 &amp; SSL Problem
+</A></li>
+        <LI>Next message: <A HREF="001496.html">[Chilli] Event-Timestamp
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1499">[ date ]</a>
+              <a href="thread.html#1499">[ thread ]</a>
+              <a href="subject.html#1499">[ subject ]</a>
+              <a href="author.html#1499">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hi Tim,
+
+Many thanks for the reply.
+
+It turned out to a problem with my configuration: I was setting my  
+uamaliasip in my chilli/defaults config file.
+
+For anyone's reference who may read this in the future:
+
+The SSL errors I noted in my initial post resulted from me posting an  
+HTTPS login request to a non HTTPS channel.
+
+I had set the uamaliasip in my chilli/defaults file to the same ip as  
+that of my uamlisten ip. I had set my DNS to resolve  
+(uamaliasname.domain) to that same ip address, and was posting logins  
+to <A HREF="http://uamaliasname.domain:3990/login?...">http://uamaliasname.domain:3990/login?...</A> etc
+
+I also tried posting to that same url without the port - with the same  
+errors.
+
+I got it working by NOT setting the uamaliasip in any config files -  
+therefore using the default of 1.0.0.1
+I changed my DNS to match this.
+
+I added the following to my chilli/defaults configuration file:
+
+HS_UAMUISSL=on
+HS_DNS_DOMAIN=&lt;my domain&gt;
+HS_UAMALIASNAME=&lt;my host&gt;
+HS_SSLKEYFILE=&lt;path to my key file&gt;
+HS_SSLCERTFILE=&lt;path to my certificate file&gt;
+
+... and I added the following to my chilli/local.conf file:
+
+sslcafile=&lt;path to my ca root certificate file&gt;
+
+I set the login url in my smart client UAM method to post to:
+
+<A HREF="https://uamaliasname.domain/login?..etc">https://uamaliasname.domain/login?..etc</A>
+
+... and made sure my certificate provider crl server(s) were added to  
+my UAMALLOW list in my chilli/defaults config file.
+
+So I have now got an HTTPS enabled solution for smart clients working  
+using coova-chilli-1.2.4 on openWRT backfire 10.03 rc3 with  
+radsecproxy 1.4 sending my RADIUS traffic using TLS.
+
+If anyone is interested in the hardware I am using a TP-Link WR741ND  
+access point.
+
+...........
+Adam
+
+
+On 28 Sep 2010, at 12:40, Tim Long wrote:
+
+&gt;<i> Hi Adam,
+</I>&gt;<i>
+</I>&gt;<i> Are you sure that those certificate settings in the defaults file  
+</I>&gt;<i> are making it into the configuration?
+</I>&gt;<i>
+</I>&gt;<i> We're using an older version of openwrt, but we had to add
+</I>&gt;<i>
+</I>&gt;<i>                 [ -n &quot;$HS_SSLKEYFILE&quot; -a -n &quot;$HS_SSLCERTFILE&quot; ] &amp;&amp; {
+</I>&gt;<i>                         addconfig2 &quot;sslkeyfile $HS_SSLKEYFILE&quot;
+</I>&gt;<i>                         addconfig2 &quot;sslcertfile $HS_SSLCERTFILE&quot;
+</I>&gt;<i>                 }
+</I>&gt;<i>
+</I>&gt;<i> to the /etc/chilli/functions file, so that the init.d script would  
+</I>&gt;<i> take the values from the defaults file and add it to main.conf.
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> On Fri, Sep 24, 2010 at 5:22 PM, Adam Hammond &lt;<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">adam at freerunr.com</A>&gt;  
+</I>&gt;<i> wrote:
+</I>&gt;<i> Hello everyone,
+</I>&gt;<i>
+</I>&gt;<i> I'm trying to develop an openwrt image using openwrt backfire 10.0.3  
+</I>&gt;<i> rc3 with coova-chilli-1.2.4, compiled with ssl support, for use with  
+</I>&gt;<i> (amongst other smartclients) iPass. I am developing this image for  
+</I>&gt;<i> the TP-Link WR741ND Acess Point. The critical thing I'm trying to  
+</I>&gt;<i> get working is support in chilli for clients to post login events to  
+</I>&gt;<i> the chilli controller using SSL.
+</I>&gt;<i>
+</I>&gt;<i> I have been using this mailing list post as a general how-to for my  
+</I>&gt;<i> setup: <A HREF="http://lists.coova.org/pipermail/chilli/2010-May/001379.html,">http://lists.coova.org/pipermail/chilli/2010-May/001379.html,</A>  
+</I>&gt;<i> and others as guides on what to and not to do.
+</I>&gt;<i>
+</I>&gt;<i> I am writing to the mailing list as I am now a bit stuck. Suffice to  
+</I>&gt;<i> say that I can't get it to work, and I don't know exactly why it  
+</I>&gt;<i> isn't working either.
+</I>&gt;<i>
+</I>&gt;<i> Below is the typical output I see from chilli when an HTTPS login  
+</I>&gt;<i> post is sent to the controller (e.g. <A HREF="https://ap.thewifinetwork.net:3990/logon?username=adam@freerunr.com&amp;password=623fcbda6a6fc5b8659f26d82a0c45ed">https://ap.thewifinetwork.net:3990/logon?username=adam@freerunr.com&amp;password=623fcbda6a6fc5b8659f26d82a0c45ed</A>)
+</I>&gt;<i>
+</I>&gt;<i> redir.c: 3150: 0 (Debug) Receiving HTTP Request
+</I>&gt;<i> redir.c: 1897: 0 (Debug) HTTP request timeout!
+</I>&gt;<i> redir.c: 2288: 0 (Debug) --&gt;&gt; Setting userurl=[<A HREF="http:///]">http:///]</A>
+</I>&gt;<i> redir.c: 3202: 0 (Debug) Processing HTTP Request
+</I>&gt;<i> redir.c: 3434: 0 (Debug) Processing received request
+</I>&gt;<i> redir.c: 3648: 0 (Debug) redir_accept: Original request
+</I>&gt;<i> redir.c: 3678: 0 (Debug) ----&gt;&gt;&gt; challenge:  
+</I>&gt;<i> 0de41675a44417e279a0754c0b251712
+</I>&gt;<i> redir.c: 2933: 0 (Debug) close_exit
+</I>&gt;<i> chilli.c: 114: 0 (Debug) caught 18 via selfpipe
+</I>&gt;<i> chilli.c: 75: 0 (Debug) child 14158 terminated
+</I>&gt;<i>
+</I>&gt;<i> I have set my UAM method for smartclients to pass back a login url  
+</I>&gt;<i> in the WISPr tags with a hardcoded value (uamaliasname.domain) that  
+</I>&gt;<i> corresponds to the common name set in the SSL certificate I am using  
+</I>&gt;<i> with chilli. (I have also tried this with the more generic &quot;<A HREF="https://$uamip:$uamport/logon?">https://$uamip:$uamport/logon?</A> 
+</I>&gt;<i> ..&quot; url with exactly the same debug output from chilli). The UAM  
+</I>&gt;<i> method works fine with http requests.
+</I>&gt;<i>
+</I>&gt;<i> The error I see in the iPass logs is:
+</I>&gt;<i>
+</I>&gt;<i> WinInet error code: 12157  Message: An error occurred in the secure  
+</I>&gt;<i> channel support
+</I>&gt;<i>
+</I>&gt;<i> ... which according to msdn means &quot;The application experienced an  
+</I>&gt;<i> internal error loading the SSL libraries&quot;. Not much of a clue for me.
+</I>&gt;<i>
+</I>&gt;<i> I have tried posting to the login controller using a standard  
+</I>&gt;<i> browser and have seen the following errors.
+</I>&gt;<i>
+</I>&gt;<i> Chrome (pretty vague):
+</I>&gt;<i>
+</I>&gt;<i> Error 107 (net::ERR_SSL_PROTOCOL_ERROR): SSL protocol error.
+</I>&gt;<i>
+</I>&gt;<i> Firefox:
+</I>&gt;<i>
+</I>&gt;<i> SSL received a record that exceeded the maximum permissible length.
+</I>&gt;<i> (Error code: ssl_error_rx_record_too_long)
+</I>&gt;<i>
+</I>&gt;<i> I should mention that I am using a Thawte test certificate for  
+</I>&gt;<i> testing. I have tried using a different (non elf signed)  
+</I>&gt;<i> certificate, if only to provoke an error in chilli, or get it to  
+</I>&gt;<i> provide a different error message to provide me a clue, to no avail.
+</I>&gt;<i>
+</I>&gt;<i> If I run chilli --help I notice options for 'uamaliasip' and  
+</I>&gt;<i> 'sslcafile' but cannot find reference to them in my /etc/chilli/ 
+</I>&gt;<i> functions file. I have tried adding them to my local.conf file to no  
+</I>&gt;<i> effect.
+</I>&gt;<i>
+</I>&gt;<i> I know a few posters to this mailing list have been working on  
+</I>&gt;<i> similar iPass integration projects and would be eternally grateful  
+</I>&gt;<i> if they could provide me any clues about where I might be going wrong.
+</I>&gt;<i>
+</I>&gt;<i> Many thanks in advance,
+</I>&gt;<i>
+</I>&gt;<i> Adam
+</I>&gt;<i>
+</I>&gt;<i> coova-chilli 1.2.4
+</I>&gt;<i> Compiled with ENABLE_BINSTATFILE ENABLE_CHILLIRADSEC  
+</I>&gt;<i> ENABLE_CHILLIXML ENABLE_IEEE8021Q ENABLE_JSON ENABLE_LEAKYBUCKET  
+</I>&gt;<i> ENABLE_MINIPORTAL ENABLE_PROXYVSA ENABLE_SESSGARDEN ENABLE_STATFILE  
+</I>&gt;<i> HAVE_OPENSSL USING_POLL
+</I>&gt;<i>
+</I>&gt;<i> &lt;snippet from /etc/chilli/defaults&gt;
+</I>&gt;<i> HS_UAMUISSL=on
+</I>&gt;<i> HS_DNS_DOMAIN=thewifinetwork.net
+</I>&gt;<i> HS_UAMALIASNAME=ap
+</I>&gt;<i> HS_SSLKEYFILE=/etc/certs/ap.thewifinetwork.net.key
+</I>&gt;<i> HS_SSLCERTFILE=/etc/certs/ap.thewifinetwork.net.pem
+</I>&gt;<i> &lt;/snippet&gt;
+</I>&gt;<i>
+</I>&gt;<i> &lt;snippet from /etc/chilli/local.config&gt;
+</I>&gt;<i> sslcafile=/etc/certs/thawte-intermediate-ca.pem
+</I>&gt;<i> uamaliasip=172.17.172.1
+</I>&gt;<i> &lt;/snippet&gt;
+</I>&gt;<i>
+</I>&gt;<i> _______________________________________________
+</I>&gt;<i> Chilli mailing list
+</I>&gt;<i> <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">Chilli at coova.org</A>
+</I>&gt;<i> <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">http://lists.coova.org/cgi-bin/mailman/listinfo/chilli</A>
+</I>&gt;<i>
+</I>&gt;<i>
+</I>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: &lt;<A HREF="http://lists.coova.org/pipermail/chilli/attachments/20100929/31f0c611/attachment.htm">http://lists.coova.org/pipermail/chilli/attachments/20100929/31f0c611/attachment.htm</A>&gt;
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001497.html">[Chilli] Coova-chilli-1.2.4 &amp; SSL Problem
+</A></li>
+	<LI>Next message: <A HREF="001496.html">[Chilli] Event-Timestamp
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1499">[ date ]</a>
+              <a href="thread.html#1499">[ thread ]</a>
+              <a href="subject.html#1499">[ subject ]</a>
+              <a href="author.html#1499">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

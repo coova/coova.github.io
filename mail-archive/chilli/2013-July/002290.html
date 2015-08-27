@@ -1,0 +1,158 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] Suspected chilli_query (main-proxy.c) &quot;requests&quot; leak
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Suspected%20chilli_query%20%28main-proxy.c%29%20%22requests%22%20leak&In-Reply-To=%3C607B714C-55CD-4D7F-82C7-609B7906B82A%40hssl.ie%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="002289.html">
+   <LINK REL="Next"  HREF="002292.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] Suspected chilli_query (main-proxy.c) &quot;requests&quot; leak</H1>
+    <B>Derek Conniffe</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Suspected%20chilli_query%20%28main-proxy.c%29%20%22requests%22%20leak&In-Reply-To=%3C607B714C-55CD-4D7F-82C7-609B7906B82A%40hssl.ie%3E"
+       TITLE="[Chilli] Suspected chilli_query (main-proxy.c) &quot;requests&quot; leak">derek at hssl.ie
+       </A><BR>
+    <I>Thu Jul 18 14:44:41 UTC 2013</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="002289.html">[Chilli] Captive portal &quot;looping&quot; problem - maybe radius /	radius-proxy timeout problem ?
+</A></li>
+        <LI>Next message: <A HREF="002292.html">[Chilli] Macreauth question
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2290">[ date ]</a>
+              <a href="thread.html#2290">[ thread ]</a>
+              <a href="subject.html#2290">[ subject ]</a>
+              <a href="author.html#2290">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hi,
+
+I think that there is a requests leak in main-proxy.c.  I increased the max_requests from 16 to 256 and then left a bunch of APs running for a good few days.  Looking today and I can see that some APs have under 200 requests free and another AP has no requests free and its spitting out the &quot;out of connections&quot; debug message.  I added in some more debug messages to constantly print how many requests are available.
+
+It means that the  num_requests_free is sometimes not getting incremented so sometimes close_request() mustn't be getting called for some reason&#8230;
+
+Sample output with my extra debugging below (outputting when num_requests_free-- and num_requests_free++) .  You'll see that the free requests is hanging around 214.  When chilli_proxy is started the free requests are 256 but here they've leaked down to 214.
+
+Derek
+
+Jul 18 07:23:11 5.92.132.69 syslog: main-proxy.c: 226: *** Note: HTTP Request closed.  Number of free requests is now 214
+Jul 18 07:23:13 5.92.132.69 syslog: main-proxy.c: 137: *** Allocated a new HTTP request - now 213 free request slots
+Jul 18 07:23:15 5.92.132.69 syslog: main-proxy.c: 226: *** Note: HTTP Request closed.  Number of free requests is now 214
+Jul 18 07:23:28 5.92.132.69 syslog: main-proxy.c: 137: *** Allocated a new HTTP request - now 213 free request slots
+Jul 18 07:23:30 5.92.132.69 syslog: main-proxy.c: 226: *** Note: HTTP Request closed.  Number of free requests is now 214
+Jul 18 07:23:33 5.92.132.69 syslog: main-proxy.c: 137: *** Allocated a new HTTP request - now 213 free request slots
+Jul 18 07:23:34 5.92.132.69 syslog: main-proxy.c: 137: *** Allocated a new HTTP request - now 212 free request slots
+Jul 18 07:23:36 5.92.132.69 syslog: main-proxy.c: 226: *** Note: HTTP Request closed.  Number of free requests is now 213
+Jul 18 07:23:42 5.92.132.69 syslog: main-proxy.c: 226: *** Note: HTTP Request closed.  Number of free requests is now 214
+
+On 14 Jul 2013, at 22:03, Derek Conniffe &lt;<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">derek at hssl.ie</A>&gt; wrote:
+
+&gt;<i> Look at the logs more: 
+</I>&gt;<i> 
+</I>&gt;<i> Right now I have an AP on a pretty poor ADSL connection.  pings between the AP and the [AWS] cloud controller are up to 1,000ms.  
+</I>&gt;<i> 
+</I>&gt;<i> I killed the chilli_proxy daemon and then, shortly afterwards, I see this in the log file: -
+</I>&gt;<i> 
+</I>&gt;<i> Jul 14 20:59:27 5.2.151.100 coova-chilli[951]: chilli.c: 319: Having to re-launch chilli_proxy... PID 952 exited
+</I>&gt;<i> Jul 14 20:59:29 5.2.151.100 coova-chilli[951]: chilli.c: 4370: RADIUS request id=105 timed out for session 51e30e3000000001
+</I>&gt;<i> Jul 14 20:59:36 5.2.151.100 coova-chilli[951]: chilli.c: 4370: RADIUS request id=106 timed out for session 51e2e35d00000004
+</I>&gt;<i> Jul 14 20:59:41 5.2.151.100 coova-chilli[951]: chilli.c: 4370: RADIUS request id=107 timed out for session 51e307160000000c
+</I>&gt;<i> Jul 14 20:59:43 5.2.151.100 coova-chilli[951]: chilli.c: 5101: New DHCP request from MAC=28-6A-BA-18-D8-1B
+</I>&gt;<i> Jul 14 20:59:43 5.2.151.100 coova-chilli[951]: chilli.c: 4989: Client MAC=28-6A-BA-18-D8-1B assigned IP 10.0.0.68
+</I>&gt;<i> Jul 14 20:59:59 5.2.151.100 syslog: main-proxy.c: 142: out of connections
+</I>&gt;<i> 
+</I>&gt;<i> I wo
+</I>&gt;<i> 
+</I>&gt;<i> On 14 Jul 2013, at 16:24, Derek Conniffe &lt;<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">derek at hssl.ie</A>&gt; wrote:
+</I>&gt;<i> 
+</I>&gt;&gt;<i> Ok - an update.
+</I>&gt;&gt;<i> 
+</I>&gt;&gt;<i> Adding in syslog-ng and remote logging *was* a good idea for sure!
+</I>&gt;&gt;<i> 
+</I>&gt;&gt;<i> This is the error that seems to be related to my problem: -
+</I>&gt;&gt;<i> 
+</I>&gt;&gt;<i> Jul 14 15:16:17 5.54.29.155 syslog: main-proxy.c: 142: out of connections
+</I>&gt;&gt;<i> 
+</I>&gt;&gt;<i> I wonder is there somehow a connect leak?
+</I>&gt;&gt;<i> 
+</I>&gt;&gt;<i> This AP would not be that busy.  I see that in the source code there is a max number of requests set to 16 and I would think that this should be perfectly good so I wonder is there some kind of connection leak?
+</I>&gt;&gt;<i> 
+</I>&gt;&gt;<i> Derek
+</I>&gt;&gt;<i> 
+</I>&gt;&gt;<i> Log file output: -
+</I>&gt;&gt;<i> 
+</I>&gt;&gt;<i> Jul 14 15:20:46 5.54.29.155 syslog: main-proxy.c: 142: out of connections
+</I>&gt;&gt;<i> Jul 14 15:20:46 5.54.29.155 syslog: main-proxy.c: 102: 000. inuse=1 prev=-001 next=-001 url=<A HREF="http://MY-UAM-AAA-URL?stage=counters&amp;status=update&amp;user=AC-3C-0B-30-XX-XX&amp;ap=02-DB-36-1D-XX-XX&amp;mac=AC-3C-0B-30-XX-XX&amp;ip=10.0.0.54&amp;sessionid=51e075db00000009&amp;nasid=dc9fdb3xxxx&amp;duration=241&amp;bytes_down=0&amp;pkts_down=0&amp;bytes_up=0&amp;pkts_up=0">http://MY-UAM-AAA-URL?stage=counters&amp;status=update&amp;user=AC-3C-0B-30-XX-XX&amp;ap=02-DB-36-1D-XX-XX&amp;mac=AC-3C-0B-30-XX-XX&amp;ip=10.0.0.54&amp;sessionid=51e075db00000009&amp;nasid=dc9fdb3xxxx&amp;duration=241&amp;bytes_down=0&amp;pkts_down=0&amp;bytes_up=0&amp;pkts_up=0</A> fd=29
+</I>&gt;&gt;<i> 
+</I>&gt;&gt;<i> 
+</I>&gt;&gt;<i> 
+</I>&gt;&gt;<i> 
+</I>&gt;&gt;<i> 
+</I>&gt;&gt;<i> On 14 Jul 2013, at 15:33, Derek Conniffe &lt;<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">derek at hssl.ie</A>&gt; wrote:
+</I>&gt;&gt;<i> 
+</I>&gt;&gt;&gt;<i> Hi everyone,
+</I>&gt;&gt;&gt;<i> 
+</I>&gt;&gt;&gt;<i> I've been playing with coova chilli for years and its feature set is great and I really love new features (especially chilli_proxy that appeared in 1.2.9)!.
+</I>&gt;&gt;&gt;<i> 
+</I>&gt;&gt;&gt;<i> I'm having a problem and I think I've also seen this problem over the years too.
+</I>&gt;&gt;&gt;<i> 
+</I>&gt;&gt;&gt;<i> I'm using coova chilli 1.2.9 and right now I'm using chilli-proxy with HTTP authentication (so no radius server at all) and I'm using mac authentication.
+</I>&gt;&gt;&gt;<i> 
+</I>&gt;&gt;&gt;<i> The problem is that for some reason coova chilli thinks the user isn't authorised so it sends the user to the login page (uamhomepage) *but* I have checking in my home page to see if the user is actually authenticated (in the DB) or not and, if they are, I try to redirect them to www.google.com - I'd hope this situation wouldn't happen but it does regularly.  Its worse actually because I can sometimes see devices looping through my uamhomepage page over and over again and then, maybe, eventually getting Google.  (coova chilli keeps thinking the client isn't authenticated - when this happens I can see that my web server handling the chilli proxy requests as per the uamaaaurl directive is *NOT* getting the coova chilli request at all!).
+</I>&gt;&gt;&gt;<i> 
+</I>&gt;&gt;&gt;<i> I see this problem more if the internet connection to the coova chilli enabled AP is slow.  This makes me think its some kind of radius timeout issue.  I did add the line &quot;radiustimeout=90&quot; to my chilli conf file (I think that sets the radius timeout to 90 seconds) but this didn't appear to have any effect.
+</I>&gt;&gt;&gt;<i> 
+</I>&gt;&gt;&gt;<i> I haven't seen anything in the chilli log output yet but mostly this is because I haven't been getting detailed logs in my APs.  Now I'm trying to use remote syslog to a dedicated server so this might help.
+</I>&gt;&gt;&gt;<i> 
+</I>&gt;&gt;&gt;<i> The issue could be in chilli_proxy.  If so I might have to go back to having a freeradius server but I'd hate to do that.
+</I>&gt;&gt;&gt;<i> 
+</I>&gt;&gt;&gt;<i> Has anyone else seen this type of problem before?
+</I>&gt;&gt;&gt;<i> 
+</I>&gt;&gt;&gt;<i> thanks for any info!
+</I>&gt;&gt;&gt;<i> 
+</I>&gt;&gt;&gt;<i> Derek
+</I>&gt;&gt;&gt;<i> _______________________________________________
+</I>&gt;&gt;&gt;<i> Chilli mailing list
+</I>&gt;&gt;&gt;<i> <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">Chilli at coova.org</A>
+</I>&gt;&gt;&gt;<i> <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">http://lists.coova.org/cgi-bin/mailman/listinfo/chilli</A>
+</I>&gt;&gt;<i> 
+</I>&gt;&gt;<i> _______________________________________________
+</I>&gt;&gt;<i> Chilli mailing list
+</I>&gt;&gt;<i> <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">Chilli at coova.org</A>
+</I>&gt;&gt;<i> <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">http://lists.coova.org/cgi-bin/mailman/listinfo/chilli</A>
+</I>&gt;<i> 
+</I>
+</PRE>
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="002289.html">[Chilli] Captive portal &quot;looping&quot; problem - maybe radius /	radius-proxy timeout problem ?
+</A></li>
+	<LI>Next message: <A HREF="002292.html">[Chilli] Macreauth question
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2290">[ date ]</a>
+              <a href="thread.html#2290">[ thread ]</a>
+              <a href="subject.html#2290">[ subject ]</a>
+              <a href="author.html#2290">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

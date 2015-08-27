@@ -1,0 +1,112 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> Problem with chillispot and dhcp relay
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20Problem%20with%20chillispot%20and%20dhcp%20relay&In-Reply-To=%3Cf9ccc70f0709041302i62ff4a27od7c033018558de1%40mail.gmail.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000025.html">
+   <LINK REL="Next"  HREF="000027.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>Problem with chillispot and dhcp relay</H1>
+    <B>Giosue Pacifico</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20Problem%20with%20chillispot%20and%20dhcp%20relay&In-Reply-To=%3Cf9ccc70f0709041302i62ff4a27od7c033018558de1%40mail.gmail.com%3E"
+       TITLE="Problem with chillispot and dhcp relay">giosue.pacifico at gmail.com
+       </A><BR>
+    <I>Tue Sep  4 20:02:26 UTC 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000025.html">Problem with chillispot and dhcp relay
+</A></li>
+        <LI>Next message: <A HREF="000027.html">Problem with chillispot and dhcp relay
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#26">[ date ]</a>
+              <a href="thread.html#26">[ thread ]</a>
+              <a href="subject.html#26">[ subject ]</a>
+              <a href="author.html#26">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hi,
+with Cisco WLC controller the dynamic interface bound to CoovaChilli
+vlan is the real destination for client dhcp discovery and dhcp relay
+agent as it acts as a L2 filter. If you use chilli as &quot;Primary DHCP
+Server&quot; [read ip helper-address] it won't work because chilli doesn't
+understand unicast request. You ought to setup an external DHCP server
+with scope = &quot;dynip net&quot; &amp; &quot;statip net&quot; in chilli.conf and allow
+communication toward this server with &quot;allowed udp:[external dhcp
+server IP or fqdn]:67&quot; in the same file.
+To reach the dhcp server assign an IP outside the scope to &quot;dhcpif&quot;
+(usually eth1).
+
+client--[dhcp discovery]---&gt;WLC-DYN-IF 172.18.183.3---&gt;(bypasses)
+CHILLI tun0 172.18.183.1/ eth1 172.18.183.2 ---&gt;ext DHCP Server
+x.y.w.z
+
+Hope I've been useful,
+ciao
+Giosu&#232;
+
+On 9/4/07, Lai Zit Seng &lt;<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">lzs at pobox.com</A>&gt; wrote:
+&gt;<i> Hi,
+</I>&gt;<i>
+</I>&gt;<i> I am trying out chillispot-1.0-coova.7. It works great with my wired
+</I>&gt;<i> network clients. But when I start to move on to wireless, I have a problem.
+</I>&gt;<i>
+</I>&gt;<i> Although the chillispot logs say addresses are being assigned to
+</I>&gt;<i> clients, the client never get any IP address. E.g. I see in my log:
+</I>&gt;<i>
+</I>&gt;<i> Sep  4 13:58:55 faber chillispot[26842]: chilli.c: 2620: Client
+</I>&gt;<i> MAC=00-13-CE-8B-21-9C assigned IP 172.18.183.12
+</I>&gt;<i>
+</I>&gt;<i> But actually the client didn't get any IP. From tcpdumping on the
+</I>&gt;<i> chillispot machine, I realize that there is a dhcp relay agent making
+</I>&gt;<i> forwarding DHCP for the actual wireless clients. The dhcp relay unicasts
+</I>&gt;<i> the DHCP packets to chillispot, but chillispot replies to the broadcast
+</I>&gt;<i> IP. Perhaps something has gone wrong here?
+</I>&gt;<i>
+</I>&gt;<i> Ok, why is there a dhcp relay agent? My wireless network makes use of
+</I>&gt;<i> Cisco Wireless LAN Controller. The controller insists on relaying all
+</I>&gt;<i> DHCP on behalf of the clients, I suppose in order to keep track of DHCP
+</I>&gt;<i> requests and IP assignments, to make sure clients don't &quot;cheat&quot;.
+</I>&gt;<i>
+</I>&gt;<i> Anything I can do with chillispot to accommodate the dhcp relay agent?
+</I>&gt;<i>
+</I>&gt;<i> Regards,
+</I>&gt;<i>
+</I>&gt;<i> .lzs
+</I>&gt;<i>
+</I>&gt;<i> ---------------------------------------------------------------------
+</I>&gt;<i> To unsubscribe, e-mail: <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli-unsubscribe at coova.org</A>
+</I>&gt;<i> For additional commands, e-mail: <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli-help at coova.org</A>
+</I>&gt;<i> Wiki: <A HREF="http://coova.org/wiki/index.php/CoovaChilli">http://coova.org/wiki/index.php/CoovaChilli</A>
+</I>&gt;<i> Forum: <A HREF="http://coova.org/phpBB3/viewforum.php?f=4">http://coova.org/phpBB3/viewforum.php?f=4</A>
+</I>&gt;<i>
+</I>&gt;<i>
+</I>
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000025.html">Problem with chillispot and dhcp relay
+</A></li>
+	<LI>Next message: <A HREF="000027.html">Problem with chillispot and dhcp relay
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#26">[ date ]</a>
+              <a href="thread.html#26">[ thread ]</a>
+              <a href="subject.html#26">[ subject ]</a>
+              <a href="author.html#26">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

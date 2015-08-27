@@ -1,0 +1,92 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] iptables rules for transparent proxy
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20iptables%20rules%20for%20transparent%20proxy&In-Reply-To=%3CCACqstRUqfp-BDs8ny%3DbovruA27QG2zoeJRtM4B1TeOPfmrxzbw%40mail.gmail.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001768.html">
+   <LINK REL="Next"  HREF="001771.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] iptables rules for transparent proxy</H1>
+    <B>John Lee</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20iptables%20rules%20for%20transparent%20proxy&In-Reply-To=%3CCACqstRUqfp-BDs8ny%3DbovruA27QG2zoeJRtM4B1TeOPfmrxzbw%40mail.gmail.com%3E"
+       TITLE="[Chilli] iptables rules for transparent proxy">john.cylee at gmail.com
+       </A><BR>
+    <I>Thu Nov 10 19:51:34 UTC 2011</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001768.html">[Chilli] coovaAP on Linksys WRT54Gv8 / GSv7
+</A></li>
+        <LI>Next message: <A HREF="001771.html">[Chilli] iptables rules for transparent proxy
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1770">[ date ]</a>
+              <a href="thread.html#1770">[ thread ]</a>
+              <a href="subject.html#1770">[ subject ]</a>
+              <a href="author.html#1770">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Dear all,
+
+I was hoping to post this to <A HREF="http://coova.org/node/2917">http://coova.org/node/2917</A>
+but failed to register to the forum, so, here it goes:
+
+iptables -t mangle -A PREROUTING -p tcp -m tcp --dport 80 -j MARK --set-mark 0x1
+
+iptables -t nat -I prerouting_lan \! -d $(uci get network.lan.ipaddr)
+-p tcp -m tcp --dport 80 -j REDIRECT --to-ports 8081
+
+iptables -I input_chilli -p tcp -m tcp --dport 8081 -m mark --mark 0x1 -j ACCEPT
+
+Some notes:
+
+- This works with OpenWrt, but could be easily modified to suit other needs.
+
+- My proxy listens at port 8081.
+
+- This differs from HS_POSTAUTH_PROXYPORT because 1) I want to use
+proxy before &amp; after auth because I want to save the upload bandwidth
+of the server coova redirected to, and 2) I don't want to open proxy
+port to the user, because they can simply use it to bypass the captive
+portal. The post I refer to (<A HREF="http://coova.org/node/2917">http://coova.org/node/2917</A>) suggest doing
+it in WAN, which can also work as long as we use the updated WAN ip
+every time.
+
+- Some scripts in the original post don't work anymore because DROP
+can't be used in NAT table now.
+
+Regards,
+John
+</PRE>
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001768.html">[Chilli] coovaAP on Linksys WRT54Gv8 / GSv7
+</A></li>
+	<LI>Next message: <A HREF="001771.html">[Chilli] iptables rules for transparent proxy
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1770">[ date ]</a>
+              <a href="thread.html#1770">[ thread ]</a>
+              <a href="subject.html#1770">[ subject ]</a>
+              <a href="author.html#1770">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

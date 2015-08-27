@@ -1,0 +1,96 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] Running chilli as non-root
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Running%20chilli%20as%20non-root&In-Reply-To=%3C1273299947.30617.161.camel%40david-laptop%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001351.html">
+   <LINK REL="Next"  HREF="001353.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] Running chilli as non-root</H1>
+    <B>David Bird</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Running%20chilli%20as%20non-root&In-Reply-To=%3C1273299947.30617.161.camel%40david-laptop%3E"
+       TITLE="[Chilli] Running chilli as non-root">david at coova.com
+       </A><BR>
+    <I>Sat May  8 06:25:47 UTC 2010</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001351.html">[Chilli] uid and gid not working
+</A></li>
+        <LI>Next message: <A HREF="001353.html">[Chilli] Timeout's in the browser
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1352">[ date ]</a>
+              <a href="thread.html#1352">[ thread ]</a>
+              <a href="subject.html#1352">[ subject ]</a>
+              <a href="author.html#1352">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hello,
+
+Now in subversion is a new compile time option: --enable-chilliscript
+
+The option will have the utility program &quot;chilli_script&quot; built. This
+program will be installed with the setuid bit set, such that it is able
+to run as root. The utility is needed when running chilli under a
+non-root user in order to run script (like the up/down or conup/condown)
+that require root. 
+
+When compiled with the option, the utility program is built and chilli
+will use it when launching it's scripts. When chilli launches scripts,
+it does so using:
+
+  /path/chilli_script /path/config.bin /path/prog prog-args
+
+Where the first argument is the path to the running chilli binary
+configuration, the second argument is the target script, and what
+follows are arguments for the script. 
+
+What exactly does chilli_script do? Not that much, really. It just
+checks a couple things for security, then does a setuid(0) before
+calling the real script. Before calling setuid(0), it does the following
+checks:
+
+- chilli_script must be running as user root or &quot;chilli&quot; (this &quot;chilli&quot;
+username is hardcoded, changed with compile time define CHILLI_USER)
+
+- chilli_script must be running as group root or &quot;chilli&quot; (this &quot;chilli&quot;
+group is hardcoded, changed with compile time define CHILLI_GROUP)
+
+- the target script must be owned by root and group &quot;chilli&quot;. (and must,
+of course, be readable for user &quot;chilli&quot;)
+
+- the target script must also have the setuid bit set. 
+
+An alternative to using this is to use sudo and custom up/down scripts. 
+
+David
+
+</PRE>
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001351.html">[Chilli] uid and gid not working
+</A></li>
+	<LI>Next message: <A HREF="001353.html">[Chilli] Timeout's in the browser
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1352">[ date ]</a>
+              <a href="thread.html#1352">[ thread ]</a>
+              <a href="subject.html#1352">[ subject ]</a>
+              <a href="author.html#1352">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

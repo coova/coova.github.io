@@ -1,0 +1,105 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] Disconnect on ChilliSpot-Max-All-Octets
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Disconnect%20on%20ChilliSpot-Max-All-Octets&In-Reply-To=%3C1821897025.21735.1392280837689.JavaMail.zimbra%40yetopen.it%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="002599.html">
+   <LINK REL="Next"  HREF="002592.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] Disconnect on ChilliSpot-Max-All-Octets</H1>
+    <B>Lorenzo Milesi</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Disconnect%20on%20ChilliSpot-Max-All-Octets&In-Reply-To=%3C1821897025.21735.1392280837689.JavaMail.zimbra%40yetopen.it%3E"
+       TITLE="[Chilli] Disconnect on ChilliSpot-Max-All-Octets">maxxer at ufficyo.com
+       </A><BR>
+    <I>Thu Feb 13 08:40:37 UTC 2014</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="002599.html">[Chilli] Multiple DHCP gateways in Coova
+</A></li>
+        <LI>Next message: <A HREF="002592.html">[Chilli] Disconnect on ChilliSpot-Max-All-Octets
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2589">[ date ]</a>
+              <a href="thread.html#2589">[ thread ]</a>
+              <a href="subject.html#2589">[ subject ]</a>
+              <a href="author.html#2589">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hi.
+I've configured my FreeRadius server to have Octet counters. In my sql/mysql/counters.conf I added:
++sqlcounter counterChilliSpotMaxTotalOctets {
++            counter-name = ChilliSpot-Max-All-Octets
++            check-name = ChilliSpot-Max-All-Octets
++            reply-name = ChilliSpot-Max-All-Octets
++            sqlmod-inst = sql
++            key = User-Name
++            reset = never
++            query = &quot;SELECT SUM(acctinputoctets) + SUM(acctoutputoctets) FROM radacct WHERE username='%{%k}'&quot;
++}
+
+and in radiusd.conf counters stanza: 
+counterChilliSpotMaxTotalOctets
+
+Added in dictionary:
+ATTRIBUTE       ChilliSpot-Max-Daily-Octets               103      integer
+ATTRIBUTE       ChilliSpot-Max-Monthly-Octets             104      integer
+ATTRIBUTE       ChilliSpot-Max-Weekly-Octets              105      integer
+ATTRIBUTE       ChilliSpot-Max-All-Octets                 106      integer
+
+
+The counter is calculated correctly, but the user doesn't get disconnected if he reaches his limit. I.e. if the user has 10 octets left and starts a 4G file download it never gets interrupted.
+
+The radius reply looks like this:
+Sending Access-Accept of id 95 to 10.22.22.159 port 47286
+        Idle-Timeout := 30
+        Acct-Interim-Interval := 30
+        ChilliSpot-Max-All-Octets = 10
+
+
+Does Coova support those properties? Is this expected or should it disconnect? I'm using 1.3.0.
+
+Thanks
+-- 
+Lorenzo Milesi - <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">lorenzo.milesi at yetopen.it</A>
+
+YetOpen S.r.l. - <A HREF="http://www.yetopen.it/">http://www.yetopen.it/</A>
+</PRE>
+
+
+
+
+
+
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="002599.html">[Chilli] Multiple DHCP gateways in Coova
+</A></li>
+	<LI>Next message: <A HREF="002592.html">[Chilli] Disconnect on ChilliSpot-Max-All-Octets
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2589">[ date ]</a>
+              <a href="thread.html#2589">[ thread ]</a>
+              <a href="subject.html#2589">[ subject ]</a>
+              <a href="author.html#2589">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

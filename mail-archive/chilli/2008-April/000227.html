@@ -1,0 +1,260 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> SVN 165 - unwanted UAM redirects
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20SVN%20165%20-%20unwanted%20UAM%20redirects&In-Reply-To=%3CCD1E6379-3477-4561-B3E9-852064A39346%40silverserver.at%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000226.html">
+   <LINK REL="Next"  HREF="000228.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>SVN 165 - unwanted UAM redirects</H1>
+    <B>lc</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20SVN%20165%20-%20unwanted%20UAM%20redirects&In-Reply-To=%3CCD1E6379-3477-4561-B3E9-852064A39346%40silverserver.at%3E"
+       TITLE="SVN 165 - unwanted UAM redirects">chilli at silverserver.at
+       </A><BR>
+    <I>Sat Apr 26 20:38:53 UTC 2008</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000226.html">SVN 165 - unwanted UAM redirects
+</A></li>
+        <LI>Next message: <A HREF="000228.html">SVN 165 - unwanted UAM redirects
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#227">[ date ]</a>
+              <a href="thread.html#227">[ thread ]</a>
+              <a href="subject.html#227">[ subject ]</a>
+              <a href="author.html#227">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>This means that the trigger could be a dis- and reassociation of a  
+WiFi client during an active session - sounds reasonable. Your latest  
+SVN will be in action very soon, will keep you updated - thanks!
+
+Am 26.04.2008 um 21:02 schrieb <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">wlan at mac.com</A>:
+
+&gt;<i> I found a potential cause, and fixed it in rev 166. If the client  
+</I>&gt;<i> requested a new IP via DHCP instead of confirming an existing ip, it  
+</I>&gt;<i> would be sent down the 'dnat' state. If you are willing, give it a go.
+</I>&gt;<i>
+</I>&gt;<i> On Apr 26, 2008, at 7:37 PM, lc wrote:
+</I>&gt;<i>
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> Some time ago I reported a strange behavior of SVN 155 and later 159.
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> We found that under unknown and rare circumstances chilli starts to  
+</I>&gt;&gt;<i> redirect to the UAM server with res=already although the session is  
+</I>&gt;&gt;<i> active. No matther what is entered in the web browser, the user is  
+</I>&gt;&gt;<i> redirected. This behaviour does not start right away after a login,  
+</I>&gt;&gt;<i> but some minutes later.
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> Today we ran another test at a heavy used location. And we got  
+</I>&gt;&gt;<i> lucky (if you can call this luck) - the problem occured at one  
+</I>&gt;&gt;<i> Vista user.
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> Here are two corresponding lines of our UAM-Server log. There was  
+</I>&gt;&gt;<i> no other communication with our UAM Server within this timeframe.
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> [26/Apr/2008:16:50:31 +0200] &quot;GET /?res=success
+</I>&gt;&gt;<i> [26/Apr/2008:16:59:44 +0200] &quot;GET /?res=already
+</I>&gt;&gt;<i> After this line many &quot;already&quot; lines followed - a few minutes  
+</I>&gt;&gt;<i> later, the user gave up. But for 9 minutes chilli worked as it  
+</I>&gt;&gt;<i> should.
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> His computer info: Mozilla/4.0 (compatible; MSIE 7.0; Windows NT  
+</I>&gt;&gt;<i> 6.0; SLCC1; .NET CLR 2.0.50727; .NET CLR 3.0.04506; .NET CLR  
+</I>&gt;&gt;<i> 1.1.4322)
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> We do not know for sure but so far we only noticed this problem  
+</I>&gt;&gt;<i> when Vista was used.
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> But we know for sure that
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> - affected users do not go to the login page (=the problem starts  
+</I>&gt;&gt;<i> suddenly without the user doing anything)
+</I>&gt;&gt;<i> - no matter which URL they enter they are always redirected to the  
+</I>&gt;&gt;<i> UAM server with res=already
+</I>&gt;&gt;<i> - chilli keeps sending acct-interim updates, so this is an  
+</I>&gt;&gt;<i> indication that chilli knows the session is active
+</I>&gt;&gt;<i> - chilli closes the session correctly after the affected users give  
+</I>&gt;&gt;<i> up
+</I>&gt;&gt;<i> - chilli does not send any radius requests when it keeps redirecting
+</I>&gt;&gt;<i> - there must be something which triggers this behaviour
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> A few days ago I was at a location and by chance a user was having  
+</I>&gt;&gt;<i> this problem. So I sat next to him and tried it myself - no matter  
+</I>&gt;&gt;<i> what I did, chilli redirected me. After this I stopped chilli and  
+</I>&gt;&gt;<i> started it in debug mode. And guess what: The problem did not  
+</I>&gt;&gt;<i> occur. After I left the user stayed for quite a long time. He  
+</I>&gt;&gt;<i> logged on and was logged off (timeout), but this issue did not  
+</I>&gt;&gt;<i> happen again.
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> We have reason to believe what it does not happen with the current  
+</I>&gt;&gt;<i> 1.0.11 release.
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> Questions: did anybody use chilli SVN 155 or newer out on the  
+</I>&gt;&gt;<i> field?  Are there any ideas what could trigger this behavior? How  
+</I>&gt;&gt;<i> can we help to gather more information? Is there a special debug  
+</I>&gt;&gt;<i> mode to watch closer why chilli starts to redirect?
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i>
+</I>&gt;&gt;&gt;<i> Hi David,
+</I>&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;<i> I just returned to my office and checked the logs of this  
+</I>&gt;&gt;&gt;<i> location. Funny: the same user is still there and he opened new  
+</I>&gt;&gt;&gt;<i> sessions and it seems the problem did not occur so far. This  
+</I>&gt;&gt;&gt;<i> leaves me even more clueless.
+</I>&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;<i> Could a miscommunication between chilli and the radius server  
+</I>&gt;&gt;&gt;<i> cause such a behaviour? It is strange because if it occurs for a  
+</I>&gt;&gt;&gt;<i> few minutes everything looks fine, and then suddenly the effect  
+</I>&gt;&gt;&gt;<i> starts. The start of the session means chilli got a green light  
+</I>&gt;&gt;&gt;<i> from Radius. Maybe immediatly if the communication is somehow not  
+</I>&gt;&gt;&gt;<i> successful immediately after chilli starts to think after a few  
+</I>&gt;&gt;&gt;<i> minutes that the session is actually not ok? I ask because  
+</I>&gt;&gt;&gt;<i> sometimes it seems that chilli is not getting radius replies,  
+</I>&gt;&gt;&gt;<i> therefore keeps retransmitting. This does not happen very often,  
+</I>&gt;&gt;&gt;<i> but it happens.
+</I>&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;<i> I am kind of desperate because I saw it with my own eyes but after  
+</I>&gt;&gt;&gt;<i> restarting chilli I could not reproduce it today :(
+</I>&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;<i> Cheers,
+</I>&gt;&gt;&gt;<i> lc
+</I>&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;<i> Am 23.04.2008 um 17:13 schrieb lc:
+</I>&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;&gt;<i> Hi David,
+</I>&gt;&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;&gt;<i> Today I spent a few hours at one of those locations and  
+</I>&gt;&gt;&gt;&gt;<i> unfortunately the redirection problem popped up again!
+</I>&gt;&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;&gt;<i> The user logged in and worked for a few minutes (gmail). Suddenly  
+</I>&gt;&gt;&gt;&gt;<i> chilli started redirecting him to the uam-page which was  
+</I>&gt;&gt;&gt;&gt;<i> displayed with res=already. I tried it - no matter which URL I  
+</I>&gt;&gt;&gt;&gt;<i> entered, I ended up there.
+</I>&gt;&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;&gt;<i> The guy had Windows Vista and IE. After this I killed chilli and  
+</I>&gt;&gt;&gt;&gt;<i> restared it in debug mode - this time unfortunately I could not  
+</I>&gt;&gt;&gt;&gt;<i> reproduce it. However it was defenitly the same behaviour as with  
+</I>&gt;&gt;&gt;&gt;<i> the older SVN (I reported the issue to the mailing list).
+</I>&gt;&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;&gt;<i> I will revert one location back to 1.0.11. For the other  
+</I>&gt;&gt;&gt;&gt;<i> location: how can I start chilli in Debug mode without getting  
+</I>&gt;&gt;&gt;&gt;<i> the leaky bucket messages? What can I do to help finding the issue?
+</I>&gt;&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;&gt;<i> I keep wondering what could cause chilli to act this way? Why  
+</I>&gt;&gt;&gt;&gt;<i> would it suddenly think the session is not yet open?
+</I>&gt;&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;&gt;<i> Cheers,
+</I>&gt;&gt;&gt;&gt;<i> lc
+</I>&gt;&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;&gt;<i> Am 22.04.2008 um 14:34 schrieb lc:
+</I>&gt;&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;&gt;&gt;<i> Hi David,
+</I>&gt;&gt;&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;&gt;&gt;<i> finally I managed to put SVN 165 out on two heavy-use locations.  
+</I>&gt;&gt;&gt;&gt;&gt;<i> Will keep you updated on the results!
+</I>&gt;&gt;&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;&gt;&gt;<i> Cheers,
+</I>&gt;&gt;&gt;&gt;&gt;<i> lc
+</I>&gt;&gt;&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;&gt;&gt;<i> Am 18.04.2008 um 15:53 schrieb David Bird:
+</I>&gt;&gt;&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;&gt;&gt;&gt;<i> Thanks for that... good to hear there are no (or little)  
+</I>&gt;&gt;&gt;&gt;&gt;&gt;<i> problems in the field with 1.0.11. I believe gmayer isn't  
+</I>&gt;&gt;&gt;&gt;&gt;&gt;<i> getting his RADIUS responses (if your following the mailing  
+</I>&gt;&gt;&gt;&gt;&gt;&gt;<i> list) and chilli is retransmitting, as expected.
+</I>&gt;&gt;&gt;&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;&gt;&gt;&gt;<i> cheers,
+</I>&gt;&gt;&gt;&gt;&gt;&gt;<i> david
+</I>&gt;&gt;&gt;&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;&gt;&gt;&gt;<i> On Apr 18, 2008, at 3:46 PM, lc wrote:
+</I>&gt;&gt;&gt;&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;&gt;&gt;&gt;&gt;<i> Hi David,
+</I>&gt;&gt;&gt;&gt;&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;&gt;&gt;&gt;&gt;<i> I tested it only for 5 Mins to check whether the DNS bug has  
+</I>&gt;&gt;&gt;&gt;&gt;&gt;&gt;<i> gone (and it has - thanks a lot!!!!). But I did't do anything  
+</I>&gt;&gt;&gt;&gt;&gt;&gt;&gt;<i> more with it.
+</I>&gt;&gt;&gt;&gt;&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;&gt;&gt;&gt;&gt;<i> I read the issues in the Mailing list and I want to test the  
+</I>&gt;&gt;&gt;&gt;&gt;&gt;&gt;<i> latest SVN against it. Actually I was thinking to put it on at  
+</I>&gt;&gt;&gt;&gt;&gt;&gt;&gt;<i> a few live systems tonight.
+</I>&gt;&gt;&gt;&gt;&gt;&gt;&gt;<i> What worries me a bit is the other effect I had with some  
+</I>&gt;&gt;&gt;&gt;&gt;&gt;&gt;<i> older SVN (the Windows Vista issue - redirection although  
+</I>&gt;&gt;&gt;&gt;&gt;&gt;&gt;<i> session was active). I tried to get hold of those Vista  
+</I>&gt;&gt;&gt;&gt;&gt;&gt;&gt;<i> machines but was unlucky: one got stolen and the other one was  
+</I>&gt;&gt;&gt;&gt;&gt;&gt;&gt;<i> sold by the owner. So I could not reproduce it on my own.
+</I>&gt;&gt;&gt;&gt;&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;&gt;&gt;&gt;&gt;<i> So far I run the 1.0.11 release out there. I see some error  
+</I>&gt;&gt;&gt;&gt;&gt;&gt;&gt;<i> messages which are reported by the Radius Server but I have  
+</I>&gt;&gt;&gt;&gt;&gt;&gt;&gt;<i> not had the time to look further into it.
+</I>&gt;&gt;&gt;&gt;&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;&gt;&gt;&gt;&gt;<i> Early next week I will give you an update.
+</I>&gt;&gt;&gt;&gt;&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;&gt;&gt;&gt;&gt;<i> Cheers,
+</I>&gt;&gt;&gt;&gt;&gt;&gt;&gt;<i> lc
+</I>&gt;&gt;&gt;&gt;&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;&gt;&gt;&gt;&gt;<i> Am 18.04.2008 um 15:33 schrieb David Bird:
+</I>&gt;&gt;&gt;&gt;&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;<i> Are you having issues with it?
+</I>&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;<i> cheers,
+</I>&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;<i> David
+</I>&gt;&gt;&gt;&gt;&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;<i>
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> ---------------------------------------------------------------------
+</I>&gt;&gt;<i> To unsubscribe, e-mail: <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli-unsubscribe at coova.org</A>
+</I>&gt;&gt;<i> For additional commands, e-mail: <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli-help at coova.org</A>
+</I>&gt;&gt;<i> Wiki: <A HREF="http://coova.org/wiki/index.php/CoovaChilli">http://coova.org/wiki/index.php/CoovaChilli</A>
+</I>&gt;&gt;<i> Forum: <A HREF="http://coova.org/phpBB3/viewforum.php?f=4">http://coova.org/phpBB3/viewforum.php?f=4</A>
+</I>&gt;&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> ---------------------------------------------------------------------
+</I>&gt;<i> To unsubscribe, e-mail: <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli-unsubscribe at coova.org</A>
+</I>&gt;<i> For additional commands, e-mail: <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli-help at coova.org</A>
+</I>&gt;<i> Wiki: <A HREF="http://coova.org/wiki/index.php/CoovaChilli">http://coova.org/wiki/index.php/CoovaChilli</A>
+</I>&gt;<i> Forum: <A HREF="http://coova.org/phpBB3/viewforum.php?f=4">http://coova.org/phpBB3/viewforum.php?f=4</A>
+</I>&gt;<i>
+</I>
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000226.html">SVN 165 - unwanted UAM redirects
+</A></li>
+	<LI>Next message: <A HREF="000228.html">SVN 165 - unwanted UAM redirects
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#227">[ date ]</a>
+              <a href="thread.html#227">[ thread ]</a>
+              <a href="subject.html#227">[ subject ]</a>
+              <a href="author.html#227">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

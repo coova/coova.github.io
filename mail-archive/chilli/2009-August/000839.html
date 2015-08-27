@@ -1,0 +1,105 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> Making Coova Chilli not count local (server, not LAN) traffic
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20Making%20Coova%20Chilli%20not%20count%20local%20%28server%2C%20not%20LAN%29%20traffic&In-Reply-To=%3C6bd64e020908042351o7ad5b380qd4029187877d788e%40mail.gmail.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000851.html">
+   <LINK REL="Next"  HREF="000849.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>Making Coova Chilli not count local (server, not LAN) traffic</H1>
+    <B>Timothy White</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20Making%20Coova%20Chilli%20not%20count%20local%20%28server%2C%20not%20LAN%29%20traffic&In-Reply-To=%3C6bd64e020908042351o7ad5b380qd4029187877d788e%40mail.gmail.com%3E"
+       TITLE="Making Coova Chilli not count local (server, not LAN) traffic">timwhite88 at gmail.com
+       </A><BR>
+    <I>Wed Aug  5 06:51:53 UTC 2009</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000851.html">Password encoding/decoding
+</A></li>
+        <LI>Next message: <A HREF="000849.html">Making Coova Chilli not count local (server, not LAN) traffic
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#839">[ date ]</a>
+              <a href="thread.html#839">[ thread ]</a>
+              <a href="subject.html#839">[ subject ]</a>
+              <a href="author.html#839">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>I apologise in advance if I break any list etiquettes for this list.
+
+I'm basically tired of waiting for a feature to be added, so I'm going
+to work on adding it myself, or at least trying to. (It's been a long
+time since I did any C programming, so I'm a best rusty).
+Having never worked on the Chilli code, I'm not 100% sure how it
+works. From my brief look at the code, chilli.c around line 1464 is
+where the actual &quot;accounting&quot; happens, in the cb_tun_ind function I
+think. I'm not 100% sure on this at all though.
+
+Can someone who knows the code let me know if that is actually where
+the accounting of data happens? From what I can see ether
+appconn-&gt;s_state.output_packets or appconn-&gt;s_state.input_packets is
+increased for each packet, and the associated octets count depending
+on whether it's in or out. So this suggests to me that I can just wrap
+that small bit of code with an if statement that checks ip address and
+ports, and not count traffic to and from the local server.
+It also appears to my untrained eye, that while it's not supposed to
+count traffic to and from the &quot;uam&quot; service on 3990, it still does
+count it, so here would be a chance to fix that too.
+
+The if statement would look like this.
+
+  if ( ! (ipph-&gt;saddr  == options()-&gt;uamlisten.s_addr &amp;&amp;
+	  (ipph-&gt;sport == htons(options()-&gt;uamport) ||
+	   ipph-&gt;sport == htons(options()-&gt;uamuiport)))) {
+
+You'd also set uamuiport in your config files to be what ever port
+your local webserver runs on. (I have also noticed that wwwui exists
+in the Changelog but can't be found anywhere else.)
+
+I haven't had a chance to test the code (being at Uni atm, and not
+near my testing box), so I'll test it when I get home and have a try.
+If it works, I'll submit the patch.
+
+If I'm totally off track, can someone please point me in the correct
+direction to where the accounting happens, so I can poke around the
+code and try and work out how to get it to not count local server
+traffic.
+
+Hope I can &quot;code&quot; this feature and fix what to me and a few others is a bug.
+
+I'm open to criticism as long as it's constructive to fixing problems
+and not cutting down. I am a programmer, but have a lot to learn so
+any chance to learn I'll take.
+
+Tim White
+<A HREF="http://weirdo.bur.st/">http://weirdo.bur.st/</A>
+<A HREF="http://purewhite.id.au/">http://purewhite.id.au/</A>
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000851.html">Password encoding/decoding
+</A></li>
+	<LI>Next message: <A HREF="000849.html">Making Coova Chilli not count local (server, not LAN) traffic
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#839">[ date ]</a>
+              <a href="thread.html#839">[ thread ]</a>
+              <a href="subject.html#839">[ subject ]</a>
+              <a href="author.html#839">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

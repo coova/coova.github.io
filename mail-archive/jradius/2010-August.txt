@@ -1,0 +1,571 @@
+From david at coova.com  Sat Aug  7 16:09:37 2010
+From: david at coova.com (David Bird)
+Date: Sat, 07 Aug 2010 18:09:37 +0200
+Subject: [Jradius] jraduis update
+Message-ID: <1281197377.26760.6.camel@david-laptop>
+
+Fixed in subversion: EAP-TLS, EAP-TTLS/PAP, and PEAP with the
+JRadiusSimulator.
+
+David
+
+
+From murray at skyrove.com  Wed Aug 18 15:31:24 2010
+From: murray at skyrove.com (Murray Long)
+Date: Wed, 18 Aug 2010 17:31:24 +0200
+Subject: [Jradius] JRadius Proxy mangles User-Password
+Message-ID: <AANLkTimXb1g=uXHP7kGxc-bJS_U2Eq-Zr4QmGpCzdZ5J@mail.gmail.com>
+
+Hi Everyone,
+
+I'm trying to set up JRadius to accept Radsec connections and proxy them
+onto freeradius.
+
+I've set up jardius as described on coova.org, and it seems to work well,
+except the User-Password is encrypted by the time it reaches freeradius
+
+I get the following reported on the freeradius side:
+
+    User-Name = "testuser"
+    User-Password =
+"\212\230\306\310\313}\010\231\257\211F\237.l\365JJ\2173\240b\367\215+?u\177=\237\304\001"
+
+My NAS is sending plaintext passwords so I'm pretty sure Jradius is mangling
+the User-Password somehow.
+
+Does anyone know why this would be happening and how to prevent it?
+
+I did notice "dictionary.rfc2865" had a line:
+User-Password                2    string encrypt=1
+but setting encrypt=0 dosn't seem to make a difference.
+
+Thanks,
+Murray
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/jradius/attachments/20100818/244019aa/attachment.htm>
+
+From wlan at mac.com  Thu Aug 19 06:21:39 2010
+From: wlan at mac.com (wlanmac)
+Date: Thu, 19 Aug 2010 08:21:39 +0200
+Subject: [Jradius] JRadius Proxy mangles User-Password
+In-Reply-To: <AANLkTimXb1g=uXHP7kGxc-bJS_U2Eq-Zr4QmGpCzdZ5J@mail.gmail.com>
+References: <AANLkTimXb1g=uXHP7kGxc-bJS_U2Eq-Zr4QmGpCzdZ5J@mail.gmail.com>
+Message-ID: <1282198899.2881.5.camel@david-laptop>
+
+Hello,
+
+The User-Password is always encoded ("encrypted") with the shared secret
+on the wire. Changes are that there is a shared secret mix up
+somewhere. 
+
+David
+
+
+On Wed, 2010-08-18 at 17:31 +0200, Murray Long wrote:
+> Hi Everyone,
+> 
+> I'm trying to set up JRadius to accept Radsec connections and proxy
+> them onto freeradius.
+> 
+> I've set up jardius as described on coova.org, and it seems to work
+> well, except the User-Password is encrypted by the time it reaches
+> freeradius 
+> 
+> I get the following reported on the freeradius side:
+> 
+>     User-Name = "testuser"
+>     User-Password = "\212\230\306\310\313}\010\231\257\211F\237.l
+> \365JJ\2173\240b\367\215+?u\177=\237\304\001"
+> 
+> My NAS is sending plaintext passwords so I'm pretty sure Jradius is
+> mangling the User-Password somehow.
+> 
+> Does anyone know why this would be happening and how to prevent it?
+> 
+> I did notice "dictionary.rfc2865" had a line:
+> User-Password                2    string encrypt=1
+> but setting encrypt=0 dosn't seem to make a difference.
+> 
+> Thanks,
+> Murray
+> 
+> 
+> 
+> 
+> 
+> _______________________________________________
+> Jradius mailing list
+> Jradius at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/jradius
+
+
+
+From murray at skyrove.com  Thu Aug 19 08:49:06 2010
+From: murray at skyrove.com (Murray Long)
+Date: Thu, 19 Aug 2010 10:49:06 +0200
+Subject: [Jradius] JRadius Proxy mangles User-Password
+In-Reply-To: <1282198899.2881.5.camel@david-laptop>
+References: <AANLkTimXb1g=uXHP7kGxc-bJS_U2Eq-Zr4QmGpCzdZ5J@mail.gmail.com>
+	<1282198899.2881.5.camel@david-laptop>
+Message-ID: <AANLkTimnPLY4+dYLB9_Dh2iDZyMv4kZohbNTYeeiCFma@mail.gmail.com>
+
+Oh interesting, so it's only the password field that gets hashed by shared
+secret?
+
+At the moment I have:
+UAM --(radsec) --> Jradius ---(radius)--> freeradius
+
+I defiantly got the same secret between Jradius and freeradius ( set in
+radSecProxyHander.sharedSecret )
+But I haven't told Jradius about the shared secret being used by the UAM,
+and I'm not sure where to set this.  Can someone point me in the right
+direction?
+
+Thanks Murray
+
+On Thu, Aug 19, 2010 at 8:21 AM, wlanmac <wlan at mac.com> wrote:
+
+> Hello,
+>
+> The User-Password is always encoded ("encrypted") with the shared secret
+> on the wire. Changes are that there is a shared secret mix up
+> somewhere.
+>
+> David
+>
+>
+> On Wed, 2010-08-18 at 17:31 +0200, Murray Long wrote:
+> > Hi Everyone,
+> >
+> > I'm trying to set up JRadius to accept Radsec connections and proxy
+> > them onto freeradius.
+> >
+> > I've set up jardius as described on coova.org, and it seems to work
+> > well, except the User-Password is encrypted by the time it reaches
+> > freeradius
+> >
+> > I get the following reported on the freeradius side:
+> >
+> >     User-Name = "testuser"
+> >     User-Password = "\212\230\306\310\313}\010\231\257\211F\237.l
+> > \365JJ\2173\240b\367\215+?u\177=\237\304\001"
+> >
+> > My NAS is sending plaintext passwords so I'm pretty sure Jradius is
+> > mangling the User-Password somehow.
+> >
+> > Does anyone know why this would be happening and how to prevent it?
+> >
+> > I did notice "dictionary.rfc2865" had a line:
+> > User-Password                2    string encrypt=1
+> > but setting encrypt=0 dosn't seem to make a difference.
+> >
+> > Thanks,
+> > Murray
+> >
+> >
+> >
+> >
+> >
+> > _______________________________________________
+> > Jradius mailing list
+> > Jradius at coova.org
+> > http://lists.coova.org/cgi-bin/mailman/listinfo/jradius
+>
+>
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/jradius/attachments/20100819/d7e75ff7/attachment.htm>
+
+From stelio at skyrove.com  Thu Aug 19 09:45:10 2010
+From: stelio at skyrove.com (Stelio Gouveia)
+Date: Thu, 19 Aug 2010 11:45:10 +0200
+Subject: [Jradius] RadSec and JRadius
+Message-ID: <AANLkTinGBP3ZjO9eh-yoos0oLLEEyzUijtUWuCOj+fTd@mail.gmail.com>
+
+Hi Folks
+
+I've been trying for some time now to marry CoovaChilli and RadSecProxy.
+We've also managed to uncover some serious design flaws with the
+implementation of RadSec by RadSecProxy.
+
+You can read the discussion here -> http://bit.ly/czEpxt
+
+It's become apparent that JRadius may be another options for RadSec
+implementation, and in our case
+we would use it to handle ONLY the RadSec protocol and forward to our
+FreeRadius server.
+
+I have a few question that maybe someone in the community could answer:
+
+   1. Is anyone actually using JRadius with RadSec? If so, how many routers
+   to you have connected and is it scalable?
+   2. Does JRadius thread each incoming connection and keep the connection
+   alive for the duration of the CoovaChilli runtime?
+   3. How many open sockets can it handle? Linux default is 1024, or it
+   this irrelevant?
+
+- Stelio
+
+Skyrove Software Engineer,
+Skyrove (Pty) Ltd
+Technology Top 100 Award Winner (2006)
+Mobile: +27 82 34 09 120
+Tel: +27 861 ROVERS (0861 768 377)
+Fax: +27 86 6204077
+Email & Gtalk: stelio at skyrove.com
+Web:   www.skyrove.com
+
+This message contains confidential information. If you are not the intended
+recipient you are notified that disclosing, copying, distributing or taking
+any action in reliance on the contents of this information is strictly
+prohibited. E-mail transmission cannot be guaranteed to be secure or
+error-free as information could be intercepted, corrupted, lost, destroyed,
+arrive late or incomplete, or contain viruses. The sender therefore does not
+accept liability for any errors or omissions in the contents of this
+message.
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/jradius/attachments/20100819/9f3f5b54/attachment.htm>
+
+From stelio at skyrove.com  Thu Aug 19 10:11:11 2010
+From: stelio at skyrove.com (Stelio Gouveia)
+Date: Thu, 19 Aug 2010 12:11:11 +0200
+Subject: [Jradius] JRadius and RadSec
+Message-ID: <AANLkTimzQGjVJKWFLH-B-00M0-Do-urLDR-i8rjJY797@mail.gmail.com>
+
+Hi Folks
+
+I've been trying for some time now to marry CoovaChilli and RadSecProxy.
+We've also managed to uncover some serious design flaws with the
+implementation of RadSec by RadSecProxy.
+
+You can read the discussion here -> http://bit.ly/czEpxt
+
+It's become apparent that JRadius may be another options for RadSec
+implementation, and in our case
+we would use it to handle ONLY the RadSec protocol and forward to our
+FreeRadius server.
+
+I have a few question that maybe someone in the community could answer:
+
+   1. Is anyone actually using JRadius with RadSec? If so, how many routers
+   to you have connected and is it scalable?
+   2. Does JRadius thread each incoming connection and keep the connection
+   alive for the duration of the CoovaChilli runtime?
+   3. How many open sockets can it handle? Linux default is 1024, or it
+   this irrelevant?
+
+- Stelio
+
+--
+Skyrove Software Engineer,
+Skyrove (Pty) Ltd
+Technology Top 100 Award Winner (2006)
+Mobile: +27 82 34 09 120
+Tel: +27 861 ROVERS (0861 768 377)
+Fax: +27 86 6204077
+Email & Gtalk: stelio at skyrove.com
+Web:   www.skyrove.com
+
+This message contains confidential information. If you are not the intended
+recipient you are notified that disclosing, copying, distributing or taking
+any action in reliance on the contents of this information is strictly
+prohibited. E-mail transmission cannot be guaranteed to be secure or
+error-free as information could be intercepted, corrupted, lost, destroyed,
+arrive late or incomplete, or contain viruses. The sender therefore does not
+accept liability for any errors or omissions in the contents of this
+message.
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/jradius/attachments/20100819/06637cf1/attachment.htm>
+
+From murray at skyrove.com  Thu Aug 19 13:11:13 2010
+From: murray at skyrove.com (Murray Long)
+Date: Thu, 19 Aug 2010 15:11:13 +0200
+Subject: [Jradius] JRadius Proxy mangles User-Password
+In-Reply-To: <1282198899.2881.5.camel@david-laptop>
+References: <AANLkTimXb1g=uXHP7kGxc-bJS_U2Eq-Zr4QmGpCzdZ5J@mail.gmail.com>
+	<1282198899.2881.5.camel@david-laptop>
+Message-ID: <AANLkTikiyiNKqVhNYZ2NZmVhMMB=YXrffUH4yAyGy4vV@mail.gmail.com>
+
+Hi David, Jradius LIst,
+
+After further testing I'm doubting this is a shared secret problem:
+
+If I intentionally send the wrong shared secret from client-->Jradius,
+Jradius gives me and error saying:
+"Bad RadSec tunnel shared secret, set to radsec"
+
+If I intentionally set the wrong shared secret for the Jradius-->freeradius
+connection, freeradius gives me an error saying:
+"Received packet from 127.0.0.1 with invalid Message-Authenticator!  (Shared
+secret is incorrect.) Dropping packet without response."
+
+If I use the correct shared secrets on both sides, I get no error messages,
+only garbled passwords.
+
+Is there any way to get Jradius to log packets before it proxys them? So I
+can at least isolate the problem to the client-->jradius connection or the
+jradius-->freeradius one.
+
+Many Thanks,
+Murray
+
+On Thu, Aug 19, 2010 at 8:21 AM, wlanmac <wlan at mac.com> wrote:
+
+> Hello,
+>
+> The User-Password is always encoded ("encrypted") with the shared secret
+> on the wire. Changes are that there is a shared secret mix up
+> somewhere.
+>
+> David
+>
+>
+> On Wed, 2010-08-18 at 17:31 +0200, Murray Long wrote:
+> > Hi Everyone,
+> >
+> > I'm trying to set up JRadius to accept Radsec connections and proxy
+> > them onto freeradius.
+> >
+> > I've set up jardius as described on coova.org, and it seems to work
+> > well, except the User-Password is encrypted by the time it reaches
+> > freeradius
+> >
+> > I get the following reported on the freeradius side:
+> >
+> >     User-Name = "testuser"
+> >     User-Password = "\212\230\306\310\313}\010\231\257\211F\237.l
+> > \365JJ\2173\240b\367\215+?u\177=\237\304\001"
+> >
+> > My NAS is sending plaintext passwords so I'm pretty sure Jradius is
+> > mangling the User-Password somehow.
+> >
+> > Does anyone know why this would be happening and how to prevent it?
+> >
+> > I did notice "dictionary.rfc2865" had a line:
+> > User-Password                2    string encrypt=1
+> > but setting encrypt=0 dosn't seem to make a difference.
+> >
+> > Thanks,
+> > Murray
+> >
+> >
+> >
+> >
+> >
+> > _______________________________________________
+> > Jradius mailing list
+> > Jradius at coova.org
+> > http://lists.coova.org/cgi-bin/mailman/listinfo/jradius
+>
+>
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/jradius/attachments/20100819/dc9d940f/attachment.htm>
+
+From wlan at mac.com  Thu Aug 19 17:04:57 2010
+From: wlan at mac.com (wlanmac)
+Date: Thu, 19 Aug 2010 19:04:57 +0200
+Subject: [Jradius] JRadius Proxy mangles User-Password
+In-Reply-To: <AANLkTimnPLY4+dYLB9_Dh2iDZyMv4kZohbNTYeeiCFma@mail.gmail.com>
+References: <AANLkTimXb1g=uXHP7kGxc-bJS_U2Eq-Zr4QmGpCzdZ5J@mail.gmail.com>
+	<1282198899.2881.5.camel@david-laptop>
+	<AANLkTimnPLY4+dYLB9_Dh2iDZyMv4kZohbNTYeeiCFma@mail.gmail.com>
+Message-ID: <1282237497.3925.9.camel@david-laptop>
+
+The shared secret from CoovaChilli(UAM) to JRadius should be "radsec" 
+
+On Thu, 2010-08-19 at 10:49 +0200, Murray Long wrote:
+> Oh interesting, so it's only the password field that gets hashed by
+> shared secret?
+> 
+> At the moment I have:
+> UAM --(radsec) --> Jradius ---(radius)--> freeradius
+> 
+> I defiantly got the same secret between Jradius and freeradius ( set
+> in radSecProxyHander.sharedSecret ) 
+> But I haven't told Jradius about the shared secret being used by the
+> UAM, and I'm not sure where to set this.  Can someone point me in the
+> right direction?
+> 
+> Thanks Murray
+> 
+> On Thu, Aug 19, 2010 at 8:21 AM, wlanmac <wlan at mac.com> wrote:
+>         Hello,
+>         
+>         The User-Password is always encoded ("encrypted") with the
+>         shared secret
+>         on the wire. Changes are that there is a shared secret mix up
+>         somewhere.
+>         
+>         David
+>         
+>         
+>         
+>         On Wed, 2010-08-18 at 17:31 +0200, Murray Long wrote:
+>         > Hi Everyone,
+>         >
+>         > I'm trying to set up JRadius to accept Radsec connections
+>         and proxy
+>         > them onto freeradius.
+>         >
+>         > I've set up jardius as described on coova.org, and it seems
+>         to work
+>         > well, except the User-Password is encrypted by the time it
+>         reaches
+>         > freeradius
+>         >
+>         > I get the following reported on the freeradius side:
+>         >
+>         >     User-Name = "testuser"
+>         >     User-Password = "\212\230\306\310\313}\010\231\257\211F
+>         \237.l
+>         > \365JJ\2173\240b\367\215+?u\177=\237\304\001"
+>         >
+>         > My NAS is sending plaintext passwords so I'm pretty sure
+>         Jradius is
+>         > mangling the User-Password somehow.
+>         >
+>         > Does anyone know why this would be happening and how to
+>         prevent it?
+>         >
+>         > I did notice "dictionary.rfc2865" had a line:
+>         > User-Password                2    string encrypt=1
+>         > but setting encrypt=0 dosn't seem to make a difference.
+>         >
+>         > Thanks,
+>         > Murray
+>         >
+>         >
+>         >
+>         >
+>         >
+>         
+>         > _______________________________________________
+>         > Jradius mailing list
+>         > Jradius at coova.org
+>         > http://lists.coova.org/cgi-bin/mailman/listinfo/jradius
+>         
+>         
+> 
+> _______________________________________________
+> Jradius mailing list
+> Jradius at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/jradius
+
+
+
+From murray at skyrove.com  Fri Aug 20 08:38:28 2010
+From: murray at skyrove.com (Murray Long)
+Date: Fri, 20 Aug 2010 10:38:28 +0200
+Subject: [Jradius] JRadius Proxy mangles User-Password
+In-Reply-To: <1282237497.3925.9.camel@david-laptop>
+References: <AANLkTimXb1g=uXHP7kGxc-bJS_U2Eq-Zr4QmGpCzdZ5J@mail.gmail.com>
+	<1282198899.2881.5.camel@david-laptop>
+	<AANLkTimnPLY4+dYLB9_Dh2iDZyMv4kZohbNTYeeiCFma@mail.gmail.com>
+	<1282237497.3925.9.camel@david-laptop>
+Message-ID: <AANLkTins8RTaaJtmOq2XT=TgXic0WKeTe9n+BNyRpstR@mail.gmail.com>
+
+Yes, I am using "radsec" as the shared secret between UAM and Jradius
+
+The thing is, if I intentionally set an incorrect shared secret on either
+side I get an appropriate error message.  Where as if I use the correct
+secrets I get no error messages only mangled passwords.
+
+Is it possible there is something wrong with the shared secret that is not
+being picked up by the error checking?
+
+
+
+On Thu, Aug 19, 2010 at 7:04 PM, wlanmac <wlan at mac.com> wrote:
+
+> The shared secret from CoovaChilli(UAM) to JRadius should be "radsec"
+>
+> On Thu, 2010-08-19 at 10:49 +0200, Murray Long wrote:
+> > Oh interesting, so it's only the password field that gets hashed by
+> > shared secret?
+> >
+> > At the moment I have:
+> > UAM --(radsec) --> Jradius ---(radius)--> freeradius
+> >
+> > I defiantly got the same secret between Jradius and freeradius ( set
+> > in radSecProxyHander.sharedSecret )
+> > But I haven't told Jradius about the shared secret being used by the
+> > UAM, and I'm not sure where to set this.  Can someone point me in the
+> > right direction?
+> >
+> > Thanks Murray
+> >
+> > On Thu, Aug 19, 2010 at 8:21 AM, wlanmac <wlan at mac.com> wrote:
+> >         Hello,
+> >
+> >         The User-Password is always encoded ("encrypted") with the
+> >         shared secret
+> >         on the wire. Changes are that there is a shared secret mix up
+> >         somewhere.
+> >
+> >         David
+> >
+> >
+> >
+> >         On Wed, 2010-08-18 at 17:31 +0200, Murray Long wrote:
+> >         > Hi Everyone,
+> >         >
+> >         > I'm trying to set up JRadius to accept Radsec connections
+> >         and proxy
+> >         > them onto freeradius.
+> >         >
+> >         > I've set up jardius as described on coova.org, and it seems
+> >         to work
+> >         > well, except the User-Password is encrypted by the time it
+> >         reaches
+> >         > freeradius
+> >         >
+> >         > I get the following reported on the freeradius side:
+> >         >
+> >         >     User-Name = "testuser"
+> >         >     User-Password = "\212\230\306\310\313}\010\231\257\211F
+> >         \237.l
+> >         > \365JJ\2173\240b\367\215+?u\177=\237\304\001"
+> >         >
+> >         > My NAS is sending plaintext passwords so I'm pretty sure
+> >         Jradius is
+> >         > mangling the User-Password somehow.
+> >         >
+> >         > Does anyone know why this would be happening and how to
+> >         prevent it?
+> >         >
+> >         > I did notice "dictionary.rfc2865" had a line:
+> >         > User-Password                2    string encrypt=1
+> >         > but setting encrypt=0 dosn't seem to make a difference.
+> >         >
+> >         > Thanks,
+> >         > Murray
+> >         >
+> >         >
+> >         >
+> >         >
+> >         >
+> >
+> >         > _______________________________________________
+> >         > Jradius mailing list
+> >         > Jradius at coova.org
+> >         > http://lists.coova.org/cgi-bin/mailman/listinfo/jradius
+> >
+> >
+> >
+> > _______________________________________________
+> > Jradius mailing list
+> > Jradius at coova.org
+> > http://lists.coova.org/cgi-bin/mailman/listinfo/jradius
+>
+>
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/jradius/attachments/20100820/40121c9f/attachment.htm>
+

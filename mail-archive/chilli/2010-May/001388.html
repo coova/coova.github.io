@@ -1,0 +1,217 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] MAC blacklist and other security measures
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20MAC%20blacklist%20and%20other%20security%20measures&In-Reply-To=%3C1274504790.3330.115.camel%40david-laptop%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001387.html">
+   <LINK REL="Next"  HREF="001386.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] MAC blacklist and other security measures</H1>
+    <B>David Bird</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20MAC%20blacklist%20and%20other%20security%20measures&In-Reply-To=%3C1274504790.3330.115.camel%40david-laptop%3E"
+       TITLE="[Chilli] MAC blacklist and other security measures">david at coova.com
+       </A><BR>
+    <I>Sat May 22 05:06:30 UTC 2010</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001387.html">[Chilli] MAC blacklist and other security measures
+</A></li>
+        <LI>Next message: <A HREF="001386.html">[Chilli] [Patch] Fix auth state in redir_main()
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1388">[ date ]</a>
+              <a href="thread.html#1388">[ thread ]</a>
+              <a href="subject.html#1388">[ subject ]</a>
+              <a href="author.html#1388">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hi Felipe,
+
+With regard to the 'splash' getting into local.conf bug, it's because of
+the use of DEFAULT. You are also returning the 'splash' attribute to the
+'administrative-user' login. Try setting --admuser=&quot;&quot; to disable that. 
+
+David
+
+On Fri, 2010-05-21 at 16:35 -0300, Felipe Augusto van de Wiel wrote:
+&gt;<i> -----BEGIN PGP SIGNED MESSAGE-----
+</I>&gt;<i> Hash: SHA512
+</I>&gt;<i> 
+</I>&gt;<i> Hey!
+</I>&gt;<i> 
+</I>&gt;<i> On 21-05-2010 01:46, David Bird wrote:
+</I>&gt;<i> &gt;&gt; 	Let me revive this thread in order to add a
+</I>&gt;<i> &gt;&gt; few comments that would be nice to have and publicly
+</I>&gt;<i> &gt;&gt; archived, specially because a few things have changed.
+</I>&gt;<i> &gt;&gt;
+</I>&gt;<i> &gt; 
+</I>&gt;<i> &gt; Thanks for your feedback!
+</I>&gt;<i> 
+</I>&gt;<i> 	You are very welcome!
+</I>&gt;<i> 
+</I>&gt;<i> 	Coova developers and contributors are very nice
+</I>&gt;<i> and kind with outsiders and sysadmins trying different
+</I>&gt;<i> things and giving crazy suggestions/ideas. :)
+</I>&gt;<i> 
+</I>&gt;<i> 	I always come back because there are always
+</I>&gt;<i> ideas and different suggestions and Coova is moving to
+</I>&gt;<i> add features that weeks before we talked on the list.
+</I>&gt;<i> 
+</I>&gt;<i> 	So, thank you for always paying attention.
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> &gt;&gt; On 06-04-2010 12:42, Felipe Augusto van de Wiel wrote:
+</I>&gt;<i> &gt;&gt;&gt; On 21-03-2010 03:16, David Bird wrote:
+</I>&gt;<i> &gt;&gt;&gt;&gt; Hm.. one way might be to enable MAC authentication
+</I>&gt;<i> &gt;&gt;&gt;&gt; such that:
+</I>&gt;<i> &gt;&gt;&gt;
+</I>&gt;<i> &gt;&gt;&gt; 	That means enable 'macauth', right?  Using
+</I>&gt;<i> &gt;&gt;&gt; only 'macauthdeny' didn't result in the expected
+</I>&gt;<i> &gt;&gt;&gt; behavior.
+</I>&gt;<i> &gt;&gt;
+</I>&gt;<i> &gt;&gt; 	Although it was not clear before, now it
+</I>&gt;<i> &gt;&gt; makes a lot of sense that macauthdeny depends on
+</I>&gt;<i> &gt;&gt; macauth, otherwise you are not authenticating MAC
+</I>&gt;<i> &gt;&gt; addresses.
+</I>&gt;<i> &gt; 
+</I>&gt;<i> &gt; Indeed, macauthdeny is used with macauth. It makes it
+</I>&gt;<i> &gt; such that an Access-Reject means the user session is
+</I>&gt;<i> &gt; put in DROP state (where there is no returning from).
+</I>&gt;<i> 
+</I>&gt;<i> 	This is exactly what we want and indeed it
+</I>&gt;<i> work as expected. As I mentioned before, the free
+</I>&gt;<i> wifi we provide for our clients/customers but
+</I>&gt;<i> sometimes we have some &quot;corporate&quot; users abusing it,
+</I>&gt;<i> so we blacklist them to avoid circumventing the
+</I>&gt;<i> firewall/proxy.
+</I>&gt;<i> 
+</I>&gt;<i> 	It was nice to know it worked perfectly.
+</I>&gt;<i> More and more we are trying to improve our RADIUS
+</I>&gt;<i> setup, specially around LDAP, so we are looking to
+</I>&gt;<i> have EAP and a more well organized infrastructure.
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> &gt;&gt; 	In this new scenario, it would be great to
+</I>&gt;<i> &gt;&gt; have a way to &quot;drop&quot; clients that got a Access-Reject
+</I>&gt;<i> &gt;&gt; from RADIUS.
+</I>&gt;<i> &gt; 
+</I>&gt;<i> &gt; That is what the macauthdeny option does, really. If
+</I>&gt;<i> &gt; you don't want all Access-Accepted sessions to have
+</I>&gt;<i> &gt; full access, then you can try out the feature where
+</I>&gt;<i> &gt; you also return this in the access-accept:
+</I>&gt;<i> &gt; 
+</I>&gt;<i> &gt;   ChilliSpot-Config = 'splash' 
+</I>&gt;<i> 
+</I>&gt;<i> 	I did that with the DEFAULT option, it even
+</I>&gt;<i> raised the &quot;splash&quot; bug that replaces the entire
+</I>&gt;<i> local.conf file.
+</I>&gt;<i> 
+</I>&gt;<i> 	And it worked as expected, traffic on other
+</I>&gt;<i> ports are allowed and web redirects to captive portal
+</I>&gt;<i> until authenticated.
+</I>&gt;<i> 
+</I>&gt;<i> 	We want to allow our users to use other ports,
+</I>&gt;<i> otherwise we could change the firewall to block it all.
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> &gt; which will put the user in a 'splash' state (full Internet
+</I>&gt;<i> &gt; access, just with portal redirection). You can also try
+</I>&gt;<i> &gt; 'require-uam-auth' (which requires using option --wpaguests
+</I>&gt;<i> &gt; even if not using WPA, btw) which will put the user in the
+</I>&gt;<i> &gt; standard &quot;DNAT&quot; state. In an Access-Reject, you can also
+</I>&gt;<i> &gt; use ChilliSpot-Config = 'admin-reset' to release the DHCP
+</I>&gt;<i> &gt; release right away. Using that, you can also enforce a
+</I>&gt;<i> &gt; &quot;DROP&quot; state where you keep revoking the lease (but will
+</I>&gt;<i> &gt; also potentially mean you get a LOT of mac auth RADIUS
+</I>&gt;<i> &gt; requests).
+</I>&gt;<i> 
+</I>&gt;<i> 	The standard DNAT state would still allow the
+</I>&gt;<i> navigation of pages allowed by Coova until client
+</I>&gt;<i> authenticates in the Captive Portal. And indeed,
+</I>&gt;<i> 'admin-reset' can cause a lot of auth requests.
+</I>&gt;<i> 
+</I>&gt;<i> 	As I understood it, right now I can't tell
+</I>&gt;<i> Coova to change clients to 'drop' unless I use macauth
+</I>&gt;<i> and macauthdeny. I was planning on investigate more on
+</I>&gt;<i> the RADIUS side to see if there are something I am
+</I>&gt;<i> missing, but I realize that probably is Coova that
+</I>&gt;<i> needs to process the answer.
+</I>&gt;<i> 
+</I>&gt;<i> 	Thanks for clarifying that. We can live with
+</I>&gt;<i> the clients being blocked on the Captive Portal and
+</I>&gt;<i> all other ports and only being able to navigate to
+</I>&gt;<i> some of the allowed pages.
+</I>&gt;<i> 
+</I>&gt;<i> 	One of the nice points of the macauthdeny is
+</I>&gt;<i> that the client can't even get an IP or bind to the
+</I>&gt;<i> AP, which leads the client to believe it is not
+</I>&gt;<i> working (and achieves the point we are expecting,
+</I>&gt;<i> preventing corporate users to abuse the free wifi
+</I>&gt;<i> with corporate computers). :)
+</I>&gt;<i> 
+</I>&gt;<i> [...]
+</I>&gt;<i> &gt;&gt; 	I was wondering if it is possible to have the
+</I>&gt;<i> &gt;&gt; blocked MAC address to move to a 'drop' state after
+</I>&gt;<i> &gt;&gt; Access-Reject, is there such possibility in Coova?
+</I>&gt;<i> &gt; 
+</I>&gt;<i> &gt; It might be nice to have a &quot;ChilliSpot-Config = 'blocked'&quot;
+</I>&gt;<i> &gt; option that can be used outside of macauthdeny for this
+</I>&gt;<i> &gt; kind of use.
+</I>&gt;<i> 
+</I>&gt;<i> 	Indeed, that would be very cool! :-)
+</I>&gt;<i> 
+</I>&gt;<i> Kind regards,
+</I>&gt;<i> - -- 
+</I>&gt;<i> Felipe Augusto van de Wiel &lt;<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">felipe.wiel at hpp.org.br</A>&gt;
+</I>&gt;<i> Tecnologia da Informa&#231;&#227;o (TI) - Complexo Pequeno Pr&#237;ncipe
+</I>&gt;<i> <A HREF="http://www.pequenoprincipe.org.br/">http://www.pequenoprincipe.org.br/</A>    T: +55 41 3310 1747
+</I>&gt;<i> -----BEGIN PGP SIGNATURE-----
+</I>&gt;<i> Version: GnuPG v1.4.10 (GNU/Linux)
+</I>&gt;<i> Comment: Using GnuPG with Mozilla - <A HREF="http://enigmail.mozdev.org/">http://enigmail.mozdev.org/</A>
+</I>&gt;<i> 
+</I>&gt;<i> iQIcBAEBCgAGBQJL9uCKAAoJECCPPxLgxLxP3XEP/1FLpkZmMb0GioPlI0evdFn2
+</I>&gt;<i> JiHrOXwNQz89qHKps5lOfHIYfJ/pvqEnNYxC/0iJ1LegKVt0v9JNIE8brFBUaR1F
+</I>&gt;<i> zPt7z9zL6Qx+VqWtMLdMWPxAv5izkIS7mzc0ck+IvfP7lmo4zvLHJDAQw1Cn0FMF
+</I>&gt;<i> i5KbGeJhgptlhhh3xr/r6mwD+qeMgY2STJzvwRbgq7925a/cWzkJAmafTYmKl2Up
+</I>&gt;<i> 5pJZLdcWSCpqi0ijIKKQ5+aZgG6ELYifUvQC4pQFicV+YuSw/1YGOGbS5BysYN/z
+</I>&gt;<i> 2vBW2o6DqX17/t8mVs8+e4cFdKnGCpJl1fqaiUuVkMPgttNBJ8I03Gw1yWGuK5F5
+</I>&gt;<i> kSgu5KFDutVSnHS4irGZKvOHRUThiSTdOmeZwAPirH7FjR/LU5dcI4puwORIYKbj
+</I>&gt;<i> 7fDFNez7RO16IsnthGqdKp5LFtSFY/MQ0lUtFL9vTzcNNtIerhDQSQ3vcCUv7Qkn
+</I>&gt;<i> OYNSLceAb371QiKRKnEPYGYlpRguh0GVHdvFBGyGcBHj/VooxrS1In144eYteEw2
+</I>&gt;<i> 0LXt5mCDGKxfI2CJ9XytZz2bZrivyLCSVV5oqyeQzugfoqhsBds2S/tBeMIaWebA
+</I>&gt;<i> sUOsQ+8T21bBZnGupu+jTSDJUyrv65ldfJCvcwqHqzNIpxs0DM3GL0dV4l99jiPo
+</I>&gt;<i> VKvdiEkmBP7iYjq86URQ
+</I>&gt;<i> =I8Vn
+</I>&gt;<i> -----END PGP SIGNATURE-----
+</I>
+
+</PRE>
+
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001387.html">[Chilli] MAC blacklist and other security measures
+</A></li>
+	<LI>Next message: <A HREF="001386.html">[Chilli] [Patch] Fix auth state in redir_main()
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1388">[ date ]</a>
+              <a href="thread.html#1388">[ thread ]</a>
+              <a href="subject.html#1388">[ subject ]</a>
+              <a href="author.html#1388">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

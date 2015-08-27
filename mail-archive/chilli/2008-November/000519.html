@@ -1,0 +1,290 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> Running Chilli on FreeBSD
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20Running%20Chilli%20on%20FreeBSD&In-Reply-To=%3C991123400811171213vc084b23p500e3ea4cda2d3d2%40mail.gmail.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000518.html">
+   <LINK REL="Next"  HREF="000520.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>Running Chilli on FreeBSD</H1>
+    <B>Odhiambo Washington</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20Running%20Chilli%20on%20FreeBSD&In-Reply-To=%3C991123400811171213vc084b23p500e3ea4cda2d3d2%40mail.gmail.com%3E"
+       TITLE="Running Chilli on FreeBSD">odhiambo at gmail.com
+       </A><BR>
+    <I>Mon Nov 17 20:13:53 UTC 2008</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000518.html">Running Chilli on FreeBSD
+</A></li>
+        <LI>Next message: <A HREF="000520.html">Running Chilli on FreeBSD
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#519">[ date ]</a>
+              <a href="thread.html#519">[ thread ]</a>
+              <a href="subject.html#519">[ subject ]</a>
+              <a href="author.html#519">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>On Mon, Nov 17, 2008 at 10:40 PM, Outback Dingo &lt;<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">outbackdingo at gmail.com</A>&gt;wrote:
+
+&gt;<i>
+</I>&gt;<i> &lt;begin main.conf&gt;
+</I>&gt;&gt;<i> #copy this file into /usr/local/chilli
+</I>&gt;&gt;<i> #&amp; create 2 empty files named hs.conf &amp; local.conf
+</I>&gt;&gt;<i> # <A HREF="http://www.geeklan.co.uk/files/coova-main.conf">http://www.geeklan.co.uk/files/coova-main.conf</A>
+</I>&gt;&gt;<i> 1. cmdsocket       /var/run/chilli.sock
+</I>&gt;&gt;<i> 2. pidfile         /var/run/chilli.pid
+</I>&gt;&gt;<i> 3. net             192.168.1.0/255.255.255.0
+</I>&gt;&gt;<i> 4. uamlisten       192.168.1.101
+</I>&gt;&gt;<i> 5. uamport         3990
+</I>&gt;&gt;<i> 6. dhcpif          vr0
+</I>&gt;&gt;<i> 7. adminuser       chillispot
+</I>&gt;&gt;<i> 8. adminpasswd     chillispot
+</I>&gt;&gt;<i> 9. uamallowed      coova.org,coova.org,rad01.coova.org,coova.org
+</I>&gt;&gt;<i> 10.uamanydns
+</I>&gt;&gt;<i> 11. domain                  lan
+</I>&gt;&gt;<i> 12. dns1                    192.168.1.1
+</I>&gt;&gt;<i> 13. uamhomepage             <A HREF="http://192.168.1.101:3990/coova/coova.html">http://192.168.1.101:3990/coova/coova.html</A>
+</I>&gt;&gt;<i> 14. wisprlogin              <A HREF="https://coova.org/app/uam/auth">https://coova.org/app/uam/auth</A>
+</I>&gt;&gt;<i> 15. wwwdir                  /usr/local/www/chilli
+</I>&gt;&gt;<i> 16. wwwbin                  /usr/local/etc/chilli/wwwsh
+</I>&gt;&gt;<i> 17. locationname            &quot;ROWTech Securitet&quot;
+</I>&gt;&gt;<i> 18. radiuslocationname      ROWTech_HotSpot
+</I>&gt;&gt;<i> 19. radiuslocationid        isocc=,cc=,ac=,network=Coova,
+</I>&gt;&gt;<i> 20. radiusserver1           rad01.coova.org
+</I>&gt;&gt;<i> 21. radiusserver2           rad01.coova.org
+</I>&gt;&gt;<i> 22. radiussecret            coova-anonymous
+</I>&gt;&gt;<i> 23. radiusauthport          1812
+</I>&gt;&gt;<i> 24. radiusacctport          1813
+</I>&gt;&gt;<i> 25. uamserver               <A HREF="https://coova.org/app/uam/chilli">https://coova.org/app/uam/chilli</A>
+</I>&gt;&gt;<i> 26. radiusnasid             nas01
+</I>&gt;&gt;<i> 27.papalwaysok
+</I>&gt;&gt;<i>  &lt;/end&gt;
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> Let's say I have a dual-homed box, with vr0 being the public interface and
+</I>&gt;&gt;<i> fxp0 being the private interface. And say I run a DHCP server on the
+</I>&gt;&gt;<i> internal interface.
+</I>&gt;&gt;<i> Also say I run FreeRADIUS (with MySQL support) on the same box. I also run
+</I>&gt;&gt;<i> my Apache22 on this very box, so it is &quot;everything to me&quot;. I have the IP
+</I>&gt;&gt;<i> 192.168.1.101 on the internal/private interface (fxp0). Can someone
+</I>&gt;&gt;<i> explain to me what items 6-10, 14, 19, 25 should be?
+</I>&gt;&gt;<i> I am especially not sure how 14 and 25 are being arrived at.
+</I>&gt;&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> 6 is the interface you want chilli to basically listen for dhcp requests on
+</I>&gt;<i>
+</I>
+ok.
+
+
+&gt;<i>
+</I>&gt;<i> 7 and 8 are radius authentication attibutes, if using that type of auth for
+</I>&gt;<i> radius
+</I>&gt;<i>
+</I>
+RADIUS authentication attributes? The credentials chilli uses to connect to
+RADIUS server?
+
+
+&gt;<i>
+</I>&gt;<i> 9 is a list of allowed urls surfable without authentication first
+</I>&gt;<i>
+</I>
+ok.
+
+
+&gt;<i>
+</I>&gt;<i> 10 means it will aloow any dns server, say if a client has one set manually
+</I>&gt;<i> other then what you rovided from dhcp
+</I>&gt;<i>
+</I>
+ok.
+
+
+&gt;<i>
+</I>&gt;<i> 14 is for the WISPR login URL
+</I>&gt;<i>
+</I>
+Where is it derived from? I mean, is
+/app/uam/auth&lt;<A HREF="https://coova.org/app/uam/auth">https://coova.org/app/uam/auth</A>&gt;derived from some Apache
+Alias on my server running the chilli web portal?
+What is the actual location on disk?
+
+
+&gt;<i>
+</I>&gt;<i> 19 is the NAS information for radius
+</I>&gt;<i>
+</I>
+I still don't understand that one. Why is it in an LDAP like notation?
+
+
+&gt;<i>
+</I>&gt;<i> 25 is the physical location of the UAM server, should be the same as the
+</I>&gt;<i> uamhomepage ip or address
+</I>&gt;<i>
+</I>
+ Is /app/uam/chilli &lt;<A HREF="https://coova.org/app/uam/chilli">https://coova.org/app/uam/chilli</A>&gt; an Apache Alias on
+the chilli web portal as well? What is the actual location on disk of the
+Alias, if any?
+
+
+
+
+&gt;&gt;<i> I also have the file named &quot;defaults&quot; which I need to copy to &quot;config&quot;.
+</I>&gt;&gt;<i> They are both in /usr/local/etc/chilli/. Looking at them, I see that most of
+</I>&gt;&gt;<i> the parameters are almost like what I see in main.conf. This has left me
+</I>&gt;&gt;<i> confused as what purpose the &quot;config&quot; file is supposed to serve.
+</I>&gt;&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> the config file is for your customized parameters, where default is the
+</I>&gt;<i> default coova settings, it reads variables from default, looks at config for
+</I>&gt;<i> customizations and the writes main.conf, this file is generated by functions
+</I>&gt;<i>
+</I>
+It writes main.conf on the fly??? So I should not create a main.conf?
+
+
+
+&gt;&gt;<i> All my chilli files are accesible on my webserver via /coova (an Apache
+</I>&gt;&gt;<i> Alias pointer). Now where /app are supposed to come from still beats me.
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> Am I supposed to be running my own DHCP server or does coova-chilli have
+</I>&gt;&gt;<i> some sort of built-in DHCP server?
+</I>&gt;&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> chilli does have an internal dhcp system
+</I>&gt;<i>
+</I>
+Wow. So I do not need to have one? Interesting. Thank you for this. It's the
+only one I clearly understand now:-)
+
+
+
+&gt;&gt;<i> At some point, I believe I am going to introduce a Wireless Access Point
+</I>&gt;&gt;<i> into this mix, connected to my DHCP interface, yes? This is how the clients
+</I>&gt;&gt;<i> are going to communicate with the system, correct?
+</I>&gt;&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> its exactly how i am configured though chilli runs on my APs not on my auth
+</I>&gt;<i> server
+</I>&gt;<i>
+</I>
+chilli runs on your APs? You have different computers acting as APs using
+Wireless Access Point hardware??
+
+
+&gt;<i>
+</I>&gt;&gt;<i> My other problem are two files- up.sh and down,sh: I can run either PF or
+</I>&gt;&gt;<i> IPFilter/IPNat on the FreeBSD box, but not IPTABLES. So I am wondering what
+</I>&gt;&gt;<i> the purpose of these two files. What do they do? I do believe IPTables is
+</I>&gt;&gt;<i> for Linux only. Is there a FreeBSD use who can share their *BSD versions of
+</I>&gt;&gt;<i> these two files?
+</I>&gt;&gt;<i>
+</I>&gt;<i>
+</I>You did not mention anything about the up.sh and down.sh and the issue on
+IPTables.... Do you use FreeBSD, bay any chance? It would be most helpful.
+
+
+
+&gt;<i>
+</I>&gt;&gt;<i> I also had to install haserl from <A HREF="http://haserl.sourceforge.net/">http://haserl.sourceforge.net/</A> but I
+</I>&gt;&gt;<i> still wonder if it's necessary in my setup. I still haven't quite caught up
+</I>&gt;&gt;<i> speed on this so please excuse my ignorance.
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> yes, and no,  if you are running the coova web interface / internal portal
+</I>&gt;<i> then yes, if not then essentailly no
+</I>&gt;<i>
+</I>
+I don't understand this answer? Is it optional to run coova web
+interface/internal portal? If I don't run them, then what else is there to
+run?? &lt;LOL&gt;
+Excuse my stupidity on this, honestly.
+
+
+
+&gt;<i> my config and main.conf for APs looks like
+</I>&gt;<i>
+</I>&gt;<i> HS_LANIF=ath0              # Subscriber Interface for client devices
+</I>&gt;<i> HS_UAMLISTEN=101.177.51.1    # HotSpot IP Address (on subscriber network)
+</I>&gt;<i> HS_UAMPORT=3990            # HotSpot Port (on subscriber network)
+</I>&gt;<i> HS_NETWORK=101.177.51.0
+</I>&gt;<i> HS_NETMASK=255.255.255.0
+</I>&gt;<i> HS_NASID=nas01
+</I>&gt;<i> HS_UAMSERVER=auth.optimwifi.com
+</I>&gt;<i> HS_UAMURL=&quot;/login/hotspotlogin.php&quot;
+</I>&gt;<i> HS_MACAUTH=on
+</I>&gt;<i> HS_UAMSECRET=uamsharedsecret
+</I>&gt;<i> HS_RADIUS=58.147.11.218         # replace with your radius server's ip
+</I>&gt;<i> HS_RADIUS2=58.147.11.218
+</I>&gt;<i> HS_RADSECRET=edited-out                   # you should probably choose a
+</I>&gt;<i> better shared secret
+</I>&gt;<i> HS_SSID=&quot;OptimWIFI&quot;
+</I>&gt;<i> HS_DNS1=101.177.51.1
+</I>&gt;<i>
+</I>&gt;<i> HS_UAMALLOWED=www.google.com
+</I>&gt;<i> HS_RADCONF=off
+</I>&gt;<i>
+</I>&gt;<i> HS_UAMFORMAT=&quot;\${HS_UAMPROTO:-http}://\$HS_UAMSERVER\$HS_UAMURL\$HS_UAMURLEXTRAS&quot;
+</I>&gt;<i> HS_UAMHOMEPAGE=<A HREF="http://\$HS_UAMSERVER/">http://\$HS_UAMSERVER/</A>
+</I>&gt;<i> HS_MODE=hotspot
+</I>&gt;<i> HS_TYPE=chillispot
+</I>&gt;<i> HS_RADAUTH=1812
+</I>&gt;<i> HS_RADACCT=1813
+</I>&gt;<i> #HS_ADMUSR=chillispot
+</I>&gt;<i> #HS_ADMPWD=chillispot
+</I>&gt;<i>
+</I>&gt;<i> HS_PROVIDER=OptimWIFI
+</I>&gt;<i> HS_PROVIDER_LINK=<A HREF="http://www.coova.org/">http://www.coova.org/</A>
+</I>&gt;<i> HS_LOC_NAME=&quot;OptimWIFI HotSpot&quot;           # WISPr Location Name and used in
+</I>&gt;<i> portal
+</I>&gt;<i>
+</I>&gt;<i> my server is on 58.147.26.217 with radius / apache /  uam hostspotlogin,
+</I>&gt;<i> and notice i do use variables in my config, if you read them it might help
+</I>&gt;<i> you understand the way it puts this together
+</I>&gt;<i>
+</I>
+I will read these keenly, honestly.
+
+Don't get tired with me:-)
+
+
+-- 
+Best regards,
+Odhiambo WASHINGTON,
+Nairobi,KE
++254733744121/+254722743223
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+&quot;Oh My God! They killed init! You Bastards!&quot;
+                       --from a /. post
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: &lt;<A HREF="http://lists.coova.org/pipermail/chilli/attachments/20081117/202ca489/attachment.htm">http://lists.coova.org/pipermail/chilli/attachments/20081117/202ca489/attachment.htm</A>&gt;
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000518.html">Running Chilli on FreeBSD
+</A></li>
+	<LI>Next message: <A HREF="000520.html">Running Chilli on FreeBSD
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#519">[ date ]</a>
+              <a href="thread.html#519">[ thread ]</a>
+              <a href="subject.html#519">[ subject ]</a>
+              <a href="author.html#519">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

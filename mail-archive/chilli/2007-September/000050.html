@@ -1,0 +1,113 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> Problem with chillispot and dhcp relay
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20Problem%20with%20chillispot%20and%20dhcp%20relay&In-Reply-To=%3Cef21d1850709072309k6db69ea2h699d9ac82039b9fd%40mail.gmail.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000049.html">
+   <LINK REL="Next"  HREF="000051.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>Problem with chillispot and dhcp relay</H1>
+    <B>David Bird</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20Problem%20with%20chillispot%20and%20dhcp%20relay&In-Reply-To=%3Cef21d1850709072309k6db69ea2h699d9ac82039b9fd%40mail.gmail.com%3E"
+       TITLE="Problem with chillispot and dhcp relay">mem.corruption at gmail.com
+       </A><BR>
+    <I>Sat Sep  8 06:09:01 UTC 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000049.html">Problem with chillispot and dhcp relay
+</A></li>
+        <LI>Next message: <A HREF="000051.html">DHCP - WLAN behaviour of Windows Notebooks
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#50">[ date ]</a>
+              <a href="thread.html#50">[ thread ]</a>
+              <a href="subject.html#50">[ subject ]</a>
+              <a href="author.html#50">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>That's great. Thanks for testing! I'm happy to have chilli work with
+more environments and now supports a DHCP relay. With regard to the
+ICMP duplicate packets... I think it could be the fact that the OS is
+replying to the ping from both the dhcpif _and_ the tun interfaces.
+With your installation, are you running the supplied configuration
+with the ip up/down scripts (which setup your firewall for chilli)?
+I'll try to reproduce the problem...
+
+Thanks again.
+David
+
+On 9/8/07, Lai Zit Seng &lt;<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">lzs at pobox.com</A>&gt; wrote:
+&gt;<i> Ok, was too eager to try the svn update so I came back to test anyway.
+</I>&gt;<i> Your latest update works great! Thanks. Especially since I imagine my
+</I>&gt;<i> DHCP relay configuration is rather unusual :)
+</I>&gt;<i>
+</I>&gt;<i> May I bug you with one more item. This is not show stopper but
+</I>&gt;<i> nevertheless something that bothers me. I can ping across chillispot
+</I>&gt;<i> just fine. But if the clients ping chillispot IP itself, they get
+</I>&gt;<i> duplicate replies. I.e. 1 echo-request, 2 echo-replies come back. This
+</I>&gt;<i> is the case for both wired and wireless clients (so it is not a
+</I>&gt;<i> quirkness of the WLC in my environment).
+</I>&gt;<i>
+</I>&gt;<i> The tcpdump at the client, chillispot's tun interface and chillispot's
+</I>&gt;<i> dhcpif interface shows the duplicate echo-replies. The tun interface
+</I>&gt;<i> capture does show something odd: There is actually an echo-reply going
+</I>&gt;<i> out first, then the echo-request in, then echo-reply out. I can send the
+</I>&gt;<i>
+</I>&gt;<i> I can send you the tcpdump if needed :)
+</I>&gt;<i>
+</I>&gt;<i> Regards,
+</I>&gt;<i>
+</I>&gt;<i> .lzs
+</I>&gt;<i>
+</I>&gt;<i> ps: Copying back to mailing list.
+</I>&gt;<i>
+</I>&gt;<i> On 9/8/07 1:30 AM, David Bird wrote:
+</I>&gt;<i> &gt; Thanks,
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt;  From a quick review, I think my (and the current svn) version does
+</I>&gt;<i> &gt; roughly the same thing. Though, I think mine is a little cleaner in that
+</I>&gt;<i> &gt; I moved the call to dhcp_getreq() up above the newconn() in the
+</I>&gt;<i> &gt; receive_ip method. And, it returns out of receive_ip -- since the
+</I>&gt;<i> &gt; request has actually already been replied to. The newconn() method is
+</I>&gt;<i> &gt; also called from within dhcp_getreq() - and I instantiate the connection
+</I>&gt;<i> &gt; with the chaddr in the event of a relay. I look forward to hearing how
+</I>&gt;<i> &gt; the current snapshot does in your environment.
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; David
+</I>&gt;<i>
+</I>&gt;<i> ---------------------------------------------------------------------
+</I>&gt;<i> To unsubscribe, e-mail: <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli-unsubscribe at coova.org</A>
+</I>&gt;<i> For additional commands, e-mail: <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli-help at coova.org</A>
+</I>&gt;<i> Wiki: <A HREF="http://coova.org/wiki/index.php/CoovaChilli">http://coova.org/wiki/index.php/CoovaChilli</A>
+</I>&gt;<i> Forum: <A HREF="http://coova.org/phpBB3/viewforum.php?f=4">http://coova.org/phpBB3/viewforum.php?f=4</A>
+</I>&gt;<i>
+</I>&gt;<i>
+</I>
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000049.html">Problem with chillispot and dhcp relay
+</A></li>
+	<LI>Next message: <A HREF="000051.html">DHCP - WLAN behaviour of Windows Notebooks
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#50">[ date ]</a>
+              <a href="thread.html#50">[ thread ]</a>
+              <a href="subject.html#50">[ subject ]</a>
+              <a href="author.html#50">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,2463 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] not responding
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20not%20responding&In-Reply-To=%3CCAJc1nuq8BCV7r4mwhLfsyDZXo%2Bpbi6Uqj%3DvQDwXFWf8x4T9iSA%40mail.gmail.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="002336.html">
+   <LINK REL="Next"  HREF="002338.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] not responding</H1>
+    <B>Jed Gainer</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20not%20responding&In-Reply-To=%3CCAJc1nuq8BCV7r4mwhLfsyDZXo%2Bpbi6Uqj%3DvQDwXFWf8x4T9iSA%40mail.gmail.com%3E"
+       TITLE="[Chilli] not responding">jedgainer at gmail.com
+       </A><BR>
+    <I>Tue Aug  6 05:00:10 UTC 2013</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="002336.html">[Chilli] Problems with SVN/HEAD + deb package
+</A></li>
+        <LI>Next message: <A HREF="002338.html">[Chilli] Parameters in uamhomepage
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2337">[ date ]</a>
+              <a href="thread.html#2337">[ thread ]</a>
+              <a href="subject.html#2337">[ subject ]</a>
+              <a href="author.html#2337">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Every once and a while Chilli will not hand out IPs or redir to UAM.
+
+I am using <A HREF="http://github.com/ehayon/Coova-Chilli">http://github.com/ehayon/Coova-Chilli</A> with patch
+
+--- chilli.c.orig       2013-05-13 19:11:44.477019372 -0700
++++ chilli.c    2013-05-13 20:52:12.132302496 -0700
+@@ -2732,6 +2732,7 @@
+ #ifdef ENABLE_UAMUIPORT
+           || ipph-&gt;sport == htons(_options.uamuiport)
+ #endif
++           || ipph-&gt;sport == htons(81)
+           ))) {
+     if (chilli_acct_tosub(appconn, ipph))
+       return 0;
+@@ -5617,6 +5618,7 @@
+ #ifdef ENABLE_UAMUIPORT
+        || ipph-&gt;dport == htons(_options.uamuiport)
+ #endif
++       || ipph-&gt;dport == htons(81)
+        )) {
+     return tun_encaps(tun, pack, len, 0);
+   }
+
+
+I compile with
+
+  ./configure --prefix=/usr --sysconfdir=/etc --localstatedir=/var \
+    --enable-largelimits \
+    --enable-binstatusfile \
+    --enable-statusfile
+
+Example log:
+
+Aug 01 00:01:32 hotspot systemd[1]: Starting Chilli...
+Aug 01 00:01:32 hotspot systemd[1]: Started Chilli.
+Aug 01 00:01:39 hotspot coova-chilli[361]: CoovaChilli(ChilliSpot) 1.3.0.
+Copyright 2002-2005 Mondru AB. Licensed under GPL. Copyright 2006-2012
+David Bird (Coova Technologies) &lt;<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">support at coova.com</A>&gt;. Licensed under GPL.
+See <A HREF="http://www.coova.org/">http://www.coova.org/</A> for details.
+Aug 01 00:01:40 hotspot coova-chilli[361]: tun.c: 605: TX queue length set
+to 100
+Aug 01 00:01:41 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=00-0C-29-02-C1-2E
+Aug 01 00:01:41 hotspot coova-chilli[361]: ippool.c: 486: Static out of
+range
+Aug 01 00:01:41 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=00-0C-29-02-C1-2E assigned IP 10.1.128.1
+Aug 01 00:01:41 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=E0-CA-94-0F-8A-EF
+Aug 01 00:01:41 hotspot coova-chilli[361]: ippool.c: 486: Static out of
+range
+Aug 01 00:01:41 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=E0-CA-94-0F-8A-EF assigned IP 10.1.128.10
+Aug 01 00:01:41 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=5C-95-AE-C4-1D-E7
+Aug 01 00:01:41 hotspot coova-chilli[361]: ippool.c: 486: Static out of
+range
+Aug 01 00:01:41 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=5C-95-AE-C4-1D-E7 assigned IP 10.1.128.2
+Aug 01 00:01:42 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=90-F6-52-00-9D-1E
+Aug 01 00:01:42 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=90-F6-52-00-9D-1E assigned IP 10.1.1.100
+Aug 01 00:01:47 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=70-73-CB-2E-1F-3D
+Aug 01 00:01:47 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=70-73-CB-2E-1F-3D assigned IP 10.1.128.3
+Aug 01 00:01:58 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=A4-67-06-4D-A3-CD
+Aug 01 00:01:58 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=A4-67-06-4D-A3-CD assigned IP 10.1.128.4
+Aug 01 00:02:01 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=A4-67-06-4D-A3-CD IP=10.1.128.4
+Aug 01 00:02:01 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=A4-67-06-4D-A3-CD
+Aug 01 00:02:01 hotspot coova-chilli[361]: ippool.c: 486: Static out of
+range
+Aug 01 00:02:01 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=A4-67-06-4D-A3-CD assigned IP 10.1.128.4
+Aug 01 00:02:08 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=00-02-6F-E5-A2-10
+Aug 01 00:02:08 hotspot coova-chilli[361]: ippool.c: 486: Static out of
+range
+Aug 01 00:02:08 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=00-02-6F-E5-A2-10 assigned IP 10.1.128.5
+Aug 01 00:02:14 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=A4-67-06-4D-A3-CD IP=10.1.128.4
+Aug 01 00:02:14 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=A4-67-06-4D-A3-CD
+Aug 01 00:02:14 hotspot coova-chilli[361]: ippool.c: 486: Static out of
+range
+Aug 01 00:02:14 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=A4-67-06-4D-A3-CD assigned IP 10.1.128.4
+Aug 01 00:02:16 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=00-02-6F-E0-8E-E8
+Aug 01 00:02:16 hotspot coova-chilli[361]: ippool.c: 486: Static out of
+range
+Aug 01 00:02:16 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=00-02-6F-E0-8E-E8 assigned IP 10.1.128.6
+Aug 01 00:02:17 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=00-02-6F-E0-8E-EA
+Aug 01 00:02:17 hotspot coova-chilli[361]: ippool.c: 486: Static out of
+range
+Aug 01 00:02:17 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=00-02-6F-E0-8E-EA assigned IP 10.1.128.7
+Aug 01 00:02:17 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=00-02-6F-E0-8E-E6
+Aug 01 00:02:17 hotspot coova-chilli[361]: ippool.c: 486: Static out of
+range
+Aug 01 00:02:17 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=00-02-6F-E0-8E-E6 assigned IP 10.1.128.8
+Aug 01 00:03:30 hotspot coova-chilli[361]: chilli.c: 5875: Successful UAM
+login from username=Jillian Wilson IP=10.1.128.10
+Aug 01 00:03:30 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=D8-D3-85-D1-96-5E
+Aug 01 00:03:30 hotspot coova-chilli[361]: ippool.c: 486: Static out of
+range
+Aug 01 00:03:30 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=D8-D3-85-D1-96-5E assigned IP 10.1.128.9
+Aug 01 00:04:11 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=00-88-65-54-94-95
+Aug 01 00:04:11 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=00-88-65-54-94-95 assigned IP 10.1.128.11
+Aug 01 00:04:16 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=88-C6-63-6A-6E-28
+Aug 01 00:04:16 hotspot coova-chilli[361]: ippool.c: 486: Static out of
+range
+Aug 01 00:04:16 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=88-C6-63-6A-6E-28 assigned IP 10.1.128.12
+Aug 01 00:05:30 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=5C-59-48-ED-BC-44
+Aug 01 00:05:30 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=5C-59-48-ED-BC-44 assigned IP 10.1.128.13
+Aug 01 00:05:55 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=C0-9F-42-E0-D2-27
+Aug 01 00:05:55 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=C0-9F-42-E0-D2-27 assigned IP 10.1.128.14
+Aug 01 00:10:43 hotspot coova-chilli[361]: chilli.c: 5875: Successful UAM
+login from username=Jillian Wilson IP=10.1.128.13
+Aug 01 00:12:43 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=00-0C-29-02-C1-2E IP=10.1.128.1
+Aug 01 00:13:16 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=A4-67-06-4D-A3-CD IP=10.1.128.4
+Aug 01 00:17:33 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=38-19-2F-48-BF-A5
+Aug 01 00:17:33 hotspot coova-chilli[361]: ippool.c: 486: Static out of
+range
+Aug 01 00:17:33 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=38-19-2F-48-BF-A5 assigned IP 10.1.128.15
+Aug 01 00:18:06 hotspot coova-chilli[361]: chilli.c: 5875: Successful UAM
+login from username=Kayla Lattie IP=10.1.128.15
+Aug 01 00:24:04 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=A4-67-06-4D-A3-CD
+Aug 01 00:24:04 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=A4-67-06-4D-A3-CD assigned IP 10.1.128.16
+Aug 01 00:24:50 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=E4-25-E7-3F-2C-F8
+Aug 01 00:24:50 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=E4-25-E7-3F-2C-F8 assigned IP 10.1.128.17
+Aug 01 00:28:44 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=90-F6-52-00-9D-1E IP=10.1.1.100
+Aug 01 00:28:45 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=90-F6-52-00-9D-1E
+Aug 01 00:28:45 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=90-F6-52-00-9D-1E assigned IP 10.1.1.100
+Aug 01 00:35:54 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=E4-25-E7-3F-2C-F8 IP=10.1.128.17
+Aug 01 00:38:01 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=68-9C-70-6B-4B-2D
+Aug 01 00:38:01 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=68-9C-70-6B-4B-2D assigned IP 10.1.128.18
+Aug 01 00:40:00 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=00-25-D3-BE-40-0F
+Aug 01 00:40:00 hotspot coova-chilli[361]: ippool.c: 486: Static out of
+range
+Aug 01 00:40:00 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=00-25-D3-BE-40-0F assigned IP 10.1.128.19
+Aug 01 00:40:44 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=90-F6-52-00-9D-1E IP=10.1.1.100
+Aug 01 00:40:48 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=90-F6-52-00-9D-1E
+Aug 01 00:40:48 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=90-F6-52-00-9D-1E assigned IP 10.1.1.100
+Aug 01 00:40:56 hotspot coova-chilli[361]: chilli.c: 5875: Successful UAM
+login from username=Tia Robinson IP=10.1.128.19
+Aug 01 00:49:06 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=68-9C-70-6B-4B-2D IP=10.1.128.18
+Aug 01 00:50:35 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=E4-25-E7-3F-2C-F8
+Aug 01 00:50:35 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=E4-25-E7-3F-2C-F8 assigned IP 10.1.128.20
+Aug 01 00:52:44 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=90-F6-52-00-9D-1E IP=10.1.1.100
+Aug 01 00:52:50 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=90-F6-52-00-9D-1E
+Aug 01 00:52:50 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=90-F6-52-00-9D-1E assigned IP 10.1.1.100
+Aug 01 00:53:12 hotspot coova-chilli[361]: chilli.c: 5899: Received UAM
+logoff from username=Kayla Lattie IP=10.1.128.15
+Aug 01 01:01:39 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=E4-25-E7-3F-2C-F8 IP=10.1.128.20
+Aug 01 01:04:45 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=90-F6-52-00-9D-1E IP=10.1.1.100
+Aug 01 01:04:50 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=90-F6-52-00-9D-1E
+Aug 01 01:04:50 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=90-F6-52-00-9D-1E assigned IP 10.1.1.100
+Aug 01 01:05:30 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=10-0B-A9-2D-A6-DC
+Aug 01 01:05:30 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=10-0B-A9-2D-A6-DC assigned IP 10.1.128.21
+Aug 01 01:07:51 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=68-9C-70-6B-4B-2D
+Aug 01 01:07:51 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=68-9C-70-6B-4B-2D assigned IP 10.1.128.22
+Aug 01 01:15:12 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=00-25-D3-BE-40-0F IP=10.1.128.19
+Aug 01 01:15:25 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=E4-25-E7-3F-2C-F8
+Aug 01 01:15:25 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=E4-25-E7-3F-2C-F8 assigned IP 10.1.128.23
+Aug 01 01:16:45 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=10-0B-A9-2D-A6-DC IP=10.1.128.21
+Aug 01 01:18:59 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=68-9C-70-6B-4B-2D IP=10.1.128.22
+Aug 01 01:21:40 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=5C-0A-5B-7F-36-F0
+Aug 01 01:21:40 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=5C-0A-5B-7F-36-F0 assigned IP 10.1.128.24
+Aug 01 01:23:53 hotspot coova-chilli[818]: redir.c: 2020: 104 (Connection
+reset by peer) redir_read(0) failed!
+Aug 01 01:26:08 hotspot coova-chilli[848]: redir.c: 2020: 104 (Connection
+reset by peer) redir_read(0) failed!
+Aug 01 01:28:44 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=90-F6-52-00-9D-1E IP=10.1.1.100
+Aug 01 01:28:51 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=90-F6-52-00-9D-1E
+Aug 01 01:28:51 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=90-F6-52-00-9D-1E assigned IP 10.1.1.100
+Aug 01 01:36:01 hotspot coova-chilli[876]: redir.c: 54: Client process
+timed out: 1
+Aug 01 01:37:41 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=68-9C-70-6B-4B-2D
+Aug 01 01:37:41 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=68-9C-70-6B-4B-2D assigned IP 10.1.128.25
+Aug 01 01:40:42 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=90-F6-52-00-9D-1E IP=10.1.1.100
+Aug 01 01:40:52 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=90-F6-52-00-9D-1E
+Aug 01 01:40:52 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=90-F6-52-00-9D-1E assigned IP 10.1.1.100
+Aug 01 01:40:52 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=E4-25-E7-3F-2C-F8 IP=10.1.128.23
+Aug 01 01:48:45 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=68-9C-70-6B-4B-2D IP=10.1.128.25
+Aug 01 01:52:42 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=90-F6-52-00-9D-1E IP=10.1.1.100
+Aug 01 01:52:52 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=90-F6-52-00-9D-1E
+Aug 01 01:52:52 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=90-F6-52-00-9D-1E assigned IP 10.1.1.100
+Aug 01 01:59:35 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=E4-25-E7-3F-2C-F8
+Aug 01 01:59:35 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=E4-25-E7-3F-2C-F8 assigned IP 10.1.128.26
+Aug 01 02:02:55 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=68-9C-70-6B-4B-2D
+Aug 01 02:02:55 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=68-9C-70-6B-4B-2D assigned IP 10.1.128.27
+Aug 01 02:04:44 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=90-F6-52-00-9D-1E IP=10.1.1.100
+Aug 01 02:04:53 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=90-F6-52-00-9D-1E
+Aug 01 02:04:53 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=90-F6-52-00-9D-1E assigned IP 10.1.1.100
+Aug 01 02:10:40 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=E4-25-E7-3F-2C-F8 IP=10.1.128.26
+Aug 01 02:14:12 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=68-9C-70-6B-4B-2D IP=10.1.128.27
+Aug 01 02:16:42 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=90-F6-52-00-9D-1E IP=10.1.1.100
+Aug 01 02:16:54 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=90-F6-52-00-9D-1E
+Aug 01 02:16:54 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=90-F6-52-00-9D-1E assigned IP 10.1.1.100
+Aug 01 02:27:29 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=E4-25-E7-3F-2C-F8
+Aug 01 02:27:29 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=E4-25-E7-3F-2C-F8 assigned IP 10.1.128.28
+Aug 01 02:28:39 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=90-F6-52-00-9D-1E IP=10.1.1.100
+Aug 01 02:28:54 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=90-F6-52-00-9D-1E
+Aug 01 02:28:54 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=90-F6-52-00-9D-1E assigned IP 10.1.1.100
+Aug 01 02:32:40 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=68-9C-70-6B-4B-2D
+Aug 01 02:32:40 hotspot coova-chilli[361]: ippool.c: 486: Static out of
+range
+Aug 01 02:32:40 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=68-9C-70-6B-4B-2D assigned IP 10.1.128.27
+Aug 01 02:38:34 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=E4-25-E7-3F-2C-F8 IP=10.1.128.28
+Aug 01 02:40:36 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=90-F6-52-00-9D-1E IP=10.1.1.100
+Aug 01 02:40:55 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=90-F6-52-00-9D-1E
+Aug 01 02:40:55 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=90-F6-52-00-9D-1E assigned IP 10.1.1.100
+Aug 01 02:43:49 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=68-9C-70-6B-4B-2D IP=10.1.128.27
+Aug 01 02:52:19 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=E4-25-E7-3F-2C-F8
+Aug 01 02:52:19 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=E4-25-E7-3F-2C-F8 assigned IP 10.1.128.29
+Aug 01 02:52:35 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=90-F6-52-00-9D-1E IP=10.1.1.100
+Aug 01 02:52:55 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=90-F6-52-00-9D-1E
+Aug 01 02:52:55 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=90-F6-52-00-9D-1E assigned IP 10.1.1.100
+Aug 01 03:02:30 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=68-9C-70-6B-4B-2D
+Aug 01 03:02:30 hotspot coova-chilli[361]: ippool.c: 486: Static out of
+range
+Aug 01 03:02:30 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=68-9C-70-6B-4B-2D assigned IP 10.1.128.27
+Aug 01 03:03:24 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=E4-25-E7-3F-2C-F8 IP=10.1.128.29
+Aug 01 03:13:38 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=68-9C-70-6B-4B-2D IP=10.1.128.27
+Aug 01 03:16:34 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=90-F6-52-00-9D-1E IP=10.1.1.100
+Aug 01 03:16:56 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=90-F6-52-00-9D-1E
+Aug 01 03:16:56 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=90-F6-52-00-9D-1E assigned IP 10.1.1.100
+Aug 01 03:18:49 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=E4-25-E7-3F-2C-F8
+Aug 01 03:18:49 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=E4-25-E7-3F-2C-F8 assigned IP 10.1.128.30
+Aug 01 03:26:35 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=78-F7-BE-73-DA-A9
+Aug 01 03:26:35 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=78-F7-BE-73-DA-A9 assigned IP 10.1.128.31
+Aug 01 03:28:31 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=90-F6-52-00-9D-1E IP=10.1.1.100
+Aug 01 03:28:57 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=90-F6-52-00-9D-1E
+Aug 01 03:28:57 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=90-F6-52-00-9D-1E assigned IP 10.1.1.100
+Aug 01 03:29:54 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=E4-25-E7-3F-2C-F8 IP=10.1.128.30
+Aug 01 03:32:20 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=68-9C-70-6B-4B-2D
+Aug 01 03:32:20 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=68-9C-70-6B-4B-2D assigned IP 10.1.128.32
+Aug 01 03:40:33 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=90-F6-52-00-9D-1E IP=10.1.1.100
+Aug 01 03:40:58 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=90-F6-52-00-9D-1E
+Aug 01 03:40:58 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=90-F6-52-00-9D-1E assigned IP 10.1.1.100
+Aug 01 03:43:28 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=68-9C-70-6B-4B-2D IP=10.1.128.32
+Aug 01 03:47:10 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=E4-25-E7-3F-2C-F8
+Aug 01 03:47:10 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=E4-25-E7-3F-2C-F8 assigned IP 10.1.128.33
+Aug 01 03:52:35 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=90-F6-52-00-9D-1E IP=10.1.1.100
+Aug 01 03:52:58 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=90-F6-52-00-9D-1E
+Aug 01 03:52:58 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=90-F6-52-00-9D-1E assigned IP 10.1.1.100
+Aug 01 03:58:15 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=E4-25-E7-3F-2C-F8 IP=10.1.128.33
+Aug 01 04:04:37 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=90-F6-52-00-9D-1E IP=10.1.1.100
+Aug 01 04:04:59 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=90-F6-52-00-9D-1E
+Aug 01 04:04:59 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=90-F6-52-00-9D-1E assigned IP 10.1.1.100
+Aug 01 04:08:03 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=00-88-65-54-94-95 IP=10.1.128.11
+Aug 01 04:11:32 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=00-88-65-54-94-95
+Aug 01 04:11:32 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=00-88-65-54-94-95 assigned IP 10.1.128.34
+Aug 01 04:21:36 hotspot coova-chilli[1465]: redir.c: 54: Client process
+timed out: 1
+Aug 01 04:21:54 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=E4-25-E7-3F-2C-F8
+Aug 01 04:21:54 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=E4-25-E7-3F-2C-F8 assigned IP 10.1.128.35
+Aug 01 04:22:36 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=00-88-65-54-94-95 IP=10.1.128.34
+Aug 01 04:27:00 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=00-88-65-54-94-95
+Aug 01 04:27:00 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=00-88-65-54-94-95 assigned IP 10.1.128.36
+Aug 01 04:28:35 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=90-F6-52-00-9D-1E IP=10.1.1.100
+Aug 01 04:29:00 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=90-F6-52-00-9D-1E
+Aug 01 04:29:00 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=90-F6-52-00-9D-1E assigned IP 10.1.1.100
+Aug 01 04:32:37 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=5C-0A-5B-7F-36-F0 IP=10.1.128.24
+Aug 01 04:32:59 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=E4-25-E7-3F-2C-F8 IP=10.1.128.35
+Aug 01 04:38:07 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=00-88-65-54-94-95 IP=10.1.128.36
+Aug 01 04:40:38 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=90-F6-52-00-9D-1E IP=10.1.1.100
+Aug 01 04:41:01 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=90-F6-52-00-9D-1E
+Aug 01 04:41:01 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=90-F6-52-00-9D-1E assigned IP 10.1.1.100
+Aug 01 04:46:59 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=E4-25-E7-3F-2C-F8
+Aug 01 04:46:59 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=E4-25-E7-3F-2C-F8 assigned IP 10.1.128.37
+Aug 01 04:48:10 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=68-9C-70-6B-4B-2D
+Aug 01 04:48:10 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=68-9C-70-6B-4B-2D assigned IP 10.1.128.38
+Aug 01 04:49:25 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=00-88-65-54-94-95
+Aug 01 04:49:25 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=00-88-65-54-94-95 assigned IP 10.1.128.39
+Aug 01 04:51:09 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=78-F7-BE-73-DA-A9 IP=10.1.128.31
+Aug 01 04:51:56 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=A4-67-06-4D-A3-CD IP=10.1.128.16
+Aug 01 04:52:35 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=90-F6-52-00-9D-1E IP=10.1.1.100
+Aug 01 04:53:01 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=90-F6-52-00-9D-1E
+Aug 01 04:53:01 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=90-F6-52-00-9D-1E assigned IP 10.1.1.100
+Aug 01 04:54:22 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=A4-67-06-4D-A3-CD
+Aug 01 04:54:22 hotspot coova-chilli[361]: ippool.c: 486: Static out of
+range
+Aug 01 04:54:22 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=A4-67-06-4D-A3-CD assigned IP 10.1.128.16
+Aug 01 04:58:04 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=E4-25-E7-3F-2C-F8 IP=10.1.128.37
+Aug 01 04:59:18 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=68-9C-70-6B-4B-2D IP=10.1.128.38
+Aug 01 05:01:49 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=E4-25-E7-3F-2C-F8
+Aug 01 05:01:49 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=E4-25-E7-3F-2C-F8 assigned IP 10.1.128.40
+Aug 01 05:04:36 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=90-F6-52-00-9D-1E IP=10.1.1.100
+Aug 01 05:05:02 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=90-F6-52-00-9D-1E
+Aug 01 05:05:02 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=90-F6-52-00-9D-1E assigned IP 10.1.1.100
+Aug 01 05:05:43 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=A4-67-06-4D-A3-CD IP=10.1.128.16
+Aug 01 05:07:48 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=00-88-65-54-94-95 IP=10.1.128.39
+Aug 01 05:12:54 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=E4-25-E7-3F-2C-F8 IP=10.1.128.40
+Aug 01 05:18:00 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=68-9C-70-6B-4B-2D
+Aug 01 05:18:00 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=68-9C-70-6B-4B-2D assigned IP 10.1.128.41
+Aug 01 05:24:07 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=A4-67-06-4D-A3-CD
+Aug 01 05:24:07 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=A4-67-06-4D-A3-CD assigned IP 10.1.128.42
+Aug 01 05:25:25 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=00-88-65-54-94-95
+Aug 01 05:25:25 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=00-88-65-54-94-95 assigned IP 10.1.128.43
+Aug 01 05:28:35 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=90-F6-52-00-9D-1E IP=10.1.1.100
+Aug 01 05:28:50 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=90-F6-52-00-9D-1E
+Aug 01 05:28:50 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=90-F6-52-00-9D-1E assigned IP 10.1.1.100
+Aug 01 05:29:08 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=68-9C-70-6B-4B-2D IP=10.1.128.41
+Aug 01 05:30:30 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=E4-25-E7-3F-2C-F8
+Aug 01 05:30:30 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=E4-25-E7-3F-2C-F8 assigned IP 10.1.128.44
+Aug 01 05:35:12 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=A4-67-06-4D-A3-CD IP=10.1.128.42
+Aug 01 05:38:45 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=00-88-65-54-94-95 IP=10.1.128.43
+Aug 01 05:40:33 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=90-F6-52-00-9D-1E IP=10.1.1.100
+Aug 01 05:41:04 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=90-F6-52-00-9D-1E
+Aug 01 05:41:04 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=90-F6-52-00-9D-1E assigned IP 10.1.1.100
+Aug 01 05:41:34 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=E4-25-E7-3F-2C-F8 IP=10.1.128.44
+Aug 01 05:49:22 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=A4-67-06-4D-A3-CD
+Aug 01 05:49:22 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=A4-67-06-4D-A3-CD assigned IP 10.1.128.45
+Aug 01 05:49:25 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=00-88-65-54-94-95
+Aug 01 05:49:25 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=00-88-65-54-94-95 assigned IP 10.1.128.46
+Aug 01 05:52:31 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=90-F6-52-00-9D-1E IP=10.1.1.100
+Aug 01 05:53:04 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=90-F6-52-00-9D-1E
+Aug 01 05:53:04 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=90-F6-52-00-9D-1E assigned IP 10.1.1.100
+Aug 01 05:53:41 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=18-E7-F4-EE-1C-0E
+Aug 01 05:53:41 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=18-E7-F4-EE-1C-0E assigned IP 10.1.128.47
+Aug 01 05:55:26 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=E4-25-E7-3F-2C-F8
+Aug 01 05:55:26 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=E4-25-E7-3F-2C-F8 assigned IP 10.1.128.48
+Aug 01 05:57:24 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=28-37-37-4D-99-47
+Aug 01 05:57:24 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=28-37-37-4D-99-47 assigned IP 10.1.128.49
+Aug 01 05:57:51 hotspot coova-chilli[361]: chilli.c: 5875: Successful UAM
+login from username=Devin Mould IP=10.1.128.49
+Aug 01 06:00:26 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=A4-67-06-4D-A3-CD IP=10.1.128.45
+Aug 01 06:04:32 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=90-F6-52-00-9D-1E IP=10.1.1.100
+Aug 01 06:05:05 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=90-F6-52-00-9D-1E
+Aug 01 06:05:05 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=90-F6-52-00-9D-1E assigned IP 10.1.1.100
+Aug 01 06:05:05 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=68-9C-70-6B-4B-2D
+Aug 01 06:05:05 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=68-9C-70-6B-4B-2D assigned IP 10.1.128.50
+Aug 01 06:06:10 hotspot coova-chilli[361]: chilli.c: 5875: Successful UAM
+login from username=james mould IP=10.1.128.47
+Aug 01 06:06:13 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=00-88-65-54-94-95 IP=10.1.128.46
+Aug 01 06:10:51 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=E4-25-E7-3F-2C-F8 IP=10.1.128.48
+Aug 01 06:11:31 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=28-37-37-4D-99-47 IP=10.1.128.49
+Aug 01 06:12:25 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=00-88-65-54-94-95
+Aug 01 06:12:25 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=00-88-65-54-94-95 assigned IP 10.1.128.51
+Aug 01 06:13:49 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=E4-25-E7-3F-2C-F8
+Aug 01 06:13:49 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=E4-25-E7-3F-2C-F8 assigned IP 10.1.128.52
+Aug 01 06:16:24 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=68-9C-70-6B-4B-2D IP=10.1.128.50
+Aug 01 06:16:29 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=90-F6-52-00-9D-1E IP=10.1.1.100
+Aug 01 06:17:05 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=90-F6-52-00-9D-1E
+Aug 01 06:17:05 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=90-F6-52-00-9D-1E assigned IP 10.1.1.100
+Aug 01 06:17:27 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=74-F0-6D-4C-02-7F
+Aug 01 06:17:27 hotspot coova-chilli[361]: ippool.c: 486: Static out of
+range
+Aug 01 06:17:27 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=74-F0-6D-4C-02-7F assigned IP 10.1.128.53
+Aug 01 06:20:41 hotspot coova-chilli[361]: chilli.c: 5875: Successful UAM
+login from username=Andrew Kreut IP=10.1.128.53
+Aug 01 06:24:53 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=E4-25-E7-3F-2C-F8 IP=10.1.128.52
+Aug 01 06:25:13 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=E4-25-E7-3F-2C-F8
+Aug 01 06:25:13 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=E4-25-E7-3F-2C-F8 assigned IP 10.1.128.54
+Aug 01 06:28:29 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=90-F6-52-00-9D-1E IP=10.1.1.100
+Aug 01 06:29:06 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=90-F6-52-00-9D-1E
+Aug 01 06:29:06 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=90-F6-52-00-9D-1E assigned IP 10.1.1.100
+Aug 01 06:29:45 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=68-9C-70-6B-4B-2D
+Aug 01 06:29:45 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=68-9C-70-6B-4B-2D assigned IP 10.1.128.55
+Aug 01 06:35:58 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=00-88-65-54-94-95 IP=10.1.128.51
+Aug 01 06:39:34 hotspot coova-chilli[361]: dhcp.c: 1784: dropping malformed
+DNS
+Aug 01 06:40:29 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=90-F6-52-00-9D-1E IP=10.1.1.100
+Aug 01 06:41:07 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=90-F6-52-00-9D-1E
+Aug 01 06:41:07 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=90-F6-52-00-9D-1E assigned IP 10.1.1.100
+Aug 01 06:42:57 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=A4-67-06-4D-A3-CD
+Aug 01 06:42:57 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=A4-67-06-4D-A3-CD assigned IP 10.1.128.56
+Aug 01 06:44:48 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=00-21-5D-40-A8-7A
+Aug 01 06:44:48 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=00-21-5D-40-A8-7A assigned IP 10.1.128.57
+Aug 01 06:45:43 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=E4-25-E7-3F-2C-F8 IP=10.1.128.54
+Aug 01 06:46:43 hotspot coova-chilli[361]: chilli.c: 5875: Successful UAM
+login from username=C Ratcliffe IP=10.1.128.57
+Aug 01 06:48:30 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=00-88-65-54-94-95
+Aug 01 06:48:30 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=00-88-65-54-94-95 assigned IP 10.1.128.58
+Aug 01 06:52:27 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=90-F6-52-00-9D-1E IP=10.1.1.100
+Aug 01 06:53:07 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=90-F6-52-00-9D-1E
+Aug 01 06:53:07 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=90-F6-52-00-9D-1E assigned IP 10.1.1.100
+Aug 01 06:54:05 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=A4-67-06-4D-A3-CD IP=10.1.128.56
+Aug 01 06:55:44 hotspot coova-chilli[361]: chilli.c: 5875: Successful UAM
+login from username=Paige Seabrooke IP=10.1.128.2
+Aug 01 06:56:09 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=E4-25-E7-3F-2C-F8
+Aug 01 06:56:09 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=E4-25-E7-3F-2C-F8 assigned IP 10.1.128.59
+Aug 01 06:58:00 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=A4-67-06-4D-A3-CD
+Aug 01 06:58:00 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=A4-67-06-4D-A3-CD assigned IP 10.1.128.60
+Aug 01 06:58:29 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=68-9C-70-6B-4B-2D IP=10.1.128.55
+Aug 01 07:02:52 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=74-F0-6D-4C-02-7F IP=10.1.128.53
+Aug 01 07:04:25 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=90-F6-52-00-9D-1E IP=10.1.1.100
+Aug 01 07:05:08 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=90-F6-52-00-9D-1E
+Aug 01 07:05:08 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=90-F6-52-00-9D-1E assigned IP 10.1.1.100
+Aug 01 07:07:56 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=48-02-2A-B1-3E-F1
+Aug 01 07:07:56 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=48-02-2A-B1-3E-F1 assigned IP 10.1.128.61
+Aug 01 07:08:45 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=68-9C-70-6B-4B-2D
+Aug 01 07:08:45 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=68-9C-70-6B-4B-2D assigned IP 10.1.128.62
+Aug 01 07:10:23 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=E4-25-E7-3F-2C-F8 IP=10.1.128.59
+Aug 01 07:10:53 hotspot coova-chilli[361]: chilli.c: 5875: Successful UAM
+login from username=Beverley Good IP=10.1.128.61
+Aug 01 07:12:19 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=A8-96-8A-DA-BC-47
+Aug 01 07:12:19 hotspot coova-chilli[361]: ippool.c: 486: Static out of
+range
+Aug 01 07:12:19 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=A8-96-8A-DA-BC-47 assigned IP 10.1.128.63
+Aug 01 07:13:47 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=00-88-65-54-94-95 IP=10.1.128.58
+Aug 01 07:14:02 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=00-88-65-54-94-95
+Aug 01 07:14:02 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=00-88-65-54-94-95 assigned IP 10.1.128.64
+Aug 01 07:14:24 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=A4-67-06-4D-A3-CD IP=10.1.128.60
+Aug 01 07:19:34 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=E4-25-E7-3F-2C-F8
+Aug 01 07:19:34 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=E4-25-E7-3F-2C-F8 assigned IP 10.1.128.65
+Aug 01 07:19:50 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=68-9C-70-6B-4B-2D IP=10.1.128.62
+Aug 01 07:21:12 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=A4-67-06-4D-A3-CD
+Aug 01 07:21:12 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=A4-67-06-4D-A3-CD assigned IP 10.1.128.66
+Aug 01 07:23:32 hotspot coova-chilli[361]: chilli.c: 5899: Received UAM
+logoff from username=Beverley Good IP=10.1.128.61
+Aug 01 07:24:32 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=A8-96-8A-DA-BC-47 IP=10.1.128.63
+Aug 01 07:28:23 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=90-F6-52-00-9D-1E IP=10.1.1.100
+Aug 01 07:29:09 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=90-F6-52-00-9D-1E
+Aug 01 07:29:09 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=90-F6-52-00-9D-1E assigned IP 10.1.1.100
+Aug 01 07:34:49 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=48-02-2A-B1-3E-F1 IP=10.1.128.61
+Aug 01 07:38:35 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=68-9C-70-6B-4B-2D
+Aug 01 07:38:35 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=68-9C-70-6B-4B-2D assigned IP 10.1.128.67
+Aug 01 07:40:24 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=90-F6-52-00-9D-1E IP=10.1.1.100
+Aug 01 07:41:10 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=90-F6-52-00-9D-1E
+Aug 01 07:41:10 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=90-F6-52-00-9D-1E assigned IP 10.1.1.100
+Aug 01 07:43:45 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=00-88-65-54-94-95 IP=10.1.128.64
+Aug 01 07:44:10 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=A4-67-06-4D-A3-CD IP=10.1.128.66
+Aug 01 07:44:49 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=70-73-CB-2E-1F-3D IP=10.1.128.3
+Aug 01 07:45:50 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=E4-25-E7-3F-2C-F8 IP=10.1.128.65
+Aug 01 07:49:43 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=68-9C-70-6B-4B-2D IP=10.1.128.67
+Aug 01 07:52:26 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=90-F6-52-00-9D-1E IP=10.1.1.100
+Aug 01 07:53:10 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=90-F6-52-00-9D-1E
+Aug 01 07:53:10 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=90-F6-52-00-9D-1E assigned IP 10.1.1.100
+Aug 01 08:04:28 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=90-F6-52-00-9D-1E IP=10.1.1.100
+Aug 01 08:05:11 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=90-F6-52-00-9D-1E
+Aug 01 08:05:11 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=90-F6-52-00-9D-1E assigned IP 10.1.1.100
+Aug 01 08:08:25 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=68-9C-70-6B-4B-2D
+Aug 01 08:08:25 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=68-9C-70-6B-4B-2D assigned IP 10.1.128.68
+Aug 01 08:11:06 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=5C-95-AE-C4-1D-E7 IP=10.1.128.2
+Aug 01 08:19:30 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=68-9C-70-6B-4B-2D IP=10.1.128.68
+Aug 01 08:21:26 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=88-C6-63-6A-6E-28 IP=10.1.128.12
+Aug 01 08:24:05 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=5C-95-AE-C4-1D-E7
+Aug 01 08:24:05 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=5C-95-AE-C4-1D-E7 assigned IP 10.1.128.69
+Aug 01 08:26:30 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=68-9C-70-6B-4B-2D
+Aug 01 08:26:30 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=68-9C-70-6B-4B-2D assigned IP 10.1.128.70
+Aug 01 08:28:30 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=90-F6-52-00-9D-1E IP=10.1.1.100
+Aug 01 08:29:12 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=90-F6-52-00-9D-1E
+Aug 01 08:29:12 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=90-F6-52-00-9D-1E assigned IP 10.1.1.100
+Aug 01 08:37:39 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=68-9C-70-6B-4B-2D IP=10.1.128.70
+Aug 01 08:38:15 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=68-9C-70-6B-4B-2D
+Aug 01 08:38:15 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=68-9C-70-6B-4B-2D assigned IP 10.1.128.71
+Aug 01 08:40:33 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=90-F6-52-00-9D-1E IP=10.1.1.100
+Aug 01 08:40:35 hotspot coova-chilli[361]: chilli.c: 5875: Successful UAM
+login from username=Paige Seabrooke IP=10.1.128.69
+Aug 01 08:41:12 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=90-F6-52-00-9D-1E
+Aug 01 08:41:12 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=90-F6-52-00-9D-1E assigned IP 10.1.1.100
+Aug 01 08:43:05 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=88-C6-63-6A-6E-28
+Aug 01 08:43:05 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=88-C6-63-6A-6E-28 assigned IP 10.1.128.72
+Aug 01 08:49:20 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=68-9C-70-6B-4B-2D IP=10.1.128.71
+Aug 01 08:52:12 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=C0-9F-42-E0-D2-27 IP=10.1.128.14
+Aug 01 08:53:36 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=88-53-2E-C1-AC-E6
+Aug 01 08:53:36 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=88-53-2E-C1-AC-E6 assigned IP 10.1.128.73
+Aug 01 08:53:40 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=38-19-2F-48-BF-A5 IP=10.1.128.15
+Aug 01 08:55:55 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=C0-9F-42-E0-D2-27
+Aug 01 08:55:55 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=C0-9F-42-E0-D2-27 assigned IP 10.1.128.74
+Aug 01 08:58:15 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=00-88-65-73-94-E3
+Aug 01 08:58:15 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=00-88-65-73-94-E3 assigned IP 10.1.128.75
+Aug 01 08:59:45 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=68-9C-70-6B-4B-2D
+Aug 01 08:59:45 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=68-9C-70-6B-4B-2D assigned IP 10.1.128.76
+Aug 01 09:02:25 hotspot chilli_opt[2414]: garden.c: 531: Invalid uamallowed
+domain or address: www.coova.org!
+Aug 01 09:06:15 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=88-53-2E-C1-AC-E6 IP=10.1.128.73
+Aug 01 09:06:59 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=00-16-A4-FE-B4-85
+Aug 01 09:06:59 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=00-16-A4-FE-B4-85 assigned IP 10.1.128.77
+Aug 01 09:10:29 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=00-16-A4-FE-B4-85 IP=10.1.128.77
+Aug 01 09:11:28 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=68-9C-70-6B-4B-2D IP=10.1.128.76
+Aug 01 09:11:34 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=00-16-A4-FE-B4-85
+Aug 01 09:11:34 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=00-16-A4-FE-B4-85 assigned IP 10.1.128.78
+Aug 01 09:15:21 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=00-16-A4-FE-B4-85 IP=10.1.128.78
+Aug 01 09:16:32 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=90-F6-52-00-9D-1E IP=10.1.1.100
+Aug 01 09:16:53 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=00-88-65-73-94-E3 IP=10.1.128.75
+Aug 01 09:17:04 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=00-16-A4-FE-B4-85
+Aug 01 09:17:04 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=00-16-A4-FE-B4-85 assigned IP 10.1.128.79
+Aug 01 09:17:14 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=90-F6-52-00-9D-1E
+Aug 01 09:17:14 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=90-F6-52-00-9D-1E assigned IP 10.1.1.100
+Aug 01 09:18:25 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=68-9C-70-6B-4B-2D
+Aug 01 09:18:25 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=68-9C-70-6B-4B-2D assigned IP 10.1.128.80
+Aug 01 09:28:30 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=90-F6-52-00-9D-1E IP=10.1.1.100
+Aug 01 09:29:14 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=90-F6-52-00-9D-1E
+Aug 01 09:29:14 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=90-F6-52-00-9D-1E assigned IP 10.1.1.100
+Aug 01 09:29:26 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=00-16-A4-FE-B4-85 IP=10.1.128.79
+Aug 01 09:29:44 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=68-9C-70-6B-4B-2D IP=10.1.128.80
+Aug 01 09:40:32 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=90-F6-52-00-9D-1E IP=10.1.1.100
+Aug 01 09:41:15 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=90-F6-52-00-9D-1E
+Aug 01 09:41:15 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=90-F6-52-00-9D-1E assigned IP 10.1.1.100
+Aug 01 09:45:50 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=B8-8D-12-3D-4A-AC
+Aug 01 09:45:50 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=B8-8D-12-3D-4A-AC assigned IP 10.1.128.81
+Aug 01 09:48:20 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=68-9C-70-6B-4B-2D
+Aug 01 09:48:20 hotspot coova-chilli[361]: ippool.c: 486: Static out of
+range
+Aug 01 09:48:20 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=68-9C-70-6B-4B-2D assigned IP 10.1.128.80
+Aug 01 09:52:32 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=90-F6-52-00-9D-1E IP=10.1.1.100
+Aug 01 09:53:16 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=90-F6-52-00-9D-1E
+Aug 01 09:53:16 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=90-F6-52-00-9D-1E assigned IP 10.1.1.100
+Aug 01 09:54:05 hotspot coova-chilli[361]: chilli.c: 5875: Successful UAM
+login from username=Franz Fux IP=10.1.128.81
+Aug 01 09:58:37 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=00-21-5D-40-A8-7A IP=10.1.128.57
+Aug 01 09:59:24 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=68-9C-70-6B-4B-2D IP=10.1.128.80
+Aug 01 10:05:05 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=68-9C-70-6B-4B-2D
+Aug 01 10:05:05 hotspot coova-chilli[361]: ippool.c: 486: Static out of
+range
+Aug 01 10:05:05 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=68-9C-70-6B-4B-2D assigned IP 10.1.128.80
+Aug 01 10:05:28 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=28-37-37-4D-99-47
+Aug 01 10:05:28 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=28-37-37-4D-99-47 assigned IP 10.1.128.82
+Aug 01 10:06:00 hotspot coova-chilli[361]: chilli.c: 5875: Successful UAM
+login from username=Devin Mould IP=10.1.128.82
+Aug 01 10:15:07 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=C0-9F-42-E0-D2-27 IP=10.1.128.74
+Aug 01 10:16:25 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=68-9C-70-6B-4B-2D IP=10.1.128.80
+Aug 01 10:16:29 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=90-F6-52-00-9D-1E IP=10.1.1.100
+Aug 01 10:17:17 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=90-F6-52-00-9D-1E
+Aug 01 10:17:17 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=90-F6-52-00-9D-1E assigned IP 10.1.1.100
+Aug 01 10:18:10 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=68-9C-70-6B-4B-2D
+Aug 01 10:18:10 hotspot coova-chilli[361]: ippool.c: 486: Static out of
+range
+Aug 01 10:18:10 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=68-9C-70-6B-4B-2D assigned IP 10.1.128.80
+Aug 01 10:23:25 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=C0-9F-42-E0-D2-27
+Aug 01 10:23:25 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=C0-9F-42-E0-D2-27 assigned IP 10.1.128.83
+Aug 01 10:28:32 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=90-F6-52-00-9D-1E IP=10.1.1.100
+Aug 01 10:29:13 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=68-9C-70-6B-4B-2D IP=10.1.128.80
+Aug 01 10:29:17 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=90-F6-52-00-9D-1E
+Aug 01 10:29:17 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=90-F6-52-00-9D-1E assigned IP 10.1.1.100
+Aug 01 10:32:38 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=24-AB-81-22-8D-A5
+Aug 01 10:32:38 hotspot coova-chilli[361]: ippool.c: 486: Static out of
+range
+Aug 01 10:32:38 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=24-AB-81-22-8D-A5 assigned IP 10.1.128.84
+Aug 01 10:34:33 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=C0-9F-42-E0-D2-27 IP=10.1.128.83
+Aug 01 10:39:44 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=5C-95-AE-C4-1D-E7 IP=10.1.128.69
+Aug 01 10:40:34 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=90-F6-52-00-9D-1E IP=10.1.1.100
+Aug 01 10:40:45 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=5C-95-AE-C4-1D-E7
+Aug 01 10:40:45 hotspot coova-chilli[361]: ippool.c: 486: Static out of
+range
+Aug 01 10:40:45 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=5C-95-AE-C4-1D-E7 assigned IP 10.1.128.69
+Aug 01 10:41:18 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=90-F6-52-00-9D-1E
+Aug 01 10:41:18 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=90-F6-52-00-9D-1E assigned IP 10.1.1.100
+Aug 01 10:42:25 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=7C-FA-DF-A4-50-99
+Aug 01 10:42:25 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=7C-FA-DF-A4-50-99 assigned IP 10.1.128.85
+Aug 01 10:42:56 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=C0-9F-42-E0-D2-27
+Aug 01 10:42:56 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=C0-9F-42-E0-D2-27 assigned IP 10.1.128.86
+Aug 01 10:44:37 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=24-AB-81-22-8D-A5 IP=10.1.128.84
+Aug 01 10:47:22 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=38-19-2F-48-BF-A5
+Aug 01 10:47:22 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=38-19-2F-48-BF-A5 assigned IP 10.1.128.87
+Aug 01 10:47:56 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=68-9C-70-6B-4B-2D
+Aug 01 10:47:56 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=68-9C-70-6B-4B-2D assigned IP 10.1.128.88
+Aug 01 10:51:50 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=5C-95-AE-C4-1D-E7 IP=10.1.128.69
+Aug 01 10:52:33 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=90-F6-52-00-9D-1E IP=10.1.1.100
+Aug 01 10:53:18 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=90-F6-52-00-9D-1E
+Aug 01 10:53:18 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=90-F6-52-00-9D-1E assigned IP 10.1.1.100
+Aug 01 10:53:46 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=7C-FA-DF-A4-50-99 IP=10.1.128.85
+Aug 01 10:55:25 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=5C-95-AE-C4-1D-E7
+Aug 01 10:55:25 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=5C-95-AE-C4-1D-E7 assigned IP 10.1.128.89
+Aug 01 10:58:25 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=38-19-2F-48-BF-A5 IP=10.1.128.87
+Aug 01 10:59:05 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=68-9C-70-6B-4B-2D IP=10.1.128.88
+Aug 01 11:04:31 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=90-F6-52-00-9D-1E IP=10.1.1.100
+Aug 01 11:05:21 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=90-F6-52-00-9D-1E
+Aug 01 11:05:21 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=90-F6-52-00-9D-1E assigned IP 10.1.1.100
+Aug 01 11:06:30 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=5C-95-AE-C4-1D-E7 IP=10.1.128.89
+Aug 01 11:07:05 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=5C-95-AE-C4-1D-E7
+Aug 01 11:07:05 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=5C-95-AE-C4-1D-E7 assigned IP 10.1.128.90
+Aug 01 11:07:06 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=C0-9F-42-E0-D2-27 IP=10.1.128.86
+Aug 01 11:10:01 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=B8-8D-12-3D-4A-AC IP=10.1.128.81
+Aug 01 11:12:15 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=28-37-37-4D-99-47 IP=10.1.128.82
+Aug 01 11:12:59 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=00-25-D3-BE-40-0F
+Aug 01 11:12:59 hotspot coova-chilli[361]: ippool.c: 486: Static out of
+range
+Aug 01 11:12:59 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=00-25-D3-BE-40-0F assigned IP 10.1.128.19
+Aug 01 11:13:29 hotspot coova-chilli[361]: chilli.c: 5875: Successful UAM
+login from username=Tia Robinson IP=10.1.128.19
+Aug 01 11:17:07 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=90-F6-52-00-9D-1E IP=10.1.1.100
+Aug 01 11:17:21 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=90-F6-52-00-9D-1E
+Aug 01 11:17:21 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=90-F6-52-00-9D-1E assigned IP 10.1.1.100
+Aug 01 11:17:45 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=68-9C-70-6B-4B-2D
+Aug 01 11:17:45 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=68-9C-70-6B-4B-2D assigned IP 10.1.128.91
+Aug 01 11:18:09 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=5C-95-AE-C4-1D-E7 IP=10.1.128.90
+Aug 01 11:18:45 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=5C-95-AE-C4-1D-E7
+Aug 01 11:18:45 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=5C-95-AE-C4-1D-E7 assigned IP 10.1.128.92
+Aug 01 11:19:18 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=B8-8D-12-3D-4A-AC
+Aug 01 11:19:18 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=B8-8D-12-3D-4A-AC assigned IP 10.1.128.93
+Aug 01 11:19:58 hotspot coova-chilli[361]: chilli.c: 5875: Successful UAM
+login from username=Franz Fux IP=10.1.128.93
+Aug 01 11:28:32 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=90-F6-52-00-9D-1E IP=10.1.1.100
+Aug 01 11:28:53 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=68-9C-70-6B-4B-2D IP=10.1.128.91
+Aug 01 11:29:22 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=90-F6-52-00-9D-1E
+Aug 01 11:29:22 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=90-F6-52-00-9D-1E assigned IP 10.1.1.100
+Aug 01 11:29:49 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=5C-95-AE-C4-1D-E7 IP=10.1.128.92
+Aug 01 11:30:25 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=5C-95-AE-C4-1D-E7
+Aug 01 11:30:25 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=5C-95-AE-C4-1D-E7 assigned IP 10.1.128.94
+Aug 01 11:34:05 hotspot coova-chilli[361]: chilli.c: 5875: Successful UAM
+login from username=Paige Seabrooke IP=10.1.128.94
+Aug 01 11:38:14 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=70-F9-27-B7-F9-0D
+Aug 01 11:38:14 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=70-F9-27-B7-F9-0D assigned IP 10.1.128.95
+Aug 01 11:39:01 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=88-C6-63-6A-6E-28 IP=10.1.128.72
+Aug 01 11:40:29 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=90-F6-52-00-9D-1E IP=10.1.1.100
+Aug 01 11:41:22 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=90-F6-52-00-9D-1E
+Aug 01 11:41:22 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=90-F6-52-00-9D-1E assigned IP 10.1.1.100
+Aug 01 11:47:35 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=68-9C-70-6B-4B-2D
+Aug 01 11:47:35 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=68-9C-70-6B-4B-2D assigned IP 10.1.128.96
+Aug 01 11:52:32 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=90-F6-52-00-9D-1E IP=10.1.1.100
+Aug 01 11:53:23 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=90-F6-52-00-9D-1E
+Aug 01 11:53:23 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=90-F6-52-00-9D-1E assigned IP 10.1.1.100
+Aug 01 11:53:25 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=70-F9-27-B7-F9-0D IP=10.1.128.95
+Aug 01 11:54:15 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=88-C6-63-6A-6E-28
+Aug 01 11:54:15 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=88-C6-63-6A-6E-28 assigned IP 10.1.128.97
+Aug 01 11:58:39 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=68-9C-70-6B-4B-2D IP=10.1.128.96
+Aug 01 12:04:33 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=90-F6-52-00-9D-1E IP=10.1.1.100
+Aug 01 12:05:26 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=90-F6-52-00-9D-1E
+Aug 01 12:05:26 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=90-F6-52-00-9D-1E assigned IP 10.1.1.100
+Aug 01 12:07:18 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=00-22-69-A1-45-99
+Aug 01 12:07:18 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=00-22-69-A1-45-99 assigned IP 10.1.128.98
+Aug 01 12:07:52 hotspot coova-chilli[3031]: redir.c: 2020: 104 (Connection
+reset by peer) redir_read(0) failed!
+Aug 01 12:07:59 hotspot coova-chilli[361]: chilli.c: 5875: Successful UAM
+login from username=Beverley Good IP=10.1.128.98
+Aug 01 12:10:35 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=28-37-37-4D-99-47
+Aug 01 12:10:35 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=28-37-37-4D-99-47 assigned IP 10.1.128.99
+Aug 01 12:11:05 hotspot coova-chilli[361]: chilli.c: 5875: Successful UAM
+login from username=Devin Mould IP=10.1.128.99
+Aug 01 12:11:25 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=38-19-2F-48-BF-A5
+Aug 01 12:11:25 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=38-19-2F-48-BF-A5 assigned IP 10.1.128.100
+Aug 01 12:12:24 hotspot coova-chilli[361]: chilli.c: 5875: Successful UAM
+login from username=Kayla Lattie IP=10.1.128.100
+Aug 01 12:12:31 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=70-73-CB-A1-AC-79
+Aug 01 12:12:31 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=70-73-CB-A1-AC-79 assigned IP 10.1.128.101
+Aug 01 12:17:25 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=68-9C-70-6B-4B-2D
+Aug 01 12:17:25 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=68-9C-70-6B-4B-2D assigned IP 10.1.128.102
+Aug 01 12:19:10 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=00-25-D3-BE-40-0F IP=10.1.128.19
+Aug 01 12:23:52 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=70-73-CB-A1-AC-79 IP=10.1.128.101
+Aug 01 12:24:44 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=00-22-69-A1-45-99 IP=10.1.128.98
+Aug 01 12:28:30 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=68-9C-70-6B-4B-2D IP=10.1.128.102
+Aug 01 12:28:34 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=90-F6-52-00-9D-1E IP=10.1.1.100
+Aug 01 12:29:34 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=90-F6-52-00-9D-1E
+Aug 01 12:29:34 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=90-F6-52-00-9D-1E assigned IP 10.1.1.100
+Aug 01 12:31:41 hotspot coova-chilli[361]: chilli.c: 5899: Received UAM
+logoff from username=Kayla Lattie IP=10.1.128.100
+Aug 01 12:32:13 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=78-1F-DB-96-24-04
+Aug 01 12:32:13 hotspot coova-chilli[361]: ippool.c: 486: Static out of
+range
+Aug 01 12:32:13 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=78-1F-DB-96-24-04 assigned IP 10.1.128.74
+Aug 01 12:40:37 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=90-F6-52-00-9D-1E IP=10.1.1.100
+Aug 01 12:41:36 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=90-F6-52-00-9D-1E
+Aug 01 12:41:36 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=90-F6-52-00-9D-1E assigned IP 10.1.1.100
+Aug 01 12:43:27 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=78-1F-DB-96-24-04 IP=10.1.128.74
+Aug 01 12:43:55 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=38-19-2F-48-BF-A5 IP=10.1.128.100
+Aug 01 12:44:54 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=B8-8D-12-3D-4A-AC IP=10.1.128.93
+Aug 01 12:47:15 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=68-9C-70-6B-4B-2D
+Aug 01 12:47:15 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=68-9C-70-6B-4B-2D assigned IP 10.1.128.103
+Aug 01 12:52:45 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=90-F6-52-00-9D-1E IP=10.1.1.100
+Aug 01 12:53:37 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=90-F6-52-00-9D-1E
+Aug 01 12:53:37 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=90-F6-52-00-9D-1E assigned IP 10.1.1.100
+Aug 01 12:58:20 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=68-9C-70-6B-4B-2D IP=10.1.128.103
+Aug 01 13:01:11 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=B8-8D-12-3D-4A-AC
+Aug 01 13:01:11 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=B8-8D-12-3D-4A-AC assigned IP 10.1.128.104
+Aug 01 13:02:25 hotspot coova-chilli[361]: chilli.c: 5875: Successful UAM
+login from username=Franz Fux IP=10.1.128.104
+Aug 01 13:04:53 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=90-F6-52-00-9D-1E IP=10.1.1.100
+Aug 01 13:05:38 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=90-F6-52-00-9D-1E
+Aug 01 13:05:38 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=90-F6-52-00-9D-1E assigned IP 10.1.1.100
+Aug 01 13:16:04 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=5C-95-AE-C4-1D-E7 IP=10.1.128.94
+Aug 01 13:17:05 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=68-9C-70-6B-4B-2D
+Aug 01 13:17:05 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=68-9C-70-6B-4B-2D assigned IP 10.1.128.105
+Aug 01 13:22:11 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=38-19-2F-48-BF-A5
+Aug 01 13:22:11 hotspot coova-chilli[361]: ippool.c: 486: Static out of
+range
+Aug 01 13:22:11 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=38-19-2F-48-BF-A5 assigned IP 10.1.128.106
+Aug 01 13:26:07 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=5C-95-AE-C4-1D-E7
+Aug 01 13:26:07 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=5C-95-AE-C4-1D-E7 assigned IP 10.1.128.107
+Aug 01 13:29:07 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=90-F6-52-00-9D-1E IP=10.1.1.100
+Aug 01 13:29:40 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=90-F6-52-00-9D-1E
+Aug 01 13:29:40 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=90-F6-52-00-9D-1E assigned IP 10.1.1.100
+Aug 01 13:31:31 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=68-9C-70-6B-4B-2D IP=10.1.128.105
+Aug 01 13:36:21 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=38-19-2F-48-BF-A5 IP=10.1.128.106
+Aug 01 13:37:16 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=5C-95-AE-C4-1D-E7 IP=10.1.128.107
+Aug 01 13:41:08 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=90-F6-52-00-9D-1E IP=10.1.1.100
+Aug 01 13:41:42 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=90-F6-52-00-9D-1E
+Aug 01 13:41:42 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=90-F6-52-00-9D-1E assigned IP 10.1.1.100
+Aug 01 13:46:55 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=68-9C-70-6B-4B-2D
+Aug 01 13:46:55 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=68-9C-70-6B-4B-2D assigned IP 10.1.128.108
+Aug 01 13:53:14 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=90-F6-52-00-9D-1E IP=10.1.1.100
+Aug 01 13:53:39 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=90-F6-52-00-9D-1E
+Aug 01 13:53:39 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=90-F6-52-00-9D-1E assigned IP 10.1.1.100
+Aug 01 13:58:01 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=68-9C-70-6B-4B-2D IP=10.1.128.108
+Aug 01 14:02:28 hotspot chilli_opt[3465]: garden.c: 531: Invalid uamallowed
+domain or address: www.coova.org!
+Aug 01 14:05:15 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=90-F6-52-00-9D-1E IP=10.1.1.100
+Aug 01 14:05:40 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=90-F6-52-00-9D-1E
+Aug 01 14:05:40 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=90-F6-52-00-9D-1E assigned IP 10.1.1.100
+Aug 01 14:16:45 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=68-9C-70-6B-4B-2D
+Aug 01 14:16:45 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=68-9C-70-6B-4B-2D assigned IP 10.1.128.109
+Aug 01 14:18:39 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=C0-9F-42-E0-7E-BD
+Aug 01 14:18:39 hotspot coova-chilli[361]: ippool.c: 486: Static out of
+range
+Aug 01 14:18:39 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=C0-9F-42-E0-7E-BD assigned IP 10.1.128.110
+Aug 01 14:27:50 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=68-9C-70-6B-4B-2D IP=10.1.128.109
+Aug 01 14:29:20 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=90-F6-52-00-9D-1E IP=10.1.1.100
+Aug 01 14:29:41 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=90-F6-52-00-9D-1E
+Aug 01 14:29:41 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=90-F6-52-00-9D-1E assigned IP 10.1.1.100
+Aug 01 14:30:04 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=C0-9F-42-E0-7E-BD IP=10.1.128.110
+Aug 01 14:31:23 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=B8-8D-12-3D-4A-AC IP=10.1.128.104
+Aug 01 14:35:12 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=88-C6-63-6A-6E-28 IP=10.1.128.97
+Aug 01 14:40:58 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=D8-D1-CB-98-1F-C2
+Aug 01 14:40:58 hotspot coova-chilli[361]: ippool.c: 486: Static out of
+range
+Aug 01 14:40:58 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=D8-D1-CB-98-1F-C2 assigned IP 10.1.128.111
+Aug 01 14:41:23 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=90-F6-52-00-9D-1E IP=10.1.1.100
+Aug 01 14:41:43 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=90-F6-52-00-9D-1E
+Aug 01 14:41:43 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=90-F6-52-00-9D-1E assigned IP 10.1.1.100
+Aug 01 14:46:35 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=68-9C-70-6B-4B-2D
+Aug 01 14:46:35 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=68-9C-70-6B-4B-2D assigned IP 10.1.128.112
+Aug 01 14:50:40 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=88-C6-63-6A-6E-28
+Aug 01 14:50:40 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=88-C6-63-6A-6E-28 assigned IP 10.1.128.113
+Aug 01 14:52:55 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=D8-D1-CB-98-1F-C2 IP=10.1.128.111
+Aug 01 14:53:26 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=90-F6-52-00-9D-1E IP=10.1.1.100
+Aug 01 14:53:43 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=90-F6-52-00-9D-1E
+Aug 01 14:53:43 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=90-F6-52-00-9D-1E assigned IP 10.1.1.100
+Aug 01 14:57:40 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=68-9C-70-6B-4B-2D IP=10.1.128.112
+Aug 01 15:00:16 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=78-A3-E4-58-37-90
+Aug 01 15:00:16 hotspot coova-chilli[361]: ippool.c: 486: Static out of
+range
+Aug 01 15:00:16 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=78-A3-E4-58-37-90 assigned IP 10.1.128.114
+Aug 01 15:01:54 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=00-22-69-A1-45-99
+Aug 01 15:01:54 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=00-22-69-A1-45-99 assigned IP 10.1.128.115
+Aug 01 15:02:15 hotspot coova-chilli[361]: chilli.c: 5875: Successful UAM
+login from username=Beverley Good IP=10.1.128.115
+Aug 01 15:03:35 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=68-9C-70-6B-4B-2D
+Aug 01 15:03:35 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=68-9C-70-6B-4B-2D assigned IP 10.1.128.116
+Aug 01 15:05:30 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=90-F6-52-00-9D-1E IP=10.1.1.100
+Aug 01 15:05:46 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=90-F6-52-00-9D-1E
+Aug 01 15:05:46 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=90-F6-52-00-9D-1E assigned IP 10.1.1.100
+Aug 01 15:09:33 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=38-48-4C-01-4F-10
+Aug 01 15:09:33 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=38-48-4C-01-4F-10 assigned IP 10.1.128.117
+Aug 01 15:13:26 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=B8-8D-12-3D-4A-AC
+Aug 01 15:13:26 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=B8-8D-12-3D-4A-AC assigned IP 10.1.128.118
+Aug 01 15:14:57 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=68-9C-70-6B-4B-2D IP=10.1.128.116
+Aug 01 15:15:21 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=78-A3-E4-58-37-90 IP=10.1.128.114
+Aug 01 15:15:36 hotspot coova-chilli[361]: chilli.c: 5875: Successful UAM
+login from username=Franz Fux IP=10.1.128.118
+Aug 01 15:16:25 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=68-9C-70-6B-4B-2D
+Aug 01 15:16:25 hotspot coova-chilli[361]: ippool.c: 486: Static out of
+range
+Aug 01 15:16:25 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=68-9C-70-6B-4B-2D assigned IP 10.1.128.116
+Aug 01 15:17:41 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=90-F6-52-00-9D-1E IP=10.1.1.100
+Aug 01 15:17:46 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=90-F6-52-00-9D-1E
+Aug 01 15:17:46 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=90-F6-52-00-9D-1E assigned IP 10.1.1.100
+Aug 01 15:17:56 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=00-22-69-A1-45-99 IP=10.1.128.115
+Aug 01 15:21:03 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=38-48-4C-01-4F-10 IP=10.1.128.117
+Aug 01 15:27:33 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=68-9C-70-6B-4B-2D IP=10.1.128.116
+Aug 01 15:28:25 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=BC-3B-AF-46-BE-00
+Aug 01 15:28:25 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=BC-3B-AF-46-BE-00 assigned IP 10.1.128.119
+Aug 01 15:29:47 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=90-F6-52-00-9D-1E IP=10.1.1.100
+Aug 01 15:29:49 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=90-F6-52-00-9D-1E
+Aug 01 15:29:49 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=90-F6-52-00-9D-1E assigned IP 10.1.1.100
+Aug 01 15:31:03 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=44-4C-0C-90-E9-B8
+Aug 01 15:31:03 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=44-4C-0C-90-E9-B8 assigned IP 10.1.128.120
+Aug 01 15:37:19 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=60-33-4B-19-FC-16
+Aug 01 15:37:19 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=60-33-4B-19-FC-16 assigned IP 10.1.128.121
+Aug 01 15:39:48 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=BC-3B-AF-46-BE-00 IP=10.1.128.119
+Aug 01 15:46:15 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=68-9C-70-6B-4B-2D
+Aug 01 15:46:15 hotspot coova-chilli[361]: ippool.c: 486: Static out of
+range
+Aug 01 15:46:15 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=68-9C-70-6B-4B-2D assigned IP 10.1.128.116
+Aug 01 15:57:23 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=68-9C-70-6B-4B-2D IP=10.1.128.116
+Aug 01 15:57:28 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=44-4C-0C-90-E9-B8 IP=10.1.128.120
+Aug 01 15:57:54 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=44-4C-0C-90-E9-B8
+Aug 01 15:57:54 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=44-4C-0C-90-E9-B8 assigned IP 10.1.128.122
+Aug 01 16:16:05 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=68-9C-70-6B-4B-2D
+Aug 01 16:16:05 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=68-9C-70-6B-4B-2D assigned IP 10.1.128.123
+Aug 01 16:19:18 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=44-4C-0C-90-E9-B8 IP=10.1.128.122
+Aug 01 16:19:45 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=00-21-5D-40-A8-7A
+Aug 01 16:19:45 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=00-21-5D-40-A8-7A assigned IP 10.1.128.124
+Aug 01 16:23:24 hotspot coova-chilli[361]: chilli.c: 5875: Successful UAM
+login from username=C Ratcliffe IP=10.1.128.124
+Aug 01 16:23:36 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=00-22-69-A1-45-99
+Aug 01 16:23:36 hotspot coova-chilli[361]: ippool.c: 486: Static out of
+range
+Aug 01 16:23:36 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=00-22-69-A1-45-99 assigned IP 10.1.128.125
+Aug 01 16:24:01 hotspot coova-chilli[361]: chilli.c: 5875: Successful UAM
+login from username=Beverley Good IP=10.1.128.125
+Aug 01 16:26:39 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=44-4C-0C-90-E9-B8
+Aug 01 16:26:39 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=44-4C-0C-90-E9-B8 assigned IP 10.1.128.126
+Aug 01 16:27:09 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=68-9C-70-6B-4B-2D IP=10.1.128.123
+Aug 01 16:37:11 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=70-F1-A1-81-44-A0
+Aug 01 16:37:11 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=70-F1-A1-81-44-A0 assigned IP 10.1.128.127
+Aug 01 16:39:12 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=F0-D1-A9-F0-86-15
+Aug 01 16:39:12 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=F0-D1-A9-F0-86-15 assigned IP 10.1.128.128
+Aug 01 16:42:10 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=18-9E-FC-0D-9A-46
+Aug 01 16:42:10 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=18-9E-FC-0D-9A-46 assigned IP 10.1.128.129
+Aug 01 16:45:55 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=68-9C-70-6B-4B-2D
+Aug 01 16:45:55 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=68-9C-70-6B-4B-2D assigned IP 10.1.128.130
+Aug 01 16:50:14 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=F0-A2-25-00-26-51
+Aug 01 16:50:14 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=F0-A2-25-00-26-51 assigned IP 10.1.128.131
+Aug 01 16:53:39 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=F0-D1-A9-F0-86-15 IP=10.1.128.128
+Aug 01 16:54:06 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=18-9E-FC-0D-9A-46 IP=10.1.128.129
+Aug 01 16:55:25 hotspot coova-chilli[361]: chilli.c: 5875: Successful UAM
+login from username=Gailzee IP=10.1.128.127
+Aug 01 16:56:31 hotspot coova-chilli[361]: chilli.c: 5875: Successful UAM
+login from username=gailzee IP=10.1.128.126
+Aug 01 16:57:05 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=68-9C-70-6B-4B-2D IP=10.1.128.130
+Aug 01 16:57:34 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=38-19-2F-48-BF-A5
+Aug 01 16:57:34 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=38-19-2F-48-BF-A5 assigned IP 10.1.128.132
+Aug 01 16:57:40 hotspot coova-chilli[361]: chilli.c: 5875: Successful UAM
+login from username=Lucas Wadley IP=10.1.128.99
+Aug 01 16:58:17 hotspot coova-chilli[361]: chilli.c: 5875: Successful UAM
+login from username=kayla Lattie  IP=10.1.128.132
+Aug 01 17:07:37 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=B8-8D-12-3D-4A-AC IP=10.1.128.118
+Aug 01 17:09:50 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=68-9C-70-6B-4B-2D
+Aug 01 17:09:50 hotspot coova-chilli[361]: ippool.c: 486: Static out of
+range
+Aug 01 17:09:50 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=68-9C-70-6B-4B-2D assigned IP 10.1.128.130
+Aug 01 17:10:19 hotspot coova-chilli[361]: chilli.c: 5875: Successful UAM
+login from username=Margaret Shiels IP=10.1.128.130
+Aug 01 17:14:20 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=38-19-2F-48-BF-A5 IP=10.1.128.132
+Aug 01 17:18:04 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=60-33-4B-19-FC-16 IP=10.1.128.121
+Aug 01 17:19:56 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=70-F1-A1-81-44-A0 IP=10.1.128.127
+Aug 01 17:20:23 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=48-02-2A-B1-3E-F1
+Aug 01 17:20:23 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=48-02-2A-B1-3E-F1 assigned IP 10.1.128.133
+Aug 01 17:21:31 hotspot coova-chilli[361]: chilli.c: 5875: Successful UAM
+login from username=Beverley Good IP=10.1.128.133
+Aug 01 17:23:00 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=E0-CB-1D-8E-7B-FC
+Aug 01 17:23:00 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=E0-CB-1D-8E-7B-FC assigned IP 10.1.128.134
+Aug 01 17:26:12 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=90-4C-E5-5F-FE-15
+Aug 01 17:26:12 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=90-4C-E5-5F-FE-15 assigned IP 10.1.128.135
+Aug 01 17:26:43 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=F0-A2-25-00-26-51 IP=10.1.128.131
+Aug 01 17:30:39 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=00-22-69-A1-45-99 IP=10.1.128.125
+Aug 01 17:34:01 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=04-E5-36-17-CE-BE
+Aug 01 17:34:01 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=04-E5-36-17-CE-BE assigned IP 10.1.128.136
+Aug 01 17:34:35 hotspot coova-chilli[361]: chilli.c: 5875: Successful UAM
+login from username=Franz Fux IP=10.1.128.136
+Aug 01 17:36:36 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=88-C6-63-6A-6E-28 IP=10.1.128.113
+Aug 01 17:36:49 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=48-02-2A-B1-3E-F1 IP=10.1.128.133
+Aug 01 17:41:31 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=44-4C-0C-90-E9-B8 IP=10.1.128.126
+Aug 01 17:45:13 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=90-4C-E5-5F-FE-15 IP=10.1.128.135
+Aug 01 17:46:16 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=88-C6-63-6A-6E-28
+Aug 01 17:46:16 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=88-C6-63-6A-6E-28 assigned IP 10.1.128.137
+Aug 01 18:02:07 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=70-56-81-72-17-29
+Aug 01 18:02:07 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=70-56-81-72-17-29 assigned IP 10.1.128.138
+Aug 01 18:16:05 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=70-56-81-72-17-29 IP=10.1.128.138
+Aug 01 18:18:06 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=D0-23-DB-38-34-CE
+Aug 01 18:18:06 hotspot coova-chilli[361]: ippool.c: 486: Static out of
+range
+Aug 01 18:18:06 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=D0-23-DB-38-34-CE assigned IP 10.1.128.139
+Aug 01 18:18:54 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=98-D6-F7-8C-BE-62
+Aug 01 18:18:54 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=98-D6-F7-8C-BE-62 assigned IP 10.1.128.140
+Aug 01 18:21:24 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=40-F3-08-46-BE-59
+Aug 01 18:21:24 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=40-F3-08-46-BE-59 assigned IP 10.1.128.141
+Aug 01 18:21:35 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=F0-A2-25-00-26-51
+Aug 01 18:21:35 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=F0-A2-25-00-26-51 assigned IP 10.1.128.142
+Aug 01 18:25:41 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=A0-6C-EC-68-C7-4B
+Aug 01 18:25:41 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=A0-6C-EC-68-C7-4B assigned IP 10.1.128.143
+Aug 01 18:28:52 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=F0-D1-A9-31-30-65
+Aug 01 18:28:52 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=F0-D1-A9-31-30-65 assigned IP 10.1.128.144
+Aug 01 18:30:12 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=D0-23-DB-38-34-CE IP=10.1.128.139
+Aug 01 18:33:01 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=40-F3-08-46-BE-59 IP=10.1.128.141
+Aug 01 18:36:40 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=44-4C-0C-90-E9-B8
+Aug 01 18:36:40 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=44-4C-0C-90-E9-B8 assigned IP 10.1.128.145
+Aug 01 18:37:33 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=98-D6-F7-8C-BE-62 IP=10.1.128.140
+Aug 01 18:40:36 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=F0-D1-A9-31-30-65 IP=10.1.128.144
+Aug 01 18:42:11 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=88-C6-63-6A-6E-28 IP=10.1.128.137
+Aug 01 18:45:14 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=38-19-2F-48-BF-A5
+Aug 01 18:45:14 hotspot coova-chilli[361]: ippool.c: 486: Static out of
+range
+Aug 01 18:45:14 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=38-19-2F-48-BF-A5 assigned IP 10.1.128.146
+Aug 01 18:45:56 hotspot coova-chilli[361]: chilli.c: 5875: Successful UAM
+login from username=Kayla Lattie IP=10.1.128.146
+Aug 01 18:55:44 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=44-D8-84-AB-39-CC
+Aug 01 18:55:44 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=44-D8-84-AB-39-CC assigned IP 10.1.128.147
+Aug 01 19:00:05 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=88-C6-63-6A-6E-28
+Aug 01 19:00:05 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=88-C6-63-6A-6E-28 assigned IP 10.1.128.148
+Aug 01 19:01:26 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=38-19-2F-48-BF-A5 IP=10.1.128.146
+Aug 01 19:01:42 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=44-4C-0C-90-E9-B8 IP=10.1.128.145
+Aug 01 19:04:39 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=28-E0-2C-DD-49-F2
+Aug 01 19:04:39 hotspot coova-chilli[361]: ippool.c: 486: Static out of
+range
+Aug 01 19:04:39 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=28-E0-2C-DD-49-F2 assigned IP 10.1.128.149
+Aug 01 19:06:15 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=68-9C-70-6B-4B-2D IP=10.1.128.130
+Aug 01 19:07:33 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=68-9C-70-6B-4B-2D
+Aug 01 19:07:33 hotspot coova-chilli[361]: ippool.c: 486: Static out of
+range
+Aug 01 19:07:33 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=68-9C-70-6B-4B-2D assigned IP 10.1.128.130
+Aug 01 19:09:20 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=44-D8-84-AB-39-CC IP=10.1.128.147
+Aug 01 19:12:57 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=44-4C-0C-90-E9-B8
+Aug 01 19:12:57 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=44-4C-0C-90-E9-B8 assigned IP 10.1.128.150
+Aug 01 19:13:53 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=48-02-2A-B1-3E-F1
+Aug 01 19:13:53 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=48-02-2A-B1-3E-F1 assigned IP 10.1.128.151
+Aug 01 19:14:45 hotspot coova-chilli[361]: chilli.c: 5875: Successful UAM
+login from username=Beverley Good IP=10.1.128.151
+Aug 01 19:18:34 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=68-9C-70-6B-4B-2D IP=10.1.128.130
+Aug 01 19:21:02 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=68-9C-70-6B-4B-2D
+Aug 01 19:21:02 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=68-9C-70-6B-4B-2D assigned IP 10.1.128.152
+Aug 01 19:23:25 hotspot coova-chilli[6218]: redir.c: 54: Client process
+timed out: 1
+Aug 01 19:27:53 hotspot coova-chilli[361]: chilli.c: 5875: Successful UAM
+login from username=Patrick Wells IP=10.1.128.149
+Aug 01 19:41:25 hotspot coova-chilli[361]: chilli.c: 5875: Successful UAM
+login from username=Margaret Shiels IP=10.1.128.152
+Aug 01 19:42:59 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=F0-DC-E2-B9-58-BE
+Aug 01 19:42:59 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=F0-DC-E2-B9-58-BE assigned IP 10.1.128.153
+Aug 01 19:45:42 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=44-4C-0C-90-E9-B8 IP=10.1.128.150
+Aug 01 19:50:14 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=28-E0-2C-DD-49-F2 IP=10.1.128.149
+Aug 01 19:53:00 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=28-E0-2C-DD-49-F2
+Aug 01 19:53:00 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=28-E0-2C-DD-49-F2 assigned IP 10.1.128.154
+Aug 01 19:53:33 hotspot coova-chilli[361]: chilli.c: 5875: Successful UAM
+login from username=Patrick Wells IP=10.1.128.154
+Aug 01 19:54:13 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=F0-DC-E2-B9-58-BE IP=10.1.128.153
+Aug 01 19:57:02 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=F0-A2-25-00-26-51 IP=10.1.128.142
+Aug 01 20:01:30 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=CC-08-E0-02-56-09
+Aug 01 20:01:30 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=CC-08-E0-02-56-09 assigned IP 10.1.128.155
+Aug 01 20:02:30 hotspot chilli_opt[6575]: garden.c: 531: Invalid uamallowed
+domain or address: www.jedgainer.me!
+Aug 01 20:03:56 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=68-9C-70-6B-4B-2D IP=10.1.128.152
+Aug 01 20:04:06 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=88-32-9B-0F-9E-F6
+Aug 01 20:04:06 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=88-32-9B-0F-9E-F6 assigned IP 10.1.128.156
+Aug 01 20:04:38 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=68-9C-70-6B-4B-2D
+Aug 01 20:04:38 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=68-9C-70-6B-4B-2D assigned IP 10.1.128.157
+Aug 01 20:06:16 hotspot coova-chilli[6586]: redir.c: 2020: 104 (Connection
+reset by peer) redir_read(0) failed!
+Aug 01 20:08:28 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=64-A3-CB-84-FA-97
+Aug 01 20:08:28 hotspot coova-chilli[361]: ippool.c: 486: Static out of
+range
+Aug 01 20:08:28 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=64-A3-CB-84-FA-97 assigned IP 10.1.128.158
+Aug 01 20:12:27 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=38-19-2F-48-BF-A5
+Aug 01 20:12:27 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=38-19-2F-48-BF-A5 assigned IP 10.1.128.159
+Aug 01 20:12:57 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=CC-08-E0-02-56-09 IP=10.1.128.155
+Aug 01 20:13:44 hotspot coova-chilli[361]: chilli.c: 5875: Successful UAM
+login from username=Kayla Lattie IP=10.1.128.159
+Aug 01 20:15:20 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=28-E0-2C-DD-49-F2 IP=10.1.128.154
+Aug 01 20:16:38 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=60-33-4B-19-FC-16
+Aug 01 20:16:38 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=60-33-4B-19-FC-16 assigned IP 10.1.128.160
+Aug 01 20:17:31 hotspot coova-chilli[361]: chilli.c: 5875: Successful UAM
+login from username=Margaret Shiels IP=10.1.128.157
+Aug 01 20:17:44 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=CC-08-E0-02-56-09
+Aug 01 20:17:44 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=CC-08-E0-02-56-09 assigned IP 10.1.128.161
+Aug 01 20:19:32 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=88-32-9B-0F-9E-F6 IP=10.1.128.156
+Aug 01 20:20:03 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=64-A3-CB-84-FA-97 IP=10.1.128.158
+Aug 01 20:29:26 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=38-19-2F-48-BF-A5 IP=10.1.128.159
+Aug 01 20:31:57 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=CC-08-E0-02-56-09 IP=10.1.128.161
+Aug 01 20:36:46 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=F0-A2-25-00-26-51
+Aug 01 20:36:46 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=F0-A2-25-00-26-51 assigned IP 10.1.128.162
+Aug 01 20:37:52 hotspot coova-chilli[361]: chilli.c: 5875: Successful UAM
+login from username=soopak IP=10.1.128.160
+Aug 01 20:38:29 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=88-C6-63-6A-6E-28 IP=10.1.128.148
+Aug 01 20:44:53 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=28-37-37-4D-99-47 IP=10.1.128.99
+Aug 01 20:47:48 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=00-25-D3-BE-40-0F
+Aug 01 20:47:48 hotspot coova-chilli[361]: ippool.c: 486: Static out of
+range
+Aug 01 20:47:48 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=00-25-D3-BE-40-0F assigned IP 10.1.128.19
+Aug 01 20:48:27 hotspot coova-chilli[361]: chilli.c: 5875: Successful UAM
+login from username=Tia Robinson IP=10.1.128.19
+Aug 01 20:51:08 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=5C-95-AE-E8-A8-4E
+Aug 01 20:51:08 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=5C-95-AE-E8-A8-4E assigned IP 10.1.128.163
+Aug 01 20:52:13 hotspot coova-chilli[361]: chilli.c: 5875: Successful UAM
+login from username=soopak IP=10.1.128.160
+Aug 01 21:00:50 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=4C-72-B9-FB-3F-30
+Aug 01 21:00:50 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=4C-72-B9-FB-3F-30 assigned IP 10.1.128.164
+Aug 01 21:01:32 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=48-02-2A-B1-3E-F1 IP=10.1.128.151
+Aug 01 21:06:54 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=5C-FF-35-24-45-D2
+Aug 01 21:06:54 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=5C-FF-35-24-45-D2 assigned IP 10.1.128.165
+Aug 01 21:06:56 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=28-E0-2C-DD-49-F2
+Aug 01 21:06:56 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=28-E0-2C-DD-49-F2 assigned IP 10.1.128.166
+Aug 01 21:07:30 hotspot coova-chilli[361]: chilli.c: 5899: Received UAM
+logoff from username=Tia Robinson IP=10.1.128.19
+Aug 01 21:07:58 hotspot coova-chilli[361]: chilli.c: 5875: Successful UAM
+login from username=James Moreland IP=10.1.128.19
+Aug 01 21:09:07 hotspot coova-chilli[361]: chilli.c: 5875: Successful UAM
+login from username=Nico Rottstaedt IP=10.1.128.164
+Aug 01 21:09:55 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=60-33-4B-19-FC-16 IP=10.1.128.160
+Aug 01 21:15:40 hotspot coova-chilli[361]: chilli.c: 5875: Successful UAM
+login from username=Franz Fux IP=10.1.128.163
+Aug 01 21:18:18 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=28-E0-2C-DD-49-F2 IP=10.1.128.166
+Aug 01 21:20:00 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=5C-FF-35-24-45-D2 IP=10.1.128.165
+Aug 01 21:23:29 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=E0-B9-BA-7E-77-68
+Aug 01 21:23:29 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=E0-B9-BA-7E-77-68 assigned IP 10.1.128.167
+Aug 01 21:24:47 hotspot coova-chilli[361]: chilli.c: 5875: Successful UAM
+login from username=Nico Rottstaedt IP=10.1.128.164
+Aug 01 21:38:12 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=F0-A2-25-00-26-51 IP=10.1.128.162
+Aug 01 21:39:44 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=B8-8D-12-3D-4A-AC
+Aug 01 21:39:44 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=B8-8D-12-3D-4A-AC assigned IP 10.1.128.168
+Aug 01 21:42:38 hotspot coova-chilli[361]: chilli.c: 5875: Successful UAM
+login from username=Franz Fux IP=10.1.128.168
+Aug 01 21:49:43 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=4C-72-B9-FB-3F-30 IP=10.1.128.164
+Aug 01 21:52:30 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=48-02-2A-B1-3E-F1
+Aug 01 21:52:30 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=48-02-2A-B1-3E-F1 assigned IP 10.1.128.169
+Aug 01 21:53:38 hotspot coova-chilli[361]: chilli.c: 5875: Successful UAM
+login from username=Beverley Good IP=10.1.128.169
+Aug 01 22:16:17 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=60-33-4B-19-FC-16
+Aug 01 22:16:17 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=60-33-4B-19-FC-16 assigned IP 10.1.128.170
+Aug 01 22:23:01 hotspot coova-chilli[361]: chilli.c: 5875: Successful UAM
+login from username=soopak IP=10.1.128.170
+Aug 01 22:23:10 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=44-4C-0C-90-E9-B8
+Aug 01 22:23:10 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=44-4C-0C-90-E9-B8 assigned IP 10.1.128.171
+Aug 01 22:23:50 hotspot coova-chilli[361]: chilli.c: 5875: Successful UAM
+login from username=soopak IP=10.1.128.167
+Aug 01 22:28:21 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=88-C6-63-6A-6E-28
+Aug 01 22:28:21 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=88-C6-63-6A-6E-28 assigned IP 10.1.128.172
+Aug 01 22:34:04 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=A0-6C-EC-68-C7-4B IP=10.1.128.143
+Aug 01 22:35:00 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=44-4C-0C-90-E9-B8 IP=10.1.128.171
+Aug 01 22:37:24 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=10-0B-A9-2D-A6-DC
+Aug 01 22:37:24 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=10-0B-A9-2D-A6-DC assigned IP 10.1.128.173
+Aug 01 22:37:24 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=28-E0-2C-DD-49-F2
+Aug 01 22:37:24 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=28-E0-2C-DD-49-F2 assigned IP 10.1.128.174
+Aug 01 22:37:39 hotspot coova-chilli[8636]: redir.c: 2020: 104 (Connection
+reset by peer) redir_read(0) failed!
+Aug 01 22:37:39 hotspot coova-chilli[8637]: redir.c: 2020: 104 (Connection
+reset by peer) redir_read(0) failed!
+Aug 01 22:37:40 hotspot coova-chilli[8638]: redir.c: 2020: 104 (Connection
+reset by peer) redir_read(0) failed!
+Aug 01 22:39:48 hotspot coova-chilli[8645]: redir.c: 54: Client process
+timed out: 1
+Aug 01 22:39:50 hotspot coova-chilli[8646]: redir.c: 54: Client process
+timed out: 1
+Aug 01 22:39:51 hotspot coova-chilli[8647]: redir.c: 54: Client process
+timed out: 1
+Aug 01 22:39:56 hotspot coova-chilli[8649]: redir.c: 54: Client process
+timed out: 1
+Aug 01 22:39:56 hotspot coova-chilli[8650]: redir.c: 54: Client process
+timed out: 1
+Aug 01 22:39:57 hotspot coova-chilli[8651]: redir.c: 54: Client process
+timed out: 1
+Aug 01 22:39:58 hotspot coova-chilli[8653]: redir.c: 54: Client process
+timed out: 1
+Aug 01 22:39:59 hotspot coova-chilli[8655]: redir.c: 54: Client process
+timed out: 1
+Aug 01 22:40:29 hotspot coova-chilli[8662]: redir.c: 54: Client process
+timed out: 1
+Aug 01 22:41:36 hotspot coova-chilli[8682]: redir.c: 54: Client process
+timed out: 1
+Aug 01 22:41:37 hotspot coova-chilli[8683]: redir.c: 54: Client process
+timed out: 1
+Aug 01 22:41:38 hotspot coova-chilli[8684]: redir.c: 54: Client process
+timed out: 1
+Aug 01 22:41:43 hotspot coova-chilli[8686]: redir.c: 54: Client process
+timed out: 1
+Aug 01 22:41:47 hotspot coova-chilli[8689]: redir.c: 54: Client process
+timed out: 1
+Aug 01 22:46:04 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=00-0C-29-84-58-E1
+Aug 01 22:46:04 hotspot coova-chilli[361]: ippool.c: 486: Static out of
+range
+Aug 01 22:46:04 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=00-0C-29-84-58-E1 assigned IP 10.1.128.242
+Aug 01 22:49:23 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=00-02-6F-C5-9F-0E
+Aug 01 22:49:23 hotspot coova-chilli[361]: ippool.c: 486: Static out of
+range
+Aug 01 22:49:23 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=00-02-6F-C5-9F-0E assigned IP 10.1.128.175
+Aug 01 22:49:23 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=00-02-6F-E1-CA-AC
+Aug 01 22:49:23 hotspot coova-chilli[361]: ippool.c: 486: Static out of
+range
+Aug 01 22:49:23 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=00-02-6F-E1-CA-AC assigned IP 10.1.128.176
+Aug 01 22:49:48 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=28-E0-2C-DD-49-F2 IP=10.1.128.174
+Aug 01 22:50:10 hotspot coova-chilli[361]: chilli.c: 5118: New DHCP request
+from MAC=64-A3-CB-84-FA-97
+Aug 01 22:50:10 hotspot coova-chilli[361]: chilli.c: 5006: Client
+MAC=64-A3-CB-84-FA-97 assigned IP 10.1.128.177
+Aug 01 22:50:53 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=10-0B-A9-2D-A6-DC IP=10.1.128.173
+Aug 01 22:58:43 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:43 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:43 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:43 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:43 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:43 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:43 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:43 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:43 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:43 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:43 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:43 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:43 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:43 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:43 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:43 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:43 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:43 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:43 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:43 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:43 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:43 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:43 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:43 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:43 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:43 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:43 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:43 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:43 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:43 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:43 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:43 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:43 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:43 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:43 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:43 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:43 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:43 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:43 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:43 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:43 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:43 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:43 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:43 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:43 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:43 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:43 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:43 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:43 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:43 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:43 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:43 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:43 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:43 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:43 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:43 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:43 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:43 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:43 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:43 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:43 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:43 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:43 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:43 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:43 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:43 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:43 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:43 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:43 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:43 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:43 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:43 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:43 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:43 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:43 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:43 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:43 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:43 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:43 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:43 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:43 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:43 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:43 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:43 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:43 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:43 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:43 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:43 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:43 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:43 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:43 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:43 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:43 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:43 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:43 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:43 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:43 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:43 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 22:58:44 hotspot coova-chilli[361]: redir.c: 3027: 10 (No child
+processes) fork() returned -1!
+Aug 01 23:00:24 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=00-02-6F-E1-CA-AC IP=10.1.128.176
+Aug 01 23:00:24 hotspot coova-chilli[361]: chilli.c: 5512: DHCP Released
+MAC=00-02-6F-C5-9F-0E IP=10.1.128.175
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: &lt;<A HREF="http://lists.coova.org/pipermail/chilli/attachments/20130805/6aaf05d1/attachment-0001.html">http://lists.coova.org/pipermail/chilli/attachments/20130805/6aaf05d1/attachment-0001.html</A>&gt;
+</PRE>
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="002336.html">[Chilli] Problems with SVN/HEAD + deb package
+</A></li>
+	<LI>Next message: <A HREF="002338.html">[Chilli] Parameters in uamhomepage
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2337">[ date ]</a>
+              <a href="thread.html#2337">[ thread ]</a>
+              <a href="subject.html#2337">[ subject ]</a>
+              <a href="author.html#2337">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,142 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] Installation question
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Installation%20question&In-Reply-To=%3Cb9e934e807f74054b76147fa45ae796b%40AM3PR05MB323.eurprd05.prod.outlook.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="002740.html">
+   <LINK REL="Next"  HREF="002734.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] Installation question</H1>
+    <B>Steffen Dettmer</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Installation%20question&In-Reply-To=%3Cb9e934e807f74054b76147fa45ae796b%40AM3PR05MB323.eurprd05.prod.outlook.com%3E"
+       TITLE="[Chilli] Installation question">steffen.dettmer at nomadrail.com
+       </A><BR>
+    <I>Wed May 21 08:14:20 UTC 2014</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="002740.html">[Chilli] Installation question
+</A></li>
+        <LI>Next message: <A HREF="002734.html">[Chilli] client MTU too small for SSL requests
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2741">[ date ]</a>
+              <a href="thread.html#2741">[ thread ]</a>
+              <a href="subject.html#2741">[ subject ]</a>
+              <a href="author.html#2741">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hi,
+
+I'm in a hurry, sorry, but without difficult tricky stuff you need one device for coova client net (wlan0 or eth1.10 or whatever) and Coova is DHCP server on that interface (because coova checks MAC address etc). You must not have another DHCP server on that device, it will be a race with undefined results I guess. Also notice that Coova rewrites firewalling (and has to).
+I don't understand what you mean with &quot;DHCP of the lan&quot;, you mean outside HS_NETWORK?
+
+Steffen
+
+
+
+Von: Stephen Davies [mailto:<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">steve at base-it.co.uk</A>]
+Gesendet: Dienstag, 20. Mai 2014 20:38
+An: Steffen Dettmer
+Betreff: Re: [Chilli] Installation question
+
+Thanks again Steffen,
+
+I have Chilli working great on an Ubuntu PC with the same running RadiusDesk. I now need a Chilli hotspot 'device' rather than a PC and that is where the problems have started. i've tried to keep the minimal config initially to make things easier to get running. i just cant work out for the life of me why an IP as set is given to the client and a DHCP off the lan is given instead. i'm thinking Chilli will just not wok on certain types of router although OpenWRT is installed fine.
+
+Thanks
+Steve
+
+On 20/05/2014 19:13, Steffen Dettmer wrote:
+Hi,
+
+Normally you copy /etc/chilli defaults to /etc/chilli/config and edit it e.g. to include
+HS_WANIF=&quot;eth0&quot; # Give interface of default route or omit (=auto).
+HS_LANIF=&quot;wlan0&quot;      # Your WiFi interface.
+
+
+There is a *very* brief note <A HREF="http://coova.org/CoovaChilli/Configuration">http://coova.org/CoovaChilli/Configuration</A>
+Looking at the init.d script and the function file it uses may help,
+Google should point you to some configuration HOWTOs,
+Setting up backends (RADIUS) can be challenging.
+
+Steffen
+
+Von: Charles Chambers [mailto:<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">cchamb2 at gmail.com</A>]
+Gesendet: Dienstag, 20. Mai 2014 15:24
+An: Steffen Dettmer
+Betreff: Re: AW: [Chilli] Installation question
+
+
+Sure.
+
+I'm installing on an Ubuntu server (14. 04) with basic system files,  with RadiusDesk already configured.  I'm at the step of starting CoovaChilli,  and the daemon is looking to bind to eth0 and eth1 (WAN and LAN interface... assuming that eth1 connects to an access point).
+
+There is no eth1.   ifconfig shows eth0 and wlan0 for the network adapters,  along with lo.
+
+I'm asking how/where/what to change so that the daemon accepts wlan0 instead of eth0.
+On May 20, 2014 1:12 AM, &quot;Steffen Dettmer&quot; &lt;<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">steffen.dettmer at nomadrail.com</A>&lt;mailto:<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">steffen.dettmer at nomadrail.com</A>&gt;&gt; wrote:
+* Charles Chambers
+&gt;<i> Chilli doesn't want to deal with wlan0, it wants both network
+</I>&gt;<i> connections to be ethernet (eth0 and eth1).
+</I>
+Could you describe a bit more in detail, please?
+Coova works fine with wlan0, a standard config for me.
+
+&gt;<i> Any way to configure Chilli so that eth1 can be wlan0?
+</I>
+Sure, should be straight-forward:
+
+HS_WANIF=&quot;uplink-tun&quot; # Give interface of default route or omit (=auto).
+HS_LANIF=&quot;wlan0&quot;      # Your WiFi interface.
+HS_TUNDEV=&quot;wlan0-tun&quot; # Name of the tun dev.
+...
+
+Steffen
+
+
+
+
+_______________________________________________
+
+Chilli mailing list
+
+<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">Chilli at coova.org</A>&lt;mailto:<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">Chilli at coova.org</A>&gt;
+
+<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">http://lists.coova.org/cgi-bin/mailman/listinfo/chilli</A>
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: &lt;<A HREF="http://lists.coova.org/pipermail/chilli/attachments/20140521/2ef06354/attachment-0001.html">http://lists.coova.org/pipermail/chilli/attachments/20140521/2ef06354/attachment-0001.html</A>&gt;
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="002740.html">[Chilli] Installation question
+</A></li>
+	<LI>Next message: <A HREF="002734.html">[Chilli] client MTU too small for SSL requests
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2741">[ date ]</a>
+              <a href="thread.html#2741">[ thread ]</a>
+              <a href="subject.html#2741">[ subject ]</a>
+              <a href="author.html#2741">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

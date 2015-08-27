@@ -1,0 +1,121 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> dns tunnels a threat?
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20dns%20tunnels%20a%20threat%3F&In-Reply-To=%3C46E071CB.8050400%40zizi.ath.cx%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000045.html">
+   <LINK REL="Next"  HREF="000039.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>dns tunnels a threat?</H1>
+    <B>sophana</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20dns%20tunnels%20a%20threat%3F&In-Reply-To=%3C46E071CB.8050400%40zizi.ath.cx%3E"
+       TITLE="dns tunnels a threat?">sophana at zizi.ath.cx
+       </A><BR>
+    <I>Thu Sep  6 21:31:55 UTC 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000045.html">dns tunnels a threat?
+</A></li>
+        <LI>Next message: <A HREF="000039.html">dns tunnels a threat?
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#38">[ date ]</a>
+              <a href="thread.html#38">[ thread ]</a>
+              <a href="subject.html#38">[ subject ]</a>
+              <a href="author.html#38">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE><A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">nextime at nexlab.it</A> a &#233;crit :
+&gt;&gt;<i> Hello,
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> How many people consider dns tunneling a real concern? Just curious...
+</I>&gt;&gt;<i>     
+</I>&gt;<i>
+</I>&gt;<i> For me is a real issue as the italian laws say that anyone setup a free
+</I>&gt;<i> or pay hot-spot need to register personal data ( document ) and to trace
+</I>&gt;<i> the logs of connection/disconnection time for any user.
+</I>&gt;<i>  
+</I>&gt;<i>   
+</I>&gt;&gt;<i> Never heard of it? see <A HREF="http://dnstunnel.de/">http://dnstunnel.de/</A>
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i>     
+</I>&gt;<i>
+</I>&gt;<i> This is one &quot;public&quot;, but ther's many software that permit to setup a
+</I>&gt;<i> &quot;personal&quot; and more advanced tunnel.
+</I>&gt;<i>
+</I>&gt;<i>   
+</I>&gt;&gt;<i> It could be a simple matter of dropping DNS packets with TXT records before
+</I>&gt;&gt;<i> authentication. No?
+</I>&gt;&gt;<i>     
+</I>&gt;<i>
+</I>&gt;<i> No, in theory ( and even in reality ) it is possible to make a dns
+</I>&gt;<i> tunnel even on other query type, like NS, MX, A, CNAME and so on.
+</I>&gt;<i>
+</I>&gt;<i> Dropping TXT request block *some* of the dnstunnel software, but not
+</I>&gt;<i> all, and for the &quot;cracker&quot; prospective is only a way to make the tunnel
+</I>&gt;<i> more slow, but not blocked.
+</I>&gt;<i>
+</I>&gt;<i> I use a different approach:
+</I>&gt;<i>
+</I>&gt;<i> All dns request are permitted only to a my dns server over ( so, i have
+</I>&gt;<i> only one dns server centralized for many hot-spots ).
+</I>&gt;<i>
+</I>&gt;<i> I've written a little udp relayer that get all udp request on a specific
+</I>&gt;<i> port ( of course 53 ) on the &quot;user&quot; side, ad redirect all the packets to
+</I>&gt;<i> two different ip/port, one by default, and the other one if the source
+</I>&gt;<i> ip of the request is in a list ( in a simple file text list ).
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> The daemon refresh the &quot;alternative ip&quot; list by a SIGUSR1 signal.
+</I>&gt;<i>
+</I>&gt;<i> Now, on the conup and condown script of coova-chilli, i put some lines
+</I>&gt;<i> of shell script that get the list of already authenticated users by
+</I>&gt;<i> perform a chilli_query &lt;socket&gt; dhcp-list | grep pass | awk awk -F ' ' '{print $2}' &gt; /tmp/listfile
+</I>&gt;<i> and then send a SIGUSR1 signal to my daemon refreshing the &quot;internal&quot; list.
+</I>&gt;<i>
+</I>&gt;<i> By default i send all packets to a &quot;fake&quot; dns server that manage *only* A, CNAME and AAAA records, 
+</I>&gt;<i> and where i use iptables to setup a very restrictive policy about how many packets
+</I>&gt;<i> can comein ( i permit only 2 packets/second, not more that 100 packets in 5 minutes ).
+</I>&gt;<i>
+</I>&gt;<i> When a client is authenticated, all the dns request are redirected to a &quot;real and normal&quot; bind server, no more 
+</I>&gt;<i> restricted.
+</I>&gt;<i>
+</I>&gt;<i> In this way i block *any* dns tunnel.
+</I>&gt;<i>
+</I>&gt;<i>   
+</I>This looks complicated.
+Using a bad QoS for dns (no more than 10 requests/response in 5 second) 
++ dropping TXT records seem sufficient.
+I don'see why you need an intermediate dns.
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: &lt;<A HREF="http://lists.coova.org/pipermail/chilli/attachments/20070906/f7726d51/attachment.htm">http://lists.coova.org/pipermail/chilli/attachments/20070906/f7726d51/attachment.htm</A>&gt;
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000045.html">dns tunnels a threat?
+</A></li>
+	<LI>Next message: <A HREF="000039.html">dns tunnels a threat?
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#38">[ date ]</a>
+              <a href="thread.html#38">[ thread ]</a>
+              <a href="subject.html#38">[ subject ]</a>
+              <a href="author.html#38">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

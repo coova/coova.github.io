@@ -1,0 +1,227 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] [Chillispot] Redirection problem with DD-WRT
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20%5BChillispot%5D%20Redirection%20problem%20with%20DD-WRT&In-Reply-To=%3C54268D29.3090707%40gmail.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="002820.html">
+   <LINK REL="Next"  HREF="002823.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] [Chillispot] Redirection problem with DD-WRT</H1>
+    <B>Alexandru Gheorghe</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20%5BChillispot%5D%20Redirection%20problem%20with%20DD-WRT&In-Reply-To=%3C54268D29.3090707%40gmail.com%3E"
+       TITLE="[Chilli] [Chillispot] Redirection problem with DD-WRT">alghe.global at gmail.com
+       </A><BR>
+    <I>Sat Sep 27 10:10:49 UTC 2014</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="002820.html">[Chilli] Use of facebook to authenticate in RADIUS
+</A></li>
+        <LI>Next message: <A HREF="002823.html">[Chilli] [Chillispot] Redirection problem with DD-WRT [SOLVED]
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2822">[ date ]</a>
+              <a href="thread.html#2822">[ thread ]</a>
+              <a href="subject.html#2822">[ subject ]</a>
+              <a href="author.html#2822">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hi guys,
+
+    Please apologize me for having to put into discussions the defuncted
+Chillispot but this is a forced corner case for me.
+
+    With router TP-Link TL-WR740N (see [1] for hardware details), I've
+installed DD-WRT image for WR740N (v24 PreSP2 Beta Build 21061).
+    Trying to get chillispot to work, so here goes some information my
+setup (please bare with me):
+
+FreeRADIUS side (on CentOS, firewall disabled allows incoming, SELinux
+not enforcing):
+-----------------------------------------------------------------------
+1. Type: other
+2. clients allow 0.0.0.0/0
+3. secret is configured to be the same with hotspotlogin.cgi (chillispot
+doc/) for test purposes
+4. local radius test login works fine (both accept &amp; reject)
+5. remote radius test (from dd-wrt) works fine from bash
+6. when dd-wrt should redirect the user there's no incoming data on the
+WAN interface of the server (ping however is seen and is working; so
+this rules out connectivity issues)
+
+
+DD-WRT most important:
+
+A summary first: this router is intended to be deployed in production
+behind an ADSL router, so it will serve Hotspot and will use the
+upstream router as a gateway.
+
+A. Networking side
+------------------
+i. Config type: Gateway
+
+ii. WAN is static in Gateway's LAN (router ip: 192.168.1.2/24, gw:
+192.168.1.254 -&gt; this is the ADSL)
+
+iii. DHCP disabled
+
+iv. br0: eth0 (&quot;WAN&quot; - to ADSL router) + eth1 (LAN)
+
+v. br1: ath0.1 + ath0 (wireless iface; ath0.1 is the hotspot one which
+announces its bssid to the public and is free; ath0 is for management
+purposes, passwd protected)
+
+vi. firewall is disabled; connectivity is fine (dns as well); all
+interfaces are set bridged (Setup &gt; Networking); brctl is ok (see iv and
+v above)
+
+vii. tun0 is created by chilli and serves dhcp for its subnet as well
+(192.168.182.0/24); running in debug mode i can see it serves dhcp
+leases so is fine
+
+viii. the client that gets the lease has chilli (192.168.182.1) as
+gateway, first ip for client is from range: .2-.254/24 (OK) and dns
+works correctly (can resolve google.ro for example); pinging also works
+
+ix. iptables is reflecting the rules from firewall.openwrt[2]
+(chillispot doc/); once I remove masquerade on postrouting however in
+nat table, connectivity for client is cut; it seems is bypassing chilli
+somehow
+
+So last: x. redirection issue: the client gets the lease, but when it
+will browse is just completely bypassing chilli altogether. Chilli gives
+the lease, and i can see the traffic (tcpdump) but the browser is not
+redirected to hotspotlogin.cgi (centos tcpdump doesn't prompt anything
+so is like chilli never got the traffic in the first place).
+
+How can chilli be bypassed since it is the gateway and should capture
+all traffic from the client? Could it be that once chilli gives the
+lease then traffic bypasses from br1 to br0 without going via tun0?
+
+Tried in debug mode, nothing of interest just the lease (chilli -d -f -c
+/tmp/chilli/chilli.conf). Could be the forward rules that are not blocking?
+
+Any suggestions? Much appreciated!
+
+Thanks a lot,
+Alex
+
+
+__REFERENCES:
+
+[1] specs:
+
+Platform...........Atheros AR9132 @ 400 MHz
+FCC ID.............TE7WR1043NX
+Wireless NIC...Atheros AR9103 3x3 MIMO
+WLAN..............802.11b/g/n
+LAN.................4/gigabit
+WAN................1/gigabit
+RAM.................32 MB
+Flash...............8 MB
+Serial Port.......1 (internal)
+JTAG...............1 (internal)
+USB.................1 (external)
+Input Voltage...12V 1.5A
+
+
+
+[2] firewall rules:
+#!/bin/sh
+#
+# Firewall script for ChilliSpot on OpenWRT
+#
+# -- changed for a different network topology: enable Wi-Fi --
+
+WANIF=&quot;eth0&quot;
+WLANIF=&quot;ath0.1&quot;
+LANIF=&quot;br0&quot;
+
+IPTABLES=&quot;/usr/sbin/iptables&quot;
+
+for T in filter nat mangle ; do
+  $IPTABLES -t $T -F
+  $IPTABLES -t $T -X
+done
+
+$IPTABLES -P INPUT DROP
+$IPTABLES -P FORWARD ACCEPT
+$IPTABLES -P OUTPUT ACCEPT
+
+# Just let everything to the router be accepted (behind another router
+already)
+$IPTABLES -A INPUT -j ACCEPT
+
+#Allow related and established on all interfaces (input)
+#$IPTABLES -A INPUT -m state --state RELATED,ESTABLISHED -j ACCEPT
+
+#Allow related and established $WANIF. Reject everything else.
+#$IPTABLES -A INPUT -i $WANIF -j REJECT
+
+#Allow related and established $WLANIF. Drop everything else.
+#$IPTABLES -A INPUT -i $WLANIF -j DROP
+
+#Allow 3990 on other interfaces (input).
+#$IPTABLES -A INPUT -p tcp -m tcp --dport 3990 --syn -j ACCEPT
+
+#Allow everything on loopback interface.
+$IPTABLES -A INPUT -i lo -j ACCEPT
+
+#Allow everything on $LANIF
+#$IPTABLES -A INPUT -i $LANIF -j ACCEPT
+
+#Drop everything to and from $WLANIF (forward)
+$IPTABLES -A FORWARD -i $WLANIF -j DROP
+$IPTABLES -A FORWARD -o $WLANIF -j DROP
+
+#Enable NAT on output device.
+$IPTABLES -t nat -A POSTROUTING -o $WANIF -j MASQUERADE
+
+
+-- 
+; Alexandru Gheorghe
+; alghe.global {at} gmail {dot} com
+; OpenPGP key ID 0xCAF985D2
+
+
+
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: signature.asc
+Type: application/pgp-signature
+Size: 836 bytes
+Desc: OpenPGP digital signature
+URL: &lt;<A HREF="http://lists.coova.org/pipermail/chilli/attachments/20140927/93292e33/attachment.pgp">http://lists.coova.org/pipermail/chilli/attachments/20140927/93292e33/attachment.pgp</A>&gt;
+</PRE>
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="002820.html">[Chilli] Use of facebook to authenticate in RADIUS
+</A></li>
+	<LI>Next message: <A HREF="002823.html">[Chilli] [Chillispot] Redirection problem with DD-WRT [SOLVED]
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2822">[ date ]</a>
+              <a href="thread.html#2822">[ thread ]</a>
+              <a href="subject.html#2822">[ subject ]</a>
+              <a href="author.html#2822">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

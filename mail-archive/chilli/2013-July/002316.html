@@ -1,0 +1,185 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] Chilli_Query login issue
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Chilli_Query%20login%20issue&In-Reply-To=%3C016501ce8953%24e9c44cd0%24bd4ce670%24%40cabocom.cv%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="002310.html">
+   <LINK REL="Next"  HREF="002309.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] Chilli_Query login issue</H1>
+    <B>Luis Ferreira</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Chilli_Query%20login%20issue&In-Reply-To=%3C016501ce8953%24e9c44cd0%24bd4ce670%24%40cabocom.cv%3E"
+       TITLE="[Chilli] Chilli_Query login issue">lferreira at cabocom.cv
+       </A><BR>
+    <I>Thu Jul 25 16:27:51 UTC 2013</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="002310.html">[Chilli] Chilli_Query login issue
+</A></li>
+        <LI>Next message: <A HREF="002309.html">[Chilli] Chilli_Query login issue
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2316">[ date ]</a>
+              <a href="thread.html#2316">[ thread ]</a>
+              <a href="subject.html#2316">[ subject ]</a>
+              <a href="author.html#2316">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hi everyone,
+
+New updates on the issue
+
+I was looking it to it, and I realize that the ping was working fine.
+I then start increase the packet size, and found out that it happen when I try to send more than 1485 bytes (MTU limit?!?!)
+
+Since I got and WRT54GL router in client mode as the test subject, I thought that it could be the firmware on it causing this. So I replace this with a laptop, and the problem kept going, so it is not a router problem.
+
+I'm inclined to believe that this problem could be something related to chilli_query not fully performing a login on a client and chilli is not making the split of the information on several packets.
+
+The fun thing is that other instances of chilli have a couple of them working, and somehow, changing IP's and rebooting the instances, they start working, except this.
+By the way, I've already confirmed all the setting, and tacking the vlan setting all are the same, as they always were.
+
+
+=============================================
+Hi David,
+
+Yes, this is not the first time that this happen to me. But for the other times, I would just change the IP on ISC-DHCP to a new one, and Chilli would start working properly on that different IP.
+Also, other thing that would help would be to kill Chilli process and restart it. That Way it would work correctly the command. But now it does not work in any way.
+Is there another way of doing a remote login of an account?
+
+From: David Bird [mailto:<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">david at coova.com</A>] 
+
+There shouldn't be a difference. You get this result consistently? 
+
+
+====================================================================================
+
+Hi, the problem is that I'm making this setup for a client, so this has to trigger the account for traffic and BW management.
+
+
+From: Bojan
+
+I've experienced similar problem when I've been changing user's speed on the fly. I think I've solved the problem by also insering mac directive and using authorize insted of update or smth like that. I don't remember very well.
+
+Best regards, Bojan
+
+
+
+On Wed, 2013-07-24 at 19:13 -0100, Luis Ferreira wrote:
+&gt;<i> Hi everyone,
+</I>&gt;<i> 
+</I>&gt;<i>  
+</I>&gt;<i> 
+</I>&gt;<i> I&#8217;ve got a very strange problem.
+</I>&gt;<i> 
+</I>&gt;<i>  
+</I>&gt;<i> 
+</I>&gt;<i> Setup:
+</I>&gt;<i> 
+</I>&gt;<i>  
+</I>&gt;<i> 
+</I>&gt;<i> Chilli 1.2.9 Running with Layer3
+</I>&gt;<i> 
+</I>&gt;<i>  
+</I>&gt;<i> 
+</I>&gt;<i> Client with static IP provided by isc-dhcp running on VLAN ID 40
+</I>&gt;<i> 
+</I>&gt;<i>  
+</I>&gt;<i> 
+</I>&gt;<i>  
+</I>&gt;<i> 
+</I>&gt;<i> If I make the login normally (open browser, type user and password) 
+</I>&gt;<i> the internet works great.
+</I>&gt;<i> 
+</I>&gt;<i>  
+</I>&gt;<i> 
+</I>&gt;<i> If I do the login on the chillibox with:
+</I>&gt;<i> /usr/local/sbin/chilli_query -s /usr/local/var/run/chilli.vlan40.sock
+</I>&gt;<i> login ip 10.1.1.xx username &lt;username&gt; password &lt;password&gt;
+</I>&gt;<i> 
+</I>&gt;<i>  
+</I>&gt;<i> 
+</I>&gt;<i> The login is performed good (show the session on radius) and internet 
+</I>&gt;<i> start working, but the speed is terribly slow.
+</I>&gt;<i> 
+</I>&gt;<i>  
+</I>&gt;<i> 
+</I>&gt;<i> If I logout and do the login via web browser on client, the speed is 
+</I>&gt;<i> good again.
+</I>&gt;<i> 
+</I>&gt;<i>  
+</I>&gt;<i> 
+</I>&gt;<i> To help, if I do the login via chilli_query, I get this on 
+</I>&gt;<i> chilli_query list:
+</I>&gt;<i> 
+</I>&gt;<i> 10.1.40.19 51f031c700000004 1 &lt;USERNAME&gt; 57/0 11/1800 33542/0 11791/0
+</I>&gt;<i> 1392508928 0 0%/1024000 0%/3072000
+</I>&gt;<i> 
+</I>&gt;<i>  
+</I>&gt;<i> 
+</I>&gt;<i> If I do it via web browser:
+</I>&gt;<i> 
+</I>&gt;<i>  
+</I>&gt;<i> 
+</I>&gt;<i> 10.1.40.19 51f032b400000004 1 &lt;USERNAME&gt; 11/0 0/1800 129190/0 40875/0
+</I>&gt;<i> 1392508928 0 0%/1024000 0%/3072000 <A HREF="http://www.google.com/">http://www.google.com/</A>
+</I>&gt;<i> 
+</I>&gt;<i>  
+</I>&gt;<i> 
+</I>&gt;<i> As you can see, the download speed is the same (3Mb) and Upload speed 
+</I>&gt;<i> also (1Mb)
+</I>&gt;<i> 
+</I>&gt;<i>  
+</I>&gt;<i> 
+</I>&gt;<i> Is there any way that chilli_query if failing on the login process?
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> _______________________________________________
+</I>&gt;<i> Chilli mailing list
+</I>&gt;<i> <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">Chilli at coova.org</A>
+</I>&gt;<i> <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">http://lists.coova.org/cgi-bin/mailman/listinfo/chilli</A>
+</I>
+--
+--
+David Bird
+<A HREF="http://www.linkedin.com/in/dwbird/">http://www.linkedin.com/in/dwbird/</A>
+
+_______________________________________________
+Chilli mailing list
+<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">Chilli at coova.org</A>
+<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">http://lists.coova.org/cgi-bin/mailman/listinfo/chilli</A>
+
+</PRE>
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="002310.html">[Chilli] Chilli_Query login issue
+</A></li>
+	<LI>Next message: <A HREF="002309.html">[Chilli] Chilli_Query login issue
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2316">[ date ]</a>
+              <a href="thread.html#2316">[ thread ]</a>
+              <a href="subject.html#2316">[ subject ]</a>
+              <a href="author.html#2316">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

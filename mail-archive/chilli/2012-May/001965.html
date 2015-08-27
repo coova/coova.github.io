@@ -1,0 +1,237 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] Coovachilli and Squid Transparent on the same host
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Coovachilli%20and%20Squid%20Transparent%20on%20the%20same%20host&In-Reply-To=%3C1337440199.27842.63.camel%40david-laptop%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001964.html">
+   <LINK REL="Next"  HREF="001962.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] Coovachilli and Squid Transparent on the same host</H1>
+    <B>David Bird</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Coovachilli%20and%20Squid%20Transparent%20on%20the%20same%20host&In-Reply-To=%3C1337440199.27842.63.camel%40david-laptop%3E"
+       TITLE="[Chilli] Coovachilli and Squid Transparent on the same host">david at coova.com
+       </A><BR>
+    <I>Sat May 19 15:09:59 UTC 2012</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001964.html">[Chilli] Coovachilli and Squid Transparent on the same host
+</A></li>
+        <LI>Next message: <A HREF="001962.html">[Chilli] Support and development work
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1965">[ date ]</a>
+              <a href="thread.html#1965">[ thread ]</a>
+              <a href="subject.html#1965">[ subject ]</a>
+              <a href="author.html#1965">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>A couple things to try:
+
+- Try either the postauthproxy or the iptables REDIRECT, both shouldn't
+be needed.
+
+- Try using 10.0.0.1 instead of 127.0.0.1 for the squid listen and for
+the postauthproxy.
+
+- If using the REDIRECT method, try without the postauthproxy and will
+out a destination match in your iptables rule.
+
+Cheers,
+David
+
+On Sat, 2012-05-19 at 12:33 +0200, Germano Paciocco wrote:
+&gt;<i> I can't understand the reason why, but it still not working for me.
+</I>&gt;<i> I noticed that your firewall rules ar not matching in my configuration.
+</I>&gt;<i> On my next hop I can't see packets coming from HS network.
+</I>&gt;<i> I attach all my configuration files here, including the complete list
+</I>&gt;<i> of iptables rule: please help me I'm going crazy!
+</I>&gt;<i> 
+</I>&gt;<i> [iptables rules]
+</I>&gt;<i> 
+</I>&gt;<i> # iptables -L -t nat --line-number -n -v &amp;&amp; iptables -L --line-numbers
+</I>&gt;<i> -n -v
+</I>&gt;<i> 
+</I>&gt;<i> Chain PREROUTING (policy ACCEPT 2526 packets, 161K bytes)
+</I>&gt;<i> num   pkts bytes target     prot opt in     out     source
+</I>&gt;<i>   destination
+</I>&gt;<i> 1        0     0 REDIRECT   tcp  --  tun0   *       0.0.0.0/0
+</I>&gt;<i>   10.0.0.1             tcp dpt:443 redir ports 3128 &lt;&lt;&lt;&lt; NOT MATCHING
+</I>&gt;<i> 2        0     0 REDIRECT   tcp  --  tun0   *       0.0.0.0/0
+</I>&gt;<i>   10.0.0.1             tcp dpt:80 redir ports 3128 &lt;&lt;&lt;&lt; NOT MATCHING
+</I>&gt;<i> 
+</I>&gt;<i> Chain INPUT (policy ACCEPT 61 packets, 4220 bytes)
+</I>&gt;<i> num   pkts bytes target     prot opt in     out     source
+</I>&gt;<i>   destination
+</I>&gt;<i> 
+</I>&gt;<i> Chain OUTPUT (policy ACCEPT 8 packets, 2134 bytes)
+</I>&gt;<i> num   pkts bytes target     prot opt in     out     source
+</I>&gt;<i>   destination
+</I>&gt;<i> 
+</I>&gt;<i> Chain POSTROUTING (policy ACCEPT 112 packets, 9055 bytes)
+</I>&gt;<i> num   pkts bytes target     prot opt in     out     source
+</I>&gt;<i>   destination
+</I>&gt;<i> Chain INPUT (policy ACCEPT 1793 packets, 94754 bytes)
+</I>&gt;<i> num   pkts bytes target     prot opt in     out     source
+</I>&gt;<i>   destination
+</I>&gt;<i> 1        0     0 ACCEPT     tcp  --  *      *       0.0.0.0/0
+</I>&gt;<i>   0.0.0.0/0            tcp dpt:3128flags: 0x17/0x02 &lt;&lt;&lt;&lt; NOT MATCHING
+</I>&gt;<i> 2        1   328 DROP       all  --  eth1   *       0.0.0.0/0
+</I>&gt;<i>   0.0.0.0/0
+</I>&gt;<i> 3        0     0 ACCEPT     icmp --  tun0   *       0.0.0.0/0
+</I>&gt;<i>   10.0.0.1
+</I>&gt;<i> 4       48  3195 ACCEPT     udp  --  tun0   *       0.0.0.0/0
+</I>&gt;<i>   10.0.0.1             udp dpt:53
+</I>&gt;<i> 5        0     0 ACCEPT     udp  --  tun0   *       0.0.0.0/0
+</I>&gt;<i>   10.0.0.1             udp dpts:67:68
+</I>&gt;<i> 6        0     0 ACCEPT     udp  --  tun0   *       0.0.0.0/0
+</I>&gt;<i>   255.255.255.255      udp dpts:67:68
+</I>&gt;<i> 7        0     0 ACCEPT     tcp  --  tun0   *       0.0.0.0/0
+</I>&gt;<i>   10.0.0.1             tcp dpt:443
+</I>&gt;<i> 8        0     0 ACCEPT     tcp  --  tun0   *       0.0.0.0/0
+</I>&gt;<i>   10.0.0.1             tcp dpt:80
+</I>&gt;<i> 9       80  9751 ACCEPT     tcp  --  tun0   *       0.0.0.0/0
+</I>&gt;<i>   10.0.0.1             tcp dpt:4990
+</I>&gt;<i> 10     122 15651 ACCEPT     tcp  --  tun0   *       0.0.0.0/0
+</I>&gt;<i>   10.0.0.1             tcp dpt:3990
+</I>&gt;<i> 11       2    64 DROP       all  --  tun0   *       0.0.0.0/0
+</I>&gt;<i>   10.0.0.1
+</I>&gt;<i> 
+</I>&gt;<i> Chain FORWARD (policy ACCEPT 0 packets, 0 bytes)
+</I>&gt;<i> num   pkts bytes target     prot opt in     out     source
+</I>&gt;<i>   destination
+</I>&gt;<i> 1        0     0 DROP       all  --  tun0   !eth0   0.0.0.0/0
+</I>&gt;<i>   0.0.0.0/0
+</I>&gt;<i> 2      136  8324 TCPMSS     tcp  --  *      *       0.0.0.0/0
+</I>&gt;<i>   0.0.0.0/0            tcpflags: 0x06/0x02 TCPMSS clamp to PMTU
+</I>&gt;<i> 3      654  137K ACCEPT     all  --  *      tun0    0.0.0.0/0
+</I>&gt;<i>   0.0.0.0/0
+</I>&gt;<i> 4      879 99006 ACCEPT     all  --  tun0   *       0.0.0.0/0
+</I>&gt;<i>   0.0.0.0/0
+</I>&gt;<i> 5        0     0 DROP       all  --  *      eth1    0.0.0.0/0
+</I>&gt;<i>   0.0.0.0/0
+</I>&gt;<i> 6        0     0 DROP       all  --  eth1   *       0.0.0.0/0
+</I>&gt;<i>   0.0.0.0/0
+</I>&gt;<i> 
+</I>&gt;<i> Chain OUTPUT (policy ACCEPT 2017 packets, 470K bytes)
+</I>&gt;<i> num   pkts bytes target     prot opt in     out     source
+</I>&gt;<i>   destination
+</I>&gt;<i> 
+</I>&gt;<i> [main.conf]
+</I>&gt;<i> cmdsocket       /var/run/chilli.eth1.sock
+</I>&gt;<i> unixipc         chilli.eth1.ipc
+</I>&gt;<i> pidfile         /var/run/chilli.eth1.pid
+</I>&gt;<i> net		10.0.0.0/255.255.255.0
+</I>&gt;<i> uamlisten	10.0.0.1
+</I>&gt;<i> uamport         3990
+</I>&gt;<i> dhcpif		eth1
+</I>&gt;<i> uamallowed	&quot;www.coova.org,10.0.0.1,www.coova.org&quot;
+</I>&gt;<i> uamanydns
+</I>&gt;<i> statip 10.0.0.1/255.255.255.0
+</I>&gt;<i> domain &quot;lan&quot;
+</I>&gt;<i> dns1 &quot;10.0.0.1&quot;
+</I>&gt;<i> dns2 &quot;192.168.196.1&quot;
+</I>&gt;<i> uamhomepage <A HREF="http://10.0.0.1:3990/www/coova.html">http://10.0.0.1:3990/www/coova.html</A>
+</I>&gt;<i> wwwdir /etc/chilli/www
+</I>&gt;<i> wwwbin /etc/chilli/wwwsh
+</I>&gt;<i> uamuiport 4990
+</I>&gt;<i> locationname &quot;GePs Spot&quot;
+</I>&gt;<i> radiuslocationname &quot;GePs_Spot&quot;
+</I>&gt;<i> radiuslocationid &quot;isocc=,cc=,ac=,network=Coova,&quot;
+</I>&gt;<i> 
+</I>&gt;<i> [hs.conf]
+</I>&gt;<i> radiusserver1   &quot;localhost&quot;
+</I>&gt;<i> radiusserver2   &quot;localhost&quot;
+</I>&gt;<i> radiussecret    &quot;testing123&quot;
+</I>&gt;<i> radiusauthport  1812
+</I>&gt;<i> radiusacctport  1813
+</I>&gt;<i> uamserver       &quot;<A HREF="http://10.0.0.1:4990/www/login.chi">http://10.0.0.1:4990/www/login.chi</A>&quot;
+</I>&gt;<i> radiusnasid     &quot;nas01&quot;
+</I>&gt;<i> papalwaysok
+</I>&gt;<i> uamaliasname &quot;chilli&quot;
+</I>&gt;<i> adminupdatefile &quot;/etc/chilli/local.conf&quot;
+</I>&gt;<i> uamsecret &quot;uamsecret&quot;
+</I>&gt;<i> postauthproxy 127.0.0.1
+</I>&gt;<i> postauthproxyport 3128
+</I>&gt;<i> 
+</I>&gt;<i> [ipup.conf]
+</I>&gt;<i> iptables -I INPUT -p tcp -m tcp --dport 3128 --tcp-flags
+</I>&gt;<i> FIN,SYN,RST,ACK SYN -j ACCEPT
+</I>&gt;<i> iptables -t nat -A PREROUTING -d 10.0.0.1 -i tun0 -p tcp -m tcp
+</I>&gt;<i> --dport 443 -j REDIRECT --to-ports 3128
+</I>&gt;<i> iptables -t nat -A PREROUTING -d 10.0.0.1 -i tun0 -p tcp -m tcp
+</I>&gt;<i> --dport 80 -j REDIRECT --to-ports 3128
+</I>&gt;<i> 
+</I>&gt;<i> [squid.conf]
+</I>&gt;<i> acl manager proto cache_object
+</I>&gt;<i> acl localhost src 127.0.0.1/32 ::1
+</I>&gt;<i> acl to_localhost dst 127.0.0.0/8 0.0.0.0/32 ::1
+</I>&gt;<i> acl localnet src 10.0.0.0/24    # RFC1918 possible internal network
+</I>&gt;<i> acl SSL_ports port 443
+</I>&gt;<i> acl Safe_ports port 80          # http
+</I>&gt;<i> acl Safe_ports port 21          # ftp
+</I>&gt;<i> acl Safe_ports port 443         # https
+</I>&gt;<i> acl Safe_ports port 70          # gopher
+</I>&gt;<i> acl Safe_ports port 210         # wais
+</I>&gt;<i> acl Safe_ports port 1025-65535  # unregistered ports
+</I>&gt;<i> acl Safe_ports port 280         # http-mgmt
+</I>&gt;<i> acl Safe_ports port 488         # gss-http
+</I>&gt;<i> acl Safe_ports port 591         # filemaker
+</I>&gt;<i> acl Safe_ports port 777         # multiling http
+</I>&gt;<i> acl CONNECT method CONNECT
+</I>&gt;<i> http_access allow manager localhost
+</I>&gt;<i> http_access deny manager
+</I>&gt;<i> http_access deny !Safe_ports
+</I>&gt;<i> http_access deny CONNECT !SSL_ports
+</I>&gt;<i> http_access allow localnet
+</I>&gt;<i> http_access allow localhost
+</I>&gt;<i> http_access deny all
+</I>&gt;<i> always_direct allow all
+</I>&gt;<i> http_port 3128 transparent
+</I>&gt;<i> coredump_dir /var/spool/squid3
+</I>&gt;<i> refresh_pattern ^ftp:           1440    20%     10080
+</I>&gt;<i> refresh_pattern ^gopher:        1440    0%      1440
+</I>&gt;<i> refresh_pattern -i (/cgi-bin/|\?) 0     0%      0
+</I>&gt;<i> refresh_pattern (Release|Packages(.gz)*)$      0       20%     2880
+</I>&gt;<i> refresh_pattern .               0       20%     4320
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> &gt; That rules works fine. I setup it on the multiple box on different location.
+</I>&gt;<i> &gt; no. i used route. I don't link bridge mode.
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001964.html">[Chilli] Coovachilli and Squid Transparent on the same host
+</A></li>
+	<LI>Next message: <A HREF="001962.html">[Chilli] Support and development work
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1965">[ date ]</a>
+              <a href="thread.html#1965">[ thread ]</a>
+              <a href="subject.html#1965">[ subject ]</a>
+              <a href="author.html#1965">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,225 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] chilli as proxy question
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20chilli%20as%20proxy%20question&In-Reply-To=%3C1271136469.4130.455.camel%40david-laptop%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001257.html">
+   <LINK REL="Next"  HREF="001260.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] chilli as proxy question</H1>
+    <B>David Bird</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20chilli%20as%20proxy%20question&In-Reply-To=%3C1271136469.4130.455.camel%40david-laptop%3E"
+       TITLE="[Chilli] chilli as proxy question">david at coova.com
+       </A><BR>
+    <I>Tue Apr 13 05:27:49 UTC 2010</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001257.html">[Chilli] chilli as proxy question
+</A></li>
+        <LI>Next message: <A HREF="001260.html">[Chilli] chilli as proxy question
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1258">[ date ]</a>
+              <a href="thread.html#1258">[ thread ]</a>
+              <a href="subject.html#1258">[ subject ]</a>
+              <a href="author.html#1258">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hmm.. If the access-accept went through chilli, then you should see the
+session authorized using chilli_query. As for packet with id=12, you
+should be checking to see if it was your AP that sent that packet
+(chilli is just proxying) and you might check your AP logs for any
+related errors, etc. 
+
+On Mon, 2010-04-12 at 19:31 +0400, Anatoly Oreshkin wrote:
+&gt;<i> Hello,
+</I>&gt;<i> 
+</I>&gt;<i> I am trying to use chilli as proxy beetween Access Point (AP) and Radius 
+</I>&gt;<i> server. AP is configured with WPA2 security and EAP/PEAP/MSCHAPv2 
+</I>&gt;<i> authentication.
+</I>&gt;<i> 
+</I>&gt;<i> Chilli configuration.
+</I>&gt;<i> 
+</I>&gt;<i> /usr/local/etc/chilli/config:
+</I>&gt;<i> 
+</I>&gt;<i> HS_WANIF=eth0             # address 195.19.214.216 
+</I>&gt;<i> HS_LANIF=eth1             # address 10.2.3.1
+</I>&gt;<i> HS_NETWORK=10.2.3.0
+</I>&gt;<i> HS_NETMASK=255.255.255.0
+</I>&gt;<i> HS_UAMLISTEN=10.2.3.1
+</I>&gt;<i> HS_RADIUS=212.193.96.134
+</I>&gt;<i> ...
+</I>&gt;<i> 
+</I>&gt;<i> /usr/local/etc/chilli/local.conf:
+</I>&gt;<i> 
+</I>&gt;<i> proxylisten=10.2.3.1
+</I>&gt;<i> proxyport=1812
+</I>&gt;<i> proxyclient=10.2.3.254  # AP address
+</I>&gt;<i> proxysecret=&lt;secret&gt;
+</I>&gt;<i> 
+</I>&gt;<i> Radius configuration.
+</I>&gt;<i> 
+</I>&gt;<i> clients.conf:
+</I>&gt;<i> 
+</I>&gt;<i> # chilli hotspot
+</I>&gt;<i> client 195.19.214.216 {
+</I>&gt;<i>          secret      = &lt;secret&gt;
+</I>&gt;<i>          shortname   = Chilli
+</I>&gt;<i>          nastype     = other
+</I>&gt;<i> }
+</I>&gt;<i> 
+</I>&gt;<i> I ran chilli in debug mode and got such output:
+</I>&gt;<i> 
+</I>&gt;<i> chilli.c: 1957: 0 (Debug) RADIUS Access-Request received
+</I>&gt;<i> chilli.c: 1986: 0 (Debug) Calling Station ID is: 00-16-EA-8A-DE-38
+</I>&gt;<i> dhcp.c: 389: 0 (Debug) DHCP newconn: 00:16:ea:8a:de:38
+</I>&gt;<i> chilli.c: 3285: 0 (Debug) New DHCP request from MAC=00-16-EA-8A-DE-38
+</I>&gt;<i> chilli.c: 3288: 0 (Debug) New DHCP connection established
+</I>&gt;<i> radius.c: 1446: 0 (Debug) RADIUS to 212.193.96.134:1812
+</I>&gt;<i> ...
+</I>&gt;<i> chilli.c: 2792: 0 (Debug) Received access request confirmation from radius 
+</I>&gt;<i> server
+</I>&gt;<i> 
+</I>&gt;<i> chilli.c: 2828: 0 (Debug) Received access challenge from radius server
+</I>&gt;<i> chilli.c: 920: 0 (Debug) Sending RADIUS AccessChallenge to client
+</I>&gt;<i> chilli.c: 1957: 0 (Debug) RADIUS Access-Request received
+</I>&gt;<i> chilli.c: 1986: 0 (Debug) Calling Station ID is: 00-16-EA-8A-DE-38
+</I>&gt;<i> radius.c: 1446: 0 (Debug) RADIUS to 212.193.96.134:1812
+</I>&gt;<i> chilli.c: 2792: 0 (Debug) Received access request confirmation from radius 
+</I>&gt;<i> server
+</I>&gt;<i> 
+</I>&gt;<i> chilli.c: 2828: 0 (Debug) Received access challenge from radius server
+</I>&gt;<i> chilli.c: 920: 0 (Debug) Sending RADIUS AccessChallenge to client
+</I>&gt;<i> chilli.c: 1957: 0 (Debug) RADIUS Access-Request received
+</I>&gt;<i> chilli.c: 1986: 0 (Debug) Calling Station ID is: 00-16-EA-8A-DE-38
+</I>&gt;<i> radius.c: 1446: 0 (Debug) RADIUS to 212.193.96.134:1812
+</I>&gt;<i> chilli.c: 2792: 0 (Debug) Received access request confirmation from radius server
+</I>&gt;<i> ...
+</I>&gt;<i> 
+</I>&gt;<i> chilli.c: 1957: 0 (Debug) RADIUS Access-Request received
+</I>&gt;<i> chilli.c: 1986: 0 (Debug) Calling Station ID is: 00-16-EA-8A-DE-38
+</I>&gt;<i> radius.c: 1446: 0 (Debug) RADIUS to 212.193.96.134:1813
+</I>&gt;<i> radius.c: 1446: 0 (Debug) RADIUS to 212.193.96.134:1812
+</I>&gt;<i> radius.c: 1703: 0 (Debug) Authenticator does not match request!
+</I>&gt;<i> radius.c: 337: 0 (Debug) No such id in radius queue: id=12!
+</I>&gt;<i> radius.c: 1698: 0 (Debug) Matching request was not found in queue: 12!
+</I>&gt;<i> chilli.c: 1957: 0 (Debug) RADIUS Access-Request received
+</I>&gt;<i> ...
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> Radius output:
+</I>&gt;<i> --------------
+</I>&gt;<i> 
+</I>&gt;<i> Radius received from chilli Access-Request packet with id=1:
+</I>&gt;<i> 
+</I>&gt;<i> rad_recv: Access-Request packet from host 195.19.214.216 port 37455, id=1, length=176
+</I>&gt;<i>          Vendor-14559-Attr-8 = 0x312e322e332d726331
+</I>&gt;<i>          User-Name = &quot;csd-notebook\\oreshkin&quot;
+</I>&gt;<i>          EAP-Message = 
+</I>&gt;<i> 0x0200001a016373642d6e6f7465626f6f6b5c6f726573686b696e
+</I>&gt;<i>          Calling-Station-Id = &quot;00-16-EA-8A-DE-38&quot;
+</I>&gt;<i>          Called-Station-Id = &quot;00-0E-0C-36-AE-AA&quot;
+</I>&gt;<i>          NAS-Port-Type = Wireless-802.11
+</I>&gt;<i>          NAS-Port = 2
+</I>&gt;<i>          Service-Type = Login-User
+</I>&gt;<i>          NAS-IP-Address = 10.2.3.1
+</I>&gt;<i>          NAS-Identifier = &quot;nas01&quot;
+</I>&gt;<i>          Message-Authenticator = 0x70bb92e04f02f1717329cf61fff2e2f1
+</I>&gt;<i> +- entering group authorize {...}
+</I>&gt;<i> ++[preprocess] returns ok
+</I>&gt;<i> 
+</I>&gt;<i> ...
+</I>&gt;<i> ...
+</I>&gt;<i> 
+</I>&gt;<i> Radius authenticated the client with MAC: 00-16-EA-8A-DE-38 and sent 
+</I>&gt;<i> chilli Access-Accept packet with id=10  to confirm authentication.
+</I>&gt;<i> 
+</I>&gt;<i> Sending Access-Accept of id 10 to 195.19.214.216 port 37455
+</I>&gt;<i>          MS-MPPE-Recv-Key = 
+</I>&gt;<i> 0x446fcdddb89288bd3b720a314422d9cccb1c09941636fbb4bbc15a07c1873bfb
+</I>&gt;<i>          MS-MPPE-Send-Key = 
+</I>&gt;<i> 0x117f6d0a36318d0e869f7570773cf36a916c7c8ea4910d4c25c965977d876814
+</I>&gt;<i>          EAP-Message = 0x03090004
+</I>&gt;<i>          Message-Authenticator = 0x00000000000000000000000000000000
+</I>&gt;<i>          User-Name = &quot;csd-notebook\\oreshkin&quot;
+</I>&gt;<i> Finished request 10.
+</I>&gt;<i> 
+</I>&gt;<i> Then radius  received from chilli Accounting-Request packet with id=11 and 
+</I>&gt;<i> sent Accounting-Response to chilli.
+</I>&gt;<i> 
+</I>&gt;<i> Sending Accounting-Response of id 11 to 195.19.214.216 port 37455
+</I>&gt;<i> Finished request 11.
+</I>&gt;<i> 
+</I>&gt;<i> It seemed that authentication process to be complete !
+</I>&gt;<i> 
+</I>&gt;<i> But radius got unexpectedly from chilli   Access-Request packet with id=12
+</I>&gt;<i> 
+</I>&gt;<i> rad_recv: Access-Request packet from host 195.19.214.216 port 37455, id=12, length=176
+</I>&gt;<i>          Vendor-14559-Attr-8 = 0x312e322e332d726331
+</I>&gt;<i>          User-Name = &quot;csd-notebook\\oreshkin&quot;
+</I>&gt;<i>          EAP-Message = 
+</I>&gt;<i> 0x0200001a016373642d6e6f7465626f6f6b5c6f726573686b696e
+</I>&gt;<i>          Calling-Station-Id = &quot;00-16-EA-8A-DE-38&quot;
+</I>&gt;<i>          Called-Station-Id = &quot;00-0E-0C-36-AE-AA&quot;
+</I>&gt;<i>          NAS-Port-Type = Wireless-802.11
+</I>&gt;<i>          NAS-Port = 2
+</I>&gt;<i>          Service-Type = Login-User
+</I>&gt;<i>          NAS-IP-Address = 10.2.3.1
+</I>&gt;<i>          NAS-Identifier = &quot;nas01&quot;
+</I>&gt;<i>          Message-Authenticator = 0x647799f84fc9779142b12a59a00dcac1
+</I>&gt;<i> +- entering group authorize {...}
+</I>&gt;<i> ++[preprocess] returns ok
+</I>&gt;<i> ...
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> Why did this Access-Request with id=12 come from chilli ?
+</I>&gt;<i> Chilli does not see such id=12 in radius queue and can not complete authentication.
+</I>&gt;<i> 
+</I>&gt;<i> What might be wrong ? Configuration or something else ?
+</I>&gt;<i> I installed chilli from SVN.
+</I>&gt;<i> 
+</I>&gt;<i> Thanks.
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> _______________________________________________
+</I>&gt;<i> Chilli mailing list
+</I>&gt;<i> <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">Chilli at coova.org</A>
+</I>&gt;<i> <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">http://lists.coova.org/cgi-bin/mailman/listinfo/chilli</A>
+</I>
+
+</PRE>
+
+
+
+
+
+
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001257.html">[Chilli] chilli as proxy question
+</A></li>
+	<LI>Next message: <A HREF="001260.html">[Chilli] chilli as proxy question
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1258">[ date ]</a>
+              <a href="thread.html#1258">[ thread ]</a>
+              <a href="subject.html#1258">[ subject ]</a>
+              <a href="author.html#1258">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

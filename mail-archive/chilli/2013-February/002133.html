@@ -1,0 +1,221 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] Coova-Chilli Multi Tenanency Mode
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Coova-Chilli%20Multi%20Tenanency%20Mode&In-Reply-To=%3CCAODoKgDqQ_H1zCXqXcFa60Z_YSoeDYGL3eMey_M-fPumSxNbgg%40mail.gmail.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="002132.html">
+   <LINK REL="Next"  HREF="002135.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] Coova-Chilli Multi Tenanency Mode</H1>
+    <B>Robert White</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Coova-Chilli%20Multi%20Tenanency%20Mode&In-Reply-To=%3CCAODoKgDqQ_H1zCXqXcFa60Z_YSoeDYGL3eMey_M-fPumSxNbgg%40mail.gmail.com%3E"
+       TITLE="[Chilli] Coova-Chilli Multi Tenanency Mode">rwhite at globalgossip.net
+       </A><BR>
+    <I>Thu Feb  7 02:40:21 UTC 2013</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="002132.html">[Chilli] Coova-Chilli Multi Tenanency Mode
+</A></li>
+        <LI>Next message: <A HREF="002135.html">[Chilli] Coova-Chilli Multi Tenanency Mode
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2133">[ date ]</a>
+              <a href="thread.html#2133">[ thread ]</a>
+              <a href="subject.html#2133">[ subject ]</a>
+              <a href="author.html#2133">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE> I've also experienced the same problem.
+
+All rules from up.sh except the following seem to get created:
+
+ipt_in -p tcp -m tcp --dport $UAMPORT --dst $ADDR -j ACCEPT
+
+
+It seems to only ever happen in multi-instance environments so maybe it is
+something to do with iptables locking and not allowing the insertion of the
+rule while another instance is trying to do the same?  I'm not sure.
+
+Do all chilli instances start concurrently or in order?
+
+
+
+
+On 7 February 2013 10:45, Luis Ferreira &lt;<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">lferreira at cabocom.cv</A>&gt; wrote:
+
+&gt;<i> Hello everyone. This is my first message to the great Coova community, so
+</I>&gt;<i> I&#8217;ll start by give a little help, but describing the same problem in more
+</I>&gt;<i> detail, my actual fix and a request for a fix/workaround****
+</I>&gt;<i>
+</I>&gt;<i> ** **
+</I>&gt;<i>
+</I>&gt;<i> The problem that you are describing is because at start up time*, it did
+</I>&gt;<i> not managed to create all the required iptables rules*. For each VLAN, it
+</I>&gt;<i> should create:****
+</I>&gt;<i>
+</I>&gt;<i> ** **
+</I>&gt;<i>
+</I>&gt;<i> -A FORWARD -o vlan10 -j DROP****
+</I>&gt;<i>
+</I>&gt;<i> -A FORWARD -i vlan10 -j DROP ****
+</I>&gt;<i>
+</I>&gt;<i> ** **
+</I>&gt;<i>
+</I>&gt;<i> And also****
+</I>&gt;<i>
+</I>&gt;<i> ** **
+</I>&gt;<i>
+</I>&gt;<i> -A FORWARD -i tun0 ! -o eth1 -j DROP****
+</I>&gt;<i>
+</I>&gt;<i> -A FORWARD -o tun0 -j ACCEPT****
+</I>&gt;<i>
+</I>&gt;<i> -A FORWARD -i tun0 -j ACCEPT****
+</I>&gt;<i>
+</I>&gt;<i> ** **
+</I>&gt;<i>
+</I>&gt;<i> In my implementation, it normally *fail to create all the iptables rules
+</I>&gt;<i> uppon startup*. For that reason, I have to apply the following very dirty
+</I>&gt;<i> solution.****
+</I>&gt;<i>
+</I>&gt;<i> That problem normally appears only at boot time. What I do is****
+</I>&gt;<i>
+</I>&gt;<i> *killall &#8211;v chilli*****
+</I>&gt;<i>
+</I>&gt;<i> and****
+</I>&gt;<i>
+</I>&gt;<i> */etc/init.d/chilli start*****
+</I>&gt;<i>
+</I>&gt;<i> to start all of them the proper way.****
+</I>&gt;<i>
+</I>&gt;<i> After that, I&#8217;ve check with iptables if for each vlan, it created 2 rules
+</I>&gt;<i> regarding vlanXXX and 3 rules regarding tunXXX****
+</I>&gt;<i>
+</I>&gt;<i> ** **
+</I>&gt;<i>
+</I>&gt;<i> I would apreciate if someone has a fix/workaround for that, like a
+</I>&gt;<i> different startup script that would check if all the instances started
+</I>&gt;<i> correctly.****
+</I>&gt;<i>
+</I>&gt;<i> ** **
+</I>&gt;<i>
+</I>&gt;<i> ** **
+</I>&gt;<i>
+</I>&gt;<i> Best regards,****
+</I>&gt;<i>
+</I>&gt;<i> Luis Ferreira****
+</I>&gt;<i>
+</I>&gt;<i> ** **
+</I>&gt;<i>
+</I>&gt;<i> *De:* <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli-bounces at coova.org</A> [mailto:<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli-bounces at coova.org</A>] *Em nome
+</I>&gt;<i> de *Russell Mike
+</I>&gt;<i> *Enviada:* quarta-feira, 6 de Fevereiro de 2013 10:58
+</I>&gt;<i> *Para:* chilli list; David Bird
+</I>&gt;<i> *Assunto:* [Chilli] Coova-Chilli Multi Tenanency Mode****
+</I>&gt;<i>
+</I>&gt;<i> ** **
+</I>&gt;<i>
+</I>&gt;<i> Dear David &amp; Community Members Greetings,****
+</I>&gt;<i>
+</I>&gt;<i> This discussion is with respect to that, how to make sure all instances
+</I>&gt;<i> are up for &quot;CoovaChilli&quot; in multi tenant environment after hardware server
+</I>&gt;<i> reboots. ****
+</I>&gt;<i>
+</I>&gt;<i> *1.)* This is ISP environment. We have 10 Coovachill instances running
+</I>&gt;<i> (Multi Tenanency) using (VLANs 10,20,30,40,50,60,70,80,90,100). When system
+</I>&gt;<i> reboot, all daemons comes up just fine and start serving users by
+</I>&gt;<i> presenting login page. We are very very happy from Coova-Chilli
+</I>&gt;<i> implementation. ****
+</I>&gt;<i>
+</I>&gt;<i> *2.)* BUT SOMETIMES when system reboot and after it has comes up. For
+</I>&gt;<i> example VLAN30 would not present login page, other NINE(9) instances would
+</I>&gt;<i> be just fine, working as expected. Then i restart Chilli daemon as
+</I>&gt;<i> solution. Now, all 10 daemons would come up and start serving just fine
+</I>&gt;<i> again. ****
+</I>&gt;<i>
+</I>&gt;<i> *2a)* BUT SOMETIME, when i apply the solution (restart Chill daemon) one
+</I>&gt;<i> of them would not present login page again (it is random VLAN (Sometime
+</I>&gt;<i> 30/80/20 etc..)). ****
+</I>&gt;<i>
+</I>&gt;<i> For example: i restarted the service earlier because VLAN 90 was not
+</I>&gt;<i> presenting login page, after restart VLAN60 daemon is not presenting login
+</I>&gt;<i> page. Problem is recoverable, by restarting service more than once.****
+</I>&gt;<i>
+</I>&gt;<i> *2b.)* When a instance would not present login page. Same time i see
+</I>&gt;<i> that, it is mounted &amp; listening on the port (&quot;netstat&quot;) stuff looks obvious
+</I>&gt;<i> from that point of view. Tunnel would be created as well, all stuff belongs
+</I>&gt;<i> to that VLAN (that is not serving web page) exists under &quot;/var/run'chilli*
+</I>&gt;<i> (pid, ipc, socket, bash script). ****
+</I>&gt;<i>
+</I>&gt;<i> *HOW I AM DOING IT: *****
+</I>&gt;<i>
+</I>&gt;<i> Now whenever the Chilli Server is restarted, i manually browse &amp; check if
+</I>&gt;<i> all daemons are presenting login pages. But eventually, we going to run
+</I>&gt;<i> minimum 120 daemons. it would not possible to browse 120 pages after every
+</I>&gt;<i> reboot. Is there better way to handle it? or what could be the auto fix? i
+</I>&gt;<i> was thinking something like a script that can check the functionality, if
+</I>&gt;<i> everything did not up restart the daemon again. i understand that we do not
+</I>&gt;<i> restart data center servers everyday but it happens sometimes due to the
+</I>&gt;<i> power outage or UPS failed or generator did not come up on time etc.****
+</I>&gt;<i>
+</I>&gt;<i> Thanks / Regards ****
+</I>&gt;<i>
+</I>&gt;<i> RM --- ****
+</I>&gt;<i>
+</I>&gt;<i> _______________________________________________
+</I>&gt;<i> Chilli mailing list
+</I>&gt;<i> <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">Chilli at coova.org</A>
+</I>&gt;<i> <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">http://lists.coova.org/cgi-bin/mailman/listinfo/chilli</A>
+</I>&gt;<i>
+</I>&gt;<i>
+</I>
+-- 
+-------------------------------------------------
+
+IMPORTANT NOTICE: The information in this email is confidential and may 
+also be privileged. 
+If you are not the intended recipient, any use or dissemination of the 
+information and any disclosure or copying of this email is unauthorised and 
+strictly prohibited.  If you have received this email in error, please 
+promptly inform us by reply email or telephone.  You should also 
+delete this email and destroy any hard copies produced.
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: &lt;<A HREF="http://lists.coova.org/pipermail/chilli/attachments/20130207/2f86246b/attachment-0001.html">http://lists.coova.org/pipermail/chilli/attachments/20130207/2f86246b/attachment-0001.html</A>&gt;
+</PRE>
+
+
+
+
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="002132.html">[Chilli] Coova-Chilli Multi Tenanency Mode
+</A></li>
+	<LI>Next message: <A HREF="002135.html">[Chilli] Coova-Chilli Multi Tenanency Mode
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2133">[ date ]</a>
+              <a href="thread.html#2133">[ thread ]</a>
+              <a href="subject.html#2133">[ subject ]</a>
+              <a href="author.html#2133">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

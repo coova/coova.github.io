@@ -1,0 +1,134 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] Bugs and patches
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Bugs%20and%20patches&In-Reply-To=%3C1360093654.6387.2.camel%40david-laptop%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="002127.html">
+   <LINK REL="Next"  HREF="002156.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] Bugs and patches</H1>
+    <B>David Bird</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Bugs%20and%20patches&In-Reply-To=%3C1360093654.6387.2.camel%40david-laptop%3E"
+       TITLE="[Chilli] Bugs and patches">david at coova.com
+       </A><BR>
+    <I>Tue Feb  5 19:47:34 UTC 2013</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="002127.html">[Chilli] Coova-Chilli CP
+</A></li>
+        <LI>Next message: <A HREF="002156.html">[Chilli] Problem with mmap!
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2128">[ date ]</a>
+              <a href="thread.html#2128">[ thread ]</a>
+              <a href="subject.html#2128">[ subject ]</a>
+              <a href="author.html#2128">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Subversion has been updated...
+
+The &quot;nosystemdns&quot; option doesn't need to be in options_t because it's
+only used during configuration time. 
+
+Also updated, when using --with-mmap, you can now selectively use
+--mmapring to enable the RX/TX rings, otherwise you are running without
+them (the standard way). 
+
+Cheers,
+
+
+On Wed, 2013-01-30 at 16:28 +0100, Sven Anders wrote:
+&gt;<i> Bug reports for &quot;coova-chilli-1.3.0&quot;
+</I>&gt;<i> 
+</I>&gt;<i> I compile with the following options:
+</I>&gt;<i>  --with-openssl --with-mmap --with-poll --enable-largelimits --enable-binstatusfile --enable-statusfile \
+</I>&gt;<i>  --enable-chilliproxy --enable-chilliradsec --enable-chilliredir --enable-chilliscript --enable-ieee8023 \
+</I>&gt;<i>  --enable-multiroute
+</I>&gt;<i> 
+</I>&gt;<i> 1) If I try to compile without the &quot;--enable-multiroute&quot; option:
+</I>&gt;<i> 
+</I>&gt;<i> chilli.c: In function 'chilli_main':
+</I>&gt;<i> chilli.c:7540:26: error: 'struct tun_t' has no member named '_interface_count'
+</I>&gt;<i> chilli.c:7541:16: error: 'struct tun_t' has no member named '_interfaces'
+</I>&gt;<i> 
+</I>&gt;<i> Compiling with this option enabled works fine.
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> 2) I get the following warnings, which are treated as errors:
+</I>&gt;<i> 
+</I>&gt;<i> cc1: warnings being treated as errors
+</I>&gt;<i> net.c: In function 'net_open_eth':
+</I>&gt;<i> net.c:1189:22: error: unused variable 'mr'
+</I>&gt;<i> net.c: At top level:
+</I>&gt;<i> net.c:1938:13: error: 'setup_filter' defined but not used
+</I>&gt;<i> 
+</I>&gt;<i> I removed the -Werror option from the Makefile.
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> 3) If you start chilli without stdin/stdout/stderr, the file descriptor of opened
+</I>&gt;<i>    files may be 0.
+</I>&gt;<i> 
+</I>&gt;<i> Patch attached.
+</I>&gt;<i> 
+</I>&gt;<i> 4) The default parameters should be initialized right after it's creation.
+</I>&gt;<i>    (This solved a problem I did not remember).
+</I>&gt;<i> 
+</I>&gt;<i> Patch attached.
+</I>&gt;<i> 
+</I>&gt;<i> 5) It should be possible to use the chilli with its own DNS server settings.
+</I>&gt;<i>    Currently the DNS server settings from the host are used, if none are
+</I>&gt;<i>    configured.
+</I>&gt;<i>    I added a new option &quot;--nosystemdns&quot; for that.
+</I>&gt;<i> 
+</I>&gt;<i> Patch attached.
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> Regards
+</I>&gt;<i>  Sven Anders
+</I>&gt;<i> 
+</I>&gt;<i> _______________________________________________
+</I>&gt;<i> Chilli mailing list
+</I>&gt;<i> <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">Chilli at coova.org</A>
+</I>&gt;<i> <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">http://lists.coova.org/cgi-bin/mailman/listinfo/chilli</A>
+</I>
+-- 
+--
+David Bird
+<A HREF="http://www.linkedin.com/in/dwbird">http://www.linkedin.com/in/dwbird</A>
+<A HREF="https://twitter.com/wlanmac">https://twitter.com/wlanmac</A>
+
+</PRE>
+
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="002127.html">[Chilli] Coova-Chilli CP
+</A></li>
+	<LI>Next message: <A HREF="002156.html">[Chilli] Problem with mmap!
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2128">[ date ]</a>
+              <a href="thread.html#2128">[ thread ]</a>
+              <a href="subject.html#2128">[ subject ]</a>
+              <a href="author.html#2128">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

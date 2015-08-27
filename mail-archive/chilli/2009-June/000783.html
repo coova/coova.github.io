@@ -1,0 +1,154 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> CC + FreeRadius - splash page randomly appears
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20CC%20%2B%20FreeRadius%20-%20splash%20page%20randomly%20appears&In-Reply-To=%3C58389.194.125.91.89.1246189665.squirrel%40www.rivertowermail.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000765.html">
+   <LINK REL="Next"  HREF="000769.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>CC + FreeRadius - splash page randomly appears</H1>
+    <B>Derek C</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20CC%20%2B%20FreeRadius%20-%20splash%20page%20randomly%20appears&In-Reply-To=%3C58389.194.125.91.89.1246189665.squirrel%40www.rivertowermail.com%3E"
+       TITLE="CC + FreeRadius - splash page randomly appears">derekchilli at hssl.ie
+       </A><BR>
+    <I>Sun Jun 28 11:47:45 UTC 2009</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000765.html">CC + FreeRadius - splash page randomly appears
+</A></li>
+        <LI>Next message: <A HREF="000769.html">[tap mode doesn't work]
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#783">[ date ]</a>
+              <a href="thread.html#783">[ thread ]</a>
+              <a href="subject.html#783">[ subject ]</a>
+              <a href="author.html#783">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hi guys - an update on this...
+
+I've been logging whats happening users hit my splash page and I've been
+working on a work-around so that users don't see what's happening even if
+there is a glitch.
+
+I'm running Coova Chillia 1.0.13 on OpenWRT and I'm using MAC
+authentication with a freeradius server.
+
+This is whats happening now: -
+
+1. A user has access to the Internet because their MAC is in the
+freeradius DB (radcheck and usergroup) - all working perfectly
+
+2. Then, for whatever reason the Coova Chilli decides to redirect the user
+to my splash page instead of the page they requested
+
+3. On the splash page I first check if the user is in the radcheck table -
+they are!  So I redirect them to CC /login page
+
+4. Now instantly Coova Chilli redirects back to the splash page again but
+this time I see that the &quot;res&quot; CGI parameter is now set to &quot;already&quot; so
+now I redirect the user to the page they really wanted
+
+5. Its works - the users sees their requested page and they are none the
+wiser to all this...
+
+I suppose this is not good for users wanting to do stuff that isn't web
+related (email, etc) because its the web page access (with my redirects)
+that gets them access again..
+
+Also (in point 3 above) I might get away with just be redirecting the user
+to the page they want rather than the Coova Chilli /login page - My
+reasoning for the /login page is that if they aren't logged in and seeing
+the splash page then I should try to force CC to try the login again?
+
+Its funny though isn't it?  Maybe its some kind of time-out with on
+macauth happening just after the timeout?
+
+Derek
+
+
+
+On Wed, June 24, 2009 3:50 pm, Derek C wrote:
+&gt;<i>
+</I>
+&gt;<i> On Wed, June 24, 2009 6:30 am, Urech Bruno wrote:
+</I>&gt;<i>
+</I>&gt;&gt;<i> Hi all
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> I had the same issue sometimes too. It seemed to be related to the DHCP
+</I>&gt;&gt;<i>  lease policy. The device asks for a new IP, even if still an address
+</I>&gt;&gt;<i> is assigned to it. Then you have to stop the reservation (chilli_query
+</I>&gt;&gt;<i> logout) for the mentioned session/device and the whole DHCP procedure
+</I>&gt;&gt;<i> worked again, after a browser refresh. This issue seems to be much
+</I>&gt;&gt;<i> better since 1.0.12 and it occurred the most on 3G iPhones and Nokia
+</I>&gt;&gt;<i> N95/N96s,
+</I>&gt;&gt;<i> but also sometimes on other devices.
+</I>&gt;<i>
+</I>&gt;<i> Hi Bruno,
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> I was hoping that the &quot;macreauth&quot; option in 1.0.13 would be the fix to
+</I>&gt;<i> that but I'm still seeing the same problem.
+</I>&gt;<i>
+</I>&gt;<i> I'm going to update my splash page to redirect back to the Coova Chilli
+</I>&gt;<i> /login page again and also write a log entry into the database - this way
+</I>&gt;<i> I'll know how often it is happening and, maybe?, the redirecting to the
+</I>&gt;<i> /login page will make Coova Chilli try to re-authenticate again (I wonder
+</I>&gt;<i> will it?)
+</I>&gt;<i>
+</I>&gt;<i> thanks,
+</I>&gt;<i>
+</I>&gt;<i> Derek
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> --
+</I>&gt;<i> Derek C
+</I>&gt;<i> In Ireland
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> ---------------------------------------------------------------------
+</I>&gt;<i> To unsubscribe, e-mail: <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli-unsubscribe at coova.org</A>
+</I>&gt;<i> For additional commands, e-mail: <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli-help at coova.org</A>
+</I>&gt;<i> Wiki: <A HREF="http://coova.org/wiki/index.php/CoovaChilli">http://coova.org/wiki/index.php/CoovaChilli</A>
+</I>&gt;<i> Forum: <A HREF="http://coova.org/phpBB3/viewforum.php?f=4">http://coova.org/phpBB3/viewforum.php?f=4</A>
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>
+</I>
+
+-- 
+Derek C
+In Ireland
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000765.html">CC + FreeRadius - splash page randomly appears
+</A></li>
+	<LI>Next message: <A HREF="000769.html">[tap mode doesn't work]
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#783">[ date ]</a>
+              <a href="thread.html#783">[ thread ]</a>
+              <a href="subject.html#783">[ subject ]</a>
+              <a href="author.html#783">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

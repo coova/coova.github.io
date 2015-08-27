@@ -1,0 +1,157 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] [SOLVED !!!]Configuring CoovaChilli For DHCP Pool Range Classless &amp; Class-full Ranges VLMS How To ??SOLVED !!!]
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20%5BSOLVED%20%21%21%21%5DConfiguring%20CoovaChilli%20For%20DHCP%20Pool%20Range%0A%20Classless%20%26%20Class-full%20Ranges%20VLMS%20How%20To%20%3F%3FSOLVED%20%21%21%21%5D&In-Reply-To=%3CCADao4CpQirMmMKZXX%3DkJ8q%3DakO3pn%2BNXh_ABb4Swuu%3D8r0NNLQ%40mail.gmail.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="002242.html">
+   <LINK REL="Next"  HREF="002229.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] [SOLVED !!!]Configuring CoovaChilli For DHCP Pool Range Classless &amp; Class-full Ranges VLMS How To ??SOLVED !!!]</H1>
+    <B>Russell Mike</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20%5BSOLVED%20%21%21%21%5DConfiguring%20CoovaChilli%20For%20DHCP%20Pool%20Range%0A%20Classless%20%26%20Class-full%20Ranges%20VLMS%20How%20To%20%3F%3FSOLVED%20%21%21%21%5D&In-Reply-To=%3CCADao4CpQirMmMKZXX%3DkJ8q%3DakO3pn%2BNXh_ABb4Swuu%3D8r0NNLQ%40mail.gmail.com%3E"
+       TITLE="[Chilli] [SOLVED !!!]Configuring CoovaChilli For DHCP Pool Range Classless &amp; Class-full Ranges VLMS How To ??SOLVED !!!]">radius.sir at gmail.com
+       </A><BR>
+    <I>Tue Apr  2 19:37:40 UTC 2013</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="002242.html">[Chilli] Reduce the DHCP lease Time of CoovaChilli
+</A></li>
+        <LI>Next message: <A HREF="002229.html">[Chilli] CoovaChilli (Connection reset by peer) redir_read(0)	failed!
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2228">[ date ]</a>
+              <a href="thread.html#2228">[ thread ]</a>
+              <a href="subject.html#2228">[ subject ]</a>
+              <a href="author.html#2228">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Configuring CoovaChilli (I used v1.3.0) For DHCP Pool Range Classless &amp;
+Class-full Ranges VLMS How To ??
+
+Special Thanks To:  *Mr.* *Steffen Dettmer*
+
+Scenario: I have a network of 192.168.8.0 255.255.255.0 (24). i am using
+some static ip address for my server from the range 192.168.8.1 -
+192.168.8.34. I do not want CoovaChilli to issue these ip address. Saying
+other way, i want to specify a dhcp pool range, therefore CoovaChilli can
+use a ip from the pool to issue the ip address for incoming dhcp requests.
+
+How do i do that?
+
+nano &quot;/usr/local/etc/chilli.conf&quot; (These are two different ways of writing
+the directive, use one only)
+
+net=192.168.8.0/255.255.255.0
+
+OR
+
+net=192.168.8.0/24
+
+nano &quot;/usr/local/etc/chilli/local.conf&quot;
+
+dhcpstart=35
+
+dhcpend=254
+
+save the files and it is done. Coova will now issue the ip address from
+this range (192.168.8.35 - 192.168.8.254). make sure your entires are not
+in conflict with previous configuration otherwise it would just work.
+configured so many times.
+
+BUT when it comes to variable length subnet mask (VLMS) - (sub-netting
+braking ip address, hosts &amp; networks in small/big partitions as needed)  i
+found it bit tricky to configure and understand DHCP pool range directive
+when using VLMS, to help new comers and those may attempt in future, i wish
+to share my opinion that may helpful for them to understand easily.
+
+
+My Network: 10.130.8.160
+
+My Subnet Mask: 255.255.255.224
+
+(- IP sub netting example copied from online subnet calculator)
+
+Network:   10.130.8.160/27       00001010.10000010.00001000.101 00000 (*Class
+A*)
+
+Broadcast: 10.130.8.191          00001010.10000010.00001000.101 11111
+
+HostMin:   10.130.8.161          00001010.10000010.00001000.101 00001
+
+HostMax:   10.130.8.190          00001010.10000010.00001000.101 11110
+
+Hosts/Net: 30
+
+Assuming that 10.130.8.161 is CoovaChilli Box. Coova dhcp must issue from
+10.130.8.162 - 10.130.8.190.  What would you expect to write in to
+&quot;local.conf&quot; &amp; &quot;chilli.conf&quot; when reading above example.
+
+dhcpstart=162
+
+dhcpend=190
+
+IT IS WRONG !!!! WOULD NOT WORK. HERE IT IS BIT TICKY
+
+*CORRECT VERSION:*
+
+nano &quot;/usr/local/etc/chilli.conf&quot; (These are two different ways of writing
+the directive, use one only)
+
+net=10.130.8.160/255.255.255.224
+
+OR
+
+net=192.168.8.0/27
+
+nano &quot;/usr/local/etc/chilli/local.conf&quot;
+
+dhcpstart=2
+
+dhcpend=29
+
+The correct dhcpstart should be 2 and dhcpend should be 29
+
+I hope this would helps someone..
+
+*Thanks / Regards *
+
+*RM --*
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: &lt;<A HREF="http://lists.coova.org/pipermail/chilli/attachments/20130402/17358268/attachment-0001.html">http://lists.coova.org/pipermail/chilli/attachments/20130402/17358268/attachment-0001.html</A>&gt;
+</PRE>
+
+
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="002242.html">[Chilli] Reduce the DHCP lease Time of CoovaChilli
+</A></li>
+	<LI>Next message: <A HREF="002229.html">[Chilli] CoovaChilli (Connection reset by peer) redir_read(0)	failed!
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2228">[ date ]</a>
+              <a href="thread.html#2228">[ thread ]</a>
+              <a href="subject.html#2228">[ subject ]</a>
+              <a href="author.html#2228">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,162 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] Error coova-chilli 1.2.2, CentOS 5.4 --with-openssl option
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Error%20coova-chilli%201.2.2%2C%0A%20CentOS%205.4%20--with-openssl%20option&In-Reply-To=%3C1271862434.1987.4244.camel%40localhost%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001307.html">
+   <LINK REL="Next"  HREF="001309.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] Error coova-chilli 1.2.2, CentOS 5.4 --with-openssl option</H1>
+    <B>Daniel Berteaud</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Error%20coova-chilli%201.2.2%2C%0A%20CentOS%205.4%20--with-openssl%20option&In-Reply-To=%3C1271862434.1987.4244.camel%40localhost%3E"
+       TITLE="[Chilli] Error coova-chilli 1.2.2, CentOS 5.4 --with-openssl option">daniel at firewall-services.com
+       </A><BR>
+    <I>Wed Apr 21 15:07:14 UTC 2010</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001307.html">[Chilli] Error coova-chilli 1.2.2,	CentOS 5.4 --with-openssl	option
+</A></li>
+        <LI>Next message: <A HREF="001309.html">[Chilli] Error coova-chilli 1.2.2, CentOS 5.4 --with-openssl option
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1308">[ date ]</a>
+              <a href="thread.html#1308">[ thread ]</a>
+              <a href="subject.html#1308">[ subject ]</a>
+              <a href="author.html#1308">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hi.
+
+I've been able to successfully compile coova-chilli 1.2.2 with openssl
+on CentOS (4.X but should also work on 5.X) with a modified version of
+the patch from Isidor Zeuner (Thank you)
+
+I attach it.
+
+The only changes are some additionnals limits -&gt; chilli_limits in
+Makefil.in and Makfil.am
+
+
+Note that I've not tested the functionnality yet, it just compile fine.
+
+Regards, Daniel
+
+Le mercredi 21 avril 2010 &#224; 10:56 -0400, Hardy Beltran Monasterios a
+&#233;crit :
+&gt;<i> El dom, 18-04-2010 a las 19:08 +0200, Isidor Zeuner escribi&#243;:
+</I>&gt;<i> &gt; Hi Hardy,
+</I>&gt;<i> &gt; 
+</I>&gt;<i> &gt; &gt; 
+</I>&gt;<i> &gt; &gt; I'm trying to build coova-chilli-1.2.2 on CentOS 5.4 but i have errors
+</I>&gt;<i> &gt; &gt; when I use '--with-openssl' option
+</I>&gt;<i> &gt; &gt; 
+</I>&gt;<i> &gt; &gt; I did:
+</I>&gt;<i> &gt; &gt; 
+</I>&gt;<i> &gt; &gt; ./configure --enable-miniportal --enable-chilliredir
+</I>&gt;<i> &gt; &gt; --enable-chilliproxy --with-openssl
+</I>&gt;<i> &gt; &gt; 
+</I>&gt;<i> &gt; &gt; This is the error (only first 20 lines):
+</I>&gt;<i> &gt; &gt; 
+</I>&gt;<i> &gt; &gt; In file included from /usr/include/krb5.h:7,
+</I>&gt;<i> &gt; &gt;                  from /usr/include/openssl/kssl.h:72,
+</I>&gt;<i> &gt; &gt;                  from /usr/include/openssl/ssl.h:191,
+</I>&gt;<i> &gt; &gt;                  from ssl.h:42,
+</I>&gt;<i> &gt; &gt;                  from conn.h:25,
+</I>&gt;<i> &gt; &gt;                  from redir.h:26,
+</I>&gt;<i> &gt; &gt;                  from chilli.c:27:
+</I>&gt;<i> &gt; &gt; /usr/include/krb5/krb5.h:139:2: error: #error undefined 16 bit type
+</I>&gt;<i> &gt; &gt; /usr/include/krb5/krb5.h:152:2: error: #error : undefined 32 bit type
+</I>&gt;<i> &gt; &gt; In file included from /usr/include/krb5.h:7,
+</I>&gt;<i> &gt; &gt;                  from /usr/include/openssl/kssl.h:72,
+</I>&gt;<i> &gt; &gt;                  from /usr/include/openssl/ssl.h:191,
+</I>&gt;<i> &gt; &gt;                  from ssl.h:42,
+</I>&gt;<i> &gt; &gt;                  from conn.h:25,
+</I>&gt;<i> &gt; &gt;                  from redir.h:26,
+</I>&gt;<i> &gt; &gt;                  from chilli.c:27:
+</I>&gt;<i> &gt; 
+</I>&gt;<i> &gt; The failing conditional in /usr/include/krb5/krb5.h depends on a
+</I>&gt;<i> &gt; preprocessor variable defined in the system limits.h. Chilli has its
+</I>&gt;<i> &gt; own limits.h, so krb5.h probably includes the wrong limits.h.
+</I>&gt;<i> &gt; 
+</I>&gt;<i> &gt; Could you try if it compiles correctly using the attached patch, which
+</I>&gt;<i> &gt; will avoid this collision by renaming limits.h?
+</I>&gt;<i> 
+</I>&gt;<i> Hi Isidor
+</I>&gt;<i> 
+</I>&gt;<i> I have applied your patch
+</I>&gt;<i> 
+</I>&gt;<i> # cd coova-chilli-1.2.2
+</I>&gt;<i> # patch -p1 &lt; coova-chilli-1.2.2-limits.diff
+</I>&gt;<i> 
+</I>&gt;<i> But still I have the same compile errors :-(
+</I>&gt;<i> 
+</I>&gt;<i> I have read too the messages fomr Brigitta Bennici, which seems like has
+</I>&gt;<i> the same compile errors.
+</I>&gt;<i> 
+</I>&gt;<i> Based on your comments about limits on limits.h and krb5.h, I will try
+</I>&gt;<i> to find what to do. AFAIU limits.h should not include values already
+</I>&gt;<i> defined in krb5.h. I got it right?
+</I>&gt;<i> 
+</I>&gt;<i> Thanks for your support
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> ----
+</I>&gt;<i> Hardy
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> _______________________________________________
+</I>&gt;<i> Chilli mailing list
+</I>&gt;<i> <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">Chilli at coova.org</A>
+</I>&gt;<i> <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">http://lists.coova.org/cgi-bin/mailman/listinfo/chilli</A>
+</I>
+-- 
+Daniel Berteaud
+FIREWALL-SERVICES SARL.
+Soci&#233;t&#233; de Services en Logiciels Libres
+Technop&#244;le Montesquieu
+33650 MARTILLAC
+Tel : 05 56 64 15 32
+Fax : 05 56 64 15 32
+Mail: <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">daniel at firewall-services.com</A>
+Web : <A HREF="http://www.firewall-services.com">http://www.firewall-services.com</A>
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: coova-chilli-1.2.2-rename_limits_to_chilli_limits.patch
+Type: text/x-patch
+Size: 15462 bytes
+Desc: not available
+URL: &lt;<A HREF="http://lists.coova.org/pipermail/chilli/attachments/20100421/1d9fb5de/attachment.bin">http://lists.coova.org/pipermail/chilli/attachments/20100421/1d9fb5de/attachment.bin</A>&gt;
+</PRE>
+
+
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001307.html">[Chilli] Error coova-chilli 1.2.2,	CentOS 5.4 --with-openssl	option
+</A></li>
+	<LI>Next message: <A HREF="001309.html">[Chilli] Error coova-chilli 1.2.2, CentOS 5.4 --with-openssl option
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1308">[ date ]</a>
+              <a href="thread.html#1308">[ thread ]</a>
+              <a href="subject.html#1308">[ subject ]</a>
+              <a href="author.html#1308">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

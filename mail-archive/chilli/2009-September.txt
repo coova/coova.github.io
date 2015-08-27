@@ -1,0 +1,2033 @@
+From DGarcia at globalgossip.net  Mon Sep  7 02:25:54 2009
+From: DGarcia at globalgossip.net (Daniel Garcia)
+Date: Mon, 7 Sep 2009 12:25:54 +1000
+Subject: HS_radius2 variable not working
+Message-ID: <BB13BEB48D3B3B4CA1AA6A51DB9CFBCE1B847010DF@ausyd04.globalgossip.net>
+
+Hi All,
+
+I have created a second Wireless radius server to handle any requests if the primary server goes down...does not seem to work. I am using Coova 1.1.13 and I used the following lines in the config file.
+
+HS_RADIUS=radius0.au.globalgossip.com
+HS_RADIUS2=radius1.au.globalgossip.com
+
+Ok, this works as long as radius1 server is running. When I bring down the server, new requests do NOT hit radius1 (checked the logs). If I do the following...
+
+HS_RADIUS=radius1.au.globalgossip.com
+
+Then it works and requests get processed, so its not a misconfiguration. The only thing I can think of is that HS_RADIUS2 does not work, as in, if HS_RADIUS server is down, it does not even try to check HS_RADIUS2.
+
+Can someone let me know if this is a bug or if I've configured something incorrectly? Thanks
+
+Daniel Garcia
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20090907/385d795d/attachment.htm>
+
+From oguzhank at bilkent.edu.tr  Mon Sep  7 07:00:46 2009
+From: oguzhank at bilkent.edu.tr (Oguzhan Kayhan)
+Date: Mon, 7 Sep 2009 10:00:46 +0300 (EEST)
+Subject: HS_radius2 variable not working
+In-Reply-To: 
+     <BB13BEB48D3B3B4CA1AA6A51DB9CFBCE1B847010DF@ausyd04.globalgossip.net>
+References: 
+    <BB13BEB48D3B3B4CA1AA6A51DB9CFBCE1B847010DF@ausyd04.globalgossip.net>
+Message-ID: <37149.139.179.14.250.1252306846.squirrel@webmail.bilkent.edu.tr>
+
+I havent tested it on normal coova but
+on coovaap.. the functions.sh doesnt check the second radius variable..
+It just ignores it.
+
+By the way.. still waiting for any upgrade on coovaap..
+
+> Hi All,
+>
+> I have created a second Wireless radius server to handle any requests if
+> the primary server goes down...does not seem to work. I am using Coova
+> 1.1.13 and I used the following lines in the config file.
+>
+> HS_RADIUS=radius0.au.globalgossip.com
+> HS_RADIUS2=radius1.au.globalgossip.com
+>
+> Ok, this works as long as radius1 server is running. When I bring down the
+> server, new requests do NOT hit radius1 (checked the logs). If I do the
+> following...
+>
+> HS_RADIUS=radius1.au.globalgossip.com
+>
+> Then it works and requests get processed, so its not a misconfiguration.
+> The only thing I can think of is that HS_RADIUS2 does not work, as in, if
+> HS_RADIUS server is down, it does not even try to check HS_RADIUS2.
+>
+> Can someone let me know if this is a bug or if I've configured something
+> incorrectly? Thanks
+>
+> Daniel Garcia
+>
+>
+
+
+
+
+From DGarcia at globalgossip.net  Mon Sep  7 23:29:54 2009
+From: DGarcia at globalgossip.net (Daniel Garcia)
+Date: Tue, 8 Sep 2009 09:29:54 +1000
+Subject: HS_radius2 variable not working
+In-Reply-To: <37149.139.179.14.250.1252306846.squirrel@webmail.bilkent.edu.tr>
+References: <BB13BEB48D3B3B4CA1AA6A51DB9CFBCE1B847010DF@ausyd04.globalgossip.net>
+ <37149.139.179.14.250.1252306846.squirrel@webmail.bilkent.edu.tr>
+Message-ID: <BB13BEB48D3B3B4CA1AA6A51DB9CFBCE1B847010E1@ausyd04.globalgossip.net>
+
+So whats the point of the HS_RADIUS2 variable? Is there any code I can add in functions.sh to have it check it?
+
+Daniel Garcia
+IT Manager
+Core Infrastructure & Systems Development
+Global Gossip Group
+[a]????14 Wentworth Avenue, Sydney, NSW 2010
+[t]????+612 9263 0458
+[f]????+612 9263 0404
+[m]??? 0400 604 897
+[e]????dgarcia at globalgossip.net
+
+-----Original Message-----
+From: Oguzhan Kayhan [mailto:oguzhank at bilkent.edu.tr]
+Sent: Monday, 7 September 2009 5:01 PM
+To: chilli at coova.org
+Subject: Re: HS_radius2 variable not working
+
+I havent tested it on normal coova but
+on coovaap.. the functions.sh doesnt check the second radius variable..
+It just ignores it.
+
+By the way.. still waiting for any upgrade on coovaap..
+
+> Hi All,
+>
+> I have created a second Wireless radius server to handle any requests if
+> the primary server goes down...does not seem to work. I am using Coova
+> 1.1.13 and I used the following lines in the config file.
+>
+> HS_RADIUS=radius0.au.globalgossip.com
+> HS_RADIUS2=radius1.au.globalgossip.com
+>
+> Ok, this works as long as radius1 server is running. When I bring down the
+> server, new requests do NOT hit radius1 (checked the logs). If I do the
+> following...
+>
+> HS_RADIUS=radius1.au.globalgossip.com
+>
+> Then it works and requests get processed, so its not a misconfiguration.
+> The only thing I can think of is that HS_RADIUS2 does not work, as in, if
+> HS_RADIUS server is down, it does not even try to check HS_RADIUS2.
+>
+> Can someone let me know if this is a bug or if I've configured something
+> incorrectly? Thanks
+>
+> Daniel Garcia
+>
+>
+
+
+
+---------------------------------------------------------------------
+To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+For additional commands, e-mail: chilli-help at coova.org
+http://www.coova.org/CoovaChilli
+
+
+
+From oguzhank at bilkent.edu.tr  Tue Sep  8 07:58:04 2009
+From: oguzhank at bilkent.edu.tr (Oguzhan Kayhan)
+Date: Tue, 8 Sep 2009 10:58:04 +0300 (EEST)
+Subject: HS_radius2 variable not working
+In-Reply-To: 
+     <BB13BEB48D3B3B4CA1AA6A51DB9CFBCE1B847010E1@ausyd04.globalgossip.net>
+References: 
+    <BB13BEB48D3B3B4CA1AA6A51DB9CFBCE1B847010DF@ausyd04.globalgossip.net>
+    <37149.139.179.14.250.1252306846.squirrel@webmail.bilkent.edu.tr>
+    <BB13BEB48D3B3B4CA1AA6A51DB9CFBCE1B847010E1@ausyd04.globalgossip.net>
+Message-ID: <57872.139.179.14.250.1252396684.squirrel@webmail.bilkent.edu.tr>
+
+> So whats the point of the HS_RADIUS2 variable? Is there any code I can add
+> in functions.sh to have it check it?
+>
+
+You can edit functions.sh and change the file or simply add
+radiusserver2 xxx.xxx.xxx.xxx line to /chilli/local.conf file
+> Daniel Garcia
+> IT Manager
+> Core Infrastructure & Systems Development
+> Global Gossip Group
+> [a]????14 Wentworth Avenue, Sydney, NSW 2010
+> [t]????+612 9263 0458
+> [f]????+612 9263 0404
+> [m]??? 0400 604 897
+> [e]????dgarcia at globalgossip.net
+>
+> -----Original Message-----
+> From: Oguzhan Kayhan [mailto:oguzhank at bilkent.edu.tr]
+> Sent: Monday, 7 September 2009 5:01 PM
+> To: chilli at coova.org
+> Subject: Re: HS_radius2 variable not working
+>
+> I havent tested it on normal coova but
+> on coovaap.. the functions.sh doesnt check the second radius variable..
+> It just ignores it.
+>
+> By the way.. still waiting for any upgrade on coovaap..
+>
+>> Hi All,
+>>
+>> I have created a second Wireless radius server to handle any requests if
+>> the primary server goes down...does not seem to work. I am using Coova
+>> 1.1.13 and I used the following lines in the config file.
+>>
+>> HS_RADIUS=radius0.au.globalgossip.com
+>> HS_RADIUS2=radius1.au.globalgossip.com
+>>
+>> Ok, this works as long as radius1 server is running. When I bring down
+>> the
+>> server, new requests do NOT hit radius1 (checked the logs). If I do the
+>> following...
+>>
+>> HS_RADIUS=radius1.au.globalgossip.com
+>>
+>> Then it works and requests get processed, so its not a misconfiguration.
+>> The only thing I can think of is that HS_RADIUS2 does not work, as in,
+>> if
+>> HS_RADIUS server is down, it does not even try to check HS_RADIUS2.
+>>
+>> Can someone let me know if this is a bug or if I've configured something
+>> incorrectly? Thanks
+>>
+>> Daniel Garcia
+>>
+>>
+>
+>
+>
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> http://www.coova.org/CoovaChilli
+>
+>
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> http://www.coova.org/CoovaChilli
+>
+>
+
+
+
+
+From ian.coffey at gmail.com  Tue Sep  8 13:11:52 2009
+From: ian.coffey at gmail.com (IanC)
+Date: Tue, 8 Sep 2009 09:11:52 -0400
+Subject: Bandwidth per day.
+Message-ID: <3ea93a690909080611r4b6cb9dcwd7dfe0f3e3fbf289@mail.gmail.com>
+
+Thanks for taking the time to read this.
+
+I need to limit users so they can only use a certain amount of bandwidth per
+day.  Seemed logical to me to use ChilliSpot-Max-Total-Octets for this, but
+I need to do so per day and am not having much luck. I have a freeradius
+sqlcounter which denies login for those over quota, but since it only checks
+upon login its not very useful. Im trying to avoid having to use MySQL
+procedures for this.
+
+Does anyone have any advice on how to accomplish this?
+
+Thanks!
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20090908/829e85a6/attachment.htm>
+
+From oguzhank at bilkent.edu.tr  Tue Sep  8 13:16:40 2009
+From: oguzhank at bilkent.edu.tr (Oguzhan Kayhan)
+Date: Tue, 8 Sep 2009 16:16:40 +0300 (EEST)
+Subject: Bandwidth per day.
+In-Reply-To: <3ea93a690909080611r4b6cb9dcwd7dfe0f3e3fbf289@mail.gmail.com>
+References: <3ea93a690909080611r4b6cb9dcwd7dfe0f3e3fbf289@mail.gmail.com>
+Message-ID: <34401.139.179.14.250.1252415800.squirrel@webmail.bilkent.edu.tr>
+
+You can run a script that checks octets from mysql and.. if it is over
+quota you can send disconnect msg to that user with radclient command as
+
+echo "User-Name=test" | /usr/bin/radclient 192.168.1.1:1820 disconnect dichsk
+
+> Thanks for taking the time to read this.
+>
+> I need to limit users so they can only use a certain amount of bandwidth
+> per
+> day.  Seemed logical to me to use ChilliSpot-Max-Total-Octets for this,
+> but
+> I need to do so per day and am not having much luck. I have a freeradius
+> sqlcounter which denies login for those over quota, but since it only
+> checks
+> upon login its not very useful. Im trying to avoid having to use MySQL
+> procedures for this.
+>
+> Does anyone have any advice on how to accomplish this?
+>
+> Thanks!
+>
+
+
+
+
+From DGarcia at globalgossip.net  Wed Sep  9 03:04:34 2009
+From: DGarcia at globalgossip.net (Daniel Garcia)
+Date: Wed, 9 Sep 2009 13:04:34 +1000
+Subject: HS_radius2 variable not working
+In-Reply-To: <57872.139.179.14.250.1252396684.squirrel@webmail.bilkent.edu.tr>
+References: <BB13BEB48D3B3B4CA1AA6A51DB9CFBCE1B847010DF@ausyd04.globalgossip.net>
+    <37149.139.179.14.250.1252306846.squirrel@webmail.bilkent.edu.tr>
+    <BB13BEB48D3B3B4CA1AA6A51DB9CFBCE1B847010E1@ausyd04.globalgossip.net>
+ <57872.139.179.14.250.1252396684.squirrel@webmail.bilkent.edu.tr>
+Message-ID: <BB13BEB48D3B3B4CA1AA6A51DB9CFBCE1B88FA87D2@ausyd04.globalgossip.net>
+
+I added radiusserver2 in the local.conf and coova doesn't like it.
+
+Can you advise what code I need to change to have radiusserver2 used as a standby server? Im sorry I don't understand the code in functions.sh.
+
+Daniel Garcia
+IT Manager
+Core Infrastructure & Systems Development
+Global Gossip Group
+[a]????14 Wentworth Avenue, Sydney, NSW 2010
+[t]????+612 9263 0458
+[f]????+612 9263 0404
+[m]??? 0400 604 897
+[e]????dgarcia at globalgossip.net
+
+-----Original Message-----
+From: Oguzhan Kayhan [mailto:oguzhank at bilkent.edu.tr]
+Sent: Tuesday, 8 September 2009 5:58 PM
+To: chilli at coova.org
+Subject: RE: HS_radius2 variable not working
+
+> So whats the point of the HS_RADIUS2 variable? Is there any code I can add
+> in functions.sh to have it check it?
+>
+
+You can edit functions.sh and change the file or simply add
+radiusserver2 xxx.xxx.xxx.xxx line to /chilli/local.conf file
+> Daniel Garcia
+> IT Manager
+> Core Infrastructure & Systems Development
+> Global Gossip Group
+> [a]????14 Wentworth Avenue, Sydney, NSW 2010
+> [t]????+612 9263 0458
+> [f]????+612 9263 0404
+> [m]??? 0400 604 897
+> [e]????dgarcia at globalgossip.net
+>
+> -----Original Message-----
+> From: Oguzhan Kayhan [mailto:oguzhank at bilkent.edu.tr]
+> Sent: Monday, 7 September 2009 5:01 PM
+> To: chilli at coova.org
+> Subject: Re: HS_radius2 variable not working
+>
+> I havent tested it on normal coova but
+> on coovaap.. the functions.sh doesnt check the second radius variable..
+> It just ignores it.
+>
+> By the way.. still waiting for any upgrade on coovaap..
+>
+>> Hi All,
+>>
+>> I have created a second Wireless radius server to handle any requests if
+>> the primary server goes down...does not seem to work. I am using Coova
+>> 1.1.13 and I used the following lines in the config file.
+>>
+>> HS_RADIUS=radius0.au.globalgossip.com
+>> HS_RADIUS2=radius1.au.globalgossip.com
+>>
+>> Ok, this works as long as radius1 server is running. When I bring down
+>> the
+>> server, new requests do NOT hit radius1 (checked the logs). If I do the
+>> following...
+>>
+>> HS_RADIUS=radius1.au.globalgossip.com
+>>
+>> Then it works and requests get processed, so its not a misconfiguration.
+>> The only thing I can think of is that HS_RADIUS2 does not work, as in,
+>> if
+>> HS_RADIUS server is down, it does not even try to check HS_RADIUS2.
+>>
+>> Can someone let me know if this is a bug or if I've configured something
+>> incorrectly? Thanks
+>>
+>> Daniel Garcia
+>>
+>>
+>
+>
+>
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> http://www.coova.org/CoovaChilli
+>
+>
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> http://www.coova.org/CoovaChilli
+>
+>
+
+
+
+---------------------------------------------------------------------
+To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+For additional commands, e-mail: chilli-help at coova.org
+http://www.coova.org/CoovaChilli
+
+
+
+From wlan at mac.com  Wed Sep  9 09:03:09 2009
+From: wlan at mac.com (wlanmac)
+Date: Wed, 09 Sep 2009 11:03:09 +0200
+Subject: HS_radius2 variable not working
+In-Reply-To: 
+ <BB13BEB48D3B3B4CA1AA6A51DB9CFBCE1B88FA87D2@ausyd04.globalgossip.net>
+References: 
+ <BB13BEB48D3B3B4CA1AA6A51DB9CFBCE1B847010DF@ausyd04.globalgossip.net>
+ <37149.139.179.14.250.1252306846.squirrel@webmail.bilkent.edu.tr>
+ <BB13BEB48D3B3B4CA1AA6A51DB9CFBCE1B847010E1@ausyd04.globalgossip.net>
+ <57872.139.179.14.250.1252396684.squirrel@webmail.bilkent.edu.tr>
+ <BB13BEB48D3B3B4CA1AA6A51DB9CFBCE1B88FA87D2@ausyd04.globalgossip.net>
+Message-ID: <1252486989.8341.5.camel@david-laptop>
+
+You might check these options to fine tune the radius failover:
+
+radiustimeout=5
+radiusretry=3
+radiusretrysec=1
+
+
+On Wed, 2009-09-09 at 13:04 +1000, Daniel Garcia wrote:
+> I added radiusserver2 in the local.conf and coova doesn't like it.
+> 
+> Can you advise what code I need to change to have radiusserver2 used as a standby server? Im sorry I don't understand the code in functions.sh.
+> 
+> Daniel Garcia
+> IT Manager
+> Core Infrastructure & Systems Development
+> Global Gossip Group
+> [a]    14 Wentworth Avenue, Sydney, NSW 2010
+> [t]    +612 9263 0458
+> [f]    +612 9263 0404
+> [m]    0400 604 897
+> [e]    dgarcia at globalgossip.net
+> 
+> -----Original Message-----
+> From: Oguzhan Kayhan [mailto:oguzhank at bilkent.edu.tr]
+> Sent: Tuesday, 8 September 2009 5:58 PM
+> To: chilli at coova.org
+> Subject: RE: HS_radius2 variable not working
+> 
+> > So whats the point of the HS_RADIUS2 variable? Is there any code I can add
+> > in functions.sh to have it check it?
+> >
+> 
+> You can edit functions.sh and change the file or simply add
+> radiusserver2 xxx.xxx.xxx.xxx line to /chilli/local.conf file
+> > Daniel Garcia
+> > IT Manager
+> > Core Infrastructure & Systems Development
+> > Global Gossip Group
+> > [a]    14 Wentworth Avenue, Sydney, NSW 2010
+> > [t]    +612 9263 0458
+> > [f]    +612 9263 0404
+> > [m]    0400 604 897
+> > [e]    dgarcia at globalgossip.net
+> >
+> > -----Original Message-----
+> > From: Oguzhan Kayhan [mailto:oguzhank at bilkent.edu.tr]
+> > Sent: Monday, 7 September 2009 5:01 PM
+> > To: chilli at coova.org
+> > Subject: Re: HS_radius2 variable not working
+> >
+> > I havent tested it on normal coova but
+> > on coovaap.. the functions.sh doesnt check the second radius variable..
+> > It just ignores it.
+> >
+> > By the way.. still waiting for any upgrade on coovaap..
+> >
+> >> Hi All,
+> >>
+> >> I have created a second Wireless radius server to handle any requests if
+> >> the primary server goes down...does not seem to work. I am using Coova
+> >> 1.1.13 and I used the following lines in the config file.
+> >>
+> >> HS_RADIUS=radius0.au.globalgossip.com
+> >> HS_RADIUS2=radius1.au.globalgossip.com
+> >>
+> >> Ok, this works as long as radius1 server is running. When I bring down
+> >> the
+> >> server, new requests do NOT hit radius1 (checked the logs). If I do the
+> >> following...
+> >>
+> >> HS_RADIUS=radius1.au.globalgossip.com
+> >>
+> >> Then it works and requests get processed, so its not a misconfiguration.
+> >> The only thing I can think of is that HS_RADIUS2 does not work, as in,
+> >> if
+> >> HS_RADIUS server is down, it does not even try to check HS_RADIUS2.
+> >>
+> >> Can someone let me know if this is a bug or if I've configured something
+> >> incorrectly? Thanks
+> >>
+> >> Daniel Garcia
+> >>
+> >>
+> >
+> >
+> >
+> > ---------------------------------------------------------------------
+> > To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> > For additional commands, e-mail: chilli-help at coova.org
+> > http://www.coova.org/CoovaChilli
+> >
+> >
+> > ---------------------------------------------------------------------
+> > To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> > For additional commands, e-mail: chilli-help at coova.org
+> > http://www.coova.org/CoovaChilli
+> >
+> >
+> 
+> 
+> 
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> http://www.coova.org/CoovaChilli
+> 
+> 
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> http://www.coova.org/CoovaChilli
+> 
+
+
+
+From wlan at mac.com  Wed Sep  9 09:51:40 2009
+From: wlan at mac.com (wlanmac)
+Date: Wed, 09 Sep 2009 11:51:40 +0200
+Subject: Bandwidth per day.
+In-Reply-To: <3ea93a690909080611r4b6cb9dcwd7dfe0f3e3fbf289@mail.gmail.com>
+References: <3ea93a690909080611r4b6cb9dcwd7dfe0f3e3fbf289@mail.gmail.com>
+Message-ID: <1252489900.8341.7.camel@david-laptop>
+
+this is all back-end stuff. checkout daloradius or try out our devpay
+version of CoovaRADIUS :) 
+
+http://www.coova.com/CoovaRADIUS/DevPay
+
+
+
+
+On Tue, 2009-09-08 at 09:11 -0400, IanC wrote:
+> Thanks for taking the time to read this.
+> 
+> I need to limit users so they can only use a certain amount of
+> bandwidth per day.  Seemed logical to me to use
+> ChilliSpot-Max-Total-Octets for this, but I need to do so per day and
+> am not having much luck. I have a freeradius sqlcounter which denies
+> login for those over quota, but since it only checks upon login its
+> not very useful. Im trying to avoid having to use MySQL procedures for
+> this.
+> 
+> Does anyone have any advice on how to accomplish this?
+> 
+> Thanks!
+> 
+
+
+
+From fahd.kasri at weblib.eu  Wed Sep  9 11:27:37 2009
+From: fahd.kasri at weblib.eu (Fahd Kasri)
+Date: Wed, 9 Sep 2009 13:27:37 +0200
+Subject: Fonera + Openwrt + Coovachilli + WDS
+Message-ID: <ddc827aa0909090427u56f56716taffa0387b54257d@mail.gmail.com>
+
+Hi all,
+Has anyone been able to configure multiple Foneras with Openwrt and
+Coovachilli as wifi repeaters? I'm having trouble configuring it, and Google
+hasn't helped. I tried searching the mailing list, but to no avail.
+
+Thanks.
+
+Regards,
+
+Fahd
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20090909/aced9b60/attachment.htm>
+
+From info at easyhorpak.com  Wed Sep  9 13:03:14 2009
+From: info at easyhorpak.com (EasyHorpak.com)
+Date: Wed, 9 Sep 2009 20:03:14 +0700
+Subject: Fonera + Openwrt + Coovachilli + WDS
+References: <ddc827aa0909090427u56f56716taffa0387b54257d@mail.gmail.com>
+Message-ID: <33A1CD7423844D55AA44596CA299D16A@chuan>
+
+have you try coovaAP firmware?
+
+  ----- Original Message ----- 
+  From: Fahd Kasri 
+  To: chilli 
+  Sent: Wednesday, September 09, 2009 6:27 PM
+  Subject: Fonera + Openwrt + Coovachilli + WDS
+
+
+  Hi all, 
+
+
+  Has anyone been able to configure multiple Foneras with Openwrt and Coovachilli as wifi repeaters? I'm having trouble configuring it, and Google hasn't helped. I tried searching the mailing list, but to no avail. 
+
+
+  Thanks.
+
+
+  Regards,
+
+
+  Fahd
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20090909/286dc4e6/attachment.htm>
+
+From fahd.kasri at weblib.eu  Wed Sep  9 13:12:07 2009
+From: fahd.kasri at weblib.eu (Fahd Kasri)
+Date: Wed, 9 Sep 2009 15:12:07 +0200
+Subject: Fonera + Openwrt + Coovachilli + WDS
+In-Reply-To: <33A1CD7423844D55AA44596CA299D16A@chuan>
+References: <ddc827aa0909090427u56f56716taffa0387b54257d@mail.gmail.com>
+	 <33A1CD7423844D55AA44596CA299D16A@chuan>
+Message-ID: <ddc827aa0909090612j38bdeb1dg1f47984c6df8f276@mail.gmail.com>
+
+CoovaAP can't be installed on a La Fonera 2100, unless you have some
+documentation on that :)
+
+2009/9/9 EasyHorpak.com <info at easyhorpak.com>
+
+>  have you try coovaAP firmware?
+>
+>
+> ----- Original Message -----
+> *From:* Fahd Kasri <fahd.kasri at weblib.eu>
+> *To:* chilli <chilli at coova.org>
+> *Sent:* Wednesday, September 09, 2009 6:27 PM
+> *Subject:* Fonera + Openwrt + Coovachilli + WDS
+>
+> Hi all,
+> Has anyone been able to configure multiple Foneras with Openwrt and
+> Coovachilli as wifi repeaters? I'm having trouble configuring it, and Google
+> hasn't helped. I tried searching the mailing list, but to no avail.
+>
+> Thanks.
+>
+> Regards,
+>
+> Fahd
+>
+>
+
+
+-- 
+Fahd Kasri
+Directeur Technique
+Weblib
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20090909/da2acc58/attachment.htm>
+
+From Mark.Dennehy at cs.tcd.ie  Wed Sep  9 13:14:24 2009
+From: Mark.Dennehy at cs.tcd.ie (Mark Dennehy)
+Date: Wed, 9 Sep 2009 14:14:24 +0100
+Subject: 15 character maximum password length for PAP?
+In-Reply-To: <33A1CD7423844D55AA44596CA299D16A@chuan>
+References: <ddc827aa0909090427u56f56716taffa0387b54257d@mail.gmail.com> <33A1CD7423844D55AA44596CA299D16A@chuan>
+Message-ID: <20090909131423.GA17402@cs.tcd.ie>
+
+Hi all,
+We're moving from Chillispot to CoovaChilli here for a project, and in
+the inital test deployment we ran into an issue in that any password
+sent via PAP from the captive portal page via CoovaChilli to FreeRADIUS
+is utterly garbled if it contains more than 15 characters. 
+
+I *think* this is down to redir_hextochar2() in redir.c but I'm not 100%
+certain. 
+
+Has anyone encountered (and hopefully solved) this problem before? 
+
+Thanks,
+
+-- 
+Mark Dennehy
+tel : +353-1-896 1543
+Distributed Systems Group
+School of Computer Science & Statistics
+Trinity College Dublin
+
+
+From wichert at wiggy.net  Wed Sep  9 13:14:36 2009
+From: wichert at wiggy.net (Wichert Akkerman)
+Date: Wed, 09 Sep 2009 15:14:36 +0200
+Subject: 15 character maximum password length for PAP?
+In-Reply-To: <20090909131423.GA17402@cs.tcd.ie>
+References: <ddc827aa0909090427u56f56716taffa0387b54257d@mail.gmail.com> <33A1CD7423844D55AA44596CA299D16A@chuan> <20090909131423.GA17402@cs.tcd.ie>
+Message-ID: <4AA7AA3C.3090305@wiggy.net>
+
+On 2009-9-9 15:14, Mark Dennehy wrote:
+> Hi all,
+> We're moving from Chillispot to CoovaChilli here for a project, and in
+> the inital test deployment we ran into an issue in that any password
+> sent via PAP from the captive portal page via CoovaChilli to FreeRADIUS
+> is utterly garbled if it contains more than 15 characters.
+>
+> I *think* this is down to redir_hextochar2() in redir.c but I'm not 100%
+> certain.
+>
+> Has anyone encountered (and hopefully solved) this problem before?
+
+I fixed those problems in svn a couple of weeks ago. Can you test a 
+current subversion trunk checkout?
+
+Wichert.
+
+
+-- 
+Wichert Akkerman <wichert at wiggy.net>   It is simple to make things.
+http://www.wiggy.net/                  It is hard to make things simple.
+
+
+From outbackdingo at gmail.com  Wed Sep  9 13:14:40 2009
+From: outbackdingo at gmail.com (Outback Dingo)
+Date: Wed, 9 Sep 2009 20:14:40 +0700
+Subject: Fonera + Openwrt + Coovachilli + WDS
+In-Reply-To: <33A1CD7423844D55AA44596CA299D16A@chuan>
+References: <ddc827aa0909090427u56f56716taffa0387b54257d@mail.gmail.com>
+	 <33A1CD7423844D55AA44596CA299D16A@chuan>
+Message-ID: <5635aa0d0909090614j5bf6f5f7u38cda397f2b92733@mail.gmail.com>
+
+CoovaAP firmware doesnt run on Foneras, they are atheros based
+
+On Wed, Sep 9, 2009 at 8:03 PM, EasyHorpak.com <info at easyhorpak.com> wrote:
+
+>  have you try coovaAP firmware?
+>
+>
+> ----- Original Message -----
+> *From:* Fahd Kasri <fahd.kasri at weblib.eu>
+> *To:* chilli <chilli at coova.org>
+> *Sent:* Wednesday, September 09, 2009 6:27 PM
+> *Subject:* Fonera + Openwrt + Coovachilli + WDS
+>
+> Hi all,
+> Has anyone been able to configure multiple Foneras with Openwrt and
+> Coovachilli as wifi repeaters? I'm having trouble configuring it, and Google
+> hasn't helped. I tried searching the mailing list, but to no avail.
+>
+> Thanks.
+>
+> Regards,
+>
+> Fahd
+>
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20090909/c94622c0/attachment.htm>
+
+From Mark.Dennehy at cs.tcd.ie  Wed Sep  9 13:18:54 2009
+From: Mark.Dennehy at cs.tcd.ie (Mark Dennehy)
+Date: Wed, 9 Sep 2009 14:18:54 +0100
+Subject: 15 character maximum password length for PAP?
+In-Reply-To: <4AA7AA3C.3090305@wiggy.net>
+References: <ddc827aa0909090427u56f56716taffa0387b54257d@mail.gmail.com> <33A1CD7423844D55AA44596CA299D16A@chuan> <20090909131423.GA17402@cs.tcd.ie> <4AA7AA3C.3090305@wiggy.net>
+Message-ID: <20090909131854.GB17402@cs.tcd.ie>
+
+Ref:[Wichert Akkerman, Wed, 09/09/09 @ 15:14 +0200]
+> I fixed those problems in svn a couple of weeks ago. Can you test a  
+> current subversion trunk checkout?
+
+Excellent, can do.
+
+-- 
+Mark Dennehy
+tel : +353-1-896 1543
+Distributed Systems Group
+School of Computer Science & Statistics
+Trinity College Dublin
+
+
+From Mark.Dennehy at cs.tcd.ie  Wed Sep  9 14:02:36 2009
+From: Mark.Dennehy at cs.tcd.ie (Mark Dennehy)
+Date: Wed, 9 Sep 2009 15:02:36 +0100
+Subject: 15 character maximum password length for PAP?
+In-Reply-To: <20090909131854.GB17402@cs.tcd.ie>
+References: <ddc827aa0909090427u56f56716taffa0387b54257d@mail.gmail.com> <33A1CD7423844D55AA44596CA299D16A@chuan> <20090909131423.GA17402@cs.tcd.ie> <4AA7AA3C.3090305@wiggy.net> <20090909131854.GB17402@cs.tcd.ie>
+Message-ID: <20090909140236.GA17836@cs.tcd.ie>
+
+Ref:[Mark Dennehy, Wed, 09/09/09 @ 14:18 +0100]
+> Ref:[Wichert Akkerman, Wed, 09/09/09 @ 15:14 +0200]
+> > I fixed those problems in svn a couple of weeks ago. Can you test a  
+> > current subversion trunk checkout?
+> Excellent, can do.
+
+Tried it, didn't work. Have an idea why. Working on it now, I'll send on
+a patch if I'm right. Is there a bug report page for this? 
+
+-- 
+Mark Dennehy
+tel : +353-1-896 1543
+Distributed Systems Group
+School of Computer Science & Statistics
+Trinity College Dublin
+
+
+From wichert at wiggy.net  Wed Sep  9 14:02:04 2009
+From: wichert at wiggy.net (Wichert Akkerman)
+Date: Wed, 09 Sep 2009 16:02:04 +0200
+Subject: 15 character maximum password length for PAP?
+In-Reply-To: <20090909140236.GA17836@cs.tcd.ie>
+References: <ddc827aa0909090427u56f56716taffa0387b54257d@mail.gmail.com> <33A1CD7423844D55AA44596CA299D16A@chuan> <20090909131423.GA17402@cs.tcd.ie> <4AA7AA3C.3090305@wiggy.net> <20090909131854.GB17402@cs.tcd.ie> <20090909140236.GA17836@cs.tcd.ie>
+Message-ID: <4AA7B55C.9080304@wiggy.net>
+
+On 2009-9-9 16:02, Mark Dennehy wrote:
+> Ref:[Mark Dennehy, Wed, 09/09/09 @ 14:18 +0100]
+>> Ref:[Wichert Akkerman, Wed, 09/09/09 @ 15:14 +0200]
+>>> I fixed those problems in svn a couple of weeks ago. Can you test a
+>>> current subversion trunk checkout?
+>> Excellent, can do.
+>
+> Tried it, didn't work. Have an idea why. Working on it now, I'll send on
+> a patch if I'm right. Is there a bug report page for this?
+
+Can you try revision 217? I have that running in production and I've 
+succesfully tested 16 character and longer passwords with it.
+
+Wichert.
+
+
+-- 
+Wichert Akkerman <wichert at wiggy.net>   It is simple to make things.
+http://www.wiggy.net/                  It is hard to make things simple.
+
+
+From Mark.Dennehy at cs.tcd.ie  Wed Sep  9 15:19:45 2009
+From: Mark.Dennehy at cs.tcd.ie (Mark Dennehy)
+Date: Wed, 9 Sep 2009 16:19:45 +0100
+Subject: 15 character maximum password length for PAP?
+In-Reply-To: <4AA7B55C.9080304@wiggy.net>
+References: <ddc827aa0909090427u56f56716taffa0387b54257d@mail.gmail.com> <33A1CD7423844D55AA44596CA299D16A@chuan> <20090909131423.GA17402@cs.tcd.ie> <4AA7AA3C.3090305@wiggy.net> <20090909131854.GB17402@cs.tcd.ie> <20090909140236.GA17836@cs.tcd.ie> <4AA7B55C.9080304@wiggy.net>
+Message-ID: <20090909151945.GA18294@cs.tcd.ie>
+
+                                                                     Ref:[Wichert Akkerman, Wed, 09/09/09 @ 16:02 +0200]
+> On 2009-9-9 16:02, Mark Dennehy wrote:
+>> Ref:[Mark Dennehy, Wed, 09/09/09 @ 14:18 +0100]
+>>> Ref:[Wichert Akkerman, Wed, 09/09/09 @ 15:14 +0200]
+>>>> I fixed those problems in svn a couple of weeks ago. Can you test a
+>>>> current subversion trunk checkout?
+>>> Excellent, can do.
+>>
+>> Tried it, didn't work. Have an idea why. Working on it now, I'll send on
+>> a patch if I'm right. Is there a bug report page for this?
+>
+> Can you try revision 217? I have that running in production and I've  
+> succesfully tested 16 character and longer passwords with it.
+
+Are the changes not also in revision 223?
+
+-- 
+Mark Dennehy
+tel : +353-1-896 1543
+Distributed Systems Group
+School of Computer Science & Statistics
+Trinity College Dublin
+
+
+From wichert at wiggy.net  Wed Sep  9 15:19:00 2009
+From: wichert at wiggy.net (Wichert Akkerman)
+Date: Wed, 09 Sep 2009 17:19:00 +0200
+Subject: 15 character maximum password length for PAP?
+In-Reply-To: <20090909151945.GA18294@cs.tcd.ie>
+References: <ddc827aa0909090427u56f56716taffa0387b54257d@mail.gmail.com> <33A1CD7423844D55AA44596CA299D16A@chuan> <20090909131423.GA17402@cs.tcd.ie> <4AA7AA3C.3090305@wiggy.net> <20090909131854.GB17402@cs.tcd.ie> <20090909140236.GA17836@cs.tcd.ie> <4AA7B55C.9080304@wiggy.net> <20090909151945.GA18294@cs.tcd.ie>
+Message-ID: <4AA7C764.500@wiggy.net>
+
+On 2009-9-9 17:19, Mark Dennehy wrote:
+>                                                                       Ref:[Wichert Akkerman, Wed, 09/09/09 @ 16:02 +0200]
+>> On 2009-9-9 16:02, Mark Dennehy wrote:
+>>> Ref:[Mark Dennehy, Wed, 09/09/09 @ 14:18 +0100]
+>>>> Ref:[Wichert Akkerman, Wed, 09/09/09 @ 15:14 +0200]
+>>>>> I fixed those problems in svn a couple of weeks ago. Can you test a
+>>>>> current subversion trunk checkout?
+>>>> Excellent, can do.
+>>>
+>>> Tried it, didn't work. Have an idea why. Working on it now, I'll send on
+>>> a patch if I'm right. Is there a bug report page for this?
+>>
+>> Can you try revision 217? I have that running in production and I've
+>> succesfully tested 16 character and longer passwords with it.
+>
+> Are the changes not also in revision 223?
+
+There might have been other changes since then which affect that code. 
+Knowing if 217 works for you will help us track that down.
+
+Wichert.
+
+
+-- 
+Wichert Akkerman <wichert at wiggy.net>   It is simple to make things.
+http://www.wiggy.net/                  It is hard to make things simple.
+
+
+From Mark.Dennehy at cs.tcd.ie  Wed Sep  9 15:39:45 2009
+From: Mark.Dennehy at cs.tcd.ie (Mark Dennehy)
+Date: Wed, 9 Sep 2009 16:39:45 +0100
+Subject: 15 character maximum password length for PAP?
+In-Reply-To: <4AA7C764.500@wiggy.net>
+References: <ddc827aa0909090427u56f56716taffa0387b54257d@mail.gmail.com> <33A1CD7423844D55AA44596CA299D16A@chuan> <20090909131423.GA17402@cs.tcd.ie> <4AA7AA3C.3090305@wiggy.net> <20090909131854.GB17402@cs.tcd.ie> <20090909140236.GA17836@cs.tcd.ie> <4AA7B55C.9080304@wiggy.net> <20090909151945.GA18294@cs.tcd.ie> <4AA7C764.500@wiggy.net>
+Message-ID: <20090909153945.GC18294@cs.tcd.ie>
+
+Ref:[Wichert Akkerman, Wed, 09/09/09 @ 17:19 +0200]
+>> Are the changes not also in revision 223?
+> There might have been other changes since then which affect that code.  
+> Knowing if 217 works for you will help us track that down.
+> Wichert.
+
+Okay, checking it out now.
+
+-- 
+Mark Dennehy
+tel : +353-1-896 1543
+Distributed Systems Group
+School of Computer Science & Statistics
+Trinity College Dublin
+
+
+From Mark.Dennehy at cs.tcd.ie  Wed Sep  9 17:33:21 2009
+From: Mark.Dennehy at cs.tcd.ie (Mark Dennehy)
+Date: Wed, 9 Sep 2009 18:33:21 +0100
+Subject: 15 character maximum password length for PAP?
+In-Reply-To: <20090909153945.GC18294@cs.tcd.ie>
+References: <ddc827aa0909090427u56f56716taffa0387b54257d@mail.gmail.com> <33A1CD7423844D55AA44596CA299D16A@chuan> <20090909131423.GA17402@cs.tcd.ie> <4AA7AA3C.3090305@wiggy.net> <20090909131854.GB17402@cs.tcd.ie> <20090909140236.GA17836@cs.tcd.ie> <4AA7B55C.9080304@wiggy.net> <20090909151945.GA18294@cs.tcd.ie> <4AA7C764.500@wiggy.net> <20090909153945.GC18294@cs.tcd.ie>
+Message-ID: <20090909173321.GA18738@cs.tcd.ie>
+
+Ref:[Mark Dennehy, Wed, 09/09/09 @ 16:39 +0100]
+> Ref:[Wichert Akkerman, Wed, 09/09/09 @ 17:19 +0200]
+> >> Are the changes not also in revision 223?
+> > There might have been other changes since then which affect that code.  
+> > Knowing if 217 works for you will help us track that down.
+> > Wichert.
+> Okay, checking it out now.
+
+Nope, getting the same problem again. If I put in
+"test/12345678901234567890" as the username/password into the captive
+portal, I get "test/1234567890123456" as the username/password being
+received by FreeRADIUS.
+
+I think it's down to lines 1653-1655 in redir.c:
+
+    /*
+     * decode password - encoded by the UAM portal/script. 
+     */
+    for (m=0; m < RADIUS_PWSIZE;) 
+          for (n=0; n < REDIR_MD5LEN; m++, n++)
+            user_password[m] = conn->password[m] ^ chap_challenge[n];
+                
+
+The problem is, they do the right thing :-)
+If conn->password[] is longer than chap_challange[], those lines repeat
+chap_challange[] to compensate.
+
+Whereas in hotspotlogin.cgi:
+
+  $hexchal  = pack "H32", $challenge;
+
+  ...
+
+  } elsif (defined($userpassword)) {
+    # Encode plain text password with challenge 
+    # (which may or may not be uamsecret encoded)
+
+    $pappassword = unpack "H32", ($password ^ $newchal);
+
+    $logonUrl = "http://$uamip:$uamport/logon?username=$username&password=$pappassword";
+
+So if the password is longer than 16 characters
+(the default size of the challange), firstly only the first 16
+characters of the password are xor'd with the challange - everything
+after that is left in plaintext (well, actually it's xor'd with 0
+but that's the same end result); and secondly (and masking the first
+problem), everything after the 16th character is dropped by the use of
+the "H32" template for the pack and unpack commands on lines 153 and
+173.
+
+So, changes to hotspotlogin.cgi (I know it's legacy, but it's in use)
+and the problem's fixed, I'm able to use 100-character passwords now
+(I've not tested it for passwords over 128 characters):
+
+  $hexchal  = pack "H*", $challenge;
+
+...
+
+  } elsif (defined($userpassword)) {
+    # Encode plain text password with challenge 
+    # (which may or may not be uamsecret encoded)
+
+    while (length($newchal) < length($password)){
+       $newchal .= $newchal;
+    }
+
+    $pappassword = unpack "H*", ($password ^ $newchal);
+
+
+Patch attached.
+
+-- 
+Mark Dennehy
+tel : +353-1-896 1543
+Distributed Systems Group
+School of Computer Science & Statistics
+Trinity College Dublin
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: patch.diff
+Type: text/x-diff
+Size: 873 bytes
+Desc: not available
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20090909/764f6ddc/attachment.diff>
+
+From bartjonkers at hotmail.com  Wed Sep  9 18:16:28 2009
+From: bartjonkers at hotmail.com (Bart Jonkers)
+Date: Wed, 9 Sep 2009 18:16:28 +0000
+Subject: Fonera + Openwrt + Coovachilli + WDS
+In-Reply-To: <ddc827aa0909090427u56f56716taffa0387b54257d@mail.gmail.com>
+References: <ddc827aa0909090427u56f56716taffa0387b54257d@mail.gmail.com>
+Message-ID: <SNT113-W11FF27F11CF289C0ECE7EBAEE90@phx.gbl>
+
+
+I did an installation with one linksys wrt54gl with coovaAp.
+and then till 6 linksys WAP54 connected with WDS. (dd-wrt)
+
+Works fine here
+
+Bart
+Date: Wed, 9 Sep 2009 13:27:37 +0200
+Subject: Fonera + Openwrt + Coovachilli + WDS
+From: fahd.kasri at weblib.eu
+To: chilli at coova.org
+
+Hi all,
+
+Has anyone been able to configure multiple Foneras with Openwrt and Coovachilli as wifi repeaters? I'm having trouble configuring it, and Google hasn't helped. I tried searching the mailing list, but to no avail. 
+
+Thanks.
+Regards,
+Fahd
+_________________________________________________________________
+Voeg vrienden toe van LinkedIn & Facebook aan je Windows Live
+http://profile.live.com/connect
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20090909/65da5c4d/attachment.htm>
+
+From outbackdingo at gmail.com  Wed Sep  9 18:49:52 2009
+From: outbackdingo at gmail.com (Outback Dingo)
+Date: Thu, 10 Sep 2009 01:49:52 +0700
+Subject: Fonera + Openwrt + Coovachilli + WDS
+In-Reply-To: <SNT113-W11FF27F11CF289C0ECE7EBAEE90@phx.gbl>
+References: <ddc827aa0909090427u56f56716taffa0387b54257d@mail.gmail.com>
+	 <SNT113-W11FF27F11CF289C0ECE7EBAEE90@phx.gbl>
+Message-ID: <5635aa0d0909091149v7007b409le614d3cb2080c17f@mail.gmail.com>
+
+Again, linksys are broadcom and CoovaAP works fine on broadcom, his FONs
+however are atheros
+and hence there is no CoovaAP for atheros based APs, its not something he
+can use
+
+On Thu, Sep 10, 2009 at 1:16 AM, Bart Jonkers <bartjonkers at hotmail.com>wrote:
+
+>  I did an installation with one linksys wrt54gl with coovaAp.
+> and then till 6 linksys WAP54 connected with WDS. (dd-wrt)
+>
+> Works fine here
+>
+> Bart
+> ------------------------------
+> Date: Wed, 9 Sep 2009 13:27:37 +0200
+> Subject: Fonera + Openwrt + Coovachilli + WDS
+> From: fahd.kasri at weblib.eu
+> To: chilli at coova.org
+>
+>
+> Hi all,
+> Has anyone been able to configure multiple Foneras with Openwrt and
+> Coovachilli as wifi repeaters? I'm having trouble configuring it, and Google
+> hasn't helped. I tried searching the mailing list, but to no avail.
+>
+> Thanks.
+>
+> Regards,
+>
+> Fahd
+>
+> ------------------------------
+> Nagenieten met je vrienden over het laatste reisje of feestje? Maak een
+> groepsalbum aan.<http://www.microsoft.com/belux/nl/windows/windowslive/products/photos.aspx>
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20090910/cb2d2852/attachment.htm>
+
+From DGarcia at globalgossip.net  Thu Sep 10 01:34:11 2009
+From: DGarcia at globalgossip.net (Daniel Garcia)
+Date: Thu, 10 Sep 2009 11:34:11 +1000
+Subject: HS_radius2 variable not working
+In-Reply-To: <1252486989.8341.5.camel@david-laptop>
+References: <BB13BEB48D3B3B4CA1AA6A51DB9CFBCE1B847010DF@ausyd04.globalgossip.net>
+ <37149.139.179.14.250.1252306846.squirrel@webmail.bilkent.edu.tr>
+ <BB13BEB48D3B3B4CA1AA6A51DB9CFBCE1B847010E1@ausyd04.globalgossip.net>
+ <57872.139.179.14.250.1252396684.squirrel@webmail.bilkent.edu.tr>
+ <BB13BEB48D3B3B4CA1AA6A51DB9CFBCE1B88FA87D2@ausyd04.globalgossip.net>
+ <1252486989.8341.5.camel@david-laptop>
+Message-ID: <BB13BEB48D3B3B4CA1AA6A51DB9CFBCE1B88FA87DD@ausyd04.globalgossip.net>
+
+Great thanks, works like a dream! :)
+
+Daniel Garcia
+IT Manager
+Core Infrastructure & Systems Development
+Global Gossip Group
+[a]????14 Wentworth Avenue, Sydney, NSW 2010
+[t]????+612 9263 0458
+[f]????+612 9263 0404
+[m]??? 0400 604 897
+[e]????dgarcia at globalgossip.net
+
+-----Original Message-----
+From: wlanmac [mailto:wlan at mac.com]
+Sent: Wednesday, 9 September 2009 7:03 PM
+To: chilli at coova.org
+Subject: RE: HS_radius2 variable not working
+
+You might check these options to fine tune the radius failover:
+
+radiustimeout=5
+radiusretry=3
+radiusretrysec=1
+
+
+On Wed, 2009-09-09 at 13:04 +1000, Daniel Garcia wrote:
+> I added radiusserver2 in the local.conf and coova doesn't like it.
+>
+> Can you advise what code I need to change to have radiusserver2 used as a standby server? Im sorry I don't understand the code in functions.sh.
+>
+> Daniel Garcia
+> IT Manager
+> Core Infrastructure & Systems Development
+> Global Gossip Group
+> [a]    14 Wentworth Avenue, Sydney, NSW 2010
+> [t]    +612 9263 0458
+> [f]    +612 9263 0404
+> [m]    0400 604 897
+> [e]    dgarcia at globalgossip.net
+>
+> -----Original Message-----
+> From: Oguzhan Kayhan [mailto:oguzhank at bilkent.edu.tr]
+> Sent: Tuesday, 8 September 2009 5:58 PM
+> To: chilli at coova.org
+> Subject: RE: HS_radius2 variable not working
+>
+> > So whats the point of the HS_RADIUS2 variable? Is there any code I can add
+> > in functions.sh to have it check it?
+> >
+>
+> You can edit functions.sh and change the file or simply add
+> radiusserver2 xxx.xxx.xxx.xxx line to /chilli/local.conf file
+> > Daniel Garcia
+> > IT Manager
+> > Core Infrastructure & Systems Development
+> > Global Gossip Group
+> > [a]    14 Wentworth Avenue, Sydney, NSW 2010
+> > [t]    +612 9263 0458
+> > [f]    +612 9263 0404
+> > [m]    0400 604 897
+> > [e]    dgarcia at globalgossip.net
+> >
+> > -----Original Message-----
+> > From: Oguzhan Kayhan [mailto:oguzhank at bilkent.edu.tr]
+> > Sent: Monday, 7 September 2009 5:01 PM
+> > To: chilli at coova.org
+> > Subject: Re: HS_radius2 variable not working
+> >
+> > I havent tested it on normal coova but
+> > on coovaap.. the functions.sh doesnt check the second radius variable..
+> > It just ignores it.
+> >
+> > By the way.. still waiting for any upgrade on coovaap..
+> >
+> >> Hi All,
+> >>
+> >> I have created a second Wireless radius server to handle any requests if
+> >> the primary server goes down...does not seem to work. I am using Coova
+> >> 1.1.13 and I used the following lines in the config file.
+> >>
+> >> HS_RADIUS=radius0.au.globalgossip.com
+> >> HS_RADIUS2=radius1.au.globalgossip.com
+> >>
+> >> Ok, this works as long as radius1 server is running. When I bring down
+> >> the
+> >> server, new requests do NOT hit radius1 (checked the logs). If I do the
+> >> following...
+> >>
+> >> HS_RADIUS=radius1.au.globalgossip.com
+> >>
+> >> Then it works and requests get processed, so its not a misconfiguration.
+> >> The only thing I can think of is that HS_RADIUS2 does not work, as in,
+> >> if
+> >> HS_RADIUS server is down, it does not even try to check HS_RADIUS2.
+> >>
+> >> Can someone let me know if this is a bug or if I've configured something
+> >> incorrectly? Thanks
+> >>
+> >> Daniel Garcia
+> >>
+> >>
+> >
+> >
+> >
+> > ---------------------------------------------------------------------
+> > To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> > For additional commands, e-mail: chilli-help at coova.org
+> > http://www.coova.org/CoovaChilli
+> >
+> >
+> > ---------------------------------------------------------------------
+> > To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> > For additional commands, e-mail: chilli-help at coova.org
+> > http://www.coova.org/CoovaChilli
+> >
+> >
+>
+>
+>
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> http://www.coova.org/CoovaChilli
+>
+>
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> http://www.coova.org/CoovaChilli
+>
+
+
+---------------------------------------------------------------------
+To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+For additional commands, e-mail: chilli-help at coova.org
+http://www.coova.org/CoovaChilli
+
+
+
+From wlan at mac.com  Thu Sep 10 04:50:25 2009
+From: wlan at mac.com (wlanmac)
+Date: Thu, 10 Sep 2009 06:50:25 +0200
+Subject: 15 character maximum password length for PAP?
+In-Reply-To: <20090909173321.GA18738@cs.tcd.ie>
+References: <ddc827aa0909090427u56f56716taffa0387b54257d@mail.gmail.com>
+ <33A1CD7423844D55AA44596CA299D16A@chuan> <20090909131423.GA17402@cs.tcd.ie>
+ <4AA7AA3C.3090305@wiggy.net> <20090909131854.GB17402@cs.tcd.ie>
+ <20090909140236.GA17836@cs.tcd.ie> <4AA7B55C.9080304@wiggy.net>
+ <20090909151945.GA18294@cs.tcd.ie> <4AA7C764.500@wiggy.net>
+ <20090909153945.GC18294@cs.tcd.ie> <20090909173321.GA18738@cs.tcd.ie>
+Message-ID: <1252558225.8133.6.camel@david-laptop>
+
+committed, thanks! btw, I also saw your writeup in your blog. thanks
+again. 
+
+
+On Wed, 2009-09-09 at 18:33 +0100, Mark Dennehy wrote:
+> Ref:[Mark Dennehy, Wed, 09/09/09 @ 16:39 +0100]
+> > Ref:[Wichert Akkerman, Wed, 09/09/09 @ 17:19 +0200]
+> > >> Are the changes not also in revision 223?
+> > > There might have been other changes since then which affect that code.  
+> > > Knowing if 217 works for you will help us track that down.
+> > > Wichert.
+> > Okay, checking it out now.
+> 
+> Nope, getting the same problem again. If I put in
+> "test/12345678901234567890" as the username/password into the captive
+> portal, I get "test/1234567890123456" as the username/password being
+> received by FreeRADIUS.
+> 
+> I think it's down to lines 1653-1655 in redir.c:
+> 
+>     /*
+>      * decode password - encoded by the UAM portal/script. 
+>      */
+>     for (m=0; m < RADIUS_PWSIZE;) 
+>           for (n=0; n < REDIR_MD5LEN; m++, n++)
+>             user_password[m] = conn->password[m] ^ chap_challenge[n];
+>                 
+> 
+> The problem is, they do the right thing :-)
+> If conn->password[] is longer than chap_challange[], those lines repeat
+> chap_challange[] to compensate.
+> 
+> Whereas in hotspotlogin.cgi:
+> 
+>   $hexchal  = pack "H32", $challenge;
+> 
+>   ...
+> 
+>   } elsif (defined($userpassword)) {
+>     # Encode plain text password with challenge 
+>     # (which may or may not be uamsecret encoded)
+> 
+>     $pappassword = unpack "H32", ($password ^ $newchal);
+> 
+>     $logonUrl = "http://$uamip:$uamport/logon?username=$username&password=$pappassword";
+> 
+> So if the password is longer than 16 characters
+> (the default size of the challange), firstly only the first 16
+> characters of the password are xor'd with the challange - everything
+> after that is left in plaintext (well, actually it's xor'd with 0
+> but that's the same end result); and secondly (and masking the first
+> problem), everything after the 16th character is dropped by the use of
+> the "H32" template for the pack and unpack commands on lines 153 and
+> 173.
+> 
+> So, changes to hotspotlogin.cgi (I know it's legacy, but it's in use)
+> and the problem's fixed, I'm able to use 100-character passwords now
+> (I've not tested it for passwords over 128 characters):
+> 
+>   $hexchal  = pack "H*", $challenge;
+> 
+> ...
+> 
+>   } elsif (defined($userpassword)) {
+>     # Encode plain text password with challenge 
+>     # (which may or may not be uamsecret encoded)
+> 
+>     while (length($newchal) < length($password)){
+>        $newchal .= $newchal;
+>     }
+> 
+>     $pappassword = unpack "H*", ($password ^ $newchal);
+> 
+> 
+> Patch attached.
+> 
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> http://www.coova.org/CoovaChilli
+
+
+
+From wichert at wiggy.net  Thu Sep 10 08:29:14 2009
+From: wichert at wiggy.net (Wichert Akkerman)
+Date: Thu, 10 Sep 2009 10:29:14 +0200
+Subject: 15 character maximum password length for PAP?
+In-Reply-To: <20090909173321.GA18738@cs.tcd.ie>
+References: <ddc827aa0909090427u56f56716taffa0387b54257d@mail.gmail.com> <33A1CD7423844D55AA44596CA299D16A@chuan> <20090909131423.GA17402@cs.tcd.ie> <4AA7AA3C.3090305@wiggy.net> <20090909131854.GB17402@cs.tcd.ie> <20090909140236.GA17836@cs.tcd.ie> <4AA7B55C.9080304@wiggy.net> <20090909151945.GA18294@cs.tcd.ie> <4AA7C764.500@wiggy.net> <20090909153945.GC18294@cs.tcd.ie> <20090909173321.GA18738@cs.tcd.ie>
+Message-ID: <4AA8B8DA.7030105@wiggy.net>
+
+On 9/9/09 19:33 , Mark Dennehy wrote:
+> Ref:[Mark Dennehy, Wed, 09/09/09 @ 16:39 +0100]
+>> Ref:[Wichert Akkerman, Wed, 09/09/09 @ 17:19 +0200]
+>>>> Are the changes not also in revision 223?
+>>> There might have been other changes since then which affect that code.
+>>> Knowing if 217 works for you will help us track that down.
+>>> Wichert.
+>> Okay, checking it out now.
+>
+> Nope, getting the same problem again. If I put in
+> "test/12345678901234567890" as the username/password into the captive
+> portal, I get "test/1234567890123456" as the username/password being
+> received by FreeRADIUS.
+>
+> I think it's down to lines 1653-1655 in redir.c:
+>
+>      /*
+>       * decode password - encoded by the UAM portal/script.
+>       */
+>      for (m=0; m<  RADIUS_PWSIZE;)
+>            for (n=0; n<  REDIR_MD5LEN; m++, n++)
+>              user_password[m] = conn->password[m] ^ chap_challenge[n];
+>
+>
+> The problem is, they do the right thing :-)
+> If conn->password[] is longer than chap_challange[], those lines repeat
+> chap_challange[] to compensate.
+
+I was quite sure they do the right thing now and I'm happy to see that 
+you agree :). There were some problems with passwords of 16 characters 
+and longer before revision 217 in related parts of the code.
+
+> Whereas in hotspotlogin.cgi:
+>
+>    $hexchal  = pack "H32", $challenge;
+>
+>    ...
+>
+>    } elsif (defined($userpassword)) {
+>      # Encode plain text password with challenge
+>      # (which may or may not be uamsecret encoded)
+>
+>      $pappassword = unpack "H32", ($password ^ $newchal);
+>
+>      $logonUrl = "http://$uamip:$uamport/logon?username=$username&password=$pappassword";
+
+Nicely spotted. I had not seen that since we use a custom portal with 
+chilli.
+
+Regards,
+Wichert.
+
+
+From Mark.Dennehy at cs.tcd.ie  Thu Sep 10 14:18:54 2009
+From: Mark.Dennehy at cs.tcd.ie (Mark Dennehy)
+Date: Thu, 10 Sep 2009 15:18:54 +0100
+Subject: 15 character maximum password length for PAP?
+In-Reply-To: <1252558225.8133.6.camel@david-laptop>
+References: <20090909131423.GA17402@cs.tcd.ie> <4AA7AA3C.3090305@wiggy.net> <20090909131854.GB17402@cs.tcd.ie> <20090909140236.GA17836@cs.tcd.ie> <4AA7B55C.9080304@wiggy.net> <20090909151945.GA18294@cs.tcd.ie> <4AA7C764.500@wiggy.net> <20090909153945.GC18294@cs.tcd.ie> <20090909173321.GA18738@cs.tcd.ie> <1252558225.8133.6.camel@david-laptop>
+Message-ID: <20090910141854.GA4013@cs.tcd.ie>
+
+Ref:[wlanmac, Thu, 10/09/09 @ 06:50 +0200]
+> committed, thanks! btw, I also saw your writeup in your blog. thanks
+> again. 
+
+Cheers! 
+Yeah, I'd gotten so wound up with the hassle of all of this that it was
+either write it up or find a clock tower :)
+
+-- 
+Mark Dennehy
+tel : +353-1-896 1543
+Distributed Systems Group
+School of Computer Science & Statistics
+Trinity College Dublin
+
+
+From Mark.Dennehy at cs.tcd.ie  Thu Sep 10 14:21:39 2009
+From: Mark.Dennehy at cs.tcd.ie (Mark Dennehy)
+Date: Thu, 10 Sep 2009 15:21:39 +0100
+Subject: 15 character maximum password length for PAP?
+In-Reply-To: <4AA8B8DA.7030105@wiggy.net>
+References: <20090909131423.GA17402@cs.tcd.ie> <4AA7AA3C.3090305@wiggy.net> <20090909131854.GB17402@cs.tcd.ie> <20090909140236.GA17836@cs.tcd.ie> <4AA7B55C.9080304@wiggy.net> <20090909151945.GA18294@cs.tcd.ie> <4AA7C764.500@wiggy.net> <20090909153945.GC18294@cs.tcd.ie> <20090909173321.GA18738@cs.tcd.ie> <4AA8B8DA.7030105@wiggy.net>
+Message-ID: <20090910142139.GB4013@cs.tcd.ie>
+
+Ref:[Wichert Akkerman, Thu, 10/09/09 @ 10:29 +0200]
+> I was quite sure they do the right thing now and I'm happy to see that  
+> you agree :). There were some problems with passwords of 16 characters  
+> and longer before revision 217 in related parts of the code.
+
+Well, it's a nice neat turn of code. Might wind up stealing that pattern
+if I wind up teaching C this year.
+
+> Nicely spotted. 
+
+Thank you! 
+
+> I had not seen that since we use a custom portal with  
+> chilli.
+
+Aye, but the docs aren't fantastic for that - all the links from google
+to info on UAMService and the like go to a redirect page that bounces
+you to http://www.coova.org and there's no caches to use - and the hotcakes docs say
+to fall back to hotspotlogin.cgi. 
+
+Legacy stuff. You gotta love it.
+
+-- 
+Mark Dennehy
+tel : +353-1-896 1543
+Distributed Systems Group
+School of Computer Science & Statistics
+Trinity College Dublin
+
+
+From info at ollisnet.de  Sun Sep 20 18:46:39 2009
+From: info at ollisnet.de (Oliver Hinckel)
+Date: Sun, 20 Sep 2009 20:46:39 +0200
+Subject: QOS
+Message-ID: <4AB6788F.1010200@ollisnet.de>
+
+Hello,
+
+we're using CoovaChilli to provide our customer Internet access with 
+different bandwidth. It works quite good, but we still miss one feature: 
+QOS.
+
+AFAIK, CoovaChilli does the bandwidth handing with just dropping packets 
+when the bandwidth limit is reached. This has the following drawbacks:
+
+1. the client needs to retransmit the packet again when it was dropped, 
+which increase the traffic in the network and decrease the performance 
+(especially when using wireless access points the WLAN is transmitting 
+much more traffic than it realls needs and the load of the WLAN is 
+higher than it needs).
+
+2. there's no way to priorize special traffic to avoid packet loss when 
+bandwidth is reached (e.g. when downloading something via FTP the VoIP 
+traffic should not be dropped, better the FTP traffic should be dropped 
+to keep the VoIP with stable quality).
+
+Using tc on the clients router would be one solution to configure QOS, 
+but a) we don't want to configure each client router with tc (too much 
+work) and b) some client are connected directly with a notebook and we 
+don't have access to them to configure the bandwidth.
+
+So the question is, is there any posibility to configure CoovaChilli to 
+priorize some traffic and drop other traffic of on client if the 
+bandwidth is reached? And it doesn't seem that CoovaChilli does some 
+packet queueing to do some QOS stuff. Is it planned to be included in 
+next releases? Or is there any other solution to setup QOS in 
+combination with CoovaChilli?
+
+Thanks for any answer!
+
+Regards
+Olli
+
+
+From wlan at mac.com  Tue Sep 22 08:00:00 2009
+From: wlan at mac.com (wlanmac)
+Date: Tue, 22 Sep 2009 10:00:00 +0200
+Subject: QOS
+In-Reply-To: <4AB6788F.1010200@ollisnet.de>
+References: <4AB6788F.1010200@ollisnet.de>
+Message-ID: <1253606400.7715.24.camel@david-laptop>
+
+You could use the conup/down scripts to automatically do some tc work.
+Adding packet prioritization isn't something that we've planned on
+doing... I think it's better for another device to do the shaping. What
+chilli could do, however, rather easily is set a QoS flag in packets to
+have an upstream QoS device prioritize some users over others. 
+
+On Sun, 2009-09-20 at 20:46 +0200, Oliver Hinckel wrote:
+> Hello,
+> 
+> we're using CoovaChilli to provide our customer Internet access with 
+> different bandwidth. It works quite good, but we still miss one feature: 
+> QOS.
+> 
+> AFAIK, CoovaChilli does the bandwidth handing with just dropping packets 
+> when the bandwidth limit is reached. This has the following drawbacks:
+> 
+> 1. the client needs to retransmit the packet again when it was dropped, 
+> which increase the traffic in the network and decrease the performance 
+> (especially when using wireless access points the WLAN is transmitting 
+> much more traffic than it realls needs and the load of the WLAN is 
+> higher than it needs).
+> 
+> 2. there's no way to priorize special traffic to avoid packet loss when 
+> bandwidth is reached (e.g. when downloading something via FTP the VoIP 
+> traffic should not be dropped, better the FTP traffic should be dropped 
+> to keep the VoIP with stable quality).
+> 
+> Using tc on the clients router would be one solution to configure QOS, 
+> but a) we don't want to configure each client router with tc (too much 
+> work) and b) some client are connected directly with a notebook and we 
+> don't have access to them to configure the bandwidth.
+> 
+> So the question is, is there any posibility to configure CoovaChilli to 
+> priorize some traffic and drop other traffic of on client if the 
+> bandwidth is reached? And it doesn't seem that CoovaChilli does some 
+> packet queueing to do some QOS stuff. Is it planned to be included in 
+> next releases? Or is there any other solution to setup QOS in 
+> combination with CoovaChilli?
+> 
+> Thanks for any answer!
+> 
+> Regards
+> Olli
+> 
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> http://www.coova.org/CoovaChilli
+> 
+
+
+
+From wichert at wiggy.net  Tue Sep 22 08:02:10 2009
+From: wichert at wiggy.net (Wichert Akkerman)
+Date: Tue, 22 Sep 2009 10:02:10 +0200
+Subject: QOS
+In-Reply-To: <1253606400.7715.24.camel@david-laptop>
+References: <4AB6788F.1010200@ollisnet.de> <1253606400.7715.24.camel@david-laptop>
+Message-ID: <4AB88482.1030708@wiggy.net>
+
+I can highly recommend using the wondershaper (see
+http://lartc.org/wondershaper/) in on your uplink in front of CoovaChilli.
+
+Wichert.
+
+On 2009-9-22 10:00, wlanmac wrote:
+> You could use the conup/down scripts to automatically do some tc work.
+> Adding packet prioritization isn't something that we've planned on
+> doing... I think it's better for another device to do the shaping. What
+> chilli could do, however, rather easily is set a QoS flag in packets to
+> have an upstream QoS device prioritize some users over others.
+>
+> On Sun, 2009-09-20 at 20:46 +0200, Oliver Hinckel wrote:
+>> Hello,
+>>
+>> we're using CoovaChilli to provide our customer Internet access with
+>> different bandwidth. It works quite good, but we still miss one feature:
+>> QOS.
+>>
+>> AFAIK, CoovaChilli does the bandwidth handing with just dropping packets
+>> when the bandwidth limit is reached. This has the following drawbacks:
+>>
+>> 1. the client needs to retransmit the packet again when it was dropped,
+>> which increase the traffic in the network and decrease the performance
+>> (especially when using wireless access points the WLAN is transmitting
+>> much more traffic than it realls needs and the load of the WLAN is
+>> higher than it needs).
+>>
+>> 2. there's no way to priorize special traffic to avoid packet loss when
+>> bandwidth is reached (e.g. when downloading something via FTP the VoIP
+>> traffic should not be dropped, better the FTP traffic should be dropped
+>> to keep the VoIP with stable quality).
+>>
+>> Using tc on the clients router would be one solution to configure QOS,
+>> but a) we don't want to configure each client router with tc (too much
+>> work) and b) some client are connected directly with a notebook and we
+>> don't have access to them to configure the bandwidth.
+>>
+>> So the question is, is there any posibility to configure CoovaChilli to
+>> priorize some traffic and drop other traffic of on client if the
+>> bandwidth is reached? And it doesn't seem that CoovaChilli does some
+>> packet queueing to do some QOS stuff. Is it planned to be included in
+>> next releases? Or is there any other solution to setup QOS in
+>> combination with CoovaChilli?
+>>
+>> Thanks for any answer!
+>>
+>> Regards
+>> Olli
+>>
+>> ---------------------------------------------------------------------
+>> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+>> For additional commands, e-mail: chilli-help at coova.org
+>> http://www.coova.org/CoovaChilli
+>>
+>
+>
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> http://www.coova.org/CoovaChilli
+>
+
+
+-- 
+Wichert Akkerman <wichert at wiggy.net>   It is simple to make things.
+http://www.wiggy.net/                  It is hard to make things simple.
+
+
+From mihamina at gulfsat.mg  Tue Sep 22 08:04:18 2009
+From: mihamina at gulfsat.mg (Rakotomandimby Mihamina)
+Date: Tue, 22 Sep 2009 11:04:18 +0300
+Subject: QOS
+In-Reply-To: <4AB6788F.1010200@ollisnet.de>
+References: <4AB6788F.1010200@ollisnet.de>
+Message-ID: <4AB88502.90901@gulfsat.mg>
+
+09/20/2009 09:46 PM, Oliver Hinckel:
+> Using tc on the clients router would be one solution to configure QOS,
+> but a) we don't want to configure each client router with tc (too much
+> work) and b) some client are connected directly with a notebook and we
+> don't have access to them to configure the bandwidth.
+
+We use a tc bandwith management in the same box as the Chilli.
+Let me find some backed up configuration.
+
+
+-- 
+       Architecte Informatique chez Blueline/Gulfsat:
+    Administration Systeme, Recherche & Developpement
+                                    +261 34 29 155 34
+
+
+From ian.coffey at gmail.com  Thu Sep 24 20:09:28 2009
+From: ian.coffey at gmail.com (IanC)
+Date: Thu, 24 Sep 2009 16:09:28 -0400
+Subject: Captive portal + iPhone auto-join
+Message-ID: <3ea93a690909241309m276e9aeaj72346d11106a2ed4@mail.gmail.com>
+
+Hi folks,
+
+Ever since Apple released iPhone version 3.0 firmware, Ive been seeing
+a recurring issue like so:
+
+- iPhone users can connect as normal to an AP, get its address via
+DHCP, arrive at the captive portal, sign in as normal and browse.
+- Anytime after that initial successful session, they can get a valid
+address via DHCP, but then the iPhone browser grays out with a
+spinning "loading" message that never goes away.
+- User can then click "forget this network", turn off wireless, then
+turn it back on and viola, it works again..for one session.
+
+Ive never seen this behavior with anything other than a Chilli
+controlled network, has anyone else seen anything like this with
+iPhones?
+
+--Ian
+
+
+From gregorym at techconcepts.co.za  Mon Sep 28 06:47:46 2009
+From: gregorym at techconcepts.co.za (Gregory Machin)
+Date: Mon, 28 Sep 2009 08:47:46 +0200
+Subject: spec file for fc10
+Message-ID: <AD12406E39E3CE4DBB441A20D33AC8CE577E755CB6@rvtcdcm01.techconcepts.co.za>
+
+Hi
+I found that the spec file included for coovachilli didnt work. I have corrected it. See attached file.
+
+Regards
+Gregory Machin
+Email: gmachin at techconcepts.co.za
+Cell:   +27 (0) 72 524 5098
+gtalk:  gmachin.techconcepts at gmail.com
+Support
+helpdesk at techconcepts.co.za
+Tell:     +27 (0) 11 803 2169
+Fax:     +27 (0) 11 803 2189
+After Hours
+Cell:    +27 (0) 82 790 0796 
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: coova-chilli-1.0.14.spec
+Type: application/octet-stream
+Size: 2201 bytes
+Desc: coova-chilli-1.0.14.spec
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20090928/d1a872b0/attachment.obj>
+
+From jmeiring at amobia.com  Wed Sep 30 08:33:12 2009
+From: jmeiring at amobia.com (Johan Meiring)
+Date: Wed, 30 Sep 2009 10:33:12 +0200
+Subject: Log out client when no accounting updates received
+Message-ID: <4AC317C8.7090108@amobia.com>
+
+Hi,
+
+Unsure whether the message below made it onto the list, can't find it in my 
+inbox, so this is a resend.  (Apologies if it did).
+
+------------
+
+Hi,
+
+I am running about 150 hotspots with chilli.
+
+Sometimes (twice before) I ran into a situation where accounting packets
+were not being processed at the radius server anymore.
+
+The reason why accounting is not processed is irrelevant to this
+conversation.  The assumption is that accounting packets are getting
+lost somewhere on the way to the radius server.
+
+This makes accounting data (and therefore revenue) disappear.
+
+
+Is it possible (or fairly easy to modify chilli) to log out a user, if
+e.g. 3 accounting packets have not been acknowledged.
+
+Thanks,
+-- 
+
+
+Johan Meiring
+Amobia Communications
+Tel: (0861) AMOBIA / (0861) 266242
+Fax: (0861) AMOFAX / (0861) 266329
+
+
+
+From wichert at wiggy.net  Wed Sep 30 08:36:34 2009
+From: wichert at wiggy.net (Wichert Akkerman)
+Date: Wed, 30 Sep 2009 10:36:34 +0200
+Subject: Log out client when no accounting updates received
+In-Reply-To: <4AC317C8.7090108@amobia.com>
+References: <4AC317C8.7090108@amobia.com>
+Message-ID: <4AC31892.1010602@wiggy.net>
+
+On 9/30/09 10:33 , Johan Meiring wrote:
+> Hi,
+>
+> I am running about 150 hotspots with chilli.
+>
+> Sometimes (twice before) I ran into a situation where accounting packets
+> were not being processed at the radius server anymore.
+>
+> The reason why accounting is not processed is irrelevant to this
+> conversation. The assumption is that accounting packets are getting
+> lost somewhere on the way to the radius server.
+>
+> This makes accounting data (and therefore revenue) disappear.
+>
+>
+> Is it possible (or fairly easy to modify chilli) to log out a user, if
+> e.g. 3 accounting packets have not been acknowledged.
+
+It's doable, but I'm not in favour of doing that. Is there any other NAS 
+out there which supports that feature?
+
+Wichert.
+
+
+From jmeiring at amobia.com  Wed Sep 30 08:40:51 2009
+From: jmeiring at amobia.com (Johan Meiring)
+Date: Wed, 30 Sep 2009 10:40:51 +0200
+Subject: Log out client when no accounting updates received
+In-Reply-To: <4AC31892.1010602@wiggy.net>
+References: <4AC317C8.7090108@amobia.com> <4AC31892.1010602@wiggy.net>
+Message-ID: <4AC31993.9060803@amobia.com>
+
+Wichert Akkerman wrote:
+> 
+> It's doable, but I'm not in favour of doing that. Is there any other NAS 
+> out there which supports that feature?
+> 
+
+I am not aware of one...
+But then chilli also support COA with accounting responses.  This is also 
+unique.
+
+Some of this uniqueness makes chilli very powerful!
+
+May I ask why you are not in favour of doing that?
+
+-- 
+
+
+Johan Meiring
+Amobia Communications
+Tel: (0861) AMOBIA / (0861) 266242
+Fax: (0861) AMOFAX / (0861) 266329
+
+
+
+From wlan at mac.com  Wed Sep 30 08:44:43 2009
+From: wlan at mac.com (wlanmac)
+Date: Wed, 30 Sep 2009 10:44:43 +0200
+Subject: Log out client when no accounting updates received
+In-Reply-To: <4AC31993.9060803@amobia.com>
+References: <4AC317C8.7090108@amobia.com> <4AC31892.1010602@wiggy.net>
+ <4AC31993.9060803@amobia.com>
+Message-ID: <1254300283.8101.18.camel@david-laptop>
+
+I think it could be an option.. even a compile-time option + runtime
+configuration for number of missed acct'ing responses. But, it's not a
+feature I would imagine many would use. 
+
+
+On Wed, 2009-09-30 at 10:40 +0200, Johan Meiring wrote:
+> Wichert Akkerman wrote:
+> > 
+> > It's doable, but I'm not in favour of doing that. Is there any other NAS 
+> > out there which supports that feature?
+> > 
+> 
+> I am not aware of one...
+> But then chilli also support COA with accounting responses.  This is also 
+> unique.
+> 
+> Some of this uniqueness makes chilli very powerful!
+> 
+> May I ask why you are not in favour of doing that?
+> 
+
+
+
+From wichert at wiggy.net  Wed Sep 30 08:46:03 2009
+From: wichert at wiggy.net (Wichert Akkerman)
+Date: Wed, 30 Sep 2009 10:46:03 +0200
+Subject: Log out client when no accounting updates received
+In-Reply-To: <4AC31993.9060803@amobia.com>
+References: <4AC317C8.7090108@amobia.com> <4AC31892.1010602@wiggy.net> <4AC31993.9060803@amobia.com>
+Message-ID: <4AC31ACB.8060703@wiggy.net>
+
+On 9/30/09 10:40 , Johan Meiring wrote:
+> Wichert Akkerman wrote:
+>>
+>> It's doable, but I'm not in favour of doing that. Is there any other
+>> NAS out there which supports that feature?
+>>
+>
+> I am not aware of one...
+> But then chilli also support COA with accounting responses. This is also
+> unique.
+>
+> Some of this uniqueness makes chilli very powerful!
+>
+> May I ask why you are not in favour of doing that?
+
+RADIUS is very explicit in separating the handling of authentication and 
+session setup from accounting. This change would violate that by having 
+an error in processing of RADIUS packets influence the session handling. 
+This is especially problematic in environments where 
+authentication/authorization is done by other systems than processing of 
+accounting data.
+
+If we do this it should be a configurable option which is disabled by 
+default.
+
+Wichert.
+
+
+
+
+
+From jmeiring at amobia.com  Wed Sep 30 08:51:26 2009
+From: jmeiring at amobia.com (Johan Meiring)
+Date: Wed, 30 Sep 2009 10:51:26 +0200
+Subject: Log out client when no accounting updates received
+In-Reply-To: <4AC31ACB.8060703@wiggy.net>
+References: <4AC317C8.7090108@amobia.com> <4AC31892.1010602@wiggy.net> <4AC31993.9060803@amobia.com> <4AC31ACB.8060703@wiggy.net>
+Message-ID: <4AC31C0E.8040604@amobia.com>
+
+Wichert Akkerman wrote:
+> On 9/30/09 10:40 , Johan Meiring wrote:
+>> Wichert Akkerman wrote:
+>>>
+>>> It's doable, but I'm not in favour of doing that. Is there any other
+>>> NAS out there which supports that feature?
+>>>
+>>
+>> I am not aware of one...
+>> But then chilli also support COA with accounting responses. This is also
+>> unique.
+>>
+>> Some of this uniqueness makes chilli very powerful!
+>>
+>> May I ask why you are not in favour of doing that?
+> 
+> RADIUS is very explicit in separating the handling of authentication and 
+> session setup from accounting. This change would violate that by having 
+> an error in processing of RADIUS packets influence the session handling. 
+> This is especially problematic in environments where 
+> authentication/authorization is done by other systems than processing of 
+> accounting data.
+
+This I agree with.
+But my argument against would be that you are not modifying radius. (or 
+radius rfc's).
+
+You are creating a nas, that is not happy to have a user use traffic without 
+someone knowing about it.
+
+> 
+> If we do this it should be a configurable option which is disabled by 
+> default.
+> 
+
+This I also agree with (like acctupdate)
+
+-- 
+
+
+Johan Meiring
+Amobia Communications
+Tel: (0861) AMOBIA / (0861) 266242
+Fax: (0861) AMOFAX / (0861) 266329
+
+
+
+From jmeiring at amobia.com  Wed Sep 30 09:31:53 2009
+From: jmeiring at amobia.com (Johan Meiring)
+Date: Wed, 30 Sep 2009 11:31:53 +0200
+Subject: Log out client when no accounting updates received
+In-Reply-To: <1254300283.8101.18.camel@david-laptop>
+References: <4AC317C8.7090108@amobia.com> <4AC31892.1010602@wiggy.net> <4AC31993.9060803@amobia.com> <1254300283.8101.18.camel@david-laptop>
+Message-ID: <4AC32589.6040008@amobia.com>
+
+wlanmac wrote:
+> I think it could be an option.. even a compile-time option + runtime
+> configuration for number of missed acct'ing responses. But, it's not a
+> feature I would imagine many would use. 
+> 
+
+Whether people would use it or not, is probably a case of people don't know 
+that they need it.
+
+Hope the following makes sense.....
+
+I process about 2 million radius accounting records per month (probably very 
+few in some people's book).
+I discovered (by accident) that accounting data sometimes got lost,  I would 
+never have known about it, had I not stumbled on a "weird" session.
+
+Let me explain how this can go wrong.
+
+You have a NAS (chillispot) natted behind an ADSL line.  It handles few 
+users with long sessions.
+
+A Linux device (probably every ADSL router out there) is handling the DSL 
+line.  In the Linux conntrack table, the authentication and accounting 
+become tracked (and masqueraded/source natted).
+
+Now the authentication conntrack times out, but the accounting conntrack 
+session stays, (few authentications, but frequent accounting updates).
+
+Now the ADSL connection is dropped and re-established with a new IP.
+
+Because the accounting conntrack still exists, the accounting packets are 
+source natted behind the old IP, and therefore gets lost.  The 
+authentication is behind the new IP, and works.  Now everyone on this 
+hotspot gets free bandwidth.
+
+I realise there are other ways to fix the spesific issue above (manipulting 
+the conntrack table in ip-up/ip-down) but as Wickert mentioned, lots of 
+people have seperate authentication and accounting systems.  The one system 
+does not neccesarily know the other is down, and now people can use 
+resources without being billed for them.
+
+It would be interesting for everyone on the list that may have hotspots 
+behind dymanic IP connections, to see how many successfull authentications 
+they have without any accounting data.
+
+The problem could be solved from the radius side (using COA), but only if 
+the Radius server can contact the NAS - which it can't if the NAS is behind 
+a NATTED connection.
+
+If the Radius server received no Radius Accounting, it has no opportunity to 
+stop (COA) the client.
+
+Hope this makes sense.
+
+
+If you think it is worth implementing, I can offer to help wherever I can. 
+My c skills is limited to "copy and paste" programming, but I am willing to 
+assist.
+
+
+-- 
+
+
+Johan Meiring
+Amobia Communications
+Tel: (0861) AMOBIA / (0861) 266242
+Fax: (0861) AMOFAX / (0861) 266329
+
+
+

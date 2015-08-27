@@ -1,0 +1,199 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] 100% cpu problem
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20100%25%20cpu%20problem&In-Reply-To=%3CAANLkTin5%3DAMMg%3DUb5_nXawBvszYkrmSxHtrqP3i3K5ax%40mail.gmail.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001493.html">
+   <LINK REL="Next"  HREF="001495.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] 100% cpu problem</H1>
+    <B>Marco Simioni</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20100%25%20cpu%20problem&In-Reply-To=%3CAANLkTin5%3DAMMg%3DUb5_nXawBvszYkrmSxHtrqP3i3K5ax%40mail.gmail.com%3E"
+       TITLE="[Chilli] 100% cpu problem">m.simioni at gmail.com
+       </A><BR>
+    <I>Thu Sep 23 13:20:16 UTC 2010</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001493.html">[Chilli] multiple chilli instances on the same network
+</A></li>
+        <LI>Next message: <A HREF="001495.html">[Chilli] Coova-chilli-1.2.4 &amp; SSL Problem
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1494">[ date ]</a>
+              <a href="thread.html#1494">[ thread ]</a>
+              <a href="subject.html#1494">[ subject ]</a>
+              <a href="author.html#1494">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>It happened again: i had 100% cpu after days of uptime.
+
+This time, i was able to identify the following:
+
+1) Thanks to &quot;sar&quot; utility, i was able to localize the CPU usage
+between 09:45 and 10:05.
+
+09:05:02        CPU     %user     %nice   %system   %iowait    %steal     %idle
+09:45:02        all      0,00      0,00      0,04      4,26      0,00     95,70
+09:55:02        all      2,51      0,00      0,08      3,47      0,00     93,94
+10:05:02        all     98,32      0,00      1,68      0,00      0,00      0,00
+
+2) In syslog, the messages i see are:
+
+Sep 23 09:51:10 izc coova-chilli[939]: chilli.c: 3402: DHCP addr
+released by MAC=90-84-0D-D2-00-2D IP=0.0.0.0
+Sep 23 09:51:11 izc coova-chilli[939]: chilli.c: 3248: New DHCP
+request from MAC=90-84-0D-D2-00-2D
+Sep 23 09:52:02 izc coova-chilli[939]: chilli.c: 3248: New DHCP
+request from MAC=00-0E-6A-7A-AB-9C
+Sep 23 09:52:02 izc coova-chilli[939]: chilli.c: 3209: Client
+MAC=00-0E-6A-7A-AB-9C assigned IP 10.1.0.73
+Sep 23 09:55:02 izc CRON[9452]: (root) CMD (command -v debian-sa1 &gt;
+/dev/null &amp;&amp; debian-sa1 1 1)
+Sep 23 10:00:03 izc CRON[9455]: (root) CMD (/etc/rc2.d/S20chilli radconfig)
+Sep 23 10:05:01 izc CRON[9461]: (root) CMD (command -v debian-sa1 &gt;
+/dev/null &amp;&amp; debian-sa1 1 1)
+
+3) I tried to attach with &quot;gdb&quot; to the chilli process. Nothing
+happened. I didn't know what to do, so tried to make a step and i got
+the following:
+
+(gdb) step
+Single stepping until exit from function radius_getnextattr, wich has
+no line number information.
+
+than nothing else.
+
+4) Tried to attach with &quot;strace&quot;
+
+<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">root at izc</A>:# strace -p 939
+Process 939 attached - interrupt to quit
+
+and nothing happened.
+
+Now i had to reboot to let customers surf.
+
+What can i do next time?
+
+The syslog &quot;radconf&quot; and the gdb message &quot;radius_getnextattr&quot; could
+point to something ?
+
+Keep in mind that the radius server is a proprietary one, it is not
+freeradius or something else.
+
+Is there something i can to the next time with gdb and/or strace ?
+
+Thank you again.
+
+2010/7/27 David Bird &lt;<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">david at coova.com</A>&gt;:
+&gt;<i> Wichert asked a good question; are you using SSL features of
+</I>&gt;<i> CoovaChilli?
+</I>&gt;<i>
+</I>&gt;<i> For info on gdb, you can google for it, of course. Here is a quick howto
+</I>&gt;<i> page:
+</I>&gt;<i> <A HREF="http://www.freebsd.org/doc/en/books/developers-handbook/debugging.html">http://www.freebsd.org/doc/en/books/developers-handbook/debugging.html</A>
+</I>&gt;<i>
+</I>&gt;<i> For strace, use &quot;strace -p &lt;pid&gt;&quot; and you will see the system calls
+</I>&gt;<i> being executed - if it is using 100%, there must be a runaway loop
+</I>&gt;<i> occurring.
+</I>&gt;<i>
+</I>&gt;<i> David
+</I>&gt;<i>
+</I>&gt;<i> On Tue, 2010-07-27 at 09:20 +0200, Marco Simioni wrote:
+</I>&gt;&gt;<i> It happened 3 times in a month,
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> not immediately but after some day of regular work.
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> &quot;top&quot; command sayd chilli was consuming 100% CPU.
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> customers reported that they could not get dhcp and then login page.
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> i will try to use chilli_query when will happen again.
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> how can i attach with gdb or strace? can you point me some documentation?
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> i can run it in debug mode only in console mode, with -fd, or also as
+</I>&gt;&gt;<i> a service ?
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> thank you i.a.
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> regards,
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> Marco
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> 2010/7/27 David Bird &lt;<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">david at coova.com</A>&gt;:
+</I>&gt;&gt;<i> &gt; How quickly does this start to happen? Immediately? After how long?
+</I>&gt;&gt;<i> &gt;
+</I>&gt;&gt;<i> &gt; Is chilli also not working during this time? Does chilli_query hang?
+</I>&gt;&gt;<i> &gt;
+</I>&gt;&gt;<i> &gt; Are you able to attach gdb or use strace to get more info?
+</I>&gt;&gt;<i> &gt;
+</I>&gt;&gt;<i> &gt; If able, you can try running in debug mode for additional log
+</I>&gt;&gt;<i> &gt; information?
+</I>&gt;&gt;<i> &gt;
+</I>&gt;&gt;<i> &gt; Thanks,
+</I>&gt;&gt;<i> &gt; David
+</I>&gt;&gt;<i> &gt;
+</I>&gt;&gt;<i> &gt;
+</I>&gt;&gt;<i> &gt; On Tue, 2010-07-27 at 08:55 +0200, Marco Simioni wrote:
+</I>&gt;&gt;<i> &gt;&gt; Hi all, my customer is reporting a cpu problem.
+</I>&gt;&gt;<i> &gt;&gt;
+</I>&gt;&gt;<i> &gt;&gt; Chilli goes to consume all the processor, going to 100%.
+</I>&gt;&gt;<i> &gt;&gt;
+</I>&gt;&gt;<i> &gt;&gt; It is a brand new setup, bult on a VMWare ESXi Virtual Machine on HP ML115,
+</I>&gt;&gt;<i> &gt;&gt; 1.8GHz CPU allocated,
+</I>&gt;&gt;<i> &gt;&gt; 512MB RAM allocated,
+</I>&gt;&gt;<i> &gt;&gt; coova-chilli 1.2.2,
+</I>&gt;&gt;<i> &gt;&gt; Ubuntu 9.10 ( 2.6.31-14-server ).
+</I>&gt;&gt;<i> &gt;&gt;
+</I>&gt;&gt;<i> &gt;&gt; It's about three times it happens, solved it with a reboot.
+</I>&gt;&gt;<i> &gt;&gt;
+</I>&gt;&gt;<i> &gt;&gt; Very few clients, &lt; 10.
+</I>&gt;&gt;<i> &gt;&gt;
+</I>&gt;&gt;<i> &gt;&gt; Suggestions ?
+</I>&gt;&gt;<i> &gt;&gt;
+</I>&gt;&gt;<i> &gt;&gt; How can i investigate and understand when it happens ?
+</I>&gt;&gt;<i> &gt;&gt;
+</I>&gt;&gt;<i> &gt;&gt; Thank i.a.
+</I>&gt;&gt;<i> &gt;&gt;
+</I>&gt;&gt;<i> &gt;&gt; Best regards,
+</I>&gt;&gt;<i> &gt;&gt;
+</I>&gt;&gt;<i> &gt;&gt; Marco
+</I>&gt;&gt;<i> &gt;&gt; _______________________________________________
+</I>&gt;&gt;<i> &gt;&gt; Chilli mailing list
+</I>&gt;&gt;<i> &gt;&gt; <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">Chilli at coova.org</A>
+</I>&gt;&gt;<i> &gt;&gt; <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">http://lists.coova.org/cgi-bin/mailman/listinfo/chilli</A>
+</I>&gt;&gt;<i> &gt;
+</I>&gt;&gt;<i> &gt;
+</I>&gt;&gt;<i> &gt;
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>
+</I></PRE>
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001493.html">[Chilli] multiple chilli instances on the same network
+</A></li>
+	<LI>Next message: <A HREF="001495.html">[Chilli] Coova-chilli-1.2.4 &amp; SSL Problem
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1494">[ date ]</a>
+              <a href="thread.html#1494">[ thread ]</a>
+              <a href="subject.html#1494">[ subject ]</a>
+              <a href="author.html#1494">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,192 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> Chilli dhcp problem (No such device or address) does any one heard?
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20Chilli%20dhcp%20problem%20%28No%20such%20device%20or%20address%29%20does%20any%20one%0A%20heard%3F&In-Reply-To=%3C477ED0B7.6010605%40gmail.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   
+   <LINK REL="Next"  HREF="000101.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>Chilli dhcp problem (No such device or address) does any one heard?</H1>
+    <B>Aykut Demirkol</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20Chilli%20dhcp%20problem%20%28No%20such%20device%20or%20address%29%20does%20any%20one%0A%20heard%3F&In-Reply-To=%3C477ED0B7.6010605%40gmail.com%3E"
+       TITLE="Chilli dhcp problem (No such device or address) does any one heard?">aykut.demirkol at gmail.com
+       </A><BR>
+    <I>Sat Jan  5 00:35:03 UTC 2008</I>
+    <P><UL>
+        
+        <LI>Next message: <A HREF="000101.html">centralized coova
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#100">[ date ]</a>
+              <a href="thread.html#100">[ thread ]</a>
+              <a href="subject.html#100">[ subject ]</a>
+              <a href="author.html#100">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Problem was a missing bridge interface. I couldn't regenarate the 
+problem in a working box. But I am sure that somehow DHCP answers tried 
+to be send to a non existing interface.
+When I discovered the missing bridge interface and added manually by 
+brctl and vconfig problem is solved.
+Evidence of problem can be found by greping ifname's in nvram and 
+comparing existing interfaces. I think each ifname must exist as a 
+network interface.
+
+David Bird wrote:
+&gt;<i> From what I understand, you would only get such an error if your 
+</I>&gt;<i> network somehow broke. Some possible causes that come to mind might be 
+</I>&gt;<i> a network driver unloaded or crashing, faulty hardware, or something 
+</I>&gt;<i> otherwise taking down the interface or changing it's ifindex. What I 
+</I>&gt;<i> will do, however, is have chilli try to reconnect a broken socket 
+</I>&gt;<i> (after trying to UP the interface that is not running).
+</I>&gt;<i>
+</I>&gt;<i> On Dec 16, 2007, at 8:21 PM, Aykut Demirkol wrote:
+</I>&gt;<i>
+</I>&gt;&gt;<i> Coova 1.0 beta 6, coova-chilli 1.0.8-1
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> No there is one chilli running. Working and non working boxes are 
+</I>&gt;&gt;<i> both in a test enviroment with no load or disturbance.
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> Can you give any circumtances when dhcp.c can cause a &quot;No such device 
+</I>&gt;&gt;<i> or address&quot; message.
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> David Bird wrote:
+</I>&gt;&gt;&gt;<i> I'm not sure what you mean by version 0.6.. of what?
+</I>&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;<i> I doubt it has to do with your configurations. It is possible that 
+</I>&gt;&gt;&gt;<i> you have more than one instance of chilli running at the same time? 
+</I>&gt;&gt;&gt;<i> Any other information you have as to when this occurs (heavy load, 
+</I>&gt;&gt;&gt;<i> network disturbances, etc)?
+</I>&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;<i> If you can, try using the latest CoovaChilli version...
+</I>&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;<i> David
+</I>&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;<i> On Dec 15, 2007, at 12:42 AM, Aykut Demirkol wrote:
+</I>&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;&gt;<i> Version is 0.6.
+</I>&gt;&gt;&gt;&gt;<i> I have a same version in another identical box that does not have 
+</I>&gt;&gt;&gt;&gt;<i> same problem. I checked all lan,wireless,dhcp confugation through 
+</I>&gt;&gt;&gt;&gt;<i> web page.  They are same.
+</I>&gt;&gt;&gt;&gt;<i> I tired to compare nvram's by diff. But can not figure out sth. The 
+</I>&gt;&gt;&gt;&gt;<i> box with problem has 2K nvram output, working one gave 4K of nvram 
+</I>&gt;&gt;&gt;&gt;<i> output. So there are lots of differences.
+</I>&gt;&gt;&gt;&gt;<i> I saved the configurations through web interface. And compared by 
+</I>&gt;&gt;&gt;&gt;<i> diff. They are really same.
+</I>&gt;&gt;&gt;&gt;<i> Next, I will copy and compare all /etc/ files with diff (It seems 
+</I>&gt;&gt;&gt;&gt;<i> that saving conf through web interface gives only some of the files 
+</I>&gt;&gt;&gt;&gt;<i> in /etc/).
+</I>&gt;&gt;&gt;&gt;<i> I had worked on it but can not break my working box to give same 
+</I>&gt;&gt;&gt;&gt;<i> problem. So, No I am not able to regenerate problem yet.
+</I>&gt;&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;&gt;<i> Do you have any idea why this error can occur: &quot;No such device or 
+</I>&gt;&gt;&gt;&gt;<i> address&quot;.
+</I>&gt;&gt;&gt;&gt;<i> I looked to the source code (dhcp.c). I am not currently expert of 
+</I>&gt;&gt;&gt;&gt;<i> code but I thought it can be sth about fd &quot;File descriptor to 
+</I>&gt;&gt;&gt;&gt;<i> network interface&quot;.
+</I>&gt;&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;&gt;<i> <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">wlan at mac.com</A> wrote:
+</I>&gt;&gt;&gt;&gt;&gt;<i> Hi,
+</I>&gt;&gt;&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;&gt;&gt;<i> What version are you using and can you reproduce the problem? If 
+</I>&gt;&gt;&gt;&gt;&gt;<i> so, what do you do to get it to fail?
+</I>&gt;&gt;&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;&gt;&gt;<i> Cheers
+</I>&gt;&gt;&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;&gt;&gt;<i> On Dec 13, 2007, at 10:41 PM, Aykut Demirkol wrote:
+</I>&gt;&gt;&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;&gt;&gt;&gt;<i> Hi all,
+</I>&gt;&gt;&gt;&gt;&gt;&gt;<i> Realy need help.
+</I>&gt;&gt;&gt;&gt;&gt;&gt;<i> My coova gives following error message for dhcp. I search so many 
+</I>&gt;&gt;&gt;&gt;&gt;&gt;<i> hours in google and could not found sth about it.
+</I>&gt;&gt;&gt;&gt;&gt;&gt;<i> Only think I found is a non solved, problem submition in a dd-wrt 
+</I>&gt;&gt;&gt;&gt;&gt;&gt;<i> forum 
+</I>&gt;&gt;&gt;&gt;&gt;&gt;<i> <A HREF="http://www.dd-wrt.com/phpBB2/viewtopic.php?p=110254&amp;highlight=&amp;sid=7d5ac03bb833498ce981480fb882dbe5#110254">http://www.dd-wrt.com/phpBB2/viewtopic.php?p=110254&amp;highlight=&amp;sid=7d5ac03bb833498ce981480fb882dbe5#110254</A> 
+</I>&gt;&gt;&gt;&gt;&gt;&gt;<i> .
+</I>&gt;&gt;&gt;&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;&gt;&gt;&gt;<i> My Chilli in debug mode gives:
+</I>&gt;&gt;&gt;&gt;&gt;&gt;<i> chilli.c: 2596: 0 (Debug) New DHCP request from 
+</I>&gt;&gt;&gt;&gt;&gt;&gt;<i> MAC=00-1B-9E-15-XX-XX
+</I>&gt;&gt;&gt;&gt;&gt;&gt;<i> chilli.c: 2599: 0 (Debug) New DHCP connection established
+</I>&gt;&gt;&gt;&gt;&gt;&gt;<i> chilli.c: 2505: 0 (Debug) DHCP requested IP address
+</I>&gt;&gt;&gt;&gt;&gt;&gt;<i> chilli.c: 2558: 0 (Debug) Client MAC=00-1B-9E-15-XX-XX assigned 
+</I>&gt;&gt;&gt;&gt;&gt;&gt;<i> IP 10.1.0.2
+</I>&gt;&gt;&gt;&gt;&gt;&gt;<i> dhcp.c: 633: 6 (No such device or address) sendto(fd=5, len=335) 
+</I>&gt;&gt;&gt;&gt;&gt;&gt;<i> failed
+</I>&gt;&gt;&gt;&gt;&gt;&gt;<i> dhcp.c: 633: 6 (No such device or address) sendto(fd=7, len=42) 
+</I>&gt;&gt;&gt;&gt;&gt;&gt;<i> failed
+</I>&gt;&gt;&gt;&gt;&gt;&gt;<i> dhcp.c: 633: 6 (No such device or address) sendto(fd=7, len=42) 
+</I>&gt;&gt;&gt;&gt;&gt;&gt;<i> failed
+</I>&gt;&gt;&gt;&gt;&gt;&gt;<i> dhcp.c: 633: 6 (No such device or address) sendto(fd=7, len=42) 
+</I>&gt;&gt;&gt;&gt;&gt;&gt;<i> failed
+</I>&gt;&gt;&gt;&gt;&gt;&gt;<i> dhcp.c: 633: 6 (No such device or address) sendto(fd=7, len=42) 
+</I>&gt;&gt;&gt;&gt;&gt;&gt;<i> failed
+</I>&gt;&gt;&gt;&gt;&gt;&gt;<i> dhcp.c: 633: 6 (No such device or address) sendto(fd=7, len=42) 
+</I>&gt;&gt;&gt;&gt;&gt;&gt;<i> failed
+</I>&gt;&gt;&gt;&gt;&gt;&gt;<i> dhcp.c: 633: 6 (No such device or address) sendto(fd=7, len=42) 
+</I>&gt;&gt;&gt;&gt;&gt;&gt;<i> failed
+</I>&gt;&gt;&gt;&gt;&gt;&gt;<i> dhcp.c: 633: 6 (No such device or address) sendto(fd=7, len=42) 
+</I>&gt;&gt;&gt;&gt;&gt;&gt;<i> failed
+</I>&gt;&gt;&gt;&gt;&gt;&gt;<i> dhcp.c: 633: 6 (No such device or address) sendto(fd=7, len=42) 
+</I>&gt;&gt;&gt;&gt;&gt;&gt;<i> failed
+</I>&gt;&gt;&gt;&gt;&gt;&gt;<i> ......
+</I>&gt;&gt;&gt;&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;&gt;&gt;&gt;<i> It seems it has the dhcp request, assign an ip to mac but while 
+</I>&gt;&gt;&gt;&gt;&gt;&gt;<i> delivering result sth happens..
+</I>&gt;&gt;&gt;&gt;&gt;&gt;<i> Does any one heard about this problem?
+</I>&gt;&gt;&gt;&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;&gt;&gt;&gt;<i> --------------------------------------------------------------------- 
+</I>&gt;&gt;&gt;&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;&gt;&gt;&gt;<i> To unsubscribe, e-mail: <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli-unsubscribe at coova.org</A>
+</I>&gt;&gt;&gt;&gt;&gt;&gt;<i> For additional commands, e-mail: <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli-help at coova.org</A>
+</I>&gt;&gt;&gt;&gt;&gt;&gt;<i> Wiki: <A HREF="http://coova.org/wiki/index.php/CoovaChilli">http://coova.org/wiki/index.php/CoovaChilli</A>
+</I>&gt;&gt;&gt;&gt;&gt;&gt;<i> Forum: <A HREF="http://coova.org/phpBB3/viewforum.php?f=4">http://coova.org/phpBB3/viewforum.php?f=4</A>
+</I>&gt;&gt;&gt;&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;&gt;<i> ---------------------------------------------------------------------
+</I>&gt;&gt;&gt;&gt;<i> To unsubscribe, e-mail: <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli-unsubscribe at coova.org</A>
+</I>&gt;&gt;&gt;&gt;<i> For additional commands, e-mail: <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli-help at coova.org</A>
+</I>&gt;&gt;&gt;&gt;<i> Wiki: <A HREF="http://coova.org/wiki/index.php/CoovaChilli">http://coova.org/wiki/index.php/CoovaChilli</A>
+</I>&gt;&gt;&gt;&gt;<i> Forum: <A HREF="http://coova.org/phpBB3/viewforum.php?f=4">http://coova.org/phpBB3/viewforum.php?f=4</A>
+</I>&gt;&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;<i>
+</I>&gt;&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>
+</I>
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	
+	<LI>Next message: <A HREF="000101.html">centralized coova
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#100">[ date ]</a>
+              <a href="thread.html#100">[ thread ]</a>
+              <a href="subject.html#100">[ subject ]</a>
+              <a href="author.html#100">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

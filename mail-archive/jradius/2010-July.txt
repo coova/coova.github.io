@@ -1,0 +1,839 @@
+From karuna.kumar at indscape.com  Thu Jul  8 05:56:37 2010
+From: karuna.kumar at indscape.com (Karuna G. Kumar)
+Date: Thu, 8 Jul 2010 11:26:37 +0530
+Subject: [Jradius] How to use vendor specific attributes?
+Message-ID: <C266C6CB8E0BFE43B49583893F9968E803F9288A@exchange.pdcindscape.com>
+
+Hi,
+
+ 
+
+I am using FreeRADIUS and JRadius. That means, rlm_jradius module in
+FreeRADIUS. Using JRadius handler to process authentication,
+authorization and accounting.
+
+ 
+
+Now, I don't know how to use vendor specific attributes in request and
+response objects. Please provide me any documentation on how to
+configure this. Thanks in advance.
+
+ 
+
+- Karun.
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/jradius/attachments/20100708/74022bd5/attachment.htm>
+
+From karuna.kumar at indscape.com  Wed Jul 14 10:48:33 2010
+From: karuna.kumar at indscape.com (Karuna G. Kumar)
+Date: Wed, 14 Jul 2010 16:18:33 +0530
+Subject: [Jradius] How to use vendor specific attributes?
+References: <C266C6CB8E0BFE43B49583893F9968E803F9288A@exchange.pdcindscape.com>
+	<1278569923.3651.28.camel@david-laptop>
+Message-ID: <C266C6CB8E0BFE43B49583893F9968E803F928A2@exchange.pdcindscape.com>
+
+David,
+
+Thanks for the response. I need little more help from you. Because, still JRadius cannot read my VSAttribute.
+
+I have rebuild the dictionary as explained and created a jradius-dictionary.jar. I have placed this jar file in jradius's lib folder and restarted the JRadius server. 
+
+After that, I have sent auth request to the JRadius handler (LocalUsersHandler.java). Authentication is successful but throwing the following exception while sending the response attributes back.
+
+# Log:
+------
+
+>>> packets in request from "example":
+--- packet 1 of 2
+Class: class net.jradius.packet.AccessRequest
+Attributes:
+User-Name = test
+Acct-Session-Id = 001
+NAS-Identifier = 00:E0:81:2A:45:FA
+NAS-IP-Address = 192.168.1.109
+Called-Station-Id = called
+Calling-Station-Id = caller
+NAS-Port = 1234
+NAS-Port-Type = Ethernet
+User-Password = [Encrypted String]
+
+--- packet 2 of 2
+Class: class net.jradius.packet.NullPacket
+Attributes:
+
+Configuration Items:
+User-Password := [Encrypted String]
+Cleartext-Password := test123
+JRadius-Session-Id := e026a240c242c7362d6997c5678c5727 JRadius-Request-Id := 66
+
+Appropriate session locking must be implemented
+net.jradius.exception.UnknownAttributeException: Unknown attribute Pronto-AVPair
+	at net.jradius.packet.attribute.AttributeFactory.newAttribute(AttributeFactory.java:306)
+	at net.jradius.packet.attribute.AttributeFactory.newAttribute(AttributeFactory.java:343)
+	at com.pronto.handler.LocalUsersHandler$LocalUser.getAttributeList(LocalUsersHandler.java:109)
+	at com.pronto.handler.LocalUsersHandler.handle(LocalUsersHandler.java:249)
+	at net.jradius.handler.PacketHandlerBase.handle(PacketHandlerBase.java:49)
+	at net.jradius.handler.EventHandlerBase.execute(EventHandlerBase.java:66)
+	at net.jradius.server.RadiusProcessor.runPacketHandlers(RadiusProcessor.java:130)
+	at net.jradius.freeradius.FreeRadiusProcessor.processRequest(FreeRadiusProcessor.java:57)
+	at net.jradius.server.Processor.process(Processor.java:123)
+	at net.jradius.server.Processor.run(Processor.java:99)
+14 Jul, 2010 3:44:33 PM net.jradius.log.BaseRadiusLog info
+INFO: Allowing WPA access for username: test Appropriate session locking must be implemented Appropriate session locking must be implemented Appropriate session locking must be implemented
+
+>>> packets in request from "example":
+--- packet 1 of 2
+Class: class net.jradius.packet.AccessRequest
+Attributes:
+User-Name = test
+Acct-Session-Id = 001
+NAS-Identifier = 00:E0:81:2A:45:FA
+NAS-IP-Address = 192.168.1.109
+Called-Station-Id = called
+Calling-Station-Id = caller
+NAS-Port = 1234
+NAS-Port-Type = Ethernet
+User-Password = [Encrypted String]
+
+--- packet 2 of 2
+Class: class net.jradius.packet.AccessAccept
+Attributes:
+Reply-Message = Hello test user!
+Session-Timeout = 3600
+Idle-Timeout = 300
+User-Name = test
+Class := [Binary Data (length=46)]
+
+Configuration Items:
+Cleartext-Password := test123
+JRadius-Session-Id := e026a240c242c7362d6997c5678c5727 JRadius-Request-Id := 66 Auth-Type = PAP
+
+
+# Jradius-config.xml:
+---------------------
+.
+.
+.
+<users>
+<user username="test" password="test123">
+  Reply-Message = Hello test user!
+  Session-Timeout = 3600
+  Idle-Timeout = 300
+  User-Name = test
+  Pronto-AVPair = test
+</user>
+</users>
+.
+.
+
+# After executing build_dictionary.sh... file.list inside tmp-dictionary folder shows the following.
+
+./net/jradius/dictionary/vsa_pronto/VSADictionaryImpl.java
+./net/jradius/dictionary/vsa_pronto/Attr_ProntoAVPair.java
+
+# In tmp-dictionary folder, net/jradius/dictionary/vsa_pronto/Attr_ProntoAVPair.java shows following.
+
+Public final class Attr_ProntoAVPair extends VSAttribute
+{
+	Public static final String NAME = "Pronto-AVPair";
+	.
+	.
+	.
+
+
+What went wrong? Please help. Thanks in advance.
+
+- Karun.
+
+
+-----Original Message-----
+From: wlanmac [mailto:wlan at mac.com] 
+Sent: Thursday, July 08, 2010 11:49
+To: Karuna G. Kumar
+Subject: Re: [Jradius] How to use vendor specific attributes?
+
+You can use VSAs just like any other attribute in JRadius. If you are
+wanting to create your own VSAs, then model a dictionary file off of the
+FreeRADIUS dictionary files that come with JRadius. Then (re)build the
+JRadius dictionary (http://www.coova.org/JRadius/Dictionary) where your
+new dictionary file is includes in the main "dictionary" file (also make
+sure the same dictionary files are used in FreeRADIUS too). 
+
+David
+
+
+On Thu, 2010-07-08 at 11:26 +0530, Karuna G. Kumar wrote:
+> Hi,
+> 
+>  
+> 
+> I am using FreeRADIUS and JRadius. That means, rlm_jradius module in
+> FreeRADIUS. Using JRadius handler to process authentication,
+> authorization and accounting.
+> 
+>  
+> 
+> Now, I don?t know how to use vendor specific attributes in request and
+> response objects. Please provide me any documentation on how to
+> configure this. Thanks in advance.
+> 
+>  
+> 
+> - Karun.
+> 
+> 
+> _______________________________________________
+> Jradius mailing list
+> Jradius at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/jradius
+
+
+
+
+
+From wlan at mac.com  Wed Jul 14 11:31:52 2010
+From: wlan at mac.com (wlanmac)
+Date: Wed, 14 Jul 2010 13:31:52 +0200
+Subject: [Jradius] How to use vendor specific attributes?
+In-Reply-To: <C266C6CB8E0BFE43B49583893F9968E803F928A2@exchange.pdcindscape.com>
+References: <C266C6CB8E0BFE43B49583893F9968E803F9288A@exchange.pdcindscape.com>
+	<1278569923.3651.28.camel@david-laptop>
+	<C266C6CB8E0BFE43B49583893F9968E803F928A2@exchange.pdcindscape.com>
+Message-ID: <1279107112.9346.15.camel@david-laptop>
+
+It is hard to say; somehow it's not loading that vsa dictionary. 
+
+Perhaps you have two directionary.* files that have the same Vendor ID?
+It might help to include the dictionary.pronto in your reply. 
+
+Cheers,
+David
+
+
+On Wed, 2010-07-14 at 16:18 +0530, Karuna G. Kumar wrote:
+> David,
+> 
+> Thanks for the response. I need little more help from you. Because, still JRadius cannot read my VSAttribute.
+> 
+> I have rebuild the dictionary as explained and created a jradius-dictionary.jar. I have placed this jar file in jradius's lib folder and restarted the JRadius server. 
+> 
+> After that, I have sent auth request to the JRadius handler (LocalUsersHandler.java). Authentication is successful but throwing the following exception while sending the response attributes back.
+> 
+> # Log:
+> ------
+> 
+> >>> packets in request from "example":
+> --- packet 1 of 2
+> Class: class net.jradius.packet.AccessRequest
+> Attributes:
+> User-Name = test
+> Acct-Session-Id = 001
+> NAS-Identifier = 00:E0:81:2A:45:FA
+> NAS-IP-Address = 192.168.1.109
+> Called-Station-Id = called
+> Calling-Station-Id = caller
+> NAS-Port = 1234
+> NAS-Port-Type = Ethernet
+> User-Password = [Encrypted String]
+> 
+> --- packet 2 of 2
+> Class: class net.jradius.packet.NullPacket
+> Attributes:
+> 
+> Configuration Items:
+> User-Password := [Encrypted String]
+> Cleartext-Password := test123
+> JRadius-Session-Id := e026a240c242c7362d6997c5678c5727 JRadius-Request-Id := 66
+> 
+> Appropriate session locking must be implemented
+> net.jradius.exception.UnknownAttributeException: Unknown attribute Pronto-AVPair
+> 	at net.jradius.packet.attribute.AttributeFactory.newAttribute(AttributeFactory.java:306)
+> 	at net.jradius.packet.attribute.AttributeFactory.newAttribute(AttributeFactory.java:343)
+> 	at com.pronto.handler.LocalUsersHandler$LocalUser.getAttributeList(LocalUsersHandler.java:109)
+> 	at com.pronto.handler.LocalUsersHandler.handle(LocalUsersHandler.java:249)
+> 	at net.jradius.handler.PacketHandlerBase.handle(PacketHandlerBase.java:49)
+> 	at net.jradius.handler.EventHandlerBase.execute(EventHandlerBase.java:66)
+> 	at net.jradius.server.RadiusProcessor.runPacketHandlers(RadiusProcessor.java:130)
+> 	at net.jradius.freeradius.FreeRadiusProcessor.processRequest(FreeRadiusProcessor.java:57)
+> 	at net.jradius.server.Processor.process(Processor.java:123)
+> 	at net.jradius.server.Processor.run(Processor.java:99)
+> 14 Jul, 2010 3:44:33 PM net.jradius.log.BaseRadiusLog info
+> INFO: Allowing WPA access for username: test Appropriate session locking must be implemented Appropriate session locking must be implemented Appropriate session locking must be implemented
+> 
+> >>> packets in request from "example":
+> --- packet 1 of 2
+> Class: class net.jradius.packet.AccessRequest
+> Attributes:
+> User-Name = test
+> Acct-Session-Id = 001
+> NAS-Identifier = 00:E0:81:2A:45:FA
+> NAS-IP-Address = 192.168.1.109
+> Called-Station-Id = called
+> Calling-Station-Id = caller
+> NAS-Port = 1234
+> NAS-Port-Type = Ethernet
+> User-Password = [Encrypted String]
+> 
+> --- packet 2 of 2
+> Class: class net.jradius.packet.AccessAccept
+> Attributes:
+> Reply-Message = Hello test user!
+> Session-Timeout = 3600
+> Idle-Timeout = 300
+> User-Name = test
+> Class := [Binary Data (length=46)]
+> 
+> Configuration Items:
+> Cleartext-Password := test123
+> JRadius-Session-Id := e026a240c242c7362d6997c5678c5727 JRadius-Request-Id := 66 Auth-Type = PAP
+> 
+> 
+> # Jradius-config.xml:
+> ---------------------
+> .
+> .
+> .
+> <users>
+> <user username="test" password="test123">
+>   Reply-Message = Hello test user!
+>   Session-Timeout = 3600
+>   Idle-Timeout = 300
+>   User-Name = test
+>   Pronto-AVPair = test
+> </user>
+> </users>
+> .
+> .
+> 
+> # After executing build_dictionary.sh... file.list inside tmp-dictionary folder shows the following.
+> 
+> ./net/jradius/dictionary/vsa_pronto/VSADictionaryImpl.java
+> ./net/jradius/dictionary/vsa_pronto/Attr_ProntoAVPair.java
+> 
+> # In tmp-dictionary folder, net/jradius/dictionary/vsa_pronto/Attr_ProntoAVPair.java shows following.
+> 
+> Public final class Attr_ProntoAVPair extends VSAttribute
+> {
+> 	Public static final String NAME = "Pronto-AVPair";
+> 	.
+> 	.
+> 	.
+> 
+> 
+> What went wrong? Please help. Thanks in advance.
+> 
+> - Karun.
+> 
+> 
+> -----Original Message-----
+> From: wlanmac [mailto:wlan at mac.com] 
+> Sent: Thursday, July 08, 2010 11:49
+> To: Karuna G. Kumar
+> Subject: Re: [Jradius] How to use vendor specific attributes?
+> 
+> You can use VSAs just like any other attribute in JRadius. If you are
+> wanting to create your own VSAs, then model a dictionary file off of the
+> FreeRADIUS dictionary files that come with JRadius. Then (re)build the
+> JRadius dictionary (http://www.coova.org/JRadius/Dictionary) where your
+> new dictionary file is includes in the main "dictionary" file (also make
+> sure the same dictionary files are used in FreeRADIUS too). 
+> 
+> David
+> 
+> 
+> On Thu, 2010-07-08 at 11:26 +0530, Karuna G. Kumar wrote:
+> > Hi,
+> > 
+> >  
+> > 
+> > I am using FreeRADIUS and JRadius. That means, rlm_jradius module in
+> > FreeRADIUS. Using JRadius handler to process authentication,
+> > authorization and accounting.
+> > 
+> >  
+> > 
+> > Now, I don?t know how to use vendor specific attributes in request and
+> > response objects. Please provide me any documentation on how to
+> > configure this. Thanks in advance.
+> > 
+> >  
+> > 
+> > - Karun.
+> > 
+> > 
+> > _______________________________________________
+> > Jradius mailing list
+> > Jradius at coova.org
+> > http://lists.coova.org/cgi-bin/mailman/listinfo/jradius
+> 
+> 
+> 
+> 
+
+
+
+From wlan at mac.com  Tue Jul 27 06:28:15 2010
+From: wlan at mac.com (wlanmac)
+Date: Tue, 27 Jul 2010 08:28:15 +0200
+Subject: [Jradius] How to use vendor specific attributes?
+In-Reply-To: <C266C6CB8E0BFE43B49583893F9968E803F928F1@exchange.pdcindscape.com>
+References: <C266C6CB8E0BFE43B49583893F9968E803F9288A@exchange.pdcindscape.com>
+	<1278569923.3651.28.camel@david-laptop>
+	<C266C6CB8E0BFE43B49583893F9968E803F928A2@exchange.pdcindscape.com>
+	<1279107112.9346.15.camel@david-laptop>
+	<C266C6CB8E0BFE43B49583893F9968E803F928F1@exchange.pdcindscape.com>
+Message-ID: <1280212095.3366.0.camel@david-laptop>
+
+Indeed, having jars with conflicting classes is never good in Java. Glad
+to hear your issue was resolved. 
+
+David
+
+
+On Tue, 2010-07-27 at 12:01 +0530, Karuna G. Kumar wrote:
+> David,
+> 
+> Sorry for not replying soon.
+> 
+> After creating the dictionary, I have just copied the newly created jradius-dictionary.jar file in to lib folder. But, already there is another dictionary jar file (jradius-dictionary-1.0.0.jar) in the lib folder. I tried moving that jar file out of the lib folder keeping newly created jar file alone and it started working fine. I think there is some conflict between these two jar files which is resulting in error as mentioned initially.
+> 
+> As you asked me to provide the dictionary.pronto, It is written as below.
+> 
+> 
+> # -*- text -*-
+> #
+> # dictionary.pronto
+> #
+> #           Pronto VSAs
+> #           Karuna G Kumar <karuna.kumar at indscape.com>
+> #
+> 
+> VENDOR          Pronto                          16521
+> 
+> #
+> # Standard attribute
+> #
+> BEGIN-VENDOR    Pronto
+> 
+> ATTRIBUTE       Pronto-AVPair                  1       string
+> 
+> #VALUE   <ATTRIBUTE1>           <ATTRIBUTEVALUE1>                 1
+> #VALUE   <ATTRIBUTE1>           <ATTRIBUTEVALUE2>                 2
+> #VALUE   <ATTRIBUTE1>           <ATTRIBUTEVALUE3>                 3
+> 
+> END-VENDOR      Pronto
+> 
+> 
+> Thanks,
+> - Karun.
+> 
+> -----Original Message-----
+> From: wlanmac [mailto:wlan at mac.com] 
+> Sent: Wednesday, July 14, 2010 17:02
+> To: Karuna G. Kumar
+> Cc: jradius at coova.org
+> Subject: RE: [Jradius] How to use vendor specific attributes?
+> 
+> It is hard to say; somehow it's not loading that vsa dictionary. 
+> 
+> Perhaps you have two directionary.* files that have the same Vendor ID?
+> It might help to include the dictionary.pronto in your reply. 
+> 
+> Cheers,
+> David
+> 
+> 
+> On Wed, 2010-07-14 at 16:18 +0530, Karuna G. Kumar wrote:
+> > David,
+> > 
+> > Thanks for the response. I need little more help from you. Because, still JRadius cannot read my VSAttribute.
+> > 
+> > I have rebuild the dictionary as explained and created a jradius-dictionary.jar. I have placed this jar file in jradius's lib folder and restarted the JRadius server. 
+> > 
+> > After that, I have sent auth request to the JRadius handler (LocalUsersHandler.java). Authentication is successful but throwing the following exception while sending the response attributes back.
+> > 
+> > # Log:
+> > ------
+> > 
+> > >>> packets in request from "example":
+> > --- packet 1 of 2
+> > Class: class net.jradius.packet.AccessRequest
+> > Attributes:
+> > User-Name = test
+> > Acct-Session-Id = 001
+> > NAS-Identifier = 00:E0:81:2A:45:FA
+> > NAS-IP-Address = 192.168.1.109
+> > Called-Station-Id = called
+> > Calling-Station-Id = caller
+> > NAS-Port = 1234
+> > NAS-Port-Type = Ethernet
+> > User-Password = [Encrypted String]
+> > 
+> > --- packet 2 of 2
+> > Class: class net.jradius.packet.NullPacket
+> > Attributes:
+> > 
+> > Configuration Items:
+> > User-Password := [Encrypted String]
+> > Cleartext-Password := test123
+> > JRadius-Session-Id := e026a240c242c7362d6997c5678c5727 JRadius-Request-Id := 66
+> > 
+> > Appropriate session locking must be implemented
+> > net.jradius.exception.UnknownAttributeException: Unknown attribute Pronto-AVPair
+> > 	at net.jradius.packet.attribute.AttributeFactory.newAttribute(AttributeFactory.java:306)
+> > 	at net.jradius.packet.attribute.AttributeFactory.newAttribute(AttributeFactory.java:343)
+> > 	at com.pronto.handler.LocalUsersHandler$LocalUser.getAttributeList(LocalUsersHandler.java:109)
+> > 	at com.pronto.handler.LocalUsersHandler.handle(LocalUsersHandler.java:249)
+> > 	at net.jradius.handler.PacketHandlerBase.handle(PacketHandlerBase.java:49)
+> > 	at net.jradius.handler.EventHandlerBase.execute(EventHandlerBase.java:66)
+> > 	at net.jradius.server.RadiusProcessor.runPacketHandlers(RadiusProcessor.java:130)
+> > 	at net.jradius.freeradius.FreeRadiusProcessor.processRequest(FreeRadiusProcessor.java:57)
+> > 	at net.jradius.server.Processor.process(Processor.java:123)
+> > 	at net.jradius.server.Processor.run(Processor.java:99)
+> > 14 Jul, 2010 3:44:33 PM net.jradius.log.BaseRadiusLog info
+> > INFO: Allowing WPA access for username: test Appropriate session locking must be implemented Appropriate session locking must be implemented Appropriate session locking must be implemented
+> > 
+> > >>> packets in request from "example":
+> > --- packet 1 of 2
+> > Class: class net.jradius.packet.AccessRequest
+> > Attributes:
+> > User-Name = test
+> > Acct-Session-Id = 001
+> > NAS-Identifier = 00:E0:81:2A:45:FA
+> > NAS-IP-Address = 192.168.1.109
+> > Called-Station-Id = called
+> > Calling-Station-Id = caller
+> > NAS-Port = 1234
+> > NAS-Port-Type = Ethernet
+> > User-Password = [Encrypted String]
+> > 
+> > --- packet 2 of 2
+> > Class: class net.jradius.packet.AccessAccept
+> > Attributes:
+> > Reply-Message = Hello test user!
+> > Session-Timeout = 3600
+> > Idle-Timeout = 300
+> > User-Name = test
+> > Class := [Binary Data (length=46)]
+> > 
+> > Configuration Items:
+> > Cleartext-Password := test123
+> > JRadius-Session-Id := e026a240c242c7362d6997c5678c5727 JRadius-Request-Id := 66 Auth-Type = PAP
+> > 
+> > 
+> > # Jradius-config.xml:
+> > ---------------------
+> > .
+> > .
+> > .
+> > <users>
+> > <user username="test" password="test123">
+> >   Reply-Message = Hello test user!
+> >   Session-Timeout = 3600
+> >   Idle-Timeout = 300
+> >   User-Name = test
+> >   Pronto-AVPair = test
+> > </user>
+> > </users>
+> > .
+> > .
+> > 
+> > # After executing build_dictionary.sh... file.list inside tmp-dictionary folder shows the following.
+> > 
+> > ./net/jradius/dictionary/vsa_pronto/VSADictionaryImpl.java
+> > ./net/jradius/dictionary/vsa_pronto/Attr_ProntoAVPair.java
+> > 
+> > # In tmp-dictionary folder, net/jradius/dictionary/vsa_pronto/Attr_ProntoAVPair.java shows following.
+> > 
+> > Public final class Attr_ProntoAVPair extends VSAttribute
+> > {
+> > 	Public static final String NAME = "Pronto-AVPair";
+> > 	.
+> > 	.
+> > 	.
+> > 
+> > 
+> > What went wrong? Please help. Thanks in advance.
+> > 
+> > - Karun.
+> > 
+> > 
+> > -----Original Message-----
+> > From: wlanmac [mailto:wlan at mac.com] 
+> > Sent: Thursday, July 08, 2010 11:49
+> > To: Karuna G. Kumar
+> > Subject: Re: [Jradius] How to use vendor specific attributes?
+> > 
+> > You can use VSAs just like any other attribute in JRadius. If you are
+> > wanting to create your own VSAs, then model a dictionary file off of the
+> > FreeRADIUS dictionary files that come with JRadius. Then (re)build the
+> > JRadius dictionary (http://www.coova.org/JRadius/Dictionary) where your
+> > new dictionary file is includes in the main "dictionary" file (also make
+> > sure the same dictionary files are used in FreeRADIUS too). 
+> > 
+> > David
+> > 
+> > 
+> > On Thu, 2010-07-08 at 11:26 +0530, Karuna G. Kumar wrote:
+> > > Hi,
+> > > 
+> > >  
+> > > 
+> > > I am using FreeRADIUS and JRadius. That means, rlm_jradius module in
+> > > FreeRADIUS. Using JRadius handler to process authentication,
+> > > authorization and accounting.
+> > > 
+> > >  
+> > > 
+> > > Now, I don?t know how to use vendor specific attributes in request and
+> > > response objects. Please provide me any documentation on how to
+> > > configure this. Thanks in advance.
+> > > 
+> > >  
+> > > 
+> > > - Karun.
+> > > 
+> > > 
+> > > _______________________________________________
+> > > Jradius mailing list
+> > > Jradius at coova.org
+> > > http://lists.coova.org/cgi-bin/mailman/listinfo/jradius
+> > 
+> > 
+> > 
+> > 
+> 
+> 
+> 
+> 
+
+
+
+From karuna.kumar at indscape.com  Tue Jul 27 06:31:00 2010
+From: karuna.kumar at indscape.com (Karuna G. Kumar)
+Date: Tue, 27 Jul 2010 12:01:00 +0530
+Subject: [Jradius] How to use vendor specific attributes?
+References: <C266C6CB8E0BFE43B49583893F9968E803F9288A@exchange.pdcindscape.com>
+	<1278569923.3651.28.camel@david-laptop>
+	<C266C6CB8E0BFE43B49583893F9968E803F928A2@exchange.pdcindscape.com>
+	<1279107112.9346.15.camel@david-laptop>
+Message-ID: <C266C6CB8E0BFE43B49583893F9968E803F928F1@exchange.pdcindscape.com>
+
+David,
+
+Sorry for not replying soon.
+
+After creating the dictionary, I have just copied the newly created jradius-dictionary.jar file in to lib folder. But, already there is another dictionary jar file (jradius-dictionary-1.0.0.jar) in the lib folder. I tried moving that jar file out of the lib folder keeping newly created jar file alone and it started working fine. I think there is some conflict between these two jar files which is resulting in error as mentioned initially.
+
+As you asked me to provide the dictionary.pronto, It is written as below.
+
+
+# -*- text -*-
+#
+# dictionary.pronto
+#
+#           Pronto VSAs
+#           Karuna G Kumar <karuna.kumar at indscape.com>
+#
+
+VENDOR          Pronto                          16521
+
+#
+# Standard attribute
+#
+BEGIN-VENDOR    Pronto
+
+ATTRIBUTE       Pronto-AVPair                  1       string
+
+#VALUE   <ATTRIBUTE1>           <ATTRIBUTEVALUE1>                 1
+#VALUE   <ATTRIBUTE1>           <ATTRIBUTEVALUE2>                 2
+#VALUE   <ATTRIBUTE1>           <ATTRIBUTEVALUE3>                 3
+
+END-VENDOR      Pronto
+
+
+Thanks,
+- Karun.
+
+-----Original Message-----
+From: wlanmac [mailto:wlan at mac.com] 
+Sent: Wednesday, July 14, 2010 17:02
+To: Karuna G. Kumar
+Cc: jradius at coova.org
+Subject: RE: [Jradius] How to use vendor specific attributes?
+
+It is hard to say; somehow it's not loading that vsa dictionary. 
+
+Perhaps you have two directionary.* files that have the same Vendor ID?
+It might help to include the dictionary.pronto in your reply. 
+
+Cheers,
+David
+
+
+On Wed, 2010-07-14 at 16:18 +0530, Karuna G. Kumar wrote:
+> David,
+> 
+> Thanks for the response. I need little more help from you. Because, still JRadius cannot read my VSAttribute.
+> 
+> I have rebuild the dictionary as explained and created a jradius-dictionary.jar. I have placed this jar file in jradius's lib folder and restarted the JRadius server. 
+> 
+> After that, I have sent auth request to the JRadius handler (LocalUsersHandler.java). Authentication is successful but throwing the following exception while sending the response attributes back.
+> 
+> # Log:
+> ------
+> 
+> >>> packets in request from "example":
+> --- packet 1 of 2
+> Class: class net.jradius.packet.AccessRequest
+> Attributes:
+> User-Name = test
+> Acct-Session-Id = 001
+> NAS-Identifier = 00:E0:81:2A:45:FA
+> NAS-IP-Address = 192.168.1.109
+> Called-Station-Id = called
+> Calling-Station-Id = caller
+> NAS-Port = 1234
+> NAS-Port-Type = Ethernet
+> User-Password = [Encrypted String]
+> 
+> --- packet 2 of 2
+> Class: class net.jradius.packet.NullPacket
+> Attributes:
+> 
+> Configuration Items:
+> User-Password := [Encrypted String]
+> Cleartext-Password := test123
+> JRadius-Session-Id := e026a240c242c7362d6997c5678c5727 JRadius-Request-Id := 66
+> 
+> Appropriate session locking must be implemented
+> net.jradius.exception.UnknownAttributeException: Unknown attribute Pronto-AVPair
+> 	at net.jradius.packet.attribute.AttributeFactory.newAttribute(AttributeFactory.java:306)
+> 	at net.jradius.packet.attribute.AttributeFactory.newAttribute(AttributeFactory.java:343)
+> 	at com.pronto.handler.LocalUsersHandler$LocalUser.getAttributeList(LocalUsersHandler.java:109)
+> 	at com.pronto.handler.LocalUsersHandler.handle(LocalUsersHandler.java:249)
+> 	at net.jradius.handler.PacketHandlerBase.handle(PacketHandlerBase.java:49)
+> 	at net.jradius.handler.EventHandlerBase.execute(EventHandlerBase.java:66)
+> 	at net.jradius.server.RadiusProcessor.runPacketHandlers(RadiusProcessor.java:130)
+> 	at net.jradius.freeradius.FreeRadiusProcessor.processRequest(FreeRadiusProcessor.java:57)
+> 	at net.jradius.server.Processor.process(Processor.java:123)
+> 	at net.jradius.server.Processor.run(Processor.java:99)
+> 14 Jul, 2010 3:44:33 PM net.jradius.log.BaseRadiusLog info
+> INFO: Allowing WPA access for username: test Appropriate session locking must be implemented Appropriate session locking must be implemented Appropriate session locking must be implemented
+> 
+> >>> packets in request from "example":
+> --- packet 1 of 2
+> Class: class net.jradius.packet.AccessRequest
+> Attributes:
+> User-Name = test
+> Acct-Session-Id = 001
+> NAS-Identifier = 00:E0:81:2A:45:FA
+> NAS-IP-Address = 192.168.1.109
+> Called-Station-Id = called
+> Calling-Station-Id = caller
+> NAS-Port = 1234
+> NAS-Port-Type = Ethernet
+> User-Password = [Encrypted String]
+> 
+> --- packet 2 of 2
+> Class: class net.jradius.packet.AccessAccept
+> Attributes:
+> Reply-Message = Hello test user!
+> Session-Timeout = 3600
+> Idle-Timeout = 300
+> User-Name = test
+> Class := [Binary Data (length=46)]
+> 
+> Configuration Items:
+> Cleartext-Password := test123
+> JRadius-Session-Id := e026a240c242c7362d6997c5678c5727 JRadius-Request-Id := 66 Auth-Type = PAP
+> 
+> 
+> # Jradius-config.xml:
+> ---------------------
+> .
+> .
+> .
+> <users>
+> <user username="test" password="test123">
+>   Reply-Message = Hello test user!
+>   Session-Timeout = 3600
+>   Idle-Timeout = 300
+>   User-Name = test
+>   Pronto-AVPair = test
+> </user>
+> </users>
+> .
+> .
+> 
+> # After executing build_dictionary.sh... file.list inside tmp-dictionary folder shows the following.
+> 
+> ./net/jradius/dictionary/vsa_pronto/VSADictionaryImpl.java
+> ./net/jradius/dictionary/vsa_pronto/Attr_ProntoAVPair.java
+> 
+> # In tmp-dictionary folder, net/jradius/dictionary/vsa_pronto/Attr_ProntoAVPair.java shows following.
+> 
+> Public final class Attr_ProntoAVPair extends VSAttribute
+> {
+> 	Public static final String NAME = "Pronto-AVPair";
+> 	.
+> 	.
+> 	.
+> 
+> 
+> What went wrong? Please help. Thanks in advance.
+> 
+> - Karun.
+> 
+> 
+> -----Original Message-----
+> From: wlanmac [mailto:wlan at mac.com] 
+> Sent: Thursday, July 08, 2010 11:49
+> To: Karuna G. Kumar
+> Subject: Re: [Jradius] How to use vendor specific attributes?
+> 
+> You can use VSAs just like any other attribute in JRadius. If you are
+> wanting to create your own VSAs, then model a dictionary file off of the
+> FreeRADIUS dictionary files that come with JRadius. Then (re)build the
+> JRadius dictionary (http://www.coova.org/JRadius/Dictionary) where your
+> new dictionary file is includes in the main "dictionary" file (also make
+> sure the same dictionary files are used in FreeRADIUS too). 
+> 
+> David
+> 
+> 
+> On Thu, 2010-07-08 at 11:26 +0530, Karuna G. Kumar wrote:
+> > Hi,
+> > 
+> >  
+> > 
+> > I am using FreeRADIUS and JRadius. That means, rlm_jradius module in
+> > FreeRADIUS. Using JRadius handler to process authentication,
+> > authorization and accounting.
+> > 
+> >  
+> > 
+> > Now, I don?t know how to use vendor specific attributes in request and
+> > response objects. Please provide me any documentation on how to
+> > configure this. Thanks in advance.
+> > 
+> >  
+> > 
+> > - Karun.
+> > 
+> > 
+> > _______________________________________________
+> > Jradius mailing list
+> > Jradius at coova.org
+> > http://lists.coova.org/cgi-bin/mailman/listinfo/jradius
+> 
+> 
+> 
+> 
+
+
+
+
+

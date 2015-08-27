@@ -1,0 +1,135 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] kmod-coova
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20kmod-coova&In-Reply-To=%3C1270617050.18129.899.camel%40david-laptop%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001265.html">
+   <LINK REL="Next"  HREF="001240.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] kmod-coova</H1>
+    <B>David Bird</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20kmod-coova&In-Reply-To=%3C1270617050.18129.899.camel%40david-laptop%3E"
+       TITLE="[Chilli] kmod-coova">david at coova.com
+       </A><BR>
+    <I>Wed Apr  7 05:10:50 UTC 2010</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001265.html">[Chilli] MAC blacklist and other security measures
+</A></li>
+        <LI>Next message: <A HREF="001240.html">[Chilli] kmod-coova
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1239">[ date ]</a>
+              <a href="thread.html#1239">[ thread ]</a>
+              <a href="subject.html#1239">[ subject ]</a>
+              <a href="author.html#1239">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hi,
+
+Been working on a concept for a kernel module for CoovaChilli. With the
+subversion code, configure with &quot;--with-nfcoova&quot; to have the module
+built. With the support built in, and the xt_coova module loaded, the
+idea is that authenticated traffic goes straight through the kernel and
+unauthorized traffic still goes through chilli user-space - enforcing
+captive portal and doing the walled garden, etc. xt_coova (which borrows
+from the 'recent' module) does a simple allow/drop decision based on
+authentication status. Some specific configurations are needed for this
+to work. 
+
+The iptables rules might look like this:
+
+iptables -I FORWARD -o eth0 --src 10.0.0.0/8 \
+  -m coova --name chilli -j ACCEPT
+iptables -I FORWARD -i eth0 --dst 10.0.0.0/8 \
+  -m coova --name chilli --dest -j ACCEPT
+
+iptables -I FORWARD --src 11.0.0.0/8 -j ACCEPT
+iptables -I FORWARD --dst 11.0.0.0/8 -j ACCEPT
+
+(where the assumption is that the default FORWARD rule is to DENY). The
+idea is that traffic to/from eth0 (WAN) from source 10.0.0.0/8 (the
+chilli DHCP IP space) is either allowed or dropped by the xt_coova
+module based on authentication status. The 11.0.0.0/8 network, in this
+example, is the network chilli has configured for it's uamlisten. 
+
+I should mention that when using the kernel module, I have it setup such
+that the dhcpif (eth1) is actually configured with IP address 10.1.0.1
+and the same IP is configured in chilli as the 'dhcplisten' (note that
+typically chilli doesn't want the dhcpif interface configured with an
+IP). Chilli is then also configured with 'uamlisten' of 11.0.0.1 and
+this is the IP address that gets assigned to tun0 (so note that
+dhcplisten and uamlisten are different!). The high level concept is that
+subscribers get a 10.1.0.0/24 IP address which is routed (when
+authenticated) through the kernel. Chilli still monitors all traffic on
+the dhcpif and when users are not authorized yet (i.e. their 10.1.0.0/24
+address is not being forwarded), then chilli does the routing (after
+doing a NAT translation from 10.1.0.0/24 to 11.1.0.0/24). 
+
+Thus, chilli basically is only routing unauthorized traffic while
+authorized traffic goes straight through the kernel. With some testing
+on open-mesh routers, we have seen this can drastically increase
+throughput for authenticated users.
+
+With the iptables rules above, here is an example chilli.conf that I
+have been using:
+
+cat&lt;&lt;EOF&gt;/tmp/chilli.conf
+net 10.1.0.0/16
+dynip 10.1.0.0/24
+statip 10.1.1.0/24
+
+uamlisten 11.1.0.1 
+dhcplisten 10.1.0.1 
+dhcpstart 10
+uamaliasname chilli
+ipup=
+ipdown= 
+
+radiusserver1 localhost
+radiussecret testing123
+dhcpif eth0
+dns1 192.168.1.1
+uamdomain coova.org
+uamserver <A HREF="http://portal/hotspot">http://portal/hotspot</A>
+uamsecret uamsecret
+cmdsock /var/run/chilli.sock
+kname chilli
+EOF
+
+Give it a try if interested in testing! 
+
+David
+
+
+</PRE>
+
+
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001265.html">[Chilli] MAC blacklist and other security measures
+</A></li>
+	<LI>Next message: <A HREF="001240.html">[Chilli] kmod-coova
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1239">[ date ]</a>
+              <a href="thread.html#1239">[ thread ]</a>
+              <a href="subject.html#1239">[ subject ]</a>
+              <a href="author.html#1239">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

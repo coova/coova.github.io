@@ -1,0 +1,197 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] Using CoovaChilli without RADIUS
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Using%20CoovaChilli%20without%20RADIUS&In-Reply-To=%3CCACkgH70kvmiQ7-SuU4%2B6BFQ8SPqE8hjQFRZ1PFghGKvBykypMA%40mail.gmail.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="002185.html">
+   <LINK REL="Next"  HREF="002177.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] Using CoovaChilli without RADIUS</H1>
+    <B>Xabier Oneca -- xOneca</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Using%20CoovaChilli%20without%20RADIUS&In-Reply-To=%3CCACkgH70kvmiQ7-SuU4%2B6BFQ8SPqE8hjQFRZ1PFghGKvBykypMA%40mail.gmail.com%3E"
+       TITLE="[Chilli] Using CoovaChilli without RADIUS">xoneca at gmail.com
+       </A><BR>
+    <I>Thu Feb 28 13:32:29 UTC 2013</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="002185.html">[Chilli] Using CoovaChilli without RADIUS
+</A></li>
+        <LI>Next message: <A HREF="002177.html">[Chilli] DHCP Pool Range With CoovaChilli 1.3.0
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2186">[ date ]</a>
+              <a href="thread.html#2186">[ thread ]</a>
+              <a href="subject.html#2186">[ subject ]</a>
+              <a href="author.html#2186">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>I've been crawling throughout the source code and I found out.
+
+Summarizing, this is what I have done:
+
+In the config file add:
+
+    localusers '/usr/local/etc/chilli/local.users'
+    # There's no RADIUS in localhost, but must provide one.
+    radiusserver1 '127.0.0.1'
+
+And create the local.users file with users. In my case only needed one:
+
+    myuser:mypass
+
+I don't know why yesterday didn't work, maybe was browser's cache in
+action...
+
+Thanks you David for all responses! You answer very quickly!!
+
+--
+Xabier Oneca_,,_
+El 28/02/2013 10:57, &quot;Xabier Oneca -- xOneca&quot; &lt;<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">xoneca at gmail.com</A>&gt; escribi&#243;:
+
+&gt;<i> A better question maybe is: how does local authentication work?
+</I>&gt;<i>
+</I>&gt;<i> --
+</I>&gt;<i> Xabier Oneca_,,_
+</I>&gt;<i> El 27/02/2013 18:59, &quot;Xabier Oneca -- xOneca&quot; &lt;<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">xoneca at gmail.com</A>&gt; escribi&#243;:
+</I>&gt;<i>
+</I>&gt;&gt;<i> Yeah, maybe that works for me. I have found the syntax for the file on
+</I>&gt;&gt;<i> Internet. But I add the line to the config file and does not work. Do I
+</I>&gt;&gt;<i> have to still have a radius server?
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> With the radiusserver1 properly configured authenticates ok, but does not
+</I>&gt;&gt;<i> see at the localusers file. If I remove radiusserver1, then chilli won't
+</I>&gt;&gt;<i> start... :S
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> Thanks!
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> --
+</I>&gt;&gt;<i> Xabier Oneca_,,_
+</I>&gt;&gt;<i> El 27/02/2013 18:49, &quot;David Bird&quot; &lt;<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">david at coova.com</A>&gt; escribi&#243;:
+</I>&gt;&gt;<i>
+</I>&gt;&gt;&gt;<i> The users file is simply there for when a couple local credentials are
+</I>&gt;&gt;&gt;<i> needed. It is not intended to be a 'database' of users. However, it
+</I>&gt;&gt;&gt;<i> might work for your application.
+</I>&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;<i> On Wed, 2013-02-27 at 10:00 +0100, Xabier Oneca -- xOneca wrote:
+</I>&gt;&gt;&gt;<i> &gt; Sorry, I didn't send to the mailing list... :P
+</I>&gt;&gt;&gt;<i> &gt;
+</I>&gt;&gt;&gt;<i> &gt; --
+</I>&gt;&gt;&gt;<i> &gt; Xabier Oneca_,,_
+</I>&gt;&gt;&gt;<i> &gt;
+</I>&gt;&gt;&gt;<i> &gt; El 25/02/2013 20:59, &quot;Xabier Oneca -- xOneca&quot; &lt;<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">xoneca at gmail.com</A>&gt;
+</I>&gt;&gt;&gt;<i> &gt; escribi&#243;:
+</I>&gt;&gt;&gt;<i> &gt;         So, I have to install a RADIUS server with CoovaChilli...
+</I>&gt;&gt;&gt;<i> &gt;
+</I>&gt;&gt;&gt;<i> &gt;         And what is the local users file for? I haven't found anything
+</I>&gt;&gt;&gt;<i> &gt;         in the documentation...
+</I>&gt;&gt;&gt;<i> &gt;
+</I>&gt;&gt;&gt;<i> &gt;         Xabier Oneca_,,_
+</I>&gt;&gt;&gt;<i> &gt;
+</I>&gt;&gt;&gt;<i> &gt;         El 25/02/2013 18:40, &quot;David Bird&quot; &lt;<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">david at coova.com</A>&gt; escribi&#243;:
+</I>&gt;&gt;&gt;<i> &gt;                 CoovaChilli is meant to have a provisioning service
+</I>&gt;&gt;&gt;<i> &gt;                 like RADIUS or it
+</I>&gt;&gt;&gt;<i> &gt;                 can also use an HTTP/S replacement that basically
+</I>&gt;&gt;&gt;<i> &gt;                 translates and proxies
+</I>&gt;&gt;&gt;<i> &gt;                 RADIUS to/from a web service. There isn't an option to
+</I>&gt;&gt;&gt;<i> &gt;                 NOT use either,
+</I>&gt;&gt;&gt;<i> &gt;                 but I know some people do use chilli without doing
+</I>&gt;&gt;&gt;<i> &gt;                 much with RADIUS,
+</I>&gt;&gt;&gt;<i> &gt;                 except for maybe accounting. You can, for instance,
+</I>&gt;&gt;&gt;<i> &gt;                 use chilli_query to
+</I>&gt;&gt;&gt;<i> &gt;                 log in/out subscribers from the command line. There is
+</I>&gt;&gt;&gt;<i> &gt;                 also a local
+</I>&gt;&gt;&gt;<i> &gt;                 users file, but it is not recommended for large
+</I>&gt;&gt;&gt;<i> &gt;                 numbers of users.
+</I>&gt;&gt;&gt;<i> &gt;
+</I>&gt;&gt;&gt;<i> &gt;                 Cheers,
+</I>&gt;&gt;&gt;<i> &gt;                 David
+</I>&gt;&gt;&gt;<i> &gt;
+</I>&gt;&gt;&gt;<i> &gt;
+</I>&gt;&gt;&gt;<i> &gt;
+</I>&gt;&gt;&gt;<i> &gt;                 On Mon, 2013-02-25 at 09:21 +0100, Xabier Oneca --
+</I>&gt;&gt;&gt;<i> &gt;                 xOneca wrote:
+</I>&gt;&gt;&gt;<i> &gt;                 &gt; Hello everybody!
+</I>&gt;&gt;&gt;<i> &gt;                 &gt;
+</I>&gt;&gt;&gt;<i> &gt;                 &gt; Is there a way co configure and use CoovaChilli
+</I>&gt;&gt;&gt;<i> &gt;                 without a RADIUS
+</I>&gt;&gt;&gt;<i> &gt;                 &gt; server?
+</I>&gt;&gt;&gt;<i> &gt;                 &gt;
+</I>&gt;&gt;&gt;<i> &gt;                 &gt; I have seen a 'localusers' option that may help
+</I>&gt;&gt;&gt;<i> &gt;                 achieving that, but I
+</I>&gt;&gt;&gt;<i> &gt;                 &gt; have not found any information about that...
+</I>&gt;&gt;&gt;<i> &gt;                 &gt;
+</I>&gt;&gt;&gt;<i> &gt;                 &gt; Someone has any clue? Thanks!
+</I>&gt;&gt;&gt;<i> &gt;                 &gt;
+</I>&gt;&gt;&gt;<i> &gt;                 &gt; --
+</I>&gt;&gt;&gt;<i> &gt;                 &gt; Xabier Oneca_,,_
+</I>&gt;&gt;&gt;<i> &gt;                 &gt;
+</I>&gt;&gt;&gt;<i> &gt;                 &gt; _______________________________________________
+</I>&gt;&gt;&gt;<i> &gt;                 &gt; Chilli mailing list
+</I>&gt;&gt;&gt;<i> &gt;                 &gt; <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">Chilli at coova.org</A>
+</I>&gt;&gt;&gt;<i> &gt;                 &gt;
+</I>&gt;&gt;&gt;<i> &gt;                 <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">http://lists.coova.org/cgi-bin/mailman/listinfo/chilli</A>
+</I>&gt;&gt;&gt;<i> &gt;
+</I>&gt;&gt;&gt;<i> &gt;                 --
+</I>&gt;&gt;&gt;<i> &gt;                 --
+</I>&gt;&gt;&gt;<i> &gt;                 David Bird
+</I>&gt;&gt;&gt;<i> &gt;                 <A HREF="http://www.linkedin.com/in/dwbird">http://www.linkedin.com/in/dwbird</A>
+</I>&gt;&gt;&gt;<i> &gt;                 <A HREF="https://twitter.com/wlanmac">https://twitter.com/wlanmac</A>
+</I>&gt;&gt;&gt;<i> &gt;
+</I>&gt;&gt;&gt;<i> &gt;                 _______________________________________________
+</I>&gt;&gt;&gt;<i> &gt;                 Chilli mailing list
+</I>&gt;&gt;&gt;<i> &gt;                 <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">Chilli at coova.org</A>
+</I>&gt;&gt;&gt;<i> &gt;                 <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">http://lists.coova.org/cgi-bin/mailman/listinfo/chilli</A>
+</I>&gt;&gt;&gt;<i> &gt; _______________________________________________
+</I>&gt;&gt;&gt;<i> &gt; Chilli mailing list
+</I>&gt;&gt;&gt;<i> &gt; <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">Chilli at coova.org</A>
+</I>&gt;&gt;&gt;<i> &gt; <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">http://lists.coova.org/cgi-bin/mailman/listinfo/chilli</A>
+</I>&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;<i> --
+</I>&gt;&gt;&gt;<i> --
+</I>&gt;&gt;&gt;<i> David Bird
+</I>&gt;&gt;&gt;<i> <A HREF="http://www.linkedin.com/in/dwbird">http://www.linkedin.com/in/dwbird</A>
+</I>&gt;&gt;&gt;<i> <A HREF="https://twitter.com/wlanmac">https://twitter.com/wlanmac</A>
+</I>&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;<i> _______________________________________________
+</I>&gt;&gt;&gt;<i> Chilli mailing list
+</I>&gt;&gt;&gt;<i> <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">Chilli at coova.org</A>
+</I>&gt;&gt;&gt;<i> <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">http://lists.coova.org/cgi-bin/mailman/listinfo/chilli</A>
+</I>&gt;&gt;&gt;<i>
+</I>&gt;&gt;<i>
+</I>-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: &lt;<A HREF="http://lists.coova.org/pipermail/chilli/attachments/20130228/5d6ccc1e/attachment.html">http://lists.coova.org/pipermail/chilli/attachments/20130228/5d6ccc1e/attachment.html</A>&gt;
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="002185.html">[Chilli] Using CoovaChilli without RADIUS
+</A></li>
+	<LI>Next message: <A HREF="002177.html">[Chilli] DHCP Pool Range With CoovaChilli 1.3.0
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2186">[ date ]</a>
+              <a href="thread.html#2186">[ thread ]</a>
+              <a href="subject.html#2186">[ subject ]</a>
+              <a href="author.html#2186">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,106 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> how the iptables affect?
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20how%20the%20iptables%20affect%3F&In-Reply-To=%3C49D38457.5000009%40ibh.de%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000657.html">
+   <LINK REL="Next"  HREF="000659.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>how the iptables affect?</H1>
+    <B>Thomas Liske</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20how%20the%20iptables%20affect%3F&In-Reply-To=%3C49D38457.5000009%40ibh.de%3E"
+       TITLE="how the iptables affect?">liske at ibh.de
+       </A><BR>
+    <I>Wed Apr  1 15:12:23 UTC 2009</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000657.html">how the iptables affect?
+</A></li>
+        <LI>Next message: <A HREF="000659.html">how the iptables affect?
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#658">[ date ]</a>
+              <a href="thread.html#658">[ thread ]</a>
+              <a href="subject.html#658">[ subject ]</a>
+              <a href="author.html#658">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hi,
+
+IaMaPlAyEr schrieb:
+&gt;<i> recently, I study the iptables, and was confused by the position of tun in
+</I>&gt;<i> coova-chilli.
+</I>&gt;<i> 
+</I>&gt;<i> just like this big picture:
+</I>&gt;<i> 
+</I>&gt;<i> <A HREF="http://iptables-tutorial.frozentux.net/images/tables_traverse.jpg">http://iptables-tutorial.frozentux.net/images/tables_traverse.jpg</A>
+</I>&gt;<i> 
+</I>&gt;<i> the normal process of the route is just like this:
+</I>&gt;<i> 
+</I>&gt;<i> wire ---&gt;&gt;&gt; eth1 ---&gt;&gt;&gt; mangle prerouting --&gt;&gt; nat prerouting ---&gt;&gt; route
+</I>&gt;<i> decision ---&gt;&gt;....-------&gt;&gt;&gt;nat prerouting --&gt;&gt;&gt; eth0
+</I>&gt;<i> 
+</I>&gt;<i> but in coova-chilli, there is a net device TUN, it connect the eth1 to eth0?
+</I>&gt;<i> where is it in such a normal firewall process?
+</I>
+chilli bypasses the kernel network stack on eth1 (where the clients
+reside). It check if IP packets of the client is allowed to pass (i.e.
+is it a walled garden destination or is the client authorized etc.) - if
+true, it pushes the packet into the kernel via the tun interface.
+The default iptables rule set loaded by chilli's up.sh drop any incoming
+packets on eth1 silently (so the kernel network stack ignores them).
+This has no effect on chilli which sniffs on eth1. Packets from eth0
+which goes to the clients well be routed into tun0, which will processed
+by chilli and put on the &quot;eth1-wire&quot; (bypassing the kernel network stack
+again).
+
+
+Regards,
+Thomas L.
+-- 
+<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">support at ibh.de</A>                              Tel. +49 351 477 77 30
+www.ibh.de                                  Fax  +49 351 477 77 39
+
+-----------------------------------------------------------------------
+Dipl.-Ing. Thomas Liske
+Netzwerk- und System-Design
+
+
+IBH IT-Service GmbH                         Amtsgericht Dresden
+Gostritzer Str. 61-63                       HRB 13626
+D-01217 Dresden                             GF: Prof. Dr. Thomas Horn
+Germany                                     VAT DE182302907
+-----------------------------------------------------------------------
+Ihr Partner f&#252;r: LAN, WAN IP-Quality, Security, VoIP, SAN, Backup, USV
+-----------------------------------------------------------------------
+       professioneller IT-Service - kompetent und zuverl&#228;ssig
+-----------------------------------------------------------------------
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000657.html">how the iptables affect?
+</A></li>
+	<LI>Next message: <A HREF="000659.html">how the iptables affect?
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#658">[ date ]</a>
+              <a href="thread.html#658">[ thread ]</a>
+              <a href="subject.html#658">[ subject ]</a>
+              <a href="author.html#658">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

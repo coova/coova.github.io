@@ -1,0 +1,191 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] CoovaChilli Kernel Mode issue
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20CoovaChilli%20Kernel%20Mode%20issue&In-Reply-To=%3C826889934.520.1385638567614.JavaMail.root%40frontiir.net%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="002468.html">
+   <LINK REL="Next"  HREF="002469.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] CoovaChilli Kernel Mode issue</H1>
+    <B>Phyo Wai Soe</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20CoovaChilli%20Kernel%20Mode%20issue&In-Reply-To=%3C826889934.520.1385638567614.JavaMail.root%40frontiir.net%3E"
+       TITLE="[Chilli] CoovaChilli Kernel Mode issue">phyo.w.soe at frontiir.net
+       </A><BR>
+    <I>Thu Nov 28 11:36:07 UTC 2013</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="002468.html">[Chilli] CoovaChilli Kernel Mode issue
+</A></li>
+        <LI>Next message: <A HREF="002469.html">[Chilli] CoovaChilli Kernel Mode issue
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2471">[ date ]</a>
+              <a href="thread.html#2471">[ thread ]</a>
+              <a href="subject.html#2471">[ subject ]</a>
+              <a href="author.html#2471">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hi Russell,
+
+I saw your mails to the list regarding the redir error message and hoped I could get some clues. So far, I am still stuck :( In my case, when I see redir_read messages in the server's syslog, it normally means that clients see &quot;The connection was reset&quot; error in their browsers and can't go anywhere. They don't even see the &quot;redirecting&quot; message with the animated circle (www/wait.gif).
+
+I tried different config settings. If I make HS_UAMLISTEN address in the same range as HS_NETWORK, clients do see redirection/login pages but that's all. I don't see any record in /proc/net/coova/chilli (which should happen if the kernel module mode is on) or issue authorize, log out, etc., commands on the server with chilli_query. It's as if the commands don't have any effect on the clients. However, if I make HS_UAMLISTEN address to be on another network range like David mentioned, clients get that connection reset error. But /proc/net/coova/chilli is populated and if I manually authorize a client, he/she can browse the web. It's possible that there is a config problem or the NAT between UAMLISTEN and DHCPLISTEN has a issue. I am trying out all possible things I can think of but so far, I am not getting it right.
+
+Thanks so much for your advice and help.
+
+Regards,
+Phyo Wai Soe
+
+----- Original Message -----
+From: &quot;Russell Mike&quot; &lt;<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">radius.sir at gmail.com</A>&gt;
+To: &quot;Phyo Wai Soe&quot; &lt;<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">phyo.w.soe at frontiir.net</A>&gt;
+Sent: Thursday, November 28, 2013 2:04:05 PM
+Subject: Re: [Chilli] CoovaChilli Kernel Mode issue
+
+Hi
+
+i use CoovaChilli 1.3.0 in ISP HOSTING environment in multi tenancy mode
+using VALNs. I have 27 instances running for chilli on single server. This
+message is normal
+
+* (Connection reset by peer) redir_read(0) failed!*
+
+
+i do serve 230 hotspots across the city from my data center. i also see the
+same (* (Connection reset by peer)*) in my logs as well, but cause nothing.
+Moreover, i did not even received one trouble ticket in last one year from
+any hotspot client, whereas above message is always there.
+
+&quot;Connection reset by peer&quot; is often seen when a TCP communication partner
+(&quot;peer&quot;) resets an initiated or established TCP connection. if a TCP packet
+was received, but the peer has no matching socket associated As a result, a
+locally invoked TCP receive
+
+When user close browser, shutdown computer, take off network cable or walk
+out side the network range with his iPhone, this would be logged. Can you
+tell what is actual problem?
+
+Thanks / Regards
+RM --
+
+
+
+On Thu, Nov 28, 2013 at 2:44 AM, Phyo Wai Soe &lt;<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">phyo.w.soe at frontiir.net</A>&gt;wrote:
+
+&gt;<i> Hi Xabier,
+</I>&gt;<i>
+</I>&gt;<i> I am following these instructions from David on how to enable the kernel
+</I>&gt;<i> module. <A HREF="http://lists.coova.org/pipermail/chilli/2010-April/001239.html">http://lists.coova.org/pipermail/chilli/2010-April/001239.html</A>
+</I>&gt;<i>
+</I>&gt;<i> According to him, &quot;Chilli is then also configured with 'uamlisten' of
+</I>&gt;<i> 11.0.0.1 and
+</I>&gt;<i> this is the IP address that gets assigned to tun0 (so note that
+</I>&gt;<i> dhcplisten and uamlisten are different!). The high level concept is that
+</I>&gt;<i> subscribers get a 10.1.0.0/24 IP address which is routed (when
+</I>&gt;<i> authenticated) through the kernel.&quot;
+</I>&gt;<i>
+</I>&gt;<i> So, I guess my setup is ok. When I installed CoovaChilli in normal mode
+</I>&gt;<i> and made UAMLISTEN part of HS_NETWORK, it was ok. This issue happens only
+</I>&gt;<i> if I enable the kernel module mode.
+</I>&gt;<i>
+</I>&gt;<i> Btw, when I looked at the syslogs, I saw the following lines when the
+</I>&gt;<i> clients got the resetting issue.
+</I>&gt;<i>
+</I>&gt;<i> redir.c: 2020: 104 (Connection reset by peer) redir_read(0) failed!
+</I>&gt;<i>
+</I>&gt;<i> Doing tcpdump on a client (10.99.0.30) when the issue occurred gave me the
+</I>&gt;<i> followings.
+</I>&gt;<i> ========================
+</I>&gt;<i> 16:54:09.921330 IP (tos 0x0, ttl 64, id 0, offset 0, flags [DF], proto TCP
+</I>&gt;<i> (6), length 40)
+</I>&gt;<i> 192.168.99.1.3990 &gt; 10.99.0.30.57235: Flags [R], cksum 0xcb11 (correct),
+</I>&gt;<i> seq 2598775956, win 0, length 0
+</I>&gt;<i> 16:54:09.922202 IP (tos 0x0, ttl 64, id 0, offset 0, flags [DF], proto TCP
+</I>&gt;<i> (6), length 40)
+</I>&gt;<i> 10.99.0.30.57235 &gt; 192.168.99.1.3990: Flags [R], cksum 0xb372 (correct),
+</I>&gt;<i> seq 524533718, win 0, length 0
+</I>&gt;<i> 16:54:09.922646 IP (tos 0x0, ttl 64, id 0, offset 0, flags [DF], proto TCP
+</I>&gt;<i> (6), length 40)
+</I>&gt;<i> 10.99.0.30.57235 &gt; 192.168.99.1.3990: Flags [R], cksum 0xb372 (correct),
+</I>&gt;<i> seq 524533718, win 0, length 0
+</I>&gt;<i> ===============
+</I>&gt;<i> I think it probably indicates that the server (192.168.99.1:3990) is
+</I>&gt;<i> resetting the connections even before showing the redirection page. I
+</I>&gt;<i> tested by creating a test page and put it in /www. A client won't even see
+</I>&gt;<i> the contents of that test page.
+</I>&gt;<i> HS_UAMHOMEPAGE=<A HREF="http://\$HS_UAMLISTEN:\$HS_UAMPORT/www/testpage.html">http://\$HS_UAMLISTEN:\$HS_UAMPORT/www/testpage.html</A>
+</I>&gt;<i>
+</I>&gt;<i> I searched the forum and web for solving redir_read issue but didn't get
+</I>&gt;<i> any clue.
+</I>&gt;<i>
+</I>&gt;<i> Thank you.
+</I>&gt;<i>
+</I>&gt;<i> Regards,
+</I>&gt;<i> Phyo
+</I>&gt;<i>
+</I>&gt;<i> Regards,
+</I>&gt;<i> Phyo Wai Soe
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> ------------------------------
+</I>&gt;<i> *From: *&quot;Xabier Oneca -- xOneca&quot; &lt;<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">xoneca at gmail.com</A>&gt;
+</I>&gt;<i> *To: *&quot;Phyo Wai Soe&quot; &lt;<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">phyo.w.soe at frontiir.net</A>&gt;, <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli at coova.org</A>
+</I>&gt;<i> *Sent: *Wednesday, November 27, 2013 1:21:50 AM
+</I>&gt;<i> *Subject: *Re: [Chilli] CoovaChilli Kernel Mode issue
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> Hello Phyo,
+</I>&gt;<i>
+</I>&gt;<i> Are you sure you posted the configuration that you used?
+</I>&gt;<i>
+</I>&gt;<i> &gt; HS_NETWORK=10.99.0.0       # HotSpot Network (must include HS_UAMLISTEN)
+</I>&gt;<i> &gt; HS_NETMASK=255.255.255.0   # HotSpot Network Netmask
+</I>&gt;<i> &gt; HS_UAMLISTEN=192.168.99.1  # HotSpot IP Address (on subscriber network
+</I>&gt;<i>
+</I>&gt;<i> As the comments say, 'HS_UAMLISTEN' must be in 'HS_NEWORK' and your
+</I>&gt;<i> isn't...
+</I>&gt;<i>
+</I>&gt;<i> Cheers,
+</I>&gt;<i>
+</I>&gt;<i> Xabier Oneca_,,_
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> _______________________________________________
+</I>&gt;<i> Chilli mailing list
+</I>&gt;<i> <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">Chilli at coova.org</A>
+</I>&gt;<i> <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">http://lists.coova.org/cgi-bin/mailman/listinfo/chilli</A>
+</I>&gt;<i>
+</I>&gt;<i>
+</I></PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="002468.html">[Chilli] CoovaChilli Kernel Mode issue
+</A></li>
+	<LI>Next message: <A HREF="002469.html">[Chilli] CoovaChilli Kernel Mode issue
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2471">[ date ]</a>
+              <a href="thread.html#2471">[ thread ]</a>
+              <a href="subject.html#2471">[ subject ]</a>
+              <a href="author.html#2471">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

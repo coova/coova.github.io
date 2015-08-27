@@ -1,0 +1,141 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> Bypass Chilli using alternate IPs?
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20Bypass%20Chilli%20using%20alternate%20IPs%3F&In-Reply-To=%3C481AC4B9.5090700%40sriviere.info%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000231.html">
+   <LINK REL="Next"  HREF="000234.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>Bypass Chilli using alternate IPs?</H1>
+    <B>SR Infosyst&#232;mes</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20Bypass%20Chilli%20using%20alternate%20IPs%3F&In-Reply-To=%3C481AC4B9.5090700%40sriviere.info%3E"
+       TITLE="Bypass Chilli using alternate IPs?">contact at sriviere.info
+       </A><BR>
+    <I>Fri May  2 07:37:29 UTC 2008</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000231.html">Bypass Chilli using alternate IPs?
+</A></li>
+        <LI>Next message: <A HREF="000234.html">Bypass Chilli using alternate IPs?
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#232">[ date ]</a>
+              <a href="thread.html#232">[ thread ]</a>
+              <a href="subject.html#232">[ subject ]</a>
+              <a href="author.html#232">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>&gt;<i> 	I'll start out saying this is a Chillispot problem on DD-WRT. 
+</I>&gt;<i> Unfortunately, support on the DD-WRT forum is generally lacking, so I
+</I>&gt;<i> come to you hoping that since this is a branch you'll be able to understand
+</I>&gt;<i> and suggest a change for me. If not, I certaininly understand.
+</I>
+I don't really understand if your final goal is to get direct access to 
+the AP firmware (to log traces, ntp setting, modify parameters in the 
+same time Chilli is running, etc...) and I don't use DD-WRT...
+
+But the information below works very well for me (and could be useful 
+for others, I personaly have a lot of problems when setting my first 
+Chilli network (lack of network knowledge, not related with Chilli 
+itself which is really easy to use) :
+
+
+WLAN---eth0---PC(radius+chilli)---eth1---WIFI (AP1, AP2, AP3,...)
+
+interface
+-------------------------
+auto lo
+iface lo inet loopback
+
+auto eth0
+iface eth0 inet static
+network 192.168.0.0
+netmask 255.255.255.0
+address 192.168.0.251
+gateway 192.168.0.254
+
+auto eth1
+iface eth1 inet static
+network 192.168.2.0
+netmask 255.255.255.0
+address 192.168.2.251
+-------------------------
+
+chilli
+-------------------------
+...
+dhcpif          eth1
+net             192.168.1.0/24
+dynip           192.168.1.0/24
+dhcpstart       2
+...
+uamserver <A HREF="https://192.168.1.1/wua/">https://192.168.1.1/wua/</A>
+uamhomepage <A HREF="http://192.168.1.1/wua/index.html">http://192.168.1.1/wua/index.html</A>
+...
+-------------------------
+
+So, the tun0 192.168.1.x network is declared at the top of the real 
+(hardware) eth1 192.168.2.x network
+
+Connected to eth1 you have :
+
+- 192.168.1.x (wifi from chilli)
+- 192.168.2.x (AP maintenance and logs)
+
+Inside the AP, I declared :
+
+AP IP (number &quot;n&quot;) : 192.168.2.n
+IP Mask : 255.255.255.0
+Gateway : 192.168.1.1
+
+I can now redirect AP logs and use NTP for accurate datetime in logs 
+(using additional iptables settings related to eth1/192.168.2.251), and 
+modify AP parameters while Chilli is running, even update firmware via 
+FTP. Very useful.
+
+
+-- 
+LA SOLUTION &#224; vos probl&#232;mes INFORMATIQUES
+
+SR Infosyst&#232;mes
+15, rue du Temple
+17310 St Pierre d'Ol&#233;ron
+Ile d'Ol&#233;ron - France
+
+Mobile : 06 89 29 88 44
+Fixe :   09 54 10 55 60 (appel local)
+Fax :    05 46 36 30 59
+Site :   www.sriviere.info
+Email :  <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">contact at sriviere.info</A>
+Skype :  stephane.riviere
+
+Certificat X509 : disponible sur le site
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000231.html">Bypass Chilli using alternate IPs?
+</A></li>
+	<LI>Next message: <A HREF="000234.html">Bypass Chilli using alternate IPs?
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#232">[ date ]</a>
+              <a href="thread.html#232">[ thread ]</a>
+              <a href="subject.html#232">[ subject ]</a>
+              <a href="author.html#232">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

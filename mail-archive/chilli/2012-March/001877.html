@@ -1,0 +1,158 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] New Forum topic: Strange behaviour with WISPr-Redirection-URL in 1.2.9
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20New%20Forum%20topic%3A%20Strange%20behaviour%20with%0A%20WISPr-Redirection-URL%20in%201.2.9&In-Reply-To=%3C4F58A512.1010504%40cirrusworks.net%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001876.html">
+   <LINK REL="Next"  HREF="001882.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] New Forum topic: Strange behaviour with WISPr-Redirection-URL in 1.2.9</H1>
+    <B>Ryan Day</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20New%20Forum%20topic%3A%20Strange%20behaviour%20with%0A%20WISPr-Redirection-URL%20in%201.2.9&In-Reply-To=%3C4F58A512.1010504%40cirrusworks.net%3E"
+       TITLE="[Chilli] New Forum topic: Strange behaviour with WISPr-Redirection-URL in 1.2.9">ryan.day at cirrusworks.net
+       </A><BR>
+    <I>Thu Mar  8 12:24:50 UTC 2012</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001876.html">[Chilli] New Forum topic: Strange behaviour with WISPr-Redirection-URL in 1.2.9
+</A></li>
+        <LI>Next message: <A HREF="001882.html">[Chilli] New Forum topic: Strange behaviour with WISPr-Redirection-URL in 1.2.9
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1877">[ date ]</a>
+              <a href="thread.html#1877">[ thread ]</a>
+              <a href="subject.html#1877">[ subject ]</a>
+              <a href="author.html#1877">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>We'll take a look at this, thanks!
+
+We've been testing the SVN, 1.2.9, and 1.2.8 releases over the past
+couple days to try to get a comprehensive picture of the issue, I'll let
+you know how 1.3 works.
+
+
+Ryan
+
+On 03/08/2012 04:14 AM, David Bird wrote:
+&gt;<i> The issue should be fixed in:
+</I>&gt;<i> <A HREF="http://coova-chilli.s3.amazonaws.com/coova-chilli-1.3.0-svn.tar.gz">http://coova-chilli.s3.amazonaws.com/coova-chilli-1.3.0-svn.tar.gz</A>
+</I>&gt;<i>
+</I>&gt;<i> .. if you can verify. There is also a new run-time option --redirurl
+</I>&gt;<i> which will have the WISPr-Redirection-URL put into the UAM success query
+</I>&gt;<i> string parameter &amp;redirurl=... When the option is not used, chilli will
+</I>&gt;<i> do a HTTP redirect. 
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> On Sun, 2012-03-04 at 10:17 -0500, Ryan Day wrote:
+</I>&gt;&gt;<i> I'm sure this is related to the problem I've described here
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i>  <A HREF="http://lists.coova.org/pipermail/chilli/2011-November/001775.html">http://lists.coova.org/pipermail/chilli/2011-November/001775.html</A>
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> The patch was implemented in 1.2.9 and may be breaking functionality in
+</I>&gt;&gt;<i> some situations.
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> What I find amazing is that the problem described in
+</I>&gt;&gt;<i> <A HREF="http://www.coova.org/node/5115">http://www.coova.org/node/5115</A> is exactly what I was experiencing with
+</I>&gt;&gt;<i> previous versions of chilli(&lt;1.2.9). My uamserver was being replaced by
+</I>&gt;&gt;<i> my WISPr redirect and I could no longer authenticate. This patch seems
+</I>&gt;&gt;<i> to work for me (me being 3 dev servers and 2 production servers).
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> Any thoughts?
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> Ryan
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> On 03/04/2012 09:55 AM, David Bird wrote:
+</I>&gt;&gt;&gt;<i> Hello,
+</I>&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;<i> The following was reported in the forum, but I will discuss it here. The
+</I>&gt;&gt;&gt;<i> issue is that chilli supports WISPr-Redirection-URL in several ways; it
+</I>&gt;&gt;&gt;<i> can be used, for example, to send users on a per session basis to
+</I>&gt;&gt;&gt;<i> alternate URLs based on the attribute not only in an Access-Accept, but
+</I>&gt;&gt;&gt;<i> also an Access-Reject. In both cases, it is sometimes desired to have
+</I>&gt;&gt;&gt;<i> the user keep going to that URL, even after their session had ended.
+</I>&gt;&gt;&gt;<i> However, obviously, that is not always the case. Possible remedies
+</I>&gt;&gt;&gt;<i> include: having an option that controls whether or not the URL value
+</I>&gt;&gt;&gt;<i> should &quot;survive&quot; after the session ends, making that behavior a compile
+</I>&gt;&gt;&gt;<i> time option, using a ChilliSpot-Redirect-URL VSA that can be used
+</I>&gt;&gt;&gt;<i> instead of WISPr-Redirection-URL (where the WISPr is only used in
+</I>&gt;&gt;&gt;<i> Access-Accept and only used once and the ChilliSpot-Redirect-URL VSA is
+</I>&gt;&gt;&gt;<i> the more persistent option). Any preferences or other suggestions?
+</I>&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;<i> David
+</I>&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;<i> On Fri, 2012-02-24 at 11:20 +0000, <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">support at coova.com</A> wrote:
+</I>&gt;&gt;&gt;&gt;<i> Greetings david,
+</I>&gt;&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;&gt;<i> Hello,
+</I>&gt;&gt;&gt;&gt;<i> With the last version of coova this strange behaviour occurs when the  
+</I>&gt;&gt;&gt;&gt;<i> WISPr-Redirection-URL is used :
+</I>&gt;&gt;&gt;&gt;<i> - When a user is intercepted for the first time : all is ok (he performs the  
+</I>&gt;&gt;&gt;&gt;<i> login procedure and he is redirect to the URL defined in the radius attribute  
+</I>&gt;&gt;&gt;&gt;<i> &quot;WISPr-Redirection-URL&quot;).
+</I>&gt;&gt;&gt;&gt;<i> - When he comes back after logs out, coova can't intercept him (the &quot;Move  
+</I>&gt;&gt;&gt;&gt;<i> Temporarily&quot; packet is wrong).
+</I>&gt;&gt;&gt;&gt;<i> Look at the two &quot;Move Temporarily&quot; packet send by coova :
+</I>&gt;&gt;&gt;&gt;<i> - First one - ok (redirect to the uamserver) :
+</I>&gt;&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;&gt;<i> Read more <A HREF="http://www.coova.org/node/5115">http://www.coova.org/node/5115</A> -- This is an automatic message from  
+</I>&gt;&gt;&gt;&gt;<i> Coova :: Open Source Captive Portal Access Controller and RADIUS Software To  
+</I>&gt;&gt;&gt;&gt;<i> manage your subscriptions, browse to  
+</I>&gt;&gt;&gt;&gt;<i> <A HREF="http://www.coova.org/user/1/notifications">http://www.coova.org/user/1/notifications</A> You can unsubscribe at  
+</I>&gt;&gt;&gt;&gt;<i> <A HREF="http://www.coova.org/notifications/unsubscribe/sid/1?signature=7dea0a65b50949c91873109c35fa01b2">http://www.coova.org/notifications/unsubscribe/sid/1?signature=7dea0a65b50949c91873109c35fa01b2</A>
+</I>&gt;&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;<i> _______________________________________________
+</I>&gt;&gt;&gt;<i> Chilli mailing list
+</I>&gt;&gt;&gt;<i> <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">Chilli at coova.org</A>
+</I>&gt;&gt;&gt;<i> <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">http://lists.coova.org/cgi-bin/mailman/listinfo/chilli</A>
+</I>&gt;&gt;<i>
+</I>&gt;<i>
+</I>
+
+-- 
+Ryan Day
+
+CirrusWorks
+Beyond Convergence
+
+750 17th Street NW, Suite 1100
+Washington, DC 20006
+
+</PRE>
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001876.html">[Chilli] New Forum topic: Strange behaviour with WISPr-Redirection-URL in 1.2.9
+</A></li>
+	<LI>Next message: <A HREF="001882.html">[Chilli] New Forum topic: Strange behaviour with WISPr-Redirection-URL in 1.2.9
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1877">[ date ]</a>
+              <a href="thread.html#1877">[ thread ]</a>
+              <a href="subject.html#1877">[ subject ]</a>
+              <a href="author.html#1877">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

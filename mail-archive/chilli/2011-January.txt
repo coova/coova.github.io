@@ -1,0 +1,165 @@
+From derekchilli at hssl.ie  Sun Jan  9 23:20:56 2011
+From: derekchilli at hssl.ie (Derek C)
+Date: Sun, 9 Jan 2011 23:20:56 -0000 (UTC)
+Subject: [Chilli] CoovaChilli JRadius and DHCP IP response
+Message-ID: <54803.172.16.15.251.1294615256.squirrel@www.rivertowermail.com>
+
+Hi everyone,
+
+Is there a Radius response (to a Mac radius request) that I can send
+(along with the Yea/Nay radius response) to give the DHCP address to the
+client ?  (i.e. can I turn off the normal DHCP server in Coova Chilli and
+handle the DHCP myself?)
+
+I'd like to do this to try to have a persistent IP address across APs on
+the same wired network
+
+thanks,
+
+Derek
+
+
+-- 
+Derek C
+In Ireland
+
+
+From david at coova.com  Mon Jan 10 14:44:29 2011
+From: david at coova.com (David Bird)
+Date: Mon, 10 Jan 2011 15:44:29 +0100
+Subject: [Chilli] CoovaChilli JRadius and DHCP IP response
+In-Reply-To: <54803.172.16.15.251.1294615256.squirrel@www.rivertowermail.com>
+References: <54803.172.16.15.251.1294615256.squirrel@www.rivertowermail.com>
+Message-ID: <1294670669.19187.51.camel@david-laptop>
+
+Yes, theres is Framed-IP-Address... you can also try (svn version)
+building with ./configure --enable-layer3 and run with --layer3 while
+supporting your own DHCP server ready to handle requests on the tun/tap
+device chilli creates. 
+
+On Sun, 2011-01-09 at 23:20 +0000, Derek C wrote:
+> Hi everyone,
+> 
+> Is there a Radius response (to a Mac radius request) that I can send
+> (along with the Yea/Nay radius response) to give the DHCP address to the
+> client ?  (i.e. can I turn off the normal DHCP server in Coova Chilli and
+> handle the DHCP myself?)
+> 
+> I'd like to do this to try to have a persistent IP address across APs on
+> the same wired network
+> 
+> thanks,
+> 
+> Derek
+> 
+> 
+
+
+
+From derekchilli at hssl.ie  Mon Jan 10 17:45:37 2011
+From: derekchilli at hssl.ie (Derek C)
+Date: Mon, 10 Jan 2011 17:45:37 -0000 (UTC)
+Subject: [Chilli] CoovaChilli JRadius and DHCP IP response
+In-Reply-To: <1294670669.19187.51.camel@david-laptop>
+References: <54803.172.16.15.251.1294615256.squirrel@www.rivertowermail.com>
+	<1294670669.19187.51.camel@david-laptop>
+Message-ID: <39227.172.16.200.1.1294681537.squirrel@www.rivertowermail.com>
+
+Hi David,
+
+Thanks very much - so Framed-IP-Address works in CoovaChilli (just like a
+PPPoE setup).
+
+That was all I needed but the --enable-layer3 options is very intriguing -
+can this option work with MAC radius authentication?  I'm guessing not
+because its the DHCP stage where Coova Chilli seems to look to authorise
+the user against the Radius server.  Is this right or can it work somehow?
+
+
+Derek
+
+On Mon, January 10, 2011 2:44 pm, David Bird wrote:
+> Yes, theres is Framed-IP-Address... you can also try (svn version)
+> building with ./configure --enable-layer3 and run with --layer3 while
+> supporting your own DHCP server ready to handle requests on the tun/tap
+> device chilli creates.
+
+
+
+From david at coova.com  Tue Jan 11 07:36:15 2011
+From: david at coova.com (David Bird)
+Date: Tue, 11 Jan 2011 08:36:15 +0100
+Subject: [Chilli] CoovaChilli JRadius and DHCP IP response
+In-Reply-To: <39227.172.16.200.1.1294681537.squirrel@www.rivertowermail.com>
+References: <54803.172.16.15.251.1294615256.squirrel@www.rivertowermail.com>
+	<1294670669.19187.51.camel@david-laptop>
+	<39227.172.16.200.1.1294681537.squirrel@www.rivertowermail.com>
+Message-ID: <1294731375.19187.80.camel@david-laptop>
+
+Hi Derek,
+
+Indeed, MAC-auth in layer3 mode wouldn't make sense. While it could be
+nice to authenticate a router, you wouldn't want to think that all
+clients with that MAC are unique... since, again, could be a router. 
+
+
+On Mon, 2011-01-10 at 17:45 +0000, Derek C wrote:
+> Hi David,
+> 
+> Thanks very much - so Framed-IP-Address works in CoovaChilli (just like a
+> PPPoE setup).
+> 
+> That was all I needed but the --enable-layer3 options is very intriguing -
+> can this option work with MAC radius authentication?  I'm guessing not
+> because its the DHCP stage where Coova Chilli seems to look to authorise
+> the user against the Radius server.  Is this right or can it work somehow?
+> 
+> 
+> Derek
+> 
+> On Mon, January 10, 2011 2:44 pm, David Bird wrote:
+> > Yes, theres is Framed-IP-Address... you can also try (svn version)
+> > building with ./configure --enable-layer3 and run with --layer3 while
+> > supporting your own DHCP server ready to handle requests on the tun/tap
+> > device chilli creates.
+> 
+> 
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+
+
+From rnalrd at gmail.com  Tue Jan 11 12:35:03 2011
+From: rnalrd at gmail.com (Leonardo Arena)
+Date: Tue, 11 Jan 2011 13:35:03 +0100
+Subject: [Chilli] CoovaChilli JRadius and DHCP IP response
+In-Reply-To: <1294670669.19187.51.camel@david-laptop>
+References: <54803.172.16.15.251.1294615256.squirrel@www.rivertowermail.com>
+	<1294670669.19187.51.camel@david-laptop>
+Message-ID: <AANLkTimVR0xq9mYJck=ds2pcUkX+u7oQgDm67rS2WsH7@mail.gmail.com>
+
+On Mon, Jan 10, 2011 at 3:44 PM, David Bird <david at coova.com> wrote:
+> Yes, theres is Framed-IP-Address... you can also try (svn version)
+> building with ./configure --enable-layer3 and run with --layer3 while
+> supporting your own DHCP server ready to handle requests on the tun/tap
+> device chilli creates.
+
+I've tried the layer3 option (during compiling and running),
+but dumping traffic on tun0 interface I don't see any DHCP request,
+and clients do not get any ip address. I'm running dnsmasq on tun0 interface
+binded to its ip address.
+
+Turning on debugging I see:
+
+dhcp.c: 2940: 0 (Debug) ignoring layer2 dhcp/bootps request
+
+Do I need to enable/set any special option in configuration files
+(like dhcpgateway/relay)
+to use the external dhcp?
+
+Thank you
+
+Leonardo
+

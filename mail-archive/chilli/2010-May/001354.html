@@ -1,0 +1,151 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] kmod-coova
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20kmod-coova&In-Reply-To=%3C20100512112523.GB30604%40legolas.on.net.mk%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001353.html">
+   <LINK REL="Next"  HREF="001355.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] kmod-coova</H1>
+    <B>Damjan</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20kmod-coova&In-Reply-To=%3C20100512112523.GB30604%40legolas.on.net.mk%3E"
+       TITLE="[Chilli] kmod-coova">gdamjan at mail.net.mk
+       </A><BR>
+    <I>Wed May 12 11:25:23 UTC 2010</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001353.html">[Chilli] Timeout's in the browser
+</A></li>
+        <LI>Next message: <A HREF="001355.html">[Chilli] kmod-coova
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1354">[ date ]</a>
+              <a href="thread.html#1354">[ thread ]</a>
+              <a href="subject.html#1354">[ subject ]</a>
+              <a href="author.html#1354">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>&gt;<i> Been working on a concept for a kernel module for CoovaChilli. With the
+</I>&gt;<i> subversion code, configure with &quot;--with-nfcoova&quot; to have the module
+</I>&gt;<i> built. With the support built in, and the xt_coova module loaded, the
+</I>&gt;<i> idea is that authenticated traffic goes straight through the kernel and
+</I>&gt;<i> unauthorized traffic still goes through chilli user-space - enforcing
+</I>&gt;<i> captive portal and doing the walled garden, etc. xt_coova (which borrows
+</I>&gt;<i> from the 'recent' module) does a simple allow/drop decision based on
+</I>&gt;<i> authentication status. Some specific configurations are needed for this
+</I>&gt;<i> to work. 
+</I>&gt;<i> 
+</I>&gt;<i> The iptables rules might look like this:
+</I>&gt;<i> 
+</I>&gt;<i> iptables -I FORWARD -o eth0 --src 10.0.0.0/8 \
+</I>&gt;<i>   -m coova --name chilli -j ACCEPT
+</I>&gt;<i> iptables -I FORWARD -i eth0 --dst 10.0.0.0/8 \
+</I>&gt;<i>   -m coova --name chilli --dest -j ACCEPT
+</I>&gt;<i> 
+</I>&gt;<i> iptables -I FORWARD --src 11.0.0.0/8 -j ACCEPT
+</I>&gt;<i> iptables -I FORWARD --dst 11.0.0.0/8 -j ACCEPT
+</I>&gt;<i> 
+</I>&gt;<i> (where the assumption is that the default FORWARD rule is to DENY). The
+</I>&gt;<i> idea is that traffic to/from eth0 (WAN) from source 10.0.0.0/8 (the
+</I>&gt;<i> chilli DHCP IP space) is either allowed or dropped by the xt_coova
+</I>&gt;<i> module based on authentication status. The 11.0.0.0/8 network, in this
+</I>&gt;<i> example, is the network chilli has configured for it's uamlisten. 
+</I>
+Have you considered using something like NF_QUEUE (i.e.
+libnetfilter_queue)
+
+This is a mechanism with which you can reroute some packets from
+netfilter to userspace. This could maybe simplify the packet capture
+part of chillispot
+
+
+<A HREF="http://netfilter.org/projects/libnetfilter_queue/index.html">http://netfilter.org/projects/libnetfilter_queue/index.html</A>
+
+
+&gt;<i> I should mention that when using the kernel module, I have it setup such
+</I>&gt;<i> that the dhcpif (eth1) is actually configured with IP address 10.1.0.1
+</I>&gt;<i> and the same IP is configured in chilli as the 'dhcplisten' (note that
+</I>&gt;<i> typically chilli doesn't want the dhcpif interface configured with an
+</I>&gt;<i> IP). Chilli is then also configured with 'uamlisten' of 11.0.0.1 and
+</I>&gt;<i> this is the IP address that gets assigned to tun0 (so note that
+</I>&gt;<i> dhcplisten and uamlisten are different!). The high level concept is that
+</I>&gt;<i> subscribers get a 10.1.0.0/24 IP address which is routed (when
+</I>&gt;<i> authenticated) through the kernel. Chilli still monitors all traffic on
+</I>&gt;<i> the dhcpif and when users are not authorized yet (i.e. their 10.1.0.0/24
+</I>&gt;<i> address is not being forwarded), then chilli does the routing (after
+</I>&gt;<i> doing a NAT translation from 10.1.0.0/24 to 11.1.0.0/24). 
+</I>&gt;<i> 
+</I>&gt;<i> Thus, chilli basically is only routing unauthorized traffic while
+</I>&gt;<i> authorized traffic goes straight through the kernel. With some testing
+</I>&gt;<i> on open-mesh routers, we have seen this can drastically increase
+</I>&gt;<i> throughput for authenticated users.
+</I>&gt;<i> 
+</I>&gt;<i> With the iptables rules above, here is an example chilli.conf that I
+</I>&gt;<i> have been using:
+</I>&gt;<i> 
+</I>&gt;<i> cat&lt;&lt;EOF&gt;/tmp/chilli.conf
+</I>&gt;<i> net 10.1.0.0/16
+</I>&gt;<i> dynip 10.1.0.0/24
+</I>&gt;<i> statip 10.1.1.0/24
+</I>&gt;<i> 
+</I>&gt;<i> uamlisten 11.1.0.1 
+</I>&gt;<i> dhcplisten 10.1.0.1 
+</I>&gt;<i> dhcpstart 10
+</I>&gt;<i> uamaliasname chilli
+</I>&gt;<i> ipup=
+</I>&gt;<i> ipdown= 
+</I>&gt;<i> 
+</I>&gt;<i> radiusserver1 localhost
+</I>&gt;<i> radiussecret testing123
+</I>&gt;<i> dhcpif eth0
+</I>&gt;<i> dns1 192.168.1.1
+</I>&gt;<i> uamdomain coova.org
+</I>&gt;<i> uamserver <A HREF="http://portal/hotspot">http://portal/hotspot</A>
+</I>&gt;<i> uamsecret uamsecret
+</I>&gt;<i> cmdsock /var/run/chilli.sock
+</I>&gt;<i> kname chilli
+</I>&gt;<i> EOF
+</I>&gt;<i> 
+</I>&gt;<i> Give it a try if interested in testing! 
+</I>&gt;<i> 
+</I>&gt;<i> David
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> _______________________________________________
+</I>&gt;<i> Chilli mailing list
+</I>&gt;<i> <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">Chilli at coova.org</A>
+</I>&gt;<i> <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">http://lists.coova.org/cgi-bin/mailman/listinfo/chilli</A>
+</I>
+-- 
+damjan | &#1076;&#1072;&#1084;&#1112;&#1072;&#1085;
+This is my jabber ID --&gt;         <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">damjan at bagra.net.mk</A> 
+ -- not my mail address, it's a Jabber ID --^ :)
+</PRE>
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001353.html">[Chilli] Timeout's in the browser
+</A></li>
+	<LI>Next message: <A HREF="001355.html">[Chilli] kmod-coova
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1354">[ date ]</a>
+              <a href="thread.html#1354">[ thread ]</a>
+              <a href="subject.html#1354">[ subject ]</a>
+              <a href="author.html#1354">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

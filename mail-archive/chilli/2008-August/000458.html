@@ -1,0 +1,106 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> Cron auto-generate bug
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20Cron%20auto-generate%20bug&In-Reply-To=%3C48A91D6A.9060005%40wiera.hu%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000457.html">
+   <LINK REL="Next"  HREF="000472.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>Cron auto-generate bug</H1>
+    <B>Krn&#225;k J&#225;nos</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20Cron%20auto-generate%20bug&In-Reply-To=%3C48A91D6A.9060005%40wiera.hu%3E"
+       TITLE="Cron auto-generate bug">krnak.janos at wiera.hu
+       </A><BR>
+    <I>Mon Aug 18 06:57:46 UTC 2008</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000457.html">Cron auto-generate bug
+</A></li>
+        <LI>Next message: <A HREF="000472.html">Requested IP address when already allocated
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#458">[ date ]</a>
+              <a href="thread.html#458">[ thread ]</a>
+              <a href="subject.html#458">[ subject ]</a>
+              <a href="author.html#458">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>hi
+
+do you add this extra line through an init script?
+i had a bug with the method i mentioned, but while looking up other init 
+scripts i found a soltion:
+
+(crontab -l 2&gt;&amp;- | grep -v myscriptname.sh
+  echo &quot;10 * * * * /path/to/myscript/myscriptname.sh 2&amp;&gt;1 &gt; /dev/null&quot;
+) | crontab - 2&gt;&amp;-
+
+this will check your crontab, and only add the line if it not exists, i 
+mean, if no other lines matches the myscriptname.sh
+
+bye
+
+Graham Beneke escribi&#243;:
+&gt;<i> Hi
+</I>&gt;<i>
+</I>&gt;<i> I have been having problems with various CoovaAP devices locking up 
+</I>&gt;<i> and failing to boot after a few months of deployment.
+</I>&gt;<i>
+</I>&gt;<i> When viewing the syslog i found the following:
+</I>&gt;<i>
+</I>&gt;<i> user.info : /etc/init.d/S90chilli: 1: cannot create 
+</I>&gt;<i> /etc/chilli/main.conf: No space left on device
+</I>&gt;<i> user.info : touch: /etc/chilli/local.conf: No space left on device
+</I>&gt;<i> kern.crit kernel: mini_fo: create_sto_file: ERROR creating sto file.
+</I>&gt;<i> user.info : touch: /etc/chilli/hs.conf: No space left on device
+</I>&gt;<i> kern.crit kernel: mini_fo: create_sto_file: ERROR creating sto file.
+</I>&gt;<i> user.info : coova-chilli: Error opening configuration file 
+</I>&gt;<i> '/etc/chilli/hs.conf'
+</I>&gt;<i>
+</I>&gt;<i> Further investigation revealed that an extra line that I had added to 
+</I>&gt;<i> /etc/crontabs/root had got mangled and duplicated thousands of times 
+</I>&gt;<i> but one of the start-up scripts.
+</I>&gt;<i>
+</I>&gt;<i> This resulted in the flash filling up and the device being unable to 
+</I>&gt;<i> start.
+</I>&gt;<i>
+</I>&gt;<i> How should I be adding cron items to avoid them being mangled?
+</I>&gt;<i>
+</I>&gt;<i> regards
+</I>
+-- 
+This message has been scanned for viruses and
+dangerous content by MailScanner, and is
+believed to be clean.
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: &lt;<A HREF="http://lists.coova.org/pipermail/chilli/attachments/20080818/9f07ec4b/attachment.htm">http://lists.coova.org/pipermail/chilli/attachments/20080818/9f07ec4b/attachment.htm</A>&gt;
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000457.html">Cron auto-generate bug
+</A></li>
+	<LI>Next message: <A HREF="000472.html">Requested IP address when already allocated
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#458">[ date ]</a>
+              <a href="thread.html#458">[ thread ]</a>
+              <a href="subject.html#458">[ subject ]</a>
+              <a href="author.html#458">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

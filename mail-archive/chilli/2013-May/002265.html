@@ -1,0 +1,202 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] CoovaChiili Permit Server IP
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20CoovaChiili%20Permit%20Server%20IP&In-Reply-To=%3C004601ce564e%246e748190%244b5d84b0%24%40cabocom.cv%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="002264.html">
+   <LINK REL="Next"  HREF="002266.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] CoovaChiili Permit Server IP</H1>
+    <B>Luis Ferreira</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20CoovaChiili%20Permit%20Server%20IP&In-Reply-To=%3C004601ce564e%246e748190%244b5d84b0%24%40cabocom.cv%3E"
+       TITLE="[Chilli] CoovaChiili Permit Server IP">lferreira at cabocom.cv
+       </A><BR>
+    <I>Tue May 21 18:10:08 UTC 2013</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="002264.html">[Chilli] CoovaChiili Permit Server IP
+</A></li>
+        <LI>Next message: <A HREF="002266.html">[Chilli] CoovaChiili Permit Server IP
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2265">[ date ]</a>
+              <a href="thread.html#2265">[ thread ]</a>
+              <a href="subject.html#2265">[ subject ]</a>
+              <a href="author.html#2265">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hi David,
+
+Can you clarify on the conup?
+&gt;<i>From what I understood, you are saying that is a script that is run every
+</I>time a client connects to the network. (correct?)
+If true, will that work in my case, with another server running ISC-DHCP?
+Where can I configure it? Where is it located?
+
+
+Regards,
+Luis
+
+-----Mensagem original-----
+De: <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli-bounces at coova.org</A> [mailto:<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli-bounces at coova.org</A>] Em nome de
+David Bird
+Enviada: ter&#231;a-feira, 21 de Maio de 2013 16:01
+Para: <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli at coova.org</A>
+Assunto: Re: [Chilli] CoovaChiili Permit Server IP
+
+There could be an option similar to macallowed (plus macallowlocal) but for
+layer3 mode using ip addresses. Using a script like the one suggested would
+also work - though, I think you'd want 'authorize'
+instead of 'login' since you don't have RADIUS. You can also do something
+similar from the conup script so that as soon as the station connects, you
+authorize it. 
+
+
+On Tue, 2013-05-21 at 09:23 -0100, Luis Ferreira wrote:
+&gt;<i> Hi Russell,
+</I>&gt;<i> 
+</I>&gt;<i>  
+</I>&gt;<i> 
+</I>&gt;<i> Here we had the same problem, and were able to fix it with the 
+</I>&gt;<i> following script:
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> #!/bin/bash
+</I>&gt;<i> 
+</I>&gt;<i>  
+</I>&gt;<i> 
+</I>&gt;<i> usercheck=$(/usr/local/sbin/chilli_query
+</I>&gt;<i> -s /usr/local/var/run/chilli.vlanxx.sock list |grep -c &quot;1 
+</I>&gt;<i> accountusername &quot;)
+</I>&gt;<i> 
+</I>&gt;<i>  
+</I>&gt;<i> 
+</I>&gt;<i> if [ $usercheck = '0' ];
+</I>&gt;<i> 
+</I>&gt;<i> then
+</I>&gt;<i> 
+</I>&gt;<i>         echo &quot;Logging in accountname&quot;
+</I>&gt;<i> 
+</I>&gt;<i>         /usr/local/sbin/chilli_query
+</I>&gt;<i> -s /usr/local/var/run/chilli.vlanxx.sock login ip 192.168.10.251 
+</I>&gt;<i> username accountusername password accountpassword
+</I>&gt;<i> 
+</I>&gt;<i> fi
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i>  
+</I>&gt;<i> 
+</I>&gt;<i> Replace account name, account password and IP for the correct ones.
+</I>&gt;<i> Also check the location of the sock files.
+</I>&gt;<i> 
+</I>&gt;<i>  
+</I>&gt;<i> 
+</I>&gt;<i> This script is running every minute. If the IP is not present, Chilli 
+</I>&gt;<i> will not perform the login and ignore it. But if it is present (client
+</I>&gt;<i> connected) it will trigger the account login.
+</I>&gt;<i> 
+</I>&gt;<i>  
+</I>&gt;<i> 
+</I>&gt;<i> This is a very dirty hack, but we have been using it for more than 2 
+</I>&gt;<i> years and it never failed (except when the account would ran out of 
+</I>&gt;<i> credit J ).
+</I>&gt;<i> 
+</I>&gt;<i>  
+</I>&gt;<i> 
+</I>&gt;<i> Btw, if someone as a different (and less hacked) way of doing this on 
+</I>&gt;<i> layer 3, please share it.
+</I>&gt;<i> 
+</I>&gt;<i>  
+</I>&gt;<i> 
+</I>&gt;<i> Regards,
+</I>&gt;<i> 
+</I>&gt;<i> Luis
+</I>&gt;<i> 
+</I>&gt;<i>  
+</I>&gt;<i> 
+</I>&gt;<i>  
+</I>&gt;<i> 
+</I>&gt;<i> Dear Coova Gurus,
+</I>&gt;<i> 
+</I>&gt;<i>  
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> CoovaChilli Layer3, Working great. But for some days now, i am working 
+</I>&gt;<i> CoovaChilli to allow some devices to allow access without 
+</I>&gt;<i> authentication AND have Static IP address. (Servers, IP phones, Apple 
+</I>&gt;<i> TV etc..).
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i>  
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> MAC auth do not help because of L3 setup. Have anyone got the idea.
+</I>&gt;<i> How can configure coovachilli to allow access 10 static ip address out 
+</I>&gt;<i> of a subnet by default.
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i>  
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> Thanks in advance. 
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i>  
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> Thanks / Regards
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> _______________________________________________
+</I>&gt;<i> Chilli mailing list
+</I>&gt;<i> <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">Chilli at coova.org</A>
+</I>&gt;<i> <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">http://lists.coova.org/cgi-bin/mailman/listinfo/chilli</A>
+</I>
+--
+--
+David Bird
+<A HREF="http://www.linkedin.com/in/dwbird/">http://www.linkedin.com/in/dwbird/</A>
+
+_______________________________________________
+Chilli mailing list
+<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">Chilli at coova.org</A>
+<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">http://lists.coova.org/cgi-bin/mailman/listinfo/chilli</A>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: &lt;<A HREF="http://lists.coova.org/pipermail/chilli/attachments/20130521/26557370/attachment.html">http://lists.coova.org/pipermail/chilli/attachments/20130521/26557370/attachment.html</A>&gt;
+</PRE>
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="002264.html">[Chilli] CoovaChiili Permit Server IP
+</A></li>
+	<LI>Next message: <A HREF="002266.html">[Chilli] CoovaChiili Permit Server IP
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2265">[ date ]</a>
+              <a href="thread.html#2265">[ thread ]</a>
+              <a href="subject.html#2265">[ subject ]</a>
+              <a href="author.html#2265">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

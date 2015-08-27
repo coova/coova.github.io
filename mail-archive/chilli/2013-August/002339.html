@@ -1,0 +1,314 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] Parameters in uamhomepage
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Parameters%20in%20uamhomepage&In-Reply-To=%3C5200A275.7020008%40gmail.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="002338.html">
+   <LINK REL="Next"  HREF="002340.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] Parameters in uamhomepage</H1>
+    <B>Alexandre Rubert</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Parameters%20in%20uamhomepage&In-Reply-To=%3C5200A275.7020008%40gmail.com%3E"
+       TITLE="[Chilli] Parameters in uamhomepage">alexandre.rubert at gmail.com
+       </A><BR>
+    <I>Tue Aug  6 07:15:01 UTC 2013</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="002338.html">[Chilli] Parameters in uamhomepage
+</A></li>
+        <LI>Next message: <A HREF="002340.html">[Chilli] Per-user/group content filtering
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2339">[ date ]</a>
+              <a href="thread.html#2339">[ thread ]</a>
+              <a href="subject.html#2339">[ subject ]</a>
+              <a href="author.html#2339">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Sorry for this confusion.
+I have setup like this
+HS_UAMHOMEPAGE=<A HREF="http://192.168.182.1/portal/index.php">http://192.168.182.1/portal/index.php</A>
+HS_UAMSERVER=<A HREF="https://192.168.182.1/cgi-bin/login.cgi">https://192.168.182.1/cgi-bin/login.cgi</A>
+
+My uamhomepage include links to differents website allowed by my coova 
+configuration, link to <A HREF="http://192.168.182.1:3990/prelogin">http://192.168.182.1:3990/prelogin</A> for 
+authentication (login.cgi), and a personal local website in php. When I 
+launch my browser it goes to 
+<A HREF="http://192.168.182.1/portal/index.php?loginurl=...&amp;mac=...&amp;...">http://192.168.182.1/portal/index.php?loginurl=...&amp;mac=...&amp;...</A> I'd like 
+it to redirect to <A HREF="http://192.168.182.1/portal/index.php">http://192.168.182.1/portal/index.php</A> with no 
+parameters. The only moment I want these parameters is when I click on 
+the link <A HREF="http://192.168.182.1:3990/prelogin">http://192.168.182.1:3990/prelogin</A> wich redirect to 
+<A HREF="https://192.168.182.1/cgi-bin/login.cgi">https://192.168.182.1/cgi-bin/login.cgi</A>
+I hope to be understood.
+Thanks
+Le 06/08/2013 08:50, Jed Gainer a &#233;crit :
+&gt;<i> huh?
+</I>&gt;<i>
+</I>&gt;<i> First you say you don't want them then you say you do.
+</I>&gt;<i>
+</I>&gt;<i> Well you have to have them.
+</I>&gt;<i>
+</I>&gt;<i> I have it setup like
+</I>&gt;<i>
+</I>&gt;<i> #/etc/chilli/config
+</I>&gt;<i> HS_UAMFORMAT=<A HREF="http://10.1.0.1:81/uam/login.php">http://10.1.0.1:81/uam/login.php</A>
+</I>&gt;<i> HS_UAMHOMEPAGE=<A HREF="http://10.1.0.1:81/uam/splash.php">http://10.1.0.1:81/uam/splash.php</A>
+</I>&gt;<i>
+</I>&gt;<i> &lt;?php
+</I>&gt;<i> /* splash.php */
+</I>&gt;<i> $url = str_replace('&amp;', '&amp;', $_GET['loginurl']);
+</I>&gt;<i> $url_amp = str_replace('&amp;', '&amp;', $url);
+</I>&gt;<i> include('php/config.php');
+</I>&gt;<i>
+</I>&gt;<i> $page = 'Splash';
+</I>&gt;<i> include($conf['template_dir'] . '/splash.php');
+</I>&gt;<i> ?&gt;
+</I>&gt;<i>
+</I>&gt;<i> &lt;?php
+</I>&gt;<i> /* templates/default/splash.php */
+</I>&gt;<i> if (!isset($page))
+</I>&gt;<i>     die();
+</I>&gt;<i> ?&gt;
+</I>&gt;<i> &lt;!DOCTYPE html&gt;
+</I>&gt;<i> &lt;html&gt;
+</I>&gt;<i>  &lt;head&gt;
+</I>&gt;<i>   &lt;!--[if IE]&gt;&lt;meta http-equiv=&quot;X-UA-Compatible&quot; 
+</I>&gt;<i> content=&quot;IE=edge,chrome=1&quot;&gt;&lt;![endif]--&gt;
+</I>&gt;<i>   &lt;meta &lt;meta name=&quot;description&quot; content=&quot;derp&quot;&gt;
+</I>&gt;<i>   &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width&quot;&gt;
+</I>&gt;<i>   &lt;meta http-equiv=&quot;refresh&quot; content=&quot;5; URL='&lt;?=$url_amp?&gt;'&quot;&gt;
+</I>&gt;<i>   &lt;title&gt;Welcome to &lt;?=$conf['sitename']?&gt;&lt;/title&gt;
+</I>&gt;<i>   &lt;link href=&quot;css/bootstrap.min.css&quot; rel=&quot;stylesheet&quot;&gt;
+</I>&gt;<i>   &lt;link rel=&quot;stylesheet&quot; href=&quot;css/default.css&quot;&gt;
+</I>&gt;<i>   &lt;style type=&quot;text/css&quot;&gt;
+</I>&gt;<i> body
+</I>&gt;<i> {
+</I>&gt;<i>  text-align: center;
+</I>&gt;<i> }
+</I>&gt;<i>   &lt;/style&gt;
+</I>&gt;<i>   &lt;link href=&quot;css/bootstrap-responsive.min.css&quot; rel=&quot;stylesheet&quot;&gt;
+</I>&gt;<i>   &lt;!--[if lt IE 7]&gt;&lt;link rel=&quot;stylesheet&quot; 
+</I>&gt;<i> href=&quot;css/bootstrap-ie6.css&quot;&gt;&lt;![endif]--&gt;
+</I>&gt;<i>   &lt;!--[if lt IE 9]&gt;&lt;script src=&quot;js/html5shim.js&quot;&gt;&lt;/script&gt;&lt;![endif]--&gt;
+</I>&gt;<i>   &lt;script&gt;
+</I>&gt;<i>   var date = new Date();
+</I>&gt;<i>   date.setTime(date.getTime() + 2592000000);
+</I>&gt;<i>   document.cookie = &quot;js=true; expires=&quot; + date.toGMTString() + &quot;; path=/&quot;;
+</I>&gt;<i>   window.location.replace(&quot;&lt;?=$url?&gt;&amp;js=true&quot;);
+</I>&gt;<i>   &lt;/script&gt;
+</I>&gt;<i>  &lt;/head&gt;
+</I>&gt;<i>  &lt;body&gt;
+</I>&gt;<i>   &lt;div class=&quot;container&quot;&gt;
+</I>&gt;<i>    &lt;div class=&quot;page-header&quot;&gt;
+</I>&gt;<i>     &lt;h1&gt;Welcome to &lt;?=$conf['sitename']?&gt;&lt;/h1&gt;
+</I>&gt;<i>     &lt;img src=&quot;img/logo.jpg&quot;&gt;
+</I>&gt;<i>     &lt;h2&gt;&lt;img src=&quot;img/wait.gif&quot;&gt; &lt;a 
+</I>&gt;<i> href=&quot;&lt;?=$url_amp?&gt;&quot;&gt;redirecting...&lt;/a&gt;&lt;/h2&gt;
+</I>&gt;<i>    &lt;/div&gt;
+</I>&gt;<i>   &lt;/div&gt;
+</I>&gt;<i>   &lt;script src=&quot;js/jquery.min.js&quot;&gt;&lt;/script&gt;
+</I>&gt;<i>   &lt;script src=&quot;js/bootstrap.min.js&quot;&gt;&lt;/script&gt;
+</I>&gt;<i>  &lt;/body&gt;
+</I>&gt;<i> &lt;/html&gt;
+</I>&gt;<i>
+</I>&gt;<i> &lt;?php
+</I>&gt;<i> /* login.php */
+</I>&gt;<i> $page = 'Login';
+</I>&gt;<i> include('page-header.php');
+</I>&gt;<i>
+</I>&gt;<i> if (isset($_GET['challenge']))
+</I>&gt;<i>     $_SESSION['chilli'] = $_GET;
+</I>&gt;<i>
+</I>&gt;<i> if (isset($_GET['login']))
+</I>&gt;<i> {
+</I>&gt;<i>     if (!$db_radius-&gt;user_exists($_POST['username']))
+</I>&gt;<i>         $errors[] = 'Name does not exist.';
+</I>&gt;<i>     elseif ($_POST['password'] != 
+</I>&gt;<i> $db_radius-&gt;get_user_password($_POST['username']))
+</I>&gt;<i>         $errors[] = 'Password incorrect.';
+</I>&gt;<i>     if (empty($errors))
+</I>&gt;<i>         chilli_login();
+</I>&gt;<i> }
+</I>&gt;<i>
+</I>&gt;<i> if (!empty($_GET['res']))
+</I>&gt;<i> {
+</I>&gt;<i>     switch ($_GET['res'])
+</I>&gt;<i>     {
+</I>&gt;<i>         case 'success':
+</I>&gt;<i>             $_SESSION = array(
+</I>&gt;<i>                 'username' =&gt; strpos($_GET['uid'], '@') === false ? 
+</I>&gt;<i> ucwords($_GET['uid']) : $_GET['uid']
+</I>&gt;<i>             );
+</I>&gt;<i>             file_put_contents('logs/logins/' . date('Y-m-d') . '.log', 
+</I>&gt;<i> &quot;SUCCESS\t&quot; . date('h:i:s a') . &quot;\t'{$_GET['uid']}'\n&quot; . 
+</I>&gt;<i> print_r($_GET, true), FILE_APPEND);
+</I>&gt;<i>             //header('Location: <A HREF="http://google.ca">http://google.ca</A>');
+</I>&gt;<i>             header('Location: bandwidth.php');
+</I>&gt;<i>             die();
+</I>&gt;<i>         case 'already':
+</I>&gt;<i>             //header('Location: <A HREF="http://google.ca">http://google.ca</A>');
+</I>&gt;<i>             header('Location: bandwidth.php');
+</I>&gt;<i>             die();
+</I>&gt;<i>         case 'logoff':
+</I>&gt;<i>             $_SESSION = array();
+</I>&gt;<i>     }
+</I>&gt;<i> }
+</I>&gt;<i>
+</I>&gt;<i> if (!empty($_GET['res']))
+</I>&gt;<i> {
+</I>&gt;<i>     switch ($_GET['res'])
+</I>&gt;<i>     {
+</I>&gt;<i>         case 'failed':
+</I>&gt;<i>             $errors = array();
+</I>&gt;<i>             if (isset($_GET['reply']))
+</I>&gt;<i>                 if ($_GET['reply'] == 'Your maximum daily usage time 
+</I>&gt;<i> has been reached' ||
+</I>&gt;<i>                     $_GET['reply'] == 'Your maximum weekly usage time 
+</I>&gt;<i> has been reached' ||
+</I>&gt;<i>                     $_GET['reply'] == 'Your maximum monthly usage time 
+</I>&gt;<i> has been reached')
+</I>&gt;<i>                 {
+</I>&gt;<i>                     $bandwidth = 
+</I>&gt;<i> $db_radius-&gt;get_user_bandwidth($_SESSION['login']['username']);
+</I>&gt;<i>                     $bandwidth_types = array('all-time', 'daily', 
+</I>&gt;<i> 'weekly', 'monthly');
+</I>&gt;<i>                     $errors[] = &quot;You have used your &quot; . 
+</I>&gt;<i> format_bytes($bandwidth['limit']['bytes'], 2) . &quot; of 
+</I>&gt;<i> {$bandwidth_types[$bandwidth['limit']['type']]} bandwidth!&quot;;
+</I>&gt;<i>                     $remaining_time = ($bandwidth['remaining']['time'] 
+</I>&gt;<i> &gt; 0 ? duration($bandwidth['remaining']['time']) : '&infin;');
+</I>&gt;<i>                     $errors[] = &quot;Your bandwidth resets in: 
+</I>&gt;<i> {$remaining_time}.&quot;;
+</I>&gt;<i>                 }
+</I>&gt;<i>                 elseif ($_GET['reply'] == 'Your maximum never usage 
+</I>&gt;<i> time has been reached')
+</I>&gt;<i>                 {
+</I>&gt;<i>                     $errors[] = &quot;You have used all your bandwidth.&quot;;
+</I>&gt;<i>                     $errors[] = &quot;You need to buy more to use the 
+</I>&gt;<i> Internet.&quot;;
+</I>&gt;<i>                 }
+</I>&gt;<i>                 else
+</I>&gt;<i>                     $errors[] = $_GET['reply'];
+</I>&gt;<i>             else
+</I>&gt;<i>                 $errors[] = &quot;Username and/or password rejected.&quot;;
+</I>&gt;<i>             file_put_contents('logs/logins/' . date('Y-m-d') . '.log', 
+</I>&gt;<i> &quot;FAILED\t&quot; . date('h:i:s a') . 
+</I>&gt;<i> &quot;\t'{$_SESSION['login']['username']}'\t\t'{$_SESSION['login']['password']}'\t\t'&quot; 
+</I>&gt;<i> . $db_radius-&gt;get_user_password($_SESSION['login']['username']) . 
+</I>&gt;<i> &quot;'\n\$errors = &quot; . print_r($errors, true) . &quot;\n&quot;, FILE_APPEND);
+</I>&gt;<i>     }
+</I>&gt;<i> }
+</I>&gt;<i> include('page-footer.php');
+</I>&gt;<i>
+</I>&gt;<i> include($conf['template_dir'] . '/page-header.php');
+</I>&gt;<i> include($conf['template_dir'] . '/login.php');
+</I>&gt;<i> include($conf['template_dir'] . '/page-footer.php');
+</I>&gt;<i> ?&gt;
+</I>&gt;<i>
+</I>&gt;<i> &lt;?php
+</I>&gt;<i> /* templates/default/login.php */
+</I>&gt;<i> if (!isset($page))
+</I>&gt;<i>     die();
+</I>&gt;<i> ?&gt;
+</I>&gt;<i>       &lt;div class=&quot;row-fluid&quot;&gt;
+</I>&gt;<i>        &lt;div class=&quot;span5&quot;&gt;
+</I>&gt;<i>       &lt;form method=&quot;post&quot; action=&quot;paypal.php&quot; class=&quot;form-signin2&quot; 
+</I>&gt;<i> autocomplete=&quot;off&quot;&gt;
+</I>&gt;<i>         &lt;h4 class=&quot;form-signin-heading&quot;&gt;Buy Internet&lt;/h4&gt;
+</I>&gt;<i>         &lt;select id=&quot;selectAmount&quot; name=&quot;amount_select&quot;&gt;
+</I>&gt;<i>           &lt;option value=&quot;20&quot;&gt;$20 - 400MB&lt;/option&gt;
+</I>&gt;<i>           &lt;option value=&quot;50&quot; selected&gt;$50 - 1000MB&lt;/option&gt;
+</I>&gt;<i>           &lt;option value=&quot;100&quot;&gt;$100 - 2000MB&lt;/option&gt;
+</I>&gt;<i>           &lt;option value=&quot;200&quot;&gt;$200 - 4000MB&lt;/option&gt;
+</I>&gt;<i>           &lt;option value=&quot;0&quot;&gt;Other (specify below)&lt;/option&gt;
+</I>&gt;<i>         &lt;/select&gt;
+</I>&gt;<i>         &lt;div id=&quot;amount&quot; class=&quot;control-group&quot;&gt;
+</I>&gt;<i>           &lt;div class=&quot;input-prepend input-append&quot;&gt;
+</I>&gt;<i>             &lt;span class=&quot;add-on&quot;&gt;$&lt;/span&gt;
+</I>&gt;<i>             &lt;input id=&quot;inputAmount&quot; type=&quot;text&quot; name=&quot;amount_input&quot; 
+</I>&gt;<i> value=&quot;0&quot; style=&quot;text-align: right&quot; autocomplete=&quot;off&quot;&gt;
+</I>&gt;<i>             &lt;span class=&quot;add-on&quot;&gt;.00&lt;/span&gt;
+</I>&gt;<i>           &lt;/div&gt;
+</I>&gt;<i>         &lt;/div&gt;
+</I>&gt;<i>         &lt;button id=&quot;buttonPayPal&quot; type=&quot;submit&quot; class=&quot;btn btn-large 
+</I>&gt;<i> btn-primary&quot;&gt;Continue to PayPal&lt;/button&gt;
+</I>&gt;<i>       &lt;/form&gt;
+</I>&gt;<i>        &lt;/div&gt;
+</I>&gt;<i>        &lt;div class=&quot;span2&quot;&gt;
+</I>&gt;<i>       &lt;h3 style=&quot;text-align: center&quot;&gt;- OR -&lt;/h3&gt;
+</I>&gt;<i>        &lt;/div&gt;
+</I>&gt;<i>        &lt;div class=&quot;span5&quot;&gt;
+</I>&gt;<i>       &lt;form class=&quot;form-signin&quot; 
+</I>&gt;<i> action=&quot;login.php?login&amp;&lt;?=http_build_query($_GET, '', '&amp;')?&gt;&quot; 
+</I>&gt;<i> method=&quot;post&quot; autocomplete=&quot;off&quot;&gt;
+</I>&gt;<i> &lt;?php if (isset($errors)): foreach ($errors as $error): ?&gt;
+</I>&gt;<i>          &lt;h2 class=&quot;form-signin-heading text-error&quot;&gt;&lt;?=$error?&gt;&lt;/h2&gt;
+</I>&gt;<i> &lt;?php endforeach; else: ?&gt;
+</I>&gt;<i>         &lt;h4 class=&quot;form-signin-heading&quot;&gt;Login to the Internet&lt;/h4&gt;
+</I>&gt;<i> &lt;?php endif; ?&gt;
+</I>&gt;<i>         &lt;input id=&quot;inputName&quot; type=&quot;text&quot; name=&quot;username&quot; 
+</I>&gt;<i> class=&quot;input-block-level&quot; placeholder=&quot;Name&quot; autocomplete=&quot;off&quot;&gt;
+</I>&gt;<i>         &lt;input type=&quot;password&quot; name=&quot;password&quot; 
+</I>&gt;<i> class=&quot;input-block-level&quot; placeholder=&quot;Password&quot;&gt;
+</I>&gt;<i>         &lt;button class=&quot;btn btn-large btn-primary&quot; type=&quot;submit&quot;&gt;Sign 
+</I>&gt;<i> in&lt;/button&gt;
+</I>&gt;<i>       &lt;/form&gt;
+</I>&gt;<i>        &lt;/div&gt;
+</I>&gt;<i>       &lt;/div&gt;
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> On Mon, Aug 5, 2013 at 11:08 PM, Alexandre Rubert 
+</I>&gt;<i> &lt;<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">alexandre.rubert at gmail.com</A> &lt;mailto:<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">alexandre.rubert at gmail.com</A>&gt;&gt; wrote:
+</I>&gt;<i>
+</I>&gt;<i>     Hello,
+</I>&gt;<i>     When I set uamhomepage, I'm redirected to this page but with lot
+</I>&gt;<i>     of parameters like loginurl, mac etc... How can I do to be
+</I>&gt;<i>     redirected to this page without parameters ? My uamhomepage is a
+</I>&gt;<i>     local php file which can have GET parameters. I'd like to have
+</I>&gt;<i>     mac, loginurl... parameters when I go to uamlisten:uamport/prelogin.
+</I>&gt;<i>     Thanks
+</I>&gt;<i>     _______________________________________________
+</I>&gt;<i>     Chilli mailing list
+</I>&gt;<i>     <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">Chilli at coova.org</A> &lt;mailto:<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">Chilli at coova.org</A>&gt;
+</I>&gt;<i>     <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">http://lists.coova.org/cgi-bin/mailman/listinfo/chilli</A>
+</I>&gt;<i>
+</I>&gt;<i>
+</I>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: &lt;<A HREF="http://lists.coova.org/pipermail/chilli/attachments/20130806/1aadc26a/attachment-0001.html">http://lists.coova.org/pipermail/chilli/attachments/20130806/1aadc26a/attachment-0001.html</A>&gt;
+</PRE>
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="002338.html">[Chilli] Parameters in uamhomepage
+</A></li>
+	<LI>Next message: <A HREF="002340.html">[Chilli] Per-user/group content filtering
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2339">[ date ]</a>
+              <a href="thread.html#2339">[ thread ]</a>
+              <a href="subject.html#2339">[ subject ]</a>
+              <a href="author.html#2339">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

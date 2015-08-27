@@ -1,0 +1,187 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] coova-chilli on Debian Lenny
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20coova-chilli%20on%20Debian%20Lenny&In-Reply-To=%3C4BD8D89B.1030406%40hpp.org.br%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001328.html">
+   <LINK REL="Next"  HREF="001342.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] coova-chilli on Debian Lenny</H1>
+    <B>Felipe Augusto van de Wiel</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20coova-chilli%20on%20Debian%20Lenny&In-Reply-To=%3C4BD8D89B.1030406%40hpp.org.br%3E"
+       TITLE="[Chilli] coova-chilli on Debian Lenny">felipe.wiel at hpp.org.br
+       </A><BR>
+    <I>Thu Apr 29 00:53:47 UTC 2010</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001328.html">[Chilli] coova-chilli on Debian Lenny
+</A></li>
+        <LI>Next message: <A HREF="001342.html">[Chilli] subversion
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1340">[ date ]</a>
+              <a href="thread.html#1340">[ thread ]</a>
+              <a href="subject.html#1340">[ subject ]</a>
+              <a href="author.html#1340">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA512
+
+On 27-04-2010 18:27, SA R wrote:
+&gt;<i> I have a Debian (Lenny) server running coova-chilli and
+</I>&gt;<i> have some trouble getting dhcp leases past connected AP's.
+</I>
+	I'm also using Debian &quot;Lenny&quot; and coova-chilli.
+Which version of coova are you deploying?
+
+	
+&gt;<i> Set-up as follows:
+</I>&gt;<i> Modem &lt;---&gt; Debian server &lt;---&gt; AP
+</I>&gt;<i> 
+</I>&gt;<i> The AP, a wrt54gl w/Tomato firmware, is getting a dhcp lease
+</I>&gt;<i> from coova-chilli. Clients do not. If I connect the ethernet
+</I>&gt;<i> cable from the server to one of the LAN ports on the router,
+</I>&gt;<i> clients get ip, but is not redirected.
+</I>
+As mentioned by Timothy in another message on this thread
+your setup is not totally clear, I'm guessing that your
+modem is your router to the Internet and that your AP is
+in your internal LAN.
+
+Another point is that all three components above can
+handle DHCP leases, you could even have all three of
+them serving DHCP requests at the same time with
+different purposes and still have a valid Coova setup.
+
+
+&gt;<i> Since the router gets an ip, I suspect there is error(s)
+</I>&gt;<i> in my way of configuring the router. To clear up
+</I>&gt;<i> misconceptions:
+</I>&gt;<i> 
+</I>&gt;<i> * From a standalone pc running coova-chilli, should the
+</I>&gt;<i>   ethernet cable connect to the LAN or the WAN port of
+</I>&gt;<i>   the router ?
+</I>
+	Depends on your router's capabilities.
+
+
+&gt;<i> * I believe the router's dhcp should be off, but how
+</I>&gt;<i>   should I set the router's LAN ip ?
+</I>
+	Yes, you should turn off the DHCP and use the
+	one from Coova. The rest of the configuration
+	depend on your router's model, if it is able
+	to do bridge and still hold an IP, that would
+	be a nice solution.
+
+
+&gt;<i> * Should the router's gateway be set to coova-chilli ?
+</I>
+	Probably.
+
+
+Our setup is pretty simple:
+
+[ Coova Server ] --- Cable Modem --- [ Internet ]
+|<i>
+</I>[ Switches ] ------- Various APs
+
+The Coova Server has two network interfaces, one of
+them is connected to a cable modem from where we get
+out Internet access (the public valid IPv4 address).
+
+The other network interface is the one used by Coova
+to sent IP addresses and control the access. Most of
+our APs do not work as routers, so they only have
+on RJ45 connection.
+
+We do have a few wi-fi routers and we have them in
+two different setups. Some of the are connected to
+the Coova network on the WAN port, that means we
+have a small network that is MASQed with the same
+IP address to Coova, we used it in our IT office
+to simplify things and do not use IPs from the
+pool (we also authenticate based on MAC to make
+things simpler, but it works without MAC auth).
+
+We also have an wi-fi router working as a small hub,
+we connected the Coova network to a regular port and
+turned off the internal DHCP, that way it bridged
+the requests and if it were a hub/switch.
+
+
+
+&gt;<i> A little server info:
+</I>&gt;<i> Freeradius (and Daloradius) is working as it should,
+</I>&gt;<i> the interface facing internet gets an ip from the
+</I>&gt;<i> modem and the tun0 interface facing the AP is getting
+</I>&gt;<i> the ip 10.1.0.1 from coova-chilli. Eth1 that physically
+</I>&gt;<i> connects the server and the AP is not brought up and is
+</I>&gt;<i> not given an ip, this seem correct to me.
+</I>&gt;<i> 
+</I>&gt;<i> What I try to achieve:
+</I>&gt;<i> A central server + &quot;dumb&quot; nodes that can authenticate
+</I>&gt;<i> users by way of (free)radius.
+</I>&gt;<i> Freeradius, coova-chilli and apache in one package.
+</I>&gt;<i> 
+</I>&gt;<i> Hopefully these are trivial questions that will make you
+</I>&gt;<i> laugh, point and in your guruness provide a solution:)
+</I>
+	Hopefully the above will help you figure out what
+to do. It seems more a problem of network topology than a
+problem with Coova. :)
+
+Kind regards,
+- -- 
+Felipe Augusto van de Wiel &lt;<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">felipe.wiel at hpp.org.br</A>&gt;
+Tecnologia da Informa&#231;&#227;o (TI) - Complexo Pequeno Pr&#237;ncipe
+<A HREF="http://www.pequenoprincipe.org.br/">http://www.pequenoprincipe.org.br/</A>    T: +55 41 3310 1747
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.10 (GNU/Linux)
+Comment: Using GnuPG with Mozilla - <A HREF="http://enigmail.mozdev.org/">http://enigmail.mozdev.org/</A>
+
+iQIcBAEBCgAGBQJL2NiYAAoJECCPPxLgxLxPoM0P/iwrwqCdkLLViJCwpWKGhKbL
+X4N1LmGFLPKxYzItZm/G8IqNANKCUoDijcSjXOh5aMz5K0R1K4mj4L3ZOOqNCffu
+RKCpsI0XVw/rzIA+/PsbF4FRmVr0OaAtl7Es2D1oJEr4fnx0hRlX3bTM38DpgOfQ
+1VNpXCKvRrbAg5q6nLJzsZxiYq5chH0aVeVbj3LJWyRBcYPUIJO9qmSqMb/4NlzN
+gfv8hTRNtPtaqYY+RhxqYdOfE2LUemBG8+pPND3lyEqDCP+gcgCRMx1VIugJPrvD
+ahkIZ+qX03IK0ap+W0T3K/xnRv9gtlfXc5NAwUZupyrEQsHeIPO+oV/64+SYptEW
+tqogdX7GW/0qPsQZ/n4D23S+SdX4xjl9aLEYLfhQrFXD7rRaL+M/Cf/5uJFbBuzf
+dxHTSysxa/x4uA2ae3LsU82zPcQa3syjM6rvzsbJbWXvFCGmps8LBWbuytZgn0z0
+dXoqvA/CqO9K7oLCq+wzfHNzULFYG6U/lyVotCpS5B7pcGR0s7eh3YzRcQPCteSn
+7xId2hArniKuEdLlAFeObmSQ527tGcGoLlrOuWUYQM5P9xsYott9eaTfL226mfwK
+Qndr2jQmYMtjc0xMw9uyn4fHHE8nNk8nkOOZSvCro1bK3PgkuEe5b20bpJWMEyZL
+K0ph36VzKEd9R5uRAlbW
+=2Ovg
+-----END PGP SIGNATURE-----
+</PRE>
+
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001328.html">[Chilli] coova-chilli on Debian Lenny
+</A></li>
+	<LI>Next message: <A HREF="001342.html">[Chilli] subversion
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1340">[ date ]</a>
+              <a href="thread.html#1340">[ thread ]</a>
+              <a href="subject.html#1340">[ subject ]</a>
+              <a href="author.html#1340">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

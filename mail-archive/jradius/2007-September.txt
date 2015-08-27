@@ -1,0 +1,205 @@
+From wlan at mac.com  Thu Sep 13 15:02:29 2007
+From: wlan at mac.com (wlan at mac.com)
+Date: Thu, 13 Sep 2007 17:02:29 +0200
+Subject: [Jradius-users] Fix for missed possible values in VSAs
+In-Reply-To: <30894062CC1BAA459D4DC3B245DBCF8C130BB0@sxmbx58.corproot.net>
+References: <30894062CC1BAA459D4DC3B245DBCF8C130BB0@sxmbx58.corproot.net>
+Message-ID: <A3073CA7-B13A-4F5C-A2FB-FEBF6DC37A38@mac.com>
+
+Hi,
+
+Thanks for that!.. I've committed the changes to my current repo (and  
+cc'ed the new mailing list):
+http://dev.coova.org/svn/cjradius/
+
+Actually, you will find that I rearranged how the dictionary works  
+internally, but the interface is roughly the same.
+
+Cheers,
+David
+
+On Sep 13, 2007, at 3:40 PM, Marcel.Natz at swisscom.com wrote:
+
+> Hi
+>
+> We created our own vendor specific attributes in a new dictionary.
+> Unfortunately the values didnt show up in the created Java-classes.
+> Because none of the other VSA did have possible values I had a look  
+> into
+> the code. I'm not sure if omitting this values was a bug or a  
+> feature. A
+> feature because there are some troubles with variable naming.
+>
+> Because I like to have this human readable values I adapted the  
+> code and
+> I don't want to detain it in case somebody else is interested in it:
+>
+> The reason why the values didn't show up was found in the method
+> "readline()" at the following part:
+>
+>
+> else if (upperLine.startsWith("VALUE"))
+> {
+>     String parts[] = line.split("[\t ]+");
+>     String attrName = null;
+>     String attrValueName = null;
+>     String attrValueNum = null;
+>     for (int i = 1; i < parts.length; i++)
+>     {
+>         String p = parts[i].trim();
+>         if (p.length() == 0) continue;
+>         if (attrName == null) attrName = p;
+>         else if (attrValueName == null) attrValueName = p;
+>         else if (attrValueNum == null) attrValueNum = p;
+>     }
+>     if (attrName != null && attrValueNum != null && attrValueName !=
+> null)
+>     {
+>         AttrDesc desc = (AttrDesc)attrMap.get(attrName);
+>
+>
+>         // NEW CODE
+>         if(desc == null) {
+>         	VendorDesc vendorDesc = (VendorDesc)
+> vendorMap.get(cVendor);
+>         	desc = (AttrDesc) vendorDesc.attrMap.get(attrName);
+>         }
+>         // END NEW CODE
+>
+>
+>         if (desc != null)
+>         {
+>             AttrValueDesc avd;
+>             if (desc.values == null) desc.values = new LinkedHashMap 
+> ();
+>             if ((avd = (AttrValueDesc)desc.values.get 
+> (attrValueNum)) ==
+> null)
+>                 desc.values.put(attrValueNum, new
+> AttrValueDesc(attrValueName, attrValueNum));
+>             else
+>                 avd.addName(attrValueName);
+>         }
+>     }
+> }
+>
+>
+> Now the values show up in the code but now there are some problems  
+> with
+> generated variable names starting with a digit. The following  
+> change in
+> the mertho clean() fixed it:
+>
+> private String clean(String s)
+> {
+>     s = s.replaceAll("[^a-zA-Z0-9]", "");
+>
+>     // NEW CODE
+>     if(Character.isDigit(s.charAt(0))) {
+>     	s = "_" + s;
+>     }
+>     // END NEW CODE
+>
+>     return s;
+> }
+>
+> And finally there is a "L" required where new Long() are created (in
+> method writeAttrMap()) because the compile said that the integer is to
+> large or out of range:
+>
+>
+> while (iter2.hasNext())
+> {
+>     AttrValueDesc vdesc = (AttrValueDesc)iter2.next();
+>     for (Iterator i = vdesc.names.iterator(); i.hasNext(); )
+>     {
+>         // The last one defined is the one used for number to String
+> lookups!
+>         String name = (String)i.next();
+>
+>         // NEW: "L" added after vdesc.num the declare a long  
+> instead of
+> a int
+>         writer.println("        valueMap.put(new Long(" + vdesc.num +
+> "L), " + clean(name) + ");");
+>         writer.println("        valueMap.put(" + clean(name) + ", new
+> Long(" + vdesc.num + "L));");
+>     }
+> }
+>
+> Thats it. Well, almost. The dictonary "karlnet" produces so many lines
+> of code the the java compiler just said "code to large". Comment it in
+> the root dictionary file and everything works fine.
+>
+> Have fun with JRadius!
+>
+> Marcel
+>
+> Sorry, that I can't provide a patch. Eclipse can't create a patch  
+> from a
+> compare-editor or I just do not know how ;-).
+>
+>
+> ---------------------------------------------------------------------- 
+> ---
+> This SF.net email is sponsored by: Microsoft
+> Defy all challenges. Microsoft(R) Visual Studio 2005.
+> http://clk.atdmt.com/MRT/go/vse0120000070mrt/direct/01/
+> _______________________________________________
+> Jradius-users mailing list
+> Jradius-users at lists.sourceforge.net
+> https://lists.sourceforge.net/lists/listinfo/jradius-users
+
+
+
+From dwbird at mac.com  Sat Sep 15 06:55:49 2007
+From: dwbird at mac.com (David Bird)
+Date: Sat, 15 Sep 2007 08:55:49 +0200
+Subject: JRadius svn update
+Message-ID: <EE207600-D563-47CE-8DA5-51E5E95008AA@mac.com>
+
+Hello,
+
+I am committing some change to JRadius in the SVN. I got rid of the  
+ObjectQueue and replaced it with a Java 5 BlockingQueue (anyone still  
+use Java 1.4??). I also revisited the use of ServerSocketChannel and  
+Selector in the main Listener class (used for 'keepAlive' connection  
+with FreeRADIUS, etc). Since there are just a small finite number of  
+these connections, I switched to using Threads and blocking Sockets  
+instead of cycling through a select loop. In doing so, I moved the  
+protocol parsing code into the Listener classes (FreeRadiusListener,  
+for instance) instead of it being in the Processor classes (like  
+FreeRadiusProcessor). This way, the listener can block and wait for a  
+request, parse it, and put it onto the processing queue before going  
+back to sit on the socket read. I got rid of the Channel/Selector way  
+of doing things because I found it rather temperamental and probably  
+less efficient (in Java, anyway) than a small number of blocking  
+threads... Anyways, committing now.
+
+Cheers,
+David
+
+
+From wlan at mac.com  Mon Sep 24 17:45:54 2007
+From: wlan at mac.com (wlan at mac.com)
+Date: Mon, 24 Sep 2007 19:45:54 +0200
+Subject: a release and new domain
+Message-ID: <BC97F7AC-F628-41A7-8712-63EF19DCDAE3@mac.com>
+
+Hi,
+
+There is a new release, 0.37, for download:
+http://jradius.net/
+
+Note the domain name, as this version has been refactored under the  
+net.jradius package. I know, it went from net.sf.jradius to  
+jradius.org to jradius.net. But, ultimately, I found .net more  
+appropriate and this it will remain.
+
+And, you will now find the rlm_jradius module in FreeRADIUS 2.0 (cvs  
+version), which is great!
+
+Cheers,
+David
+
+

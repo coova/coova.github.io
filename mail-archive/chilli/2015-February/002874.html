@@ -1,0 +1,145 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] Correct chilli_query usage for resetting client's session, directing them back to portal
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Correct%20chilli_query%20usage%20for%20resetting%20client%27s%20session%2C%0A%20directing%20them%20back%20to%20portal&In-Reply-To=%3CCADSh-SNyXBhMwzr_K4HRmq6OhWUxbMw_YjJH22uPPGqa5HYdEA%40mail.gmail.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="002887.html">
+   <LINK REL="Next"  HREF="002875.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] Correct chilli_query usage for resetting client's session, directing them back to portal</H1>
+    <B>Ben West</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Correct%20chilli_query%20usage%20for%20resetting%20client%27s%20session%2C%0A%20directing%20them%20back%20to%20portal&In-Reply-To=%3CCADSh-SNyXBhMwzr_K4HRmq6OhWUxbMw_YjJH22uPPGqa5HYdEA%40mail.gmail.com%3E"
+       TITLE="[Chilli] Correct chilli_query usage for resetting client's session, directing them back to portal">ben at gowasabi.net
+       </A><BR>
+    <I>Fri Feb 13 22:55:29 UTC 2015</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="002887.html">[Chilli] Chilli Multiple processes on OpenWRT
+</A></li>
+        <LI>Next message: <A HREF="002875.html">[Chilli] Correct chilli_query usage for resetting client's session, directing them back to portal
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2874">[ date ]</a>
+              <a href="thread.html#2874">[ thread ]</a>
+              <a href="subject.html#2874">[ subject ]</a>
+              <a href="author.html#2874">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>I am curious what is the correct &quot;chilli_query&quot; invocation to reset a
+particular client's authorized session and force them back to the portal,
+without affecting other clients on that same AP.
+
+This is the usage info which chilli_query reports:
+
+<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">root at Openwrt</A>:~# chilli_query
+Usage: chilli_query [ -s &lt;socket&gt; ] [ -P &lt;port&gt; ] &lt;command&gt; [&lt;arguments&gt;]
+  socket = full path to UNIX domain socket (e.g. /var/run/chilli.sock)
+  port = TCP socket port to connect to. Default is 42424
+  Available Commands:
+    list, listippool, listradqueue, listgarden, reload, dhcp-list,
+dhcp-release, authorize, login, update, logout, logoff, drop, block, procs,
+addgarden, remgarden
+  Available Arguments:
+    ip                &lt;value&gt; - type: ip   [   4] - IP address of session
+to perform action on
+    mac               &lt;value&gt; - type: mac  [   6] - MAC address of session
+to perform action on
+    sessionid         &lt;value&gt; - type: char [  17] - Session-id of session
+to perform action on
+    username          &lt;value&gt; - type: char [ 256] - Username to use in
+RADIUS 'login' or authorization
+    password          &lt;value&gt; - type: char [ 256] - Password to be used for
+'login' command
+    sessiontimeout    &lt;value&gt; - type: int  [   8] - Max session time (in
+seconds)
+    idletimeout       &lt;value&gt; - type: int  [   4] - Max idle time (in
+seconds)
+    interiminterval   &lt;value&gt; - type: int  [   2] - Accounting interim
+interval
+    maxoctets         &lt;value&gt; - type: int  [   8] - Max input + output
+octets (bytes)
+    maxinputoctets    &lt;value&gt; - type: int  [   8] - Max input octets (bytes)
+    maxoutputoctets   &lt;value&gt; - type: int  [   8] - Max output octets
+(bytes)
+    maxbwup           &lt;value&gt; - type: int  [   8] - Max bandwidth up
+    maxbwdown         &lt;value&gt; - type: int  [   8] - Max bandwidth down
+    splash            &lt;value&gt; - type: char [2048] - Set splash page
+    url               &lt;value&gt; - type: char [2048] - Set redirect url
+    noacct                    - type: flag [   0] - No accounting flag
+    data              &lt;value&gt; - type: char [1024] - Text configuration line
+The ip and/or sessionid is required.
+
+Say this the active session list (anonymized):
+
+<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">root at Openwrt</A>:~# chilli_query list
+50-55-27-XX-XX-XX 101.2.233.37 dnat 54de762f00000007 0 50-55-27-XX-XX-XX
+0/7200 0/3600 0/0 0/0 0 1 0/0 0/0 <A HREF="http://domain.com">http://domain.com</A>
+10-68-3F-XX-XX-XX 101.2.233.40 pass 54de742800000006 1 guest 2140/7200
+1/3600 1155289/0 5056945/0 524288000 1 0%/384000 0%/1000000
+<A HREF="http://somewhere.com">http://somewhere.com</A>
+C8-3A-35-XX-XX-XX 101.2.233.27 pass 54de7e9a00000003 1 guest 113/7200
+0/3600 310508/0 3970351/0 524288000 1 2%/384000 32%/1000000
+<A HREF="http://somewhereelse.com">http://somewhereelse.com</A>
+CC-D2-9B-XX-XX-XX 101.2.233.25 dnat 54de3ed700000004 0 CC-D2-9B-XX-XX-XX
+0/7200 0/3600 0/0 0/0 0 1 0/0 0/0 <A HREF="http://nowhere.com">http://nowhere.com</A>
+DE-9F-DB-XX-XX-XX 101.2.233.2 dnat 54ddcb2300000002 0 DE-9F-DB-XX-XX-XX
+0/7200 0/3600 0/0 0/0 0 1 0/0 0/0 -
+
+To reset the session for client at MAC address C8-3A-35-XX-XX-XX, forcing
+him to log back into the captive portal again as user &quot;guest,&quot; would this
+be correct usage?
+
+# chilli_query logoff C8-3A-35-XX-XX-XX
+
+chilli_query has the commands logout, logoff, block, and drop, and I'm
+having difficulty locating documentation about precisely what those
+commands do.
+
+Thank you.
+
+-- 
+Ben West
+<A HREF="http://gowasabi.net">http://gowasabi.net</A>
+<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">ben at gowasabi.net</A>
+314-246-9434
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: &lt;<A HREF="http://lists.coova.org/pipermail/chilli/attachments/20150213/dc803cdf/attachment.html">http://lists.coova.org/pipermail/chilli/attachments/20150213/dc803cdf/attachment.html</A>&gt;
+</PRE>
+
+
+
+
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="002887.html">[Chilli] Chilli Multiple processes on OpenWRT
+</A></li>
+	<LI>Next message: <A HREF="002875.html">[Chilli] Correct chilli_query usage for resetting client's session, directing them back to portal
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2874">[ date ]</a>
+              <a href="thread.html#2874">[ thread ]</a>
+              <a href="subject.html#2874">[ subject ]</a>
+              <a href="author.html#2874">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

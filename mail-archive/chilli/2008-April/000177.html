@@ -1,0 +1,135 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> uamanyip patch
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20uamanyip%20patch&In-Reply-To=%3CC7265A99-E520-4E80-B4E8-CE4926F4B7B1%40mac.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000175.html">
+   <LINK REL="Next"  HREF="000178.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>uamanyip patch</H1>
+    <B>wlan at mac.com</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20uamanyip%20patch&In-Reply-To=%3CC7265A99-E520-4E80-B4E8-CE4926F4B7B1%40mac.com%3E"
+       TITLE="uamanyip patch">wlan at mac.com
+       </A><BR>
+    <I>Fri Apr  4 05:22:48 UTC 2008</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000175.html">uamanyip patch
+</A></li>
+        <LI>Next message: <A HREF="000178.html">uamanyip patch
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#177">[ date ]</a>
+              <a href="thread.html#177">[ thread ]</a>
+              <a href="subject.html#177">[ subject ]</a>
+              <a href="author.html#177">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hi Gunther,
+
+I will definitely give it a look, thanks!
+
+Are you already using this code in a live network?
+
+Btw, if you (or anyone) wants to directly help out chilli, send me  
+over a htpasswd (using md5) generated username/password and I'll set  
+you up.
+
+Cheers,
+David
+
+On Apr 4, 2008, at 12:07 AM, Gunther Mayer wrote:
+
+&gt;<i> Hi David,
+</I>&gt;<i>
+</I>&gt;<i> I've recently tried out the uamanyip option in coova and was very  
+</I>&gt;<i> pleased at how well it works. I want to use it all the time in  
+</I>&gt;<i> future across our network to simplify troubleshooting, should save  
+</I>&gt;<i> a couple of support calls ;-)
+</I>&gt;<i>
+</I>&gt;<i> However, I found a very annoying side effect of uamanyip: It spoofs  
+</I>&gt;<i> ARP requests for just about anything. While that's the point of  
+</I>&gt;<i> uamanyip, it makes it impossible to have other devices such as  
+</I>&gt;<i> access points that you have to access for management purposes on  
+</I>&gt;<i> the chilli network. Say chilli listens on 192.168.182.1 and there's  
+</I>&gt;<i> another access point with static ip 192.168.182.2 (of course not  
+</I>&gt;<i> part of the dynip range) to increase wireless coverage. As soon as  
+</I>&gt;<i> anybody tries to ping or otherwise access 192.168.182.2 because  
+</I>&gt;<i> chilli will immediately claim it through arp before the real device  
+</I>&gt;<i> has a chance to answer - it creates a race condition. Putting such  
+</I>&gt;<i> devices on entirely different subnets makes no difference as their  
+</I>&gt;<i> ip's will be stolen too. The only though somewhat ugly way I found  
+</I>&gt;<i> around that was to clear the arp cache on my client and then force  
+</I>&gt;<i> a mapping with arp -s.
+</I>&gt;<i>
+</I>&gt;<i> So, I thought wouldn't it be cool to let chilli ignore arp requests  
+</I>&gt;<i> for anything other than itself but only on its own subnet. Anything  
+</I>&gt;<i> else will still be caught and spoofed as usual. Hence I came up  
+</I>&gt;<i> with the below patch, I created it against 1.0.11-stable but  
+</I>&gt;<i> applying it to svn (r161) proved trivial, as it's a very short patch.
+</I>&gt;<i>
+</I>&gt;<i> I think this should be done by default as it allows devices on the  
+</I>&gt;<i> chilli subnet to talk to each other properly (of course for real  
+</I>&gt;<i> isolation one would use something like ebtables or a/p isolation).  
+</I>&gt;<i> But of course the patch could be extended to make this optional  
+</I>&gt;<i> (uamanyipignorelan?) if people wanted to keep the current  
+</I>&gt;<i> behaviour. Thoughts?
+</I>&gt;<i>
+</I>&gt;<i> Gunther
+</I>&gt;<i>
+</I>&gt;<i> Index: dhcp.c
+</I>&gt;<i> ===================================================================
+</I>&gt;<i> --- dhcp.c      (revision 161)
+</I>&gt;<i> +++ dhcp.c      (working copy)
+</I>&gt;<i> @@ -2595,6 +2595,14 @@
+</I>&gt;<i>       return 0; /* Only reply if he asked for his router address */
+</I>&gt;<i>     }
+</I>&gt;<i>   }
+</I>&gt;<i> +  else if ((taraddr.s_addr != options.dhcplisten.s_addr) &amp;&amp;
+</I>&gt;<i> +        ((conn-&gt;hisip.s_addr &amp; conn-&gt;hismask.s_addr) ==
+</I>&gt;<i> +        (reqaddr.s_addr &amp; conn-&gt;hismask.s_addr))) {
+</I>&gt;<i> +    /* when uamanyip is on we should ignore arp requests that ARE  
+</I>&gt;<i> within our subnet except of course the ones for ourselves*/
+</I>&gt;<i> +    if (options.debug)
+</I>&gt;<i> +      log_dbg(&quot;ARP: request for ip other than us within our subnet 
+</I>&gt;<i> (uamanyip on), ignoring&quot;);
+</I>&gt;<i> +    return 0;
+</I>&gt;<i> +  }
+</I>&gt;<i>   conn-&gt;lasttime = mainclock;
+</I>&gt;<i>
+</I>&gt;<i> ---------------------------------------------------------------------
+</I>&gt;<i> To unsubscribe, e-mail: <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli-unsubscribe at coova.org</A>
+</I>&gt;<i> For additional commands, e-mail: <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli-help at coova.org</A>
+</I>&gt;<i> Wiki: <A HREF="http://coova.org/wiki/index.php/CoovaChilli">http://coova.org/wiki/index.php/CoovaChilli</A>
+</I>&gt;<i> Forum: <A HREF="http://coova.org/phpBB3/viewforum.php?f=4">http://coova.org/phpBB3/viewforum.php?f=4</A>
+</I>&gt;<i>
+</I>
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000175.html">uamanyip patch
+</A></li>
+	<LI>Next message: <A HREF="000178.html">uamanyip patch
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#177">[ date ]</a>
+              <a href="thread.html#177">[ thread ]</a>
+              <a href="subject.html#177">[ subject ]</a>
+              <a href="author.html#177">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

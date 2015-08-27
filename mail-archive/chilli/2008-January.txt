@@ -1,0 +1,1169 @@
+From aykut.demirkol at gmail.com  Sat Jan  5 00:35:03 2008
+From: aykut.demirkol at gmail.com (Aykut Demirkol)
+Date: Sat, 05 Jan 2008 02:35:03 +0200
+Subject: Chilli dhcp problem (No such device or address) does any one
+ heard?
+In-Reply-To: <C551E130-23B8-447A-8EDF-121ECEDDE992@mac.com>
+References: <47619366.8000808@frccorp.com> <4761A710.10504@gmail.com> <8B409829-8DA0-4D39-8390-EC66B5F873EB@mac.com> <476314DB.4060004@gmail.com> <5B66CC10-153B-442D-9FB8-971506C926B5@mac.com> <47657AA7.5020004@gmail.com> <C551E130-23B8-447A-8EDF-121ECEDDE992@mac.com>
+Message-ID: <477ED0B7.6010605@gmail.com>
+
+Problem was a missing bridge interface. I couldn't regenarate the 
+problem in a working box. But I am sure that somehow DHCP answers tried 
+to be send to a non existing interface.
+When I discovered the missing bridge interface and added manually by 
+brctl and vconfig problem is solved.
+Evidence of problem can be found by greping ifname's in nvram and 
+comparing existing interfaces. I think each ifname must exist as a 
+network interface.
+
+David Bird wrote:
+> From what I understand, you would only get such an error if your 
+> network somehow broke. Some possible causes that come to mind might be 
+> a network driver unloaded or crashing, faulty hardware, or something 
+> otherwise taking down the interface or changing it's ifindex. What I 
+> will do, however, is have chilli try to reconnect a broken socket 
+> (after trying to UP the interface that is not running).
+>
+> On Dec 16, 2007, at 8:21 PM, Aykut Demirkol wrote:
+>
+>> Coova 1.0 beta 6, coova-chilli 1.0.8-1
+>>
+>> No there is one chilli running. Working and non working boxes are 
+>> both in a test enviroment with no load or disturbance.
+>>
+>> Can you give any circumtances when dhcp.c can cause a "No such device 
+>> or address" message.
+>>
+>> David Bird wrote:
+>>> I'm not sure what you mean by version 0.6.. of what?
+>>>
+>>> I doubt it has to do with your configurations. It is possible that 
+>>> you have more than one instance of chilli running at the same time? 
+>>> Any other information you have as to when this occurs (heavy load, 
+>>> network disturbances, etc)?
+>>>
+>>> If you can, try using the latest CoovaChilli version...
+>>>
+>>> David
+>>>
+>>> On Dec 15, 2007, at 12:42 AM, Aykut Demirkol wrote:
+>>>
+>>>> Version is 0.6.
+>>>> I have a same version in another identical box that does not have 
+>>>> same problem. I checked all lan,wireless,dhcp confugation through 
+>>>> web page.  They are same.
+>>>> I tired to compare nvram's by diff. But can not figure out sth. The 
+>>>> box with problem has 2K nvram output, working one gave 4K of nvram 
+>>>> output. So there are lots of differences.
+>>>> I saved the configurations through web interface. And compared by 
+>>>> diff. They are really same.
+>>>> Next, I will copy and compare all /etc/ files with diff (It seems 
+>>>> that saving conf through web interface gives only some of the files 
+>>>> in /etc/).
+>>>> I had worked on it but can not break my working box to give same 
+>>>> problem. So, No I am not able to regenerate problem yet.
+>>>>
+>>>> Do you have any idea why this error can occur: "No such device or 
+>>>> address".
+>>>> I looked to the source code (dhcp.c). I am not currently expert of 
+>>>> code but I thought it can be sth about fd "File descriptor to 
+>>>> network interface".
+>>>>
+>>>>
+>>>>
+>>>> wlan at mac.com wrote:
+>>>>> Hi,
+>>>>>
+>>>>> What version are you using and can you reproduce the problem? If 
+>>>>> so, what do you do to get it to fail?
+>>>>>
+>>>>> Cheers
+>>>>>
+>>>>> On Dec 13, 2007, at 10:41 PM, Aykut Demirkol wrote:
+>>>>>
+>>>>>> Hi all,
+>>>>>> Realy need help.
+>>>>>> My coova gives following error message for dhcp. I search so many 
+>>>>>> hours in google and could not found sth about it.
+>>>>>> Only think I found is a non solved, problem submition in a dd-wrt 
+>>>>>> forum 
+>>>>>> http://www.dd-wrt.com/phpBB2/viewtopic.php?p=110254&highlight=&sid=7d5ac03bb833498ce981480fb882dbe5#110254 
+>>>>>> .
+>>>>>>
+>>>>>> My Chilli in debug mode gives:
+>>>>>> chilli.c: 2596: 0 (Debug) New DHCP request from 
+>>>>>> MAC=00-1B-9E-15-XX-XX
+>>>>>> chilli.c: 2599: 0 (Debug) New DHCP connection established
+>>>>>> chilli.c: 2505: 0 (Debug) DHCP requested IP address
+>>>>>> chilli.c: 2558: 0 (Debug) Client MAC=00-1B-9E-15-XX-XX assigned 
+>>>>>> IP 10.1.0.2
+>>>>>> dhcp.c: 633: 6 (No such device or address) sendto(fd=5, len=335) 
+>>>>>> failed
+>>>>>> dhcp.c: 633: 6 (No such device or address) sendto(fd=7, len=42) 
+>>>>>> failed
+>>>>>> dhcp.c: 633: 6 (No such device or address) sendto(fd=7, len=42) 
+>>>>>> failed
+>>>>>> dhcp.c: 633: 6 (No such device or address) sendto(fd=7, len=42) 
+>>>>>> failed
+>>>>>> dhcp.c: 633: 6 (No such device or address) sendto(fd=7, len=42) 
+>>>>>> failed
+>>>>>> dhcp.c: 633: 6 (No such device or address) sendto(fd=7, len=42) 
+>>>>>> failed
+>>>>>> dhcp.c: 633: 6 (No such device or address) sendto(fd=7, len=42) 
+>>>>>> failed
+>>>>>> dhcp.c: 633: 6 (No such device or address) sendto(fd=7, len=42) 
+>>>>>> failed
+>>>>>> dhcp.c: 633: 6 (No such device or address) sendto(fd=7, len=42) 
+>>>>>> failed
+>>>>>> ......
+>>>>>>
+>>>>>> It seems it has the dhcp request, assign an ip to mac but while 
+>>>>>> delivering result sth happens..
+>>>>>> Does any one heard about this problem?
+>>>>>>
+>>>>>>
+>>>>>> --------------------------------------------------------------------- 
+>>>>>>
+>>>>>> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+>>>>>> For additional commands, e-mail: chilli-help at coova.org
+>>>>>> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+>>>>>> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>>>>>>
+>>>>>
+>>>>>
+>>>>
+>>>>
+>>>> ---------------------------------------------------------------------
+>>>> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+>>>> For additional commands, e-mail: chilli-help at coova.org
+>>>> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+>>>> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>>>>
+>>>
+>>>
+>>
+>
+>
+
+
+
+From garnoud at yahoo.co.uk  Wed Jan  9 10:14:58 2008
+From: garnoud at yahoo.co.uk (Geoffroy Arnoud)
+Date: Wed, 9 Jan 2008 11:14:58 +0100 (CET)
+Subject: centralized coova
+Message-ID: <441203.23037.qm@web27308.mail.ukl.yahoo.com>
+
+Hi All,
+
+I am looking for information on how running Coova in
+centralized fashion, with the following constraints:
+- Several hotspots (hundreds). Each hotspot has its
+DHCP server and its router,
+- DHCP relay is not an option, because we make
+localization of the user, based on its IP address (IP
+-> subnet -> hotspot),
+- No NAT,
+- Coova acting as the central gateway (with possible
+redundancy/load balancing),
+- External web portal for user authentication,
+- External transparent web proxy for unauthenticated
+users.
+
+Thanks for you information.
+
+Best regards,
+
+Geoff.
+
+
+
+      _____________________________________________________________________________ 
+Ne gardez plus qu'une seule adresse mail ! Copiez vos mails vers Yahoo! Mail http://mail.yahoo.fr
+
+
+From geo.arnoud at gmail.com  Wed Jan  9 15:12:22 2008
+From: geo.arnoud at gmail.com (Geoffroy ARNOUD)
+Date: Wed, 9 Jan 2008 16:12:22 +0100
+Subject: centralized coova
+In-Reply-To: <2E28D0FEECE2A846AAAB32134E2E95818DA550@thsvml01.togewa.com>
+References: <441203.23037.qm@web27308.mail.ukl.yahoo.com>
+	 <2E28D0FEECE2A846AAAB32134E2E95818DA550@thsvml01.togewa.com>
+Message-ID: <6af0ad6f0801090712r697b6050p87841822df0844ea@mail.gmail.com>
+
+Hi Lemy,
+
+Actually, each of my hotspot has a DHCP server. And I have in my AAA server
+the list of the subnets. when a user connects, I retrieve the connection
+place using the Framed-IP-Address (which I use to find the subnet and then
+the exact location).
+
+Actually, we want a centralised architecture: each hotspot sets up a tunnel
+to the central site, and IP connectivity is ensured for users, up to the
+centralized access gateway - that can be coova.
+
+> What do you mean with "External transparent web proxy for unauthenticatd
+> users"?
+
+What we also would like is the possibility for coova to redirect at TCP/IP
+level unauthorised traffic, and not only sending a 302 redirect to the
+device.
+
+Actually, what I want to do is (I'm not strong at ASCCI-art ;)):
+
+Hotspot-1-----+     AAA
+              |      |
+   ...        +----Coova------(NAT)------INTERNET
+              |      |
+Hotspot-N-----+      +-Squid Proxy
+                     |
+                                       +-Login portal
+                     |
+                     +-DNS
+
+Correct me if I'm wrong. For a standard Coova deployement, when a user opens
+a browser and requests www.google.com:
+- He gets a HTTP-302 that redirects its browser to Coova login page (either
+on coova or on the back-end).
+- Once on the login page, the user enter login and password, and they are
+posted to Coova
+- Coova sends RADIUS requests to the AAA
+- AAA Accepts the connection
+- Coova opens the connection
+
+What I would like to do is:
+- User requests www.google.com
+- Coova redirects (changes dest IP and TCP port) to Squid
+- Squid, with a redirector chooses :
+   + to server the page (free web site)
+   + to send a 302 redirect to the user
+- The workflow described above goes on.
+
+I wonder if this is possible with IP tables rules?
+
+Furthermore, I would like to do prepaid (volume and/or time based). ie:
+- User connects
+- AAA allocates 10 Mb and 1 hour
+- Allocated volume is elapsed
+- Coova requests more volume to the AAA - wihtout disconnecting the user
+- AAA provides 10Mb
+- Session geos on
+
+Would it be difficult to implement?
+
+Thanks
+
+Geoff.
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20080109/589762e3/attachment.htm>
+
+From wlan at mac.com  Wed Jan  9 16:26:49 2008
+From: wlan at mac.com (wlan at mac.com)
+Date: Wed, 9 Jan 2008 17:26:49 +0100
+Subject: centralized coova
+In-Reply-To: <6af0ad6f0801090712r697b6050p87841822df0844ea@mail.gmail.com>
+References: <441203.23037.qm@web27308.mail.ukl.yahoo.com> <2E28D0FEECE2A846AAAB32134E2E95818DA550@thsvml01.togewa.com> <6af0ad6f0801090712r697b6050p87841822df0844ea@mail.gmail.com>
+Message-ID: <5DF28D29-0FB5-4B76-B22E-7A5AA9C04DD8@mac.com>
+
+Actually, each of my hotspot has a DHCP server. And I have in my AAA  
+server the list of the subnets. when a user connects, I retrieve the  
+connection place using the Framed-IP-Address (which I use to find the  
+subnet and then the exact location).
+
+
+Is it chilli that is currently sending you the Framed-IP-Address or  
+something else? Are you able to relay the AP DHCP to chilli?
+
+Actually, we want a centralised architecture: each hotspot sets up a  
+tunnel to the central site, and IP connectivity is ensured for users,  
+up to the centralized access gateway - that can be coova.
+
+
+When you say coova, I assume you really mean coova-chilli (or just  
+"chilli").
+
+ > What do you mean with "External transparent web proxy for  
+unauthenticatd
+ > users"?
+
+What we also would like is the possibility for coova to redirect at  
+TCP/IP level unauthorised traffic, and not only sending a 302  
+redirect to the device.
+
+Actually, what I want to do is (I'm not strong at ASCCI-art ;)):
+
+Hotspot-1-----+     AAA
+               |      |
+    ...        +----Coova------(NAT)------INTERNET
+               |      |
+Hotspot-N-----+      +-Squid Proxy
+                      |
+                                       +-Login portal
+                      |
+                      +-DNS
+
+Correct me if I'm wrong. For a standard Coova deployement, when a  
+user opens a browser and requests www.google.com:
+- He gets a HTTP-302 that redirects its browser to Coova login page  
+(either on coova or on the back-end).
+- Once on the login page, the user enter login and password, and they  
+are posted to Coova
+- Coova sends RADIUS requests to the AAA
+- AAA Accepts the connection
+- Coova opens the connection
+
+
+Yeah, that's right.
+
+What I would like to do is:
+- User requests www.google.com
+- Coova redirects (changes dest IP and TCP port) to Squid
+- Squid, with a redirector chooses :
+    + to server the page (free web site)
+    + to send a 302 redirect to the user
+- The workflow described above goes on.
+
+
+There is already an option for 'post-auth proxy' in coova-chilli that  
+does this for authorized traffic. What you describe is not that  
+different.
+
+I wonder if this is possible with IP tables rules?
+
+
+You can easily make an IP tables rule for all traffic to go through  
+the proxy. There are conup/condown scripts possible in chilli if you  
+want to change firewall settings based on login/logout.
+
+Furthermore, I would like to do prepaid (volume and/or time based). ie:
+- User connects
+- AAA allocates 10 Mb and 1 hour
+- Allocated volume is elapsed
+- Coova requests more volume to the AAA - wihtout disconnecting the user
+- AAA provides 10Mb
+- Session geos on
+
+
+"Without disconnecting the user" meaning no redirect, just a RADIUS  
+re-auth? not sure I see the value in that...
+
+Would it be difficult to implement?
+
+Thanks
+
+Geoff.
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20080109/c77c94c5/attachment.htm>
+
+From walter.krivanek at vividvisions.at  Thu Jan 24 00:29:56 2008
+From: walter.krivanek at vividvisions.at (Walter Krivanek, VividVisions)
+Date: Thu, 24 Jan 2008 01:29:56 +0100
+Subject: ChilliSpot-Lang back to CoovaChilli
+Message-ID: <09E43C55-B447-4EA3-816E-2A3B3630E526@vividvisions.at>
+
+Hi,
+
+I was wondering if there is a way to add the ChilliSpot-Lang parameter  
+back to the CoovaChilli URLs (as query parameter "lang") when it's  
+returned in the response of the RADIUS server.
+
+My Login pages are multilingual and it would be great if the pages  
+after the login would be shown in the selected language without having  
+to use cookies or workarounds.
+
+Here's the workflow I am talking about.
+CoovaChilli login page -> Language selection + Login (lang parameter) - 
+ > CoovaChilli (converting parameters) -> RADIUS (ChilliSpot-Lang  
+parameter) -> CoovaChilli (converting parameters) -> CoovaChilli  
+success/failed/... page (lang parameter).
+
+Or is there another way to achieve this?
+
+Thanks!
+Walter
+
+
+
+From walter.krivanek at vividvisions.at  Thu Jan 24 09:09:27 2008
+From: walter.krivanek at vividvisions.at (Walter Krivanek, VividVisions)
+Date: Thu, 24 Jan 2008 10:09:27 +0100
+Subject: [chilli] ChilliSpot-Lang back to CoovaChilli (fwd)
+In-Reply-To: <200801240048.m0O0m9AK038819@himinbjorg.tucs-beachin-obx-house.com>
+References: <200801240048.m0O0m9AK038819@himinbjorg.tucs-beachin-obx-house.com>
+Message-ID: <CF9E29CD-C62A-44D1-AC4C-D15FAF900E6A@vividvisions.at>
+
+Hi,
+
+in redir.c in line 1468 "lang" gets converted to "ChilliSpot-Lang" for  
+the RADIUS request.
+But it never gets converted back if RADIUS sends "ChilliSpot-Lang" back.
+
+Bye,
+Walter
+
+
+Am 24.01.2008 um 01:48 schrieb Tuc at T-B-O-H.NET:
+
+> Hi,
+>
+> 	Please excuse my ignorance. I'm looking at the source
+> to Chilli and see nothing about lang... Can you expand where/how
+> this occurs?
+>
+> 		Thanks, Tuc
+>
+>> Hi,
+>>
+>> I was wondering if there is a way to add the ChilliSpot-Lang  
+>> parameter
+>> back to the CoovaChilli URLs (as query parameter "lang") when it's
+>> returned in the response of the RADIUS server.
+>>
+>> My Login pages are multilingual and it would be great if the pages
+>> after the login would be shown in the selected language without  
+>> having
+>> to use cookies or workarounds.
+>>
+>> Here's the workflow I am talking about.
+>> CoovaChilli login page -> Language selection + Login (lang  
+>> parameter) -
+>>> CoovaChilli (converting parameters) -> RADIUS (ChilliSpot-Lang
+>> parameter) -> CoovaChilli (converting parameters) -> CoovaChilli
+>> success/failed/... page (lang parameter).
+>>
+>> Or is there another way to achieve this?
+>>
+>> Thanks!
+>> Walter
+>>
+>>
+>> ---------------------------------------------------------------------
+>> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+>> For additional commands, e-mail: chilli-help at coova.org
+>> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+>> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>>
+>
+>
+
+
+
+From list.coovachilli at mac.com  Thu Jan 24 10:43:54 2008
+From: list.coovachilli at mac.com (JB)
+Date: Thu, 24 Jan 2008 11:43:54 +0100
+Subject: [chilli] ChilliSpot-Lang back to CoovaChilli (fwd)
+In-Reply-To: <CF9E29CD-C62A-44D1-AC4C-D15FAF900E6A@vividvisions.at>
+References: <200801240048.m0O0m9AK038819@himinbjorg.tucs-beachin-obx-house.com> <CF9E29CD-C62A-44D1-AC4C-D15FAF900E6A@vividvisions.at>
+Message-ID: <46C3C3CD-FFD0-4C1D-AD13-508C0FEA18E6@mac.com>
+
+
+>> I was wondering if there is a way to add the ChilliSpot-Lang  
+>> parameter
+>> back to the CoovaChilli URLs (as query parameter "lang") when it's
+>> returned in the response of the RADIUS server.
+> in redir.c in line 1468 "lang" gets converted to "ChilliSpot-Lang"  
+> for the RADIUS request.
+> But it never gets converted back if RADIUS sends "ChilliSpot-Lang"  
+> back.
+
+Yes, I also came across this. I guess there is no way to channel  
+custom query parameters through those requests...?
+
+JB
+
+
+
+From wlan at mac.com  Thu Jan 24 12:37:54 2008
+From: wlan at mac.com (wlan at mac.com)
+Date: Thu, 24 Jan 2008 13:37:54 +0100
+Subject: [chilli] ChilliSpot-Lang back to CoovaChilli (fwd)
+In-Reply-To: <CF9E29CD-C62A-44D1-AC4C-D15FAF900E6A@vividvisions.at>
+References: <200801240048.m0O0m9AK038819@himinbjorg.tucs-beachin-obx-house.com> <CF9E29CD-C62A-44D1-AC4C-D15FAF900E6A@vividvisions.at>
+Message-ID: <64235A6B-4D05-4918-ACB9-194DEDFD5282@mac.com>
+
+Give the latest svn a try. I added the parameter to the url building...
+
+David
+
+On Jan 24, 2008, at 10:09 AM, Walter Krivanek, VividVisions wrote:
+
+> Hi,
+>
+> in redir.c in line 1468 "lang" gets converted to "ChilliSpot-Lang"  
+> for the RADIUS request.
+> But it never gets converted back if RADIUS sends "ChilliSpot-Lang"  
+> back.
+>
+> Bye,
+> Walter
+>
+>
+> Am 24.01.2008 um 01:48 schrieb Tuc at T-B-O-H.NET:
+>
+>> Hi,
+>>
+>> 	Please excuse my ignorance. I'm looking at the source
+>> to Chilli and see nothing about lang... Can you expand where/how
+>> this occurs?
+>>
+>> 		Thanks, Tuc
+>>
+>>> Hi,
+>>>
+>>> I was wondering if there is a way to add the ChilliSpot-Lang  
+>>> parameter
+>>> back to the CoovaChilli URLs (as query parameter "lang") when it's
+>>> returned in the response of the RADIUS server.
+>>>
+>>> My Login pages are multilingual and it would be great if the pages
+>>> after the login would be shown in the selected language without  
+>>> having
+>>> to use cookies or workarounds.
+>>>
+>>> Here's the workflow I am talking about.
+>>> CoovaChilli login page -> Language selection + Login (lang  
+>>> parameter) -
+>>>> CoovaChilli (converting parameters) -> RADIUS (ChilliSpot-Lang
+>>> parameter) -> CoovaChilli (converting parameters) -> CoovaChilli
+>>> success/failed/... page (lang parameter).
+>>>
+>>> Or is there another way to achieve this?
+>>>
+>>> Thanks!
+>>> Walter
+>>>
+>>>
+>>> -------------------------------------------------------------------- 
+>>> -
+>>> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+>>> For additional commands, e-mail: chilli-help at coova.org
+>>> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+>>> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>>>
+>>
+>>
+>
+>
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>
+
+
+
+From ml at t-b-o-h.net  Thu Jan 24 13:35:56 2008
+From: ml at t-b-o-h.net (Tuc at T-B-O-H.NET)
+Date: Thu, 24 Jan 2008 08:35:56 -0500 (EST)
+Subject: [chilli] Re: [chilli] ChilliSpot-Lang back to CoovaChilli (fwd)
+In-Reply-To: <CF9E29CD-C62A-44D1-AC4C-D15FAF900E6A@vividvisions.at>
+Message-ID: <200801241335.m0ODZu0u052996@himinbjorg.tucs-beachin-obx-house.com>
+
+Hi,
+
+	Sorry, I had misread that this was also availabile in the original
+Chilli, not a Coovaism.
+
+	What is the allow format for this parameter? (I'm the author of
+The UAM Center on Sourceforge and I'm about to make another release and
+wanted to make sure this was added to the "accepted list". The list
+does format checking, and I wanted to make sure it wouldn't fail.)
+
+		Thanks, Tuc
+> 
+> Hi,
+> 
+> in redir.c in line 1468 "lang" gets converted to "ChilliSpot-Lang" for  
+> the RADIUS request.
+> But it never gets converted back if RADIUS sends "ChilliSpot-Lang" back.
+> 
+> Bye,
+> Walter
+> 
+> 
+> Am 24.01.2008 um 01:48 schrieb Tuc at T-B-O-H.NET:
+> 
+> > Hi,
+> >
+> > 	Please excuse my ignorance. I'm looking at the source
+> > to Chilli and see nothing about lang... Can you expand where/how
+> > this occurs?
+> >
+> > 		Thanks, Tuc
+> >
+> >> Hi,
+> >>
+> >> I was wondering if there is a way to add the ChilliSpot-Lang  
+> >> parameter
+> >> back to the CoovaChilli URLs (as query parameter "lang") when it's
+> >> returned in the response of the RADIUS server.
+> >>
+> >> My Login pages are multilingual and it would be great if the pages
+> >> after the login would be shown in the selected language without  
+> >> having
+> >> to use cookies or workarounds.
+> >>
+> >> Here's the workflow I am talking about.
+> >> CoovaChilli login page -> Language selection + Login (lang  
+> >> parameter) -
+> >>> CoovaChilli (converting parameters) -> RADIUS (ChilliSpot-Lang
+> >> parameter) -> CoovaChilli (converting parameters) -> CoovaChilli
+> >> success/failed/... page (lang parameter).
+> >>
+> >> Or is there another way to achieve this?
+> >>
+> >> Thanks!
+> >> Walter
+> >>
+> >>
+> >> ---------------------------------------------------------------------
+> >> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> >> For additional commands, e-mail: chilli-help at coova.org
+> >> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> >> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+> >>
+> >
+> >
+> 
+> 
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+> 
+
+
+
+From walter.krivanek at vividvisions.at  Thu Jan 24 15:49:40 2008
+From: walter.krivanek at vividvisions.at (Walter Krivanek, VividVisions)
+Date: Thu, 24 Jan 2008 16:49:40 +0100
+Subject: [chilli] ChilliSpot-Lang back to CoovaChilli (fwd)
+In-Reply-To: <64235A6B-4D05-4918-ACB9-194DEDFD5282@mac.com>
+References: <200801240048.m0O0m9AK038819@himinbjorg.tucs-beachin-obx-house.com> <CF9E29CD-C62A-44D1-AC4C-D15FAF900E6A@vividvisions.at> <64235A6B-4D05-4918-ACB9-194DEDFD5282@mac.com>
+Message-ID: <484E56E6-D068-4D27-A3F7-858088D1BC4D@vividvisions.at>
+
+Seems to work, thank you for this quick addition!!
+
+Bye,
+Walter
+
+
+Am 24.01.2008 um 13:37 schrieb wlan at mac.com:
+
+> Give the latest svn a try. I added the parameter to the url  
+> building...
+>
+> David
+>
+> On Jan 24, 2008, at 10:09 AM, Walter Krivanek, VividVisions wrote:
+>
+>> Hi,
+>>
+>> in redir.c in line 1468 "lang" gets converted to "ChilliSpot-Lang"  
+>> for the RADIUS request.
+>> But it never gets converted back if RADIUS sends "ChilliSpot-Lang"  
+>> back.
+>>
+>> Bye,
+>> Walter
+>>
+>>
+>> Am 24.01.2008 um 01:48 schrieb Tuc at T-B-O-H.NET:
+>>
+>>> Hi,
+>>>
+>>> 	Please excuse my ignorance. I'm looking at the source
+>>> to Chilli and see nothing about lang... Can you expand where/how
+>>> this occurs?
+>>>
+>>> 		Thanks, Tuc
+>>>
+>>>> Hi,
+>>>>
+>>>> I was wondering if there is a way to add the ChilliSpot-Lang  
+>>>> parameter
+>>>> back to the CoovaChilli URLs (as query parameter "lang") when it's
+>>>> returned in the response of the RADIUS server.
+>>>>
+>>>> My Login pages are multilingual and it would be great if the pages
+>>>> after the login would be shown in the selected language without  
+>>>> having
+>>>> to use cookies or workarounds.
+>>>>
+>>>> Here's the workflow I am talking about.
+>>>> CoovaChilli login page -> Language selection + Login (lang  
+>>>> parameter) -
+>>>>> CoovaChilli (converting parameters) -> RADIUS (ChilliSpot-Lang
+>>>> parameter) -> CoovaChilli (converting parameters) -> CoovaChilli
+>>>> success/failed/... page (lang parameter).
+>>>>
+>>>> Or is there another way to achieve this?
+>>>>
+>>>> Thanks!
+>>>> Walter
+>>>>
+>>>>
+>>>> ---------------------------------------------------------------------
+>>>> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+>>>> For additional commands, e-mail: chilli-help at coova.org
+>>>> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+>>>> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>>>>
+>>>
+>>>
+>>
+>>
+>> ---------------------------------------------------------------------
+>> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+>> For additional commands, e-mail: chilli-help at coova.org
+>> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+>> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>>
+>
+>
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>
+>
+
+
+
+From list.coovachilli at mac.com  Fri Jan 25 16:34:01 2008
+From: list.coovachilli at mac.com (JB)
+Date: Fri, 25 Jan 2008 17:34:01 +0100
+Subject: admin session on radius
+Message-ID: <1946DF20-95D8-4815-85CA-9F254AEF6691@mac.com>
+
+Hi,
+
+I can't find a list of attributes of CoovaChilli which can be updated  
+by the admin session from the RADIUS server.
+
+I know that I can return Chillispot-Config with the Access-Accept  
+reply from RADIUS (for the Administrative-User) which happens when I  
+start CoovaChilli with adminuser and adminpassword flags set. Will  
+those Chillispot-Config flags be automatically updated or do I have to  
+use a shells script using cron/chilli_radconfig/SIGHUP?
+
+Thanks,
+JB
+
+
+
+From list.coovachilli at mac.com  Fri Jan 25 17:47:37 2008
+From: list.coovachilli at mac.com (JB)
+Date: Fri, 25 Jan 2008 18:47:37 +0100
+Subject: admin session on radius
+In-Reply-To: <F3FE15C7-5F09-440A-A13E-B0855D49BCEA@mac.com>
+References: <1946DF20-95D8-4815-85CA-9F254AEF6691@mac.com> <F3FE15C7-5F09-440A-A13E-B0855D49BCEA@mac.com>
+Message-ID: <94514F97-1AFF-45B5-A264-E1C26D6639CF@mac.com>
+
+
+Thanks for the quick answer, David!
+I'm looking forward to this feature.
+
+BTW: Is it possible to configure the mailing list to automatically set chilli at coova.org 
+  as reply-to?
+
+Bye,
+JB
+
+wlan at mac.com wrote:
+
+> You still have to cron/chilli_radconfig/restart... Though, it is  
+> planned to integrate the ChilliSpot-Config handling into the main  
+> server / admin session.
+>
+> David
+>
+> On Jan 25, 2008, at 5:34 PM, JB wrote:
+>
+>> Hi,
+>>
+>> I can't find a list of attributes of CoovaChilli which can be  
+>> updated by the admin session from the RADIUS server.
+>>
+>> I know that I can return Chillispot-Config with the Access-Accept  
+>> reply from RADIUS (for the Administrative-User) which happens when  
+>> I start CoovaChilli with adminuser and adminpassword flags set.  
+>> Will those Chillispot-Config flags be automatically updated or do I  
+>> have to use a shells script using cron/chilli_radconfig/SIGHUP?
+>>
+>> Thanks,
+>> JB
+
+
+
+From gunther.mayer at googlemail.com  Sat Jan 26 10:40:42 2008
+From: gunther.mayer at googlemail.com (Gunther Mayer)
+Date: Sat, 26 Jan 2008 12:40:42 +0200
+Subject: admin session on radius
+In-Reply-To: <94514F97-1AFF-45B5-A264-E1C26D6639CF@mac.com>
+References: <1946DF20-95D8-4815-85CA-9F254AEF6691@mac.com> <F3FE15C7-5F09-440A-A13E-B0855D49BCEA@mac.com> <94514F97-1AFF-45B5-A264-E1C26D6639CF@mac.com>
+Message-ID: <479B0E2A.9020606@gmail.com>
+
+JB wrote:
+>
+> Thanks for the quick answer, David!
+> I'm looking forward to this feature.
+>
+> BTW: Is it possible to configure the mailing list to automatically set 
+> chilli at coova.org as reply-to?
+I second that actually. Most people don't realise that they reply to the 
+poster and not the list and I for one would like to see or at least 
+being able to access via an archive all the responses to any given 
+thread. Hope this doesn't start a flame war of mailing list reply-to vs 
+not...
+
+Gunther
+
+
+From sophana at zizi.ath.cx  Sat Jan 26 12:53:50 2008
+From: sophana at zizi.ath.cx (sophana)
+Date: Sat, 26 Jan 2008 13:53:50 +0100
+Subject: UAM web server failover
+Message-ID: <479B2D5E.9030705@zizi.ath.cx>
+
+Hi
+
+Lot of people would like the UAM webserver failover feature in coova 
+chilli or coovaAP.
+I'd like to help implementing this.
+
+Maybe the first step would be to agree on a spec?
+So here's a simple proposition:
+
+Add an optionnal alternate uam server parameter (or uamserver2)
+Another would be the monitoring period.
+
+Every 15-30 minutes (the monitoring period), an http request is 
+alternatively sent to one of the uam urls with 
+"?ping=1&nasId=xx&calledMac=xx&md5=xx" added to the url.
+The http response should be a text response: Ok
+If current uam response if not Ok:
+  if last resonse from other uam server was Ok: set to other uam server 
+(if not already).
+  else: switch to not available service internal page.
+else if current is OK and state was not available: set to current
+
+If main uam server is ok and currently selecting the alternate, then 
+switch back to the main uam server.
+
+Note that the monitoring process must not be launched by cron because 
+all hotspot may try to send a monitoring request at the same time.
+About some more alternatives, there could be also more than 1 alternate 
+server, and maybe it could be possible to use inexpensive ping requests 
+in addition to http requests.
+
+Now, about the implementation, I don't know if it would be better/easier 
+to do this inside coova chilli, or in a monitoring script.
+
+
+What do you think about all this?
+
+Regards
+Sophana
+
+
+From chilli at silverserver.at  Sat Jan 26 13:14:56 2008
+From: chilli at silverserver.at (lc)
+Date: Sat, 26 Jan 2008 14:14:56 +0100
+Subject: UAM web server failover
+In-Reply-To: <479B2D5E.9030705@zizi.ath.cx>
+References: <479B2D5E.9030705@zizi.ath.cx>
+Message-ID: <5667481F-D561-4FBA-9CC0-F54A5FC1EBBC@silverserver.at>
+
+
+Hi,
+
+I think this is an excellent idea!
+
+Regards,
+lc
+
+
+> Hi
+>
+> Lot of people would like the UAM webserver failover feature in coova  
+> chilli or coovaAP.
+> I'd like to help implementing this.
+>
+> Maybe the first step would be to agree on a spec?
+> So here's a simple proposition:
+>
+> Add an optionnal alternate uam server parameter (or uamserver2)
+> Another would be the monitoring period.
+>
+> Every 15-30 minutes (the monitoring period), an http request is  
+> alternatively sent to one of the uam urls with "? 
+> ping=1&nasId=xx&calledMac=xx&md5=xx" added to the url.
+> The http response should be a text response: Ok
+> If current uam response if not Ok:
+> if last resonse from other uam server was Ok: set to other uam  
+> server (if not already).
+> else: switch to not available service internal page.
+> else if current is OK and state was not available: set to current
+>
+> If main uam server is ok and currently selecting the alternate, then  
+> switch back to the main uam server.
+>
+> Note that the monitoring process must not be launched by cron  
+> because all hotspot may try to send a monitoring request at the same  
+> time.
+> About some more alternatives, there could be also more than 1  
+> alternate server, and maybe it could be possible to use inexpensive  
+> ping requests in addition to http requests.
+>
+> Now, about the implementation, I don't know if it would be better/ 
+> easier to do this inside coova chilli, or in a monitoring script.
+>
+>
+> What do you think about all this?
+>
+> Regards
+> Sophana
+
+
+
+From wlan at mac.com  Sat Jan 26 16:51:30 2008
+From: wlan at mac.com (wlan at mac.com)
+Date: Sat, 26 Jan 2008 17:51:30 +0100
+Subject: admin session on radius
+In-Reply-To: <479B0E2A.9020606@gmail.com>
+References: <1946DF20-95D8-4815-85CA-9F254AEF6691@mac.com> <F3FE15C7-5F09-440A-A13E-B0855D49BCEA@mac.com> <94514F97-1AFF-45B5-A264-E1C26D6639CF@mac.com> <479B0E2A.9020606@gmail.com>
+Message-ID: <CCD0E989-A378-4B80-A448-0F4420F74A67@mac.com>
+
+ok, ok... let's see if it worked.
+
+On Jan 26, 2008, at 11:40 AM, Gunther Mayer wrote:
+
+> JB wrote:
+>>
+>> Thanks for the quick answer, David!
+>> I'm looking forward to this feature.
+>>
+>> BTW: Is it possible to configure the mailing list to automatically  
+>> set chilli at coova.org as reply-to?
+> I second that actually. Most people don't realise that they reply  
+> to the poster and not the list and I for one would like to see or  
+> at least being able to access via an archive all the responses to  
+> any given thread. Hope this doesn't start a flame war of mailing  
+> list reply-to vs not...
+>
+> Gunther
+>
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>
+
+
+
+From wlan at mac.com  Sat Jan 26 16:59:45 2008
+From: wlan at mac.com (wlan at mac.com)
+Date: Sat, 26 Jan 2008 17:59:45 +0100
+Subject: UAM web server failover
+In-Reply-To: <479B2D5E.9030705@zizi.ath.cx>
+References: <479B2D5E.9030705@zizi.ath.cx>
+Message-ID: <889CB335-AB01-4C2C-9CDE-EAB41B08FB44@mac.com>
+
+I think it is a good idea, and perhaps something to be integrated  
+into chilli. It would have to fork a process to do the check (so that  
+there is no waiting in the main loop), but it could reconfigure the  
+server with it's findings. If it is just switching landing pages,  
+that's not too difficult. But, it still wouldn't help the situation  
+when the access point lost all connectivity since DNS will likely be  
+timing out on the original requests.
+
+David
+
+On Jan 26, 2008, at 1:53 PM, sophana wrote:
+
+> Hi
+>
+> Lot of people would like the UAM webserver failover feature in  
+> coova chilli or coovaAP.
+> I'd like to help implementing this.
+>
+> Maybe the first step would be to agree on a spec?
+> So here's a simple proposition:
+>
+> Add an optionnal alternate uam server parameter (or uamserver2)
+> Another would be the monitoring period.
+>
+> Every 15-30 minutes (the monitoring period), an http request is  
+> alternatively sent to one of the uam urls with "? 
+> ping=1&nasId=xx&calledMac=xx&md5=xx" added to the url.
+> The http response should be a text response: Ok
+> If current uam response if not Ok:
+>  if last resonse from other uam server was Ok: set to other uam  
+> server (if not already).
+>  else: switch to not available service internal page.
+> else if current is OK and state was not available: set to current
+>
+> If main uam server is ok and currently selecting the alternate,  
+> then switch back to the main uam server.
+>
+> Note that the monitoring process must not be launched by cron  
+> because all hotspot may try to send a monitoring request at the  
+> same time.
+> About some more alternatives, there could be also more than 1  
+> alternate server, and maybe it could be possible to use inexpensive  
+> ping requests in addition to http requests.
+>
+> Now, about the implementation, I don't know if it would be better/ 
+> easier to do this inside coova chilli, or in a monitoring script.
+>
+>
+> What do you think about all this?
+>
+> Regards
+> Sophana
+>
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>
+
+
+
+From sophana at zizi.ath.cx  Sat Jan 26 20:01:27 2008
+From: sophana at zizi.ath.cx (sophana)
+Date: Sat, 26 Jan 2008 21:01:27 +0100
+Subject: UAM web server failover
+In-Reply-To: <889CB335-AB01-4C2C-9CDE-EAB41B08FB44@mac.com>
+References: <479B2D5E.9030705@zizi.ath.cx> <889CB335-AB01-4C2C-9CDE-EAB41B08FB44@mac.com>
+Message-ID: <479B9197.3010708@zizi.ath.cx>
+
+If the access point looses all connectivity, there should be a 
+redirection to a local served page telling that the service is interrupted.
+There is nothing more that can be done.
+
+The uam server failover is mainly useful in case of server outages, or 
+maintenance.
+
+note: the reply-to seems to be working just fine. thanks.
+
+wlan at mac.com a ?crit :
+> I think it is a good idea, and perhaps something to be integrated into 
+> chilli. It would have to fork a process to do the check (so that there 
+> is no waiting in the main loop), but it could reconfigure the server 
+> with it's findings. If it is just switching landing pages, that's not 
+> too difficult. But, it still wouldn't help the situation when the 
+> access point lost all connectivity since DNS will likely be timing out 
+> on the original requests.
+>
+> David
+>
+> On Jan 26, 2008, at 1:53 PM, sophana wrote:
+>
+>> Hi
+>>
+>> Lot of people would like the UAM webserver failover feature in coova 
+>> chilli or coovaAP.
+>> I'd like to help implementing this.
+>>
+>> Maybe the first step would be to agree on a spec?
+>> So here's a simple proposition:
+>>
+>> Add an optionnal alternate uam server parameter (or uamserver2)
+>> Another would be the monitoring period.
+>>
+>> Every 15-30 minutes (the monitoring period), an http request is 
+>> alternatively sent to one of the uam urls with 
+>> "?ping=1&nasId=xx&calledMac=xx&md5=xx" added to the url.
+>> The http response should be a text response: Ok
+>> If current uam response if not Ok:
+>>  if last resonse from other uam server was Ok: set to other uam 
+>> server (if not already).
+>>  else: switch to not available service internal page.
+>> else if current is OK and state was not available: set to current
+>>
+>> If main uam server is ok and currently selecting the alternate, then 
+>> switch back to the main uam server.
+>>
+>> Note that the monitoring process must not be launched by cron because 
+>> all hotspot may try to send a monitoring request at the same time.
+>> About some more alternatives, there could be also more than 1 
+>> alternate server, and maybe it could be possible to use inexpensive 
+>> ping requests in addition to http requests.
+>>
+>> Now, about the implementation, I don't know if it would be 
+>> better/easier to do this inside coova chilli, or in a monitoring script.
+>>
+>>
+>> What do you think about all this?
+>>
+>> Regards
+>> Sophana
+>>
+>> ---------------------------------------------------------------------
+>> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+>> For additional commands, e-mail: chilli-help at coova.org
+>> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+>> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>>
+>
+>
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>
+>
+
+
+
+From list.coovachilli at mac.com  Sat Jan 26 20:20:38 2008
+From: list.coovachilli at mac.com (JB)
+Date: Sat, 26 Jan 2008 21:20:38 +0100
+Subject: admin session on radius
+In-Reply-To: <CCD0E989-A378-4B80-A448-0F4420F74A67@mac.com>
+References: <1946DF20-95D8-4815-85CA-9F254AEF6691@mac.com> <F3FE15C7-5F09-440A-A13E-B0855D49BCEA@mac.com> <94514F97-1AFF-45B5-A264-E1C26D6639CF@mac.com> <479B0E2A.9020606@gmail.com> <CCD0E989-A378-4B80-A448-0F4420F74A67@mac.com>
+Message-ID: <07BB9360-F99D-40A9-AA9C-425C4997E2F5@mac.com>
+
+Yaaaay! ;-)
+
+JB
+
+
+wlan at mac.com (26.01.2008 17:51):
+
+> ok, ok... let's see if it worked.
+>
+> On Jan 26, 2008, at 11:40 AM, Gunther Mayer wrote:
+>
+>> JB wrote:
+>>>
+>>> Thanks for the quick answer, David!
+>>> I'm looking forward to this feature.
+>>>
+>>> BTW: Is it possible to configure the mailing list to automatically  
+>>> set chilli at coova.org as reply-to?
+>> I second that actually. Most people don't realise that they reply  
+>> to the poster and not the list and I for one would like to see or  
+>> at least being able to access via an archive all the responses to  
+>> any given thread. Hope this doesn't start a flame war of mailing  
+>> list reply-to vs not...
+
+
+
+JB
+
+
+
+
+
+

@@ -1,0 +1,331 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Jradius] jradius performance
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:jradius%40coova.org?Subject=Re%3A%20%5BJradius%5D%20jradius%20performance&In-Reply-To=%3C1260289150.14623.30.camel%40david-laptop%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   
+   <LINK REL="Next"  HREF="000019.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Jradius] jradius performance</H1>
+    <B>wlanmac</B> 
+    <A HREF="mailto:jradius%40coova.org?Subject=Re%3A%20%5BJradius%5D%20jradius%20performance&In-Reply-To=%3C1260289150.14623.30.camel%40david-laptop%3E"
+       TITLE="[Jradius] jradius performance">wlan at mac.com
+       </A><BR>
+    <I>Tue Dec  8 16:19:10 UTC 2009</I>
+    <P><UL>
+        
+        <LI>Next message: <A HREF="000019.html">[Jradius] jradius subversion commits
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#18">[ date ]</a>
+              <a href="thread.html#18">[ thread ]</a>
+              <a href="subject.html#18">[ subject ]</a>
+              <a href="author.html#18">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hello,
+
+The question of performance of jradius has been raised a couple times. I
+thought I'd share some recent findings and improvements. Attached are
+some radperf results of various setups and a brief discussion is below. 
+
+The tests are after changes we have made, which we will be integrating
+into jradius/rlm_jradius soon. What we have done amounts to:
+
+- buffers read/write to jradius socket in rlm_jradius and jradius-server
+
+- object reuse of heavily used Java objects (radius packets, attributes,
+etc - using Apache commons &quot;pool&quot; for this)
+
+- using ByteBuffer instead of wrapped Streams throughout jradius
+(resulting in less objects and method calls)
+
+- and some more things...
+
+It should also be noted that jradius per-default will maintain a RADIUS
+&quot;session&quot; keyed on the combination of some attributes - analogous to the
+&quot;Acct-Unique-Session-Id&quot; - and a thread-safe RadiusSession cached
+object. For the testing, we disabled the session manager (and therefor
+the session locking) since all the packets from radperf appear to be of
+the same session, and requests are serialized around the session lock. 
+
+The tests are with the setup:
+
+  Thread pool: 128
+
+    thread pool {
+        start_servers = 128
+        max_servers = 128
+        min_spare_servers = 3
+        max_spare_servers = 128
+        max_requests_per_server = 0
+    }
+
+  JRadius config: 
+
+    jradius {
+        name = &quot;test&quot;
+        primary = &quot;localhost&quot;
+        timeout = 2
+        keepalive = yes
+        connections = 128
+        onfail = NOOP
+        allow_codechange = yes
+    }
+
+RadPerf performed using: radperf -x -s -f test.csv -T nas.rad -a pap -p
+200 -c 20000 localhost auth &lt;sec&gt; -q 
+
+Summary of test:
+
+FreeRADIUS 'users' file:            ~ 17500 p/s
+FreeRADIUS rlm_perl (example.pl):    ~ 7600 p/s
+FreeRADIUS rlm_jradius (LocalUsers): ~ 2500 p/s
+Native Java jradius (CoovaRADIUS):  ~ 12000 p/s
+
+Still some room for improvement... but, we are getting there. 
+
+Valgrind reveals that FreeRADIUS is spending a lot of time in
+rlm_jradius as it parses and creates/add attributes. This part could be
+streamlined a lot as the attributes (in request and response) don't
+always change yet rlm_jradius is freeing/creating new attributes
+constantly. I suspect fixing that would greatly improve the rlm_jradius
+performance. 
+
+Cheers,
+David
+
+
+
+-------------- next part --------------
+
+======================================================================================
+
+FreeRADIUS / users file (native)
+(Only the 'files' modules in authorize, no 'perl', no 'jradius')
+
+	     Total succeeded   :  20000
+	     Total failed      :  0
+	     Total no reply    :  0
+	     Total time (s)    :  1.151
+	     Packets/s         :  17372
+	     Response times:
+		&lt; 10 usec  : 0
+		&lt; 100 usec : 0
+		&lt; msec     : 0
+		&lt; 10 msec  : 6260
+		&lt; 0.1s     : 13740
+		&lt; s        : 0
+		&lt; 10s      : 0
+		&lt; 100s     : 0
+
+	     Total succeeded   :  20000
+	     Total failed      :  0
+	     Total no reply    :  0
+	     Total time (s)    :  1.111
+	     Packets/s         :  17986
+	     Response times:
+		&lt; 10 usec  : 0
+		&lt; 100 usec : 0
+		&lt; msec     : 0
+		&lt; 10 msec  : 7339
+		&lt; 0.1s     : 12661
+		&lt; s        : 0
+		&lt; 10s      : 0
+		&lt; 100s     : 0
+
+	     Total succeeded   :  20000
+	     Total failed      :  0
+	     Total no reply    :  0
+	     Total time (s)    :  1.140
+	     Packets/s         :  17536
+	     Response times:
+		&lt; 10 usec  : 0
+		&lt; 100 usec : 0
+		&lt; msec     : 0
+		&lt; 10 msec  : 5631
+		&lt; 0.1s     : 14369
+		&lt; s        : 0
+		&lt; 10s      : 0
+		&lt; 100s     : 0
+
+
+======================================================================================
+
+FreeRADIUS / Simple rlm_perl handler
+(Only 'files' and 'perl' in authorize, no 'jradius')
+
+	     Total succeeded   :  20000
+	     Total failed      :  0
+	     Total no reply    :  0
+	     Total time (s)    :  2.578
+	     Packets/s         :  7758
+	     Response times:
+		&lt; 10 usec  : 0
+		&lt; 100 usec : 0
+		&lt; msec     : 0
+		&lt; 10 msec  : 903
+		&lt; 0.1s     : 19075
+		&lt; s        : 22
+		&lt; 10s      : 0
+		&lt; 100s     : 0
+
+	     Total succeeded   :  20000
+	     Total failed      :  0
+	     Total no reply    :  0
+	     Total time (s)    :  2.622
+	     Packets/s         :  7625
+	     Response times:
+		&lt; 10 usec  : 0
+		&lt; 100 usec : 0
+		&lt; msec     : 0
+		&lt; 10 msec  : 693
+		&lt; 0.1s     : 19302
+		&lt; s        : 5
+		&lt; 10s      : 0
+		&lt; 100s     : 0
+
+	     Total succeeded   :  20000
+	     Total failed      :  0
+	     Total no reply    :  0
+	     Total time (s)    :  2.672
+	     Packets/s         :  7484
+	     Response times:
+		&lt; 10 usec  : 0
+		&lt; 100 usec : 0
+		&lt; msec     : 0
+		&lt; 10 msec  : 791
+		&lt; 0.1s     : 19157
+		&lt; s        : 52
+		&lt; 10s      : 0
+		&lt; 100s     : 0
+
+
+======================================================================================
+
+FreeRADIUS / rlm_jradius / LocalUsers
+(Only 'files' and 'jradius' in authorize, no 'perl')
+
+	     Total succeeded   :  20000
+	     Total failed      :  0
+	     Total no reply    :  0
+	     Total time (s)    :  8.135
+	     Packets/s         :  2458
+	     Response times:
+		&lt; 10 usec  : 0
+		&lt; 100 usec : 0
+		&lt; msec     : 0
+		&lt; 10 msec  : 37
+		&lt; 0.1s     : 16283
+		&lt; s        : 3680
+		&lt; 10s      : 0
+		&lt; 100s     : 0
+
+	     Total succeeded   :  20000
+	     Total failed      :  0
+	     Total no reply    :  0
+	     Total time (s)    :  8.025
+	     Packets/s         :  2492
+	     Response times:
+		&lt; 10 usec  : 0
+		&lt; 100 usec : 0
+		&lt; msec     : 0
+		&lt; 10 msec  : 45
+		&lt; 0.1s     : 16022
+		&lt; s        : 3933
+		&lt; 10s      : 0
+		&lt; 100s     : 0
+
+	     Total succeeded   :  20000
+	     Total failed      :  0
+	     Total no reply    :  0
+	     Total time (s)    :  7.874
+	     Packets/s         :  2540
+	     Response times:
+		&lt; 10 usec  : 0
+		&lt; 100 usec : 0
+		&lt; msec     : 0
+		&lt; 10 msec  : 35
+		&lt; 0.1s     : 16995
+		&lt; s        : 2970
+		&lt; 10s      : 0
+		&lt; 100s     : 0
+
+
+======================================================================================
+
+Native Java / LocalUsers
+
+	     Total succeeded   :  20000
+	     Total failed      :  0
+	     Total no reply    :  0
+	     Total time (s)    :  1.636
+	     Packets/s         :  12221
+	     Response times:
+		&lt; 10 usec  : 0
+		&lt; 100 usec : 0
+		&lt; msec     : 0
+		&lt; 10 msec  : 2329
+		&lt; 0.1s     : 17671
+		&lt; s        : 0
+		&lt; 10s      : 0
+		&lt; 100s     : 0
+
+	     Total succeeded   :  20000
+	     Total failed      :  0
+	     Total no reply    :  0
+	     Total time (s)    :  1.635
+	     Packets/s         :  12229
+	     Response times:
+		&lt; 10 usec  : 0
+		&lt; 100 usec : 0
+		&lt; msec     : 0
+		&lt; 10 msec  : 2730
+		&lt; 0.1s     : 17270
+		&lt; s        : 0
+		&lt; 10s      : 0
+		&lt; 100s     : 0
+
+	     Total succeeded   :  20000
+	     Total failed      :  0
+	     Total no reply    :  0
+	     Total time (s)    :  1.644
+	     Packets/s         :  12160
+	     Response times:
+		&lt; 10 usec  : 0
+		&lt; 100 usec : 0
+		&lt; msec     : 0
+		&lt; 10 msec  : 2418
+		&lt; 0.1s     : 17582
+		&lt; s        : 0
+		&lt; 10s      : 0
+		&lt; 100s     : 0
+</PRE>
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	
+	<LI>Next message: <A HREF="000019.html">[Jradius] jradius subversion commits
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#18">[ date ]</a>
+              <a href="thread.html#18">[ thread ]</a>
+              <a href="subject.html#18">[ subject ]</a>
+              <a href="author.html#18">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/jradius">More information about the Jradius
+mailing list</a><br>
+</body></html>

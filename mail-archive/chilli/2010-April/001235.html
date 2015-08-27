@@ -1,0 +1,157 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] chilli as proxy for 802.1X
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20chilli%20as%20proxy%20for%20802.1X&In-Reply-To=%3C32838.195.19.214.216.1270477766.squirrel%40mail.pnpi.spb.ru%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001233.html">
+   <LINK REL="Next"  HREF="001236.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] chilli as proxy for 802.1X</H1>
+    <B>Anatoly Oreshkin</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20chilli%20as%20proxy%20for%20802.1X&In-Reply-To=%3C32838.195.19.214.216.1270477766.squirrel%40mail.pnpi.spb.ru%3E"
+       TITLE="[Chilli] chilli as proxy for 802.1X">Anatoly.Oreshkin at pnpi.spb.ru
+       </A><BR>
+    <I>Mon Apr  5 14:29:26 UTC 2010</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001233.html">[Chilli] Radius with dynamic IPs
+</A></li>
+        <LI>Next message: <A HREF="001236.html">[Chilli] chilli as proxy for 802.1X
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1235">[ date ]</a>
+              <a href="thread.html#1235">[ thread ]</a>
+              <a href="subject.html#1235">[ subject ]</a>
+              <a href="author.html#1235">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hello,
+
+I would like to use chilli as proxy between Access Point (AP) and
+Radius server.
+AP (not CoovaAP) is configured for WPA2/AES security with
+802.1X/EAP/PEAP/MSCHAPv2
+authentication. Chilli address is specified as radius server in AP.
+
+Coovachilli is configured as follows.
+
+/usr/local/etc/chilli/config have the lines:
+
+HS_WANIF=eth0     # has 195.19.214.216 address
+HS_LANIF=eth1
+HS_NETWORK=10.2.3.0
+HS_NETMASK=255.255.255.0
+HS_UAMLISTEN=10.2.3.1
+HS_UAMPORT=3990
+HS_UAMUIPORT=4990
+HS_DNS_DOMAIN=&lt;my domain&gt;
+HS_DNS1=ipaddress1
+HS_DNS2=ipaddress2
+HS_RADIUS=&lt;radius server address&gt;
+HS_RADIUS2=&lt;radius server address&gt;
+HS_UAMALLOW=&quot;10.2.3.1/24,195.19.214.216&quot;
+HS_RADSECRET=&lt;radius secret&gt;
+HS_UAMSECRET=&lt;uam secret&gt;
+HS_UAMALIASNAME=chilli
+HS_UAMSERVER=&lt;uam server&gt;
+HS_UAMFORMAT=<A HREF="https://\$HS_UAMSERVER/cgi-bin/hotspotlogin.cgi">https://\$HS_UAMSERVER/cgi-bin/hotspotlogin.cgi</A>
+HS_TCP_PORTS=&quot;80 443&quot;
+HS_MODE=hotspot
+HS_TYPE=chillispot
+HS_WWWDIR=/usr/local/etc/chilli/www
+HS_WWWBIN=/usr/local/etc/chilli/wwwsh
+HS_PROVIDER=Coova
+HS_PROVIDER_LINK=<A HREF="http://www.coova.org/">http://www.coova.org/</A>
+HS_LOC_NAME=&quot;My HotSpot&quot;
+
+/usr/local/etc/chilli/local.conf:
+
+proxylisten=195.19.214.216     # eth0 address
+proxyport=1812
+proxyclient=192.168.14.242    #  AP address
+proxysecret=&lt;proxy secret&gt;
+
+
+
+Radius configuration.
+--------------------
+
+/usr/local/etc/raddb/clients.conf:
+
+# chilli hotspot
+client 195.19.214.216 {
+        secret      = &lt;chilli secret&gt;
+        shortname   = Chilli
+        nastype     = other
+}
+
+/usr/local/etc/raddb/users:
+
+oreshkin Cleartext-Password := &quot;client password&quot;, Calling-Station-Id ==
+&quot;00-16-EA-8A-DE-38&quot;
+
+When a client is trying to authenticate through chilli I see on chilli
+server in /var/log/messages:
+
+chilli.c: 3274: New DHCP request from MAC=00-16-EA-8A-DE-38
+radius.c: 1703: Authenticator does not match request!
+radius.c: 337: No such id in radius queue: id=12!
+radius.c: 1698: Matching request was not found in queue: 12!
+radius.c: 337: No such id in radius queue: id=12!
+....
+
+What do these messages mean ?
+
+On radius server in /usr/local/var/log/radius/radius.log I see
+
+ Auth: Login OK: [csd-notebook\\oreshkin] (from client Chilli port 15 cli
+00-16-EA-8A-DE-38 via TLS tunnel)
+Auth: Login OK: [csd-notebook\\oreshkin] (from client Chilli port 15 cli
+00-16-EA-8A-DE-38)
+
+
+That is the radius server authenticates the client successfully however
+chilli does not.
+
+Coovachilli is taken from SVN and installed with the options:
+
+./configure --enable-chilliproxy --with-curl
+
+
+Also I've tried with additional parameter &quot;eapolenable&quot;  in local.conf but
+with no difference.
+
+What might be wrong ? What more parameters should I specify ?
+
+Thanks.
+
+</PRE>
+
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001233.html">[Chilli] Radius with dynamic IPs
+</A></li>
+	<LI>Next message: <A HREF="001236.html">[Chilli] chilli as proxy for 802.1X
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1235">[ date ]</a>
+              <a href="thread.html#1235">[ thread ]</a>
+              <a href="subject.html#1235">[ subject ]</a>
+              <a href="author.html#1235">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

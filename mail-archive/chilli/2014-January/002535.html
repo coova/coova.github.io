@@ -1,0 +1,127 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] Help with ChilliController
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Help%20with%20ChilliController&In-Reply-To=%3CCAF%2BUSJ7_dcH_3kjTRRMp0NtjkXQ3Jt6u5e4TsOiviZKkiBwd2A%40mail.gmail.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="002533.html">
+   <LINK REL="Next"  HREF="002536.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] Help with ChilliController</H1>
+    <B>Eric Chaves</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Help%20with%20ChilliController&In-Reply-To=%3CCAF%2BUSJ7_dcH_3kjTRRMp0NtjkXQ3Jt6u5e4TsOiviZKkiBwd2A%40mail.gmail.com%3E"
+       TITLE="[Chilli] Help with ChilliController">eric at craftti.com.br
+       </A><BR>
+    <I>Sun Jan 19 17:57:02 UTC 2014</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="002533.html">[Chilli] Browser pop-up limitations
+</A></li>
+        <LI>Next message: <A HREF="002536.html">[Chilli] Res Messages
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2535">[ date ]</a>
+              <a href="thread.html#2535">[ thread ]</a>
+              <a href="subject.html#2535">[ subject ]</a>
+              <a href="author.html#2535">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hi Folks,
+
+I configured mu chilli server to redirect user's to an external captive
+portal, which is nothing more than an HTML page that loads a copy of
+ChilliLibrary.js to instantiate the chilliController JS object.
+
+Then, in the web page I call the logon method informing user and password (
+eg.: chilliController.logon('test','testing') ) but the user never gets
+authenticated.
+
+At this point, my server is performing the following steps:
+
+1) client connects to the open wifi and gets an IP address from chilli
+server (10.1.0.1).
+2) when client tries to access any website it is redirected to my captive
+portal (sample page hosted in a second server but in the same network of
+chilli server - 10.1.0.4)
+3) The javascript from the portal page parses the query string sent in
+redirection and setup uamserver (10.1.0.1) and uamport (3990) of
+chilliController (and also set chilliController.debug = true).
+4) javascript from the portal page calls chilliController.logon with user
+test and password testing.
+
+The output from chilliController debug is:
+
+chilliController.logon( &quot;test&quot; , &quot;testing &quot; )
+ChilliLibrary.js:604&lt;<A HREF="http://10.1.0.4:3333/js/ChilliLibrary.js">http://10.1.0.4:3333/js/ChilliLibrary.js</A>&gt;
+chilliController.logon: asking for a new challenge
+ChilliLibrary.js:604&lt;<A HREF="http://10.1.0.4:3333/js/ChilliLibrary.js">http://10.1.0.4:3333/js/ChilliLibrary.js</A>&gt;
+chilliJSON: getting <A HREF="http://10.1.0.1:3990/json/status">http://10.1.0.1:3990/json/status</A> . Waiting for reply ...
+ChilliLibrary.js:604 &lt;<A HREF="http://10.1.0.4:3333/js/ChilliLibrary.js">http://10.1.0.4:3333/js/ChilliLibrary.js</A>&gt;
+chilliJSON: JSON reply received in 43 ms version = 1.0 clientState = 0
+challenge = a8565bbb95980b8f9d40c9befcec8863 location = [object Object]
+name = xxxxxxx redir = [object Object] originalURL =
+<A HREF="http://google.com/redirectionURL">http://google.com/redirectionURL</A> = logoutURL =
+<A HREF="http://10.1.0.1:3990/logoff">http://10.1.0.1:3990/logoff</A> ipAddress = 10.1.0.4 macAddress =
+00-26-BB-15-CE-19 ChilliLibrary.js:604&lt;<A HREF="http://10.1.0.4:3333/js/ChilliLibrary.js">http://10.1.0.4:3333/js/ChilliLibrary.js</A>&gt;
+Entering logonStep 2
+ChilliLibrary.js:604&lt;<A HREF="http://10.1.0.4:3333/js/ChilliLibrary.js">http://10.1.0.4:3333/js/ChilliLibrary.js</A>&gt;
+chilliController.logonStep2: Got challenge =
+a8565bbb95980b8f9d40c9befcec8863
+ChilliLibrary.js:604&lt;<A HREF="http://10.1.0.4:3333/js/ChilliLibrary.js">http://10.1.0.4:3333/js/ChilliLibrary.js</A>&gt;
+chilliController.logonStep2: Calculating CHAP-Password =
+dfb74d8e6575c8f94b1dd8327ecea19c
+ChilliLibrary.js:604&lt;<A HREF="http://10.1.0.4:3333/js/ChilliLibrary.js">http://10.1.0.4:3333/js/ChilliLibrary.js</A>&gt;
+chilliJSON: getting
+<A HREF="http://10.1.0.1:3990/json/logon?username=test&amp;response=dfb74d8e6575c8f94b1dd8327ecea19c.">http://10.1.0.1:3990/json/logon?username=test&amp;response=dfb74d8e6575c8f94b1dd8327ecea19c.</A>
+Waiting for reply ...
+ChilliLibrary.js:604 &lt;<A HREF="http://10.1.0.4:3333/js/ChilliLibrary.js">http://10.1.0.4:3333/js/ChilliLibrary.js</A>&gt;
+chilliJSON: JSON reply received in 1025 ms version = 1.0 clientState = 0
+challenge = 63495061fae7607e8ac35e0b05962397 redir = [object Object]
+originalURL = <A HREF="http://google.com/">http://google.com/</A> redirectionURL = logoutURL =
+<A HREF="http://10.1.0.1:3990/logoff">http://10.1.0.1:3990/logoff</A> ipAddress = 10.1.0.4 macAddress =
+00-26-BB-15-CE-19 ChilliLibrary.js:604&lt;<A HREF="http://10.1.0.4:3333/js/ChilliLibrary.js">http://10.1.0.4:3333/js/ChilliLibrary.js</A>&gt;
+chilliController.processReply: Calling onUpdate. clienState = 0
+
+Iam sure that username and password is ok so I can't figure what I'm doing
+wrong. Any ideas?
+
+Regards,
+
+Eric Chaves
+(11) 98139-9880
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: &lt;<A HREF="http://lists.coova.org/pipermail/chilli/attachments/20140119/dee033a7/attachment.html">http://lists.coova.org/pipermail/chilli/attachments/20140119/dee033a7/attachment.html</A>&gt;
+</PRE>
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="002533.html">[Chilli] Browser pop-up limitations
+</A></li>
+	<LI>Next message: <A HREF="002536.html">[Chilli] Res Messages
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2535">[ date ]</a>
+              <a href="thread.html#2535">[ thread ]</a>
+              <a href="subject.html#2535">[ subject ]</a>
+              <a href="author.html#2535">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

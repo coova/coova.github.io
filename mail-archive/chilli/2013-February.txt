@@ -1,0 +1,5495 @@
+From radius.sir at gmail.com  Fri Feb  1 12:52:13 2013
+From: radius.sir at gmail.com (Russell Mike)
+Date: Fri, 1 Feb 2013 12:52:13 +0000
+Subject: [Chilli] CoovaChilli 1.3.0 With Squid
+Message-ID: <CADao4CrkugfCuEcS6HE4BPkGfwouuNFdKZJ8JRJfpGiimyschA@mail.gmail.com>
+
+Dear List Members,
+
+Coova-Chilli 1.3.0 Ubuntu 12.04LTS
+
+1.) i need to redirect Chilli traffic to proxy port
+*OR*
+2.) Configure chilli to use proxy server
+
+I tied the this did not worked:
+HS_PROXY=192.168.3.1
+HS_PROXYPORT=8080
+
+
+I tried this in "ipup.sh" did not worked
+iptables -t nat -I PREROUTING -s 192.168.182.0/24 -p tcp --dport 80 -j
+REDIRECT --to-port 3128
+
+i am sure it is working for someone, can you please share the solution?
+
+Thanks / Regards
+RM
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130201/7a5bb645/attachment.html>
+
+From radius.sir at gmail.com  Sat Feb  2 12:38:34 2013
+From: radius.sir at gmail.com (Russell Mike)
+Date: Sat, 2 Feb 2013 12:38:34 +0000
+Subject: [Chilli] HS_POSTAUTH_PROXY - HOW ?
+Message-ID: <CADao4Cqa2qY3Jxv2hEnk1JFPSVb=ym1H1_msYXACvaSWh-a4_A@mail.gmail.com>
+
+Hello List & David. B Greetings.
+
+it is working setup CoovaChilli 1.3.0 & Ubuntu 12.04 LTS. Everything is
+working normal as expected, but i need to use Squid proxy. Struggling two
+days now to configure Coova to use proxy. i read lot web blogs and posts
+before posting this.
+
+HS_POSTAUTH_PROXY=127.0.0.1
+HS_POSTAUTH_PROXYPORT=8080
+
+At this point i just wish to know if these directives are still valid. Has
+it worked for someone (CoovaChilli 1.3.0)?
+
+Squid is working 100% tested using directly without Coovachilli. When i
+define above directive in "config". I can login successfully (i also see
+the message Success, you are being redirecting to .......)
+
+1.) Now, by ping, i can reach out - Yahoo/Gmail Any, that mean auth was
+successfull truly, not just the message. i have been allowed access
+
+2.) Problem - Non site i can browse, that tells me Coovachilli to Squid
+problem. SQUID is on the same box as CoovaChilli
+
+3.) What should be done i edition that left?
+
+4.) NOTE: i don't have any iptable redirect rules 80<>3128 etc.. Since
+CoovaChilli can handle through configuration. i wish to use the directive.
+
+Thanks
+
+
+
+SETUP:
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130202/eed34c0a/attachment.html>
+
+From david at coova.com  Sat Feb  2 22:08:57 2013
+From: david at coova.com (David Bird)
+Date: Sat, 02 Feb 2013 14:08:57 -0800
+Subject: [Chilli] HS_POSTAUTH_PROXY - HOW ?
+In-Reply-To: <CADao4Cqa2qY3Jxv2hEnk1JFPSVb=ym1H1_msYXACvaSWh-a4_A@mail.gmail.com>
+References: <CADao4Cqa2qY3Jxv2hEnk1JFPSVb=ym1H1_msYXACvaSWh-a4_A@mail.gmail.com>
+Message-ID: <1359842937.5095.9.camel@david-laptop>
+
+Try changing the port to 3128 for squid http_port and the IP address
+that of your uamlisten. You also might use HS_TCP_PORTS=3128. 
+
+On Sat, 2013-02-02 at 12:38 +0000, Russell Mike wrote:
+> Hello List & David. B Greetings. 
+> 
+> 
+> it is working setup CoovaChilli 1.3.0 & Ubuntu 12.04 LTS. Everything
+> is working normal as expected, but i need to use Squid
+> proxy. Struggling two days now to configure Coova to use proxy. i read
+> lot web blogs and posts before posting this. 
+> 
+> 
+> HS_POSTAUTH_PROXY=127.0.0.1 
+> HS_POSTAUTH_PROXYPORT=8080
+> 
+> 
+> 
+> At this point i just wish to know if these directives are still valid.
+> Has it worked for someone (CoovaChilli 1.3.0)? 
+> 
+> 
+> Squid is working 100% tested using directly without Coovachilli. When
+> i define above directive in "config". I can login successfully (i also
+> see the message Success, you are being redirecting to .......)
+> 
+> 
+> 1.) Now, by ping, i can reach out - Yahoo/Gmail Any, that mean auth
+> was successfull truly, not just the message. i have been allowed
+> access 
+> 
+> 
+> 2.) Problem - Non site i can browse, that tells me Coovachilli to
+> Squid problem. SQUID is on the same box as CoovaChilli
+> 
+> 
+> 3.) What should be done i edition that left?
+> 
+> 
+> 4.) NOTE: i don't have any iptable redirect rules 80<>3128 etc.. Since
+> CoovaChilli can handle through configuration. i wish to use the
+> directive. 
+> 
+> 
+> Thanks
+> 
+> 
+> 
+> 
+> 
+> 
+> SETUP: 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+-- 
+--
+David Bird
+http://www.linkedin.com/in/dwbird
+https://twitter.com/wlanmac
+
+
+From radius.sir at gmail.com  Sun Feb  3 16:19:55 2013
+From: radius.sir at gmail.com (Russell Mike)
+Date: Sun, 3 Feb 2013 16:19:55 +0000
+Subject: [Chilli] HS_POSTAUTH_PROXY - HOW ? SOLVED !!!!
+Message-ID: <CADao4Com4oA-4DaVLCQo=Rg8A6QhJfg3PED5+HY-ssYeo51h-Q@mail.gmail.com>
+
+On Sat, Feb 2, 2013 at 10:08 PM, David Bird <david at coova.com> wrote:
+
+> Try changing the port to 3128 for squid http_port and the IP address
+> that of your uamlisten. You also might use HS_TCP_PORTS=3128.
+>
+> On Sat, 2013-02-02 at 12:38 +0000, Russell Mike wrote:
+> > Hello List & David. B Greetings.
+> >
+> >
+> > it is working setup CoovaChilli 1.3.0 & Ubuntu 12.04 LTS. Everything
+> > is working normal as expected, but i need to use Squid
+> > proxy. Struggling two days now to configure Coova to use proxy. i read
+> > lot web blogs and posts before posting this.
+> >
+> >
+> > HS_POSTAUTH_PROXY=127.0.0.1
+> > HS_POSTAUTH_PROXYPORT=8080
+> >
+> >
+> >
+> > At this point i just wish to know if these directives are still valid.
+> > Has it worked for someone (CoovaChilli 1.3.0)?
+> >
+> >
+> > Squid is working 100% tested using directly without Coovachilli. When
+> > i define above directive in "config". I can login successfully (i also
+> > see the message Success, you are being redirecting to .......)
+> >
+> >
+> > 1.) Now, by ping, i can reach out - Yahoo/Gmail Any, that mean auth
+> > was successfull truly, not just the message. i have been allowed
+> > access
+> >
+> >
+> > 2.) Problem - Non site i can browse, that tells me Coovachilli to
+> > Squid problem. SQUID is on the same box as CoovaChilli
+> >
+> >
+> > 3.) What should be done i edition that left?
+> >
+> >
+> > 4.) NOTE: i don't have any iptable redirect rules 80<>3128 etc.. Since
+> > CoovaChilli can handle through configuration. i wish to use the
+> > directive.
+>
+>
+*SOLUTION: CoovaChilli With Squid On Same Machine: *
+
+Hello David, Million of thanks. this worked !!!
+
+HS_POSTAUTH_PROXY=192.168.3.1   (UMA_LISTEN)
+HS_POSTAUTH_PROXYPORT=3128
+HS_TCP_PORTS=3128
+HS_LAN_ACCESS=allow
+
+Thanks / Reards
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130203/515722c7/attachment.html>
+
+From radius.sir at gmail.com  Sun Feb  3 17:40:17 2013
+From: radius.sir at gmail.com (Russell Mike)
+Date: Sun, 3 Feb 2013 17:40:17 +0000
+Subject: [Chilli] Coova-Chilli CP
+Message-ID: <CADao4Cp-eJVuW5G3J-2E16fcHAkNNfU4aYkmkoT=jvNSwshiTA@mail.gmail.com>
+
+Dear David Greetings,
+
+i just wish to thank you for doing so wonderful job. Saving life
+for thousands of admins and also helping to solve the
+problems. Personally, very much grateful for developing such software for
+free.
+
+Thanks / RM
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130203/362e76b5/attachment.html>
+
+From david at coova.com  Tue Feb  5 16:57:01 2013
+From: david at coova.com (David Bird)
+Date: Tue, 05 Feb 2013 08:57:01 -0800
+Subject: [Chilli] Coova-Chilli CP
+In-Reply-To: <CADao4Cp-eJVuW5G3J-2E16fcHAkNNfU4aYkmkoT=jvNSwshiTA@mail.gmail.com>
+References: <CADao4Cp-eJVuW5G3J-2E16fcHAkNNfU4aYkmkoT=jvNSwshiTA@mail.gmail.com>
+Message-ID: <1360083421.6387.0.camel@david-laptop>
+
+no problem ;)
+
+On Sun, 2013-02-03 at 17:40 +0000, Russell Mike wrote:
+> Dear David Greetings,
+> 
+> 
+> i just wish to thank you for doing so wonderful job. Saving life
+> for thousands of admins and also helping to solve the
+> problems. Personally, very much grateful for developing such software
+> for free. 
+> 
+> 
+> Thanks / RM
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+-- 
+--
+David Bird
+http://www.linkedin.com/in/dwbird
+https://twitter.com/wlanmac
+
+
+From david at coova.com  Tue Feb  5 19:47:34 2013
+From: david at coova.com (David Bird)
+Date: Tue, 05 Feb 2013 11:47:34 -0800
+Subject: [Chilli] Bugs and patches
+In-Reply-To: <51093C22.6080402@anduras.de>
+References: <51093C22.6080402@anduras.de>
+Message-ID: <1360093654.6387.2.camel@david-laptop>
+
+Subversion has been updated...
+
+The "nosystemdns" option doesn't need to be in options_t because it's
+only used during configuration time. 
+
+Also updated, when using --with-mmap, you can now selectively use
+--mmapring to enable the RX/TX rings, otherwise you are running without
+them (the standard way). 
+
+Cheers,
+
+
+On Wed, 2013-01-30 at 16:28 +0100, Sven Anders wrote:
+> Bug reports for "coova-chilli-1.3.0"
+> 
+> I compile with the following options:
+>  --with-openssl --with-mmap --with-poll --enable-largelimits --enable-binstatusfile --enable-statusfile \
+>  --enable-chilliproxy --enable-chilliradsec --enable-chilliredir --enable-chilliscript --enable-ieee8023 \
+>  --enable-multiroute
+> 
+> 1) If I try to compile without the "--enable-multiroute" option:
+> 
+> chilli.c: In function 'chilli_main':
+> chilli.c:7540:26: error: 'struct tun_t' has no member named '_interface_count'
+> chilli.c:7541:16: error: 'struct tun_t' has no member named '_interfaces'
+> 
+> Compiling with this option enabled works fine.
+> 
+> 
+> 2) I get the following warnings, which are treated as errors:
+> 
+> cc1: warnings being treated as errors
+> net.c: In function 'net_open_eth':
+> net.c:1189:22: error: unused variable 'mr'
+> net.c: At top level:
+> net.c:1938:13: error: 'setup_filter' defined but not used
+> 
+> I removed the -Werror option from the Makefile.
+> 
+> 
+> 3) If you start chilli without stdin/stdout/stderr, the file descriptor of opened
+>    files may be 0.
+> 
+> Patch attached.
+> 
+> 4) The default parameters should be initialized right after it's creation.
+>    (This solved a problem I did not remember).
+> 
+> Patch attached.
+> 
+> 5) It should be possible to use the chilli with its own DNS server settings.
+>    Currently the DNS server settings from the host are used, if none are
+>    configured.
+>    I added a new option "--nosystemdns" for that.
+> 
+> Patch attached.
+> 
+> 
+> Regards
+>  Sven Anders
+> 
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+-- 
+--
+David Bird
+http://www.linkedin.com/in/dwbird
+https://twitter.com/wlanmac
+
+
+From radius.sir at gmail.com  Wed Feb  6 10:49:45 2013
+From: radius.sir at gmail.com (Russell Mike)
+Date: Wed, 6 Feb 2013 10:49:45 +0000
+Subject: [Chilli] different landing page (Captive Portal Login Page) for
+	each customer
+In-Reply-To: <5111C670.4030403@easyhorpak.com>
+References: <CADao4CrM1CO8X9+0yfb8bomumMFydWKkKkyxtGgLhNNUed9_Jg@mail.gmail.com>
+ <51049EB9.1090309@easyhorpak.com>
+ <CADao4CrD8G_RgJX7sTNQZd6pWB59k-sUqMOSV=e3816O8U=Juw@mail.gmail.com>
+ <510520F6.20802@easyhorpak.com>
+ <CADao4Co6JAP7Z=2wRJ3fHf+aM7CnqqYoutZxQtp45YmeHTusnQ@mail.gmail.com>
+ <5111C670.4030403@easyhorpak.com>
+Message-ID: <CADao4Cr_8Eb8QY9aa8ZAsd9B9G-Hra_OkztGFCyyO33P86X5dQ@mail.gmail.com>
+
+> Hi Sir, i wanted to come back and think you for the great assistance.
+> Finally, i have Coova-Chilli running in multi tenant mode. i have tested up
+> to five instances simultaneous up and serving service with different
+> landing pages. is there any limit to it? i work with ISP, we may run 100
+> coova daemons simultaneously. i would like to hear about it.
+>
+>  root at captive:~# netstat -ntlp | grep chilli
+>  tcp        0      0 192.168.40.40:3300      0.0.0.0:*
+> LISTEN      9256/chilli
+> tcp        0      0 192.168.10.10:4100      0.0.0.0:*
+> LISTEN      8719/chilli
+> tcp        0      0 192.168.50.50:3400      0.0.0.0:*
+> LISTEN      9404/chilli
+> tcp        0      0 192.168.30.30:4200      0.0.0.0:*
+> LISTEN      9081/chilli
+> tcp        0      0 192.168.40.40:4300      0.0.0.0:*
+> LISTEN      9256/chilli
+> tcp        0      0 192.168.50.50:4400      0.0.0.0:*
+> LISTEN      9404/chilli
+> tcp        0      0 192.168.20.20:3990      0.0.0.0:*
+> LISTEN      8897/chilli
+> tcp        0      0 192.168.10.10:3100      0.0.0.0:*
+> LISTEN      8719/chilli
+> tcp        0      0 192.168.20.20:4990      0.0.0.0:*
+> LISTEN      8897/chilli
+> tcp        0      0 192.168.30.30:3200      0.0.0.0:*
+> LISTEN      9081/chilli
+>
+>
+>
+>  root at captive:~# ifconfig
+> eth0      Link encap:Ethernet  HWaddr 00:0c:29:8a:1f:4f
+>           inet addr:41.211.31.77  Bcast:41.211.31.127  Mask:255.255.255.128
+>           UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+>            RX packets:92472 errors:0 dropped:10 overruns:0 frame:0
+>           TX packets:2449 errors:0 dropped:0 overruns:0 carrier:0
+>           collisions:0 txqueuelen:1000
+>           RX bytes:5882116 (5.8 MB)  TX bytes:318397 (318.3 KB)
+>
+>  eth1      Link encap:Ethernet  HWaddr 00:0c:29:8a:1f:59
+>            UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+>           RX packets:5922 errors:0 dropped:0 overruns:0 frame:0
+>           TX packets:1479 errors:0 dropped:0 overruns:0 carrier:0
+>           collisions:0 txqueuelen:1000
+>           RX bytes:497130 (497.1 KB)  TX bytes:371163 (371.1 KB)
+>
+>  lo        Link encap:Local Loopback
+>           inet addr:127.0.0.1  Mask:255.0.0.0
+>           UP LOOPBACK RUNNING  MTU:16436  Metric:1
+>            RX packets:626 errors:0 dropped:0 overruns:0 frame:0
+>           TX packets:626 errors:0 dropped:0 overruns:0 carrier:0
+>           collisions:0 txqueuelen:0
+>           RX bytes:76411 (76.4 KB)  TX bytes:76411 (76.4 KB)
+>
+>  tun0      Link encap:UNSPEC  HWaddr
+> 00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00
+>           inet addr:192.168.10.10  P-t-P:192.168.10.10  Mask:255.255.255.0
+>           UP POINTOPOINT RUNNING  MTU:1500  Metric:1
+>           RX packets:164 errors:0 dropped:0 overruns:0 frame:0
+>           TX packets:167 errors:0 dropped:0 overruns:0 carrier:0
+>           collisions:0 txqueuelen:100
+>           RX bytes:20079 (20.0 KB)  TX bytes:56865 (56.8 KB)
+>
+>  tun1      Link encap:UNSPEC  HWaddr
+> 00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00
+>           inet addr:192.168.20.20  P-t-P:192.168.20.20  Mask:255.255.255.0
+>           UP POINTOPOINT RUNNING  MTU:1500  Metric:1
+>           RX packets:227 errors:0 dropped:0 overruns:0 frame:0
+>           TX packets:233 errors:0 dropped:0 overruns:0 carrier:0
+>           collisions:0 txqueuelen:100
+>           RX bytes:24555 (24.5 KB)  TX bytes:64511 (64.5 KB)
+>
+>  tun2      Link encap:UNSPEC  HWaddr
+> 00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00
+>           inet addr:192.168.30.30  P-t-P:192.168.30.30  Mask:255.255.255.0
+>           UP POINTOPOINT RUNNING  MTU:1500  Metric:1
+>           RX packets:98 errors:0 dropped:0 overruns:0 frame:0
+>           TX packets:110 errors:0 dropped:0 overruns:0 carrier:0
+>           collisions:0 txqueuelen:100
+>           RX bytes:12812 (12.8 KB)  TX bytes:41056 (41.0 KB)
+>
+>  tun3      Link encap:UNSPEC  HWaddr
+> 00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00
+>           inet addr:192.168.40.40  P-t-P:192.168.40.40  Mask:255.255.255.0
+>           UP POINTOPOINT RUNNING  MTU:1500  Metric:1
+>           RX packets:112 errors:0 dropped:0 overruns:0 frame:0
+>           TX packets:124 errors:0 dropped:0 overruns:0 carrier:0
+>           collisions:0 txqueuelen:100
+>           RX bytes:14261 (14.2 KB)  TX bytes:45107 (45.1 KB)
+>
+>  tun4      Link encap:UNSPEC  HWaddr
+> 00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00
+>           inet addr:192.168.50.50  P-t-P:192.168.50.50  Mask:255.255.255.0
+>           UP POINTOPOINT RUNNING  MTU:1500  Metric:1
+>           RX packets:290 errors:0 dropped:0 overruns:0 frame:0
+>           TX packets:298 errors:0 dropped:0 overruns:0 carrier:0
+>           collisions:0 txqueuelen:100
+>           RX bytes:33525 (33.5 KB)  TX bytes:96547 (96.5 KB)
+>
+>  vlan10    Link encap:Ethernet  HWaddr 00:0c:29:8a:1f:59
+>           UP BROADCAST RUNNING MULTICAST  MTU:1490  Metric:1
+>            RX packets:789 errors:0 dropped:0 overruns:0 frame:0
+>           TX packets:239 errors:0 dropped:0 overruns:0 carrier:0
+>           collisions:0 txqueuelen:0
+>           RX bytes:60359 (60.3 KB)  TX bytes:66913 (66.9 KB)
+>
+>  vlan20    Link encap:Ethernet  HWaddr 00:0c:29:8a:1f:59
+>            UP BROADCAST RUNNING MULTICAST  MTU:1490  Metric:1
+>           RX packets:838 errors:0 dropped:0 overruns:0 frame:0
+>           TX packets:274 errors:0 dropped:0 overruns:0 carrier:0
+>           collisions:0 txqueuelen:0
+>           RX bytes:63852 (63.8 KB)  TX bytes:71206 (71.2 KB)
+>
+>  vlan30    Link encap:Ethernet  HWaddr 00:0c:29:8a:1f:59
+>           UP BROADCAST RUNNING MULTICAST  MTU:1490  Metric:1
+>           RX packets:713 errors:0 dropped:0 overruns:0 frame:0
+>           TX packets:141 errors:0 dropped:0 overruns:0 carrier:0
+>           collisions:0 txqueuelen:0
+>           RX bytes:52814 (52.8 KB)  TX bytes:45715 (45.7 KB)
+>
+>  vlan40    Link encap:Ethernet  HWaddr 00:0c:29:8a:1f:59
+>           UP BROADCAST RUNNING MULTICAST  MTU:1490  Metric:1
+>           RX packets:740 errors:0 dropped:0 overruns:0 frame:0
+>           TX packets:151 errors:0 dropped:0 overruns:0 carrier:0
+>           collisions:0 txqueuelen:0
+>           RX bytes:55315 (55.3 KB)  TX bytes:49746 (49.7 KB)
+>
+>  vlan50    Link encap:Ethernet  HWaddr 00:0c:29:8a:1f:59
+>           UP BROADCAST RUNNING MULTICAST  MTU:1490  Metric:1
+>           RX packets:1269 errors:0 dropped:0 overruns:0 frame:0
+>           TX packets:556 errors:0 dropped:0 overruns:0 carrier:0
+>           collisions:0 txqueuelen:0
+>           RX bytes:95409 (95.4 KB)  TX bytes:116239 (116.2 KB)
+>
+>
+>
+>  Thanks / Thanks / Thanks
+>
+>  RM --
+>
+>  It 's limited by your hardware ram and cpu which can hold many process.
+> you can check with htop.
+>
+> if you run squid proxy together on the same server, it mays use many cpu.
+>
+> Regards
+> Chuan
+>
+>
+>
+Thanks dear all once again --
+
+The only problem left that i cannot stop chilli (Coova_1.3.0 & UBUNTU 12.4
+LTS x64). I can modify the start/stop script and use "kill -9" but really
+do not want to do that. perhaps there is better way to handle this.
+
+because i read that kill -9 doesn't give the process a chance to cleanly:
+
+1) shut down socket connections
+
+2) clean up temp files
+
+3) inform its children that it is going away
+
+4) reset its terminal characteristics
+
+and so on and so on and so on.
+
+
+*PROBLEM:*
+
+root at captive:~# /etc/init.d/chilli stop
+
+Found configuration /usr/local/etc/chilli/coova-vlan10/chilli.conf
+
+Running DHCPIF=coova-vlan10 /etc/init.d/chilli stop
+
+Shutting down chilli: No process in pidfile
+'/usr/local/var/run/chilli.coova-vlan10.pid' found running; none killed.
+
+
+Found configuration /usr/local/etc/chilli/coova-vlan20/chilli.conf
+
+Running DHCPIF=coova-vlan20 /etc/init.d/chilli stop
+
+Shutting down chilli: No process in pidfile
+'/usr/local/var/run/chilli.coova-vlan20.pid' found running; none killed.
+
+
+Found configuration /usr/local/etc/chilli/coova-vlan30/chilli.conf
+
+Running DHCPIF=coova-vlan30 /etc/init.d/chilli stop
+
+Shutting down chilli: No process in pidfile
+'/usr/local/var/run/chilli.coova-vlan30.pid' found running; none killed.
+
+
+Found configuration /usr/local/etc/chilli/coova-vlan40/chilli.conf
+
+Running DHCPIF=coova-vlan40 /etc/init.d/chilli stop
+
+Shutting down chilli: No process in pidfile
+'/usr/local/var/run/chilli.coova-vlan40.pid' found running; none killed.
+
+
+Found configuration /usr/local/etc/chilli/coova-vlan50/chilli.conf
+
+Running DHCPIF=coova-vlan50 /etc/init.d/chilli stop
+
+Shutting down chilli: No process in pidfile
+'/usr/local/var/run/chilli.coova-vlan50.pid' found running; none killed.
+
+Thanks / Regards
+
+RM --R
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130206/fdc5f67b/attachment-0001.html>
+
+From radius.sir at gmail.com  Wed Feb  6 11:57:39 2013
+From: radius.sir at gmail.com (Russell Mike)
+Date: Wed, 6 Feb 2013 11:57:39 +0000
+Subject: [Chilli] Coova-Chilli Multi Tenanency Mode
+Message-ID: <CADao4CpUxt5+-ptUC-7WJ7eApc8UOVCMG8hVT+gR0bM8mDSmAg@mail.gmail.com>
+
+Dear David & Community Members Greetings,
+
+This discussion is with respect to that, how to make sure all instances are
+up for "CoovaChilli" in multi tenant environment after hardware server
+reboots.
+
+*1.)* This is ISP environment. We have 10 Coovachill instances running
+(Multi Tenanency) using (VLANs 10,20,30,40,50,60,70,80,90,100). When system
+reboot, all daemons comes up just fine and start serving users by
+presenting login page. We are very very happy from Coova-Chilli
+implementation.
+
+*2.)* BUT SOMETIMES when system reboot and after it has comes up. For
+example VLAN30 would not present login page, other NINE(9) instances would
+be just fine, working as expected. Then i restart Chilli daemon as
+solution. Now, all 10 daemons would come up and start serving just fine
+again.
+
+*2a)* BUT SOMETIME, when i apply the solution (restart Chill daemon) one of
+them would not present login page again (it is random VLAN (Sometime
+30/80/20 etc..)).
+
+For example: i restarted the service earlier because VLAN 90 was not
+presenting login page, after restart VLAN60 daemon is not presenting login
+page. Problem is recoverable, by restarting service more than once.
+
+*2b.)* When a instance would not present login page. Same time i see that,
+it is mounted & listening on the port ("netstat") stuff looks obvious from
+that point of view. Tunnel would be created as well, all stuff belongs to
+that VLAN (that is not serving web page) exists under "/var/run'chilli*
+(pid, ipc, socket, bash script).
+
+*HOW I AM DOING IT: *
+
+Now whenever the Chilli Server is restarted, i manually browse & check if
+all daemons are presenting login pages. But eventually, we going to run
+minimum 120 daemons. it would not possible to browse 120 pages after every
+reboot. Is there better way to handle it? or what could be the auto fix? i
+was thinking something like a script that can check the functionality, if
+everything did not up restart the daemon again. i understand that we do not
+restart data center servers everyday but it happens sometimes due to the
+power outage or UPS failed or generator did not come up on time etc.
+
+Thanks / Regards
+
+RM ---
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130206/2d2cab92/attachment.html>
+
+From david at coova.com  Wed Feb  6 23:39:58 2013
+From: david at coova.com (David Bird)
+Date: Wed, 06 Feb 2013 15:39:58 -0800
+Subject: [Chilli] Coova-Chilli Multi Tenanency Mode
+In-Reply-To: <CADao4CpUxt5+-ptUC-7WJ7eApc8UOVCMG8hVT+gR0bM8mDSmAg@mail.gmail.com>
+References: <CADao4CpUxt5+-ptUC-7WJ7eApc8UOVCMG8hVT+gR0bM8mDSmAg@mail.gmail.com>
+Message-ID: <1360193998.6347.5.camel@david-laptop>
+
+Some thoughts that come to mind:
+
+- Check an instance with "chilli_query <specific-cmdsock-file> procs"
+
+- Are you able to see the errors from the chilli that didn't start? 
+
+- You have different cmdsocket, pidfile, unixipc files?
+
+- You might assign each instance it's own tunX interface specifically,
+using tundev=tunX
+
+David
+
+On Wed, 2013-02-06 at 11:57 +0000, Russell Mike wrote:
+> Dear David & Community Members Greetings,
+> 
+> This discussion is with respect to that, how to make sure all
+> instances are up for "CoovaChilli" in multi tenant environment after
+> hardware server reboots. 
+> 
+> 1.) This is ISP environment. We have 10 Coovachill instances running
+> (Multi Tenanency) using (VLANs 10,20,30,40,50,60,70,80,90,100). When
+> system reboot, all daemons comes up just fine and start serving users
+> by presenting login page. We are very very happy from Coova-Chilli
+> implementation. 
+> 
+> 2.) BUT SOMETIMES when system reboot and after it has comes up. For
+> example VLAN30 would not present login page, other NINE(9) instances
+> would be just fine, working as expected. Then i restart Chilli daemon
+> as solution. Now, all 10 daemons would come up and start serving just
+> fine again. 
+> 
+> 2a) BUT SOMETIME, when i apply the solution (restart Chill daemon) one
+> of them would not present login page again (it is random VLAN
+> (Sometime 30/80/20 etc..)). 
+> 
+> For example: i restarted the service earlier because VLAN 90 was not
+> presenting login page, after restart VLAN60 daemon is not presenting
+> login page. Problem is recoverable, by restarting service more than
+> once.
+> 
+> 2b.) When a instance would not present login page. Same time i see
+> that, it is mounted & listening on the port ("netstat") stuff looks
+> obvious from that point of view. Tunnel would be created as well, all
+> stuff belongs to that VLAN (that is not serving web page) exists under
+> "/var/run'chilli* (pid, ipc, socket, bash script). 
+> 
+> HOW I AM DOING IT: 
+> 
+> 
+> Now whenever the Chilli Server is restarted, i manually browse & check
+> if all daemons are presenting login pages. But eventually, we going to
+> run minimum 120 daemons. it would not possible to browse 120 pages
+> after every reboot. Is there better way to handle it? or what could be
+> the auto fix? i was thinking something like a script that can check
+> the functionality, if everything did not up restart the daemon
+> again. i understand that we do not restart data center servers
+> everyday but it happens sometimes due to the power outage or UPS
+> failed or generator did not come up on time etc.
+> 
+> Thanks / Regards 
+> 
+> RM --- 
+> 
+> 
+
+-- 
+--
+David Bird
+http://www.linkedin.com/in/dwbird
+https://twitter.com/wlanmac
+
+
+From lferreira at cabocom.cv  Wed Feb  6 23:45:50 2013
+From: lferreira at cabocom.cv (Luis Ferreira)
+Date: Wed, 6 Feb 2013 22:45:50 -0100
+Subject: [Chilli] Coova-Chilli Multi Tenanency Mode
+In-Reply-To: <CADao4CpUxt5+-ptUC-7WJ7eApc8UOVCMG8hVT+gR0bM8mDSmAg@mail.gmail.com>
+References: <CADao4CpUxt5+-ptUC-7WJ7eApc8UOVCMG8hVT+gR0bM8mDSmAg@mail.gmail.com>
+Message-ID: <029c01ce04c4$18e8e3a0$4abaaae0$@cabocom.cv>
+
+Hello everyone. This is my first message to the great Coova community, so
+I'll start by give a little help, but describing the same problem in more
+detail, my actual fix and a request for a fix/workaround
+
+ 
+
+The problem that you are describing is because at start up time, it did not
+managed to create all the required iptables rules. For each VLAN, it should
+create:
+
+ 
+
+-A FORWARD -o vlan10 -j DROP
+
+-A FORWARD -i vlan10 -j DROP 
+
+ 
+
+And also
+
+ 
+
+-A FORWARD -i tun0 ! -o eth1 -j DROP
+
+-A FORWARD -o tun0 -j ACCEPT
+
+-A FORWARD -i tun0 -j ACCEPT
+
+ 
+
+In my implementation, it normally fail to create all the iptables rules
+uppon startup. For that reason, I have to apply the following very dirty
+solution.
+
+That problem normally appears only at boot time. What I do is
+
+killall -v chilli
+
+and
+
+/etc/init.d/chilli start
+
+to start all of them the proper way.
+
+After that, I've check with iptables if for each vlan, it created 2 rules
+regarding vlanXXX and 3 rules regarding tunXXX
+
+ 
+
+I would apreciate if someone has a fix/workaround for that, like a different
+startup script that would check if all the instances started correctly.
+
+ 
+
+ 
+
+Best regards,
+
+Luis Ferreira
+
+ 
+
+De: chilli-bounces at coova.org [mailto:chilli-bounces at coova.org] Em nome de
+Russell Mike
+Enviada: quarta-feira, 6 de Fevereiro de 2013 10:58
+Para: chilli list; David Bird
+Assunto: [Chilli] Coova-Chilli Multi Tenanency Mode
+
+ 
+
+Dear David & Community Members Greetings,
+
+This discussion is with respect to that, how to make sure all instances are
+up for "CoovaChilli" in multi tenant environment after hardware server
+reboots. 
+
+1.) This is ISP environment. We have 10 Coovachill instances running (Multi
+Tenanency) using (VLANs 10,20,30,40,50,60,70,80,90,100). When system reboot,
+all daemons comes up just fine and start serving users by presenting login
+page. We are very very happy from Coova-Chilli implementation. 
+
+2.) BUT SOMETIMES when system reboot and after it has comes up. For example
+VLAN30 would not present login page, other NINE(9) instances would be just
+fine, working as expected. Then i restart Chilli daemon as solution. Now,
+all 10 daemons would come up and start serving just fine again. 
+
+2a) BUT SOMETIME, when i apply the solution (restart Chill daemon) one of
+them would not present login page again (it is random VLAN (Sometime
+30/80/20 etc..)). 
+
+For example: i restarted the service earlier because VLAN 90 was not
+presenting login page, after restart VLAN60 daemon is not presenting login
+page. Problem is recoverable, by restarting service more than once.
+
+2b.) When a instance would not present login page. Same time i see that, it
+is mounted & listening on the port ("netstat") stuff looks obvious from that
+point of view. Tunnel would be created as well, all stuff belongs to that
+VLAN (that is not serving web page) exists under "/var/run'chilli* (pid,
+ipc, socket, bash script). 
+
+HOW I AM DOING IT: 
+
+Now whenever the Chilli Server is restarted, i manually browse & check if
+all daemons are presenting login pages. But eventually, we going to run
+minimum 120 daemons. it would not possible to browse 120 pages after every
+reboot. Is there better way to handle it? or what could be the auto fix? i
+was thinking something like a script that can check the functionality, if
+everything did not up restart the daemon again. i understand that we do not
+restart data center servers everyday but it happens sometimes due to the
+power outage or UPS failed or generator did not come up on time etc.
+
+Thanks / Regards 
+
+RM --- 
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130206/d6bc189b/attachment.html>
+
+From rwhite at globalgossip.net  Thu Feb  7 02:40:21 2013
+From: rwhite at globalgossip.net (Robert White)
+Date: Thu, 7 Feb 2013 13:40:21 +1100
+Subject: [Chilli] Coova-Chilli Multi Tenanency Mode
+In-Reply-To: <029c01ce04c4$18e8e3a0$4abaaae0$@cabocom.cv>
+References: <CADao4CpUxt5+-ptUC-7WJ7eApc8UOVCMG8hVT+gR0bM8mDSmAg@mail.gmail.com>
+ <029c01ce04c4$18e8e3a0$4abaaae0$@cabocom.cv>
+Message-ID: <CAODoKgDqQ_H1zCXqXcFa60Z_YSoeDYGL3eMey_M-fPumSxNbgg@mail.gmail.com>
+
+ I've also experienced the same problem.
+
+All rules from up.sh except the following seem to get created:
+
+ipt_in -p tcp -m tcp --dport $UAMPORT --dst $ADDR -j ACCEPT
+
+
+It seems to only ever happen in multi-instance environments so maybe it is
+something to do with iptables locking and not allowing the insertion of the
+rule while another instance is trying to do the same?  I'm not sure.
+
+Do all chilli instances start concurrently or in order?
+
+
+
+
+On 7 February 2013 10:45, Luis Ferreira <lferreira at cabocom.cv> wrote:
+
+> Hello everyone. This is my first message to the great Coova community, so
+> I?ll start by give a little help, but describing the same problem in more
+> detail, my actual fix and a request for a fix/workaround****
+>
+> ** **
+>
+> The problem that you are describing is because at start up time*, it did
+> not managed to create all the required iptables rules*. For each VLAN, it
+> should create:****
+>
+> ** **
+>
+> -A FORWARD -o vlan10 -j DROP****
+>
+> -A FORWARD -i vlan10 -j DROP ****
+>
+> ** **
+>
+> And also****
+>
+> ** **
+>
+> -A FORWARD -i tun0 ! -o eth1 -j DROP****
+>
+> -A FORWARD -o tun0 -j ACCEPT****
+>
+> -A FORWARD -i tun0 -j ACCEPT****
+>
+> ** **
+>
+> In my implementation, it normally *fail to create all the iptables rules
+> uppon startup*. For that reason, I have to apply the following very dirty
+> solution.****
+>
+> That problem normally appears only at boot time. What I do is****
+>
+> *killall ?v chilli*****
+>
+> and****
+>
+> */etc/init.d/chilli start*****
+>
+> to start all of them the proper way.****
+>
+> After that, I?ve check with iptables if for each vlan, it created 2 rules
+> regarding vlanXXX and 3 rules regarding tunXXX****
+>
+> ** **
+>
+> I would apreciate if someone has a fix/workaround for that, like a
+> different startup script that would check if all the instances started
+> correctly.****
+>
+> ** **
+>
+> ** **
+>
+> Best regards,****
+>
+> Luis Ferreira****
+>
+> ** **
+>
+> *De:* chilli-bounces at coova.org [mailto:chilli-bounces at coova.org] *Em nome
+> de *Russell Mike
+> *Enviada:* quarta-feira, 6 de Fevereiro de 2013 10:58
+> *Para:* chilli list; David Bird
+> *Assunto:* [Chilli] Coova-Chilli Multi Tenanency Mode****
+>
+> ** **
+>
+> Dear David & Community Members Greetings,****
+>
+> This discussion is with respect to that, how to make sure all instances
+> are up for "CoovaChilli" in multi tenant environment after hardware server
+> reboots. ****
+>
+> *1.)* This is ISP environment. We have 10 Coovachill instances running
+> (Multi Tenanency) using (VLANs 10,20,30,40,50,60,70,80,90,100). When system
+> reboot, all daemons comes up just fine and start serving users by
+> presenting login page. We are very very happy from Coova-Chilli
+> implementation. ****
+>
+> *2.)* BUT SOMETIMES when system reboot and after it has comes up. For
+> example VLAN30 would not present login page, other NINE(9) instances would
+> be just fine, working as expected. Then i restart Chilli daemon as
+> solution. Now, all 10 daemons would come up and start serving just fine
+> again. ****
+>
+> *2a)* BUT SOMETIME, when i apply the solution (restart Chill daemon) one
+> of them would not present login page again (it is random VLAN (Sometime
+> 30/80/20 etc..)). ****
+>
+> For example: i restarted the service earlier because VLAN 90 was not
+> presenting login page, after restart VLAN60 daemon is not presenting login
+> page. Problem is recoverable, by restarting service more than once.****
+>
+> *2b.)* When a instance would not present login page. Same time i see
+> that, it is mounted & listening on the port ("netstat") stuff looks obvious
+> from that point of view. Tunnel would be created as well, all stuff belongs
+> to that VLAN (that is not serving web page) exists under "/var/run'chilli*
+> (pid, ipc, socket, bash script). ****
+>
+> *HOW I AM DOING IT: *****
+>
+> Now whenever the Chilli Server is restarted, i manually browse & check if
+> all daemons are presenting login pages. But eventually, we going to run
+> minimum 120 daemons. it would not possible to browse 120 pages after every
+> reboot. Is there better way to handle it? or what could be the auto fix? i
+> was thinking something like a script that can check the functionality, if
+> everything did not up restart the daemon again. i understand that we do not
+> restart data center servers everyday but it happens sometimes due to the
+> power outage or UPS failed or generator did not come up on time etc.****
+>
+> Thanks / Regards ****
+>
+> RM --- ****
+>
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+>
+
+-- 
+-------------------------------------------------
+
+IMPORTANT NOTICE: The information in this email is confidential and may 
+also be privileged. 
+If you are not the intended recipient, any use or dissemination of the 
+information and any disclosure or copying of this email is unauthorised and 
+strictly prohibited.  If you have received this email in error, please 
+promptly inform us by reply email or telephone.  You should also 
+delete this email and destroy any hard copies produced.
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130207/2f86246b/attachment-0001.html>
+
+From david at coova.com  Thu Feb  7 05:01:13 2013
+From: david at coova.com (David Bird)
+Date: Wed, 06 Feb 2013 21:01:13 -0800
+Subject: [Chilli] Coova-Chilli Multi Tenanency Mode
+Message-ID: <co1bxagosoendu88d3x7s0e0.1360213273978@email.android.com>
+
+On dedicated chilli machines, you could also make system iptables rules and save/restore, using wildcards like '-o vlan*'.
+
+
+Robert White <rwhite at globalgossip.net> wrote:
+
+>_______________________________________________
+>Chilli mailing list
+>Chilli at coova.org
+>http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130206/c7cbda1f/attachment.html>
+
+From ynezz at true.cz  Thu Feb  7 06:35:22 2013
+From: ynezz at true.cz (Petr =?iso-8859-2?Q?=A9tetiar?=)
+Date: Thu, 7 Feb 2013 07:35:22 +0100
+Subject: [Chilli] Coova-Chilli Multi Tenanency Mode
+In-Reply-To: <CAODoKgDqQ_H1zCXqXcFa60Z_YSoeDYGL3eMey_M-fPumSxNbgg@mail.gmail.com>
+References: <CADao4CpUxt5+-ptUC-7WJ7eApc8UOVCMG8hVT+gR0bM8mDSmAg@mail.gmail.com>
+ <029c01ce04c4$18e8e3a0$4abaaae0$@cabocom.cv>
+ <CAODoKgDqQ_H1zCXqXcFa60Z_YSoeDYGL3eMey_M-fPumSxNbgg@mail.gmail.com>
+Message-ID: <20130207063522.GK3571@ibawizard.net>
+
+Robert White <rwhite at globalgossip.net> [2013-02-07 13:40:21]:
+
+> All rules from up.sh except the following seem to get created:
+> 
+> ipt_in -p tcp -m tcp --dport $UAMPORT --dst $ADDR -j ACCEPT
+
+And sometimes some other rules :)
+
+> It seems to only ever happen in multi-instance environments so maybe it is
+> something to do with iptables locking and not allowing the insertion of the
+> rule while another instance is trying to do the same?  I'm not sure.
+
+Yes, maybe something like that, I didn't investigated it in the detail either.
+I've added simple locking into the coova-chilli init.d script and added
+wildcard system wide iptables rules like "-i tun+" and it improved a lot.
+
+-- ynezz
+
+From lferreira at cabocom.cv  Thu Feb  7 16:05:21 2013
+From: lferreira at cabocom.cv (Luis Ferreira)
+Date: Thu, 7 Feb 2013 15:05:21 -0100
+Subject: [Chilli] Coova-Chilli Multi Tenanency Mode
+In-Reply-To: <20130207063522.GK3571@ibawizard.net>
+References: <CADao4CpUxt5+-ptUC-7WJ7eApc8UOVCMG8hVT+gR0bM8mDSmAg@mail.gmail.com>
+ <029c01ce04c4$18e8e3a0$4abaaae0$@cabocom.cv>
+ <CAODoKgDqQ_H1zCXqXcFa60Z_YSoeDYGL3eMey_M-fPumSxNbgg@mail.gmail.com>
+ <20130207063522.GK3571@ibawizard.net>
+Message-ID: <02dc01ce054c$ef5d5e10$ce181a30$@cabocom.cv>
+
+Hello everyone,
+
+ 
+
+1. It could be related to iptable locking, because I've got a bit of success
+if I add "sleep 5" on /etc/init.d/chilli after starting each vlan. It's not
+100% win, but at least the success rate increased.
+
+ 
+
+2. The iptables file located at v /usr/local/var/run/chilli.tun0.sh is it
+generated every time chilli boots? Is it executed on chilli process startup?
+Could that be the issue? Not giving enough time for the OS to write the
+file, and ask it to run the script? If it's that, that would explain why is
+a sporadic problem happening on multi chilli, because is starting several
+chilli processes as fast as the machine is capable of.
+
+ 
+
+ 
+
+ 
+
+Atentamente,
+
+Luis Ferreira
+
+Director T?cnico
+
+Cabocom S.A.
+
+ 
+
+-----Mensagem original-----
+De: Petr ?tetiar [mailto:ynezz at true.cz] 
+Enviada: quinta-feira, 7 de Fevereiro de 2013 05:35
+Para: Robert White
+Cc: Luis Ferreira; chilli at coova.org
+Assunto: Re: [Chilli] Coova-Chilli Multi Tenanency Mode
+
+ 
+
+Robert White < <mailto:rwhite at globalgossip.net> rwhite at globalgossip.net>
+[2013-02-07 13:40:21]:
+
+ 
+
+> All rules from up.sh except the following seem to get created:
+
+> 
+
+> ipt_in -p tcp -m tcp --dport $UAMPORT --dst $ADDR -j ACCEPT
+
+ 
+
+And sometimes some other rules :)
+
+ 
+
+> It seems to only ever happen in multi-instance environments so maybe 
+
+> it is something to do with iptables locking and not allowing the 
+
+> insertion of the rule while another instance is trying to do the same?
+I'm not sure.
+
+ 
+
+Yes, maybe something like that, I didn't investigated it in the detail
+either.
+
+I've added simple locking into the coova-chilli init.d script and added
+wildcard system wide iptables rules like "-i tun+" and it improved a lot.
+
+ 
+
+-- ynezz
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130207/051fd4f7/attachment.html>
+
+From radius.sir at gmail.com  Thu Feb  7 16:44:48 2013
+From: radius.sir at gmail.com (Russell Mike)
+Date: Thu, 7 Feb 2013 16:44:48 +0000
+Subject: [Chilli] Coova-Chilli Multi Tenanency Mode
+In-Reply-To: <02dc01ce054c$ef5d5e10$ce181a30$@cabocom.cv>
+References: <CADao4CpUxt5+-ptUC-7WJ7eApc8UOVCMG8hVT+gR0bM8mDSmAg@mail.gmail.com>
+ <029c01ce04c4$18e8e3a0$4abaaae0$@cabocom.cv>
+ <CAODoKgDqQ_H1zCXqXcFa60Z_YSoeDYGL3eMey_M-fPumSxNbgg@mail.gmail.com>
+ <20130207063522.GK3571@ibawizard.net>
+ <02dc01ce054c$ef5d5e10$ce181a30$@cabocom.cv>
+Message-ID: <CADao4CrfmY1SH_0PhZzgMrrGTwS3-D4=Cwa2JjsmtNRKPiiu=g@mail.gmail.com>
+
+On Thu, Feb 7, 2013 at 4:05 PM, Luis Ferreira <lferreira at cabocom.cv> wrote:
+
+*Luic SAID***
+
+Hello everyone,
+
+>  1. It could be related to iptable locking, because I've got a bit of
+success if I add "sleep 5" on /etc/init.d/chilli after starting each vlan.
+It's not 100% win, but at least the success rate increased.
+
+> **
+>
+
+*Mike SAID: *
+I can agree to your point. But i do not use different script for starting
+multiple instances (vlans) the same "/etc/init.d/chilli start" does starts
+everything. But i have been advised to write a different script, then i
+will add the wait between the "start" of each instance. The following line
+in start script just check "chilli.conf" files and start everything.
+*MULTI=$(ls
+/usr/local/etc/chilli/*/chilli.conf 2>/dev/null)*
+
+
+*Luic Asked: *
+
+> 2. The iptables file located at v /usr/local/var/run/chilli.tun0.sh is it
+> generated every time chilli boots? Is it executed on chilli process
+> startup? Could that be the issue? Not giving enough time for the OS to
+> write the file, and ask it to run the script? If it?s that, that would
+> explain why is a sporadic problem happening on multi chilli, because is
+> starting several chilli processes as fast as the machine is capable of.
+>
+*Mike SAID: *
+>
+> **Yes Luic, the file, the iptables rule under "/var/run/tun*.sh is
+> created every time.  Because i have seen that when there is login page
+> problem from a VLAN, i have verify that iptables file exists normal for
+> that tunnel "/var/run/tun_problem_vlan.sh. Well, are you satisfied with the
+> contents for the iptables file? do you think that i still need the iptable
+> rule you advised earlier? in the above section of the communication?**
+>
+> ** **
+>
+> Atentamente,****
+>
+> ****
+>
+> Luis Ferreira****
+>
+> Director T?cnico****
+>
+> Cabocom S.A.****
+>
+> ****
+>
+> ** **
+>
+> -----Mensagem original-----
+> De: Petr ?tetiar [mailto:ynezz at true.cz]
+> Enviada: quinta-feira, 7 de Fevereiro de 2013 05:35
+> Para: Robert White
+> Cc: Luis Ferreira; chilli at coova.org
+> Assunto: Re: [Chilli] Coova-Chilli Multi Tenanency Mode
+>
+> Robert White <rwhite at globalgossip.net> [2013-02-07 13:40:21]:
+>
+> * Ynezz SAID: *
+>
+> All rules from up.sh except the following seem to get created:****
+>
+>  ipt_in -p tcp -m tcp --dport $UAMPORT --dst $ADDR -j ACCEPT
+>
+> ** And sometimes some other rules :)
+>
+> ** It seems to only ever happen in multi-instance environments so maybe
+>
+> it is something to do with iptables locking and not allowing the ****
+>
+> insertion of the rule while another instance is trying to do the same?
+> I'm not sure.****
+>
+>
+
+> Yes, maybe something like that, I didn't investigated it in the detail
+> either.
+>
+> I've added simple locking into the coova-chilli init.d script and added
+> wildcard system wide iptables rules like "-i tun+" and it improved a lot.*
+> ***
+>
+> ** -- ynezz
+>
+*Mike Wrote: *
+
+HI Yneez,
+
+It is Fully functional UB 12.4LTS x86_64, suffering with this disease only.
+It will help others as well, if your suggestion fixed the problem. Are you
+willing to provide more information so that i can edit the script & give a
+try? How the below is done you said
+
+I've added simple locking into the coova-chilli init.d script and added
+wildcard system wide iptables rules like "-i tun+" and it improved a lot.
+
+
+Big Thanks 2 Everyone !!!!
+
+Thanks RM --
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130207/878041a5/attachment.html>
+
+From david at coova.com  Thu Feb  7 17:19:05 2013
+From: david at coova.com (David Bird)
+Date: Thu, 07 Feb 2013 09:19:05 -0800
+Subject: [Chilli] Coova-Chilli Multi Tenanency Mode
+In-Reply-To: <CADao4CrfmY1SH_0PhZzgMrrGTwS3-D4=Cwa2JjsmtNRKPiiu=g@mail.gmail.com>
+References: <CADao4CpUxt5+-ptUC-7WJ7eApc8UOVCMG8hVT+gR0bM8mDSmAg@mail.gmail.com>
+ <029c01ce04c4$18e8e3a0$4abaaae0$@cabocom.cv>
+ <CAODoKgDqQ_H1zCXqXcFa60Z_YSoeDYGL3eMey_M-fPumSxNbgg@mail.gmail.com>
+ <20130207063522.GK3571@ibawizard.net>
+ <02dc01ce054c$ef5d5e10$ce181a30$@cabocom.cv>
+ <CADao4CrfmY1SH_0PhZzgMrrGTwS3-D4=Cwa2JjsmtNRKPiiu=g@mail.gmail.com>
+Message-ID: <1360257545.7123.1.camel@david-laptop>
+
+To serialize the iptables, you can edit the up.sh/down.sh scripts to
+wrap all the commands inside something like:
+
+
+(
+flock -s 200
+
+# ... commands executed under lock ...
+
+) 200>/tmp/.chilli-flock
+
+David
+
+On Thu, 2013-02-07 at 16:44 +0000, Russell Mike wrote:
+> 
+> 
+> 
+> On Thu, Feb 7, 2013 at 4:05 PM, Luis Ferreira <lferreira at cabocom.cv>
+> wrote:
+> 
+> 
+> Luic SAID  
+> 
+> 
+> Hello everyone,
+>         
+>  1. It could be related to iptable locking, because I've got a bit of
+> success if I add "sleep 5" on /etc/init.d/chilli after starting each
+> vlan. It's not 100% win, but at least the success rate increased.
+>         
+> 
+> 
+> Mike SAID: 
+> I can agree to your point. But i do not use different script for
+> starting multiple instances (vlans) the same "/etc/init.d/chilli
+> start" does starts everything. But i have been advised to write a
+> different script, then i will add the wait between the "start" of each
+> instance. The following line in start script just check "chilli.conf"
+> files and start everything.  MULTI=
+> $(ls /usr/local/etc/chilli/*/chilli.conf 2>/dev/null)
+> 
+> 
+> 
+> 
+> Luic Asked:  
+>         2. The iptables file located at
+>         v /usr/local/var/run/chilli.tun0.sh is it generated every time
+>         chilli boots? Is it executed on chilli process startup? Could
+>         that be the issue? Not giving enough time for the OS to write
+>         the file, and ask it to run the script? If it?s that, that
+>         would explain why is a sporadic problem happening on multi
+>         chilli, because is starting several chilli processes as fast
+>         as the machine is capable of.
+>         
+>         
+>         Mike SAID: 
+>         
+>         Yes Luic, the file, the iptables rule under "/var/run/tun*.sh
+>         is created every time.  Because i have seen that when there is
+>         login page problem from a VLAN, i have verify that iptables
+>         file exists normal for that tunnel
+>         "/var/run/tun_problem_vlan.sh. Well, are you satisfied with
+>         the contents for the iptables file? do you think that i still
+>         need the iptable rule you advised earlier? in the above
+>         section of the communication?
+>         
+>          
+>         
+>         Atentamente,
+>         
+>         Luis Ferreira
+>         
+>         Director T?cnico
+>         
+>         Cabocom S.A.
+>         
+>          
+>         
+>         -----Mensagem original-----
+>         De: Petr ?tetiar [mailto:ynezz at true.cz] 
+>         Enviada: quinta-feira, 7 de Fevereiro de 2013 05:35
+>         Para: Robert White
+>         Cc: Luis Ferreira; chilli at coova.org
+>         Assunto: Re: [Chilli] Coova-Chilli Multi Tenanency Mode
+>         
+>         Robert White <rwhite at globalgossip.net> [2013-02-07 13:40:21]:
+>         
+>          Ynezz SAID: 
+>         
+>         All rules from up.sh except the following seem to get created:
+>         
+>          ipt_in -p tcp -m tcp --dport $UAMPORT --dst $ADDR -j ACCEPT
+>         
+>         
+>          And sometimes some other rules :)
+>         
+>          It seems to only ever happen in multi-instance environments
+>         so maybe
+>         
+>         it is something to do with iptables locking and not allowing
+>         the 
+>         
+>         insertion of the rule while another instance is trying to do
+>         the same?  I'm not sure.
+>         
+>  
+>         Yes, maybe something like that, I didn't investigated it in
+>         the detail either.
+>         
+>         I've added simple locking into the coova-chilli init.d script
+>         and added wildcard system wide iptables rules like "-i tun+"
+>         and it improved a lot.
+>         
+>          -- ynezz
+>         
+>         
+> Mike Wrote: 
+> 
+> 
+> HI Yneez, 
+> 
+> 
+> It is Fully functional UB 12.4LTS x86_64, suffering with this disease
+> only. It will help others as well, if your suggestion fixed the
+> problem. Are you willing to provide more information so that i can
+> edit the script & give a try? How the below is done you said
+> 
+> 
+> I've added simple locking into the coova-chilli init.d script and
+> added wildcard system wide iptables rules like "-i tun+" and it
+> improved a lot.
+> 
+> 
+> 
+> 
+> 
+> Big Thanks 2 Everyone !!!! 
+> 
+> 
+> Thanks RM --
+> 
+> 
+> 
+> 
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+-- 
+--
+David Bird
+http://www.linkedin.com/in/dwbird
+https://twitter.com/wlanmac
+
+
+From radius.sir at gmail.com  Sun Feb 10 13:09:07 2013
+From: radius.sir at gmail.com (Russell Mike)
+Date: Sun, 10 Feb 2013 13:09:07 +0000
+Subject: [Chilli] Coova-Chilli Multi Tenanency Mode
+In-Reply-To: <1360257545.7123.1.camel@david-laptop>
+References: <CADao4CpUxt5+-ptUC-7WJ7eApc8UOVCMG8hVT+gR0bM8mDSmAg@mail.gmail.com>
+ <029c01ce04c4$18e8e3a0$4abaaae0$@cabocom.cv>
+ <CAODoKgDqQ_H1zCXqXcFa60Z_YSoeDYGL3eMey_M-fPumSxNbgg@mail.gmail.com>
+ <20130207063522.GK3571@ibawizard.net>
+ <02dc01ce054c$ef5d5e10$ce181a30$@cabocom.cv>
+ <CADao4CrfmY1SH_0PhZzgMrrGTwS3-D4=Cwa2JjsmtNRKPiiu=g@mail.gmail.com>
+ <1360257545.7123.1.camel@david-laptop>
+Message-ID: <CADao4CqcG+TcFXdTxh5=aBLwQ9RqUHEHWcqwVMThsY2-KW+B_w@mail.gmail.com>
+
+Mike SAID:
+
+Mike SAID:
+
+Dear David B. Thank you very much for the directions for correct procedure.
+so much valuable information to know. I will do this and update the status
+when done.
+
+Thanks RM ----
+
+
+
+David Bird SAID:
+
+To serialize the iptables, you can edit the up.sh/down.sh scripts to
+> wrap all the commands inside something like:
+>
+>
+> (
+> flock -s 200
+>
+> # ... commands executed under lock ...
+>
+> ) 200>/tmp/.chilli-flock
+>
+> David Bird
+>
+
+>
+
+
+> > Luic SAID
+> >
+> >
+> > Hello everyone,
+> >
+> >  1. It could be related to iptable locking, because I've got a bit of
+> > success if I add "sleep 5" on /etc/init.d/chilli after starting each
+> > vlan. It's not 100% win, but at least the success rate increased.
+> >
+> >
+> >
+> > Mike SAID:
+> > I can agree to your point. But i do not use different script for
+> > starting multiple instances (vlans) the same "/etc/init.d/chilli
+> > start" does starts everything. But i have been advised to write a
+> > different script, then i will add the wait between the "start" of each
+> > instance. The following line in start script just check "chilli.conf"
+> > files and start everything.  MULTI= $(ls
+> /usr/local/etc/chilli/*/chilli.conf 2>/dev/null)
+> >
+> >
+> >
+> >
+> > Luic Asked:
+> >         2. The iptables file located at
+> >         v /usr/local/var/run/chilli.tun0.sh is it generated every time
+> >         chilli boots? Is it executed on chilli process startup? Could
+> >         that be the issue? Not giving enough time for the OS to write
+> >         the file, and ask it to run the script? If it?s that, that
+> >         would explain why is a sporadic problem happening on multi
+> >         chilli, because is starting several chilli processes as fast
+> >         as the machine is capable of.
+> >
+> >
+> >         Mike SAID:
+> >
+> >         Yes Luic, the file, the iptables rule under "/var/run/tun*.sh
+> >         is created every time.  Because i have seen that when there is
+> >         login page problem from a VLAN, i have verify that iptables
+> >         file exists normal for that tunnel
+> >         "/var/run/tun_problem_vlan.sh. Well, are you satisfied with
+> >         the contents for the iptables file? do you think that i still
+> >         need the iptable rule you advised earlier? in the above
+> >         section of the communication?
+> >
+> >
+>
+>
+> >          Ynezz SAID:
+> >
+> >         All rules from up.sh except the following seem to get created:
+> >
+> >          ipt_in -p tcp -m tcp --dport $UAMPORT --dst $ADDR -j ACCEPT
+> >
+> >
+> >          And sometimes some other rules :)
+> >
+> >          It seems to only ever happen in multi-instance environments
+> >         so maybe
+> >
+> >         it is something to do with iptables locking and not allowing
+> >         the
+> >
+> >         insertion of the rule while another instance is trying to do
+> >         the same?  I'm not sure.
+> >
+> >
+> >         Yes, maybe something like that, I didn't investigated it in
+> >         the detail either.
+> >
+> >         I've added simple locking into the coova-chilli init.d script
+> >         and added wildcard system wide iptables rules like "-i tun+"
+> >         and it improved a lot.
+> >
+> >          -- ynezz
+> >
+> >
+> > Mike Wrote:
+> >
+> >
+> > HI Yneez,
+> >
+> >
+> > It is Fully functional UB 12.4LTS x86_64, suffering with this disease
+> > only. It will help others as well, if your suggestion fixed the
+> > problem. Are you willing to provide more information so that i can
+> > edit the script & give a try? How the below is done you said
+> >
+> >
+> > I've added simple locking into the coova-chilli init.d script and
+> > added wildcard system wide iptables rules like "-i tun+" and it
+> > improved a lot.
+> >
+> >
+> >
+> >
+> >
+> > Big Thanks 2 Everyone !!!!
+> >
+> >
+> > Thanks RM --
+> >
+> >
+> >
+> >
+> > _______________________________________________
+> > Chilli mailing list
+> > Chilli at coova.org
+> > http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+> --
+> --
+> David Bird
+> http://www.linkedin.com/in/dwbird
+> https://twitter.com/wlanmac
+>
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130210/939f757f/attachment.html>
+
+From radius.sir at gmail.com  Mon Feb 11 08:50:32 2013
+From: radius.sir at gmail.com (Russell Mike)
+Date: Mon, 11 Feb 2013 08:50:32 +0000
+Subject: [Chilli] Coova-Chilli Multi Tenanency Mode
+In-Reply-To: <CADao4CqcG+TcFXdTxh5=aBLwQ9RqUHEHWcqwVMThsY2-KW+B_w@mail.gmail.com>
+References: <CADao4CpUxt5+-ptUC-7WJ7eApc8UOVCMG8hVT+gR0bM8mDSmAg@mail.gmail.com>
+ <029c01ce04c4$18e8e3a0$4abaaae0$@cabocom.cv>
+ <CAODoKgDqQ_H1zCXqXcFa60Z_YSoeDYGL3eMey_M-fPumSxNbgg@mail.gmail.com>
+ <20130207063522.GK3571@ibawizard.net>
+ <02dc01ce054c$ef5d5e10$ce181a30$@cabocom.cv>
+ <CADao4CrfmY1SH_0PhZzgMrrGTwS3-D4=Cwa2JjsmtNRKPiiu=g@mail.gmail.com>
+ <1360257545.7123.1.camel@david-laptop>
+ <CADao4CqcG+TcFXdTxh5=aBLwQ9RqUHEHWcqwVMThsY2-KW+B_w@mail.gmail.com>
+Message-ID: <CADao4Cp3MrbGxbZkCbOz3wtuaLadXgt1TDVsu_cEV4WGqy1NBw@mail.gmail.com>
+
+#!/bin/sh
+
+TUNTAP=$(basename $DEV)
+UNDO_FILE=/usr/local/var/run/chilli.$TUNTAP.sh
+
+. /usr/local/etc/chilli/functions
+
+[ -e "$UNDO_FILE" ] && sh $UNDO_FILE 2>/dev/null
+rm -f $UNDO_FILE 2>/dev/null
+
+ipt() {
+    opt=$1; shift
+    echo "iptables -D $*" >> $UNDO_FILE
+    iptables $opt $*
+}
+
+ipt_in() {
+    ipt -I INPUT -i $TUNTAP $*
+}
+
+if [ -n "$TUNTAP" ]
+then
+    # ifconfig $TUNTAP mtu $MTU
+    if [ "$KNAME" != "" ]
+    then
+        ipt -I FORWARD -i $DHCPIF -m coova --name $KNAME -j ACCEPT
+        ipt -I FORWARD -o $DHCPIF -m coova --name $KNAME --dest -j ACCEPT
+        ipt -I FORWARD -i $TUNTAP -j ACCEPT
+        ipt -I FORWARD -o $TUNTAP -j ACCEPT
+        [ -n "$DHCPLISTEN" ] && ifconfig $DHCPIF $DHCPLISTEN
+    else
+        if [ "$LAYER3" != "1" ]
+        then
+            [ -n "$UAMPORT" -a "$UAMPORT" != "0" ] && \
+                ipt_in -p tcp -m tcp --dport $UAMPORT --dst $ADDR -j ACCEPT
+
+            [ -n "$UAMUIPORT" -a "$UAMUIPORT" != "0" ] && \
+                ipt_in -p tcp -m tcp --dport $UAMUIPORT --dst $ADDR -j
+ACCEPT
+
+            [ -n "$HS_TCP_PORTS" ] && {
+                for port in $HS_TCP_PORTS; do
+                    ipt_in -p tcp -m tcp --dport $port --dst $ADDR -j ACCEPT
+                done
+            }
+
+            ipt_in -p udp -d 255.255.255.255 --destination-port 67:68 -j
+ACCEPT
+            ipt_in -p udp -d $ADDR --destination-port 67:68 -j ACCEPT
+            ipt_in -p udp --dst $ADDR --dport 53 -j ACCEPT
+            ipt_in -p icmp --dst $ADDR -j ACCEPT
+
+            ipt -A INPUT -i $TUNTAP --dst $ADDR -j DROP
+
+            if [ "$ONLY8021Q" != "1" ]
+            then
+                ipt -I INPUT -i $DHCPIF -j DROP
+            fi
+        fi
+
+        if [ "$ONLY8021Q" != "1" ]
+        then
+            ipt -I FORWARD -i $DHCPIF -j DROP
+            ipt -I FORWARD -o $DHCPIF -j DROP
+        fi
+
+        ipt -I FORWARD -i $TUNTAP -j ACCEPT
+        ipt -I FORWARD -o $TUNTAP -j ACCEPT
+
+        # Help out conntrack to not get confused
+        # (stops masquerading from working)
+        #ipt -I PREROUTING -t raw -j NOTRACK -i $DHCPIF
+        #ipt -I OUTPUT -t raw -j NOTRACK -o $DHCPIF
+
+        # Help out MTU issues with PPPoE or Mesh
+        ipt -I FORWARD -p tcp -m tcp --tcp-flags SYN,RST SYN -j TCPMSS
+--clamp-mss-to-pmtu
+        ipt -I FORWARD -t mangle -p tcp -m tcp --tcp-flags SYN,RST SYN -j
+TCPMSS --clamp-mss-to-pmtu
+
+        [ "$HS_LAN_ACCESS" != "on" -a "$HS_LAN_ACCESS" != "allow" ] && \
+            ipt -I FORWARD -i $TUNTAP \! -o $HS_WANIF -j DROP
+
+        ipt -I FORWARD -i $TUNTAP -o $HS_WANIF -j ACCEPT
+
+        [ "$HS_LOCAL_DNS" = "on" ] && \
+            ipt -I PREROUTING -t nat -i $TUNTAP -p udp --dport 53 -j DNAT
+--to-destination $ADDR
+    fi
+fi
+
+# site specific stuff optional
+[ -e /usr/local/etc/chilli/ipup.sh ] && . /usr/local/etc/chilli/ipup.sh
+
+*
+*
+*Mike SAID:*
+
+Dear David B.
+
+First, Thank you very much for showing us correct procedure. And it should
+be enough from your side. i am sure this would kill the problem. i am
+talking about my self only, not very good in bash and i did not understand
+what exactly should be done and which part of the "up.sh" i am humbly
+requesting for more help so that i do not make it more worse situation. My
+five instances starts like this:
+
+What should be done with my "up.sh" copied above.
+
+root at captive:~# /etc/init.d/chilli start
+Found configuration /usr/local/etc/chilli/coova-vlan10/chilli.conf
+Running DHCPIF=coova-vlan10 /etc/init.d/chilli start
+Starting chilli:
+Found configuration /usr/local/etc/chilli/coova-vlan20/chilli.conf
+Running DHCPIF=coova-vlan20 /etc/init.d/chilli start
+Starting chilli:
+Found configuration /usr/local/etc/chilli/coova-vlan30/chilli.conf
+Running DHCPIF=coova-vlan30 /etc/init.d/chilli start
+Starting chilli:
+Found configuration /usr/local/etc/chilli/coova-vlan40/chilli.conf
+Running DHCPIF=coova-vlan40 /etc/init.d/chilli start
+Starting chilli:
+Found configuration /usr/local/etc/chilli/coova-vlan50/chilli.conf
+Running DHCPIF=coova-vlan50 /etc/init.d/chilli start
+Starting chilli:
+
+*Thanks / RM --*
+
+
+
+> *David Bird SAID: *
+>
+> To serialize the iptables, you can edit the up.sh/down.sh scripts to
+>> wrap all the commands inside something like:
+>>
+>>
+>> (
+>> flock -s 200
+>>
+>> # ... commands executed under lock ...
+>>
+>> ) 200>/tmp/.chilli-flock
+>>
+>> David Bird
+>>
+>
+>>
+>
+>
+>> *> Luic SAID*
+>> >
+>> >
+>> > Hello everyone,
+>> >
+>> >  1. It could be related to iptable locking, because I've got a bit of
+>> > success if I add "sleep 5" on /etc/init.d/chilli after starting each
+>> > vlan. It's not 100% win, but at least the success rate increased.
+>> >
+>> >
+>> >
+>> * > Mike SAID:*
+>> > I can agree to your point. But i do not use different script for
+>> > starting multiple instances (vlans) the same "/etc/init.d/chilli
+>> > start" does starts everything. But i have been advised to write a
+>> > different script, then i will add the wait between the "start" of each
+>> > instance. The following line in start script just check "chilli.conf"
+>> > files and start everything.  MULTI= $(ls
+>> /usr/local/etc/chilli/*/chilli.conf 2>/dev/null)
+>> >
+>> >
+>> >
+>> >
+>> >* Luic Asked:*
+>> >         2. The iptables file located at
+>> >         v /usr/local/var/run/chilli.tun0.sh is it generated every time
+>> >         chilli boots? Is it executed on chilli process startup? Could
+>> >         that be the issue? Not giving enough time for the OS to write
+>> >         the file, and ask it to run the script? If it?s that, that
+>> >         would explain why is a sporadic problem happening on multi
+>> >         chilli, because is starting several chilli processes as fast
+>> >         as the machine is capable of.
+>> >
+>> >
+>> * >         Mike SAID:
+>> >*
+>> >         Yes Luic, the file, the iptables rule under "/var/run/tun*.sh
+>> >         is created every time.  Because i have seen that when there is
+>> >         login page problem from a VLAN, i have verify that iptables
+>> >         file exists normal for that tunnel
+>> >         "/var/run/tun_problem_vlan.sh. Well, are you satisfied with
+>> >         the contents for the iptables file? do you think that i still
+>> >         need the iptable rule you advised earlier? in the above
+>> >         section of the communication?
+>> >
+>> >
+>>
+>>
+>> >        *  Ynezz SAID:*
+>> >
+>> >         All rules from up.sh except the following seem to get created:
+>> >
+>> >          ipt_in -p tcp -m tcp --dport $UAMPORT --dst $ADDR -j ACCEPT
+>> >
+>> >
+>> >          And sometimes some other rules :)
+>> >
+>> >          It seems to only ever happen in multi-instance environments
+>> >         so maybe
+>> >
+>> >         it is something to do with iptables locking and not allowing
+>> >         the
+>> >
+>> >         insertion of the rule while another instance is trying to do
+>> >         the same?  I'm not sure.
+>> >
+>> >
+>> >         Yes, maybe something like that, I didn't investigated it in
+>> >         the detail either.
+>> >
+>> >         I've added simple locking into the coova-chilli init.d script
+>> >         and added wildcard system wide iptables rules like "-i tun+"
+>> >         and it improved a lot.
+>> >
+>> >          -- ynezz
+>> >
+>> >
+>> * > Mike Wrote:*
+>> >
+>> >
+>> > HI Yneez,
+>> >
+>> >
+>> > It is Fully functional UB 12.4LTS x86_64, suffering with this disease
+>> > only. It will help others as well, if your suggestion fixed the
+>> > problem. Are you willing to provide more information so that i can
+>> > edit the script & give a try? How the below is done you said
+>> >
+>> >
+>> > I've added simple locking into the coova-chilli init.d script and
+>> > added wildcard system wide iptables rules like "-i tun+" and it
+>> > improved a lot.
+>> >
+>> >
+>> >
+>> >
+>> >
+>> > Big Thanks 2 Everyone !!!!
+>> >
+>> >
+>> > Thanks RM --
+>> >
+>> >
+>> >
+>> >
+>> > _______________________________________________
+>> > Chilli mailing list
+>> > Chilli at coova.org
+>> > http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>>
+>> --
+>> --
+>> David Bird
+>> http://www.linkedin.com/in/dwbird
+>> https://twitter.com/wlanmac
+>>
+>>
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130211/3d5b32a8/attachment-0001.html>
+
+From radius.sir at gmail.com  Mon Feb 11 11:10:27 2013
+From: radius.sir at gmail.com (Russell Mike)
+Date: Mon, 11 Feb 2013 11:10:27 +0000
+Subject: [Chilli] SOLVED !!!! No process in pidfile
+ '/usr/local/var/run/chilli.pid' found running; none killed.
+Message-ID: <CADao4CqvA+nRfEcVVB65VLMQGp-08dTxKmneUSGc4e0aq0W29A@mail.gmail.com>
+
+>
+>>>  Thanks dear all once again --
+>>>
+>>>  The only problem left that i cannot stop chilli (Coova_1.3.0 & UBUNTU
+>>> 12.4 LTS x64). I can modify the start/stop script and use "kill -9" but
+>>> really do not want to do that. perhaps there is better way to handle this.
+>>>
+>>>  because i read that kill -9 doesn't give the process a chance to
+>>> cleanly:
+>>>
+>>> 1) shut down socket connections
+>>>
+>>> 2) clean up temp files
+>>>
+>>> 3) inform its children that it is going away
+>>>
+>>> 4) reset its terminal characteristics
+>>>
+>>> and so on and so on and so on.
+>>>
+>>>
+>>>  *PROBLEM:*
+>>>
+>>> root at captive:~# /etc/init.d/chilli stop
+>>>
+>>> Found configuration /usr/local/etc/chilli/coova-vlan10/chilli.conf
+>>>
+>>> Running DHCPIF=coova-vlan10 /etc/init.d/chilli stop
+>>>
+>>> Shutting down chilli: No process in pidfile
+>>> '/usr/local/var/run/chilli.coova-vlan10.pid' found running; none killed.
+>>>
+>>>
+>>>  Found configuration /usr/local/etc/chilli/coova-vlan20/chilli.conf
+>>>
+>>> Running DHCPIF=coova-vlan20 /etc/init.d/chilli stop
+>>>
+>>> Shutting down chilli: No process in pidfile
+>>> '/usr/local/var/run/chilli.coova-vlan20.pid' found running; none killed.
+>>>
+>>>
+>>>  Found configuration /usr/local/etc/chilli/coova-vlan30/chilli.conf
+>>>
+>>> Running DHCPIF=coova-vlan30 /etc/init.d/chilli stop
+>>>
+>>> Shutting down chilli: No process in pidfile
+>>> '/usr/local/var/run/chilli.coova-vlan30.pid' found running; none killed.
+>>>
+>>>
+>>>  Found configuration /usr/local/etc/chilli/coova-vlan40/chilli.conf
+>>>
+>>> Running DHCPIF=coova-vlan40 /etc/init.d/chilli stop
+>>>
+>>> Shutting down chilli: No process in pidfile
+>>> '/usr/local/var/run/chilli.coova-vlan40.pid' found running; none killed.
+>>>
+>>>
+>>>  Found configuration /usr/local/etc/chilli/coova-vlan50/chilli.conf
+>>>
+>>> Running DHCPIF=coova-vlan50 /etc/init.d/chilli stop
+>>>
+>>> Shutting down chilli: No process in pidfile
+>>> '/usr/local/var/run/chilli.coova-vlan50.pid' found running; none killed.
+>>>
+>>> Thanks / Regards
+>>>
+>>> RM --R
+>>>
+>>>
+
+*Mike WROTE:*
+
+Hi Sir,
+
+Ever since chilli was installed, default script was never able to stop the
+service, i tried re compelling, uninstalled/installed number of time. but
+just after the installation this script never could stop the daemon.
+
+
+*Chuan SAID:*
+I install coovachilli with deb from old chilli file. It includes chilli and
+start stop scripts. I added original chilli for you with email. you need to
+create only 1 vlan then test start and stop check on start It creates
+chilli*.pid cause you need pid to kill for stop chilli
+
+
+*Mike Wrote: *
+
+Hi Sir
+
+BIG BIG Thanks, that worked !!!!
+
+i can now stop chilli normally. i modified the stop section of my chilli
+start script, i need to create two variables in edition. I tested running
+chilli on physical interface (one instance only) & stop using script, it
+just worked. i am expecting it would work for VLANs (multi instances) as
+well.
+
+But the script that was created during compilation/installation were never
+able to stop the daemon. Was failing with following error:
+*
+*
+Shutting down chilli: No process in pidfile '/usr/local/var/run/chilli.pid'
+found running; none killed.
+
+Say simple work thanks does not seems to be enough. God will through shine
+in your way. here is the working script *(CoovaChilli 1.3.0 on
+UBUNTU_12.4LTS x64)*. Modification are showed in RED.
+
+
+
+#!/bin/sh
+
+*# Custom Variable Defined by RM ---*
+*DAEMON=/usr/local/sbin/chilli*
+*NAME=chilli*
+
+[ -f /usr/local/sbin/chilli ] || exit 0
+
+. /usr/local/etc/chilli/functions
+
+MULTI=$(ls /usr/local/etc/chilli/*/chilli.conf 2>/dev/null)
+[ -z "$DHCPIF" ] && [ -n "$MULTI" ] && {
+    for c in $MULTI;
+    do
+        echo "Found configuration $c"
+        DHCPIF=$(basename $(echo $c|sed 's#/chilli.conf##'))
+        export DHCPIF
+        echo "Running DHCPIF=$DHCPIF $0 $*"
+        sh $0 $*
+    done
+    exit
+}
+
+if [ -n "$DHCPIF" ]; then
+    CONFIG=/usr/local/etc/chilli/$DHCPIF/chilli.conf
+    pidfile=/usr/local/var/run/chilli.$DHCPIF.pid
+else
+    CONFIG=/usr/local/etc/chilli.conf
+    pidfile=/usr/local/var/run/chilli.pid
+fi
+
+[ -f $CONFIG ] || {
+    echo "$CONFIG Not found"
+    exit 0
+}
+
+check_required
+
+RETVAL=0
+prog="chilli"
+
+case $1 in
+    start)
+        echo -n "Starting $prog: "
+
+        /sbin/modprobe tun >/dev/null 2>&1
+        echo 1 > /proc/sys/net/ipv4/ip_forward
+
+        [ -e /dev/net/tun ] || {
+            (cd /dev;
+                mkdir net;
+                cd net;
+                mknod tun c 10 200)
+        }
+
+        writeconfig
+        radiusconfig
+
+        test ${HS_ADMINTERVAL:-0} -gt 0 && {
+            (crontab -l 2>&- | grep -v $0
+                echo "*/$HS_ADMINTERVAL * * * * $0 radconfig"
+                ) | crontab - 2>&-
+        }
+
+        ifconfig $HS_LANIF 0.0.0.0
+        if [ "$(which start-stop-daemon)" = "" ]; then
+            /usr/local/sbin/chilli -c $CONFIG --pidfile=$pidfile &
+        else
+            start-stop-daemon -S --pidfile=$pidfile --user=chilli \
+                --exec /usr/local/sbin/chilli -- -c $CONFIG &
+        fi
+        echo
+        ;;
+
+    radconfig)
+        [ -e $MAIN_CONF ] || writeconfig
+        radiusconfig
+        ;;
+
+    reload)
+        killall -HUP chilli
+        ;;
+
+    restart)
+        $0 stop
+        sleep 1
+        $0 start
+        RETVAL=$?
+        ;;
+
+    stop)
+        echo -n "Shutting down $prog: "
+
+        crontab -l 2>&- | grep -v $0 | crontab -
+
+
+   crontab -l 2>&- | grep -v /etc/init.d/chilli | crontab -
+
+
+        start-stop-daemon --oknodo --stop --quiet --pidfile
+/var/run/$NAME.$HS_LANIF.pid \
+                --exec $DAEMON
+        echo
+        ;;
+
+    *)
+        echo "Usage: $0 {start|stop|restart|reload|radconfig}"
+        exit 1
+esac
+
+exit $?
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130211/4dfc7154/attachment-0001.html>
+
+From radius.sir at gmail.com  Mon Feb 11 12:51:40 2013
+From: radius.sir at gmail.com (Russell Mike)
+Date: Mon, 11 Feb 2013 12:51:40 +0000
+Subject: [Chilli] SOLVED !!!! No process in pidfile
+ '/usr/local/var/run/chilli.pid' found running; none killed.
+In-Reply-To: <CADao4CqvA+nRfEcVVB65VLMQGp-08dTxKmneUSGc4e0aq0W29A@mail.gmail.com>
+References: <CADao4CqvA+nRfEcVVB65VLMQGp-08dTxKmneUSGc4e0aq0W29A@mail.gmail.com>
+Message-ID: <CADao4Co2CXP80L8JuTmrT5pO90Vk8mTCqGzyDe1+oOhcaWwu_A@mail.gmail.com>
+
+>
+>
+>>>>  Thanks dear all once again --
+>>>>
+>>>>  The only problem left that i cannot stop chilli (Coova_1.3.0 & UBUNTU
+>>>> 12.4 LTS x64). I can modify the start/stop script and use "kill -9" but
+>>>> really do not want to do that. perhaps there is better way to handle this.
+>>>>
+>>>>  because i read that kill -9 doesn't give the process a chance to
+>>>> cleanly:
+>>>>
+>>>> 1) shut down socket connections
+>>>>
+>>>> 2) clean up temp files
+>>>>
+>>>> 3) inform its children that it is going away
+>>>>
+>>>> 4) reset its terminal characteristics
+>>>>
+>>>> and so on and so on and so on.
+>>>>
+>>>>
+>>>>  *PROBLEM:*
+>>>>
+>>>> root at captive:~# /etc/init.d/chilli stop
+>>>>
+>>>> Found configuration /usr/local/etc/chilli/coova-vlan10/chilli.conf
+>>>>
+>>>> Running DHCPIF=coova-vlan10 /etc/init.d/chilli stop
+>>>>
+>>>> Shutting down chilli: No process in pidfile
+>>>> '/usr/local/var/run/chilli.coova-vlan10.pid' found running; none killed.
+>>>>
+>>>>
+>>>>  Found configuration /usr/local/etc/chilli/coova-vlan20/chilli.conf
+>>>>
+>>>> Running DHCPIF=coova-vlan20 /etc/init.d/chilli stop
+>>>>
+>>>> Shutting down chilli: No process in pidfile
+>>>> '/usr/local/var/run/chilli.coova-vlan20.pid' found running; none killed.
+>>>>
+>>>>
+>>>>  Found configuration /usr/local/etc/chilli/coova-vlan30/chilli.conf
+>>>>
+>>>> Running DHCPIF=coova-vlan30 /etc/init.d/chilli stop
+>>>>
+>>>> Shutting down chilli: No process in pidfile
+>>>> '/usr/local/var/run/chilli.coova-vlan30.pid' found running; none killed.
+>>>>
+>>>>
+>>>>  Found configuration /usr/local/etc/chilli/coova-vlan40/chilli.conf
+>>>>
+>>>> Running DHCPIF=coova-vlan40 /etc/init.d/chilli stop
+>>>>
+>>>> Shutting down chilli: No process in pidfile
+>>>> '/usr/local/var/run/chilli.coova-vlan40.pid' found running; none killed.
+>>>>
+>>>>
+>>>>  Found configuration /usr/local/etc/chilli/coova-vlan50/chilli.conf
+>>>>
+>>>> Running DHCPIF=coova-vlan50 /etc/init.d/chilli stop
+>>>>
+>>>> Shutting down chilli: No process in pidfile
+>>>> '/usr/local/var/run/chilli.coova-vlan50.pid' found running; none killed.
+>>>>
+>>>> Thanks / Regards
+>>>>
+>>>> RM --R
+>>>>
+>>>>
+>
+> *Mike WROTE:*
+>
+> Hi Sir,
+>
+> Ever since chilli was installed, default script was never able to stop the
+> service, i tried re compelling, uninstalled/installed number of time. but
+> just after the installation this script never could stop the daemon.
+>
+>
+> *Chuan SAID:*
+> I install coovachilli with deb from old chilli file. It includes chilli
+> and start stop scripts. I added original chilli for you with email. you
+> need to create only 1 vlan then test start and stop check on start It
+> creates chilli*.pid cause you need pid to kill for stop chilli
+>
+>
+> *Mike Wrote: *
+>
+> Hi Sir
+>
+> BIG BIG Thanks, that worked !!!!
+>
+> i can now stop chilli normally. i modified the stop section of my chilli
+> start script, i need to create two variables in edition. I tested running
+> chilli on physical interface (one instance only) & stop using script, it
+> just worked. i am expecting it would work for VLANs (multi instances) as
+> well.
+>
+> But the script that was created during compilation/installation were never
+> able to stop the daemon. Was failing with following error:
+> *
+> *
+> Shutting down chilli: No process in pidfile '/usr/local/var/run/chilli.pid'
+> found running; none killed.
+>
+> Say simple work thanks does not seems to be enough. God will through shine
+> in your way. here is the working script *(CoovaChilli 1.3.0 on
+> UBUNTU_12.4LTS x64)*. Modification are showed in RED.
+>
+>
+>
+> #!/bin/sh
+>
+> *# Custom Variable Defined by RM ---*
+> *DAEMON=/usr/local/sbin/chilli*
+> *NAME=chilli*
+>
+> [ -f /usr/local/sbin/chilli ] || exit 0
+>
+> . /usr/local/etc/chilli/functions
+>
+> MULTI=$(ls /usr/local/etc/chilli/*/chilli.conf 2>/dev/null)
+> [ -z "$DHCPIF" ] && [ -n "$MULTI" ] && {
+>     for c in $MULTI;
+>     do
+>         echo "Found configuration $c"
+>         DHCPIF=$(basename $(echo $c|sed 's#/chilli.conf##'))
+>         export DHCPIF
+>         echo "Running DHCPIF=$DHCPIF $0 $*"
+>         sh $0 $*
+>     done
+>     exit
+> }
+>
+> if [ -n "$DHCPIF" ]; then
+>     CONFIG=/usr/local/etc/chilli/$DHCPIF/chilli.conf
+>     pidfile=/usr/local/var/run/chilli.$DHCPIF.pid
+> else
+>     CONFIG=/usr/local/etc/chilli.conf
+>     pidfile=/usr/local/var/run/chilli.pid
+> fi
+>
+> [ -f $CONFIG ] || {
+>     echo "$CONFIG Not found"
+>     exit 0
+> }
+>
+> check_required
+>
+> RETVAL=0
+> prog="chilli"
+>
+> case $1 in
+>     start)
+>         echo -n "Starting $prog: "
+>
+>         /sbin/modprobe tun >/dev/null 2>&1
+>         echo 1 > /proc/sys/net/ipv4/ip_forward
+>
+>         [ -e /dev/net/tun ] || {
+>             (cd /dev;
+>                 mkdir net;
+>                 cd net;
+>                 mknod tun c 10 200)
+>         }
+>
+>         writeconfig
+>         radiusconfig
+>
+>         test ${HS_ADMINTERVAL:-0} -gt 0 && {
+>             (crontab -l 2>&- | grep -v $0
+>                 echo "*/$HS_ADMINTERVAL * * * * $0 radconfig"
+>                 ) | crontab - 2>&-
+>         }
+>
+>         ifconfig $HS_LANIF 0.0.0.0
+>         if [ "$(which start-stop-daemon)" = "" ]; then
+>             /usr/local/sbin/chilli -c $CONFIG --pidfile=$pidfile &
+>         else
+>             start-stop-daemon -S --pidfile=$pidfile --user=chilli \
+>                 --exec /usr/local/sbin/chilli -- -c $CONFIG &
+>         fi
+>         echo
+>         ;;
+>
+>     radconfig)
+>         [ -e $MAIN_CONF ] || writeconfig
+>         radiusconfig
+>         ;;
+>
+>     reload)
+>         killall -HUP chilli
+>         ;;
+>
+>     restart)
+>         $0 stop
+>         sleep 1
+>         $0 start
+>         RETVAL=$?
+>         ;;
+>
+>     stop)
+>         echo -n "Shutting down $prog: "
+>
+>         crontab -l 2>&- | grep -v $0 | crontab -
+>
+>
+>    crontab -l 2>&- | grep -v /etc/init.d/chilli | crontab -
+>
+>
+>         start-stop-daemon --oknodo --stop --quiet --pidfile
+> /var/run/$NAME.$HS_LANIF.pid \
+>                 --exec $DAEMON
+>         echo
+>         ;;
+>
+>     *)
+>         echo "Usage: $0 {start|stop|restart|reload|radconfig}"
+>         exit 1
+> esac
+>
+> exit $?
+>
+>
+> **
+>
+
+
+
+> *MIKE WROTE:*
+>
+
+i here by update the status & confirm that the above script is successfully
+able to stop the chilli multi instance with minor change. i can now stop
+all five instance using "/etc/init.d/chilli stop" without any issue at all.
+it really does the job.
+
+To refresh the memory following was my problem:
+
+Shutting down chilli: No process in pidfile
+'/usr/local/var/run/chilli.coova-vlan10.pid'
+found running; none killed.
+Shutting down chilli: No process in pidfile
+'/usr/local/var/run/chilli.coova-vlan20.pid'
+found running; none killed.
+Shutting down chilli: No process in pidfile
+'/usr/local/var/run/chilli.coova-vlan30.pid'
+found running; none killed.
+Shutting down chilli: No process in pidfile
+'/usr/local/var/run/chilli.coova-vlan40.pid'
+found running; none killed.
+Shutting down chilli: No process in pidfile
+'/usr/local/var/run/chilli.coova-vlan50.pid'
+found running; none killed.
+
+
+Problem is also documented in the above section of this mail. Credit goes
+to CHUAN (EasyHorpak.com). We were working together. i tried to make stuff
+very clear for others to troubleshoot.
+
+With multi instances script was giving following error when it was stoping
+each instance. in my case five instances, this error was repeated 5 times
+after i issues "/etc/nit.d/chilli stop"
+
+" --exec " NOT FOUNG"
+" --exec " NOT FOUNG"
+" --exec " NOT FOUNG"
+" --exec " NOT FOUNG"
+" --exec " NOT FOUNG"
+
+FIX: Make it as one line, rest all the script remains the same as above
+(<>).
+
+*FROM:*
+start-stop-daemon --oknodo --stop --quiet --pidfile
+/var/run/$NAME.$HS_LANIF.pid \
+                --exec $DAEMON
+
+*TO:*
+ start-stop-daemon --oknodo --stop --quiet --pidfile
+/var/run/$NAME.$HS_LANIF.pid --exec $DAEMON
+
+
+Thanks to entire community
+RM --
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130211/922ea1f7/attachment-0001.html>
+
+From radius.sir at gmail.com  Mon Feb 11 14:40:45 2013
+From: radius.sir at gmail.com (Russell Mike)
+Date: Mon, 11 Feb 2013 14:40:45 +0000
+Subject: [Chilli] [RESOLVED !!!] Coova-Chilli Multi Tenanency Mode All
+ daemons do not come up on reboot
+Message-ID: <CADao4CoLdRFjaj3N-r8Zc0fiAttEACFb+JUpeFm-S4dHycqt9w@mail.gmail.com>
+
+#!/bin/sh
+
+>
+> TUNTAP=$(basename $DEV)
+> UNDO_FILE=/usr/local/var/run/chilli.$TUNTAP.sh
+>
+> . /usr/local/etc/chilli/functions
+>
+> [ -e "$UNDO_FILE" ] && sh $UNDO_FILE 2>/dev/null
+> rm -f $UNDO_FILE 2>/dev/null
+>
+> ipt() {
+>     opt=$1; shift
+>     echo "iptables -D $*" >> $UNDO_FILE
+>     iptables $opt $*
+> }
+>
+> ipt_in() {
+>     ipt -I INPUT -i $TUNTAP $*
+> }
+>
+> if [ -n "$TUNTAP" ]
+> then
+>     # ifconfig $TUNTAP mtu $MTU
+>     if [ "$KNAME" != "" ]
+>     then
+>         ipt -I FORWARD -i $DHCPIF -m coova --name $KNAME -j ACCEPT
+>         ipt -I FORWARD -o $DHCPIF -m coova --name $KNAME --dest -j ACCEPT
+>         ipt -I FORWARD -i $TUNTAP -j ACCEPT
+>         ipt -I FORWARD -o $TUNTAP -j ACCEPT
+>         [ -n "$DHCPLISTEN" ] && ifconfig $DHCPIF $DHCPLISTEN
+>     else
+>         if [ "$LAYER3" != "1" ]
+>         then
+>             [ -n "$UAMPORT" -a "$UAMPORT" != "0" ] && \
+>                 ipt_in -p tcp -m tcp --dport $UAMPORT --dst $ADDR -j ACCEPT
+>
+>             [ -n "$UAMUIPORT" -a "$UAMUIPORT" != "0" ] && \
+>                 ipt_in -p tcp -m tcp --dport $UAMUIPORT --dst $ADDR -j
+> ACCEPT
+>
+>             [ -n "$HS_TCP_PORTS" ] && {
+>                 for port in $HS_TCP_PORTS; do
+>                     ipt_in -p tcp -m tcp --dport $port --dst $ADDR -j
+> ACCEPT
+>                 done
+>             }
+>
+>             ipt_in -p udp -d 255.255.255.255 --destination-port 67:68 -j
+> ACCEPT
+>             ipt_in -p udp -d $ADDR --destination-port 67:68 -j ACCEPT
+>             ipt_in -p udp --dst $ADDR --dport 53 -j ACCEPT
+>             ipt_in -p icmp --dst $ADDR -j ACCEPT
+>
+>             ipt -A INPUT -i $TUNTAP --dst $ADDR -j DROP
+>
+>             if [ "$ONLY8021Q" != "1" ]
+>             then
+>                 ipt -I INPUT -i $DHCPIF -j DROP
+>             fi
+>         fi
+>
+>         if [ "$ONLY8021Q" != "1" ]
+>         then
+>             ipt -I FORWARD -i $DHCPIF -j DROP
+>             ipt -I FORWARD -o $DHCPIF -j DROP
+>         fi
+>
+>         ipt -I FORWARD -i $TUNTAP -j ACCEPT
+>         ipt -I FORWARD -o $TUNTAP -j ACCEPT
+>
+>         # Help out conntrack to not get confused
+>         # (stops masquerading from working)
+>         #ipt -I PREROUTING -t raw -j NOTRACK -i $DHCPIF
+>         #ipt -I OUTPUT -t raw -j NOTRACK -o $DHCPIF
+>
+>         # Help out MTU issues with PPPoE or Mesh
+>         ipt -I FORWARD -p tcp -m tcp --tcp-flags SYN,RST SYN -j TCPMSS
+> --clamp-mss-to-pmtu
+>         ipt -I FORWARD -t mangle -p tcp -m tcp --tcp-flags SYN,RST SYN -j
+> TCPMSS --clamp-mss-to-pmtu
+>
+>         [ "$HS_LAN_ACCESS" != "on" -a "$HS_LAN_ACCESS" != "allow" ] && \
+>             ipt -I FORWARD -i $TUNTAP \! -o $HS_WANIF -j DROP
+>
+>         ipt -I FORWARD -i $TUNTAP -o $HS_WANIF -j ACCEPT
+>
+>         [ "$HS_LOCAL_DNS" = "on" ] && \
+>             ipt -I PREROUTING -t nat -i $TUNTAP -p udp --dport 53 -j DNAT
+> --to-destination $ADDR
+>     fi
+> fi
+>
+> # site specific stuff optional
+> [ -e /usr/local/etc/chilli/ipup.sh ] && . /usr/local/etc/chilli/ipup.sh
+>
+> *
+> *
+> *Mike SAID:*
+>
+> Dear David B.
+>
+> First, Thank you very much for showing us correct procedure. And it should
+> be enough from your side. i am sure this would kill the problem. i am
+> talking about my self only, not very good in bash and i did not understand
+> what exactly should be done and which part of the "up.sh" i am humbly
+> requesting for more help so that i do not make it more worse situation. My
+> five instances starts like this:
+>
+> What should be done with my "up.sh" copied above.
+>
+> root at captive:~# /etc/init.d/chilli start
+> Found configuration /usr/local/etc/chilli/coova-vlan10/chilli.conf
+> Running DHCPIF=coova-vlan10 /etc/init.d/chilli start
+> Starting chilli:
+> Found configuration /usr/local/etc/chilli/coova-vlan20/chilli.conf
+> Running DHCPIF=coova-vlan20 /etc/init.d/chilli start
+> Starting chilli:
+> Found configuration /usr/local/etc/chilli/coova-vlan30/chilli.conf
+> Running DHCPIF=coova-vlan30 /etc/init.d/chilli start
+> Starting chilli:
+> Found configuration /usr/local/etc/chilli/coova-vlan40/chilli.conf
+> Running DHCPIF=coova-vlan40 /etc/init.d/chilli start
+> Starting chilli:
+> Found configuration /usr/local/etc/chilli/coova-vlan50/chilli.conf
+> Running DHCPIF=coova-vlan50 /etc/init.d/chilli start
+> Starting chilli:
+>
+> *Thanks / RM --*
+>
+>
+>
+>> *David Bird SAID: *
+>>
+>>  To serialize the iptables, you can edit the up.sh/down.sh scripts to
+>>> wrap all the commands inside something like:
+>>>
+>>>
+>>> (
+>>> flock -s 200
+>>>
+>>> # ... commands executed under lock ...
+>>>
+>>> ) 200>/tmp/.chilli-flock
+>>>
+>>> David Bird
+>>>
+>>
+>>>
+>>
+>>
+>>> *> Luic SAID*
+>>> >
+>>> >
+>>> > Hello everyone,
+>>> >
+>>> >  1. It could be related to iptable locking, because I've got a bit of
+>>> > success if I add "sleep 5" on /etc/init.d/chilli after starting each
+>>> > vlan. It's not 100% win, but at least the success rate increased.
+>>> >
+>>> >
+>>> >
+>>> * > Mike SAID:*
+>>> > I can agree to your point. But i do not use different script for
+>>> > starting multiple instances (vlans) the same "/etc/init.d/chilli
+>>> > start" does starts everything. But i have been advised to write a
+>>> > different script, then i will add the wait between the "start" of each
+>>> > instance. The following line in start script just check "chilli.conf"
+>>> > files and start everything.  MULTI= $(ls
+>>> /usr/local/etc/chilli/*/chilli.conf 2>/dev/null)
+>>> >
+>>>
+>>>
+*
+*
+*
+*
+*
+*
+*Mike Updated His Response:*
+
+Hi Luic,
+
+This is the update with respect to your idea, 5 second sleep between
+starting each "chilli" daemon (in multi tenant mode / environment). i here
+by confirm that, i have also get success rate much much higher than before.
+Prior to the solution fixed, when ever i was restarting the chilli server
+(Ubuntu).
+
+Coova-Chilli was hardly coming up by to self. When i say that, it means
+that chilli was bounded to all ports, all stuff
+(pid,cfg.bin,sock,ipc,tun*.sh) were successfully created
+under"/var/run/chilli*"
+process was visiable using "ps -ax". BUT sometimes there was no login page
+for some VLANs or for any VLAN. unless i do chilli stop/start once or more
+than once.
+
+*Success Rate: *
+
+i also added 5 sec delay between each deamon when starting (3 second delay
+also worked !). i have restated my server more than 7 times before writing
+this post but non of the FIVE daemon failed during any reboot. all were
+successfully loaded. i have the feeling that it is 100% okay. problem has
+been killed. i will update this post after some days, when server has been
+restarted more than 50 times and nothing failed. (it is lab server, are
+free to restart).
+
+I would also update my orignal post, because it would help those who may
+face this problem is future and they can strate away go to the solution.
+
+Thanks David B. & Everyone in the conversation.
+
+*[ubuntu server 12.4 64bit edition] *
+Here is the single working script that starts / stop all five daemons
+(vlan10, vlan20, vlan30, vlan40, vlnan50) and add the 5 second delay
+between daemons during start and stop. Mind the sleep command in bold
+
+
+root at captive:~# cat /etc/init.d/chilli
+
+#!/bin/sh
+
+*# Custom Variable Defined - Please mind the conflict if any. *
+DAEMON=/usr/local/sbin/chilli
+NAME=chilli
+
+[ -f /usr/local/sbin/chilli ] || exit 0
+
+. /usr/local/etc/chilli/functions
+
+MULTI=$(ls /usr/local/etc/chilli/*/chilli.conf 2>/dev/null)
+[ -z "$DHCPIF" ] && [ -n "$MULTI" ] && {
+    for c in $MULTI;
+    do
+        echo "Found configuration $c"
+        DHCPIF=$(basename $(echo $c|sed 's#/chilli.conf##'))
+        export DHCPIF
+        echo "Running DHCPIF=$DHCPIF $0 $*"
+        sh $0 $*
+    done
+    exit
+}
+
+if [ -n "$DHCPIF" ]; then
+    CONFIG=/usr/local/etc/chilli/$DHCPIF/chilli.conf
+    pidfile=/usr/local/var/run/chilli.$DHCPIF.pid
+else
+    CONFIG=/usr/local/etc/chilli.conf
+    pidfile=/usr/local/var/run/chilli.pid
+fi
+
+[ -f $CONFIG ] || {
+    echo "$CONFIG Not found"
+    exit 0
+}
+
+check_required
+
+RETVAL=0
+prog="chilli"
+
+case $1 in
+    start)
+        echo -n "Starting $prog: "
+
+        /sbin/modprobe tun >/dev/null 2>&1
+        echo 1 > /proc/sys/net/ipv4/ip_forward
+
+        [ -e /dev/net/tun ] || {
+            (cd /dev;
+                mkdir net;
+                cd net;
+                mknod tun c 10 200)
+        }
+
+        writeconfig
+        radiusconfig
+
+        test ${HS_ADMINTERVAL:-0} -gt 0 && {
+            (crontab -l 2>&- | grep -v $0
+                echo "*/$HS_ADMINTERVAL * * * * $0 radconfig"
+                ) | crontab - 2>&-
+        }
+
+        ifconfig $HS_LANIF 0.0.0.0
+        if [ "$(which start-stop-daemon)" = "" ]; then
+            /usr/local/sbin/chilli -c $CONFIG --pidfile=$pidfile &
+        else
+            start-stop-daemon -S --pidfile=$pidfile --user=chilli \
+                --exec /usr/local/sbin/chilli -- -c $CONFIG &
+        *sleep 5*
+        fi
+        echo
+        ;;
+
+    radconfig)
+        [ -e $MAIN_CONF ] || writeconfig
+        radiusconfig
+        ;;
+
+    reload)
+        killall -HUP chilli
+        ;;
+
+    restart)
+        $0 stop
+        sleep 1
+        $0 start
+        RETVAL=$?
+        ;;
+
+    stop)
+        echo -n "Shutting down $prog: "
+
+        crontab -l 2>&- | grep -v $0 | crontab -
+
+
+   crontab -l 2>&- | grep -v /etc/init.d/chilli | crontab -
+
+
+        start-stop-daemon --oknodo --stop --quiet --pidfile
+/var/run/$NAME.$HS_LANIF.pid --exec $DAEMON
+        *sleep 5*
+        echo
+        ;;
+
+
+    *)
+        echo "Usage: $0 {start|stop|restart|reload|radconfig}"
+        exit 1
+esac
+
+exit $?
+
+*#END*
+*
+*
+*Thanks RM --*
+
+
+
+
+>
+>>> >
+>>> >* Luic Asked:*
+>>> >         2. The iptables file located at
+>>> >         v /usr/local/var/run/chilli.tun0.sh is it generated every time
+>>> >         chilli boots? Is it executed on chilli process startup? Could
+>>> >         that be the issue? Not giving enough time for the OS to write
+>>> >         the file, and ask it to run the script? If it?s that, that
+>>> >         would explain why is a sporadic problem happening on multi
+>>> >         chilli, because is starting several chilli processes as fast
+>>> >         as the machine is capable of.
+>>> >
+>>> >
+>>> * >         Mike SAID:
+>>> >*
+>>> >         Yes Luic, the file, the iptables rule under "/var/run/tun*.sh
+>>> >         is created every time.  Because i have seen that when there is
+>>> >         login page problem from a VLAN, i have verify that iptables
+>>> >         file exists normal for that tunnel
+>>> >         "/var/run/tun_problem_vlan.sh. Well, are you satisfied with
+>>> >         the contents for the iptables file? do you think that i still
+>>> >         need the iptable rule you advised earlier? in the above
+>>> >         section of the communication?
+>>> >
+>>> >
+>>>
+>>>
+>>> >        *  Ynezz SAID:*
+>>> >
+>>> >         All rules from up.sh except the following seem to get created:
+>>> >
+>>> >          ipt_in -p tcp -m tcp --dport $UAMPORT --dst $ADDR -j ACCEPT
+>>> >
+>>> >
+>>> >          And sometimes some other rules :)
+>>> >
+>>> >          It seems to only ever happen in multi-instance environments
+>>> >         so maybe
+>>> >
+>>> >         it is something to do with iptables locking and not allowing
+>>> >         the
+>>> >
+>>> >         insertion of the rule while another instance is trying to do
+>>> >         the same?  I'm not sure.
+>>> >
+>>> >
+>>> >         Yes, maybe something like that, I didn't investigated it in
+>>> >         the detail either.
+>>> >
+>>> >         I've added simple locking into the coova-chilli init.d script
+>>> >         and added wildcard system wide iptables rules like "-i tun+"
+>>> >         and it improved a lot.
+>>> >
+>>> >          -- ynezz
+>>> >
+>>> >
+>>> * > Mike Wrote:*
+>>> >
+>>> >
+>>> > HI Yneez,
+>>> >
+>>> >
+>>> > It is Fully functional UB 12.4LTS x86_64, suffering with this disease
+>>> > only. It will help others as well, if your suggestion fixed the
+>>> > problem. Are you willing to provide more information so that i can
+>>> > edit the script & give a try? How the below is done you said
+>>> >
+>>> >
+>>> > I've added simple locking into the coova-chilli init.d script and
+>>> > added wildcard system wide iptables rules like "-i tun+" and it
+>>> > improved a lot.
+>>> >
+>>> >
+>>> >
+>>> >
+>>> >
+>>> > Big Thanks 2 Everyone !!!!
+>>> >
+>>> >
+>>> > Thanks RM --
+>>> >
+>>> >
+>>> >
+>>> >
+>>> > _______________________________________________
+>>> > Chilli mailing list
+>>> > Chilli at coova.org
+>>> > http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>>>
+>>> --
+>>> --
+>>> David Bird
+>>> http://www.linkedin.com/in/dwbird
+>>> https://twitter.com/wlanmac
+>>>
+>>>
+>>
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130211/5a5693cb/attachment-0001.html>
+
+From radius.sir at gmail.com  Mon Feb 11 15:03:39 2013
+From: radius.sir at gmail.com (Russell Mike)
+Date: Mon, 11 Feb 2013 15:03:39 +0000
+Subject: [Chilli] Coova-Chilli Multi Tenanency Mode
+In-Reply-To: <CADao4CpUxt5+-ptUC-7WJ7eApc8UOVCMG8hVT+gR0bM8mDSmAg@mail.gmail.com>
+References: <CADao4CpUxt5+-ptUC-7WJ7eApc8UOVCMG8hVT+gR0bM8mDSmAg@mail.gmail.com>
+Message-ID: <CADao4CpZrqE=4fEeAnmwAF6_LwYcOTXSPHXWAb1MCmotysVWBg@mail.gmail.com>
+
+On Wed, Feb 6, 2013 at 11:57 AM, Russell Mike <radius.sir at gmail.com> wrote:
+
+> Dear David & Community Members Greetings,
+>
+> This discussion is with respect to that, how to make sure all instances
+> are up for "CoovaChilli" in multi tenant environment after hardware
+> server reboots.
+>
+> *1.)* This is ISP environment. We have 10 Coovachill instances running
+> (Multi Tenanency) using (VLANs 10,20,30,40,50,60,70,80,90,100). When system
+> reboot, all daemons comes up just fine and start serving users by
+> presenting login page. We are very very happy from Coova-Chilli
+> implementation.
+>
+> *2.)* BUT SOMETIMES when system reboot and after it has comes up. For
+> example VLAN30 would not present login page, other NINE(9) instances would
+> be just fine, working as expected. Then i restart Chilli daemon as
+> solution. Now, all 10 daemons would come up and start serving just fine
+> again.
+>
+> *2a)* BUT SOMETIME, when i apply the solution (restart Chill daemon) one
+> of them would not present login page again (it is random VLAN (Sometime
+> 30/80/20 etc..)).
+>
+> For example: i restarted the service earlier because VLAN 90 was not
+> presenting login page, after restart VLAN60 daemon is not presenting login
+> page. Problem is recoverable, by restarting service more than once.
+>
+> *2b.)* When a instance would not present login page. Same time i see
+> that, it is mounted & listening on the port ("netstat") stuff looks obvious
+> from that point of view. Tunnel would be created as well, all stuff belongs
+> to that VLAN (that is not serving web page) exists under "/var/run'chilli*
+> (pid, ipc, socket, bash script).
+>
+> *HOW I AM DOING IT: *
+>
+> Now whenever the Chilli Server is restarted, i manually browse & check if
+> all daemons are presenting login pages. But eventually, we going to run
+> minimum 120 daemons. it would not possible to browse 120 pages after every
+> reboot. Is there better way to handle it? or what could be the auto fix? i
+> was thinking something like a script that can check the functionality, if
+> everything did not up restart the daemon again. i understand that we do
+> not restart data center servers everyday but it happens sometimes due to
+> the power outage or UPS failed or generator did not come up on time etc.
+>
+> Thanks / Regards
+>
+> RM ---
+>
+
+
+
+*Mike Updated His Post: *
+
+
+Hi, Who ever is facing the problem mentioned above, in multi tenancy
+environment, can try to add the delay between when starting / stoping each
+chilli daemon. For the reference, you can search archives. i have single
+script there that start & stop multiple chilli daemons successfully (Tested
+with 5 daemons) and add delays between each daemon when starting and
+stoping.
+
+Coova-Chilli_1.3.0/UB_12.4LTS x64 Server
+
+I Love Covva-Chiili - Thanks David B.
+
+Thanks
+RM --
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130211/f833084d/attachment.html>
+
+From lferreira at cabocom.cv  Mon Feb 11 19:27:25 2013
+From: lferreira at cabocom.cv (Luis Ferreira)
+Date: Mon, 11 Feb 2013 18:27:25 -0100
+Subject: [Chilli] uamallowed & uamdomain help
+Message-ID: <014801ce088d$d34a83d0$79df8b70$@cabocom.cv>
+
+ 
+
+Hi everyone,
+
+ 
+
+I've got a problem with allowing paypal to our clients either using
+uamdomain our uamallowed. Paypal has several IP ranges, and it does load
+balance between them. I've put the full range of ip's on the config, so
+that's not the issue, but it does not work all the time.
+
+My question is how does chilli work with dns resolution?
+
+It is because I see that paypal works good during like 12-24 hours, but then
+stop working properly and locking the new ip ranges that paypal start using.
+And after a couple of hours, it start work again. 
+
+Does chilli makes a dns resolution only once or every now and then?
+
+Could it be that using layer3 is the cause of chilli locking access to
+paypal.com?
+
+Is it possible to configure paypal access using some other option besides
+uamdomain and uamallowed?
+
+ 
+
+Coova-chilli-1.2.9 on Layer3
+
+CentOS 3.0
+
+ 
+
+Regards,
+
+Luis Ferreira
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130211/df2f732b/attachment.html>
+
+From lferreira at cabocom.cv  Mon Feb 11 20:18:03 2013
+From: lferreira at cabocom.cv (Luis Ferreira)
+Date: Mon, 11 Feb 2013 19:18:03 -0100
+Subject: [Chilli] uamallowed & uamdomain help
+In-Reply-To: <CAJc1nuqjo9qvkLyZ=Zsxj6HoyiXPWchGkVvwk1DCm4oTB83Lqw@mail.gmail.com>
+References: <014801ce088d$d34a83d0$79df8b70$@cabocom.cv>
+ <CAJc1nuqjo9qvkLyZ=Zsxj6HoyiXPWchGkVvwk1DCm4oTB83Lqw@mail.gmail.com>
+Message-ID: <015e01ce0894$e65427e0$b2fc77a0$@cabocom.cv>
+
+Hi,
+
+ 
+
+First of all, sorry for over complicating it.
+
+I've got that option already on the confi, sorry for not mentioning it.
+Also, for paypal http content, it work good. The problem is with https. At
+the moment, is some of the chilli instances it is working, and in others is
+not.
+
+I've put
+
+HS_UAMDOMAINS=.paypal.com,.paypalobjects.com,etc.
+
+Also
+
+uamallowed      "paypal IP's range."
+
+also
+
+uamdomain .paypal.com
+
+uamdomain .paypalobjects.com
+
+ 
+
+could my problem be from putting it in 3 places (hs_uamdomains, uamallowed
+and uamdomain)?
+
+ 
+
+Regards,
+
+Luis
+
+ 
+
+ 
+
+You're over complicating it. This has been a problem for a long time and
+CoovaChilll has a work around built in.
+
+HS_UAMDOMAINS=".paypal.com,.paypalobjects.com"
+
+Set that and CoovaChilli will resolve the domains and allow the result. IIRC
+it also hijacks all the clients DNS so it will only be allowed IP.
+
+ 
+
+Hi everyone,
+
+ I've got a problem with allowing paypal to our clients either using
+uamdomain our uamallowed. Paypal has several IP ranges, and it does load
+balance between them. I've put the full range of ip's on the config, so
+that's not the issue, but it does not work all the time.
+
+My question is how does chilli work with dns resolution?
+
+It is because I see that paypal works good during like 12-24 hours, but then
+stop working properly and locking the new ip ranges that paypal start using.
+And after a couple of hours, it start work again. 
+
+Does chilli makes a dns resolution only once or every now and then?
+
+Could it be that using layer3 is the cause of chilli locking access to
+paypal.com?
+
+Is it possible to configure paypal access using some other option besides
+uamdomain and uamallowed?
+
+ 
+
+Coova-chilli-1.2.9 on Layer3
+
+CentOS 3.0
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130211/b265c810/attachment-0001.html>
+
+From radius.sir at gmail.com  Wed Feb 13 11:39:45 2013
+From: radius.sir at gmail.com (Russell Mike)
+Date: Wed, 13 Feb 2013 11:39:45 +0000
+Subject: [Chilli] Vouchers & IP Address Coova-Chilli
+Message-ID: <CADao4CrqDcw2vXB6KKO8V5T-CCffOVxazREent0pHHgVDWHx8g@mail.gmail.com>
+
+Dear List & David B. Greetings
+
+i have 5 instances for Coova-Chilli 1.3.0 up & running . VLAN10, VLAN20,
+VLAN30, VLAN40, VLAN50 without any problem. We do not want VLAN 20 vouchers
+to work with VLAN30 vice versa for all VLANs.
+
+At this point, i only wish to know if someone is already doing it that way.
+if possible i will study about it.
+
+Thanks RM --
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130213/f5f1184a/attachment.html>
+
+From info at easyhorpak.com  Wed Feb 13 14:29:34 2013
+From: info at easyhorpak.com (EasyHorpak.com)
+Date: Wed, 13 Feb 2013 21:29:34 +0700
+Subject: [Chilli] Vouchers & IP Address Coova-Chilli
+In-Reply-To: <CADao4CrqDcw2vXB6KKO8V5T-CCffOVxazREent0pHHgVDWHx8g@mail.gmail.com>
+References: <CADao4CrqDcw2vXB6KKO8V5T-CCffOVxazREent0pHHgVDWHx8g@mail.gmail.com>
+Message-ID: <511BA34E.20400@easyhorpak.com>
+
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130213/dcb79701/attachment.html>
+
+From danny at sb-ps.ae  Thu Feb 14 03:52:25 2013
+From: danny at sb-ps.ae (Danny Magat)
+Date: Thu, 14 Feb 2013 07:52:25 +0400
+Subject: [Chilli] Chilli Digest, Vol 39, Issue 14
+In-Reply-To: <mailman.1.1360756801.22758.chilli@coova.org>
+References: <mailman.1.1360756801.22758.chilli@coova.org>
+Message-ID: <9C37DE5A-E9DF-48E6-9A42-BFFFA9231555@sb-ps.ae>
+
+Hi mike,
+
+this requirements is something related to CalledStationId or nasmac on each instances. That when you generate voucher bind it to work only on specific nasmac. or like you said vlan20 and vlan30 make this two instances with different nasmac config yo override the mac address of the network card.
+
+
+
+On Feb 13, 2013, at 4:00 PM, chilli-request at coova.org wrote:
+
+> Send Chilli mailing list submissions to
+>    chilli at coova.org
+> 
+> To subscribe or unsubscribe via the World Wide Web, visit
+>    http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+> or, via email, send a message with subject or body 'help' to
+>    chilli-request at coova.org
+> 
+> You can reach the person managing the list at
+>    chilli-owner at coova.org
+> 
+> When replying, please edit your Subject line so it is more specific
+> than "Re: Contents of Chilli digest..."
+> 
+> 
+> Today's Topics:
+> 
+>   1. Vouchers & IP Address Coova-Chilli (Russell Mike)
+> 
+> 
+> ----------------------------------------------------------------------
+> 
+> Message: 1
+> Date: Wed, 13 Feb 2013 11:39:45 +0000
+> From: Russell Mike <radius.sir at gmail.com>
+> To: chilli list <chilli at coova.org>
+> Subject: [Chilli] Vouchers & IP Address Coova-Chilli
+> Message-ID:
+>    <CADao4CrqDcw2vXB6KKO8V5T-CCffOVxazREent0pHHgVDWHx8g at mail.gmail.com>
+> Content-Type: text/plain; charset="iso-8859-1"
+> 
+> Dear List & David B. Greetings
+> 
+> i have 5 instances for Coova-Chilli 1.3.0 up & running . VLAN10, VLAN20,
+> VLAN30, VLAN40, VLAN50 without any problem. We do not want VLAN 20 vouchers
+> to work with VLAN30 vice versa for all VLANs.
+> 
+> At this point, i only wish to know if someone is already doing it that way.
+> if possible i will study about it.
+> 
+> Thanks RM --
+> -------------- next part --------------
+> An HTML attachment was scrubbed...
+> URL: <http://lists.coova.org/pipermail/chilli/attachments/20130213/f5f1184a/attachment-0001.html>
+> 
+> ------------------------------
+> 
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+> 
+> 
+> End of Chilli Digest, Vol 39, Issue 14
+> **************************************
+
+From danny at sb-ps.ae  Thu Feb 14 14:36:54 2013
+From: danny at sb-ps.ae (Danny Magat)
+Date: Thu, 14 Feb 2013 18:36:54 +0400
+Subject: [Chilli] Chilli Digest, Vol 39, Issue 15
+In-Reply-To: <CADao4Cq99_U64orEHCHWQAWBMRbTGEHeV2wzF4pBsmNM4L7LBw@mail.gmail.com>
+References: <mailman.1.1360756801.22758.chilli@coova.org>
+ <9C37DE5A-E9DF-48E6-9A42-BFFFA9231555@sb-ps.ae>
+ <CADao4CokiE4dX84v0Fwd=Ww9YOmsXtOFuL-C+TV5QR=2JUzNtg@mail.gmail.com>
+ <CADao4CqxhSmwGjaLbLaXE6HhNrEM7_bWog7NqP9_EGKkp05nzw@mail.gmail.com>
+ <08787924-BB1A-4891-962D-DAC2E9C1F4FF@sb-ps.ae>
+ <CADao4Cq99_U64orEHCHWQAWBMRbTGEHeV2wzF4pBsmNM4L7LBw@mail.gmail.com>
+Message-ID: <007701ce0ac0$bc240980$346c1c80$@ae>
+
+ 
+
+ 
+
+From: Russell Mike [mailto:radius.sir at gmail.com] 
+Sent: Thursday, February 14, 2013 4:49 PM
+To: Danny Magat
+Subject: Re: [Chilli] Chilli Digest, Vol 39, Issue 14
+
+ 
+
+Billion of thanks. It worked !!!
+
+Fake MAC & Called-Station-Id
+
+You know the stuff man. God bless you 
+
+Thanks / RM--
+
+
+
+On Thursday, February 14, 2013, Danny Magat wrote:
+
+you can put nasmac=anyfakemac on chilli.conf on each instances
+
+Sent from my iPhone
+
+
+On Feb 14, 2013, at 12:01 PM, Russell Mike <radius.sir at gmail.com> wrote:
+
+ 
+
+ 
+
+On Thu, Feb 14, 2013 at 7:48 AM, Russell Mike <radius.sir at gmail.com> wrote:
+
+ 
+
+ 
+
+Hi mike,
+
+this requirements is something related to CalledStationId or nasmac on each
+instances. That when you generate voucher bind it to work only on specific
+nasmac. or like you said vlan20 and vlan30 make this two instances with
+different nasmac config yo override the mac address of the network card.
+
+ 
+
+ 
+
+Hi Danny,
+
+ 
+
+Thanks you very much for your assistance and fantastic idea, i will try and
+get back to you. 
+
+very much appreciated.
+
+ 
+
+Thanks / RM --
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+Can we fake "Called-Station-Id" using "/usr/local/etc/chilli/config" ? i am
+asking because..
+
+ 
+
+i have noticed that "Called-Station-Id" is mac address of the VLAN interface
+where chilli is serving on. in my setup all VLANs have same
+"Called-Station-Id" (SAME MAC).
+
+ 
+
+ 
+
+my setup: 
+
+ 
+
+0.) Physical Interface eth0 WAN
+
+1.) Physical Interface (eth1) has no IP address designed to serve as trunk
+port. 
+
+2.) Next five VLANs are logical interface for eth1 all are configured with
+ip address from different subnets 
+
+3.) Since they are all logical, raw device is eth1. they are sharing eth1
+mac address
+
+ 
+
+root at captive:~# ifconfig
+
+eth0      Link encap:Ethernet  HWaddr 00:0c:29:8a:1f:4f
+
+          inet addr:71.221.61.67  Bcast:71.221.61.127  Mask:255.255.255.128
+
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+
+          RX packets:92472 errors:0 dropped:10 overruns:0 frame:0
+
+          TX packets:2449 errors:0 dropped:0 overruns:0 carrier:0
+
+          collisions:0 txqueuelen:1000
+
+          RX bytes:5882116 (5.8 MB)  TX bytes:318397 (318.3 KB)
+
+ 
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130214/c2bb5d04/attachment.html>
+
+From radius.sir at gmail.com  Thu Feb 14 16:55:04 2013
+From: radius.sir at gmail.com (Russell Mike)
+Date: Thu, 14 Feb 2013 16:55:04 +0000
+Subject: [Chilli] Data Volume Control Quota Coova-Chilli
+Message-ID: <CADao4Co79+7qnB7kB7US11ep3pH+nXywbrcoLVmWA2mErPsajg@mail.gmail.com>
+
+Dear David B. List Members,
+
+i want to implement quota based vouchers, i know how that works but need
+little help.
+
+1.) i need to create Freeradius RLM SQL_Counter module. *DONE !*
+2.) Include & load module using "radiusd.conf" in module section &
+authorize section of sites-available/default *DONE !*
+3.) Creating RLM_SQLCounter & Query *DONE !*
+*4.) *Accounting already been done by SQL
+*
+*
+i am looking for check & reply items for Freeraiuds & Coova those can
+control quota/volume. I followed the following article but it seems that
+post is old Freeradius don't have that attribute as at now v2.2, might
+replaced with something.
+
+Link: http://www.coova.org/node/1039
+
+cannot find attributes in Freeraiuds: ---->   *Max-Octets*
+*
+*
+*i am trying like this but not working: *
+*
+*
+check: no attribute
+reply: Chillispot-Max-Total-Octets := 5000000 (5MB)
+*
+*
+Thanks / Regards
+RM --
+*
+*
+*
+*
+*
+*
+*
+*
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130214/35f2df39/attachment.html>
+
+From info at easyhorpak.com  Fri Feb 15 03:46:33 2013
+From: info at easyhorpak.com (EasyHorpak.com)
+Date: Fri, 15 Feb 2013 10:46:33 +0700
+Subject: [Chilli] SOLVED !! Authentication Control Between Multiple
+ Coova-Chilli v1.3.0 Instances
+In-Reply-To: <CADao4Co-CV6p4pBc4-9KDj8gFBrYQuvb6ZZvqr=TQU512eyQdg@mail.gmail.com>
+References: <CADao4Co-CV6p4pBc4-9KDj8gFBrYQuvb6ZZvqr=TQU512eyQdg@mail.gmail.com>
+Message-ID: <511DAF99.1070801@easyhorpak.com>
+
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130215/08085846/attachment-0001.html>
+
+From radius.sir at gmail.com  Fri Feb 15 09:16:52 2013
+From: radius.sir at gmail.com (Russell Mike)
+Date: Fri, 15 Feb 2013 09:16:52 +0000
+Subject: [Chilli] HS_UAMALLOW How To ?
+Message-ID: <CADao4CoLHVe_2rGVv_=v=_7jq42PVggbkCk_0_AmWUP_=tAw5g@mail.gmail.com>
+
+Hi Coova List Members,
+
+i wish to allow some web pages to browse without or before authentication.
+i learned about "HS_UAM_ALLOWED"
+
+is it not like this we allow in config file ? but did not work.
+Coova-Chilli is presenting login page rather when trying any site covered
+by the directive.
+
+
+HS_UAMALLOW=www.yahoo.com,www.yale.edu
+uamallowed=www.yahoo.com,www.yale.edu
+
+
+Tried both methods but not working
+
+
+Thanks / Regards
+RM --
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130215/379f694c/attachment.html>
+
+From radius.sir at gmail.com  Fri Feb 15 10:30:40 2013
+From: radius.sir at gmail.com (Russell Mike)
+Date: Fri, 15 Feb 2013 10:30:40 +0000
+Subject: [Chilli] HS_UAMALLOW How To ?
+In-Reply-To: <CADao4CoLHVe_2rGVv_=v=_7jq42PVggbkCk_0_AmWUP_=tAw5g@mail.gmail.com>
+References: <CADao4CoLHVe_2rGVv_=v=_7jq42PVggbkCk_0_AmWUP_=tAw5g@mail.gmail.com>
+Message-ID: <CADao4CqypK_Fwa7XWicugL-YeTeSmzP-MXU-btQ5L9-ymAA_jQ@mail.gmail.com>
+
+Hi,
+please ignore, it worked !!
+
+CoovaChilli v1.3.0 - This is the correct format
+
+HS_UAMALLOW=www.bbc.com,www.yale.edu
+
+Thanks
+
+
+
+On Fri, Feb 15, 2013 at 9:16 AM, Russell Mike <radius.sir at gmail.com> wrote:
+
+> Hi Coova List Members,
+>
+> i wish to allow some web pages to browse without or before authentication.
+> i learned about "HS_UAM_ALLOWED"
+>
+> is it not like this we allow in config file ? but did not work.
+> Coova-Chilli is presenting login page rather when trying any site covered
+> by the directive.
+>
+>
+> HS_UAMALLOW=www.yahoo.com,www.yale.edu
+> uamallowed=www.yahoo.com,www.yale.edu
+>
+>
+> Tried both methods but not working
+>
+>
+> Thanks / Regards
+> RM --
+>
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130215/d82a4c52/attachment.html>
+
+From radius.sir at gmail.com  Fri Feb 15 12:14:45 2013
+From: radius.sir at gmail.com (Russell Mike)
+Date: Fri, 15 Feb 2013 12:14:45 +0000
+Subject: [Chilli] Data Volume Control Quota Coova-Chilli
+In-Reply-To: <CADao4Co79+7qnB7kB7US11ep3pH+nXywbrcoLVmWA2mErPsajg@mail.gmail.com>
+References: <CADao4Co79+7qnB7kB7US11ep3pH+nXywbrcoLVmWA2mErPsajg@mail.gmail.com>
+Message-ID: <CADao4CoFKRn9p2TDbH7SODoAdysXtW8-MEsrPBzO04+s8+-v1g@mail.gmail.com>
+
+> Dear David B. List Members,
+>
+> i want to implement quota based vouchers, i know how that works but need
+> little help.
+>
+> 1.) i need to create Freeradius RLM SQL_Counter module. *DONE !*
+> 2.) Include & load module using "radiusd.conf" in module section &
+> authorize section of sites-available/default *DONE !*
+>
+> *3.) *Accounting already been done by SQL
+> *
+> *
+> i am looking for check & reply items for Freeraiuds & Coova those can
+> control quota/volume.
+> *
+> *
+> i am trying like this but not working:
+> *
+> *
+> check: no attribute
+> reply: Chillispot-Max-Total-Octets := 5000000 (5MB)
+> *
+> *
+> Thanks / Regards
+> RM --
+> *
+> *
+> *
+> *
+> **
+>
+
+*Hi, *Since no one responded, I am going to reply my own post. Because i am
+able to solve the problem. i assume that you want quota based vouchers. For
+example, BOB has a voucher that should allows him to download 5mb of data
+and disconnect from the CoovaChilli after words. if he attempted to re
+login, he must be get rejected and get  *"Your maximum never usage time has
+been reached" *
+
+CoovaChilli v1.3.0 Freeradius v2.2
+
+1.) Create SQL Counter, here is working one.
+
+sqlcounter foreverbitscounter {
+              counter-name = Total-Max-Octets
+              check-name = ChilliSpot-Max-Total-Octets
+              reply-name = ChilliSpot-Max-Total-Octets
+              sqlmod-inst = sql
+              key = User-Name
+              reset = never
+query = "SELECT (SUM(AcctInputOctets)+-SUM(AcctOutputOctets)) FROM radacct
+WHERE UserName='%{%k}'"
+}
+
+
+2.) Let Freeradius read counter module before loading, many of you already
+know, this is for new admins.
+
+Type this under instantiate section of "radiusd.conf"
+
+instantiate {
+
+some other entries..
+
+foreverbitscounter
+
+}
+
+
+3.) Finally Load The Module by listing under "authorize" section of default
+file, located on the following location
+
+RH & CentOS:
+"/etc/raddb/sites-available/default
+
+Ubuntu:
+"/etc/freeradius/sites-available/default
+
+authorize {
+
+some other entries
+foreverbitscounter
+}
+
+start Freeradius in debug mode.
+Ubuntu: freeradius -XXX
+CentOS: radiusd -XXX
+
+
+Attach this attributes to radius group/profile
+
+Check Item:
+ChilliSpot-Max-Total-Octets := 5000000 (5mb)
+
+Reply Item:
+ChilliSpot-Max-Total-Octets := 5000000  (5mb)
+
+Enjoy, this is all you need for voucher quotas system, of course working
+rlm_sql driver.
+
+NOTE: Accounting must be done by SQL else it would not work
+
+Enable Accounting:
+
+RH & CentOS:
+"/etc/raddb/sites-available/default
+
+Ubuntu:
+"/etc/freeradius/sites-available/default
+
+accounting {
+some other entries
+sql
+}
+
+
+Thanks
+RM --
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+You need the following attribute in radgroupcheck & radgroupreply table.
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130215/fa957fbc/attachment.html>
+
+From anders at anduras.de  Mon Feb 18 15:47:30 2013
+From: anders at anduras.de (Sven Anders)
+Date: Mon, 18 Feb 2013 16:47:30 +0100
+Subject: [Chilli] Problem with mmap!
+In-Reply-To: <1360093654.6387.2.camel@david-laptop>
+References: <51093C22.6080402@anduras.de>
+ <1360093654.6387.2.camel@david-laptop>
+Message-ID: <51224D12.7090802@anduras.de>
+
+Hello!
+
+If I compile chilli with "--with-mmap", DHCP does not work.
+In this case chilli always reports "dhcp.c: 4930: 0 (Debug) bad packet length 0".
+
+I compiled chilli with the following options:
+
+./configure --prefix=/usr --sysconfdir=/etc --localstatedir=/var --with-openssl --with-mmap --with-poll --enable-largelimits --enable-binstatusfile
+--enable-statusfile --enable-chilliproxy --enable-chilliradsec --enable-chilliredir --enable-chilliscript --enable-ieee8023 --enable-multiroute
+--enable-dhcpopt --enable-multilan --disable-cluster
+
+If I remove "--with-mmap" anything works as expected...
+
+What me makes curious is, that in the old version 1.2.4 I used (compiled it with the "--with-mmap")
+anything worked. I'm using the same Kernel (3.2.13) for both versions.
+
+David, in your last mail you wrote the following:
+
+> Also updated, when using --with-mmap, you can now selectively use
+> --mmapring to enable the RX/TX rings, otherwise you are running without
+> them (the standard way). 
+
+Does this have anything to do with it?
+Or is this only the fix for the ">> net.c:1189:22: error: unused variable 'mr'" warning?
+
+Is there a web interface to the SVN repository?
+
+Regards
+ Sven Anders
+
+-- 
+ Sven Anders <anders at anduras.de>                 () UTF-8 Ribbon Campaign
+                                                 /\ Support plain text e-mail
+ ANDURAS intranet security AG
+ Messestrasse 3 - 94036 Passau - Germany
+ Web: www.anduras.de - Tel: +49 (0)851-4 90 50-0 - Fax: +49 (0)851-4 90 50-55
+
+Those who would give up essential Liberty, to purchase a little
+temporary Safety, deserve neither Liberty nor Safety.
+  - Benjamin Franklin
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: anders.vcf
+Type: text/x-vcard
+Size: 339 bytes
+Desc: not available
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130218/6a25c8c7/attachment.vcf>
+
+From david at coova.com  Mon Feb 18 19:52:48 2013
+From: david at coova.com (David Bird)
+Date: Mon, 18 Feb 2013 11:52:48 -0800
+Subject: [Chilli] Problem with mmap!
+In-Reply-To: <51224D12.7090802@anduras.de>
+References: <51093C22.6080402@anduras.de>
+ <1360093654.6387.2.camel@david-laptop> <51224D12.7090802@anduras.de>
+Message-ID: <1361217168.31516.1.camel@david-laptop>
+
+Hi,
+
+Support for rx ring was a bit unmaintained. It is now fixed in
+Subversion, and has a runtime option, as mentioned, to enable. You can
+now compile with mmap support but decide to use it at runtime.
+
+Cheers,
+David
+
+
+On Mon, 2013-02-18 at 16:47 +0100, Sven Anders wrote:
+> Hello!
+> 
+> If I compile chilli with "--with-mmap", DHCP does not work.
+> In this case chilli always reports "dhcp.c: 4930: 0 (Debug) bad packet length 0".
+> 
+> I compiled chilli with the following options:
+> 
+> ./configure --prefix=/usr --sysconfdir=/etc --localstatedir=/var --with-openssl --with-mmap --with-poll --enable-largelimits --enable-binstatusfile
+> --enable-statusfile --enable-chilliproxy --enable-chilliradsec --enable-chilliredir --enable-chilliscript --enable-ieee8023 --enable-multiroute
+> --enable-dhcpopt --enable-multilan --disable-cluster
+> 
+> If I remove "--with-mmap" anything works as expected...
+> 
+> What me makes curious is, that in the old version 1.2.4 I used (compiled it with the "--with-mmap")
+> anything worked. I'm using the same Kernel (3.2.13) for both versions.
+> 
+> David, in your last mail you wrote the following:
+> 
+> > Also updated, when using --with-mmap, you can now selectively use
+> > --mmapring to enable the RX/TX rings, otherwise you are running without
+> > them (the standard way). 
+> 
+> Does this have anything to do with it?
+> Or is this only the fix for the ">> net.c:1189:22: error: unused variable 'mr'" warning?
+> 
+> Is there a web interface to the SVN repository?
+> 
+> Regards
+>  Sven Anders
+> 
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+
+
+From anders at anduras.de  Mon Feb 18 20:59:22 2013
+From: anders at anduras.de (Sven Anders)
+Date: Mon, 18 Feb 2013 21:59:22 +0100
+Subject: [Chilli] Problem with mmap!
+In-Reply-To: <1361217168.31516.1.camel@david-laptop>
+References: <51093C22.6080402@anduras.de>
+ <1360093654.6387.2.camel@david-laptop> <51224D12.7090802@anduras.de>
+ <1361217168.31516.1.camel@david-laptop>
+Message-ID: <5122962A.1000305@anduras.de>
+
+Am 18.02.2013 20:52, schrieb David Bird:
+> Hi,
+> 
+> Support for rx ring was a bit unmaintained. It is now fixed in
+> Subversion, and has a runtime option, as mentioned, to enable. You can
+> now compile with mmap support but decide to use it at runtime.
+> 
+> Cheers,
+> David
+
+
+Ok, I interpret this so:
+ - The rc-ring mmap support is the cause of my problems.
+ - The new runtime option will be in version 1.3.1
+
+Any release date for the new version?
+
+Regards
+ Sven
+
+> On Mon, 2013-02-18 at 16:47 +0100, Sven Anders wrote:
+>> Hello!
+>>
+>> If I compile chilli with "--with-mmap", DHCP does not work.
+>> In this case chilli always reports "dhcp.c: 4930: 0 (Debug) bad packet length 0".
+>>
+>> I compiled chilli with the following options:
+>>
+>> ./configure --prefix=/usr --sysconfdir=/etc --localstatedir=/var --with-openssl --with-mmap --with-poll --enable-largelimits --enable-binstatusfile
+>> --enable-statusfile --enable-chilliproxy --enable-chilliradsec --enable-chilliredir --enable-chilliscript --enable-ieee8023 --enable-multiroute
+>> --enable-dhcpopt --enable-multilan --disable-cluster
+>>
+>> If I remove "--with-mmap" anything works as expected...
+>>
+>> What me makes curious is, that in the old version 1.2.4 I used (compiled it with the "--with-mmap")
+>> anything worked. I'm using the same Kernel (3.2.13) for both versions.
+>>
+>> David, in your last mail you wrote the following:
+>>
+>>> Also updated, when using --with-mmap, you can now selectively use
+>>> --mmapring to enable the RX/TX rings, otherwise you are running without
+>>> them (the standard way). 
+>>
+>> Does this have anything to do with it?
+>> Or is this only the fix for the ">> net.c:1189:22: error: unused variable 'mr'" warning?
+>>
+>> Is there a web interface to the SVN repository?
+>>
+>> Regards
+>>  Sven Anders
+>>
+>> _______________________________________________
+>> Chilli mailing list
+>> Chilli at coova.org
+>> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+> 
+> 
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+> 
+
+
+Mit freundlichen Gr??en
+ Sven Anders
+
+-- 
+ Sven Anders <anders at anduras.de>                 () UTF-8 Ribbon Campaign
+                                                 /\ Support plain text e-mail
+ ANDURAS intranet security AG
+ Messestra?e 3 - 94036 Passau - Germany
+ Web: www.anduras.de - Tel: +49 (0)851-4 90 50-0 - Fax: +49 (0)851-4 90 50-55
+
+Rechtsform: Aktiengesellschaft - Sitz: Passau - Amtsgericht: Passau HRB 6032
+Mitglieder des Vorstands: Dipl.-Inf. Sven Anders, Dipl.-Inf. Marcus Junker
+Vorsitzender des Aufsichtsrats: RA Mark Peters
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: anders.vcf
+Type: text/x-vcard
+Size: 353 bytes
+Desc: not available
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130218/c8eb3c10/attachment.vcf>
+
+From radius.sir at gmail.com  Tue Feb 19 07:59:31 2013
+From: radius.sir at gmail.com (Russell Mike)
+Date: Tue, 19 Feb 2013 07:59:31 +0000
+Subject: [Chilli] CoovaChilli Inactive Disconnect Time
+Message-ID: <CADao4CowJ8Gs_PJhYSii2Drs9DEqWfj1VGpdJqAKA6WBeKfvsg@mail.gmail.com>
+
+Dear David B. and List Greetings,
+
+Thanks for this grate software. Which directive i can use to enable "idle
+timeout". If a user is not browsing for a while (5 Minutes), i want Coova
+to disconnect the session.
+
+Thanks / Regards
+RM --
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130219/78638de3/attachment.html>
+
+From radius.sir at gmail.com  Tue Feb 19 09:38:06 2013
+From: radius.sir at gmail.com (Russell Mike)
+Date: Tue, 19 Feb 2013 09:38:06 +0000
+Subject: [Chilli] CoovaChilli Inactive Disconnect Time
+In-Reply-To: <CADao4CowJ8Gs_PJhYSii2Drs9DEqWfj1VGpdJqAKA6WBeKfvsg@mail.gmail.com>
+References: <CADao4CowJ8Gs_PJhYSii2Drs9DEqWfj1VGpdJqAKA6WBeKfvsg@mail.gmail.com>
+Message-ID: <CADao4CpjayLCMU9mhzxSbYR1bXcFK4+e5uWVt4bcQ4f6miKRkA@mail.gmail.com>
+
+> Dear David B. and List Greetings,
+>
+> Thanks for this grate software. Which directive i can use to enable "idle
+> timeout". If a user is not browsing for a while (5 Minutes), i want Coova
+> to disconnect the session.
+>
+> Thanks / Regards
+> RM --
+>
+
+
+Hi,
+
+Is this Still valid directive for above request ? CoovaChilli 1.3.0
+defidletimeout 600
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130219/1a74a7f0/attachment.html>
+
+From david at coova.com  Wed Feb 20 00:11:19 2013
+From: david at coova.com (David Bird)
+Date: Tue, 19 Feb 2013 16:11:19 -0800
+Subject: [Chilli] CoovaChilli Inactive Disconnect Time
+In-Reply-To: <CADao4CpjayLCMU9mhzxSbYR1bXcFK4+e5uWVt4bcQ4f6miKRkA@mail.gmail.com>
+References: <CADao4CowJ8Gs_PJhYSii2Drs9DEqWfj1VGpdJqAKA6WBeKfvsg@mail.gmail.com>
+ <CADao4CpjayLCMU9mhzxSbYR1bXcFK4+e5uWVt4bcQ4f6miKRkA@mail.gmail.com>
+Message-ID: <1361319079.7505.7.camel@david-laptop>
+
+Yes...
+
+On Tue, 2013-02-19 at 09:38 +0000, Russell Mike wrote:
+> 
+>         Dear David B. and List Greetings,
+>         
+>         
+>         Thanks for this grate software. Which directive i can use to
+>         enable "idle timeout". If a user is not browsing for a while
+>         (5 Minutes), i want Coova to disconnect the session. 
+>         
+>         
+>         Thanks / Regards
+>         RM --
+> 
+> 
+> 
+> 
+> Hi,
+> 
+> 
+> Is this Still valid directive for above request ? CoovaChilli 1.3.0
+> defidletimeout 600
+> 
+> 
+> 
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+-- 
+--
+David Bird
+http://www.linkedin.com/in/dwbird
+https://twitter.com/wlanmac
+
+
+From radius.sir at gmail.com  Wed Feb 20 07:44:30 2013
+From: radius.sir at gmail.com (Russell Mike)
+Date: Wed, 20 Feb 2013 07:44:30 +0000
+Subject: [Chilli] Enable interim accounting with CoovaChilli 1.3.0
+Message-ID: <CADao4CqHC-c1SshzCYJ_=SKo_p--+EtEcsFLqTiSQ6hoqdH-rA@mail.gmail.com>
+
+Greetings David B. & List Greetings,
+
+I was searching how to enable interim accounting with CoovaChilli 1.3.0.
+and i came across the following link.
+http://coova.org/CoovaChilli/chilli.conf
+
+I can found the following information there:
+Default interim-interval for RADIUS accounting unless otherwise set by
+RADIUS (defaults to 0, meaning unlimited).
+*definteriminterval 120*
+
+My Question: I want to use interim accounting with CoovaChilli. Does the
+above directive enable interim accounting and disable start/stop accounting
+?
+
+Thanks / Regards --RM
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130220/e6110b7d/attachment.html>
+
+From matteo at netlite.it  Wed Feb 20 15:54:43 2013
+From: matteo at netlite.it (Matteo Cazzador)
+Date: Wed, 20 Feb 2013 16:54:43 +0100
+Subject: [Chilli] inject content
+Message-ID: <5124F1C3.60703@netlite.it>
+
+Hi, i've a question about inject content (David'sblog content inject).
+I need layer 3 to get this feautures active?
+I'm interest in inject top banner on every web page after correct login 
+a top page content  with some  stats for the user that is logged in.
+I see http://www.coova.org/node/4656
+I'm now be able to inject javascript on top of html page.
+But i found difficult to inject on the top of every web site (like blog 
+example:  top banner).
+Is it possible to have a partial code of GWT ?
+I need to set inject in main.conf? to obtain correct injection?
+This is not clear.
+I think for a correct injection proxy server have to insert correct 
+injection after get the page request.
+Can someone help me please.
+Thank's
+
+-- 
+Rispetta l'ambiente: se non ti ? necessario, non stampare questa mail.
+
+Le informazioni contenute in questa e-mail e nei files eventualmente allegati sono destinate unicamente ai destinatari della stessa e sono da considerarsi strettamente riservate. E' proibito copiare, salvare, utilizzare,  inoltrare a terzi e diffondere il contenuto della presente senza il preventivo consenso, ai sensi dell'articolo 616 c.p. e della Legge n. 196/2003. Se avete ricevuto questo messaggio per errore siete pregati di comunicarlo immediatamente all'indirizzo mittente, nonch? di cancellarne il contenuto senza procedere ad ulteriore o differente trattamento.
+
+
+******************************************
+Ing. Matteo Cazzador
+NetLite snc di Cazzador Gagliardi
+Corso Vittorio Emanuele II, 188 37069
+Villafranca di Verona VR
+Tel 0454856656
+Fax 0454856655
+Email: matteo at netlite.it
+Web: http://www.netlite.it
+******************************************
+
+
+From mail at frank-muennich.com  Wed Feb 20 18:52:16 2013
+From: mail at frank-muennich.com (=?ISO-8859-1?Q?Frank_M=FCnnich?=)
+Date: Wed, 20 Feb 2013 19:52:16 +0100
+Subject: [Chilli] Source code commenting
+Message-ID: <51251B60.3000207@frank-muennich.com>
+
+Dear David, dear list-members,
+
+I have a question about the source code for CoovaChilli.
+While looking through the code I found out that most functions and files
+have almost no comments in them. I found it particular hard to
+understand the use and/or usage of functions or whole files altogether.
+
+Hence I would like to know whether there is any documentation or help
+available for programmers who would like to contribute to the
+development of chilli.
+
+Are contributions in that regard at all welcome to the project? If so,
+how is it done best - through wiki collaboration, through patches sent
+to David, by other means?
+
+Although I haven't been programming for a while, I would love to sharpen
+my programming skills once more. Even if it means that I only insert a
+lot of "// this function does this"   to the code.
+
+Questions welcome.
+Best regards,
+
+Frank M?nnich
+
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: smime.p7s
+Type: application/pkcs7-signature
+Size: 4234 bytes
+Desc: S/MIME Cryptographic Signature
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130220/332e3e09/attachment.bin>
+
+From radius.sir at gmail.com  Thu Feb 21 11:14:40 2013
+From: radius.sir at gmail.com (Russell Mike)
+Date: Thu, 21 Feb 2013 11:14:40 +0000
+Subject: [Chilli] CoovaChilli Behind DHCP Relay Agent
+Message-ID: <CADao4CoewUc4moD8aR31ssU-dZo0YAoEUz=QpF-Q0P-LotjtSA@mail.gmail.com>
+
+Dear David. B & List Greetings,
+
+i could not conclude how CoovaChilli can work in this environment, i
+require little help to understand. some of you perhaps already using. my
+setup (LAN Diagram) is attached to the mail.
+
+Questions:
+Would user get the login page?
+I seems that if one user would login everyone has access due to NAT on
+cisco router.
+
+Thanks
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130221/076625e6/attachment-0001.html>
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: Coova-DHCP-Relayagent.pdf
+Type: application/pdf
+Size: 130292 bytes
+Desc: not available
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130221/076625e6/attachment-0001.pdf>
+
+From lferreira at cabocom.cv  Thu Feb 21 13:40:07 2013
+From: lferreira at cabocom.cv (Luis Ferreira)
+Date: Thu, 21 Feb 2013 12:40:07 -0100
+Subject: [Chilli] CoovaChilli Behind DHCP Relay Agent
+In-Reply-To: <CADao4CoewUc4moD8aR31ssU-dZo0YAoEUz=QpF-Q0P-LotjtSA@mail.gmail.com>
+References: <CADao4CoewUc4moD8aR31ssU-dZo0YAoEUz=QpF-Q0P-LotjtSA@mail.gmail.com>
+Message-ID: <00fd01ce1038$f6f09ce0$e4d1d6a0$@cabocom.cv>
+
+Hi Russell,
+
+ 
+
+>From what I've seen on the diagram, I seriously doubt that it will work,
+because even the DHCP leases are relayed properly, the router in performing
+NAT, meaning that CoovaChilli will only see the MAC of the router, while all
+the rest is behind it, invisible to CoovaChilli.
+
+ 
+
+Regards,
+
+Luis Ferreira
+
+ 
+
+ 
+
+De: chilli-bounces at coova.org [mailto:chilli-bounces at coova.org] Em nome de
+Russell Mike
+Enviada: quinta-feira, 21 de Fevereiro de 2013 10:15
+Para: chilli list; David Bird
+Assunto: [Chilli] CoovaChilli Behind DHCP Relay Agent
+
+ 
+
+Dear David. B & List Greetings,
+
+ 
+
+i could not conclude how CoovaChilli can work in this environment, i require
+little help to understand. some of you perhaps already using. my setup (LAN
+Diagram) is attached to the mail.
+
+ 
+
+Questions:
+
+Would user get the login page? 
+
+I seems that if one user would login everyone has access due to NAT on cisco
+router. 
+
+ 
+
+Thanks
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130221/4fdf69d0/attachment.html>
+
+From david at coova.com  Thu Feb 21 15:55:10 2013
+From: david at coova.com (David Bird)
+Date: Thu, 21 Feb 2013 07:55:10 -0800
+Subject: [Chilli] CoovaChilli Behind DHCP Relay Agent
+Message-ID: <mvaq64a1qpkxbwh5vfa12h98.1361462110723@email.android.com>
+
+Could use layer3 mode or have the Cisco router bridge the traffic layer2. If layer3, you can also use a different dhcp server.
+
+Luis Ferreira <lferreira at cabocom.cv> wrote:
+
+>_______________________________________________
+>Chilli mailing list
+>Chilli at coova.org
+>http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130221/15f254b2/attachment.html>
+
+From mem.corruption at gmail.com  Thu Feb 21 15:56:49 2013
+From: mem.corruption at gmail.com (David Bird)
+Date: Thu, 21 Feb 2013 07:56:49 -0800
+Subject: [Chilli] CoovaChilli Behind DHCP Relay Agent
+In-Reply-To: <mvaq64a1qpkxbwh5vfa12h98.1361462110723@email.android.com>
+References: <mvaq64a1qpkxbwh5vfa12h98.1361462110723@email.android.com>
+Message-ID: <CABzNtm70b_+rK1gb23zeh7TkGdEq_nzmZabBBh_uFx7n3wggag@mail.gmail.com>
+
+Of course, even layer3 mode means you can not Nat everyone to the same IP.
+On Feb 21, 2013 7:54 AM, "David Bird" <david at coova.com> wrote:
+
+> Could use layer3 mode or have the Cisco router bridge the traffic layer2.
+> If layer3, you can also use a different dhcp server.
+>
+> Luis Ferreira <lferreira at cabocom.cv> wrote:
+>
+> Hi Russell,****
+>
+> ** **
+>
+> From what I?ve seen on the diagram, I seriously doubt that it will work,
+> because even the DHCP leases are relayed properly, the router in performing
+> NAT, meaning that CoovaChilli will only see the MAC of the router, while
+> all the rest is behind it, invisible to CoovaChilli.****
+>
+> ** **
+>
+> Regards,****
+>
+> Luis Ferreira****
+>
+> ** **
+>
+> ** **
+>
+> *De:* chilli-bounces at coova.org [mailto:chilli-bounces at coova.org] *Em nome
+> de *Russell Mike
+> *Enviada:* quinta-feira, 21 de Fevereiro de 2013 10:15
+> *Para:* chilli list; David Bird
+> *Assunto:* [Chilli] CoovaChilli Behind DHCP Relay Agent****
+>
+> ** **
+>
+> Dear David. B & List Greetings,****
+>
+> ** **
+>
+> i could not conclude how CoovaChilli can work in this environment, i
+> require little help to understand. some of you perhaps already using. my
+> setup (LAN Diagram) is attached to the mail.****
+>
+> ** **
+>
+> Questions:****
+>
+> Would user get the login page? ****
+>
+> I seems that if one user would login everyone has access due to NAT on
+> cisco router. ****
+>
+> ** **
+>
+> Thanks****
+>
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130221/8b702c62/attachment.html>
+
+From radius.sir at gmail.com  Thu Feb 21 16:05:06 2013
+From: radius.sir at gmail.com (Russell Mike)
+Date: Thu, 21 Feb 2013 16:05:06 +0000
+Subject: [Chilli] Port Forwarding With CovvaChilli
+Message-ID: <CADao4CqMJRZ70a09d1zzMQX9pXE6KZ-RnNpP5fnP=oedQtgEtA@mail.gmail.com>
+
+Hi List,
+
+looking for advice because i have requirement to enable port mapping (port
+forwarding) from CoovaChilli's external ip to a web server on the LAN side.
+i am bit confuse how to do that. There are many iptable rules always
+created every time Coova starts, using *ipup.sh* under
+
+*Output: "/var/run/chilli.tun0.sh". *
+
+root at captive:~# cat /var/run/chilli.tun0.sh
+iptables -D INPUT -i tun0 -p tcp -m tcp --dport 3100 --dst 192.168.10.10 -j
+ACCEPT
+iptables -D INPUT -i tun0 -p tcp -m tcp --dport 4100 --dst 192.168.10.10 -j
+ACCEPT
+iptables -D INPUT -i tun0 -p udp -d 255.255.255.255 --destination-port
+67:68 -j ACCEPT
+iptables -D INPUT -i tun0 -p udp -d 192.168.10.10 --destination-port 67:68
+-j ACCEPT
+iptables -D INPUT -i tun0 -p udp --dst 192.168.10.10 --dport 53 -j ACCEPT
+iptables -D INPUT -i tun0 -p icmp --dst 192.168.10.10 -j ACCEPT
+iptables -D INPUT -i tun0 --dst 192.168.10.10 -j DROP
+iptables -D INPUT -i vlan10 -j DROP
+iptables -D FORWARD -i vlan10 -j DROP
+iptables -D FORWARD -o vlan10 -j DROP
+iptables -D FORWARD -i tun0 -j ACCEPT
+iptables -D FORWARD -o tun0 -j ACCEPT
+iptables -D FORWARD -p tcp -m tcp --tcp-flags SYN,RST SYN -j TCPMSS
+--clamp-mss-to-pmtu
+iptables -D FORWARD -t mangle -p tcp -m tcp --tcp-flags SYN,RST SYN -j
+TCPMSS --clamp-mss-to-pmtu
+iptables -D FORWARD -i tun0 ! -o eth0 -j DROP
+iptables -D FORWARD -i tun0 -o eth0 -j ACCEPT
+
+*Scenario:*
+Web_Server On LAN has: 192.168.10.10 someone want remote desktop of this
+server when hitting external ip for CoovaChilli *WAN:41.222.34.72  *
+
+i am confused, if the rules created by Coova will interfere with the in
+coming traffic from the WAN interface to LAN side. Cannot understand, if i
+should add new rules in *"ipup.sh"* or how.
+
+Note: It is Ubuntu 12.4LTS default firewall is off (ufw disabled) expect
+the Chilli creates some rules.
+
+thanks everyone for attending to my request.
+
+Regards --RM
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130221/3da9d31e/attachment-0001.html>
+
+From lferreira at cabocom.cv  Fri Feb 22 00:10:16 2013
+From: lferreira at cabocom.cv (Luis Ferreira)
+Date: Thu, 21 Feb 2013 23:10:16 -0100
+Subject: [Chilli] CoovaChilli Behind DHCP Relay Agent
+In-Reply-To: <CABzNtm70b_+rK1gb23zeh7TkGdEq_nzmZabBBh_uFx7n3wggag@mail.gmail.com>
+References: <mvaq64a1qpkxbwh5vfa12h98.1361462110723@email.android.com>
+ <CABzNtm70b_+rK1gb23zeh7TkGdEq_nzmZabBBh_uFx7n3wggag@mail.gmail.com>
+Message-ID: <019e01ce1090$fed99350$fc8cb9f0$@cabocom.cv>
+
+Yes, in our setup, we use Layer3 at ISP level, and we have a lot of CPE
+routers doing NAT.
+
+With NAT, chilli only sees one client. This has practical uses if you want
+several users sharing the same internet account
+
+ 
+
+ 
+
+ 
+
+David Bird Said: 
+
+
+
+Of course, even layer3 mode means you can not Nat everyone to the same IP.
+
+On Feb 21, 2013 7:54 AM, "David Bird" <david at coova.com> wrote:
+
+Could use layer3 mode or have the Cisco router bridge the traffic layer2. If
+layer3, you can also use a different dhcp server.
+
+Luis Ferreira <lferreira at cabocom.cv> wrote:
+
+Hi Russell,
+
+ 
+
+>From what I've seen on the diagram, I seriously doubt that it will work,
+because even the DHCP leases are relayed properly, the router in performing
+NAT, meaning that CoovaChilli will only see the MAC of the router, while all
+the rest is behind it, invisible to CoovaChilli.
+
+ 
+
+Regards,
+
+Luis Ferreira
+
+ 
+
+ 
+
+De: chilli-bounces at coova.org [mailto:chilli-bounces at coova.org] Em nome de
+Russell Mike
+Enviada: quinta-feira, 21 de Fevereiro de 2013 10:15
+Para: chilli list; David Bird
+Assunto: [Chilli] CoovaChilli Behind DHCP Relay Agent
+
+ 
+
+Dear David. B & List Greetings,
+
+ 
+
+i could not conclude how CoovaChilli can work in this environment, i require
+little help to understand. some of you perhaps already using. my setup (LAN
+Diagram) is attached to the mail.
+
+ 
+
+Questions:
+
+Would user get the login page? 
+
+I seems that if one user would login everyone has access due to NAT on cisco
+router. 
+
+ 
+
+Thanks
+
+
+_______________________________________________
+Chilli mailing list
+Chilli at coova.org
+http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130221/8727795d/attachment.html>
+
+From radius.sir at gmail.com  Fri Feb 22 07:02:15 2013
+From: radius.sir at gmail.com (Russell Mike)
+Date: Fri, 22 Feb 2013 07:02:15 +0000
+Subject: [Chilli] Port Forwarding With CovvaChilli
+In-Reply-To: <CAJc1nurAG618Ur1KOcRJ3h3AMofaEkPjz7AdJGvJSFY0vD1ucA@mail.gmail.com>
+References: <CADao4CqMJRZ70a09d1zzMQX9pXE6KZ-RnNpP5fnP=oedQtgEtA@mail.gmail.com>
+ <CAJc1nurAG618Ur1KOcRJ3h3AMofaEkPjz7AdJGvJSFY0vD1ucA@mail.gmail.com>
+Message-ID: <CADao4CrOAEFyQ2ghxhHiKbeBfBqzYE5_voNbo8=SfJ9CE8D-5A@mail.gmail.com>
+
+Thanks Jad,
+Coovachilli is my LAN gateway, therefor I need to do the port mapping not
+only web server many more services. You idea would be the last solution in
+nothing worked.
+Thanks for you assistance anyways.
+RM --
+
+On Thursday, February 21, 2013, Jed Gainer wrote:
+
+> I have always avoided this situation entirely by putting a router (
+> routerboard.com) above Chilli and then putting said webserver "beside"
+> the chilli server rather than behind it.
+>
+> I just don't see why you would want to manager a webserver with chilli.
+>
+>
+> On Thu, Feb 21, 2013 at 8:05 AM, Russell Mike <radius.sir at gmail.com<javascript:_e({}, 'cvml', 'radius.sir at gmail.com');>
+> > wrote:
+>
+>> Hi List,
+>>
+>> looking for advice because i have requirement to enable port mapping
+>> (port forwarding) from CoovaChilli's external ip to a web server on the LAN
+>> side. i am bit confuse how to do that. There are many iptable rules always
+>> created every time Coova starts, using *ipup.sh* under
+>>
+>> *Output: "/var/run/chilli.tun0.sh". *
+>>
+>> root at captive:~# cat /var/run/chilli.tun0.sh
+>> iptables -D INPUT -i tun0 -p tcp -m tcp --dport 3100 --dst 192.168.10.10
+>> -j ACCEPT
+>> iptables -D INPUT -i tun0 -p tcp -m tcp --dport 4100 --dst 192.168.10.10
+>> -j ACCEPT
+>> iptables -D INPUT -i tun0 -p udp -d 255.255.255.255 --destination-port
+>> 67:68 -j ACCEPT
+>> iptables -D INPUT -i tun0 -p udp -d 192.168.10.10 --destination-port
+>> 67:68 -j ACCEPT
+>> iptables -D INPUT -i tun0 -p udp --dst 192.168.10.10 --dport 53 -j ACCEPT
+>> iptables -D INPUT -i tun0 -p icmp --dst 192.168.10.10 -j ACCEPT
+>> iptables -D INPUT -i tun0 --dst 192.168.10.10 -j DROP
+>> iptables -D INPUT -i vlan10 -j DROP
+>> iptables -D FORWARD -i vlan10 -j DROP
+>> iptables -D FORWARD -o vlan10 -j DROP
+>> iptables -D FORWARD -i tun0 -j ACCEPT
+>> iptables -D FORWARD -o tun0 -j ACCEPT
+>> iptables -D FORWARD -p tcp -m tcp --tcp-flags SYN,RST SYN -j TCPMSS
+>> --clamp-mss-to-pmtu
+>> iptables -D FORWARD -t mangle -p tcp -m tcp --tcp-flags SYN,RST SYN -j
+>> TCPMSS --clamp-mss-to-pmtu
+>> iptables -D FORWARD -i tun0 ! -o eth0 -j DROP
+>> iptables -D FORWARD -i tun0 -o eth0 -j ACCEPT
+>>
+>> *Scenario:*
+>> Web_Server On LAN has: 192.168.10.10 someone want remote desktop of this
+>> server when hitting external ip for CoovaChilli *WAN:41.222.34.72  *
+>>
+>> i am confused, if the rules created by Coova will interfere with the in
+>> coming traffic from the WAN interface to LAN side. Cannot understand, if i
+>> should add new rules in *"ipup.sh"* or how.
+>>
+>> Note: It is Ubuntu 12.4LTS default firewall is off (ufw disabled) expect
+>> the Chilli creates some rules.
+>>
+>> thanks everyone for attending to my request.
+>>
+>> Regards --RM
+>>
+>> _______________________________________________
+>> Chilli mailing list
+>> Chilli at coova.org <javascript:_e({}, 'cvml', 'Chilli at coova.org');>
+>> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>>
+>>
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130222/d2c25d77/attachment.html>
+
+From radius.sir at gmail.com  Sat Feb 23 15:31:47 2013
+From: radius.sir at gmail.com (Russell Mike)
+Date: Sat, 23 Feb 2013 15:31:47 +0000
+Subject: [Chilli] interim accounting with CoovaChilli 1.3.0
+Message-ID: <CADao4CrRDc68=iWwAySpjtAmYWq364=vZEuCM2aWLpuosLUb2g@mail.gmail.com>
+
+Dear David Bird
+
+I want to enable interim accounting rather than start/stop with
+CoovaChilli.  How can i enable interim accounting and disable start/stop
+accounting vice versa. Would this directive do as i want in *"chilli.conf"*?
+*definteriminterval 120*
+
+Thanks / Regards --RM
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130223/5e3f21aa/attachment.html>
+
+From daniel at collier.io  Sun Feb 24 03:44:38 2013
+From: daniel at collier.io (Daniel Collier)
+Date: Sun, 24 Feb 2013 14:44:38 +1100
+Subject: [Chilli] chilliController redirection URL
+Message-ID: <CAMooC-p_U0uj-Nj+wpiwhT+wC_MoPoRhhY9D2sfBWJR5XJA6vw@mail.gmail.com>
+
+When using the CoovaChilli JSON interface I have found the
+chilliController.redir.originalURL is often populated with an address the
+user never wanted to visit, something like "
+http://weather.service.msn.com/data.aspx?src=Windows7&wealocations=wc:ASXX0112&weadegreetype=F&culture=en-US"
+even when the user tried to get to "http://www.google.com". I suspect this
+is because a service running on the users pc had requested the URL before
+the browser even started. However, I have also noticed that the useurl
+parameter in the query string always has the correct address.
+
+Is there an established method of obtaining and redirecting to the 'useurl'
+address when using the JSON interface?
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130224/d76014d6/attachment.html>
+
+From radius.sir at gmail.com  Sun Feb 24 18:31:20 2013
+From: radius.sir at gmail.com (Russell Mike)
+Date: Sun, 24 Feb 2013 18:31:20 +0000
+Subject: [Chilli] By Pass CoovaChilli v1.3.0 Authentication Process Using
+	MACs- WORKING !!!
+Message-ID: <CADao4Cqx1Z6K09U2HcZaOp8+NX+y=d9_k0hOWm3xpH1DSR4yeg@mail.gmail.com>
+
+Greetings Dear David B.
+first of all, thanks for developing such nice software. i wish to by pass
+Auth, base on MAC address. Following worked just fine.
+
+# By Pass CoovaChilli v1.3.0 Authentication Using MACs- WORKING !!!
+HS_MACAUTHMODE=local
+HS_MACALLOW="34-08-04-99-55-c4,00-1d-92-d8-fd-b5"
+
+i am discovering if i can specify the path to a file that may contain all
+MAC Address, rather than specifying in the serial order, such as
+above. Format such as following.
+
+HS_MACALLOW="/usr/local/etc/chilli/mac_address"
+
+Thank you very much for your support ever since and attending to this
+request
+
+Regards --RM
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130224/5f353ddb/attachment.html>
+
+From xoneca at gmail.com  Mon Feb 25 08:21:37 2013
+From: xoneca at gmail.com (Xabier Oneca -- xOneca)
+Date: Mon, 25 Feb 2013 09:21:37 +0100
+Subject: [Chilli] Using CoovaChilli without RADIUS
+Message-ID: <CACkgH70DRK06SUzKkAMTeYCLE9N=VnR9MF0tZ_Sw+E=F8=dVfA@mail.gmail.com>
+
+Hello everybody!
+
+Is there a way co configure and use CoovaChilli without a RADIUS server?
+
+I have seen a 'localusers' option that may help achieving that, but I have
+not found any information about that...
+
+Someone has any clue? Thanks!
+
+--
+Xabier Oneca_,,_
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130225/473f91fd/attachment.html>
+
+From david at coova.com  Mon Feb 25 17:40:36 2013
+From: david at coova.com (David Bird)
+Date: Mon, 25 Feb 2013 09:40:36 -0800
+Subject: [Chilli] Using CoovaChilli without RADIUS
+In-Reply-To: <CACkgH70DRK06SUzKkAMTeYCLE9N=VnR9MF0tZ_Sw+E=F8=dVfA@mail.gmail.com>
+References: <CACkgH70DRK06SUzKkAMTeYCLE9N=VnR9MF0tZ_Sw+E=F8=dVfA@mail.gmail.com>
+Message-ID: <1361814036.6611.3.camel@david-laptop>
+
+CoovaChilli is meant to have a provisioning service like RADIUS or it
+can also use an HTTP/S replacement that basically translates and proxies
+RADIUS to/from a web service. There isn't an option to NOT use either,
+but I know some people do use chilli without doing much with RADIUS,
+except for maybe accounting. You can, for instance, use chilli_query to
+log in/out subscribers from the command line. There is also a local
+users file, but it is not recommended for large numbers of users. 
+
+Cheers,
+David
+
+
+
+On Mon, 2013-02-25 at 09:21 +0100, Xabier Oneca -- xOneca wrote:
+> Hello everybody!
+> 
+> Is there a way co configure and use CoovaChilli without a RADIUS
+> server?
+> 
+> I have seen a 'localusers' option that may help achieving that, but I
+> have not found any information about that...
+> 
+> Someone has any clue? Thanks!
+> 
+> --
+> Xabier Oneca_,,_
+> 
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+-- 
+--
+David Bird
+http://www.linkedin.com/in/dwbird
+https://twitter.com/wlanmac
+
+
+From radius.sir at gmail.com  Tue Feb 26 07:43:40 2013
+From: radius.sir at gmail.com (Russell Mike)
+Date: Tue, 26 Feb 2013 07:43:40 +0000
+Subject: [Chilli] DHCP Pool Range With CoovaChilli 1.3.0
+Message-ID: <CADao4Co1r+N-i3pdeADzNRsj+4Wp=J=G0VbOJNwUo0oD3V912g@mail.gmail.com>
+
+Dear Sirs Greetings,
+
+i have got hard time to configure dhcp pool range with CoovaChilli 1.3.0
+after full one day of research also. Our servers are static IPs therefore i
+want to exclude some IPs from giving out by DHCP. i want to issues dhcp
+address from 192.168.3.10 - 192.168.3.100. i tried the following in
+"locla.conf" & "config" restarted box but made no difference at all.
+
+dhcpstart=10
+dhcpend=100
+
+
+Someone please help, how do we do that?
+
+Thanks / Regards
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130226/c253296e/attachment.html>
+
+From xoneca at gmail.com  Tue Feb 26 07:53:19 2013
+From: xoneca at gmail.com (Xabier Oneca -- xOneca)
+Date: Tue, 26 Feb 2013 08:53:19 +0100
+Subject: [Chilli] DHCP Pool Range With CoovaChilli 1.3.0
+In-Reply-To: <CADao4Co1r+N-i3pdeADzNRsj+4Wp=J=G0VbOJNwUo0oD3V912g@mail.gmail.com>
+References: <CADao4Co1r+N-i3pdeADzNRsj+4Wp=J=G0VbOJNwUo0oD3V912g@mail.gmail.com>
+Message-ID: <CACkgH73Ca0HohZ=t-uhtDp2P1Nk=vmzJfJYhiEJOm4vu3Z7Z0g@mail.gmail.com>
+
+What's the value of the 'net' parameter?
+
+If it is '192.168.3.0/255.255.255.0' then it should be ok...
+
+Xabier Oneca_,,_
+El 26/02/2013 08:43, "Russell Mike" <radius.sir at gmail.com> escribi?:
+
+> Dear Sirs Greetings,
+>
+> i have got hard time to configure dhcp pool range with CoovaChilli 1.3.0
+> after full one day of research also. Our servers are static IPs therefore i
+> want to exclude some IPs from giving out by DHCP. i want to issues dhcp
+> address from 192.168.3.10 - 192.168.3.100. i tried the following in
+> "locla.conf" & "config" restarted box but made no difference at all.
+>
+> dhcpstart=10
+> dhcpend=100
+>
+>
+> Someone please help, how do we do that?
+>
+> Thanks / Regards
+>
+>
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130226/2c41389e/attachment.html>
+
+From lferreira at cabocom.cv  Tue Feb 26 10:21:55 2013
+From: lferreira at cabocom.cv (Luis Ferreira)
+Date: Tue, 26 Feb 2013 09:21:55 -0100
+Subject: [Chilli] Comunication Issues
+Message-ID: <010f01ce140b$1a8a9a90$4f9fcfb0$@cabocom.cv>
+
+Greeting to all,
+
+ 
+
+I would like you help with an issue that I?m getting. First I?ll just expose
+a couple of my problems:
+
+ 
+
+Every time to time, I found in the list of current sessions on the RADIUS,
+users online that do not have login done on Chilli. That cause the radius to
+not allow the login because there is already someone using the account.
+
+Also, I?ve notice that some users disappear from the online users, but
+chilli still has them on and working. That has a very bad side effect.
+Someone connect to the wifi, and if it catch the same ip (lease is for 8
+hours) it will get free internet, because radius as already close the
+session of the original one.
+
+                Other thing is Chilli disconnect clients, but they still
+appear on RADIUS.
+
+ 
+
+All of that seems to me failures in communication between RADIUS (Central
+Server on different country with dedicated IP), and Chilli Box?s (Couple of
+them spread around with dynamic DNS)
+
+ 
+
+What I thought it could help me, was implementing openvpn with TAP device on
+the machines, to improve the reliability of the communications.
+
+ 
+
+So, my questions are:
+
+ 
+
+1? Is this a practical approach (tell RADIUS to use fixed IP address to
+disconnect packets, instead of dyndns address)?
+
+2? Will this cause a lot of overhead (low bandwidth)
+
+3? Will this help on the issue 
+
+4? Is there a better approach for this kind of implementation (RADIUS at
+remote location and chilli with dynamic dns)?
+
+5? Will openVPN work good with Chilli (Chilli IP 10.1.10.0/255.255.255.0 |
+OpenVPN 192.168.100.0/255.255.255.0)
+
+ 
+
+Thoughts appreciated
+
+ 
+
+Chilli 1.2.9
+
+Layer 3
+
+VLAN
+
+ 
+
+Regards,
+
+Luis
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130226/7e1792bb/attachment.html>
+
+From xoneca at gmail.com  Tue Feb 26 22:42:34 2013
+From: xoneca at gmail.com (Xabier Oneca -- xOneca)
+Date: Tue, 26 Feb 2013 23:42:34 +0100
+Subject: [Chilli] SOLVED !!  DHCP Pool Range With CoovaChilli 1.3.0
+In-Reply-To: <CADao4Cr1D=6GxFp_MUiMuS1Q0fw5GcGQ5m8RKKaNFJTqQ0OUaA@mail.gmail.com>
+References: <CADao4Cr1D=6GxFp_MUiMuS1Q0fw5GcGQ5m8RKKaNFJTqQ0OUaA@mail.gmail.com>
+Message-ID: <CACkgH70wDfSmQ8cYfEA6DQTpvdact_4KZMOFRcGpsfthLr38kQ@mail.gmail.com>
+
+I'm glad you solved the problem.
+
+Xabier Oneca_,,_
+El 26/02/2013 21:49, "Russell Mike" <radius.sir at gmail.com> escribi?:
+
+> Hi Xabier. O
+>
+> i am sorry, i here by update my previous reply. Your were correct & suggestion
+> worked, i was mistakenly placing the net directive in "config" file
+> rather than "chilli.conf"
+>
+> Thanks for your assistance.  I will rewrite the steps in case someone came
+> across the post to look for the solution.
+>
+> *Configure CooveChilli 1.3.0 For DHCP Pool Range *
+> such as, if you want Coova dhcp to issue the ip from the range of
+> 192.168.3.10 - 192.168.3.100
+>
+> *1.)* nano "/usr/local/etc/chilli.conf"
+> net=192.168.3.0/255.255.255.0
+>
+> *2.)* nano "/usr/local/etc/chilli/local.conf""
+>
+> dhcpstart=10
+>
+> dhcpend=100
+>
+> *3.)* Restart Box & Testing
+>
+> Thanks Once Again Dear Xabier. O
+>
+>
+> *Xabier Oneca SAID:
+> *
+>>
+>> What's the value of the 'net' parameter?
+>>
+>> If it is '192.168.3.0/255.255.255.0' then it should be ok...
+>>
+>>
+>> El 26/02/2013 08:43, "Russell Mike" <radius.sir at gmail.com> escribi?:
+>>
+>>>  Dear Sirs Greetings,
+>>>
+>>> i have got hard time to configure dhcp pool range with CoovaChilli 1.3.0
+>>> after full one day of research also. Our servers are static IPs therefore i
+>>> want to exclude some IPs from giving out by DHCP. i want to issues dhcp
+>>> address from 192.168.3.10 - 192.168.3.100. i tried the following in
+>>> "locla.conf" & "config" restarted box but made no difference at all.
+>>>
+>>> dhcpstart=10
+>>> dhcpend=100
+>>>
+>>>
+>>> Someone please help, how do we do that?
+>>>
+>>> Thanks / Regards
+>>>
+>>>
+>>> _______________________________________________
+>>> Chilli mailing list
+>>> Chilli at coova.org
+>>> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>>>
+>>>
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130226/2804c25c/attachment.html>
+
+From xoneca at gmail.com  Wed Feb 27 09:00:20 2013
+From: xoneca at gmail.com (Xabier Oneca -- xOneca)
+Date: Wed, 27 Feb 2013 10:00:20 +0100
+Subject: [Chilli] Using CoovaChilli without RADIUS
+In-Reply-To: <CACkgH72jujCbuQEmEa080FRob5cbkB7LgPQi6J0f7RSeG7rrEw@mail.gmail.com>
+References: <CACkgH70DRK06SUzKkAMTeYCLE9N=VnR9MF0tZ_Sw+E=F8=dVfA@mail.gmail.com>
+ <1361814036.6611.3.camel@david-laptop>
+ <CACkgH72jujCbuQEmEa080FRob5cbkB7LgPQi6J0f7RSeG7rrEw@mail.gmail.com>
+Message-ID: <CACkgH732uNUs9YqoK9BB0_8Cd4R0gvQ7Wg=AZ7H6dJgO4kYbfQ@mail.gmail.com>
+
+Sorry, I didn't send to the mailing list... :P
+
+--
+Xabier Oneca_,,_
+El 25/02/2013 20:59, "Xabier Oneca -- xOneca" <xoneca at gmail.com> escribi?:
+
+> So, I have to install a RADIUS server with CoovaChilli...
+>
+> And what is the local users file for? I haven't found anything in the
+> documentation...
+>
+> Xabier Oneca_,,_
+> El 25/02/2013 18:40, "David Bird" <david at coova.com> escribi?:
+>
+>> CoovaChilli is meant to have a provisioning service like RADIUS or it
+>> can also use an HTTP/S replacement that basically translates and proxies
+>> RADIUS to/from a web service. There isn't an option to NOT use either,
+>> but I know some people do use chilli without doing much with RADIUS,
+>> except for maybe accounting. You can, for instance, use chilli_query to
+>> log in/out subscribers from the command line. There is also a local
+>> users file, but it is not recommended for large numbers of users.
+>>
+>> Cheers,
+>> David
+>>
+>>
+>>
+>> On Mon, 2013-02-25 at 09:21 +0100, Xabier Oneca -- xOneca wrote:
+>> > Hello everybody!
+>> >
+>> > Is there a way co configure and use CoovaChilli without a RADIUS
+>> > server?
+>> >
+>> > I have seen a 'localusers' option that may help achieving that, but I
+>> > have not found any information about that...
+>> >
+>> > Someone has any clue? Thanks!
+>> >
+>> > --
+>> > Xabier Oneca_,,_
+>> >
+>> > _______________________________________________
+>> > Chilli mailing list
+>> > Chilli at coova.org
+>> > http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>>
+>> --
+>> --
+>> David Bird
+>> http://www.linkedin.com/in/dwbird
+>> https://twitter.com/wlanmac
+>>
+>> _______________________________________________
+>> Chilli mailing list
+>> Chilli at coova.org
+>> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>>
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130227/ccde1eac/attachment.html>
+
+From david at coova.com  Wed Feb 27 17:49:12 2013
+From: david at coova.com (David Bird)
+Date: Wed, 27 Feb 2013 09:49:12 -0800
+Subject: [Chilli] Using CoovaChilli without RADIUS
+In-Reply-To: <CACkgH732uNUs9YqoK9BB0_8Cd4R0gvQ7Wg=AZ7H6dJgO4kYbfQ@mail.gmail.com>
+References: <CACkgH70DRK06SUzKkAMTeYCLE9N=VnR9MF0tZ_Sw+E=F8=dVfA@mail.gmail.com>
+ <1361814036.6611.3.camel@david-laptop>
+ <CACkgH72jujCbuQEmEa080FRob5cbkB7LgPQi6J0f7RSeG7rrEw@mail.gmail.com>
+ <CACkgH732uNUs9YqoK9BB0_8Cd4R0gvQ7Wg=AZ7H6dJgO4kYbfQ@mail.gmail.com>
+Message-ID: <1361987352.6805.1.camel@david-laptop>
+
+The users file is simply there for when a couple local credentials are
+needed. It is not intended to be a 'database' of users. However, it
+might work for your application. 
+
+
+On Wed, 2013-02-27 at 10:00 +0100, Xabier Oneca -- xOneca wrote:
+> Sorry, I didn't send to the mailing list... :P
+> 
+> --
+> Xabier Oneca_,,_
+> 
+> El 25/02/2013 20:59, "Xabier Oneca -- xOneca" <xoneca at gmail.com>
+> escribi?:
+>         So, I have to install a RADIUS server with CoovaChilli...
+>         
+>         And what is the local users file for? I haven't found anything
+>         in the documentation...
+>         
+>         Xabier Oneca_,,_
+>         
+>         El 25/02/2013 18:40, "David Bird" <david at coova.com> escribi?:
+>                 CoovaChilli is meant to have a provisioning service
+>                 like RADIUS or it
+>                 can also use an HTTP/S replacement that basically
+>                 translates and proxies
+>                 RADIUS to/from a web service. There isn't an option to
+>                 NOT use either,
+>                 but I know some people do use chilli without doing
+>                 much with RADIUS,
+>                 except for maybe accounting. You can, for instance,
+>                 use chilli_query to
+>                 log in/out subscribers from the command line. There is
+>                 also a local
+>                 users file, but it is not recommended for large
+>                 numbers of users.
+>                 
+>                 Cheers,
+>                 David
+>                 
+>                 
+>                 
+>                 On Mon, 2013-02-25 at 09:21 +0100, Xabier Oneca --
+>                 xOneca wrote:
+>                 > Hello everybody!
+>                 >
+>                 > Is there a way co configure and use CoovaChilli
+>                 without a RADIUS
+>                 > server?
+>                 >
+>                 > I have seen a 'localusers' option that may help
+>                 achieving that, but I
+>                 > have not found any information about that...
+>                 >
+>                 > Someone has any clue? Thanks!
+>                 >
+>                 > --
+>                 > Xabier Oneca_,,_
+>                 >
+>                 > _______________________________________________
+>                 > Chilli mailing list
+>                 > Chilli at coova.org
+>                 >
+>                 http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>                 
+>                 --
+>                 --
+>                 David Bird
+>                 http://www.linkedin.com/in/dwbird
+>                 https://twitter.com/wlanmac
+>                 
+>                 _______________________________________________
+>                 Chilli mailing list
+>                 Chilli at coova.org
+>                 http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+-- 
+--
+David Bird
+http://www.linkedin.com/in/dwbird
+https://twitter.com/wlanmac
+
+
+From xoneca at gmail.com  Wed Feb 27 17:59:49 2013
+From: xoneca at gmail.com (Xabier Oneca -- xOneca)
+Date: Wed, 27 Feb 2013 18:59:49 +0100
+Subject: [Chilli] Using CoovaChilli without RADIUS
+In-Reply-To: <1361987352.6805.1.camel@david-laptop>
+References: <CACkgH70DRK06SUzKkAMTeYCLE9N=VnR9MF0tZ_Sw+E=F8=dVfA@mail.gmail.com>
+ <1361814036.6611.3.camel@david-laptop>
+ <CACkgH72jujCbuQEmEa080FRob5cbkB7LgPQi6J0f7RSeG7rrEw@mail.gmail.com>
+ <CACkgH732uNUs9YqoK9BB0_8Cd4R0gvQ7Wg=AZ7H6dJgO4kYbfQ@mail.gmail.com>
+ <1361987352.6805.1.camel@david-laptop>
+Message-ID: <CACkgH71QUd_fpWA2uS3cyXovJtpr0ZRDBZFomxzwJ5Y_5UN80w@mail.gmail.com>
+
+Yeah, maybe that works for me. I have found the syntax for the file on
+Internet. But I add the line to the config file and does not work. Do I
+have to still have a radius server?
+
+With the radiusserver1 properly configured authenticates ok, but does not
+see at the localusers file. If I remove radiusserver1, then chilli won't
+start... :S
+
+Thanks!
+
+--
+Xabier Oneca_,,_
+El 27/02/2013 18:49, "David Bird" <david at coova.com> escribi?:
+
+> The users file is simply there for when a couple local credentials are
+> needed. It is not intended to be a 'database' of users. However, it
+> might work for your application.
+>
+>
+> On Wed, 2013-02-27 at 10:00 +0100, Xabier Oneca -- xOneca wrote:
+> > Sorry, I didn't send to the mailing list... :P
+> >
+> > --
+> > Xabier Oneca_,,_
+> >
+> > El 25/02/2013 20:59, "Xabier Oneca -- xOneca" <xoneca at gmail.com>
+> > escribi?:
+> >         So, I have to install a RADIUS server with CoovaChilli...
+> >
+> >         And what is the local users file for? I haven't found anything
+> >         in the documentation...
+> >
+> >         Xabier Oneca_,,_
+> >
+> >         El 25/02/2013 18:40, "David Bird" <david at coova.com> escribi?:
+> >                 CoovaChilli is meant to have a provisioning service
+> >                 like RADIUS or it
+> >                 can also use an HTTP/S replacement that basically
+> >                 translates and proxies
+> >                 RADIUS to/from a web service. There isn't an option to
+> >                 NOT use either,
+> >                 but I know some people do use chilli without doing
+> >                 much with RADIUS,
+> >                 except for maybe accounting. You can, for instance,
+> >                 use chilli_query to
+> >                 log in/out subscribers from the command line. There is
+> >                 also a local
+> >                 users file, but it is not recommended for large
+> >                 numbers of users.
+> >
+> >                 Cheers,
+> >                 David
+> >
+> >
+> >
+> >                 On Mon, 2013-02-25 at 09:21 +0100, Xabier Oneca --
+> >                 xOneca wrote:
+> >                 > Hello everybody!
+> >                 >
+> >                 > Is there a way co configure and use CoovaChilli
+> >                 without a RADIUS
+> >                 > server?
+> >                 >
+> >                 > I have seen a 'localusers' option that may help
+> >                 achieving that, but I
+> >                 > have not found any information about that...
+> >                 >
+> >                 > Someone has any clue? Thanks!
+> >                 >
+> >                 > --
+> >                 > Xabier Oneca_,,_
+> >                 >
+> >                 > _______________________________________________
+> >                 > Chilli mailing list
+> >                 > Chilli at coova.org
+> >                 >
+> >                 http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+> >
+> >                 --
+> >                 --
+> >                 David Bird
+> >                 http://www.linkedin.com/in/dwbird
+> >                 https://twitter.com/wlanmac
+> >
+> >                 _______________________________________________
+> >                 Chilli mailing list
+> >                 Chilli at coova.org
+> >                 http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+> > _______________________________________________
+> > Chilli mailing list
+> > Chilli at coova.org
+> > http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+> --
+> --
+> David Bird
+> http://www.linkedin.com/in/dwbird
+> https://twitter.com/wlanmac
+>
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130227/6c4d15d8/attachment.html>
+
+From david at coova.com  Wed Feb 27 18:00:22 2013
+From: david at coova.com (David Bird)
+Date: Wed, 27 Feb 2013 10:00:22 -0800
+Subject: [Chilli] Comunication Issues
+In-Reply-To: <010f01ce140b$1a8a9a90$4f9fcfb0$@cabocom.cv>
+References: <010f01ce140b$1a8a9a90$4f9fcfb0$@cabocom.cv>
+Message-ID: <1361988022.6805.11.camel@david-laptop>
+
+Hi,
+
+I don't think using a tap with OpenVPN will help much. Are you wanting
+to put the OpenVPN link into a bridge? 
+
+Do you have an idea where your RADIUS might be being dropped? Are you
+relying on CoA RADIUS being sent *to* chilli? If so, then the VPN will
+help with that (and have the side effect of a more secure RADIUS path,
+suitable for iPass integration, etc). 
+
+Not sure this is your issue, but having your RADIUS server clean up
+active sessions when there is an Accounting-On (startup) packet from
+chilli may help. 
+
+The risk of someone resuming/assuming the IP of an authorized station is
+an inherent risk of using Layer3 mode -- similarly in layer2 people can
+hijack an authorized MAC address, however the former case in layer3 mode
+is more likely to happen just by accident. 
+
+David
+
+
+
+On Tue, 2013-02-26 at 09:21 -0100, Luis Ferreira wrote:
+> Greeting to all,
+> 
+>  
+> 
+> I would like you help with an issue that I?m getting. First I?ll just
+> expose a couple of my problems:
+> 
+>  
+> 
+> Every time to time, I found in the list of current sessions on the
+> RADIUS, users online that do not have login done on Chilli. That cause
+> the radius to not allow the login because there is already someone
+> using the account.
+> 
+> Also, I?ve notice that some users disappear from the online users, but
+> chilli still has them on and working. That has a very bad side effect.
+> Someone connect to the wifi, and if it catch the same ip (lease is for
+> 8 hours) it will get free internet, because radius as already close
+> the session of the original one.
+> 
+>                 Other thing is Chilli disconnect clients, but they
+> still appear on RADIUS.
+> 
+>  
+> 
+> All of that seems to me failures in communication between RADIUS
+> (Central Server on different country with dedicated IP), and Chilli
+> Box?s (Couple of them spread around with dynamic DNS)
+> 
+>  
+> 
+> What I thought it could help me, was implementing openvpn with TAP
+> device on the machines, to improve the reliability of the
+> communications.
+> 
+>  
+> 
+> So, my questions are:
+> 
+>  
+> 
+> 1? Is this a practical approach (tell RADIUS to use fixed IP address
+> to disconnect packets, instead of dyndns address)?
+> 
+> 2? Will this cause a lot of overhead (low bandwidth)
+> 
+> 3? Will this help on the issue 
+> 
+> 4? Is there a better approach for this kind of implementation (RADIUS
+> at remote location and chilli with dynamic dns)?
+> 
+> 5? Will openVPN work good with Chilli (Chilli IP
+> 10.1.10.0/255.255.255.0 | OpenVPN 192.168.100.0/255.255.255.0)
+> 
+>  
+> 
+> Thoughts appreciated
+> 
+>  
+> 
+> Chilli 1.2.9
+> 
+> Layer 3
+> 
+> VLAN
+> 
+>  
+> 
+> Regards,
+> 
+> Luis
+> 
+> 
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+-- 
+--
+David Bird
+http://www.linkedin.com/in/dwbird
+https://twitter.com/wlanmac
+
+
+From xoneca at gmail.com  Thu Feb 28 09:57:30 2013
+From: xoneca at gmail.com (Xabier Oneca -- xOneca)
+Date: Thu, 28 Feb 2013 10:57:30 +0100
+Subject: [Chilli] Using CoovaChilli without RADIUS
+In-Reply-To: <CACkgH71QUd_fpWA2uS3cyXovJtpr0ZRDBZFomxzwJ5Y_5UN80w@mail.gmail.com>
+References: <CACkgH70DRK06SUzKkAMTeYCLE9N=VnR9MF0tZ_Sw+E=F8=dVfA@mail.gmail.com>
+ <1361814036.6611.3.camel@david-laptop>
+ <CACkgH72jujCbuQEmEa080FRob5cbkB7LgPQi6J0f7RSeG7rrEw@mail.gmail.com>
+ <CACkgH732uNUs9YqoK9BB0_8Cd4R0gvQ7Wg=AZ7H6dJgO4kYbfQ@mail.gmail.com>
+ <1361987352.6805.1.camel@david-laptop>
+ <CACkgH71QUd_fpWA2uS3cyXovJtpr0ZRDBZFomxzwJ5Y_5UN80w@mail.gmail.com>
+Message-ID: <CACkgH714Fmme6zHWcvfqvpvYjcVeBjL6m+bjNRhXpRaYh_=8Gg@mail.gmail.com>
+
+A better question maybe is: how does local authentication work?
+
+--
+Xabier Oneca_,,_
+El 27/02/2013 18:59, "Xabier Oneca -- xOneca" <xoneca at gmail.com> escribi?:
+
+> Yeah, maybe that works for me. I have found the syntax for the file on
+> Internet. But I add the line to the config file and does not work. Do I
+> have to still have a radius server?
+>
+> With the radiusserver1 properly configured authenticates ok, but does not
+> see at the localusers file. If I remove radiusserver1, then chilli won't
+> start... :S
+>
+> Thanks!
+>
+> --
+> Xabier Oneca_,,_
+> El 27/02/2013 18:49, "David Bird" <david at coova.com> escribi?:
+>
+>> The users file is simply there for when a couple local credentials are
+>> needed. It is not intended to be a 'database' of users. However, it
+>> might work for your application.
+>>
+>>
+>> On Wed, 2013-02-27 at 10:00 +0100, Xabier Oneca -- xOneca wrote:
+>> > Sorry, I didn't send to the mailing list... :P
+>> >
+>> > --
+>> > Xabier Oneca_,,_
+>> >
+>> > El 25/02/2013 20:59, "Xabier Oneca -- xOneca" <xoneca at gmail.com>
+>> > escribi?:
+>> >         So, I have to install a RADIUS server with CoovaChilli...
+>> >
+>> >         And what is the local users file for? I haven't found anything
+>> >         in the documentation...
+>> >
+>> >         Xabier Oneca_,,_
+>> >
+>> >         El 25/02/2013 18:40, "David Bird" <david at coova.com> escribi?:
+>> >                 CoovaChilli is meant to have a provisioning service
+>> >                 like RADIUS or it
+>> >                 can also use an HTTP/S replacement that basically
+>> >                 translates and proxies
+>> >                 RADIUS to/from a web service. There isn't an option to
+>> >                 NOT use either,
+>> >                 but I know some people do use chilli without doing
+>> >                 much with RADIUS,
+>> >                 except for maybe accounting. You can, for instance,
+>> >                 use chilli_query to
+>> >                 log in/out subscribers from the command line. There is
+>> >                 also a local
+>> >                 users file, but it is not recommended for large
+>> >                 numbers of users.
+>> >
+>> >                 Cheers,
+>> >                 David
+>> >
+>> >
+>> >
+>> >                 On Mon, 2013-02-25 at 09:21 +0100, Xabier Oneca --
+>> >                 xOneca wrote:
+>> >                 > Hello everybody!
+>> >                 >
+>> >                 > Is there a way co configure and use CoovaChilli
+>> >                 without a RADIUS
+>> >                 > server?
+>> >                 >
+>> >                 > I have seen a 'localusers' option that may help
+>> >                 achieving that, but I
+>> >                 > have not found any information about that...
+>> >                 >
+>> >                 > Someone has any clue? Thanks!
+>> >                 >
+>> >                 > --
+>> >                 > Xabier Oneca_,,_
+>> >                 >
+>> >                 > _______________________________________________
+>> >                 > Chilli mailing list
+>> >                 > Chilli at coova.org
+>> >                 >
+>> >                 http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>> >
+>> >                 --
+>> >                 --
+>> >                 David Bird
+>> >                 http://www.linkedin.com/in/dwbird
+>> >                 https://twitter.com/wlanmac
+>> >
+>> >                 _______________________________________________
+>> >                 Chilli mailing list
+>> >                 Chilli at coova.org
+>> >                 http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>> > _______________________________________________
+>> > Chilli mailing list
+>> > Chilli at coova.org
+>> > http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>>
+>> --
+>> --
+>> David Bird
+>> http://www.linkedin.com/in/dwbird
+>> https://twitter.com/wlanmac
+>>
+>> _______________________________________________
+>> Chilli mailing list
+>> Chilli at coova.org
+>> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>>
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130228/8fbdcf4b/attachment-0001.html>
+
+From xoneca at gmail.com  Thu Feb 28 13:32:29 2013
+From: xoneca at gmail.com (Xabier Oneca -- xOneca)
+Date: Thu, 28 Feb 2013 14:32:29 +0100
+Subject: [Chilli] Using CoovaChilli without RADIUS
+In-Reply-To: <CACkgH714Fmme6zHWcvfqvpvYjcVeBjL6m+bjNRhXpRaYh_=8Gg@mail.gmail.com>
+References: <CACkgH70DRK06SUzKkAMTeYCLE9N=VnR9MF0tZ_Sw+E=F8=dVfA@mail.gmail.com>
+ <1361814036.6611.3.camel@david-laptop>
+ <CACkgH72jujCbuQEmEa080FRob5cbkB7LgPQi6J0f7RSeG7rrEw@mail.gmail.com>
+ <CACkgH732uNUs9YqoK9BB0_8Cd4R0gvQ7Wg=AZ7H6dJgO4kYbfQ@mail.gmail.com>
+ <1361987352.6805.1.camel@david-laptop>
+ <CACkgH71QUd_fpWA2uS3cyXovJtpr0ZRDBZFomxzwJ5Y_5UN80w@mail.gmail.com>
+ <CACkgH714Fmme6zHWcvfqvpvYjcVeBjL6m+bjNRhXpRaYh_=8Gg@mail.gmail.com>
+Message-ID: <CACkgH70kvmiQ7-SuU4+6BFQ8SPqE8hjQFRZ1PFghGKvBykypMA@mail.gmail.com>
+
+I've been crawling throughout the source code and I found out.
+
+Summarizing, this is what I have done:
+
+In the config file add:
+
+    localusers '/usr/local/etc/chilli/local.users'
+    # There's no RADIUS in localhost, but must provide one.
+    radiusserver1 '127.0.0.1'
+
+And create the local.users file with users. In my case only needed one:
+
+    myuser:mypass
+
+I don't know why yesterday didn't work, maybe was browser's cache in
+action...
+
+Thanks you David for all responses! You answer very quickly!!
+
+--
+Xabier Oneca_,,_
+El 28/02/2013 10:57, "Xabier Oneca -- xOneca" <xoneca at gmail.com> escribi?:
+
+> A better question maybe is: how does local authentication work?
+>
+> --
+> Xabier Oneca_,,_
+> El 27/02/2013 18:59, "Xabier Oneca -- xOneca" <xoneca at gmail.com> escribi?:
+>
+>> Yeah, maybe that works for me. I have found the syntax for the file on
+>> Internet. But I add the line to the config file and does not work. Do I
+>> have to still have a radius server?
+>>
+>> With the radiusserver1 properly configured authenticates ok, but does not
+>> see at the localusers file. If I remove radiusserver1, then chilli won't
+>> start... :S
+>>
+>> Thanks!
+>>
+>> --
+>> Xabier Oneca_,,_
+>> El 27/02/2013 18:49, "David Bird" <david at coova.com> escribi?:
+>>
+>>> The users file is simply there for when a couple local credentials are
+>>> needed. It is not intended to be a 'database' of users. However, it
+>>> might work for your application.
+>>>
+>>>
+>>> On Wed, 2013-02-27 at 10:00 +0100, Xabier Oneca -- xOneca wrote:
+>>> > Sorry, I didn't send to the mailing list... :P
+>>> >
+>>> > --
+>>> > Xabier Oneca_,,_
+>>> >
+>>> > El 25/02/2013 20:59, "Xabier Oneca -- xOneca" <xoneca at gmail.com>
+>>> > escribi?:
+>>> >         So, I have to install a RADIUS server with CoovaChilli...
+>>> >
+>>> >         And what is the local users file for? I haven't found anything
+>>> >         in the documentation...
+>>> >
+>>> >         Xabier Oneca_,,_
+>>> >
+>>> >         El 25/02/2013 18:40, "David Bird" <david at coova.com> escribi?:
+>>> >                 CoovaChilli is meant to have a provisioning service
+>>> >                 like RADIUS or it
+>>> >                 can also use an HTTP/S replacement that basically
+>>> >                 translates and proxies
+>>> >                 RADIUS to/from a web service. There isn't an option to
+>>> >                 NOT use either,
+>>> >                 but I know some people do use chilli without doing
+>>> >                 much with RADIUS,
+>>> >                 except for maybe accounting. You can, for instance,
+>>> >                 use chilli_query to
+>>> >                 log in/out subscribers from the command line. There is
+>>> >                 also a local
+>>> >                 users file, but it is not recommended for large
+>>> >                 numbers of users.
+>>> >
+>>> >                 Cheers,
+>>> >                 David
+>>> >
+>>> >
+>>> >
+>>> >                 On Mon, 2013-02-25 at 09:21 +0100, Xabier Oneca --
+>>> >                 xOneca wrote:
+>>> >                 > Hello everybody!
+>>> >                 >
+>>> >                 > Is there a way co configure and use CoovaChilli
+>>> >                 without a RADIUS
+>>> >                 > server?
+>>> >                 >
+>>> >                 > I have seen a 'localusers' option that may help
+>>> >                 achieving that, but I
+>>> >                 > have not found any information about that...
+>>> >                 >
+>>> >                 > Someone has any clue? Thanks!
+>>> >                 >
+>>> >                 > --
+>>> >                 > Xabier Oneca_,,_
+>>> >                 >
+>>> >                 > _______________________________________________
+>>> >                 > Chilli mailing list
+>>> >                 > Chilli at coova.org
+>>> >                 >
+>>> >                 http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>>> >
+>>> >                 --
+>>> >                 --
+>>> >                 David Bird
+>>> >                 http://www.linkedin.com/in/dwbird
+>>> >                 https://twitter.com/wlanmac
+>>> >
+>>> >                 _______________________________________________
+>>> >                 Chilli mailing list
+>>> >                 Chilli at coova.org
+>>> >                 http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>>> > _______________________________________________
+>>> > Chilli mailing list
+>>> > Chilli at coova.org
+>>> > http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>>>
+>>> --
+>>> --
+>>> David Bird
+>>> http://www.linkedin.com/in/dwbird
+>>> https://twitter.com/wlanmac
+>>>
+>>> _______________________________________________
+>>> Chilli mailing list
+>>> Chilli at coova.org
+>>> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>>>
+>>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20130228/5d6ccc1e/attachment.html>
+

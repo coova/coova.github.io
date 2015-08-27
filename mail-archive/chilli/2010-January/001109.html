@@ -1,0 +1,156 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] Fixed IP addresses for APs and DHCP for clients
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Fixed%20IP%20addresses%20for%20APs%20and%20DHCP%20for%20clients&In-Reply-To=%3C4B4D0A93.8020108%40hpp.org.br%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001107.html">
+   <LINK REL="Next"  HREF="001102.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] Fixed IP addresses for APs and DHCP for clients</H1>
+    <B>Felipe Augusto van de Wiel</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Fixed%20IP%20addresses%20for%20APs%20and%20DHCP%20for%20clients&In-Reply-To=%3C4B4D0A93.8020108%40hpp.org.br%3E"
+       TITLE="[Chilli] Fixed IP addresses for APs and DHCP for clients">felipe.wiel at hpp.org.br
+       </A><BR>
+    <I>Tue Jan 12 23:49:39 UTC 2010</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001107.html">[Chilli] Fixed IP addresses for APs and DHCP for clients
+</A></li>
+        <LI>Next message: <A HREF="001102.html">[Chilli] a very common request
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1109">[ date ]</a>
+              <a href="thread.html#1109">[ thread ]</a>
+              <a href="subject.html#1109">[ subject ]</a>
+              <a href="author.html#1109">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA512
+
+On 11-01-2010 18:57, Felipe Augusto van de Wiel wrote:
+[...]
+&gt;<i> 	If I understood correctly, when I opt for
+</I>&gt;<i> macauth the MAC addresses are used as users for RADIUS
+</I>&gt;<i> and that is not what I want based on the previous
+</I>&gt;<i> scenario, considering that I didn't like to waste some
+</I>&gt;<i> address because of the range allocation (statip/dynip)
+</I>&gt;<i> I'm inclined to use macallowed, that will mix the fixed
+</I>&gt;<i> IP addresses with the single user web auth, and
+</I>&gt;<i> eventually, if the company decides to auth more users
+</I>&gt;<i> or limit some of them, the &quot;mixed&quot; solution still work.
+</I>&gt;<i> Does it sound like a good plan? (At least until the
+</I>&gt;<i> new options similar to ethers come to production).
+</I>
+	I choose the Framed-IP-Address option, I'm not
+using 1.2.0 right, but I'm willing to upgrade, specially
+to the new version with the --ethers option.
+
+	But my configuration is not yet working. :-(
+
+	Here is the relevant part of my /etc/chilli/config:
+
+HS_WANIF=eth1              # WAN Interface toward the Internet
+HS_LANIF=eth0              # Subscriber Interface for client devices
+HS_NETWORK=10.200.200.1    # HotSpot Network (must include HS_UAMLISTEN)
+HS_NETMASK=255.255.255.0   # HotSpot Network Netmask
+HS_UAMLISTEN=10.200.200.1  # HotSpot IP Address (on subscriber network)
+HS_UAMPORT=3990            # HotSpot Port (on subscriber network)
+HS_TCP_PORTS=&quot;22 80 443&quot;
+
+
+	Since some options seems to not be handled by the
+config file, I added them into local.conf and I know,
+macallowed is handled by config, but for some reason the
+version of MAC address without &quot;-&quot; was not working with
+FreeRADIUS (I just changed the final two hexas of MACs).
+
+dhcpstart 11
+dhcpend 250
+macallowed 00-0F-CB-FC-AA-AA
+macallowed 00-0F-CB-FC-AA-AB
+macallowed 00-18-6E-C3-AA-AC
+macallowed 00-0F-CB-FD-AA-AD
+macallowed 00-0F-CB-FF-AA-AE
+macallowed 00-0F-CB-FC-AA-AF
+macallowed 00-18-6E-C4-AA-BA
+macallowed 00-23-6C-D6-AA-BB
+macpasswd password
+lease 3600
+
+
+	In /etc/freeradius/users I have entries like this:
+
+&quot;00-0F-CB-FC-AA-AA&quot;     Cleartext-Password := &quot;password&quot;
+                Service-Type = Framed-User,
+                Framed-IP-Address = 10.200.200.231,
+                Framed-IP-Netmask = 255.255.255.0
+
+
+	When I restart the AP with that MAC address I see
+this in the logs:
+
+/var/log/freeradius/radius.log:
+Tue Jan 12 21:35:09 2010 : Auth: Login OK: [00-0F-CB-FC-AA-AA/password] (from client localhost port 7 cli 00-0F-CB-FC-AA-AA)
+
+/var/log/messages:
+Jan 12 21:35:09 host coova-chilli[20319]: chilli.c: 3007: New DHCP request from MAC=00-0F-CB-FC-AA-AA
+Jan 12 21:35:21 host coova-chilli[20319]: chilli.c: 3138: DHCP addr released by MAC=00-0F-CB-FC-AA-AA IP=10.200.200.231
+
+	The released message seems wrong to me, and indeed,
+I can't ping the access point after that, just for some
+seconds. :-(
+
+	Is something I'm doing horribly wrong?
+
+Kind regards,
+- -- 
+Felipe Augusto van de Wiel &lt;<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">felipe.wiel at hpp.org.br</A>&gt;
+Tecnologia da Informa&#231;&#227;o (TI) - Complexo Pequeno Pr&#237;ncipe
+<A HREF="http://www.pequenoprincipe.org.br/">http://www.pequenoprincipe.org.br/</A>    T: +55 41 3310 1747
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.10 (GNU/Linux)
+Comment: Using GnuPG with Mozilla - <A HREF="http://enigmail.mozdev.org/">http://enigmail.mozdev.org/</A>
+
+iQIcBAEBCgAGBQJLTQqPAAoJECCPPxLgxLxPZCoP/iYQeTC45yI94M3ZluKvyML/
+GablCnXNOnUPkyNSII4rwNZaA62gL8JA5ilqlKKv7qrQ3C3zQUHr/vXNFtMPWBxm
+P5rXrfYZuKRiyysv14IRNURyb8fn4iJUnkIEhQxIMFJDd7EiRN7mnhTQkG3m0hCq
+0EordCQzRky4pl+mgcWQfFD1/Ren9PG03+/bE0+L0XSBITqiN431u1cgvduIZ3Wo
+AAo6FjPyMQwFF0p0ABWBGxcTVAHsV8frA6x5u3qqCMW1eLnfPgGmDQuVKtUIKT9E
+DflKnhNX+Ar1tkSgeLXRgbOrZgFBOSTGJR0oRqIP9Ihk3dlwt7GqXPP+aM2tIBII
+26zZBuARaDjwK+cPWzy7++OqDbqiGldoId8ul60OAS8BFzI0hUjN7MbmnlIi2Hql
+TaEpxU9sRL+or1w2l1VsrFdOHrYViBNNgJGUA0C5nomEMRbdJo7n7RcdR3V8o2Te
+Lqq3ESosqB9yZekFjDuD0kccXPWTdyd4ugUq9pEXdItHA4ZAasFWXTGDAoPvCwI6
+dJnsemzqvfLIVu4J7WW+4cbinFafvdrP/IqvL4nj42ZHMrdUc1RtrcZyPaSa7bQ0
+Uh56jMZE+SZG8UoiqGGxzay2dCjNUMLLwi3aKxdUa7T97L+5v9IAEn4XQwhPEhY1
+EA3WSLvUgMJ7pY7+FF85
+=n4TX
+-----END PGP SIGNATURE-----
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001107.html">[Chilli] Fixed IP addresses for APs and DHCP for clients
+</A></li>
+	<LI>Next message: <A HREF="001102.html">[Chilli] a very common request
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1109">[ date ]</a>
+              <a href="thread.html#1109">[ thread ]</a>
+              <a href="subject.html#1109">[ subject ]</a>
+              <a href="author.html#1109">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

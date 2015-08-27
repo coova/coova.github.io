@@ -1,0 +1,226 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] CoovaChilli Layer-3 Model
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20CoovaChilli%20Layer-3%20Model&In-Reply-To=%3CCADao4Cqu%3DBPgB8bPKV%2BxuCQXk2Gjv83DfVtG0fLBe3S2rWb6sw%40mail.gmail.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="002236.html">
+   <LINK REL="Next"  HREF="002238.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] CoovaChilli Layer-3 Model</H1>
+    <B>Russell Mike</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20CoovaChilli%20Layer-3%20Model&In-Reply-To=%3CCADao4Cqu%3DBPgB8bPKV%2BxuCQXk2Gjv83DfVtG0fLBe3S2rWb6sw%40mail.gmail.com%3E"
+       TITLE="[Chilli] CoovaChilli Layer-3 Model">radius.sir at gmail.com
+       </A><BR>
+    <I>Mon Apr  8 10:45:48 UTC 2013</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="002236.html">[Chilli] CoovaChilli Layer-3 Model
+</A></li>
+        <LI>Next message: <A HREF="002238.html">[Chilli] CoovaChilli Layer-3 Model
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2237">[ date ]</a>
+              <a href="thread.html#2237">[ thread ]</a>
+              <a href="subject.html#2237">[ subject ]</a>
+              <a href="author.html#2237">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Dear David
+
+Thank you very much for your time to attend this request. i had actually
+lost the hope because no one responded expect you, whereas there are
+hundreds of guys in community using CoovaChilli as L3 modle, Anyways.
+
+Setup here is bit different where CoovaChilli is running in Multi-Tenancy
+mode (VLANs) due to the reason, every customer need their own login /
+Landing page. i am currently running 10 instances for CoovaChilli. But i
+will just focus on one instance to work and then i would know.
+
+KINDLY, if you tell me, how you setup the connection from a remote router
+(at hotspot) to Chilli. I am trying like this There is VLAN tagging in, i
+think that i creating problem. i would also very much appreciate the other
+methods those can be used for L3, such as VPN etc..
+
+[Router 41.71.81.114/252]-Point-2-Point-[CoovaChilli 41.71.81.115/252]
+router eth1 = 41.71.81.114 &lt;-- Router Interface Connected (Point-2-Point) With
+CoovaChilli  tun0 41.71.81.115
+*tun0* = 41.71.81.115 &lt;-- CoovaChilli With *VLAN interface 406*
+router eth0 = 41.139.8.193 &lt;--Router LAN Interface, Gateway For Hotspot
+User (Remote)
+my dhcp range 41.139.8.194 - 41.139.8.254
+
+*# Options i Activated For L3*
+HS_ANYIP=on
+HS_LAYER3=on
+HS_STATIP=41.139.8.192 &lt;- IP Range My DHCP Would Issue to Hotspot Users
+HS_STATIP_MASK=255.255.255.192
+
+*# Working Options For L2*
+DHCPIF=coova-vlan406
+HS_WANIF=eth0
+HS_LANIF=vlan406
+HS_NETWORK= *?????*
+HS_NETMASK=255.255.255.252
+HS_UAMLISTEN=41.71.81.115
+HS_UAMPORT=3100
+HS_UAMUIPORT=4100
+HS_DNS1=71.209.34.46
+HS_DNS2=91.201.67.42
+HS_NASID=UB124V406
+HS_RADIUS=localhost
+HS_RADSECRET=47KHi27RG909En
+HS_UAMALIASNAME=chilli
+HS_UAMSERVER=41.71.81.115
+HS_UAMFORMAT=<A HREF="http://\$HS_UAMLISTEN:\$HS_UAMUIPORT/www/login.chi">http://\$HS_UAMLISTEN:\$HS_UAMUIPORT/www/login.chi</A>
+HS_UAMHOMEPAGE=<A HREF="http://\$HS_UAMLISTEN:\$HS_UAMPORT/www/coova.html">http://\$HS_UAMLISTEN:\$HS_UAMPORT/www/coova.html</A>
+HS_TCP_PORTS=&quot;80 443&quot;
+HS_MODE=hotspot
+HS_TYPE=chillispot
+HS_RADAUTH=1812
+HS_RADACCT=1813
+HS_WWWDIR=/var/www/coova-chilli-1.3.0
+HS_WWWBIN=/usr/local/etc/chilli/wwwsh
+HS_PROVIDER=Coova
+HS_PROVIDER_LINK=<A HREF="http://www.yale.edu/">http://www.yale.edu/</A>
+HS_LOC_NAME=&quot;VLAN 406 Web Login&quot;
+
+Thanks / Regards
+RM --
+
+On Mon, Apr 8, 2013 at 8:52 AM, David Harrold &lt;<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">david at dkxl.co.uk</A>&gt; wrote:
+
+&gt;<i>
+</I>&gt;<i> Hi Mike
+</I>&gt;<i>
+</I>&gt;<i> We use a similar setup with central site chilli at Layer 3, and local APs
+</I>&gt;<i> managing local DHCP.
+</I>&gt;<i> A few things to check:
+</I>&gt;<i> - chilli's IP net pool  must be a superset of all of the local AP subnets
+</I>&gt;<i> - the UAM IP must be within this same superset net range
+</I>&gt;<i>
+</I>&gt;<i> Eg if you have three local APs 192.168.1.0/24, 192.168.2.0/24,
+</I>&gt;<i> 192.168.3.0/24, then chilli  should be configured for 192.168.0.0/22, and
+</I>&gt;<i> can use uam IP 192.168.1.1
+</I>&gt;<i>
+</I>&gt;<i> Let me know if you need more details
+</I>&gt;<i>
+</I>&gt;<i> Best Regards
+</I>&gt;<i> David
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> On 6 Apr 2013, at 14:00, <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli-request at coova.org</A> wrote:
+</I>&gt;<i>
+</I>&gt;<i> Send Chilli mailing list submissions to
+</I>&gt;<i>    <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli at coova.org</A>
+</I>&gt;<i>
+</I>&gt;<i> To subscribe or unsubscribe via the World Wide Web, visit
+</I>&gt;<i>    <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">http://lists.coova.org/cgi-bin/mailman/listinfo/chilli</A>
+</I>&gt;<i> or, via email, send a message with subject or body 'help' to
+</I>&gt;<i>    <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli-request at coova.org</A>
+</I>&gt;<i>
+</I>&gt;<i> You can reach the person managing the list at
+</I>&gt;<i>    <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli-owner at coova.org</A>
+</I>&gt;<i>
+</I>&gt;<i> When replying, please edit your Subject line so it is more specific
+</I>&gt;<i> than &quot;Re: Contents of Chilli digest...&quot;
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> Today's Topics:
+</I>&gt;<i>
+</I>&gt;<i>   1. CoovaChilli Layer-3 Model (Russell Mike)
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> ----------------------------------------------------------------------
+</I>&gt;<i>
+</I>&gt;<i> Message: 1
+</I>&gt;<i> Date: Fri, 5 Apr 2013 20:16:34 +0000
+</I>&gt;<i> From: Russell Mike &lt;<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">radius.sir at gmail.com</A>&gt;
+</I>&gt;<i> To: chilli list &lt;<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli at coova.org</A>&gt;
+</I>&gt;<i> Subject: [Chilli] CoovaChilli Layer-3 Model
+</I>&gt;<i> Message-ID:
+</I>&gt;<i>    &lt;<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">CADao4Cp9UnD44iZH-e0O+YL59JRc5hXQq1NB+o3x8Em2YH13cw at mail.gmail.com</A>&gt;
+</I>&gt;<i> Content-Type: text/plain; charset=&quot;iso-8859-1&quot;
+</I>&gt;<i>
+</I>&gt;<i> Hi All List Friends,
+</I>&gt;<i>
+</I>&gt;<i> But my question is to the guys using CoovaChilli in L3. It is Ubuntu
+</I>&gt;<i> 12.4LTS &amp; CoovaChilli 1.3.0 installation, It is multi-tenancy CoovaChilli
+</I>&gt;<i> in ISP data center. Successfully working as L2 model (No Issue At-All, Very
+</I>&gt;<i> Stable) with FR &amp; MySQL. i have almost reached end of my knowledge and this
+</I>&gt;<i> list is my last hope. After working for 5 days continuously could not make
+</I>&gt;<i> CoovaChilli to work as L3 model. i understand this mail does not tell much
+</I>&gt;<i> how the designe is, therefore it is not possible to advice much. i am ready
+</I>&gt;<i> to come up with network diagram if someone can support me please. But still
+</I>&gt;<i> any advice would be very much appreciated here.
+</I>&gt;<i>
+</I>&gt;<i> Setup:
+</I>&gt;<i>
+</I>&gt;<i> [Hotspot-User-Laptop]&lt;-----&gt;[Indoor-AP]&lt;-----&gt;[Router]&lt;--&gt;(Wireless-Link 2
+</I>&gt;<i> Data Center)&lt;--&gt;CoovaChilli
+</I>&gt;<i>
+</I>&gt;<i> Router is acting as relay agent, user can obtain the dhcp ip alright,
+</I>&gt;<i> cannot get the Coova Login page. Thanks for attending to my request.
+</I>&gt;<i>
+</I>&gt;<i> Thanks / Regards
+</I>&gt;<i>
+</I>&gt;<i> RM --
+</I>&gt;<i> -------------- next part --------------
+</I>&gt;<i> An HTML attachment was scrubbed...
+</I>&gt;<i> URL: &lt;
+</I>&gt;<i> <A HREF="http://lists.coova.org/pipermail/chilli/attachments/20130405/4a09d455/attachment-0001.html">http://lists.coova.org/pipermail/chilli/attachments/20130405/4a09d455/attachment-0001.html</A>
+</I>&gt;<i> &gt;
+</I>&gt;<i>
+</I>&gt;<i> ------------------------------
+</I>&gt;<i>
+</I>&gt;<i> _______________________________________________
+</I>&gt;<i> Chilli mailing list
+</I>&gt;<i> <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">Chilli at coova.org</A>
+</I>&gt;<i> <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">http://lists.coova.org/cgi-bin/mailman/listinfo/chilli</A>
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> End of Chilli Digest, Vol 41, Issue 5
+</I>&gt;<i> *************************************
+</I>&gt;<i> _______________________________________________
+</I>&gt;<i> Chilli mailing list
+</I>&gt;<i> <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">Chilli at coova.org</A>
+</I>&gt;<i> <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">http://lists.coova.org/cgi-bin/mailman/listinfo/chilli</A>
+</I>&gt;<i>
+</I>-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: &lt;<A HREF="http://lists.coova.org/pipermail/chilli/attachments/20130408/c57f89f2/attachment.html">http://lists.coova.org/pipermail/chilli/attachments/20130408/c57f89f2/attachment.html</A>&gt;
+</PRE>
+
+
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="002236.html">[Chilli] CoovaChilli Layer-3 Model
+</A></li>
+	<LI>Next message: <A HREF="002238.html">[Chilli] CoovaChilli Layer-3 Model
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2237">[ date ]</a>
+              <a href="thread.html#2237">[ thread ]</a>
+              <a href="subject.html#2237">[ subject ]</a>
+              <a href="author.html#2237">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

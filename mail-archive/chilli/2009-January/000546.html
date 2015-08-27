@@ -1,0 +1,175 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> Radius check time - possible to specify?
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20Radius%20check%20time%20-%20possible%20to%20specify%3F&In-Reply-To=%3C1231553135.7030.3.camel%40david-laptop%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000545.html">
+   <LINK REL="Next"  HREF="000547.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>Radius check time - possible to specify?</H1>
+    <B>wlanmac</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20Radius%20check%20time%20-%20possible%20to%20specify%3F&In-Reply-To=%3C1231553135.7030.3.camel%40david-laptop%3E"
+       TITLE="Radius check time - possible to specify?">wlan at mac.com
+       </A><BR>
+    <I>Sat Jan 10 02:05:35 UTC 2009</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000545.html">Radius check time - possible to specify?
+</A></li>
+        <LI>Next message: <A HREF="000547.html">FreeBSD port
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#546">[ date ]</a>
+              <a href="thread.html#546">[ thread ]</a>
+              <a href="subject.html#546">[ subject ]</a>
+              <a href="author.html#546">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>If you are provisioning access with a time limit, you should be setting
+the Session-Timeout attribute in your Access-Accept. It should be the
+&quot;time remaining&quot; - a dynamic variable based on time allowed minus time
+consumed (take from radacct). 
+
+David
+
+On Fri, 2009-01-09 at 21:20 +0000, Derek C wrote:
+&gt;<i> Hi Henk,
+</I>&gt;<i> 
+</I>&gt;<i> I'll give that directive a try.
+</I>&gt;<i> 
+</I>&gt;<i> Actually I am accounting [or, rather, it does accounting by default - at
+</I>&gt;<i> least data is being written into the radacct table although the write
+</I>&gt;<i> interval is whatever default coova chilli is going for].
+</I>&gt;<i> 
+</I>&gt;<i> Out of interest I've just checked the table now:  It looks like for a
+</I>&gt;<i> given user [MAC addr] I can see that the radacct records are being written
+</I>&gt;<i> every 70 minutes (funny figure isn't it?).
+</I>&gt;<i> 
+</I>&gt;<i> I'll see what happens if I can adjust the radius accounting times
+</I>&gt;<i> 
+</I>&gt;<i> thanks,
+</I>&gt;<i> 
+</I>&gt;<i> Derek
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> On Fri, January 9, 2009 4:42 pm, Henk Kleynhans wrote:
+</I>&gt;<i> &gt; Hi Derek,
+</I>&gt;<i> &gt; Normally when accounting for usage, you set an Acct-Update-Interval
+</I>&gt;<i> &gt; variable. Not sure if this applies though in your setup, as you're not
+</I>&gt;<i> &gt; doing accounting. But it's the first place I'd look. henk
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; On Fri, Jan 9, 2009 at 6:11 PM, Derek C &lt;<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">derekchilli at hssl.ie</A>&gt; wrote:
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt;&gt; Hi all,
+</I>&gt;<i> &gt;&gt;
+</I>&gt;<i> &gt;&gt;
+</I>&gt;<i> &gt;&gt; I've found that Coova Chilli works excellently with OpenWRT based APs
+</I>&gt;<i> &gt;&gt; and freeradius on a central (Internet) server:
+</I>&gt;<i> &gt;&gt;
+</I>&gt;<i> &gt;&gt; I'm easily able to add a user's MAC address into the radcheck and
+</I>&gt;<i> &gt;&gt; usergroup tables and after this the user can get past my &quot;splash screen&quot;
+</I>&gt;<i> &gt;&gt; -
+</I>&gt;<i> &gt;&gt; super.
+</I>&gt;<i> &gt;&gt;
+</I>&gt;<i> &gt;&gt; BUT, and this is the reason for my post today, what I haven't worked
+</I>&gt;<i> &gt;&gt; out is how to tell Coova Chilli to do a frequent check against the free
+</I>&gt;<i> &gt;&gt; radius server to see if the user (by MAC) is still in there.
+</I>&gt;<i> &gt;&gt;
+</I>&gt;<i> &gt;&gt; I'm automatically removing the user from the tables with a script that
+</I>&gt;<i> &gt;&gt; runs on the [same server as] freeradius server.
+</I>&gt;<i> &gt;&gt;
+</I>&gt;<i> &gt;&gt; Example: When a user tries to access the web on my Coova Chilli enabled
+</I>&gt;<i> &gt;&gt; AP
+</I>&gt;<i> &gt;&gt; they are redirected to my splash page (because their MAC is NOT in the
+</I>&gt;<i> &gt;&gt; free radius tables). Then they accept that they want free access and I
+</I>&gt;<i> &gt;&gt; add them in to the free radius tables and then I send them on to their
+</I>&gt;<i> &gt;&gt; requested Internet page. Because they [MAC] are now in the free radius
+</I>&gt;<i> &gt;&gt; tables they ARE allowed Internet access. After 5 minutes I erase their
+</I>&gt;<i> &gt;&gt; MAC
+</I>&gt;<i> &gt;&gt; entry from the free radius tables. HERE IS THE CRUNCH: I notice that you
+</I>&gt;<i> &gt;&gt;  may still have, say, 1 hour on the Internet even though their MAC is
+</I>&gt;<i> &gt;&gt; no longer in the free radius tables.
+</I>&gt;<i> &gt;&gt;
+</I>&gt;<i> &gt;&gt; I'm guessing that this is because Coova Chilli is just not often
+</I>&gt;<i> &gt;&gt; re-checking against the free radius server that the user should still
+</I>&gt;<i> &gt;&gt; get access?
+</I>&gt;<i> &gt;&gt;
+</I>&gt;<i> &gt;&gt; Does anyone know how to tune this in Coova Chilli?
+</I>&gt;<i> &gt;&gt;
+</I>&gt;<i> &gt;&gt;
+</I>&gt;<i> &gt;&gt;
+</I>&gt;<i> &gt;&gt; thanks very much!!!
+</I>&gt;<i> &gt;&gt;
+</I>&gt;<i> &gt;&gt;
+</I>&gt;<i> &gt;&gt; Derek
+</I>&gt;<i> &gt;&gt;
+</I>&gt;<i> &gt;&gt;
+</I>&gt;<i> &gt;&gt;
+</I>&gt;<i> &gt;&gt;
+</I>&gt;<i> &gt;&gt; --
+</I>&gt;<i> &gt;&gt; Derek C
+</I>&gt;<i> &gt;&gt; In Ireland
+</I>&gt;<i> &gt;&gt;
+</I>&gt;<i> &gt;&gt;
+</I>&gt;<i> &gt;&gt;
+</I>&gt;<i> &gt;&gt; ---------------------------------------------------------------------
+</I>&gt;<i> &gt;&gt; To unsubscribe, e-mail: <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli-unsubscribe at coova.org</A>
+</I>&gt;<i> &gt;&gt; For additional commands, e-mail: <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli-help at coova.org</A>
+</I>&gt;<i> &gt;&gt; Wiki: <A HREF="http://coova.org/wiki/index.php/CoovaChilli">http://coova.org/wiki/index.php/CoovaChilli</A>
+</I>&gt;<i> &gt;&gt; Forum: <A HREF="http://coova.org/phpBB3/viewforum.php?f=4">http://coova.org/phpBB3/viewforum.php?f=4</A>
+</I>&gt;<i> &gt;&gt;
+</I>&gt;<i> &gt;&gt;
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; Henk Kleynhans
+</I>&gt;<i> &gt; CTO &amp; Founder
+</I>&gt;<i> &gt; Skyrove (Pty) Ltd
+</I>&gt;<i> &gt; Technology Top 100 - Most Promising Emerging Enterprise 2006
+</I>&gt;<i> &gt; Tel: +27 (21) 4488843
+</I>&gt;<i> &gt; Cell: +27 (84) 3073451
+</I>&gt;<i> &gt; Fax: +27 (86) 6204077
+</I>&gt;<i> &gt; <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">henk at skyrove.com</A> blog: www.geekrebel.com
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; ------
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; &quot;A person with ubuntu is open and available to others, affirming of
+</I>&gt;<i> &gt; others, does not feel threatened that others are able and good, for he or
+</I>&gt;<i> &gt; she has a proper self-assurance that comes from knowing that he or she
+</I>&gt;<i> &gt; belongs in a greater whole and is diminished when others are humiliated or
+</I>&gt;<i> &gt; diminished, when others are tortured or oppressed.&quot; - Desmond Tutu
+</I>&gt;<i> &gt;
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000545.html">Radius check time - possible to specify?
+</A></li>
+	<LI>Next message: <A HREF="000547.html">FreeBSD port
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#546">[ date ]</a>
+              <a href="thread.html#546">[ thread ]</a>
+              <a href="subject.html#546">[ subject ]</a>
+              <a href="author.html#546">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

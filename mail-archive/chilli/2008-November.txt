@@ -1,0 +1,2181 @@
+From info at ollisnet.de  Thu Nov  6 21:54:26 2008
+From: info at ollisnet.de (Oliver Hinckel)
+Date: Thu, 06 Nov 2008 22:54:26 +0100
+Subject: Forwarding problem (DNS)
+Message-ID: <49136792.1060206@ollisnet.de>
+
+Hello,
+
+we have setup multiple accesspoints using Chilli. Our clients gets a 
+nameserver somewhere in the network, everything works fine.
+
+Now we thought about to use dnsmasq on the access points directly to 
+save some network traffic. We changed the chilli.conf dns1 & dns2 
+setting to use the IP address of the access point running chilli itself.
+
+In case a client authenticates successfully, it'll get an IP address 
+assigned from chilli and will also get the IP address for the DNS server 
+which is the access point's IP. When the client now tries to resolve a 
+domain name, then DNS request will never be answered and resolving 
+domain names will fail (no response).
+
+First of all, we thought about a firewall problem, but the firewall 
+doesn't list some packets which are dropped. After this we started 
+chilli in debug mode to see what's going on on the network.
+
+In an older version we saw the following when doing a sime ping to an 
+outside IP address:
+
+chilli.c: 2530: 0 (Success) cb_dhcp_data_ind. Packet received. DHCP 
+authstate: 2
+chilli.c: 1120: 0 (Success) cb_tun_ind. Packet received: Forwarding to 
+link layer
+chilli.c: 2530: 0 (Success) cb_dhcp_data_ind. Packet received. DHCP 
+authstate: 2
+chilli.c: 1120: 0 (Success) cb_tun_ind. Packet received: Forwarding to 
+link layer
+
+As you can see, chilli reports that the packed was forwared to the link 
+layer. When doing a "nslookup somedomain.com" on the client the output 
+was this:
+
+chilli.c: 2530: 0 (Success) cb_dhcp_data_ind. Packet received. DHCP 
+authstate: 2
+chilli.c: 2530: 0 (Success) cb_dhcp_data_ind. Packet received. DHCP 
+authstate: 2
+
+No message "Forwarding to link layer" is logged. So I assumed that 
+chilli get the DNS packet and drops it.
+
+After that we tried to use a newer chilli version. I downloaded coova 
+chilli 1.0.12, compiled it and installed it on the access point. Same 
+scenario as described about and we'll get the following messages when 
+doing a "nslookup somedomain.com" on the client:
+
+dhcp.c: 1835: 0 (Debug) DHCP packet received
+dhcp.c: 1865: 0 (Debug) Address found
+chilli.c: 117: 0 (Debug) Leaky bucket timediff: 420, bucketup: 0, 
+bucketdown: 100, up: 69, down: 0
+
+After a short period, this messages repeats again. No more messages. 
+When doing a simple ping to an outside IP address chilli logs the following:
+
+dhcp.c: 1835: 0 (Debug) DHCP packet received
+dhcp.c: 1865: 0 (Debug) Address found
+chilli.c: 117: 0 (Debug) Leaky bucket timediff: 5, bucketup: 98, 
+bucketdown: 84, up: 98, down: 0
+chilli.c: 117: 0 (Debug) Leaky bucket timediff: 1, bucketup: 98, 
+bucketdown: 0, up: 0, down: 84
+
+So the problem is, that when using the access points IP (we tried the 
+tun0 IP address and we tried the LAN IP address, both with same result), 
+the DNS lookup will fail. When using an other DNS server (e.g. some 
+public one) DNS lookup works fine.
+
+Can anybody shed some light on it, why DNS lookup will fail when using 
+the access point's IP address as DNS server?
+
+Thanks for your help!
+
+Kind regards
+Oliver Hinckel
+
+
+From wlan at mac.com  Fri Nov  7 05:28:36 2008
+From: wlan at mac.com (wlanmac)
+Date: Fri, 07 Nov 2008 06:28:36 +0100
+Subject: Forwarding problem (DNS)
+In-Reply-To: <49136792.1060206@ollisnet.de>
+References: <49136792.1060206@ollisnet.de>
+Message-ID: <1226035716.6985.7.camel@david-laptop>
+
+What do your iptables rules look like during this test?
+
+David
+
+
+On Thu, 2008-11-06 at 22:54 +0100, Oliver Hinckel wrote:
+> Hello,
+> 
+> we have setup multiple accesspoints using Chilli. Our clients gets a 
+> nameserver somewhere in the network, everything works fine.
+> 
+> Now we thought about to use dnsmasq on the access points directly to 
+> save some network traffic. We changed the chilli.conf dns1 & dns2 
+> setting to use the IP address of the access point running chilli itself.
+> 
+> In case a client authenticates successfully, it'll get an IP address 
+> assigned from chilli and will also get the IP address for the DNS server 
+> which is the access point's IP. When the client now tries to resolve a 
+> domain name, then DNS request will never be answered and resolving 
+> domain names will fail (no response).
+> 
+> First of all, we thought about a firewall problem, but the firewall 
+> doesn't list some packets which are dropped. After this we started 
+> chilli in debug mode to see what's going on on the network.
+> 
+> In an older version we saw the following when doing a sime ping to an 
+> outside IP address:
+> 
+> chilli.c: 2530: 0 (Success) cb_dhcp_data_ind. Packet received. DHCP 
+> authstate: 2
+> chilli.c: 1120: 0 (Success) cb_tun_ind. Packet received: Forwarding to 
+> link layer
+> chilli.c: 2530: 0 (Success) cb_dhcp_data_ind. Packet received. DHCP 
+> authstate: 2
+> chilli.c: 1120: 0 (Success) cb_tun_ind. Packet received: Forwarding to 
+> link layer
+> 
+> As you can see, chilli reports that the packed was forwared to the link 
+> layer. When doing a "nslookup somedomain.com" on the client the output 
+> was this:
+> 
+> chilli.c: 2530: 0 (Success) cb_dhcp_data_ind. Packet received. DHCP 
+> authstate: 2
+> chilli.c: 2530: 0 (Success) cb_dhcp_data_ind. Packet received. DHCP 
+> authstate: 2
+> 
+> No message "Forwarding to link layer" is logged. So I assumed that 
+> chilli get the DNS packet and drops it.
+> 
+> After that we tried to use a newer chilli version. I downloaded coova 
+> chilli 1.0.12, compiled it and installed it on the access point. Same 
+> scenario as described about and we'll get the following messages when 
+> doing a "nslookup somedomain.com" on the client:
+> 
+> dhcp.c: 1835: 0 (Debug) DHCP packet received
+> dhcp.c: 1865: 0 (Debug) Address found
+> chilli.c: 117: 0 (Debug) Leaky bucket timediff: 420, bucketup: 0, 
+> bucketdown: 100, up: 69, down: 0
+> 
+> After a short period, this messages repeats again. No more messages. 
+> When doing a simple ping to an outside IP address chilli logs the following:
+> 
+> dhcp.c: 1835: 0 (Debug) DHCP packet received
+> dhcp.c: 1865: 0 (Debug) Address found
+> chilli.c: 117: 0 (Debug) Leaky bucket timediff: 5, bucketup: 98, 
+> bucketdown: 84, up: 98, down: 0
+> chilli.c: 117: 0 (Debug) Leaky bucket timediff: 1, bucketup: 98, 
+> bucketdown: 0, up: 0, down: 84
+> 
+> So the problem is, that when using the access points IP (we tried the 
+> tun0 IP address and we tried the LAN IP address, both with same result), 
+> the DNS lookup will fail. When using an other DNS server (e.g. some 
+> public one) DNS lookup works fine.
+> 
+> Can anybody shed some light on it, why DNS lookup will fail when using 
+> the access point's IP address as DNS server?
+> 
+> Thanks for your help!
+> 
+> Kind regards
+> Oliver Hinckel
+> 
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+> 
+
+
+
+From wlan at mac.com  Fri Nov  7 09:01:09 2008
+From: wlan at mac.com (wlanmac)
+Date: Fri, 07 Nov 2008 10:01:09 +0100
+Subject: Plans for CoovaRADIUS
+Message-ID: <1226048469.6985.14.camel@david-laptop>
+
+Hello,
+
+http://coova.org/wiki/index.php/CoovaRADIUS
+
+The above URL outlines some plans for the up-and-coming release of
+CoovaRADIUS - a commercial stand-alone version of CoovaAAA. 
+
+Comments and suggestions are welcome! 
+
+David
+
+
+
+From oguzhank at bilkent.edu.tr  Fri Nov  7 13:58:10 2008
+From: oguzhank at bilkent.edu.tr (Oguzhan Kayhan)
+Date: Fri, 7 Nov 2008 15:58:10 +0200 (EET)
+Subject: dynip and staticip
+Message-ID: <59563.139.179.14.250.1226066290.squirrel@webmail.bilkent.edu.tr>
+
+Hello,
+What i am trying to do is, to create a small subnet on my network for
+static ip devices like servers, ip cameras etc..and authenticate them with
+mac-id.
+As i see, dynip and statip settings are just for dhcp to distribute ip
+addresses or not. What i wonder, is it able to prevent users to give
+static ips from dynip range?
+I mean if i give a subnet as dynip 192.168.182.1/255.255.255.128 and if a
+user decides to give a static ip on 192.168.182.10, he is able to connect
+to coova.How can i prevent them?
+
+And i got ippool.c: 345: Static out of range error on syslog.
+My config is basically like this..
+net  192.168.182.0/255.255.255.0
+dynip 192.168.182.1/255.255.255.128
+statip 192.168.182.250/255.255.255.254
+
+Everythings seem fine i think??
+
+Or should i use only one option(dynip or statip) as Distribute from this
+subnet(dynip) or do not distribute that subnet(statip)???
+
+
+
+From info at ollisnet.de  Fri Nov  7 14:17:59 2008
+From: info at ollisnet.de (Oliver Hinckel)
+Date: Fri, 07 Nov 2008 15:17:59 +0100
+Subject: Forwarding problem (DNS)
+In-Reply-To: <1226035716.6985.7.camel@david-laptop>
+References: <49136792.1060206@ollisnet.de> <1226035716.6985.7.camel@david-laptop>
+Message-ID: <49144E17.5070301@ollisnet.de>
+
+wlanmac wrote on 11/07/2008 06:28 AM:
+> What do your iptables rules look like during this test?
+
+I'll check this later and report which rules are set up.
+
+But are you able to reproduce this behaviour?
+
+- Olli
+
+
+From oguzhank at bilkent.edu.tr  Fri Nov  7 15:21:44 2008
+From: oguzhank at bilkent.edu.tr (Oguzhan Kayhan)
+Date: Fri, 7 Nov 2008 17:21:44 +0200 (EET)
+Subject: another funny problem :)
+Message-ID: <37062.139.179.14.250.1226071304.squirrel@webmail.bilkent.edu.tr>
+
+While i was trying to make coovafx-sx work, i noticed that we should use
+the chilli.js for this support.
+
+So, i copied it to my coova instlalation. made necessary settings for
+index.html and chilli.js for my configuration and made the necessary path
+settings on coova config file too.
+And i restarted chilli.
+
+That was cool to see the login page and also nice to see the coovafx
+working..
+But.. there was a little problem..
+If i type a correct username/password it gives the error unknown username
+or password.. But if i type anything else i could login to the system.
+
+really strange to login with anything except the right user/pass couple.
+
+PS: I also tested the radius config with radtest from the same server with
+coova
+It is working ok with it..And even if i change the uamlogin page to my old
+cgi hotspotlogin page it works too..
+
+
+
+
+From info at ollisnet.de  Sat Nov  8 19:42:27 2008
+From: info at ollisnet.de (Oliver Hinckel)
+Date: Sat, 08 Nov 2008 20:42:27 +0100
+Subject: Forwarding problem (DNS)
+In-Reply-To: <49144E17.5070301@ollisnet.de>
+References: <49136792.1060206@ollisnet.de> <1226035716.6985.7.camel@david-laptop> <49144E17.5070301@ollisnet.de>
+Message-ID: <4915EBA3.10802@ollisnet.de>
+
+Oliver Hinckel wrote on 11/07/2008 03:17 PM:
+> wlanmac wrote on 11/07/2008 06:28 AM:
+>> What do your iptables rules look like during this test?
+> 
+> I'll check this later and report which rules are set up.
+
+I checked the firewall rules which seems to be OK. But I checked also 
+the dnsmasq configuration which is running on the same machine running 
+chilli.
+
+It seems like a problem in the dnsmasq configuration. We changed the 
+interface listening for DNS queries from eth1 (which is the physical 
+radio network device) explicitely to tun0 (the chilli interface). With 
+this configuration everything seems to be working fine.
+
+I thought, I was already using such a configuration - that's why I asked 
+here for a solution. But it seems something other got messed up and this 
+configuration didn't worked well. But re-trying this again worked well.
+
+> But are you able to reproduce this behaviour?
+
+Thanks anyway for your support!
+
+- Olli
+
+
+
+From wlan at mac.com  Sun Nov  9 07:33:53 2008
+From: wlan at mac.com (wlanmac)
+Date: Sun, 09 Nov 2008 08:33:53 +0100
+Subject: Forwarding problem (DNS)
+In-Reply-To: <4915EBA3.10802@ollisnet.de>
+References: <49136792.1060206@ollisnet.de>
+ <1226035716.6985.7.camel@david-laptop> <49144E17.5070301@ollisnet.de>
+ <4915EBA3.10802@ollisnet.de>
+Message-ID: <1226216033.7156.5.camel@david-laptop>
+
+It could be that dnsmasq is not listening on tun0 because tun0 was not
+around when dnsmasq started. If your chilli "up.sh" script restarted
+dnsmasq after starting chilli (and tun0), then you might have better
+success.
+
+
+On Sat, 2008-11-08 at 20:42 +0100, Oliver Hinckel wrote:
+> Oliver Hinckel wrote on 11/07/2008 03:17 PM:
+> > wlanmac wrote on 11/07/2008 06:28 AM:
+> >> What do your iptables rules look like during this test?
+> > 
+> > I'll check this later and report which rules are set up.
+> 
+> I checked the firewall rules which seems to be OK. But I checked also 
+> the dnsmasq configuration which is running on the same machine running 
+> chilli.
+> 
+> It seems like a problem in the dnsmasq configuration. We changed the 
+> interface listening for DNS queries from eth1 (which is the physical 
+> radio network device) explicitely to tun0 (the chilli interface). With 
+> this configuration everything seems to be working fine.
+> 
+> I thought, I was already using such a configuration - that's why I asked 
+> here for a solution. But it seems something other got messed up and this 
+> configuration didn't worked well. But re-trying this again worked well.
+> 
+> > But are you able to reproduce this behaviour?
+> 
+> Thanks anyway for your support!
+> 
+> - Olli
+> 
+> 
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+> 
+
+
+
+From oguzhank at bilkent.edu.tr  Tue Nov 11 08:50:35 2008
+From: oguzhank at bilkent.edu.tr (Oguzhan Kayhan)
+Date: Tue, 11 Nov 2008 10:50:35 +0200 (EET)
+Subject: another funny problem :)
+In-Reply-To: 
+     <37062.139.179.14.250.1226071304.squirrel@webmail.bilkent.edu.tr>
+References: 
+    <37062.139.179.14.250.1226071304.squirrel@webmail.bilkent.edu.tr>
+Message-ID: <40357.139.179.14.250.1226393435.squirrel@webmail.bilkent.edu.tr>
+
+> While i was trying to make coovafx-sx work, i noticed that we should use
+> the chilli.js for this support.
+>
+> So, i copied it to my coova instlalation. made necessary settings for
+> index.html and chilli.js for my configuration and made the necessary path
+> settings on coova config file too.
+> And i restarted chilli.
+>
+> That was cool to see the login page and also nice to see the coovafx
+> working..
+> But.. there was a little problem..
+> If i type a correct username/password it gives the error unknown username
+> or password.. But if i type anything else i could login to the system.
+>
+> really strange to login with anything except the right user/pass couple.
+>
+> PS: I also tested the radius config with radtest from the same server with
+> coova
+> It is working ok with it..And even if i change the uamlogin page to my old
+> cgi hotspotlogin page it works too..
+>
+>
+
+I think i figured out the problem but not close to the solution.
+As i see, hotspotlogin.cgi uses clean password.And even if i test with
+radtest tool it authenticates with clean pass.
+But, chilli.js uses chap authentication. And it is making some trouble for
+me..
+I left uamsecret empty as i read on previous posts..But didnt work.
+So is there a way to disable chap and force the login page use clean
+password?
+
+
+
+
+
+>
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>
+>
+
+
+
+
+From andreas.johansson at icomera.com  Wed Nov 12 15:12:08 2008
+From: andreas.johansson at icomera.com (Andreas Johansson)
+Date: Wed, 12 Nov 2008 16:12:08 +0100
+Subject: chilli_query usage
+Message-ID: <E914E3457D2A124085BDF8B8DF3AFFAD1A296B95@maui.internal.icomera.com>
+
+Hi!
+
+I'm having a bit of a problem with the usage of chilli_query. What I want to do is manually authenticate an IP-adress. (For users who can't display the captive portal.) Seems to me that this is what chilli_query is built for.
+
+chilli_query authorizes the users just fine, but the sessiontimeout argument doesn't seem to work for me. Any suggestions?
+
+The commands I'm using are:
+
+chilli_query authorize ip 10.1.0.2 sessiontimeout 60 username testuser
+This allows the ip adress 10.1.0.2 access, however chilli_query list shows:
+<macadress> 10.1.0.2 pass <sessionid> 1 testuser 5/0 5/0 <originalurl>
+
+The number indicating the sessiontimeout is 0, and it should be 60, right? The session also doesn't get disconnected after 60 seconds.
+
+The sessions which are authorized through the captive portal shows up with a correct non-zero sessiontimeout value in chilli_query list.
+
+Any ideas?
+
+Thank you for your time.
+/Andreas
+
+
+From wlan at mac.com  Wed Nov 12 17:05:52 2008
+From: wlan at mac.com (wlanmac)
+Date: Wed, 12 Nov 2008 18:05:52 +0100
+Subject: chilli_query usage
+In-Reply-To: 
+ <E914E3457D2A124085BDF8B8DF3AFFAD1A296B95@maui.internal.icomera.com>
+References: <E914E3457D2A124085BDF8B8DF3AFFAD1A296B95@maui.internal.icomera.com>
+Message-ID: <1226509552.7170.24.camel@david-laptop>
+
+It's a bug, thanks for pointing it out!
+
+David
+
+On Wed, 2008-11-12 at 16:12 +0100, Andreas Johansson wrote:
+> Hi!
+> 
+> I'm having a bit of a problem with the usage of chilli_query. What I want to do is manually authenticate an IP-adress. (For users who can't display the captive portal.) Seems to me that this is what chilli_query is built for.
+> 
+> chilli_query authorizes the users just fine, but the sessiontimeout argument doesn't seem to work for me. Any suggestions?
+> 
+> The commands I'm using are:
+> 
+> chilli_query authorize ip 10.1.0.2 sessiontimeout 60 username testuser
+> This allows the ip adress 10.1.0.2 access, however chilli_query list shows:
+> <macadress> 10.1.0.2 pass <sessionid> 1 testuser 5/0 5/0 <originalurl>
+> 
+> The number indicating the sessiontimeout is 0, and it should be 60, right? The session also doesn't get disconnected after 60 seconds.
+> 
+> The sessions which are authorized through the captive portal shows up with a correct non-zero sessiontimeout value in chilli_query list.
+> 
+> Any ideas?
+> 
+> Thank you for your time.
+> /Andreas
+> 
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+> 
+
+
+
+From odhiambo at gmail.com  Wed Nov 12 18:43:41 2008
+From: odhiambo at gmail.com (Odhiambo Washington)
+Date: Wed, 12 Nov 2008 21:43:41 +0300
+Subject: coova-chilli on FreeBSD
+Message-ID: <991123400811121043h276aa6c5g4b2688433e22ec3c@mail.gmail.com>
+
+Hello list,
+
+I am new here, so hi everyone!
+
+I am wondering if anyone has managed to successfully compile latest
+coova-chilli on FreeBSD-{6|7} based on the port skeleton from
+http://www.geeklan.co.uk/files/coova-freebsd-port-mk2.tgz (
+http://www.geeklan.co.uk/?p=106)
+I try to "make" and it fails. The error from config.log can be seen here:
+http://email.suavegroup.com/~wash/config.log.txt
+
+All help appreciated.
+
+-- 
+Best regards,
+Odhiambo WASHINGTON,
+Nairobi,KE
++254733744121/+254722743223
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+"Life must be understood backwards; but... it must be lived forward."
+                           - Soren Kierkegaard
+"Oh My God! They killed init! You Bastards!"
+                       --from a /. post
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20081112/eb6db3cf/attachment.htm>
+
+From devinder at palettemm.com  Fri Nov 14 02:52:09 2008
+From: devinder at palettemm.com (Devinder Singh)
+Date: Fri, 14 Nov 2008 10:52:09 +0800
+Subject: NAS IP Address
+Message-ID: <6bdd03c50811131852x378c2e3ds551199349bbe2515@mail.gmail.com>
+
+Hi
+
+I have set eth0 as 203.121.4.40
+
+eth1 192.168.10.1
+
+But when i login on the login page the remote Radius Server is receiving NAS
+as 192.168.10.1
+
+What are the modifications that i need to do to allow the remote Radius
+Server to get 203.121.4.40
+
+Cheers
+
+-- 
+Devinder Singh   |   R&D Manager
+______________________________
+Palette Multimedia Berhad (420056-K)
+6 Floor, Unit 4,
+KPMG Tower
+8 First Avenue,
+Bandar Utama,
+47800 Petaling Jaya, Selangor
+Malaysia
+
+m. +60122248306
+p.  +60377289880 Ext 502
+f.   +60377281080
+@ devinder at palettemm.com
+www.palettemm.com
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20081114/586a5ef1/attachment.htm>
+
+From kaevee at gmail.com  Fri Nov 14 03:21:07 2008
+From: kaevee at gmail.com (Venkatesh K)
+Date: Fri, 14 Nov 2008 08:51:07 +0530
+Subject: NAS IP Address
+In-Reply-To: <6bdd03c50811131852x378c2e3ds551199349bbe2515@mail.gmail.com>
+References: <6bdd03c50811131852x378c2e3ds551199349bbe2515@mail.gmail.com>
+Message-ID: <e187fc980811131921j200ed361va139985299dfc0a2@mail.gmail.com>
+
+On Fri, Nov 14, 2008 at 8:22 AM, Devinder Singh <devinder at palettemm.com> wrote:
+> Hi
+>
+> I have set eth0 as 203.121.4.40
+>
+> eth1 192.168.10.1
+>
+> But when i login on the login page the remote Radius Server is receiving NAS
+> as 192.168.10.1
+>
+> What are the modifications that i need to do to allow the remote Radius
+> Server to get 203.121.4.40
+>
+
+If radius server sees client address as 192.168.x.x, you should check
+your NAT configuration
+in NAS. I Presume you are doing NAT on the NAS itself.
+
+If you mean you see 192.168.x.x in radacct, that is normal. Because,
+192.168.x.x is part of accounting request.
+
+Regards,
+
+Venkatesh K
+
+
+From devinder at palettemm.com  Fri Nov 14 03:27:26 2008
+From: devinder at palettemm.com (Devinder Singh)
+Date: Fri, 14 Nov 2008 11:27:26 +0800
+Subject: NAS IP Address
+In-Reply-To: <e187fc980811131921j200ed361va139985299dfc0a2@mail.gmail.com>
+References: <6bdd03c50811131852x378c2e3ds551199349bbe2515@mail.gmail.com>
+	 <e187fc980811131921j200ed361va139985299dfc0a2@mail.gmail.com>
+Message-ID: <6bdd03c50811131927i2f275634xe14181b60c2f1a2d@mail.gmail.com>
+
+Hi  I am not doing any NAT in Coova
+
+How do i configure NAT in coova
+
+Devinder
+
+2008/11/14 Venkatesh K <kaevee at gmail.com>
+
+> On Fri, Nov 14, 2008 at 8:22 AM, Devinder Singh <devinder at palettemm.com>
+> wrote:
+> > Hi
+> >
+> > I have set eth0 as 203.121.4.40
+> >
+> > eth1 192.168.10.1
+> >
+> > But when i login on the login page the remote Radius Server is receiving
+> NAS
+> > as 192.168.10.1
+> >
+> > What are the modifications that i need to do to allow the remote Radius
+> > Server to get 203.121.4.40
+> >
+>
+> If radius server sees client address as 192.168.x.x, you should check
+> your NAT configuration
+> in NAS. I Presume you are doing NAT on the NAS itself.
+>
+> If you mean you see 192.168.x.x in radacct, that is normal. Because,
+> 192.168.x.x is part of accounting request.
+>
+> Regards,
+>
+> Venkatesh K
+>
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>
+>
+
+
+-- 
+Devinder Singh   |   R&D Manager
+______________________________
+Palette Multimedia Berhad (420056-K)
+6 Floor, Unit 4,
+KPMG Tower
+8 First Avenue,
+Bandar Utama,
+47800 Petaling Jaya, Selangor
+Malaysia
+
+m. +60122248306
+p.  +60377289880 Ext 502
+f.   +60377281080
+@ devinder at palettemm.com
+www.palettemm.com
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20081114/596db0c4/attachment.htm>
+
+From kaevee at gmail.com  Fri Nov 14 03:31:50 2008
+From: kaevee at gmail.com (Venkatesh K)
+Date: Fri, 14 Nov 2008 09:01:50 +0530
+Subject: NAS IP Address
+In-Reply-To: <6bdd03c50811131927i2f275634xe14181b60c2f1a2d@mail.gmail.com>
+References: <6bdd03c50811131852x378c2e3ds551199349bbe2515@mail.gmail.com>
+	 <e187fc980811131921j200ed361va139985299dfc0a2@mail.gmail.com>
+	 <6bdd03c50811131927i2f275634xe14181b60c2f1a2d@mail.gmail.com>
+Message-ID: <e187fc980811131931p1f661bcay7192bf6fb813936d@mail.gmail.com>
+
+You can't confgure NAT in coova. You should setup NAT with iptables in NAS.
+
+for example,
+
+iptables -t nat -o eth0 -I POSTROUTING -j MASQUERADE
+
+The above command will NAT all outgoing traffic on NAS running coova
+with outgoing interface's IP address. You may have to fine tune your
+firewall rules to allow outgoing traffic if they exist.
+
+Regards,
+
+Venkatesh K
+
+On Fri, Nov 14, 2008 at 8:57 AM, Devinder Singh <devinder at palettemm.com> wrote:
+> Hi  I am not doing any NAT in Coova
+>
+> How do i configure NAT in coova
+>
+> Devinder
+>
+> 2008/11/14 Venkatesh K <kaevee at gmail.com>
+>>
+>> On Fri, Nov 14, 2008 at 8:22 AM, Devinder Singh <devinder at palettemm.com>
+>> wrote:
+>> > Hi
+>> >
+>> > I have set eth0 as 203.121.4.40
+>> >
+>> > eth1 192.168.10.1
+>> >
+>> > But when i login on the login page the remote Radius Server is receiving
+>> > NAS
+>> > as 192.168.10.1
+>> >
+>> > What are the modifications that i need to do to allow the remote Radius
+>> > Server to get 203.121.4.40
+>> >
+>>
+>> If radius server sees client address as 192.168.x.x, you should check
+>> your NAT configuration
+>> in NAS. I Presume you are doing NAT on the NAS itself.
+>>
+>> If you mean you see 192.168.x.x in radacct, that is normal. Because,
+>> 192.168.x.x is part of accounting request.
+>>
+>> Regards,
+>>
+>> Venkatesh K
+>>
+>> ---------------------------------------------------------------------
+>> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+>> For additional commands, e-mail: chilli-help at coova.org
+>> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+>> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>>
+>
+>
+>
+> --
+> Devinder Singh   |   R&D Manager
+> ______________________________
+> Palette Multimedia Berhad (420056-K)
+> 6 Floor, Unit 4,
+> KPMG Tower
+> 8 First Avenue,
+> Bandar Utama,
+> 47800 Petaling Jaya, Selangor
+> Malaysia
+>
+> m. +60122248306
+> p.  +60377289880 Ext 502
+> f.   +60377281080
+> @ devinder at palettemm.com
+> www.palettemm.com
+>
+>
+>
+
+
+
+-- 
+Venkatesh. K
+
+
+From devinder at palettemm.com  Fri Nov 14 03:38:40 2008
+From: devinder at palettemm.com (Devinder Singh)
+Date: Fri, 14 Nov 2008 11:38:40 +0800
+Subject: NAS IP Address
+In-Reply-To: <e187fc980811131931p1f661bcay7192bf6fb813936d@mail.gmail.com>
+References: <6bdd03c50811131852x378c2e3ds551199349bbe2515@mail.gmail.com>
+	 <e187fc980811131921j200ed361va139985299dfc0a2@mail.gmail.com>
+	 <6bdd03c50811131927i2f275634xe14181b60c2f1a2d@mail.gmail.com>
+	 <e187fc980811131931p1f661bcay7192bf6fb813936d@mail.gmail.com>
+Message-ID: <6bdd03c50811131938t2899cae1i99b404850a5151cb@mail.gmail.com>
+
+HI
+
+So this operation would allow coova to send out packets from etho to eth1
+203.121.4.40
+
+Am i right?
+
+What other changes in IP tablles i need to do to allow the remote radius
+server to access 203.121.4.40
+
+Devinder
+
+2008/11/14 Venkatesh K <kaevee at gmail.com>
+
+> You can't confgure NAT in coova. You should setup NAT with iptables in NAS.
+>
+> for example,
+>
+> iptables -t nat -o eth0 -I POSTROUTING -j MASQUERADE
+>
+> The above command will NAT all outgoing traffic on NAS running coova
+> with outgoing interface's IP address. You may have to fine tune your
+> firewall rules to allow outgoing traffic if they exist.
+>
+> Regards,
+>
+> Venkatesh K
+>
+> On Fri, Nov 14, 2008 at 8:57 AM, Devinder Singh <devinder at palettemm.com>
+> wrote:
+> > Hi  I am not doing any NAT in Coova
+>  >
+> > How do i configure NAT in coova
+> >
+> > Devinder
+> >
+> > 2008/11/14 Venkatesh K <kaevee at gmail.com>
+> >>
+> >> On Fri, Nov 14, 2008 at 8:22 AM, Devinder Singh <devinder at palettemm.com
+> >
+> >> wrote:
+> >> > Hi
+> >> >
+> >> > I have set eth0 as 203.121.4.40
+> >> >
+> >> > eth1 192.168.10.1
+> >> >
+> >> > But when i login on the login page the remote Radius Server is
+> receiving
+> >> > NAS
+> >> > as 192.168.10.1
+> >> >
+> >> > What are the modifications that i need to do to allow the remote
+> Radius
+> >> > Server to get 203.121.4.40
+> >> >
+> >>
+> >> If radius server sees client address as 192.168.x.x, you should check
+> >> your NAT configuration
+> >> in NAS. I Presume you are doing NAT on the NAS itself.
+> >>
+> >> If you mean you see 192.168.x.x in radacct, that is normal. Because,
+> >> 192.168.x.x is part of accounting request.
+> >>
+> >> Regards,
+> >>
+> >> Venkatesh K
+> >>
+> >> ---------------------------------------------------------------------
+> >> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> >> For additional commands, e-mail: chilli-help at coova.org
+> >> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> >> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+> >>
+> >
+> >
+> >
+> > --
+> > Devinder Singh   |   R&D Manager
+> > ______________________________
+> > Palette Multimedia Berhad (420056-K)
+> > 6 Floor, Unit 4,
+> > KPMG Tower
+> > 8 First Avenue,
+> > Bandar Utama,
+> > 47800 Petaling Jaya, Selangor
+> > Malaysia
+> >
+> > m. +60122248306
+> > p.  +60377289880 Ext 502
+> > f.   +60377281080
+> > @ devinder at palettemm.com
+> > www.palettemm.com
+> >
+> >
+> >
+>
+>
+>
+> --
+>  Venkatesh. K
+>
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>
+>
+
+
+-- 
+Devinder Singh   |   R&D Manager
+______________________________
+Palette Multimedia Berhad (420056-K)
+6 Floor, Unit 4,
+KPMG Tower
+8 First Avenue,
+Bandar Utama,
+47800 Petaling Jaya, Selangor
+Malaysia
+
+m. +60122248306
+p.  +60377289880 Ext 502
+f.   +60377281080
+@ devinder at palettemm.com
+www.palettemm.com
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20081114/0507b4b6/attachment.htm>
+
+From kaevee at gmail.com  Fri Nov 14 03:49:52 2008
+From: kaevee at gmail.com (Venkatesh K)
+Date: Fri, 14 Nov 2008 09:19:52 +0530
+Subject: NAS IP Address
+In-Reply-To: <6bdd03c50811131938t2899cae1i99b404850a5151cb@mail.gmail.com>
+References: <6bdd03c50811131852x378c2e3ds551199349bbe2515@mail.gmail.com>
+	 <e187fc980811131921j200ed361va139985299dfc0a2@mail.gmail.com>
+	 <6bdd03c50811131927i2f275634xe14181b60c2f1a2d@mail.gmail.com>
+	 <e187fc980811131931p1f661bcay7192bf6fb813936d@mail.gmail.com>
+	 <6bdd03c50811131938t2899cae1i99b404850a5151cb@mail.gmail.com>
+Message-ID: <e187fc980811131949i16a9c673j703b545a0ea3c669@mail.gmail.com>
+
+On Fri, Nov 14, 2008 at 9:08 AM, Devinder Singh <devinder at palettemm.com> wrote:
+> HI
+>
+> So this operation would allow coova to send out packets from etho to eth1
+> 203.121.4.40
+
+It is other way around. Coova packets from eth1 will be sent out on
+eth0 with IP address set to 203.x.x.x. Again, assuming you have setup
+a default gateway, which you would have done already.
+
+>
+> Am i right?
+>
+> What other changes in IP tablles i need to do to allow the remote radius
+> server to access 203.121.4.40
+
+It depends on your firewall configuration. If you can share with us
+your firewall configuration, we can try to help you out.
+
+Regards,
+
+Venkatesh K
+
+>
+> Devinder
+>
+> 2008/11/14 Venkatesh K <kaevee at gmail.com>
+>>
+>> You can't confgure NAT in coova. You should setup NAT with iptables in
+>> NAS.
+>>
+>> for example,
+>>
+>> iptables -t nat -o eth0 -I POSTROUTING -j MASQUERADE
+>>
+>> The above command will NAT all outgoing traffic on NAS running coova
+>> with outgoing interface's IP address. You may have to fine tune your
+>> firewall rules to allow outgoing traffic if they exist.
+>>
+>> Regards,
+>>
+>> Venkatesh K
+>>
+>> On Fri, Nov 14, 2008 at 8:57 AM, Devinder Singh <devinder at palettemm.com>
+>> wrote:
+>> > Hi  I am not doing any NAT in Coova
+>> >
+>> > How do i configure NAT in coova
+>> >
+>> > Devinder
+>> >
+>> > 2008/11/14 Venkatesh K <kaevee at gmail.com>
+>> >>
+>> >> On Fri, Nov 14, 2008 at 8:22 AM, Devinder Singh
+>> >> <devinder at palettemm.com>
+>> >> wrote:
+>> >> > Hi
+>> >> >
+>> >> > I have set eth0 as 203.121.4.40
+>> >> >
+>> >> > eth1 192.168.10.1
+>> >> >
+>> >> > But when i login on the login page the remote Radius Server is
+>> >> > receiving
+>> >> > NAS
+>> >> > as 192.168.10.1
+>> >> >
+>> >> > What are the modifications that i need to do to allow the remote
+>> >> > Radius
+>> >> > Server to get 203.121.4.40
+>> >> >
+>> >>
+>> >> If radius server sees client address as 192.168.x.x, you should check
+>> >> your NAT configuration
+>> >> in NAS. I Presume you are doing NAT on the NAS itself.
+>> >>
+>> >> If you mean you see 192.168.x.x in radacct, that is normal. Because,
+>> >> 192.168.x.x is part of accounting request.
+>> >>
+>> >> Regards,
+>> >>
+>> >> Venkatesh K
+>> >>
+>> >> ---------------------------------------------------------------------
+>> >> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+>> >> For additional commands, e-mail: chilli-help at coova.org
+>> >> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+>> >> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>> >>
+>> >
+>> >
+>> >
+>> > --
+>> > Devinder Singh   |   R&D Manager
+>> > ______________________________
+>> > Palette Multimedia Berhad (420056-K)
+>> > 6 Floor, Unit 4,
+>> > KPMG Tower
+>> > 8 First Avenue,
+>> > Bandar Utama,
+>> > 47800 Petaling Jaya, Selangor
+>> > Malaysia
+>> >
+>> > m. +60122248306
+>> > p.  +60377289880 Ext 502
+>> > f.   +60377281080
+>> > @ devinder at palettemm.com
+>> > www.palettemm.com
+>> >
+>> >
+>> >
+>>
+>>
+>>
+>> --
+>> Venkatesh. K
+>>
+>> ---------------------------------------------------------------------
+>> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+>> For additional commands, e-mail: chilli-help at coova.org
+>> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+>> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>>
+>
+>
+>
+> --
+> Devinder Singh   |   R&D Manager
+> ______________________________
+> Palette Multimedia Berhad (420056-K)
+> 6 Floor, Unit 4,
+> KPMG Tower
+> 8 First Avenue,
+> Bandar Utama,
+> 47800 Petaling Jaya, Selangor
+> Malaysia
+>
+> m. +60122248306
+> p.  +60377289880 Ext 502
+> f.   +60377281080
+> @ devinder at palettemm.com
+> www.palettemm.com
+>
+>
+>
+
+
+
+-- 
+Venkatesh. K
+
+
+From devinder at palettemm.com  Fri Nov 14 05:44:54 2008
+From: devinder at palettemm.com (Devinder Singh)
+Date: Fri, 14 Nov 2008 13:44:54 +0800
+Subject: NAS IP Address
+In-Reply-To: <e187fc980811131949i16a9c673j703b545a0ea3c669@mail.gmail.com>
+References: <6bdd03c50811131852x378c2e3ds551199349bbe2515@mail.gmail.com>
+	 <e187fc980811131921j200ed361va139985299dfc0a2@mail.gmail.com>
+	 <6bdd03c50811131927i2f275634xe14181b60c2f1a2d@mail.gmail.com>
+	 <e187fc980811131931p1f661bcay7192bf6fb813936d@mail.gmail.com>
+	 <6bdd03c50811131938t2899cae1i99b404850a5151cb@mail.gmail.com>
+	 <e187fc980811131949i16a9c673j703b545a0ea3c669@mail.gmail.com>
+Message-ID: <6bdd03c50811132144q1e4cbe4fy8e796ef6aa1a2468@mail.gmail.com>
+
+Hello
+
+I am geting this error when i connect to a radius server
+
+
+Access check : An integer access check attribute value is incorrect or
+unknown! [Vendor id: 0] [Attribute code: 6] [Value: Login] [User name:
+lormaglaya]
+
+Can someone help on this
+
+
+2008/11/14 Venkatesh K <kaevee at gmail.com>
+
+> On Fri, Nov 14, 2008 at 9:08 AM, Devinder Singh <devinder at palettemm.com>
+> wrote:
+> > HI
+> >
+> > So this operation would allow coova to send out packets from etho to eth1
+> > 203.121.4.40
+>
+> It is other way around. Coova packets from eth1 will be sent out on
+> eth0 with IP address set to 203.x.x.x. Again, assuming you have setup
+> a default gateway, which you would have done already.
+>
+> >
+> > Am i right?
+> >
+> > What other changes in IP tablles i need to do to allow the remote radius
+> > server to access 203.121.4.40
+>
+> It depends on your firewall configuration. If you can share with us
+> your firewall configuration, we can try to help you out.
+>
+> Regards,
+>
+> Venkatesh K
+>
+> >
+> > Devinder
+> >
+> > 2008/11/14 Venkatesh K <kaevee at gmail.com>
+> >>
+> >> You can't confgure NAT in coova. You should setup NAT with iptables in
+> >> NAS.
+> >>
+> >> for example,
+> >>
+> >> iptables -t nat -o eth0 -I POSTROUTING -j MASQUERADE
+> >>
+> >> The above command will NAT all outgoing traffic on NAS running coova
+> >> with outgoing interface's IP address. You may have to fine tune your
+> >> firewall rules to allow outgoing traffic if they exist.
+> >>
+> >> Regards,
+> >>
+> >> Venkatesh K
+> >>
+> >> On Fri, Nov 14, 2008 at 8:57 AM, Devinder Singh <devinder at palettemm.com
+> >
+> >> wrote:
+> >> > Hi  I am not doing any NAT in Coova
+> >> >
+> >> > How do i configure NAT in coova
+> >> >
+> >> > Devinder
+> >> >
+> >> > 2008/11/14 Venkatesh K <kaevee at gmail.com>
+> >> >>
+> >> >> On Fri, Nov 14, 2008 at 8:22 AM, Devinder Singh
+> >> >> <devinder at palettemm.com>
+> >> >> wrote:
+> >> >> > Hi
+> >> >> >
+> >> >> > I have set eth0 as 203.121.4.40
+> >> >> >
+> >> >> > eth1 192.168.10.1
+> >> >> >
+> >> >> > But when i login on the login page the remote Radius Server is
+> >> >> > receiving
+> >> >> > NAS
+> >> >> > as 192.168.10.1
+> >> >> >
+> >> >> > What are the modifications that i need to do to allow the remote
+> >> >> > Radius
+> >> >> > Server to get 203.121.4.40
+> >> >> >
+> >> >>
+> >> >> If radius server sees client address as 192.168.x.x, you should check
+> >> >> your NAT configuration
+> >> >> in NAS. I Presume you are doing NAT on the NAS itself.
+> >> >>
+> >> >> If you mean you see 192.168.x.x in radacct, that is normal. Because,
+> >> >> 192.168.x.x is part of accounting request.
+> >> >>
+> >> >> Regards,
+> >> >>
+> >> >> Venkatesh K
+> >> >>
+> >> >> ---------------------------------------------------------------------
+> >> >> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> >> >> For additional commands, e-mail: chilli-help at coova.org
+> >> >> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> >> >> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+> >> >>
+> >> >
+> >> >
+> >> >
+> >> > --
+> >> > Devinder Singh   |   R&D Manager
+> >> > ______________________________
+> >> > Palette Multimedia Berhad (420056-K)
+> >> > 6 Floor, Unit 4,
+> >> > KPMG Tower
+> >> > 8 First Avenue,
+> >> > Bandar Utama,
+> >> > 47800 Petaling Jaya, Selangor
+> >> > Malaysia
+> >> >
+> >> > m. +60122248306
+> >> > p.  +60377289880 Ext 502
+> >> > f.   +60377281080
+> >> > @ devinder at palettemm.com
+> >> > www.palettemm.com
+> >> >
+> >> >
+> >> >
+> >>
+> >>
+> >>
+> >> --
+> >> Venkatesh. K
+> >>
+> >> ---------------------------------------------------------------------
+> >> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> >> For additional commands, e-mail: chilli-help at coova.org
+> >> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> >> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+> >>
+> >
+> >
+> >
+> > --
+> > Devinder Singh   |   R&D Manager
+> > ______________________________
+> > Palette Multimedia Berhad (420056-K)
+> > 6 Floor, Unit 4,
+> > KPMG Tower
+> > 8 First Avenue,
+> > Bandar Utama,
+> > 47800 Petaling Jaya, Selangor
+> > Malaysia
+> >
+> > m. +60122248306
+> > p.  +60377289880 Ext 502
+> > f.   +60377281080
+> > @ devinder at palettemm.com
+> > www.palettemm.com
+> >
+> >
+> >
+>
+>
+>
+> --
+>  Venkatesh. K
+>
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>
+>
+
+
+-- 
+Devinder Singh   |   R&D Manager
+______________________________
+Palette Multimedia Berhad (420056-K)
+6 Floor, Unit 4,
+KPMG Tower
+8 First Avenue,
+Bandar Utama,
+47800 Petaling Jaya, Selangor
+Malaysia
+
+m. +60122248306
+p.  +60377289880 Ext 502
+f.   +60377281080
+@ devinder at palettemm.com
+www.palettemm.com
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20081114/cd83ded5/attachment.htm>
+
+From devinder at palettemm.com  Fri Nov 14 05:55:22 2008
+From: devinder at palettemm.com (Devinder Singh)
+Date: Fri, 14 Nov 2008 13:55:22 +0800
+Subject: Access Check
+Message-ID: <6bdd03c50811132155je9a7ef3j553727f8be5a1986@mail.gmail.com>
+
+Hi
+
+When i login to the captive portal of Coova Chilli i get this error message
+
+Access check : An integer access check attribute value is incorrect or
+unknown! [Vendor id: 0] [Attribute code: 6] [Value: Login] [User name:
+lormaglaya]
+Hope someone can help me trouble shoot this error.
+
+
+
+-- 
+Devinder Singh   |   R&D Manager
+______________________________
+Palette Multimedia Berhad (420056-K)
+6 Floor, Unit 4,
+KPMG Tower
+8 First Avenue,
+Bandar Utama,
+47800 Petaling Jaya, Selangor
+Malaysia
+
+m. +60122248306
+p.  +60377289880 Ext 502
+f.   +60377281080
+@ devinder at palettemm.com
+www.palettemm.com
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20081114/1cc1f1a9/attachment.htm>
+
+From wlan at mac.com  Fri Nov 14 06:05:49 2008
+From: wlan at mac.com (wlanmac)
+Date: Fri, 14 Nov 2008 07:05:49 +0100
+Subject: Access Check
+In-Reply-To: <6bdd03c50811132155je9a7ef3j553727f8be5a1986@mail.gmail.com>
+References: <6bdd03c50811132155je9a7ef3j553727f8be5a1986@mail.gmail.com>
+Message-ID: <1226642749.7414.0.camel@david-laptop>
+
+Where is the error coming from? Not from chilli; I don't recognize the
+error message. 
+
+On Fri, 2008-11-14 at 13:55 +0800, Devinder Singh wrote:
+> Hi 
+>  
+> When i login to the captive portal of Coova Chilli i get this error
+> message
+>  
+> Access check : An integer access check attribute value is incorrect or
+> unknown! [Vendor id: 0] [Attribute code: 6] [Value: Login] [User name:
+> lormaglaya] 
+> 
+> Hope someone can help me trouble shoot this error.
+>  
+> 
+> 
+> -- 
+> Devinder Singh   |   R&D Manager
+> ______________________________
+> Palette Multimedia Berhad (420056-K)
+> 6 Floor, Unit 4,
+> KPMG Tower
+> 8 First Avenue,
+> Bandar Utama,
+> 47800 Petaling Jaya, Selangor
+> Malaysia
+> 
+> m. +60122248306
+> p.  +60377289880 Ext 502
+> f.   +60377281080
+> @ devinder at palettemm.com
+> www.palettemm.com
+> 
+> 
+> 
+
+
+
+From wlan at mac.com  Fri Nov 14 06:11:39 2008
+From: wlan at mac.com (wlanmac)
+Date: Fri, 14 Nov 2008 07:11:39 +0100
+Subject: NAS IP Address
+In-Reply-To: <6bdd03c50811131852x378c2e3ds551199349bbe2515@mail.gmail.com>
+References: <6bdd03c50811131852x378c2e3ds551199349bbe2515@mail.gmail.com>
+Message-ID: <1226643099.7414.2.camel@david-laptop>
+
+There is an optional 'nasip' option.
+
+On Fri, 2008-11-14 at 10:52 +0800, Devinder Singh wrote:
+> Hi 
+>  
+> I have set eth0 as 203.121.4.40
+>  
+> eth1 192.168.10.1
+>  
+> But when i login on the login page the remote Radius Server is
+> receiving NAS as 192.168.10.1
+>  
+> What are the modifications that i need to do to allow the remote
+> Radius Server to get 203.121.4.40
+>  
+> Cheers
+> 
+> -- 
+> Devinder Singh   |   R&D Manager
+> ______________________________
+> Palette Multimedia Berhad (420056-K)
+> 6 Floor, Unit 4,
+> KPMG Tower
+> 8 First Avenue,
+> Bandar Utama,
+> 47800 Petaling Jaya, Selangor
+> Malaysia
+> 
+> m. +60122248306
+> p.  +60377289880 Ext 502
+> f.   +60377281080
+> @ devinder at palettemm.com
+> www.palettemm.com
+> 
+> 
+> 
+
+
+
+From odhiambo at gmail.com  Sun Nov 16 18:18:16 2008
+From: odhiambo at gmail.com (Odhiambo Washington)
+Date: Sun, 16 Nov 2008 21:18:16 +0300
+Subject: Startup Script for FreeBSD
+Message-ID: <991123400811161018r568151fbnfd76c130ce2bc1a3@mail.gmail.com>
+
+Hello list,
+
+I am hoping that someone already did a startup script for FreeBSD that they
+can share. I am a new user to coova-chilli and just trying to wade through.
+Thanks in advance.
+
+-- 
+Best regards,
+Odhiambo WASHINGTON,
+Nairobi,KE
++254733744121/+254722743223
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+"Oh My God! They killed init! You Bastards!"
+                       --from a /. post
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20081116/8d569537/attachment.htm>
+
+From odhiambo at gmail.com  Sun Nov 16 18:44:32 2008
+From: odhiambo at gmail.com (Odhiambo Washington)
+Date: Sun, 16 Nov 2008 21:44:32 +0300
+Subject: Running Chilli on FreeBSD
+Message-ID: <991123400811161044y6a193c01w217249f7f1f33c07@mail.gmail.com>
+
+Hello list,
+
+Is there a nice little documentation on how to run coova-chilli on FreeBSD
+somewhere?
+I have crafted a startup script and on testing it, I get the following in
+/var/log/messages:
+
+Nov 16 21:27:57 FreeBSD-7 coova-chilli[50826]: net.c: 306: 17 (File exists)
+write() failed
+Nov 16 21:27:57 FreeBSD-7 coova-chilli[50826]: net.c: 57: 6 (Device not
+configured) ioctl(SIOCSIFFLAGS) failed
+Nov 16 21:27:57 FreeBSD-7 coova-chilli[50826]: net.c: 33: 6 (Device not
+configured) ioctl(SIOCSIFFLAGS) failed
+Nov 16 21:27:57 FreeBSD-7 coova-chilli[50826]: net.c: 99: 6 (Device not
+configured) ioctl(SIOCSIFADDR) failed
+Nov 16 21:27:57 FreeBSD-7 coova-chilli[50826]: net.c: 511: 6 (Device not
+configured) ioctl() failed
+Nov 16 21:27:57 FreeBSD-7 coova-chilli[50826]: chilli.c: 3438: Failed to
+create dhcp
+
+I am wondering what I am missing at this point.
+
+-- 
+Best regards,
+Odhiambo WASHINGTON,
+Nairobi,KE
++254733744121/+254722743223
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+"Oh My God! They killed init! You Bastards!"
+                       --from a /. post
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20081116/70a7e172/attachment.htm>
+
+From info at ollisnet.de  Sun Nov 16 19:20:08 2008
+From: info at ollisnet.de (Oliver Hinckel)
+Date: Sun, 16 Nov 2008 20:20:08 +0100
+Subject: Running Chilli on FreeBSD
+In-Reply-To: <991123400811161044y6a193c01w217249f7f1f33c07@mail.gmail.com>
+References: <991123400811161044y6a193c01w217249f7f1f33c07@mail.gmail.com>
+Message-ID: <49207268.8070109@ollisnet.de>
+
+Odhiambo Washington wrote on 11/16/2008 07:44 PM:
+> Hello list,
+> 
+> Is there a nice little documentation on how to run coova-chilli on 
+> FreeBSD somewhere?
+
+Don't know if there's a documentation for FreeBSD systems.
+
+> I have crafted a startup script and on testing it, I get the following 
+> in /var/log/messages:
+> 
+> Nov 16 21:27:57 FreeBSD-7 coova-chilli[50826]: net.c: 306: 17 (File 
+> exists) write() failed
+> Nov 16 21:27:57 FreeBSD-7 coova-chilli[50826]: net.c: 57: 6 (Device not 
+> configured) ioctl(SIOCSIFFLAGS) failed
+> Nov 16 21:27:57 FreeBSD-7 coova-chilli[50826]: net.c: 33: 6 (Device not 
+> configured) ioctl(SIOCSIFFLAGS) failed
+> Nov 16 21:27:57 FreeBSD-7 coova-chilli[50826]: net.c: 99: 6 (Device not 
+> configured) ioctl(SIOCSIFADDR) failed
+> Nov 16 21:27:57 FreeBSD-7 coova-chilli[50826]: net.c: 511: 6 (Device not 
+> configured) ioctl() failed
+> Nov 16 21:27:57 FreeBSD-7 coova-chilli[50826]: chilli.c: 3438: Failed to 
+> create dhcp
+
+Seems that the network configuration is not correct.
+
+> I am wondering what I am missing at this point.
+
+Can you give us more information about your network setup (interface, 
+ifconfig, ...)? The configuration file would also be helpful.
+
+- Olli
+
+
+
+From odhiambo at gmail.com  Mon Nov 17 19:03:17 2008
+From: odhiambo at gmail.com (Odhiambo Washington)
+Date: Mon, 17 Nov 2008 22:03:17 +0300
+Subject: Running Chilli on FreeBSD
+In-Reply-To: <49207268.8070109@ollisnet.de>
+References: <991123400811161044y6a193c01w217249f7f1f33c07@mail.gmail.com>
+	 <49207268.8070109@ollisnet.de>
+Message-ID: <991123400811171103k50280af5t55e8e9d94fa80992@mail.gmail.com>
+
+On Sun, Nov 16, 2008 at 10:20 PM, Oliver Hinckel <info at ollisnet.de> wrote:
+
+> Odhiambo Washington wrote on 11/16/2008 07:44 PM:
+>
+>> Hello list,
+>>
+>> Is there a nice little documentation on how to run coova-chilli on FreeBSD
+>> somewhere?
+>>
+>
+> Don't know if there's a documentation for FreeBSD systems.
+>
+
+Well, I will contend with anything that will get me up and running:-)
+
+
+>
+>  I have crafted a startup script and on testing it, I get the following in
+>> /var/log/messages:
+>>
+>> Nov 16 21:27:57 FreeBSD-7 coova-chilli[50826]: net.c: 306: 17 (File
+>> exists) write() failed
+>> Nov 16 21:27:57 FreeBSD-7 coova-chilli[50826]: net.c: 57: 6 (Device not
+>> configured) ioctl(SIOCSIFFLAGS) failed
+>> Nov 16 21:27:57 FreeBSD-7 coova-chilli[50826]: net.c: 33: 6 (Device not
+>> configured) ioctl(SIOCSIFFLAGS) failed
+>> Nov 16 21:27:57 FreeBSD-7 coova-chilli[50826]: net.c: 99: 6 (Device not
+>> configured) ioctl(SIOCSIFADDR) failed
+>> Nov 16 21:27:57 FreeBSD-7 coova-chilli[50826]: net.c: 511: 6 (Device not
+>> configured) ioctl() failed
+>> Nov 16 21:27:57 FreeBSD-7 coova-chilli[50826]: chilli.c: 3438: Failed to
+>> create dhcp
+>>
+>
+> Seems that the network configuration is not correct.
+>
+>  I am wondering what I am missing at this point.
+>>
+>
+> Can you give us more information about your network setup (interface,
+> ifconfig, ...)? The configuration file would also be helpful.
+
+
+Okay. Let me do that and also explain myself in the process:
+
+My chilli.conf:
+
+<begin>
+[wash at FreeBSD-7 /usr/local/etc/chilli]$ less ../chilli.conf
+#
+#  Chilli Configuration
+#
+#  To configure chilli, see /usr/local/etc/chilli/default
+#  and then create your own /usr/local/etc/chilli/config
+#  start / stop chilli with @INITDIR@/chilli
+#
+#  For help with coova-chilli,
+#       visit http://coova.org/wiki/index.php/CoovaChilli
+#
+#  This file can either contain all your chilli configurations, or include
+#  other files, as shown per default below. The idea here is that main.conf
+#  contains your main configurations, hs.conf is for your configurations
+#  delivered by RADIUS (using the Administrative-User login), and local.conf
+#  is for any other settings you might configure by hand for this particular
+#  installation.
+
+include /usr/local/etc/chilli/main.conf
+include /usr/local/etc/chilli/hs.conf
+include /usr/local/etc/chilli/local.conf
+
+ipup=/usr/local/etc/chilli/up.sh
+ipdown=/usr/local/etc/chilli/down.sh
+</end>
+
+So I lifted a main.conf from
+http://www.geeklan.co.uk/files/coova-main.confand I must swear that I
+barely understand it, as the examples seem rather
+specific to a certain site. I am including my main.conf and I have decided
+to number each life for ease of explaining the lines I don't understand.
+
+
+<begin main.conf>
+#copy this file into /usr/local/chilli
+#& create 2 empty files named hs.conf & local.conf
+# http://www.geeklan.co.uk/files/coova-main.conf
+1. cmdsocket       /var/run/chilli.sock
+2. pidfile         /var/run/chilli.pid
+3. net             192.168.1.0/255.255.255.0
+4. uamlisten       192.168.1.101
+5. uamport         3990
+6. dhcpif          vr0
+7. adminuser       chillispot
+8. adminpasswd     chillispot
+9. uamallowed      coova.org,coova.org,rad01.coova.org,coova.org
+10.uamanydns
+11. domain                  lan
+12. dns1                    192.168.1.1
+13. uamhomepage             http://192.168.1.101:3990/coova/coova.html
+14. wisprlogin              https://coova.org/app/uam/auth
+15. wwwdir                  /usr/local/www/chilli
+16. wwwbin                  /usr/local/etc/chilli/wwwsh
+17. locationname            "ROWTech Securitet"
+18. radiuslocationname      ROWTech_HotSpot
+19. radiuslocationid        isocc=,cc=,ac=,network=Coova,
+20. radiusserver1           rad01.coova.org
+21. radiusserver2           rad01.coova.org
+22. radiussecret            coova-anonymous
+23. radiusauthport          1812
+24. radiusacctport          1813
+25. uamserver               https://coova.org/app/uam/chilli
+26. radiusnasid             nas01
+27.papalwaysok
+ </end>
+
+Let's say I have a dual-homed box, with vr0 being the public interface and
+fxp0 being the private interface. And say I run a DHCP server on the
+internal interface.
+Also say I run FreeRADIUS (with MySQL support) on the same box. I also run
+my Apache22 on this very box, so it is "everything to me". I have the IP
+192.168.1.101 on the internal/private interface (fxp0). Can someone explain
+to me what items 6-10, 14, 19, 25 should be?
+I am especially not sure how 14 and 25 are being arrived at.
+
+I also have the file named "defaults" which I need to copy to "config". They
+are both in /usr/local/etc/chilli/. Looking at them, I see that most of the
+parameters are almost like what I see in main.conf. This has left me
+confused as what purpose the "config" file is supposed to serve.
+
+All my chilli files are accesible on my webserver via /coova (an Apache
+Alias pointer). Now where /app are supposed to come from still beats me.
+
+Am I supposed to be running my own DHCP server or does coova-chilli have
+some sort of built-in DHCP server?
+
+At some point, I believe I am going to introduce a Wireless Access Point
+into this mix, connected to my DHCP interface, yes? This is how the clients
+are going to communicate with the system, correct?
+
+My other problem are two files- up.sh and down,sh: I can run either PF or
+IPFilter/IPNat on the FreeBSD box, but not IPTABLES. So I am wondering what
+the purpose of these two files. What do they do? I do believe IPTables is
+for Linux only. Is there a FreeBSD use who can share their *BSD versions of
+these two files?
+
+I also had to install haserl from http://haserl.sourceforge.net/ but I still
+wonder if it's necessary in my setup. I still haven't quite caught up speed
+on this so please excuse my ignorance.
+
+Thank you so much for your time. Let me not ask too much on this mail:-)
+
+-- 
+Best regards,
+Odhiambo WASHINGTON,
+Nairobi,KE
++254733744121/+254722743223
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+"Oh My God! They killed init! You Bastards!"
+                       --from a /. post
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20081117/a6a7829f/attachment.htm>
+
+From outbackdingo at gmail.com  Mon Nov 17 19:40:45 2008
+From: outbackdingo at gmail.com (Outback Dingo)
+Date: Tue, 18 Nov 2008 02:40:45 +0700
+Subject: Running Chilli on FreeBSD
+In-Reply-To: <991123400811171103k50280af5t55e8e9d94fa80992@mail.gmail.com>
+References: <991123400811161044y6a193c01w217249f7f1f33c07@mail.gmail.com>
+	 <49207268.8070109@ollisnet.de>
+	 <991123400811171103k50280af5t55e8e9d94fa80992@mail.gmail.com>
+Message-ID: <5635aa0d0811171140h2884cfaai867b8cf275ff417b@mail.gmail.com>
+
+> <begin main.conf>
+> #copy this file into /usr/local/chilli
+> #& create 2 empty files named hs.conf & local.conf
+> # http://www.geeklan.co.uk/files/coova-main.conf
+> 1. cmdsocket       /var/run/chilli.sock
+> 2. pidfile         /var/run/chilli.pid
+> 3. net             192.168.1.0/255.255.255.0
+> 4. uamlisten       192.168.1.101
+> 5. uamport         3990
+> 6. dhcpif          vr0
+> 7. adminuser       chillispot
+> 8. adminpasswd     chillispot
+> 9. uamallowed      coova.org,coova.org,rad01.coova.org,coova.org
+> 10.uamanydns
+> 11. domain                  lan
+> 12. dns1                    192.168.1.1
+> 13. uamhomepage             http://192.168.1.101:3990/coova/coova.html
+> 14. wisprlogin              https://coova.org/app/uam/auth
+> 15. wwwdir                  /usr/local/www/chilli
+> 16. wwwbin                  /usr/local/etc/chilli/wwwsh
+> 17. locationname            "ROWTech Securitet"
+> 18. radiuslocationname      ROWTech_HotSpot
+> 19. radiuslocationid        isocc=,cc=,ac=,network=Coova,
+> 20. radiusserver1           rad01.coova.org
+> 21. radiusserver2           rad01.coova.org
+> 22. radiussecret            coova-anonymous
+> 23. radiusauthport          1812
+> 24. radiusacctport          1813
+> 25. uamserver               https://coova.org/app/uam/chilli
+> 26. radiusnasid             nas01
+> 27.papalwaysok
+>  </end>
+>
+> Let's say I have a dual-homed box, with vr0 being the public interface and
+> fxp0 being the private interface. And say I run a DHCP server on the
+> internal interface.
+> Also say I run FreeRADIUS (with MySQL support) on the same box. I also run
+> my Apache22 on this very box, so it is "everything to me". I have the IP
+> 192.168.1.101 on the internal/private interface (fxp0). Can someone
+> explain to me what items 6-10, 14, 19, 25 should be?
+> I am especially not sure how 14 and 25 are being arrived at.
+>
+
+6 is the interface you want chilli to basically listen for dhcp requests on
+7 and 8 are radius authentication attibutes, if using that type of auth for
+radius
+9 is a list of allowed urls surfable without authentication first
+10 means it will aloow any dns server, say if a client has one set manually
+other then what you rovided from dhcp
+14 is for the WISPR login URL
+19 is the NAS information for radius
+25 is the physical location of the UAM server, should be the same as the
+uamhomepage ip or address
+
+
+
+
+>
+> I also have the file named "defaults" which I need to copy to "config".
+> They are both in /usr/local/etc/chilli/. Looking at them, I see that most of
+> the parameters are almost like what I see in main.conf. This has left me
+> confused as what purpose the "config" file is supposed to serve.
+>
+
+the config file is for your customized parameters, where default is the
+default coova settings, it reads variables from default, looks at config for
+customizations and the writes main.conf, this file is generated by functions
+
+
+>
+> All my chilli files are accesible on my webserver via /coova (an Apache
+> Alias pointer). Now where /app are supposed to come from still beats me.
+>
+> Am I supposed to be running my own DHCP server or does coova-chilli have
+> some sort of built-in DHCP server?
+>
+
+chilli does have an internal dhcp system
+
+
+>
+> At some point, I believe I am going to introduce a Wireless Access Point
+> into this mix, connected to my DHCP interface, yes? This is how the clients
+> are going to communicate with the system, correct?
+>
+
+its exactly how i am configured though chilli runs on my APs not on my auth
+server
+
+
+>
+> My other problem are two files- up.sh and down,sh: I can run either PF or
+> IPFilter/IPNat on the FreeBSD box, but not IPTABLES. So I am wondering what
+> the purpose of these two files. What do they do? I do believe IPTables is
+> for Linux only. Is there a FreeBSD use who can share their *BSD versions of
+> these two files?
+>
+> I also had to install haserl from http://haserl.sourceforge.net/ but I
+> still wonder if it's necessary in my setup. I still haven't quite caught up
+> speed on this so please excuse my ignorance.
+
+
+yes, and no,  if you are running the coova web interface / internal portal
+then yes, if not then essentailly no
+
+
+my config and main.conf for APs looks like
+
+HS_LANIF=ath0              # Subscriber Interface for client devices
+HS_UAMLISTEN=101.177.51.1    # HotSpot IP Address (on subscriber network)
+HS_UAMPORT=3990            # HotSpot Port (on subscriber network)
+HS_NETWORK=101.177.51.0
+HS_NETMASK=255.255.255.0
+HS_NASID=nas01
+HS_UAMSERVER=auth.optimwifi.com
+HS_UAMURL="/login/hotspotlogin.php"
+HS_MACAUTH=on
+HS_UAMSECRET=uamsharedsecret
+HS_RADIUS=58.147.11.218         # replace with your radius server's ip
+HS_RADIUS2=58.147.11.218
+HS_RADSECRET=edited-out                   # you should probably choose a
+better shared secret
+HS_SSID="OptimWIFI"
+HS_DNS1=101.177.51.1
+
+HS_UAMALLOWED=www.google.com
+HS_RADCONF=off
+HS_UAMFORMAT="\${HS_UAMPROTO:-http}://\$HS_UAMSERVER\$HS_UAMURL\$HS_UAMURLEXTRAS"
+HS_UAMHOMEPAGE=http://\$HS_UAMSERVER/
+HS_MODE=hotspot
+HS_TYPE=chillispot
+HS_RADAUTH=1812
+HS_RADACCT=1813
+#HS_ADMUSR=chillispot
+#HS_ADMPWD=chillispot
+
+HS_PROVIDER=OptimWIFI
+HS_PROVIDER_LINK=http://www.coova.org/
+HS_LOC_NAME="OptimWIFI HotSpot"           # WISPr Location Name and used in
+portal
+
+my server is on 58.147.26.217 with radius / apache /  uam hostspotlogin, and
+notice i do use variables in my config, if you read them it might help you
+understand the way it puts this together
+
+
+>
+>
+> Thank you so much for your time. Let me not ask too much on this mail:-)
+>
+>
+> --
+> Best regards,
+> Odhiambo WASHINGTON,
+> Nairobi,KE
+> +254733744121/+254722743223
+> _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+> "Oh My God! They killed init! You Bastards!"
+>                        --from a /. post
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20081118/4a1b958a/attachment.htm>
+
+From odhiambo at gmail.com  Mon Nov 17 20:13:53 2008
+From: odhiambo at gmail.com (Odhiambo Washington)
+Date: Mon, 17 Nov 2008 23:13:53 +0300
+Subject: Running Chilli on FreeBSD
+In-Reply-To: <5635aa0d0811171140h2884cfaai867b8cf275ff417b@mail.gmail.com>
+References: <991123400811161044y6a193c01w217249f7f1f33c07@mail.gmail.com>
+	 <49207268.8070109@ollisnet.de>
+	 <991123400811171103k50280af5t55e8e9d94fa80992@mail.gmail.com>
+	 <5635aa0d0811171140h2884cfaai867b8cf275ff417b@mail.gmail.com>
+Message-ID: <991123400811171213vc084b23p500e3ea4cda2d3d2@mail.gmail.com>
+
+On Mon, Nov 17, 2008 at 10:40 PM, Outback Dingo <outbackdingo at gmail.com>wrote:
+
+>
+> <begin main.conf>
+>> #copy this file into /usr/local/chilli
+>> #& create 2 empty files named hs.conf & local.conf
+>> # http://www.geeklan.co.uk/files/coova-main.conf
+>> 1. cmdsocket       /var/run/chilli.sock
+>> 2. pidfile         /var/run/chilli.pid
+>> 3. net             192.168.1.0/255.255.255.0
+>> 4. uamlisten       192.168.1.101
+>> 5. uamport         3990
+>> 6. dhcpif          vr0
+>> 7. adminuser       chillispot
+>> 8. adminpasswd     chillispot
+>> 9. uamallowed      coova.org,coova.org,rad01.coova.org,coova.org
+>> 10.uamanydns
+>> 11. domain                  lan
+>> 12. dns1                    192.168.1.1
+>> 13. uamhomepage             http://192.168.1.101:3990/coova/coova.html
+>> 14. wisprlogin              https://coova.org/app/uam/auth
+>> 15. wwwdir                  /usr/local/www/chilli
+>> 16. wwwbin                  /usr/local/etc/chilli/wwwsh
+>> 17. locationname            "ROWTech Securitet"
+>> 18. radiuslocationname      ROWTech_HotSpot
+>> 19. radiuslocationid        isocc=,cc=,ac=,network=Coova,
+>> 20. radiusserver1           rad01.coova.org
+>> 21. radiusserver2           rad01.coova.org
+>> 22. radiussecret            coova-anonymous
+>> 23. radiusauthport          1812
+>> 24. radiusacctport          1813
+>> 25. uamserver               https://coova.org/app/uam/chilli
+>> 26. radiusnasid             nas01
+>> 27.papalwaysok
+>>  </end>
+>>
+>> Let's say I have a dual-homed box, with vr0 being the public interface and
+>> fxp0 being the private interface. And say I run a DHCP server on the
+>> internal interface.
+>> Also say I run FreeRADIUS (with MySQL support) on the same box. I also run
+>> my Apache22 on this very box, so it is "everything to me". I have the IP
+>> 192.168.1.101 on the internal/private interface (fxp0). Can someone
+>> explain to me what items 6-10, 14, 19, 25 should be?
+>> I am especially not sure how 14 and 25 are being arrived at.
+>>
+>
+> 6 is the interface you want chilli to basically listen for dhcp requests on
+>
+
+ok.
+
+
+>
+> 7 and 8 are radius authentication attibutes, if using that type of auth for
+> radius
+>
+
+RADIUS authentication attributes? The credentials chilli uses to connect to
+RADIUS server?
+
+
+>
+> 9 is a list of allowed urls surfable without authentication first
+>
+
+ok.
+
+
+>
+> 10 means it will aloow any dns server, say if a client has one set manually
+> other then what you rovided from dhcp
+>
+
+ok.
+
+
+>
+> 14 is for the WISPR login URL
+>
+
+Where is it derived from? I mean, is
+/app/uam/auth<https://coova.org/app/uam/auth>derived from some Apache
+Alias on my server running the chilli web portal?
+What is the actual location on disk?
+
+
+>
+> 19 is the NAS information for radius
+>
+
+I still don't understand that one. Why is it in an LDAP like notation?
+
+
+>
+> 25 is the physical location of the UAM server, should be the same as the
+> uamhomepage ip or address
+>
+
+ Is /app/uam/chilli <https://coova.org/app/uam/chilli> an Apache Alias on
+the chilli web portal as well? What is the actual location on disk of the
+Alias, if any?
+
+
+
+
+>> I also have the file named "defaults" which I need to copy to "config".
+>> They are both in /usr/local/etc/chilli/. Looking at them, I see that most of
+>> the parameters are almost like what I see in main.conf. This has left me
+>> confused as what purpose the "config" file is supposed to serve.
+>>
+>
+> the config file is for your customized parameters, where default is the
+> default coova settings, it reads variables from default, looks at config for
+> customizations and the writes main.conf, this file is generated by functions
+>
+
+It writes main.conf on the fly??? So I should not create a main.conf?
+
+
+
+>> All my chilli files are accesible on my webserver via /coova (an Apache
+>> Alias pointer). Now where /app are supposed to come from still beats me.
+>>
+>> Am I supposed to be running my own DHCP server or does coova-chilli have
+>> some sort of built-in DHCP server?
+>>
+>
+> chilli does have an internal dhcp system
+>
+
+Wow. So I do not need to have one? Interesting. Thank you for this. It's the
+only one I clearly understand now:-)
+
+
+
+>> At some point, I believe I am going to introduce a Wireless Access Point
+>> into this mix, connected to my DHCP interface, yes? This is how the clients
+>> are going to communicate with the system, correct?
+>>
+>
+> its exactly how i am configured though chilli runs on my APs not on my auth
+> server
+>
+
+chilli runs on your APs? You have different computers acting as APs using
+Wireless Access Point hardware??
+
+
+>
+>> My other problem are two files- up.sh and down,sh: I can run either PF or
+>> IPFilter/IPNat on the FreeBSD box, but not IPTABLES. So I am wondering what
+>> the purpose of these two files. What do they do? I do believe IPTables is
+>> for Linux only. Is there a FreeBSD use who can share their *BSD versions of
+>> these two files?
+>>
+>
+You did not mention anything about the up.sh and down.sh and the issue on
+IPTables.... Do you use FreeBSD, bay any chance? It would be most helpful.
+
+
+
+>
+>> I also had to install haserl from http://haserl.sourceforge.net/ but I
+>> still wonder if it's necessary in my setup. I still haven't quite caught up
+>> speed on this so please excuse my ignorance.
+>
+>
+> yes, and no,  if you are running the coova web interface / internal portal
+> then yes, if not then essentailly no
+>
+
+I don't understand this answer? Is it optional to run coova web
+interface/internal portal? If I don't run them, then what else is there to
+run?? <LOL>
+Excuse my stupidity on this, honestly.
+
+
+
+> my config and main.conf for APs looks like
+>
+> HS_LANIF=ath0              # Subscriber Interface for client devices
+> HS_UAMLISTEN=101.177.51.1    # HotSpot IP Address (on subscriber network)
+> HS_UAMPORT=3990            # HotSpot Port (on subscriber network)
+> HS_NETWORK=101.177.51.0
+> HS_NETMASK=255.255.255.0
+> HS_NASID=nas01
+> HS_UAMSERVER=auth.optimwifi.com
+> HS_UAMURL="/login/hotspotlogin.php"
+> HS_MACAUTH=on
+> HS_UAMSECRET=uamsharedsecret
+> HS_RADIUS=58.147.11.218         # replace with your radius server's ip
+> HS_RADIUS2=58.147.11.218
+> HS_RADSECRET=edited-out                   # you should probably choose a
+> better shared secret
+> HS_SSID="OptimWIFI"
+> HS_DNS1=101.177.51.1
+>
+> HS_UAMALLOWED=www.google.com
+> HS_RADCONF=off
+>
+> HS_UAMFORMAT="\${HS_UAMPROTO:-http}://\$HS_UAMSERVER\$HS_UAMURL\$HS_UAMURLEXTRAS"
+> HS_UAMHOMEPAGE=http://\$HS_UAMSERVER/
+> HS_MODE=hotspot
+> HS_TYPE=chillispot
+> HS_RADAUTH=1812
+> HS_RADACCT=1813
+> #HS_ADMUSR=chillispot
+> #HS_ADMPWD=chillispot
+>
+> HS_PROVIDER=OptimWIFI
+> HS_PROVIDER_LINK=http://www.coova.org/
+> HS_LOC_NAME="OptimWIFI HotSpot"           # WISPr Location Name and used in
+> portal
+>
+> my server is on 58.147.26.217 with radius / apache /  uam hostspotlogin,
+> and notice i do use variables in my config, if you read them it might help
+> you understand the way it puts this together
+>
+
+I will read these keenly, honestly.
+
+Don't get tired with me:-)
+
+
+-- 
+Best regards,
+Odhiambo WASHINGTON,
+Nairobi,KE
++254733744121/+254722743223
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+"Oh My God! They killed init! You Bastards!"
+                       --from a /. post
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20081117/202ca489/attachment.htm>
+
+From venture37 at gmail.com  Wed Nov 19 03:55:26 2008
+From: venture37 at gmail.com (Sevan / Venture37)
+Date: Wed, 19 Nov 2008 03:55:26 +0000
+Subject: Running Chilli on FreeBSD
+In-Reply-To: <991123400811171213vc084b23p500e3ea4cda2d3d2@mail.gmail.com>
+References: <991123400811161044y6a193c01w217249f7f1f33c07@mail.gmail.com>	 <49207268.8070109@ollisnet.de>	 <991123400811171103k50280af5t55e8e9d94fa80992@mail.gmail.com>	 <5635aa0d0811171140h2884cfaai867b8cf275ff417b@mail.gmail.com> <991123400811171213vc084b23p500e3ea4cda2d3d2@mail.gmail.com>
+Message-ID: <49238E2E.70506@gmail.com>
+
+Hi Guys
+The reason I've posted up a dummy main.conf on my site for use with the 
+freebsd port is because the conf files bundles with coova as standard 
+are intended to be used with init.d which will dynamically generate the 
+config files for you through the values defined in /etc/chilli/config, 
+this is all well & good but FreeBSD does not use init.d, it uses rcng 
+instead.
+
+
+From venture37 at gmail.com  Wed Nov 19 19:56:01 2008
+From: venture37 at gmail.com (Sevan / Venture37)
+Date: Wed, 19 Nov 2008 19:56:01 +0000
+Subject: Running Chilli on FreeBSD
+In-Reply-To: <49238E2E.70506@gmail.com>
+References: <991123400811161044y6a193c01w217249f7f1f33c07@mail.gmail.com>	 <49207268.8070109@ollisnet.de>	 <991123400811171103k50280af5t55e8e9d94fa80992@mail.gmail.com>	 <5635aa0d0811171140h2884cfaai867b8cf275ff417b@mail.gmail.com> <991123400811171213vc084b23p500e3ea4cda2d3d2@mail.gmail.com> <49238E2E.70506@gmail.com>
+Message-ID: <49246F51.8080009@gmail.com>
+
+Sevan / Venture37 wrote:
+> Hi Guys
+> The reason I've posted up a dummy main.conf on my site for use with the 
+> freebsd port is because the conf files bundles with coova as standard 
+> are intended to be used with init.d which will dynamically generate the 
+> config files for you through the values defined in /etc/chilli/config, 
+> this is all well & good but FreeBSD does not use init.d, it uses rcng 
+> instead.
+
+A new version of the port up
+http://www.geeklan.co.uk/files/coova-chilli/coova-freebsd-port-mk3.tgz
+
+
+From oguzhank at bilkent.edu.tr  Fri Nov 28 12:02:55 2008
+From: oguzhank at bilkent.edu.tr (Oguzhan Kayhan)
+Date: Fri, 28 Nov 2008 14:02:55 +0200 (EET)
+Subject: coova-connection requests from outer networks..
+Message-ID: <42696.139.179.14.250.1227873775.squirrel@webmail.bilkent.edu.tr>
+
+There are some passive devices (network webcams) on my network, which dont
+make any traffic normally.
+But i normally can reach them from webgui and monitor them.
+But after i move them behind chilli,
+Even i allow them via macids, they dont appear on the chilli_query list.
+And so, if i try to reach that devices from outside, coova can not find
+the devices on its list and doesnt allow me to reach them.
+
+But if i connect to the cameras via a proxy i installed behind coova, and
+reach the cameras, and ..for example use NTP to reach the outer world,
+chilli allows the macid and let me reach it from outside,
+but after a while, it looses the macid and the connection again.
+
+So is there a way that i can allow to be authenticated for a static ip
+even it is not visible on coova_query list.
+
+Or how can i make the coova arp broadcasts the network behind it, when a
+request comes from outer network..
+
+
+

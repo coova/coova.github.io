@@ -1,0 +1,180 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] Patch to dev_set_address() in tun.c
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Patch%20to%20dev_set_address%28%29%20in%20tun.c&In-Reply-To=%3CCA%2BU3Mf6vdKO39if5r71LXokOLD1xHCBRwEMr74Ok69oaENX7FQ%40mail.gmail.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="002731.html">
+   <LINK REL="Next"  HREF="002730.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] Patch to dev_set_address() in tun.c</H1>
+    <B>Sevan / Venture37</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Patch%20to%20dev_set_address%28%29%20in%20tun.c&In-Reply-To=%3CCA%2BU3Mf6vdKO39if5r71LXokOLD1xHCBRwEMr74Ok69oaENX7FQ%40mail.gmail.com%3E"
+       TITLE="[Chilli] Patch to dev_set_address() in tun.c">venture37 at gmail.com
+       </A><BR>
+    <I>Sat May 10 23:02:23 UTC 2014</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="002731.html">[Chilli] Building Coova-Chilli with clang
+</A></li>
+        <LI>Next message: <A HREF="002730.html">[Chilli] Patch to dev_set_address() in tun.c
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2716">[ date ]</a>
+              <a href="thread.html#2716">[ thread ]</a>
+              <a href="subject.html#2716">[ subject ]</a>
+              <a href="author.html#2716">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hi,
+Another patch for testing, again it's intended for a specific problem
+but it effects everyone.
+Attached patch fixes issues with FreeBSD 10 &amp; newer where the tun(4)
+interface would not be configured with an address.
+This is due to the removal of a macro which has been marked as
+deprecated (10+ years apparently) across the BSD's.
+The diff separates out the configuration of interface so Linux uses
+the traditional method &amp; the BSD's use the new method.
+
+
+Sevan
+-------------- next part --------------
+diff --git a/src/net.c b/src/net.c
+index c1f8cba..ef6a529 100644
+--- a/src/net.c
++++ b/src/net.c
+@@ -91,29 +91,28 @@ int dev_get_flags(char const *dev, int *flags) {
+ 
+ int dev_set_address(char const *devname, struct in_addr *address, 
+ 		    struct in_addr *dstaddr, struct in_addr *netmask) {
++#if defined(__linux__)
+   struct ifreq ifr;
++#elif defined(__FreeBSD__) || defined (__APPLE__) || defined (__OpenBSD__) || defined (__NetBSD__)
++  struct ifaliasreq ifr;
++#endif
+   int fd;
+ 
+   memset(&amp;ifr, 0, sizeof (ifr));
+-  ifr.ifr_addr.sa_family = AF_INET;
+-  ifr.ifr_dstaddr.sa_family = AF_INET;
+-  
+-#if defined(__linux__)
+-  ifr.ifr_netmask.sa_family = AF_INET;
+-  
+-#elif defined(__FreeBSD__) || defined (__APPLE__) || defined (__OpenBSD__) || defined (__NetBSD__)
+-  ((struct sockaddr_in *) &amp;ifr.ifr_addr)-&gt;sin_len = sizeof (struct sockaddr_in);
+-  ((struct sockaddr_in *) &amp;ifr.ifr_dstaddr)-&gt;sin_len = sizeof (struct sockaddr_in);
+-#endif
+-  
+-  safe_strncpy(ifr.ifr_name, devname, IFNAMSIZ);
+-  
++
+   /* Create a channel to the NET kernel. */
+   if ((fd = socket(AF_INET, SOCK_DGRAM, 0)) &lt; 0) {
+     log_err(errno, &quot;socket() failed&quot;);
+     return -1;
+   }
+-  
++
++#if defined(__linux__)
++  safe_strncpy(ifr.ifr_name, devname, IFNAMSIZ);
++  ifr.ifr_addr.sa_family = AF_INET;
++  ifr.ifr_dstaddr.sa_family = AF_INET;
++  ifr.ifr_netmask.sa_family = AF_INET;
++  ifr.ifr_name[IFNAMSIZ-1] = 0; /* Make sure to terminate */
++
+   if (address) { /* Set the interface address */
+     ((struct sockaddr_in *) &amp;ifr.ifr_addr)-&gt;sin_addr.s_addr = address-&gt;s_addr;
+     if (ioctl(fd, SIOCSIFADDR, (void *) &amp;ifr) &lt; 0) {
+@@ -138,23 +137,46 @@ int dev_set_address(char const *devname, struct in_addr *address,
+   }
+ 
+   if (netmask) { /* Set the netmask */
+-#if defined(__linux__)
+     ((struct sockaddr_in *) &amp;ifr.ifr_netmask)-&gt;sin_addr.s_addr =  netmask-&gt;s_addr;
+-#elif defined(__FreeBSD__) || defined (__APPLE__) || defined (__OpenBSD__) || defined (__NetBSD__)
+-    ((struct sockaddr_in *) &amp;ifr.ifr_addr)-&gt;sin_addr.s_addr =  netmask-&gt;s_addr;
+-#elif defined(__sun__)
+-    ((struct sockaddr_in *) &amp;ifr.ifr_addr)-&gt;sin_addr.s_addr =  netmask-&gt;s_addr;
+-#else
+-#error  &quot;Unknown platform!&quot; 
+-#endif
+-
+     if (ioctl(fd, SIOCSIFNETMASK, (void *) &amp;ifr) &lt; 0) {
+       log_err(errno, &quot;ioctl(SIOCSIFNETMASK) failed&quot;);
+       close(fd);
+       return -1;
+     }
+   }
++
+   
++#elif defined(__FreeBSD__) || defined (__APPLE__) || defined (__OpenBSD__) || defined (__NetBSD__)
++  strncpy(ifr.ifra_name, devname, IFNAMSIZ);
++  ifr.ifra_name[IFNAMSIZ-1] = 0; /* Make sure to terminate */
++
++  ((struct sockaddr_in*) &amp;ifr.ifra_addr)-&gt;sin_family = AF_INET;
++  ((struct sockaddr_in*) &amp;ifr.ifra_addr)-&gt;sin_len = sizeof(ifr.ifra_addr);
++  ((struct sockaddr_in*) &amp;ifr.ifra_addr)-&gt;sin_addr.s_addr = address-&gt;s_addr;
++
++  ((struct sockaddr_in*) &amp;ifr.ifra_mask)-&gt;sin_family = AF_INET;
++  ((struct sockaddr_in*) &amp;ifr.ifra_mask)-&gt;sin_len    = sizeof(ifr.ifra_mask);
++  ((struct sockaddr_in*) &amp;ifr.ifra_mask)-&gt;sin_addr.s_addr = netmask-&gt;s_addr;
++
++  /* For some reason FreeBSD uses ifra_broadcast for specifying dstaddr */
++  ((struct sockaddr_in*) &amp;ifr.ifra_broadaddr)-&gt;sin_family = AF_INET;
++  ((struct sockaddr_in*) &amp;ifr.ifra_broadaddr)-&gt;sin_len = sizeof(ifr.ifra_broadaddr);
++  ((struct sockaddr_in*) &amp;ifr.ifra_broadaddr)-&gt;sin_addr.s_addr = dstaddr-&gt;s_addr;
++
++    if (ioctl(fd, SIOCAIFADDR, (void *) &amp;ifr) &lt; 0) {
++      if (errno != EEXIST) {
++	  log_err(errno, &quot;ioctl(SIOCAIFADDR) failed&quot;);
++      }
++      else {
++	  log_warn(errno, &quot;ioctl(SIOCAIFADDR): Address already exists&quot;);
++      }
++      close(fd);
++      return -1;
++    }
++#else
++#error  &quot;Unknown platform!&quot;
++#endif
++
+   close(fd);
+   
+   return dev_set_flags(devname, IFF_UP | IFF_RUNNING); 
+</PRE>
+
+
+
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="002731.html">[Chilli] Building Coova-Chilli with clang
+</A></li>
+	<LI>Next message: <A HREF="002730.html">[Chilli] Patch to dev_set_address() in tun.c
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2716">[ date ]</a>
+              <a href="thread.html#2716">[ thread ]</a>
+              <a href="subject.html#2716">[ subject ]</a>
+              <a href="author.html#2716">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

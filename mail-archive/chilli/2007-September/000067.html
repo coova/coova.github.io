@@ -1,0 +1,122 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> IP address conflicts
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20IP%20address%20conflicts&In-Reply-To=%3CAA22A388-B9AF-4444-8F1C-9F30396D3627%40mac.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000066.html">
+   <LINK REL="Next"  HREF="000068.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>IP address conflicts</H1>
+    <B>David Bird</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20IP%20address%20conflicts&In-Reply-To=%3CAA22A388-B9AF-4444-8F1C-9F30396D3627%40mac.com%3E"
+       TITLE="IP address conflicts">wlan at mac.com
+       </A><BR>
+    <I>Wed Sep 12 11:20:29 UTC 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000066.html">IP address conflicts
+</A></li>
+        <LI>Next message: <A HREF="000068.html">IP address conflicts
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#67">[ date ]</a>
+              <a href="thread.html#67">[ thread ]</a>
+              <a href="subject.html#67">[ subject ]</a>
+              <a href="author.html#67">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>
+On Sep 12, 2007, at 10:32 AM, Gunther Mayer wrote:
+&gt;&gt;<i> That net for chilli is probably ok, but misleading as chilli does  
+</I>&gt;&gt;<i> not actually calculate its dhcp range from the CIDR network (like  
+</I>&gt;&gt;<i> it should).
+</I>&gt;<i> How the heck does chilli calculate its range then if dhcpstart and  
+</I>&gt;<i> dhcpend is not given?
+</I>
+Both the options have defaults.... so, it isn't very optimal. This  
+part of chilli needs more attention as there are numerous places  
+where the uamlisten (or dhcplisten) is assumed to be net + 1  
+(meaning, the first IP in your net range).
+
+I took a closer look at this part of chilli and found a few more  
+places where the wrong assumption (net + 1) is made. I also made some  
+changes in that dhcpstart and dhcpend will default to off (i.e. 0)  
+and the entire net will be used for DHCP otherwise (minus, the  
+_correct_ uamlisten which does not have to be net + 1). The start and  
+end options can then be used together or separately to limit the range.
+
+&gt;&gt;<i> I don't believe anything relevant was change din 1.0.7, but the  
+</I>&gt;&gt;<i> current svn version has some more cleanups.
+</I>&gt;<i> Ok, after some more digging in my logs I think I found the culprit  
+</I>&gt;<i> (not coova's fault). I'm trying to run &quot;repeaters&quot; to extend my  
+</I>&gt;<i> wireless coverage, but they are actually the ones causing all the  
+</I>&gt;<i> havoc. You see, I run my &quot;repeaters&quot; in client/ap mode on a  
+</I>&gt;<i> WRT54GL, that is, one client interface  (wl0) associating with the  
+</I>&gt;<i> uplink(main) a/p, one a/p interface (wl0.1) for distributing the  
+</I>&gt;<i> signal locally, both being attached to the standard br-lan bridge.
+</I>&gt;<i>
+</I>&gt;<i> <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">root at OpenWRT</A>:~# brctl show
+</I>&gt;<i> bridge name     bridge id                STP enabled     interfaces
+</I>&gt;<i> br-lan                8000.001839bc7965       no            eth0.0
+</I>&gt;<i>                                                                        
+</I>&gt;<i>             wl0
+</I>&gt;<i>                                                                        
+</I>&gt;<i>             wl0.1
+</I>&gt;<i>
+</I>&gt;<i> Now here's the problem: One particular such node has a wl0 (or  
+</I>&gt;<i> wl0.1) mac address of 00-18-39-BC-79-82. This is what I see in my  
+</I>&gt;<i> logs on numerous occasions:
+</I>&gt;<i>
+</I>&gt;<i> Sep 12 04:07:12 41.245.146.170 chillispot[566]: chilli.c: 2602: New  
+</I>&gt;<i> DHCP request from MAC=00-18-39-BC-79-82
+</I>&gt;<i> Sep 12 04:07:12 41.245.146.170 chillispot[566]: chilli.c: 2564:  
+</I>&gt;<i> Client MAC=00-18-39-BC-79-82 assigned IP 172.25.0.119
+</I>&gt;<i>
+</I>&gt;<i> followed by successful logins of certain users. Note that the MAC  
+</I>&gt;<i> is of the repeater, not the client. Therefore the first client to  
+</I>&gt;<i> associate to the repeater and request a dhcp lease from the network  
+</I>&gt;<i> gets assigned a correct one by chilli, subsequent clients on that  
+</I>&gt;<i> same repeater get assigned the duplicate one since chilli sees the  
+</I>&gt;<i> same mac. These people then have no way of connecting.
+</I>&gt;<i>
+</I>&gt;<i> To the best of my knowledge a pure bridge just transparently  
+</I>&gt;<i> forwards packets on layer 2 and *does not* mess with mac addresses  
+</I>&gt;<i> of these packets. In this case my bridge does, so I think I found a  
+</I>&gt;<i> bug in kamikaze 7.07.
+</I>&gt;<i>
+</I>&gt;<i> I don't necessarily expect people in this list to help me out here,  
+</I>&gt;<i> perhaps I should rather post this on the OpenWRT forums.
+</I>
+Hmm.. what kind of iptables config do you have (in filter and nat)?
+
+David
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000066.html">IP address conflicts
+</A></li>
+	<LI>Next message: <A HREF="000068.html">IP address conflicts
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#67">[ date ]</a>
+              <a href="thread.html#67">[ thread ]</a>
+              <a href="subject.html#67">[ subject ]</a>
+              <a href="author.html#67">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

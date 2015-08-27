@@ -1,0 +1,146 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] Administrative-User session &amp; config update
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Administrative-User%20session%20%26%20config%20update&In-Reply-To=%3C1344531524.7597.1.camel%40david-laptop%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="002003.html">
+   <LINK REL="Next"  HREF="002002.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] Administrative-User session &amp; config update</H1>
+    <B>David Bird</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Administrative-User%20session%20%26%20config%20update&In-Reply-To=%3C1344531524.7597.1.camel%40david-laptop%3E"
+       TITLE="[Chilli] Administrative-User session &amp; config update">david at coova.com
+       </A><BR>
+    <I>Thu Aug  9 16:58:44 UTC 2012</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="002003.html">[Chilli] Administrative-User session &amp; config update
+</A></li>
+        <LI>Next message: <A HREF="002002.html">[Chilli] Administrative-User session &amp; config update
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2004">[ date ]</a>
+              <a href="thread.html#2004">[ thread ]</a>
+              <a href="subject.html#2004">[ subject ]</a>
+              <a href="author.html#2004">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>You can have it re-auth based on the --interval option value. 
+
+Cheers,
+David
+
+On Thu, 2012-08-09 at 16:29 +0100, Adam Hammond wrote:
+&gt;<i> Thanks David,
+</I>&gt;<i> 
+</I>&gt;<i> My mistake was to use both the administrative-update session AND the radius config functionality at the same time (for reasons not worth going into). Confusion reigned. 
+</I>&gt;<i> 
+</I>&gt;<i> What wasn't clear to me was that you could forgo any RADCONF-esque functionality, not need to call radiusconfig in init, and just use the Administrative-User functionality when starting up with half the configuration on the device and the rest supplied centrally. All cleared up now.
+</I>&gt;<i> 
+</I>&gt;<i> @David - Can I control the amount of time between re authentication of the administrative user session or is it hard coded to an hour?
+</I>&gt;<i> 
+</I>&gt;<i> @Bojan - the administrative-user functionality allows you to host a subset of your configuration centrally (accessible via radius), to change that configuration at will and have it updated on all relevant chilli instances in a timely and automatic fashion.
+</I>&gt;<i> 
+</I>&gt;<i> Cheers,
+</I>&gt;<i> Adam
+</I>&gt;<i> 
+</I>&gt;<i> On 8 Aug 2012, at 15:29, David Bird wrote:
+</I>&gt;<i> 
+</I>&gt;<i> &gt; Be sure the adminupdatefile is also included into your chilli
+</I>&gt;<i> &gt; configuration (using 'include &lt;filename&gt;'). 
+</I>&gt;<i> &gt; 
+</I>&gt;<i> &gt; David
+</I>&gt;<i> &gt; 
+</I>&gt;<i> &gt; 
+</I>&gt;<i> &gt; On Tue, 2012-08-07 at 13:48 +0100, Adam Hammond wrote:
+</I>&gt;<i> &gt;&gt; Hi list,
+</I>&gt;<i> &gt;&gt; 
+</I>&gt;<i> &gt;&gt; Has anyone succeeded in getting the Administrative-User session functionality fully working?
+</I>&gt;<i> &gt;&gt; 
+</I>&gt;<i> &gt;&gt; I have a test AP running an Adminstrative-User session fine (config is returned in Access-Accept and stored in a file). The config is written to non-default file (/tmp/foo) in line with my adminupdatefile setting. The session re-auths every hour and the config is re-written to my adminupdatefile at that time.
+</I>&gt;<i> &gt;&gt; 
+</I>&gt;<i> &gt;&gt; If I change the settings returned in radius what DOESN'T happen is these changes being recognised, copied to the chilli config file (hs.conf) and chilli HUP'd. 
+</I>&gt;<i> &gt;&gt; 
+</I>&gt;<i> &gt;&gt; This would be trivial to do manually via a script in cron, but it's my understanding that chilli should do this. Am I wrong or is this a bug do you think/know?
+</I>&gt;<i> &gt;&gt; 
+</I>&gt;<i> &gt;&gt; I have also not had any luck controlling the interval in which chilli re-auths the administrative-user session. I have tried setting HS_ADMININTERVAL and also returning a Session-Timeout value in the Access-Accept to no avail. Has anyone had any success controlling the session time?
+</I>&gt;<i> &gt;&gt; 
+</I>&gt;<i> &gt;&gt; I've included some debug output below for anyone that knows if this looks right or not. It appears that the config is saved in my adminupdatefile location and copied to /tmp/hs.conf rather than /etc/chilli/hs.conf (?)
+</I>&gt;<i> &gt;&gt; 
+</I>&gt;<i> &gt;&gt; Possibly relevant: I'm not using a call to writeconfg in my start script. I want to fully control the dns servers over radius. If I use writeconfig the dns1 attribute is set to the devices primary dns server (or one that I hardcode) and this is not overruled if I return a different server ip by radius config. Rather than find a way to patch the functions file I took the easy route of using a static main.conf and fetching the rest of the configuration over radius.
+</I>&gt;<i> &gt;&gt; 
+</I>&gt;<i> &gt;&gt; Many thanks in advance,
+</I>&gt;<i> &gt;&gt; Adam
+</I>&gt;<i> &gt;&gt; 
+</I>&gt;<i> &gt;&gt; coova-chilli 1.2.9 on Openwrt
+</I>&gt;<i> &gt;&gt; 
+</I>&gt;<i> &gt;&gt; 
+</I>&gt;<i> &gt;&gt; radius.c: 224: 0 (Debug) qnext=6
+</I>&gt;<i> &gt;&gt; radius.c: 294: 0 (Debug) RADIUS queue-in id=6 idx=6
+</I>&gt;<i> &gt;&gt; radius.c: 1505: 0 (Debug) RADIUS id=6 sent to x.x.x.x:11812
+</I>&gt;<i> &gt;&gt; main-opt.c: 601: 0 (Debug) DHCP Listen: 172.17.2.1
+</I>&gt;<i> &gt;&gt; main-opt.c: 602: 0 (Debug) UAM Listen: 172.17.2.1
+</I>&gt;<i> &gt;&gt; radius.c: 1740: 0 (Debug) Received RADIUS packet id=6
+</I>&gt;<i> &gt;&gt; radius.c: 264: 0 (Debug) idx 6 pid 6 id 6
+</I>&gt;<i> &gt;&gt; radius.c: 406: 0 (Debug) RADIUS queue-out id=6 idx=6
+</I>&gt;<i> &gt;&gt; chilli.c: 4379: 0 (Debug) Received RADIUS response id=6
+</I>&gt;<i> &gt;&gt; chilli.c: 4568: 0 (Debug) Received RADIUS Access-Accept
+</I>&gt;<i> &gt;&gt; chilli.c: 4197: 0 (Debug) looking to replace: /tmp/coova-update
+</I>&gt;<i> &gt;&gt; chilli.c: 4213: 0 (Debug) using temp: /tmp/hs.conf
+</I>&gt;<i> &gt;&gt; ...
+</I>&gt;<i> &gt;&gt; options.c: 442: 0 (Debug) PID 7050 saving options to /var/run/chilli.6503.cfg.bin
+</I>&gt;<i> &gt;&gt; chilli.c: 6800: 0 (Debug) Processing cmdsock request...
+</I>&gt;<i> &gt;&gt; chilli.c: 347: 0 (Debug) SIGUSR1: reloading configuration
+</I>&gt;<i> &gt;&gt; options.c: 189: 0 (Debug) PID 6503 rereading binary file /var/run/chilli.6503.cfg.bin
+</I>&gt;<i> &gt;&gt; options.c: 651: 0 (Debug) PID 6503 reloaded binary options file
+</I>&gt;<i> &gt;&gt; chilli.c: 378: 0 (Debug) caught 18 via selfpipe
+</I>&gt;<i> &gt;&gt; chilli.c: 309: 0 (Debug) child 7050 terminated
+</I>&gt;<i> &gt;&gt; options.c: 442: 0 (Debug) PID 7049 saving options to /var/run/chilli.6503.cfg.bin
+</I>&gt;<i> &gt;&gt; chilli.c: 6800: 0 (Debug) Processing cmdsock request...
+</I>&gt;<i> &gt;&gt; chilli.c: 347: 0 (Debug) SIGUSR1: reloading configuration
+</I>&gt;<i> &gt;&gt; options.c: 189: 0 (Debug) PID 6503 rereading binary file /var/run/chilli.6503.cfg.bin
+</I>&gt;<i> &gt;&gt; options.c: 651: 0 (Debug) PID 6503 reloaded binary options file
+</I>&gt;<i> &gt;&gt; chilli.c: 378: 0 (Debug) caught 18 via selfpipe
+</I>&gt;<i> &gt;&gt; chilli.c: 309: 0 (Debug) child 7049 terminated
+</I>&gt;<i> &gt;&gt; _______________________________________________
+</I>&gt;<i> &gt;&gt; Chilli mailing list
+</I>&gt;<i> &gt;&gt; <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">Chilli at coova.org</A>
+</I>&gt;<i> &gt;&gt; <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">http://lists.coova.org/cgi-bin/mailman/listinfo/chilli</A>
+</I>&gt;<i> &gt; 
+</I>&gt;<i> &gt; 
+</I>&gt;<i> 
+</I>
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="002003.html">[Chilli] Administrative-User session &amp; config update
+</A></li>
+	<LI>Next message: <A HREF="002002.html">[Chilli] Administrative-User session &amp; config update
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2004">[ date ]</a>
+              <a href="thread.html#2004">[ thread ]</a>
+              <a href="subject.html#2004">[ subject ]</a>
+              <a href="author.html#2004">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

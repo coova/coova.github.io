@@ -1,0 +1,112 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] daily reset changes counter behaviour
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20daily%20reset%20changes%20counter%20behaviour&In-Reply-To=%3CCAMooC-qHh9TtDbCmRRJYfpXPogpARPFchszZwGaAG5sfX%3DLsrg%40mail.gmail.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   
+   <LINK REL="Next"  HREF="002188.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] daily reset changes counter behaviour</H1>
+    <B>Daniel Collier</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20daily%20reset%20changes%20counter%20behaviour&In-Reply-To=%3CCAMooC-qHh9TtDbCmRRJYfpXPogpARPFchszZwGaAG5sfX%3DLsrg%40mail.gmail.com%3E"
+       TITLE="[Chilli] daily reset changes counter behaviour">daniel at collier.io
+       </A><BR>
+    <I>Fri Mar  1 09:07:37 UTC 2013</I>
+    <P><UL>
+        
+        <LI>Next message: <A HREF="002188.html">[Chilli] CoovaChilli 1.3.0 for MAC authentication on Freeradius
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2187">[ date ]</a>
+              <a href="thread.html#2187">[ thread ]</a>
+              <a href="subject.html#2187">[ subject ]</a>
+              <a href="author.html#2187">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hi all,
+
+coovachilli version 1.3, freeradius version 2.1, OS ubuntu 12.04
+
+I'm not sure if this is the right place to bring this up, it may be better
+with the freeradius people, please let me know if so.
+
+I am using sql accounting and i have defined a custom counter called
+input-octets in counter.conf, it works nicely when the reset value is set
+to never but changing reset to daily changes its behaviour in a way that i
+find difficult to understand. The counter is based on the
+ChilliSpot-Max-Input-Octets value and in the radgroupcheck table i have
+ChilliSpot-Max-Input-Octets := 10000000.
+
+debug output should tell the story;
+
+with 'reset' set to never
+Fri Mar  1 19:54:11 2013 : Info: [input-octets] expand: %{sql:SELECT
+SUM(AcctInputOctets) FROM radacct WHERE UserName='alice' AND acctstarttime
+&gt;<i> CURDATE()} -&gt; 354144
+</I>Fri Mar  1 19:54:11 2013 : Debug: rlm_sqlcounter: Check item is greater
+than query result
+Fri Mar  1 19:54:11 2013 : Debug: rlm_sqlcounter: Authorized user alice,
+check_item=10000000, counter=354144
+Fri Mar  1 19:54:11 2013 : Debug: rlm_sqlcounter: Sent Reply-Item for user
+alice, Type=ChilliSpot-Max-Input-Octets, value=9645856
+
+with 'reset' set to daily
+Fri Mar  1 19:57:03 2013 : Info: [input-octets] expand: %{sql:SELECT
+SUM(AcctInputOctets) FROM radacct WHERE UserName='alice' AND acctstarttime
+&gt;<i> CURDATE()} -&gt; 365632
+</I>Fri Mar  1 19:57:03 2013 : Debug: rlm_sqlcounter: Check item is greater
+than query result
+Fri Mar  1 19:57:03 2013 : Debug: rlm_sqlcounter: Authorized user alice,
+check_item=10000000, counter=365632
+Fri Mar  1 19:57:03 2013 : Debug: rlm_sqlcounter: Sent Reply-Item for user
+alice, Type=ChilliSpot-Max-Input-Octets, value=10014577
+
+If you look at the value sent as the reply item in the first instance the
+result pulled from the radacct table is subtracted from the check value, in
+the second instance it is... weird.
+
+Obviously i do not need to use the daily reset as i have worked around it
+bysubstituting the unlang version of the date variable for the mysql one,
+but still it would be nice to know what is going on here for future
+reference.
+
+regards
+
+Daniel
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: &lt;<A HREF="http://lists.coova.org/pipermail/chilli/attachments/20130301/7eb316ce/attachment.html">http://lists.coova.org/pipermail/chilli/attachments/20130301/7eb316ce/attachment.html</A>&gt;
+</PRE>
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	
+	<LI>Next message: <A HREF="002188.html">[Chilli] CoovaChilli 1.3.0 for MAC authentication on Freeradius
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2187">[ date ]</a>
+              <a href="thread.html#2187">[ thread ]</a>
+              <a href="subject.html#2187">[ subject ]</a>
+              <a href="author.html#2187">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,125 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Jradius] JRadius Proxy mangles User-Password
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:jradius%40coova.org?Subject=Re%3A%20%5BJradius%5D%20JRadius%20Proxy%20mangles%20User-Password&In-Reply-To=%3CAANLkTimnPLY4%2BdYLB9_Dh2iDZyMv4kZohbNTYeeiCFma%40mail.gmail.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000027.html">
+   <LINK REL="Next"  HREF="000032.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Jradius] JRadius Proxy mangles User-Password</H1>
+    <B>Murray Long</B> 
+    <A HREF="mailto:jradius%40coova.org?Subject=Re%3A%20%5BJradius%5D%20JRadius%20Proxy%20mangles%20User-Password&In-Reply-To=%3CAANLkTimnPLY4%2BdYLB9_Dh2iDZyMv4kZohbNTYeeiCFma%40mail.gmail.com%3E"
+       TITLE="[Jradius] JRadius Proxy mangles User-Password">murray at skyrove.com
+       </A><BR>
+    <I>Thu Aug 19 08:49:06 UTC 2010</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000027.html">[Jradius] JRadius Proxy mangles User-Password
+</A></li>
+        <LI>Next message: <A HREF="000032.html">[Jradius] JRadius Proxy mangles User-Password
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#28">[ date ]</a>
+              <a href="thread.html#28">[ thread ]</a>
+              <a href="subject.html#28">[ subject ]</a>
+              <a href="author.html#28">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Oh interesting, so it's only the password field that gets hashed by shared
+secret?
+
+At the moment I have:
+UAM --(radsec) --&gt; Jradius ---(radius)--&gt; freeradius
+
+I defiantly got the same secret between Jradius and freeradius ( set in
+radSecProxyHander.sharedSecret )
+But I haven't told Jradius about the shared secret being used by the UAM,
+and I'm not sure where to set this.  Can someone point me in the right
+direction?
+
+Thanks Murray
+
+On Thu, Aug 19, 2010 at 8:21 AM, wlanmac &lt;<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/jradius">wlan at mac.com</A>&gt; wrote:
+
+&gt;<i> Hello,
+</I>&gt;<i>
+</I>&gt;<i> The User-Password is always encoded (&quot;encrypted&quot;) with the shared secret
+</I>&gt;<i> on the wire. Changes are that there is a shared secret mix up
+</I>&gt;<i> somewhere.
+</I>&gt;<i>
+</I>&gt;<i> David
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> On Wed, 2010-08-18 at 17:31 +0200, Murray Long wrote:
+</I>&gt;<i> &gt; Hi Everyone,
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; I'm trying to set up JRadius to accept Radsec connections and proxy
+</I>&gt;<i> &gt; them onto freeradius.
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; I've set up jardius as described on coova.org, and it seems to work
+</I>&gt;<i> &gt; well, except the User-Password is encrypted by the time it reaches
+</I>&gt;<i> &gt; freeradius
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; I get the following reported on the freeradius side:
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt;     User-Name = &quot;testuser&quot;
+</I>&gt;<i> &gt;     User-Password = &quot;\212\230\306\310\313}\010\231\257\211F\237.l
+</I>&gt;<i> &gt; \365JJ\2173\240b\367\215+&#1205;u\177=\237\304\001&quot;
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; My NAS is sending plaintext passwords so I'm pretty sure Jradius is
+</I>&gt;<i> &gt; mangling the User-Password somehow.
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; Does anyone know why this would be happening and how to prevent it?
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; I did notice &quot;dictionary.rfc2865&quot; had a line:
+</I>&gt;<i> &gt; User-Password                2    string encrypt=1
+</I>&gt;<i> &gt; but setting encrypt=0 dosn't seem to make a difference.
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; Thanks,
+</I>&gt;<i> &gt; Murray
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; _______________________________________________
+</I>&gt;<i> &gt; Jradius mailing list
+</I>&gt;<i> &gt; <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/jradius">Jradius at coova.org</A>
+</I>&gt;<i> &gt; <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/jradius">http://lists.coova.org/cgi-bin/mailman/listinfo/jradius</A>
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>
+</I>-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: &lt;<A HREF="http://lists.coova.org/pipermail/jradius/attachments/20100819/d7e75ff7/attachment.htm">http://lists.coova.org/pipermail/jradius/attachments/20100819/d7e75ff7/attachment.htm</A>&gt;
+</PRE>
+
+
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000027.html">[Jradius] JRadius Proxy mangles User-Password
+</A></li>
+	<LI>Next message: <A HREF="000032.html">[Jradius] JRadius Proxy mangles User-Password
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#28">[ date ]</a>
+              <a href="thread.html#28">[ thread ]</a>
+              <a href="subject.html#28">[ subject ]</a>
+              <a href="author.html#28">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/jradius">More information about the Jradius
+mailing list</a><br>
+</body></html>

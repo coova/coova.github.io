@@ -1,0 +1,203 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] compiler warning leads to build error
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20compiler%20warning%20leads%20to%20build%20error&In-Reply-To=%3C8C2CB2442BFDDB4D95785B991B30D3463116EED6%40DBXPRD0510MB372.eurprd05.prod.outlook.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="002212.html">
+   <LINK REL="Next"  HREF="002214.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] compiler warning leads to build error</H1>
+    <B>Steffen Dettmer</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20compiler%20warning%20leads%20to%20build%20error&In-Reply-To=%3C8C2CB2442BFDDB4D95785B991B30D3463116EED6%40DBXPRD0510MB372.eurprd05.prod.outlook.com%3E"
+       TITLE="[Chilli] compiler warning leads to build error">steffen.dettmer at nomadrail.com
+       </A><BR>
+    <I>Thu Mar 21 16:50:11 UTC 2013</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="002212.html">[Chilli] Preproxy with coova
+</A></li>
+        <LI>Next message: <A HREF="002214.html">[Chilli] compiler warning leads to build error
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2213">[ date ]</a>
+              <a href="thread.html#2213">[ thread ]</a>
+              <a href="subject.html#2213">[ subject ]</a>
+              <a href="author.html#2213">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Dear developers,
+
+
+
+Thanks for this nice software and all you efforts spent!
+
+
+
+I just noted a minor issue. On Debian 6 amd64 a warning leads to a compiler error:
+
+
+
+  main-opt.c:781: error: 'ptr' may be used uninitialized in this function
+
+
+
+because of -Werror. The warning even seems to be a false one.
+
+
+
+Is it intended to have -Werror in release builds? Seems -Werror is &quot;hardcoded&quot; in Makefile.am.
+
+For me I just patched src/Makefile* and removed -Werror, but I write in case others could be interested in.
+
+
+
+Best regards,
+
+Steffen
+
+
+
+
+
+
+
+
+
+/bin/bash ../libtool --tag=CC   --mode=link x86_64-linux-gnu-gcc -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF='&quot;/etc/chilli.conf&quot;' -DDEFPIDFILE='&quot;/var/run/chilli.pid&quot;' -DDEFSTATEDIR='&quot;/var/run&quot;' -DSBINDIR='&quot;/usr/sbin&quot;'   -DDEFLIBDIR='&quot;/usr/lib/coova-chilli&quot;' -g -O2   -o chilli_radconfig main-radconfig.o libchilli.la  ../bstring/libbstring.la  -lssl -lcrypto     -ldl -lrt
+
+libtool: link: x86_64-linux-gnu-gcc -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF=\&quot;/etc/chilli.conf\&quot; -DDEFPIDFILE=\&quot;/var/run/chilli.pid\&quot; -DDEFSTATEDIR=\&quot;/var/run\&quot; -DSBINDIR=\&quot;/usr/sbin\&quot; -DDEFLIBDIR=\&quot;/usr/lib/coova-chilli\&quot; -g -O2 -o .libs/chilli_radconfig main-radconfig.o  ./.libs/libchilli.so ../bstring/.libs/libbstring.so -lssl -lcrypto -ldl -lrt
+
+x86_64-linux-gnu-gcc -DHAVE_CONFIG_H -I. -I..    -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring -DDEFCHILLICONF='&quot;/etc/chilli.conf&quot;' -DDEFPIDFILE='&quot;/var/run/chilli.pid&quot;' -DDEFSTATEDIR='&quot;/var/run&quot;' -DSBINDIR='&quot;/usr/sbin&quot;'   -DDEFLIBDIR='&quot;/usr/lib/coova-chilli&quot;' -g -O2 -MT main-opt.o -MD -MP -MF .deps/main-opt.Tpo -c -o main-opt.o main-opt.c
+
+cc1: warnings being treated as errors
+
+main-opt.c: In function 'main':
+
+main-opt.c:781: error: 'ptr' may be used uninitialized in this function
+
+make[4]: *** [main-opt.o] Error 1
+
+make[4]: Leaving directory `/home/steffen/tmp/coova-chilli-1.3.0/src'
+
+make[3]: *** [all-recursive] Error 1
+
+make[3]: Leaving directory `/home/steffen/tmp/coova-chilli-1.3.0/src'
+
+make[2]: *** [all-recursive] Error 1
+
+make[2]: Leaving directory `/home/steffen/tmp/coova-chilli-1.3.0'
+
+make[1]: *** [all] Error 2
+
+make[1]: Leaving directory `/home/steffen/tmp/coova-chilli-1.3.0'
+
+make: *** [build] Error 2
+
+dpkg-buildpackage: error: debian/rules build gave error exit status 2
+
+debuild: fatal error at line 1325:
+
+dpkg-buildpackage -rfakeroot -D -us -uc -i -b failed
+
+
+
+
+
+
+
+<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">steffen at vivaldi</A>:~/tmp/coova-chilli-1.3.0-steffen (master u=) $ cat /etc/issue
+
+Debian GNU/Linux 6.0 \n \l
+
+
+
+<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">steffen at vivaldi</A>:~/tmp/coova-chilli-1.3.0-steffen (master u=) $ uname -a
+
+Linux vivaldi 2.6.32-5-amd64 #1 SMP Sun Sep 23 10:07:46 UTC 2012 x86_64 GNU/Linux
+
+<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">steffen at vivaldi</A>:~/tmp/coova-chilli-1.3.0-steffen (master u=) $ gcc --version
+
+gcc (Debian 4.4.5-8) 4.4.5
+
+Copyright (C) 2010 Free Software Foundation, Inc.
+
+This is free software; see the source for copying conditions.  There is NO
+
+warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+
+
+
+
+src/main-opt.c:
+
+
+
+777     for (numargs = 0, i=0;
+
+ 778          numargs &lt; args_info.uamdomain_given &amp;&amp; i &lt; MAX_UAM_DOMAINS;
+
+779          ++numargs) {
+
+780       char *tb = args_info.uamdomain_arg[numargs];
+
+781       char *tok, *str, *ptr;
+
+782       for (str = tb ; i &lt; MAX_UAM_DOMAINS; str = NULL) {
+
+783         tok = strtok_r(str, &quot;,&quot;, &amp;ptr);
+
+784         if (!tok) break;
+
+785         log_dbg(&quot;uamdomain %s&quot;, tok);
+
+786         _options.uamdomains[i++] = STRDUP(tok);
+
+787       }
+
+788     }
+
+
+
+
+
+
+
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: &lt;<A HREF="http://lists.coova.org/pipermail/chilli/attachments/20130321/96b1ef94/attachment.html">http://lists.coova.org/pipermail/chilli/attachments/20130321/96b1ef94/attachment.html</A>&gt;
+</PRE>
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="002212.html">[Chilli] Preproxy with coova
+</A></li>
+	<LI>Next message: <A HREF="002214.html">[Chilli] compiler warning leads to build error
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2213">[ date ]</a>
+              <a href="thread.html#2213">[ thread ]</a>
+              <a href="subject.html#2213">[ subject ]</a>
+              <a href="author.html#2213">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

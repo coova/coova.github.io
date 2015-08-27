@@ -1,0 +1,155 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] Coova-chilli-1.2.4 &amp; SSL Problem
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Coova-chilli-1.2.4%20%26%20SSL%20Problem&In-Reply-To=%3CB67987C6-ED38-477D-A051-D71BB4E35E1D%40freerunr.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001494.html">
+   <LINK REL="Next"  HREF="001497.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] Coova-chilli-1.2.4 &amp; SSL Problem</H1>
+    <B>Adam Hammond</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Coova-chilli-1.2.4%20%26%20SSL%20Problem&In-Reply-To=%3CB67987C6-ED38-477D-A051-D71BB4E35E1D%40freerunr.com%3E"
+       TITLE="[Chilli] Coova-chilli-1.2.4 &amp; SSL Problem">adam at freerunr.com
+       </A><BR>
+    <I>Fri Sep 24 15:22:15 UTC 2010</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001494.html">[Chilli] 100% cpu problem
+</A></li>
+        <LI>Next message: <A HREF="001497.html">[Chilli] Coova-chilli-1.2.4 &amp; SSL Problem
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1495">[ date ]</a>
+              <a href="thread.html#1495">[ thread ]</a>
+              <a href="subject.html#1495">[ subject ]</a>
+              <a href="author.html#1495">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hello everyone,
+
+I'm trying to develop an openwrt image using openwrt backfire 10.0.3  
+rc3 with coova-chilli-1.2.4, compiled with ssl support, for use with  
+(amongst other smartclients) iPass. I am developing this image for the  
+TP-Link WR741ND Acess Point. The critical thing I'm trying to get  
+working is support in chilli for clients to post login events to the  
+chilli controller using SSL.
+
+I have been using this mailing list post as a general how-to for my  
+setup: <A HREF="http://lists.coova.org/pipermail/chilli/2010-May/001379.html,">http://lists.coova.org/pipermail/chilli/2010-May/001379.html,</A>  
+and others as guides on what to and not to do.
+
+I am writing to the mailing list as I am now a bit stuck. Suffice to  
+say that I can't get it to work, and I don't know exactly why it isn't  
+working either.
+
+Below is the typical output I see from chilli when an HTTPS login post  
+is sent to the controller (e.g. <A HREF="https://ap.thewifinetwork.net:3990/logon?username=adam@freerunr.com&amp;password=623fcbda6a6fc5b8659f26d82a0c45ed">https://ap.thewifinetwork.net:3990/logon?username=adam@freerunr.com&amp;password=623fcbda6a6fc5b8659f26d82a0c45ed</A>)
+
+redir.c: 3150: 0 (Debug) Receiving HTTP Request
+redir.c: 1897: 0 (Debug) HTTP request timeout!
+redir.c: 2288: 0 (Debug) --&gt;&gt; Setting userurl=[<A HREF="http:///]">http:///]</A>
+redir.c: 3202: 0 (Debug) Processing HTTP Request
+redir.c: 3434: 0 (Debug) Processing received request
+redir.c: 3648: 0 (Debug) redir_accept: Original request
+redir.c: 3678: 0 (Debug) ----&gt;&gt;&gt; challenge:  
+0de41675a44417e279a0754c0b251712
+redir.c: 2933: 0 (Debug) close_exit
+chilli.c: 114: 0 (Debug) caught 18 via selfpipe
+chilli.c: 75: 0 (Debug) child 14158 terminated
+
+I have set my UAM method for smartclients to pass back a login url in  
+the WISPr tags with a hardcoded value (uamaliasname.domain) that  
+corresponds to the common name set in the SSL certificate I am using  
+with chilli. (I have also tried this with the more generic &quot;<A HREF="https://$uamip:$uamport/logon?">https://$uamip:$uamport/logon?</A> 
+..&quot; url with exactly the same debug output from chilli). The UAM  
+method works fine with http requests.
+
+The error I see in the iPass logs is:
+
+WinInet error code: 12157  Message: An error occurred in the secure  
+channel support
+
+... which according to msdn means &quot;The application experienced an  
+internal error loading the SSL libraries&quot;. Not much of a clue for me.
+
+I have tried posting to the login controller using a standard browser  
+and have seen the following errors.
+
+Chrome (pretty vague):
+
+Error 107 (net::ERR_SSL_PROTOCOL_ERROR): SSL protocol error.
+
+Firefox:
+
+SSL received a record that exceeded the maximum permissible length.
+(Error code: ssl_error_rx_record_too_long)
+
+I should mention that I am using a Thawte test certificate for  
+testing. I have tried using a different (non elf signed) certificate,  
+if only to provoke an error in chilli, or get it to provide a  
+different error message to provide me a clue, to no avail.
+
+If I run chilli --help I notice options for 'uamaliasip' and  
+'sslcafile' but cannot find reference to them in my /etc/chilli/ 
+functions file. I have tried adding them to my local.conf file to no  
+effect.
+
+I know a few posters to this mailing list have been working on similar  
+iPass integration projects and would be eternally grateful if they  
+could provide me any clues about where I might be going wrong.
+
+Many thanks in advance,
+
+Adam
+
+coova-chilli 1.2.4
+Compiled with ENABLE_BINSTATFILE ENABLE_CHILLIRADSEC ENABLE_CHILLIXML  
+ENABLE_IEEE8021Q ENABLE_JSON ENABLE_LEAKYBUCKET ENABLE_MINIPORTAL  
+ENABLE_PROXYVSA ENABLE_SESSGARDEN ENABLE_STATFILE HAVE_OPENSSL  
+USING_POLL
+
+&lt;snippet from /etc/chilli/defaults&gt;
+HS_UAMUISSL=on
+HS_DNS_DOMAIN=thewifinetwork.net
+HS_UAMALIASNAME=ap
+HS_SSLKEYFILE=/etc/certs/ap.thewifinetwork.net.key
+HS_SSLCERTFILE=/etc/certs/ap.thewifinetwork.net.pem
+&lt;/snippet&gt;
+
+&lt;snippet from /etc/chilli/local.config&gt;
+sslcafile=/etc/certs/thawte-intermediate-ca.pem
+uamaliasip=172.17.172.1
+&lt;/snippet&gt;
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: &lt;<A HREF="http://lists.coova.org/pipermail/chilli/attachments/20100924/ff1193ef/attachment.htm">http://lists.coova.org/pipermail/chilli/attachments/20100924/ff1193ef/attachment.htm</A>&gt;
+</PRE>
+
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001494.html">[Chilli] 100% cpu problem
+</A></li>
+	<LI>Next message: <A HREF="001497.html">[Chilli] Coova-chilli-1.2.4 &amp; SSL Problem
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1495">[ date ]</a>
+              <a href="thread.html#1495">[ thread ]</a>
+              <a href="subject.html#1495">[ subject ]</a>
+              <a href="author.html#1495">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,2091 @@
+From baguio.ivan at yahoo.com  Sat Mar  1 09:10:30 2014
+From: baguio.ivan at yahoo.com (Ivan dominic Baguio)
+Date: Sat, 1 Mar 2014 17:10:30 +0800 (SGT)
+Subject: [Chilli] json/status session.startTime problem
+Message-ID: <1393665030.97583.YahooMailNeo@web192703.mail.sg3.yahoo.com>
+
+Hello!
+
+I have been trying to figure this out for some time, whenever I get a status request to the AP thru the json interface (192.168.182.1:3990/json/status), the session.startTime would always be the equivalent of Jan 1970, which is the unix epoch. I was expecting a time=current time. I am using coovachilli 1.2.9-1 on OpenWrt. I also checked the system time of OpenWrt, its correct as it should be.
+
+Can anyone give me advice on how to fix this?
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20140301/2df2213a/attachment.html>
+
+From ben at gowasabi.net  Sat Mar  8 15:21:05 2014
+From: ben at gowasabi.net (Ben West)
+Date: Sat, 8 Mar 2014 09:21:05 -0600
+Subject: [Chilli] Disassociate clients that don't authorize themselves via
+	portal?
+Message-ID: <CADSh-SMkgYS30zD9cLESSHbGoP+5e9Yn_q9gPDiM93oqiPChWw@mail.gmail.com>
+
+I"m curious if coovachilli v1.3.0, in my instance running under OpenWRT
+Attitude Adjustment, offers a way to actively disassociate clients who do
+not authorize themselves via the captive portal, but which still remain
+associated with the hotspot.
+
+The particular scenario I'm envisioning is someone's phone or tablet that
+automatically associates to an open SSID, but where the user doesn't bother
+clicking through the captive portal.  The device continues to try to
+periodically pull down content (e.g. app updates), sometimes quite
+furiously, causing a fair amount of useless traffic over the wifi channel,
+chewing up airtime.
+
+Or, instead of actively dissociating such an unauthorized client, perhaps
+instead have coovachilli run an iptables script after some inactivity
+timeout to begin throttling traffic to the client?
+
+Thank you.
+
+-- 
+Ben West
+http://gowasabi.net
+ben at gowasabi.net
+314-246-9434
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20140308/b7185476/attachment.html>
+
+From dbird at google.com  Sat Mar  8 19:18:35 2014
+From: dbird at google.com (David Bird)
+Date: Sat, 8 Mar 2014 11:18:35 -0800
+Subject: [Chilli] Disassociate clients that don't authorize themselves
+	via portal?
+In-Reply-To: <CADSh-SMkgYS30zD9cLESSHbGoP+5e9Yn_q9gPDiM93oqiPChWw@mail.gmail.com>
+References: <CADSh-SMkgYS30zD9cLESSHbGoP+5e9Yn_q9gPDiM93oqiPChWw@mail.gmail.com>
+Message-ID: <CADo9JyXwU_x5d6AFXL-9JQ1jO_ryV_vNgndqbNdnzc=Q5SeZTg@mail.gmail.com>
+
+No, there isn't such a feature. You could disassociate clients perhaps
+through the driver, but chances are the client will just re-associate
+(unless there is another network it knows). You could have chilli drop
+everything for the station, but that will not prevent the client from still
+taking up airtime trying to (re)send packets. However, depending on the
+client, it may drop the signal itself if it thinks it lost layer2
+connectivity.
+
+
+On Sat, Mar 8, 2014 at 7:21 AM, Ben West <ben at gowasabi.net> wrote:
+
+> I"m curious if coovachilli v1.3.0, in my instance running under OpenWRT
+> Attitude Adjustment, offers a way to actively disassociate clients who do
+> not authorize themselves via the captive portal, but which still remain
+> associated with the hotspot.
+>
+> The particular scenario I'm envisioning is someone's phone or tablet that
+> automatically associates to an open SSID, but where the user doesn't bother
+> clicking through the captive portal.  The device continues to try to
+> periodically pull down content (e.g. app updates), sometimes quite
+> furiously, causing a fair amount of useless traffic over the wifi channel,
+> chewing up airtime.
+>
+> Or, instead of actively dissociating such an unauthorized client, perhaps
+> instead have coovachilli run an iptables script after some inactivity
+> timeout to begin throttling traffic to the client?
+>
+> Thank you.
+>
+> --
+> Ben West
+> http://gowasabi.net
+> ben at gowasabi.net
+> 314-246-9434
+>
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20140308/dcc714c8/attachment.html>
+
+From andersonscinfo at gmail.com  Sat Mar  8 20:15:10 2014
+From: andersonscinfo at gmail.com (ANDERSON JUNIOR GADO DA SILVA)
+Date: Sat, 8 Mar 2014 16:15:10 -0400
+Subject: [Chilli] Hotspot in openwrt with coova-chilli
+Message-ID: <CAAFh3a3vpNWZoQeTWnRtWZvb_KVptpyDvr1V15p_DYs-Hb3vJw@mail.gmail.com>
+
+Hi, my name is Anderson and this is my first message to the list, I compiled
+openwrt with version 1.2.9 of coova-chilli, installed the firmware, put the
+chilli to start automatically, but not concigo code a login page I tried to
+use the files that came with the www folder, but without sucessso, searched
+the wiki and found some stuff, but still not found, exit, and a model
+that would
+facilitate this?
+
+I'm not using wwwsh.
+
+Att
+Anderson Junior
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20140308/0c370801/attachment.html>
+
+From ben at gowasabi.net  Sun Mar  9 01:01:46 2014
+From: ben at gowasabi.net (Ben West)
+Date: Sat, 8 Mar 2014 19:01:46 -0600
+Subject: [Chilli] Disassociate clients that don't authorize themselves
+	via portal?
+In-Reply-To: <CADo9JyXwU_x5d6AFXL-9JQ1jO_ryV_vNgndqbNdnzc=Q5SeZTg@mail.gmail.com>
+References: <CADSh-SMkgYS30zD9cLESSHbGoP+5e9Yn_q9gPDiM93oqiPChWw@mail.gmail.com>
+ <CADo9JyXwU_x5d6AFXL-9JQ1jO_ryV_vNgndqbNdnzc=Q5SeZTg@mail.gmail.com>
+Message-ID: <CADSh-SPDLK2YwxbBU=y_1eMBr9GtOaBB_KCJ1wZaanV+wj3N8g@mail.gmail.com>
+
+Thank you, David, for the clarification.
+
+Yes, I do agree that trying to kick off lingering unauthorized wifi clients
+(i.e. using "iw wlan0 station del ...") would probably just prompt the
+client to automatically reconnect, and be ineffective.  The underlying
+motivation for my question was observation of a few client apparently
+parking themselves on an AP for long periods of time and never clicking
+thru the portal.  OpenWRT tools like "iw wlan0 station dump" and "bmon"
+seem to show some of these clients downloading substantial traffic
+(Mbytes), comparable to other clients on the same AP that are authorized.
+Snooping the nf_conntrack table for these clients only yields port 3990
+connections to the HS_UAMLISTEN address and DNS queries to HS_DNS1.
+Possibly, these misbehaving clients are doing something sneaky like DNS
+tunneling, i.e. to bypass RADIUS auth (and thus the bandwidth caps).  Or,
+they're just repeatedly hitting the captive portal and going no further.
+
+However, instead of trying to pursue a whack-a-mole game, I'm more curious
+about the prospect of applying bandwidth caps to *unauthorized* clients, at
+least so that anyone who may be attempting casual DOS attacks or DNS
+tunneling would have an upper limit placed on the bandwidth available to
+them (i.e. comparable to the limit they would otherwise see by clicking
+thru the portal). Traffic shaping under OpenWRT that is tagged to a
+specific destination IP or MAC address does indeed look to be possible.  I
+think the key here would be to deploy such shaping to each unauthorized
+client upon issuance of a DHCP lease, and then use coovachill's conup
+script to flush those iptables rules upon session authorization, i.e where
+coovachilli takes over the session's bandwidth control.
+
+I'm guessing there is no ability to have coovachilli launch an external
+script upon each lease issued. So, I would need to have an external tool
+with such capability (i.e. dnsmasq) handle clients' DHCP, right?
+
+Also, Jed, the open APs are operated so by intention, i.e. to provide
+limited free wifi comparable to that found in coffeeshops, grocery stores,
+etc.  My coovachilli/firmware config is nearly identical to that used by
+Cloudtrax and WifiMesh.  Additionally, I use RADIUS to assert bandwidth
+caps and session lengths.  (Closed APs with WPA2 encryption are also used
+where desired.)
+
+Thank you again.
+
+
+
+On Sat, Mar 8, 2014 at 1:18 PM, David Bird <dbird at google.com> wrote:
+
+> No, there isn't such a feature. You could disassociate clients perhaps
+> through the driver, but chances are the client will just re-associate
+> (unless there is another network it knows). You could have chilli drop
+> everything for the station, but that will not prevent the client from still
+> taking up airtime trying to (re)send packets. However, depending on the
+> client, it may drop the signal itself if it thinks it lost layer2
+> connectivity.
+>
+>
+> On Sat, Mar 8, 2014 at 7:21 AM, Ben West <ben at gowasabi.net> wrote:
+>
+>> I"m curious if coovachilli v1.3.0, in my instance running under OpenWRT
+>> Attitude Adjustment, offers a way to actively disassociate clients who do
+>> not authorize themselves via the captive portal, but which still remain
+>> associated with the hotspot.
+>>
+>> The particular scenario I'm envisioning is someone's phone or tablet that
+>> automatically associates to an open SSID, but where the user doesn't bother
+>> clicking through the captive portal.  The device continues to try to
+>> periodically pull down content (e.g. app updates), sometimes quite
+>> furiously, causing a fair amount of useless traffic over the wifi channel,
+>> chewing up airtime.
+>>
+>> Or, instead of actively dissociating such an unauthorized client, perhaps
+>> instead have coovachilli run an iptables script after some inactivity
+>> timeout to begin throttling traffic to the client?
+>>
+>> Thank you.
+>>
+>> --
+>> Ben West
+>> http://gowasabi.net
+>> ben at gowasabi.net
+>> 314-246-9434
+>>
+>> _______________________________________________
+>> Chilli mailing list
+>> Chilli at coova.org
+>> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>>
+>>
+>
+
+
+-- 
+Ben West
+http://gowasabi.net
+ben at gowasabi.net
+314-246-9434
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20140308/1e01a428/attachment-0001.html>
+
+From eric at craftti.com.br  Sun Mar  9 01:17:24 2014
+From: eric at craftti.com.br (Eric Chaves)
+Date: Sat, 8 Mar 2014 22:17:24 -0300
+Subject: [Chilli] Disassociate clients that don't authorize themselves
+	via portal?
+In-Reply-To: <CADSh-SPDLK2YwxbBU=y_1eMBr9GtOaBB_KCJ1wZaanV+wj3N8g@mail.gmail.com>
+References: <CADSh-SMkgYS30zD9cLESSHbGoP+5e9Yn_q9gPDiM93oqiPChWw@mail.gmail.com>
+ <CADo9JyXwU_x5d6AFXL-9JQ1jO_ryV_vNgndqbNdnzc=Q5SeZTg@mail.gmail.com>
+ <CADSh-SPDLK2YwxbBU=y_1eMBr9GtOaBB_KCJ1wZaanV+wj3N8g@mail.gmail.com>
+Message-ID: <CAF+USJ6fHTp6J06gsQbB0SjvK0JtOqC1JKf_DUCK8S4ZYDyUBw@mail.gmail.com>
+
+Hi Ben,
+
+You can run scripts when a client is connect,disconnect, authenticated and
+logoff. Take a look at macup/macdown/conup and condown parameters. macup
+and macdown happens when a client connects (get a lease) and disconnects
+from the controller (release a lease).
+
+Cheers,
+
+Eric
+
+
+2014-03-08 22:01 GMT-03:00 Ben West <ben at gowasabi.net>:
+
+> Thank you, David, for the clarification.
+>
+> Yes, I do agree that trying to kick off lingering unauthorized wifi
+> clients (i.e. using "iw wlan0 station del ...") would probably just prompt
+> the client to automatically reconnect, and be ineffective.  The underlying
+> motivation for my question was observation of a few client apparently
+> parking themselves on an AP for long periods of time and never clicking
+> thru the portal.  OpenWRT tools like "iw wlan0 station dump" and "bmon"
+> seem to show some of these clients downloading substantial traffic
+> (Mbytes), comparable to other clients on the same AP that are authorized.
+> Snooping the nf_conntrack table for these clients only yields port 3990
+> connections to the HS_UAMLISTEN address and DNS queries to HS_DNS1.
+> Possibly, these misbehaving clients are doing something sneaky like DNS
+> tunneling, i.e. to bypass RADIUS auth (and thus the bandwidth caps).  Or,
+> they're just repeatedly hitting the captive portal and going no further.
+>
+> However, instead of trying to pursue a whack-a-mole game, I'm more curious
+> about the prospect of applying bandwidth caps to *unauthorized* clients,
+> at least so that anyone who may be attempting casual DOS attacks or DNS
+> tunneling would have an upper limit placed on the bandwidth available to
+> them (i.e. comparable to the limit they would otherwise see by clicking
+> thru the portal). Traffic shaping under OpenWRT that is tagged to a
+> specific destination IP or MAC address does indeed look to be possible.  I
+> think the key here would be to deploy such shaping to each unauthorized
+> client upon issuance of a DHCP lease, and then use coovachill's conup
+> script to flush those iptables rules upon session authorization, i.e where
+> coovachilli takes over the session's bandwidth control.
+>
+> I'm guessing there is no ability to have coovachilli launch an external
+> script upon each lease issued. So, I would need to have an external tool
+> with such capability (i.e. dnsmasq) handle clients' DHCP, right?
+>
+> Also, Jed, the open APs are operated so by intention, i.e. to provide
+> limited free wifi comparable to that found in coffeeshops, grocery stores,
+> etc.  My coovachilli/firmware config is nearly identical to that used by
+> Cloudtrax and WifiMesh.  Additionally, I use RADIUS to assert bandwidth
+> caps and session lengths.  (Closed APs with WPA2 encryption are also used
+> where desired.)
+>
+> Thank you again.
+>
+>
+>
+> On Sat, Mar 8, 2014 at 1:18 PM, David Bird <dbird at google.com> wrote:
+>
+>> No, there isn't such a feature. You could disassociate clients perhaps
+>> through the driver, but chances are the client will just re-associate
+>> (unless there is another network it knows). You could have chilli drop
+>> everything for the station, but that will not prevent the client from still
+>> taking up airtime trying to (re)send packets. However, depending on the
+>> client, it may drop the signal itself if it thinks it lost layer2
+>> connectivity.
+>>
+>>
+>> On Sat, Mar 8, 2014 at 7:21 AM, Ben West <ben at gowasabi.net> wrote:
+>>
+>>> I"m curious if coovachilli v1.3.0, in my instance running under OpenWRT
+>>> Attitude Adjustment, offers a way to actively disassociate clients who do
+>>> not authorize themselves via the captive portal, but which still remain
+>>> associated with the hotspot.
+>>>
+>>> The particular scenario I'm envisioning is someone's phone or tablet
+>>> that automatically associates to an open SSID, but where the user doesn't
+>>> bother clicking through the captive portal.  The device continues to try to
+>>> periodically pull down content (e.g. app updates), sometimes quite
+>>> furiously, causing a fair amount of useless traffic over the wifi channel,
+>>> chewing up airtime.
+>>>
+>>> Or, instead of actively dissociating such an unauthorized client,
+>>> perhaps instead have coovachilli run an iptables script after some
+>>> inactivity timeout to begin throttling traffic to the client?
+>>>
+>>> Thank you.
+>>>
+>>> --
+>>> Ben West
+>>> http://gowasabi.net
+>>> ben at gowasabi.net
+>>> 314-246-9434
+>>>
+>>> _______________________________________________
+>>> Chilli mailing list
+>>> Chilli at coova.org
+>>> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>>>
+>>>
+>>
+>
+>
+> --
+> Ben West
+> http://gowasabi.net
+> ben at gowasabi.net
+> 314-246-9434
+>
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20140308/f4b3b2b9/attachment.html>
+
+From ben at gowasabi.net  Sun Mar  9 01:55:36 2014
+From: ben at gowasabi.net (Ben West)
+Date: Sat, 8 Mar 2014 19:55:36 -0600
+Subject: [Chilli] Disassociate clients that don't authorize themselves
+	via portal?
+In-Reply-To: <CAF+USJ6fHTp6J06gsQbB0SjvK0JtOqC1JKf_DUCK8S4ZYDyUBw@mail.gmail.com>
+References: <CADSh-SMkgYS30zD9cLESSHbGoP+5e9Yn_q9gPDiM93oqiPChWw@mail.gmail.com>
+ <CADo9JyXwU_x5d6AFXL-9JQ1jO_ryV_vNgndqbNdnzc=Q5SeZTg@mail.gmail.com>
+ <CADSh-SPDLK2YwxbBU=y_1eMBr9GtOaBB_KCJ1wZaanV+wj3N8g@mail.gmail.com>
+ <CAF+USJ6fHTp6J06gsQbB0SjvK0JtOqC1JKf_DUCK8S4ZYDyUBw@mail.gmail.com>
+Message-ID: <CADSh-SPMPB9bPEiYHNdKVc8v3N1HR9Shv-9+TO7gCv_tJAxneA@mail.gmail.com>
+
+Hi Eric, thank you very much for the tip!  Yes, such macup/macdown script
+hooks should work quite well. I only saw the conup/condown options on the
+man page here (possibly out of date?):
+http://coova.org/CoovaChilli/chilli.conf
+
+Looks like macup/macdown were introduced in v1.2.5:
+http://coova.org/CoovaChilli/ChangeLog
+
+
+On Sat, Mar 8, 2014 at 7:17 PM, Eric Chaves <eric at craftti.com.br> wrote:
+
+> Hi Ben,
+>
+> You can run scripts when a client is connect,disconnect, authenticated and
+> logoff. Take a look at macup/macdown/conup and condown parameters. macup
+> and macdown happens when a client connects (get a lease) and disconnects
+> from the controller (release a lease).
+>
+> Cheers,
+>
+> Eric
+>
+>
+> 2014-03-08 22:01 GMT-03:00 Ben West <ben at gowasabi.net>:
+>
+> Thank you, David, for the clarification.
+>>
+>> Yes, I do agree that trying to kick off lingering unauthorized wifi
+>> clients (i.e. using "iw wlan0 station del ...") would probably just prompt
+>> the client to automatically reconnect, and be ineffective.  The underlying
+>> motivation for my question was observation of a few client apparently
+>> parking themselves on an AP for long periods of time and never clicking
+>> thru the portal.  OpenWRT tools like "iw wlan0 station dump" and "bmon"
+>> seem to show some of these clients downloading substantial traffic
+>> (Mbytes), comparable to other clients on the same AP that are authorized.
+>> Snooping the nf_conntrack table for these clients only yields port 3990
+>> connections to the HS_UAMLISTEN address and DNS queries to HS_DNS1.
+>> Possibly, these misbehaving clients are doing something sneaky like DNS
+>> tunneling, i.e. to bypass RADIUS auth (and thus the bandwidth caps).  Or,
+>> they're just repeatedly hitting the captive portal and going no further.
+>>
+>> However, instead of trying to pursue a whack-a-mole game, I'm more
+>> curious about the prospect of applying bandwidth caps to *unauthorized*clients, at least so that anyone who may be attempting casual DOS attacks
+>> or DNS tunneling would have an upper limit placed on the bandwidth
+>> available to them (i.e. comparable to the limit they would otherwise see by
+>> clicking thru the portal). Traffic shaping under OpenWRT that is tagged to
+>> a specific destination IP or MAC address does indeed look to be possible.
+>> I think the key here would be to deploy such shaping to each unauthorized
+>> client upon issuance of a DHCP lease, and then use coovachill's conup
+>> script to flush those iptables rules upon session authorization, i.e where
+>> coovachilli takes over the session's bandwidth control.
+>>
+>> I'm guessing there is no ability to have coovachilli launch an external
+>> script upon each lease issued. So, I would need to have an external tool
+>> with such capability (i.e. dnsmasq) handle clients' DHCP, right?
+>>
+>> Also, Jed, the open APs are operated so by intention, i.e. to provide
+>> limited free wifi comparable to that found in coffeeshops, grocery stores,
+>> etc.  My coovachilli/firmware config is nearly identical to that used by
+>> Cloudtrax and WifiMesh.  Additionally, I use RADIUS to assert bandwidth
+>> caps and session lengths.  (Closed APs with WPA2 encryption are also used
+>> where desired.)
+>>
+>> Thank you again.
+>>
+>>
+>>
+>> On Sat, Mar 8, 2014 at 1:18 PM, David Bird <dbird at google.com> wrote:
+>>
+>>> No, there isn't such a feature. You could disassociate clients perhaps
+>>> through the driver, but chances are the client will just re-associate
+>>> (unless there is another network it knows). You could have chilli drop
+>>> everything for the station, but that will not prevent the client from still
+>>> taking up airtime trying to (re)send packets. However, depending on the
+>>> client, it may drop the signal itself if it thinks it lost layer2
+>>> connectivity.
+>>>
+>>>
+>>> On Sat, Mar 8, 2014 at 7:21 AM, Ben West <ben at gowasabi.net> wrote:
+>>>
+>>>> I"m curious if coovachilli v1.3.0, in my instance running under OpenWRT
+>>>> Attitude Adjustment, offers a way to actively disassociate clients who do
+>>>> not authorize themselves via the captive portal, but which still remain
+>>>> associated with the hotspot.
+>>>>
+>>>> The particular scenario I'm envisioning is someone's phone or tablet
+>>>> that automatically associates to an open SSID, but where the user doesn't
+>>>> bother clicking through the captive portal.  The device continues to try to
+>>>> periodically pull down content (e.g. app updates), sometimes quite
+>>>> furiously, causing a fair amount of useless traffic over the wifi channel,
+>>>> chewing up airtime.
+>>>>
+>>>> Or, instead of actively dissociating such an unauthorized client,
+>>>> perhaps instead have coovachilli run an iptables script after some
+>>>> inactivity timeout to begin throttling traffic to the client?
+>>>>
+>>>> Thank you.
+>>>>
+>>>> --
+>>>> Ben West
+>>>> http://gowasabi.net
+>>>> ben at gowasabi.net
+>>>> 314-246-9434
+>>>>
+>>>> _______________________________________________
+>>>> Chilli mailing list
+>>>> Chilli at coova.org
+>>>> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>>>>
+>>>>
+>>>
+>>
+>>
+>> --
+>> Ben West
+>> http://gowasabi.net
+>> ben at gowasabi.net
+>> 314-246-9434
+>>
+>> _______________________________________________
+>> Chilli mailing list
+>> Chilli at coova.org
+>> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>>
+>>
+>
+
+
+-- 
+Ben West
+http://gowasabi.net
+ben at gowasabi.net
+314-246-9434
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20140308/9f477fd9/attachment-0001.html>
+
+From andersonscinfo at gmail.com  Sun Mar  9 15:52:47 2014
+From: andersonscinfo at gmail.com (ANDERSON JUNIOR GADO DA SILVA)
+Date: Sun, 9 Mar 2014 11:52:47 -0400
+Subject: [Chilli] [RE] Hotspot in openwrt with coova-chilli
+Message-ID: <CAAFh3a3N1eTaNqyNVhkBb0m8EQbpOnKCYgodDM5Kz6vOdQp-qw@mail.gmail.com>
+
+Good afternoon, I installed haserl thinking it might be a problem with the
+lack of it, I realized now that the missing file login.chi searched for
+information about it, some of his colleagues would have a model that file
+or any tips to help me assemble the mine.
+
+Att
+Anderson Junior
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20140309/068bbae8/attachment.html>
+
+From phyo.w.soe at frontiir.net  Mon Mar 10 02:32:21 2014
+From: phyo.w.soe at frontiir.net (Phyo Wai Soe)
+Date: Mon, 10 Mar 2014 02:32:21 +0000 (UTC)
+Subject: [Chilli] Using external DHCP server with Coova
+In-Reply-To: <1131845253.603483.1394418602780.JavaMail.root@frontiir.net>
+Message-ID: <791865386.603547.1394418741896.JavaMail.root@frontiir.net>
+
+Hi All,
+
+We are using an external DHCP server with a Coova server and the issue we are facing is that sometimes Coova gives out IP addresses to clients without relaying the requests to the external DHCP server and also doesn't inform the clients of the addresses it assigned. When we release/renew the client's IP, Coova sends the request to DHCP server and client gets an address. However, it seems Coova doesn't update its MAC-DHCP address mapping and when the client with DHCP server assigned address comes, it says "Received packet with spoofed source" I have read that some people also had/have that issue but I couldn't find any solution.
+
+It is an intermittent issue and not easily reproducible. But we think that in all those problem cases, the client already has an address, either assigned previously or a private one when it doesn't get a DHCP reply.
+
+Here's our DHCP relay settings. We tested with the settings in local.conf and the defaults config file and they produce the same outcome. Port is not specified because we are using the default port of 67.
+
+HS_DHCPGATEWAY=10.10.0.15
+HS_DHCPRELAYAGENT=10.99.0.1
+
+Thanks all.
+
+Regards,
+Phyo
+
+Debug logs...
+==========OK request/reply===============
+dhcp.c: 5061: 0 (Debug) Layer2 PROT: 0x86dd dropped
+dhcp.c: 3619: 0 (Debug) dhcp/bootps request being processed
+dhcp.c: 3264: 0 (Debug) function dhcp_getreq()
+dhcp.c: 732: 0 (Debug) DHCP newconn: 08:00:27:e3:0f:ff
+chilli.c: 5127: 0 (Debug) New DHCP request from MAC=08-00-27-E3-0F-FF
+chilli.c: 5130: 0 (Debug) New DHCP connection established
+chilli.c: 5086: 0 (Debug) New Chilli Connection
+dhcp.c: 3235: 0 (Debug) Sending DHCP relay packet to 10.10.0.15
+dhcp.c: 3594: 0 (Debug) Not for our MAC or broadcast: 08-00-27-E3-0F-FF
+dhcp.c: 5061: 0 (Debug) Layer2 PROT: 0x86dd dropped
+dhcp.c: 5162: 0 (Debug) DHCP relay response from 10.10.0.15 of length 300 received
+chilli.c: 4879: 0 (Debug) ----> cb_dhcp_request <----
+chilli.c: 4883: 0 (Debug) DHCP request for IP address 10.99.0.10
+chilli.c: 837: 0 (Debug) newip 10.99.0.10
+ippool.c: 456: 0 (Debug) Requesting new static ip: 10.99.0.10
+ippool.c: 479: 0 (Debug) HERE!!! -> 0
+ippool.c: 482: 0 (Debug) Static IP address not allowed
+ippool.c: 456: 0 (Debug) Requesting new dynamic ip: 10.99.0.10
+chilli.c: 5015: 0 (Debug) Client MAC=08-00-27-E3-0F-FF assigned IP 10.99.0.10
+
+====Non-OK request/reply=====
+dhcp.c: 732: 0 (Debug) DHCP newconn: 08:00:27:e3:0f:ff
+chilli.c: 5128: 0 (Debug) New DHCP request from MAC=08-00-27-E3-0F-FF
+chilli.c: 5131: 0 (Debug) New DHCP connection established
+chilli.c: 5087: 0 (Debug) New Chilli Connection
+dhcp.c: 5686: 0 (Debug) ARP: 08-00-27-E3-0F-FF asking about 91.189.89.134
+chilli.c: 4880: 0 (Debug) ----> cb_dhcp_request <----
+chilli.c: 4884: 0 (Debug) DHCP request for IP address 169.254.9.47
+chilli.c: 837: 0 (Debug) newip 169.254.9.47
+ippool.c: 456: 0 (Debug) Requesting new static ip: 169.254.9.47
+ippool.c: 479: 0 (Debug) HERE!!! -> 0
+ippool.c: 482: 0 (Debug) Static IP address not allowed
+ippool.c: 456: 0 (Debug) Requesting new dynamic ip: 169.254.9.47
+chilli.c: 5016: 0 (Debug) Client MAC=08-00-27-E3-0F-FF assigned IP 10.99.0.2
+=============================
+
+
+From eric at craftti.com.br  Thu Mar 13 19:53:07 2014
+From: eric at craftti.com.br (Eric Chaves)
+Date: Thu, 13 Mar 2014 16:53:07 -0300
+Subject: [Chilli] How to serve JSON interface under SSL?
+Message-ID: <CAF+USJ5y5ToDv1z7YMhFJ6KTzz+OELkUGEmaBQXeY3ZoUQtW1w@mail.gmail.com>
+
+Hi Folks,
+
+I'm facing a problem with some clientes that prevents them to logon in
+coova portal. My Authentication portal is under SSL but coova's internal
+server used to serve the JSON interface is not. For this reason some chrome
+browsers blocks the ajax request due to security policy.  Since my portal
+is under SSL I need that everything else should also be under ssl.
+
+The problem is that I can't manage how to configure coova to serve JSON
+interface under ssl. I tried the parameters:
+
+HS_UAMUISSL=on
+
+HS_SSLKEYFILE='/etc/ssl/mycerts/my_server.key'
+
+HS_SSLCERTFILE='/etc/ssl/mycerts/my_server.pem'
+But I can't find which port is used to serve the encrypted content. The
+default 3990 port still running unprotected and I couldn't found which
+parameter I should use to set the ssl port.
+
+Could anyone who has coova JSON interface under SSL help me out?
+
+Thanks in advance,
+
+Eric
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20140313/59c56ccc/attachment.html>
+
+From dbird at google.com  Fri Mar 14 03:34:25 2014
+From: dbird at google.com (David Bird)
+Date: Thu, 13 Mar 2014 20:34:25 -0700
+Subject: [Chilli] How to serve JSON interface under SSL?
+In-Reply-To: <CAF+USJ5y5ToDv1z7YMhFJ6KTzz+OELkUGEmaBQXeY3ZoUQtW1w@mail.gmail.com>
+References: <CAF+USJ5y5ToDv1z7YMhFJ6KTzz+OELkUGEmaBQXeY3ZoUQtW1w@mail.gmail.com>
+Message-ID: <CADo9JyXOqC1+2VQPh-ox9O9PQYJMHigE5=jcyFHH8Q_WB6Gbgg@mail.gmail.com>
+
+In your j/s config, use the uamuiport (default 3991) port instead of the
+uamport (default 3990).
+
+
+On Thu, Mar 13, 2014 at 12:53 PM, Eric Chaves <eric at craftti.com.br> wrote:
+
+> Hi Folks,
+>
+> I'm facing a problem with some clientes that prevents them to logon in
+> coova portal. My Authentication portal is under SSL but coova's internal
+> server used to serve the JSON interface is not. For this reason some chrome
+> browsers blocks the ajax request due to security policy.  Since my portal
+> is under SSL I need that everything else should also be under ssl.
+>
+> The problem is that I can't manage how to configure coova to serve JSON
+> interface under ssl. I tried the parameters:
+>
+> HS_UAMUISSL=on
+>
+> HS_SSLKEYFILE='/etc/ssl/mycerts/my_server.key'
+>
+> HS_SSLCERTFILE='/etc/ssl/mycerts/my_server.pem'
+> But I can't find which port is used to serve the encrypted content. The
+> default 3990 port still running unprotected and I couldn't found which
+> parameter I should use to set the ssl port.
+>
+> Could anyone who has coova JSON interface under SSL help me out?
+>
+> Thanks in advance,
+>
+> Eric
+>
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20140313/a2ec1bea/attachment.html>
+
+From radius.sir at gmail.com  Fri Mar 14 11:12:54 2014
+From: radius.sir at gmail.com (Russell Mike)
+Date: Fri, 14 Mar 2014 11:12:54 +0000
+Subject: [Chilli] CoovaChilli Layer3 ICMP Allow
+Message-ID: <CADao4Cpo33g8j8A3GozDO6DVOfD4zfLKh_E+CjHLY-OnQv7E7w@mail.gmail.com>
+
+Dear List Greetings
+
+i am using CoovaChilli Layer3 model multiple instances. Everything is
+working normal but i am not able to ping Chilli from directly connected
+router (layer3). i want capabilities to ping CoovaChilli from at least
+directly connected router for troubleshoot purpose. How can we do that ?
+
+Thanks
+RM --
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20140314/27a36092/attachment.html>
+
+From eric at craftti.com.br  Fri Mar 14 13:37:59 2014
+From: eric at craftti.com.br (Eric Chaves)
+Date: Fri, 14 Mar 2014 10:37:59 -0300
+Subject: [Chilli] How to serve JSON interface under SSL?
+In-Reply-To: <CADo9JyXOqC1+2VQPh-ox9O9PQYJMHigE5=jcyFHH8Q_WB6Gbgg@mail.gmail.com>
+References: <CAF+USJ5y5ToDv1z7YMhFJ6KTzz+OELkUGEmaBQXeY3ZoUQtW1w@mail.gmail.com>
+ <CADo9JyXOqC1+2VQPh-ox9O9PQYJMHigE5=jcyFHH8Q_WB6Gbgg@mail.gmail.com>
+Message-ID: <CAF+USJ7B41pi4umGXrs5r6+LWNxO-Uiuhqr8GgTZQgcKGZ2BbA@mail.gmail.com>
+
+Thank you guys! Sky tip did the trick.
+
+--
+Eric Chaves
+(11) 98139-9880
+
+
+2014-03-14 0:34 GMT-03:00 David Bird <dbird at google.com>:
+
+> In your j/s config, use the uamuiport (default 3991) port instead of the
+> uamport (default 3990).
+>
+>
+> On Thu, Mar 13, 2014 at 12:53 PM, Eric Chaves <eric at craftti.com.br> wrote:
+>
+>> Hi Folks,
+>>
+>> I'm facing a problem with some clientes that prevents them to logon in
+>> coova portal. My Authentication portal is under SSL but coova's internal
+>> server used to serve the JSON interface is not. For this reason some chrome
+>> browsers blocks the ajax request due to security policy.  Since my portal
+>> is under SSL I need that everything else should also be under ssl.
+>>
+>> The problem is that I can't manage how to configure coova to serve JSON
+>> interface under ssl. I tried the parameters:
+>>
+>> HS_UAMUISSL=on
+>>
+>> HS_SSLKEYFILE='/etc/ssl/mycerts/my_server.key'
+>>
+>> HS_SSLCERTFILE='/etc/ssl/mycerts/my_server.pem'
+>> But I can't find which port is used to serve the encrypted content. The
+>> default 3990 port still running unprotected and I couldn't found which
+>> parameter I should use to set the ssl port.
+>>
+>> Could anyone who has coova JSON interface under SSL help me out?
+>>
+>> Thanks in advance,
+>>
+>> Eric
+>>
+>> _______________________________________________
+>> Chilli mailing list
+>> Chilli at coova.org
+>> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>>
+>>
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20140314/1a1a12f6/attachment.html>
+
+From baguio.ivan at yahoo.com  Mon Mar 17 07:13:16 2014
+From: baguio.ivan at yahoo.com (Ivan dominic Baguio)
+Date: Mon, 17 Mar 2014 15:13:16 +0800 (SGT)
+Subject: [Chilli] Custom AVP to RADIUS
+Message-ID: <1395040396.19410.YahooMailNeo@web192705.mail.sg3.yahoo.com>
+
+Hello,
+
+I was wondering if it is possible to send custom Attribute value pair to RADIUS from chilli.
+
+ChilliSpot-Version = "1.2.9"
+User-Name = "username"
+CHAP-Challenge = 0x8138643499612df3871dc34f69f131dd
+. . . . .
+NAS-Identifier = "unregistered"
+WISPr-Logoff-URL = "http://192.168.182.1:3990/logoff"
+Custom-Attribute = Test
+
+And if so, how does one do this?
+
+Thanks
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20140317/ba42c670/attachment.html>
+
+From info at easyhorpak.com  Mon Mar 17 07:54:20 2014
+From: info at easyhorpak.com (EasyHorpak.com)
+Date: Mon, 17 Mar 2014 14:54:20 +0700
+Subject: [Chilli] Custom AVP to RADIUS
+In-Reply-To: <1395040396.19410.YahooMailNeo@web192705.mail.sg3.yahoo.com>
+References: <1395040396.19410.YahooMailNeo@web192705.mail.sg3.yahoo.com>
+Message-ID: <5326AA2C.9070509@easyhorpak.com>
+
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20140317/ce3d9b88/attachment.html>
+
+From jbglaw at getslash.de  Tue Mar 18 14:57:28 2014
+From: jbglaw at getslash.de (Jan-Benedict Glaw)
+Date: Tue, 18 Mar 2014 15:57:28 +0100
+Subject: [Chilli] [2/6] Depend on iptables
+In-Reply-To: <20140318145155.GB5711@pluto.office.getslash.de>
+Message-ID: <20140318145728.GD5711@pluto.office.getslash.de>
+
+`iptables' is used, but there's no dependency on it. Added here.
+
+2014-03-05  Jan-Benedict Glaw  <jbglaw at getslash.de>
+
+	* debian/control (Depends): Add `iptables'.
+---
+ debian/control | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/debian/control b/debian/control
+index 2a00003..f180106 100644
+--- a/debian/control
++++ b/debian/control
+@@ -5,14 +5,15 @@ Maintainer: David Bird (Coova Technologies) <support at coova.com>
+ Build-Depends: debhelper (>= 7), libc6-dev | libc6-dev-amd64, gengetopt
+ Standards-Version: 3.8.1
+ 
+-Package: coova-chilli 
++Package: coova-chilli
+ Architecture: any
+ Replaces: chillispot
+ Conflicts: chillispot
+ Provides: chillispot
++Depends: iptables
+ Description: Wireless LAN Access Point Controller (captive portal).
+  Coova-Chilli is an open source captive portal or wireless LAN access point
+- controller, forked from chillispot. It supports web based login which is 
++ controller, forked from chillispot. It supports web based login which is
+  today's standard for public HotSpots and it supports Wireless Protected Access (WPA) which
+  is the standard of the future. Authentication, Authorization and Accounting (AAA) 
+  is handled by your favorite radius server. Read more at http://www.coova.org/
+-- 
+1.8.3.2
+
+-- 
+Getslash GmbH, Bahnhofstra?e 16, 59302 Oelde
+Tel: +49-2522-834349-5    Fax:   +49-2522-834349-1
+http://www.getslash.de    Mobil: +49-152-33822499
+Sitz der Gesellschaft: Oelde
+Handelsregister: Amtsgericht M?nster, HRB 11911
+Ust-Id-Nr.: DE 815060326
+Gesch?ftsf?hrung: Andre Peitz, Tobias Hanisch
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: signature.asc
+Type: application/pgp-signature
+Size: 836 bytes
+Desc: Digital signature
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20140318/f70c4de9/attachment.pgp>
+
+From jbglaw at getslash.de  Tue Mar 18 14:59:05 2014
+From: jbglaw at getslash.de (Jan-Benedict Glaw)
+Date: Tue, 18 Mar 2014 15:59:05 +0100
+Subject: [Chilli] [3/6] Fix bug: Headers providing a flag don't imply this is
+In-Reply-To: <20140318145155.GB5711@pluto.office.getslash.de>
+Message-ID: <20140318145905.GE5711@pluto.office.getslash.de>
+
+One of the socket flags is checked for existence, but that doesn't
+neccessarily mean that it's supported on the target system. Accept
+failure here, SO_REUSEPORT isn't really important.
+
+2014-03-06  Jan-Benedict Glaw  <jbglaw at lug-owl.de>
+
+	* src/redir.c (redir_listen): Handle failure upon SO_REUSEPORT.
+---
+ src/redir.c | 15 +++++++++++----
+ 1 file changed, 11 insertions(+), 4 deletions(-)
+
+diff --git a/src/redir.c b/src/redir.c
+index 7c194fd..9d6d63e 100644
+--- a/src/redir.c
++++ b/src/redir.c
+@@ -1705,10 +1705,17 @@ int redir_listen(struct redir_t *redir) {
+ #ifdef SO_REUSEPORT
+     optval = 1;
+     if (setsockopt(redir->fd[n], SOL_SOCKET, SO_REUSEPORT, &optval, sizeof(optval))) {
+-      log_err(errno, "setsockopt(SO_REUSEPORT)");
+-      safe_close(redir->fd[n]);
+-      redir->fd[n]=0;
+-      return -1;
++      error_t last_errno = errno;
++      log_err(last_errno, "setsockopt(SO_REUSEPORT)");
++      if (last_errno != ENOPROTOOPT) {
++	log_dbg ("setsockopt(SO_REUSEPORT) failed hard, aborting.");
++	safe_close(redir->fd[n]);
++	redir->fd[n]=0;
++	return -1;
++      } else {
++	log_dbg ("setsockopt(SO_REUSEPORT) failed due to proto not available "
++		 "(probably compiled with newer header files), continueing anyways...");
++      }
+     }
+ #endif
+     
+-- 
+1.8.3.2
+
+-- 
+Getslash GmbH, Bahnhofstra?e 16, 59302 Oelde
+Tel: +49-2522-834349-5    Fax:   +49-2522-834349-1
+http://www.getslash.de    Mobil: +49-152-33822499
+Sitz der Gesellschaft: Oelde
+Handelsregister: Amtsgericht M?nster, HRB 11911
+Ust-Id-Nr.: DE 815060326
+Gesch?ftsf?hrung: Andre Peitz, Tobias Hanisch
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: signature.asc
+Type: application/pgp-signature
+Size: 836 bytes
+Desc: Digital signature
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20140318/ed06500e/attachment.pgp>
+
+From jbglaw at getslash.de  Tue Mar 18 14:51:55 2014
+From: jbglaw at getslash.de (Jan-Benedict Glaw)
+Date: Tue, 18 Mar 2014 15:51:55 +0100
+Subject: [Chilli] [0/6] Some small patches
+Message-ID: <20140318145155.GB5711@pluto.office.getslash.de>
+
+Hi!
+
+While I was doing some more hacking (probably only applies to our
+setup here), I also fixed some odds here and there. Maybe that should
+go upstream?
+
+MfG, JBG
+
+-- 
+Getslash GmbH, Bahnhofstra?e 16, 59302 Oelde
+Tel: +49-2522-834349-5    Fax:   +49-2522-834349-1
+http://www.getslash.de    Mobil: +49-152-33822499
+Sitz der Gesellschaft: Oelde
+Handelsregister: Amtsgericht M?nster, HRB 11911
+Ust-Id-Nr.: DE 815060326
+Gesch?ftsf?hrung: Andre Peitz, Tobias Hanisch
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: signature.asc
+Type: application/pgp-signature
+Size: 836 bytes
+Desc: Digital signature
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20140318/92482a76/attachment.pgp>
+
+From jbglaw at getslash.de  Tue Mar 18 14:56:13 2014
+From: jbglaw at getslash.de (Jan-Benedict Glaw)
+Date: Tue, 18 Mar 2014 15:56:13 +0100
+Subject: [Chilli] [1/6] Add `gengetopt' to Build-Depends
+In-Reply-To: <20140318145155.GB5711@pluto.office.getslash.de>
+Message-ID: <20140318145613.GC5711@pluto.office.getslash.de>
+
+`gengetopt' is used to create a skeleton, but it's not on the
+build-depend list.
+
+2014-03-04  Jan-Benedict Glaw  <jbglaw at getslash.de>
+
+	* debian/control (Build-Depends): Add gengetopt.
+---
+ debian/control | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/debian/control b/debian/control
+index c44f348..2a00003 100644
+--- a/debian/control
++++ b/debian/control
+@@ -2,7 +2,7 @@ Source: coova-chilli
+ Section: net
+ Priority: optional
+ Maintainer: David Bird (Coova Technologies) <support at coova.com>
+-Build-Depends: debhelper (>= 7), libc6-dev | libc6-dev-amd64 
++Build-Depends: debhelper (>= 7), libc6-dev | libc6-dev-amd64, gengetopt
+ Standards-Version: 3.8.1
+ 
+ Package: coova-chilli 
+-- 
+1.8.3.2
+
+-- 
+Getslash GmbH, Bahnhofstra?e 16, 59302 Oelde
+Tel: +49-2522-834349-5    Fax:   +49-2522-834349-1
+http://www.getslash.de    Mobil: +49-152-33822499
+Sitz der Gesellschaft: Oelde
+Handelsregister: Amtsgericht M?nster, HRB 11911
+Ust-Id-Nr.: DE 815060326
+Gesch?ftsf?hrung: Andre Peitz, Tobias Hanisch
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: signature.asc
+Type: application/pgp-signature
+Size: 836 bytes
+Desc: Digital signature
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20140318/d03e9f07/attachment.pgp>
+
+From jbglaw at getslash.de  Tue Mar 18 15:25:04 2014
+From: jbglaw at getslash.de (Jan-Benedict Glaw)
+Date: Tue, 18 Mar 2014 16:25:04 +0100
+Subject: [Chilli] [4/6] Add libtool,
+	automake and libssl-dev to Build-Depends.
+In-Reply-To: <20140318145155.GB5711@pluto.office.getslash.de>
+Message-ID: <20140318152504.GF5711@pluto.office.getslash.de>
+
+Some more tools which are used to build a .deb from sources.
+
+2014-03-07  Jan-Benedict Glaw  <jbglaw at getslash.de>
+
+	* debian/control (Build-Depends): Add libtool, automake, libssl-dev.
+---
+ debian/control | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/debian/control b/debian/control
+index f180106..1a363a8 100644
+--- a/debian/control
++++ b/debian/control
+@@ -2,7 +2,7 @@ Source: coova-chilli
+ Section: net
+ Priority: optional
+ Maintainer: David Bird (Coova Technologies) <support at coova.com>
+-Build-Depends: debhelper (>= 7), libc6-dev | libc6-dev-amd64, gengetopt
++Build-Depends: debhelper (>= 7), libc6-dev | libc6-dev-amd64, gengetopt, libtool, automake, libssl-dev
+ Standards-Version: 3.8.1
+ 
+ Package: coova-chilli
+-- 
+1.8.3.2
+
+-- 
+Getslash GmbH, Bahnhofstra?e 16, 59302 Oelde
+Tel: +49-2522-834349-5    Fax:   +49-2522-834349-1
+http://www.getslash.de    Mobil: +49-152-33822499
+Sitz der Gesellschaft: Oelde
+Handelsregister: Amtsgericht M?nster, HRB 11911
+Ust-Id-Nr.: DE 815060326
+Gesch?ftsf?hrung: Andre Peitz, Tobias Hanisch
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: signature.asc
+Type: application/pgp-signature
+Size: 836 bytes
+Desc: Digital signature
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20140318/26fbfbfe/attachment.pgp>
+
+From jbglaw at getslash.de  Tue Mar 18 15:27:22 2014
+From: jbglaw at getslash.de (Jan-Benedict Glaw)
+Date: Tue, 18 Mar 2014 16:27:22 +0100
+Subject: [Chilli] [5/6] Depend on `haserl'
+In-Reply-To: <20140318145155.GB5711@pluto.office.getslash.de>
+Message-ID: <20140318152722.GG5711@pluto.office.getslash.de>
+
+As long as there's a (working) web frontend per default shipped in the
+package, `haserl' needs to be installed to use it, too.
+
+  A better long-term solution would probably be to split off the
+miniportal into it's own (arch-independant) package, "suggest" it and
+that one would in turn depend on `haserl'.
+
+2014-03-12  Jan-Benedict Glaw  <jbglaw at getslash.de>
+
+	* debian/control (Depends): Add `haserl'.
+---
+ debian/control | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/debian/control b/debian/control
+index 1a363a8..12a55b2 100644
+--- a/debian/control
++++ b/debian/control
+@@ -10,7 +10,7 @@ Architecture: any
+ Replaces: chillispot
+ Conflicts: chillispot
+ Provides: chillispot
+-Depends: iptables
++Depends: iptables, haserl
+ Description: Wireless LAN Access Point Controller (captive portal).
+  Coova-Chilli is an open source captive portal or wireless LAN access point
+  controller, forked from chillispot. It supports web based login which is
+-- 
+1.8.3.2
+
+-- 
+Getslash GmbH, Bahnhofstra?e 16, 59302 Oelde
+Tel: +49-2522-834349-5    Fax:   +49-2522-834349-1
+http://www.getslash.de    Mobil: +49-152-33822499
+Sitz der Gesellschaft: Oelde
+Handelsregister: Amtsgericht M?nster, HRB 11911
+Ust-Id-Nr.: DE 815060326
+Gesch?ftsf?hrung: Andre Peitz, Tobias Hanisch
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: signature.asc
+Type: application/pgp-signature
+Size: 836 bytes
+Desc: Digital signature
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20140318/a09c6269/attachment-0001.pgp>
+
+From jbglaw at getslash.de  Tue Mar 18 15:28:07 2014
+From: jbglaw at getslash.de (Jan-Benedict Glaw)
+Date: Tue, 18 Mar 2014 16:28:07 +0100
+Subject: [Chilli] [6/6] No patch here
+In-Reply-To: <20140318145155.GB5711@pluto.office.getslash.de>
+Message-ID: <20140318152807.GH5711@pluto.office.getslash.de>
+
+Got counting wrong, so there's no sixth patch. Sorry.
+
+MfG, JBG
+
+-- 
+Getslash GmbH, Bahnhofstra?e 16, 59302 Oelde
+Tel: +49-2522-834349-5    Fax:   +49-2522-834349-1
+http://www.getslash.de    Mobil: +49-152-33822499
+Sitz der Gesellschaft: Oelde
+Handelsregister: Amtsgericht M?nster, HRB 11911
+Ust-Id-Nr.: DE 815060326
+Gesch?ftsf?hrung: Andre Peitz, Tobias Hanisch
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: signature.asc
+Type: application/pgp-signature
+Size: 836 bytes
+Desc: Digital signature
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20140318/7b73cada/attachment.pgp>
+
+From xoneca at gmail.com  Tue Mar 18 19:09:52 2014
+From: xoneca at gmail.com (Xabier Oneca -- xOneca)
+Date: Tue, 18 Mar 2014 20:09:52 +0100
+Subject: [Chilli] [3/6] Fix bug: Headers providing a flag don't imply
+	this is
+In-Reply-To: <20140318145905.GE5711@pluto.office.getslash.de>
+References: <20140318145155.GB5711@pluto.office.getslash.de>
+ <20140318145905.GE5711@pluto.office.getslash.de>
+Message-ID: <CACkgH71k0o_EDOyW_9Ae8mzCYw2A++oco1AyGPm5UbUESHy6tw@mail.gmail.com>
+
+Hello Jan,
+
+2014-03-18 15:59 GMT+01:00 Jan-Benedict Glaw <jbglaw at getslash.de>:
+> +       log_dbg ("setsockopt(SO_REUSEPORT) failed due to proto not available "
+> +                "(probably compiled with newer header files), continueing anyways...");
+> +      }
+>      }
+>  #endif
+
+Sorry for my pedantry, but last log_dbg should say 'continuing.'
+
+Cheers,
+
+Xabier Oneca_,,_
+
+From maltara86 at gmail.com  Wed Mar 19 14:03:55 2014
+From: maltara86 at gmail.com (Maria Lizarazo)
+Date: Wed, 19 Mar 2014 09:03:55 -0500
+Subject: [Chilli] Chilli does not refresh ips
+Message-ID: <CABTDJHAcNNQoEzZRi+QUfSv_kq30cfXbj=c0tbY_sLNuDx9x1Q@mail.gmail.com>
+
+Hi. I'm currently using coova 1.2.5-1 on fedora and it has been working for
+a while, but I'm beginning to notice that coova is not releasing the dhcp
+at all. Instead it keeps handling ips until it reaches its final segment.
+
+My setup is like this :
+
+HS_NETWORK=10.1.0.0
+
+HS_NETMASK=255.255.192.0
+
+ and I do have a lease for an hour, but still it reaches the end of the ip
+pool by 4 days of continous use. What I'm  doing is to restart the server
+to force coova to start giving out ips that are at the beginning of the
+netmask, because  if I just kill the service and restart it;some clients
+won't renew the ip address and won't be able to browse. (I guess it has
+something to do with the radius session but I'm not sure, I have tried
+using the chilli_query command but the problem remains)
+
+I know that at that moment I dont have the 500 authenticated users, but
+when coova begins to assing ips from 10.1.60.X to 10.1.63.X, those users
+won't even get redirected to the hotspot.And some clients don't get dhcp
+from my server. My UAMALLOW setup is ok:
+
+HS_UAMALLOW=10.1.0.0/18
+Has anyone experienced this kind of issues?
+
+I know that coova 1.3.0 is out but since it changed the format of the
+iptables I haven't been able to set it up properly.
+
+Thank you for your help
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20140319/bd64c439/attachment.html>
+
+From ramaayyappa at gmail.com  Thu Mar 20 12:24:58 2014
+From: ramaayyappa at gmail.com (Ayyappa Addala)
+Date: Thu, 20 Mar 2014 17:54:58 +0530
+Subject: [Chilli] Chilli Digest, Vol 52, Issue 10
+In-Reply-To: <mailman.1.1395316801.22193.chilli@coova.org>
+References: <mailman.1.1395316801.22193.chilli@coova.org>
+Message-ID: <CADL8LJ6wtwfxVogKTFaqQc-1RYszA1O_PNV4CRkaMc-Gsw0PdQ@mail.gmail.com>
+
+Hi
+
+I am facing some problem with https redirection.
+
+ERR_SSL_PROTOCOL_ERROR.
+
+Can you please give some suggestions.
+
+Thanks,
+Ayyappa.
+
+
+On Thu, Mar 20, 2014 at 5:30 PM, <chilli-request at coova.org> wrote:
+
+> Send Chilli mailing list submissions to
+>         chilli at coova.org
+>
+> To subscribe or unsubscribe via the World Wide Web, visit
+>         http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+> or, via email, send a message with subject or body 'help' to
+>         chilli-request at coova.org
+>
+> You can reach the person managing the list at
+>         chilli-owner at coova.org
+>
+> When replying, please edit your Subject line so it is more specific
+> than "Re: Contents of Chilli digest..."
+>
+>
+> Today's Topics:
+>
+>    1. Chilli does not refresh ips (Maria Lizarazo)
+>
+>
+> ----------------------------------------------------------------------
+>
+> Message: 1
+> Date: Wed, 19 Mar 2014 09:03:55 -0500
+> From: Maria Lizarazo <maltara86 at gmail.com>
+> To: chilli at coova.org
+> Subject: [Chilli] Chilli does not refresh ips
+> Message-ID:
+>         <CABTDJHAcNNQoEzZRi+QUfSv_kq30cfXbj=
+> c0tbY_sLNuDx9x1Q at mail.gmail.com>
+> Content-Type: text/plain; charset="iso-8859-1"
+>
+> Hi. I'm currently using coova 1.2.5-1 on fedora and it has been working for
+> a while, but I'm beginning to notice that coova is not releasing the dhcp
+> at all. Instead it keeps handling ips until it reaches its final segment.
+>
+> My setup is like this :
+>
+> HS_NETWORK=10.1.0.0
+>
+> HS_NETMASK=255.255.192.0
+>
+>  and I do have a lease for an hour, but still it reaches the end of the ip
+> pool by 4 days of continous use. What I'm  doing is to restart the server
+> to force coova to start giving out ips that are at the beginning of the
+> netmask, because  if I just kill the service and restart it;some clients
+> won't renew the ip address and won't be able to browse. (I guess it has
+> something to do with the radius session but I'm not sure, I have tried
+> using the chilli_query command but the problem remains)
+>
+> I know that at that moment I dont have the 500 authenticated users, but
+> when coova begins to assing ips from 10.1.60.X to 10.1.63.X, those users
+> won't even get redirected to the hotspot.And some clients don't get dhcp
+> from my server. My UAMALLOW setup is ok:
+>
+> HS_UAMALLOW=10.1.0.0/18
+> Has anyone experienced this kind of issues?
+>
+> I know that coova 1.3.0 is out but since it changed the format of the
+> iptables I haven't been able to set it up properly.
+>
+> Thank you for your help
+> -------------- next part --------------
+> An HTML attachment was scrubbed...
+> URL: <
+> http://lists.coova.org/pipermail/chilli/attachments/20140319/bd64c439/attachment-0001.html
+> >
+>
+> ------------------------------
+>
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+>
+> End of Chilli Digest, Vol 52, Issue 10
+> **************************************
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20140320/4d00a760/attachment.html>
+
+From alexander.szlezak at unwired.at  Tue Mar 25 10:27:12 2014
+From: alexander.szlezak at unwired.at (Alexander Szlezak)
+Date: Tue, 25 Mar 2014 11:27:12 +0100
+Subject: [Chilli] selective proxy / dns sever assignements via dhcp
+Message-ID: <53315A00.4080808@unwired.at>
+
+Hi Folks,
+
+I was wondering if anybody has implemented a way to assign different dns 
+servers via dhcp provided by chilli) to cpe's behind chilli. The 
+assignement should be location based (per access point).
+
+I'm kind of looking into the same thing concerning proxy assignement in 
+a scalable way on a location basis. Currently I'm afraid, that the ip 
+tables rules generated here get too slow if you have a couple of 
+thousands clients on one chilli (as we do run a centralized setup with 
+one chilli instance for hundreds of access points).
+
+Thanks for your ideas!
+
+best,
+Alexander
+
+-- 
+Follow us on Twitter @
+http://twitter.com/unwirednetworks
+_____________________________________________________
+Mag. Alexander Szlezak          Unwired Networks GmbH
+Gesch?ftsf?hrer
+
++43 660 1350410
+alexander.szlezak at unwired.at           www.unwired.at
+twitter.com/unwirednetworks
+
+Rechnungsadresse                        B?roanschrift
+Reischergasse 6/2                  Gonzagagasse 11/25
+1130 Vienna, Austria         A-1010 Vienna, Austria
+
+
+From ben at gowasabi.net  Thu Mar 27 19:30:44 2014
+From: ben at gowasabi.net (Ben West)
+Date: Thu, 27 Mar 2014 14:30:44 -0500
+Subject: [Chilli] Best way to enforce MTU 1480?
+Message-ID: <CADSh-SPdkfuA+BVN2SvftYJnQdxqV=MGo+ZCuEiaHEAT+L3www@mail.gmail.com>
+
+I'm running coovachilli v1.3.0 under OpenWRT AA on Ubiquiti Nanostation
+gear, with only 32Mbytes of RAM.  Since these are nodes in a mesh managed
+by OLSR, I need to enforce MTU=1480 for all client sessions authorized by
+chilli.
+
+>From the online Changlog, it appears I can do this by adding a parameter to
+the start-up command in coovachilli's init script:
+
+/usr/sbin/chilli --mtu 1480
+
+However, the tap interface which I believe is what chilli sets up to manage
+bandwidth throttling on client sessions still reports MTU 1500:
+
+tun0      Link encap:UNSPEC  HWaddr
+00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00
+          inet addr:101.232.44.1  P-t-P:101.232.44.1  Mask:255.255.255.0
+          UP POINTOPOINT RUNNING  MTU:1500  Metric:1
+          RX packets:0 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:100
+          RX bytes:0 (0.0 B)  TX bytes:0 (0.0 B)
+
+... where 101.232.44.1 is the NAP IP of the device where I quoted this from.
+
+Is there a way I can ensure proper MTU settings on chilli client sessions?
+
+-- 
+Ben West
+http://gowasabi.net
+ben at gowasabi.net
+314-246-9434
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20140327/f6b5854a/attachment.html>
+
+From dbird at google.com  Thu Mar 27 20:52:57 2014
+From: dbird at google.com (David Bird)
+Date: Thu, 27 Mar 2014 13:52:57 -0700
+Subject: [Chilli] Best way to enforce MTU 1480?
+In-Reply-To: <CADSh-SPdkfuA+BVN2SvftYJnQdxqV=MGo+ZCuEiaHEAT+L3www@mail.gmail.com>
+References: <CADSh-SPdkfuA+BVN2SvftYJnQdxqV=MGo+ZCuEiaHEAT+L3www@mail.gmail.com>
+Message-ID: <CADo9JyU-7Ye3U+h54Lf5mZUWvm=JosZKk9-wSTJ94PghOoGL6A@mail.gmail.com>
+
+The MTU option will send the MTU value in DHCP, but doesn't mean it's
+always respected. You might refer to
+http://lartc.org/howto/lartc.cookbook.mtu-mss.html
+
+
+On Thu, Mar 27, 2014 at 12:30 PM, Ben West <ben at gowasabi.net> wrote:
+
+> I'm running coovachilli v1.3.0 under OpenWRT AA on Ubiquiti Nanostation
+> gear, with only 32Mbytes of RAM.  Since these are nodes in a mesh managed
+> by OLSR, I need to enforce MTU=1480 for all client sessions authorized by
+> chilli.
+>
+> From the online Changlog, it appears I can do this by adding a parameter
+> to the start-up command in coovachilli's init script:
+>
+> /usr/sbin/chilli --mtu 1480
+>
+> However, the tap interface which I believe is what chilli sets up to
+> manage bandwidth throttling on client sessions still reports MTU 1500:
+>
+> tun0      Link encap:UNSPEC  HWaddr
+> 00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00
+>           inet addr:101.232.44.1  P-t-P:101.232.44.1  Mask:255.255.255.0
+>           UP POINTOPOINT RUNNING  MTU:1500  Metric:1
+>           RX packets:0 errors:0 dropped:0 overruns:0 frame:0
+>           TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
+>           collisions:0 txqueuelen:100
+>           RX bytes:0 (0.0 B)  TX bytes:0 (0.0 B)
+>
+> ... where 101.232.44.1 is the NAP IP of the device where I quoted this
+> from.
+>
+> Is there a way I can ensure proper MTU settings on chilli client sessions?
+>
+> --
+> Ben West
+> http://gowasabi.net
+> ben at gowasabi.net
+> 314-246-9434
+>
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20140327/e3f635bc/attachment.html>
+
+From dbird at google.com  Thu Mar 27 20:51:09 2014
+From: dbird at google.com (David Bird)
+Date: Thu, 27 Mar 2014 13:51:09 -0700
+Subject: [Chilli] [6/6] No patch here
+In-Reply-To: <20140318152807.GH5711@pluto.office.getslash.de>
+References: <20140318145155.GB5711@pluto.office.getslash.de>
+ <20140318152807.GH5711@pluto.office.getslash.de>
+Message-ID: <CADo9JyV7mELo3QAVNBc43+iub+EgGaGv0R+GuEOtv43E8z2ghg@mail.gmail.com>
+
+Thanks; applied in git.
+
+
+2014-03-18 8:28 GMT-07:00 Jan-Benedict Glaw <jbglaw at getslash.de>:
+
+> Got counting wrong, so there's no sixth patch. Sorry.
+>
+> MfG, JBG
+>
+> --
+> Getslash GmbH, Bahnhofstra?e 16, 59302 Oelde
+> Tel: +49-2522-834349-5    Fax:   +49-2522-834349-1
+> http://www.getslash.de    Mobil: +49-152-33822499
+> Sitz der Gesellschaft: Oelde
+> Handelsregister: Amtsgericht M?nster, HRB 11911
+> Ust-Id-Nr.: DE 815060326
+> Gesch?ftsf?hrung: Andre Peitz, Tobias Hanisch
+>
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20140327/7f0cffc0/attachment.html>
+
+From dbird at google.com  Thu Mar 27 21:03:52 2014
+From: dbird at google.com (David Bird)
+Date: Thu, 27 Mar 2014 14:03:52 -0700
+Subject: [Chilli] selective proxy / dns sever assignements via dhcp
+In-Reply-To: <53315A00.4080808@unwired.at>
+References: <53315A00.4080808@unwired.at>
+Message-ID: <CADo9JyVvWibAEp5mpASXA62Sox9DC6+qOZqnSOGF1p731prrCQ@mail.gmail.com>
+
+Hmm.. With --enable-dhcpradius, you can use ChilliSpot-DHCP-DNS1
+and ChilliSpot-DHCP-DNS2 to influence the DHCP settings per device during
+DHCP/MAC-Auth. Use with --strictmacauth so that DHCP does not reply before
+getting the RADIUS response. To make it more robust, it would be nice if
+you didn't need --strictmacauth and that you can *absolutely force*
+sessions to a particular DNS server regardless of their configuration.
+Would be also nice to be able to turn on / off / switch DNS server during
+both mac-auth and captive portal login.
+
+
+On Tue, Mar 25, 2014 at 3:27 AM, Alexander Szlezak <
+alexander.szlezak at unwired.at> wrote:
+
+> Hi Folks,
+>
+> I was wondering if anybody has implemented a way to assign different dns
+> servers via dhcp provided by chilli) to cpe's behind chilli. The
+> assignement should be location based (per access point).
+>
+> I'm kind of looking into the same thing concerning proxy assignement in a
+> scalable way on a location basis. Currently I'm afraid, that the ip tables
+> rules generated here get too slow if you have a couple of thousands clients
+> on one chilli (as we do run a centralized setup with one chilli instance
+> for hundreds of access points).
+>
+> Thanks for your ideas!
+>
+> best,
+> Alexander
+>
+> --
+> Follow us on Twitter @
+> http://twitter.com/unwirednetworks
+> _____________________________________________________
+> Mag. Alexander Szlezak          Unwired Networks GmbH
+> Gesch?ftsf?hrer
+>
+> +43 660 1350410
+> alexander.szlezak at unwired.at           www.unwired.at
+> twitter.com/unwirednetworks
+>
+> Rechnungsadresse                        B?roanschrift
+> Reischergasse 6/2                  Gonzagagasse 11/25
+> 1130 Vienna, Austria         A-1010 Vienna, Austria
+>
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20140327/9cb754cf/attachment.html>
+
+From dbird at google.com  Thu Mar 27 21:31:10 2014
+From: dbird at google.com (David Bird)
+Date: Thu, 27 Mar 2014 14:31:10 -0700
+Subject: [Chilli] selective proxy / dns sever assignements via dhcp
+In-Reply-To: <CADo9JyVvWibAEp5mpASXA62Sox9DC6+qOZqnSOGF1p731prrCQ@mail.gmail.com>
+References: <53315A00.4080808@unwired.at>
+ <CADo9JyVvWibAEp5mpASXA62Sox9DC6+qOZqnSOGF1p731prrCQ@mail.gmail.com>
+Message-ID: <CADo9JyUqBnPQo50nuoprP9k87K02ayKmCLHnOcqfONHjnEywuQ@mail.gmail.com>
+
+Actually, combined with --uamanydns, the ChilliSpot-DHCP-DNS* attributes
+should do what you want...
+
+
+On Thu, Mar 27, 2014 at 2:03 PM, David Bird <dbird at google.com> wrote:
+
+> Hmm.. With --enable-dhcpradius, you can use ChilliSpot-DHCP-DNS1
+> and ChilliSpot-DHCP-DNS2 to influence the DHCP settings per device during
+> DHCP/MAC-Auth. Use with --strictmacauth so that DHCP does not reply before
+> getting the RADIUS response. To make it more robust, it would be nice if
+> you didn't need --strictmacauth and that you can *absolutely force*
+> sessions to a particular DNS server regardless of their configuration.
+> Would be also nice to be able to turn on / off / switch DNS server during
+> both mac-auth and captive portal login.
+>
+>
+> On Tue, Mar 25, 2014 at 3:27 AM, Alexander Szlezak <
+> alexander.szlezak at unwired.at> wrote:
+>
+>> Hi Folks,
+>>
+>> I was wondering if anybody has implemented a way to assign different dns
+>> servers via dhcp provided by chilli) to cpe's behind chilli. The
+>> assignement should be location based (per access point).
+>>
+>> I'm kind of looking into the same thing concerning proxy assignement in a
+>> scalable way on a location basis. Currently I'm afraid, that the ip tables
+>> rules generated here get too slow if you have a couple of thousands clients
+>> on one chilli (as we do run a centralized setup with one chilli instance
+>> for hundreds of access points).
+>>
+>> Thanks for your ideas!
+>>
+>> best,
+>> Alexander
+>>
+>> --
+>> Follow us on Twitter @
+>> http://twitter.com/unwirednetworks
+>> _____________________________________________________
+>> Mag. Alexander Szlezak          Unwired Networks GmbH
+>> Gesch?ftsf?hrer
+>>
+>> +43 660 1350410
+>> alexander.szlezak at unwired.at           www.unwired.at
+>> twitter.com/unwirednetworks
+>>
+>> Rechnungsadresse                        B?roanschrift
+>> Reischergasse 6/2                  Gonzagagasse 11/25
+>> 1130 Vienna, Austria         A-1010 Vienna, Austria
+>>
+>> _______________________________________________
+>> Chilli mailing list
+>> Chilli at coova.org
+>> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>>
+>
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20140327/1628de07/attachment-0001.html>
+
+From dbird at google.com  Thu Mar 27 21:44:56 2014
+From: dbird at google.com (David Bird)
+Date: Thu, 27 Mar 2014 14:44:56 -0700
+Subject: [Chilli] selective proxy / dns sever assignements via dhcp
+In-Reply-To: <CA+jq8kqQ4eOC2OH+5q2=EQ8zU7isqKkzPVzgvkaAvyuOQxAY3Q@mail.gmail.com>
+References: <53315A00.4080808@unwired.at>
+ <CADo9JyVvWibAEp5mpASXA62Sox9DC6+qOZqnSOGF1p731prrCQ@mail.gmail.com>
+ <CADo9JyUqBnPQo50nuoprP9k87K02ayKmCLHnOcqfONHjnEywuQ@mail.gmail.com>
+ <CA+jq8kqQ4eOC2OH+5q2=EQ8zU7isqKkzPVzgvkaAvyuOQxAY3Q@mail.gmail.com>
+Message-ID: <CADo9JyWHacuq5oM=k11pVJ9yZx5k0ju=58pCg=XOi55ZS9mVKQ@mail.gmail.com>
+
+What is the problem building on current OpenWrt?
+
+David
+
+
+On Thu, Mar 27, 2014 at 2:36 PM, Szlezak, Alexander <
+alexander.szlezak at unwired.at> wrote:
+
+> Hi David,
+>
+> Great, that sounds perfect, I will have that tested as soon as we fix our
+> chilli compilation Problems on current openwrt trunk. Is it possible you
+> need eglibc instead of the default?
+>
+> Thanks for your time,
+> best Alex
+> Am 27.03.2014 22:31 schrieb "David Bird" <dbird at google.com>:
+>
+> Actually, combined with --uamanydns, the ChilliSpot-DHCP-DNS* attributes
+>> should do what you want...
+>>
+>>
+>> On Thu, Mar 27, 2014 at 2:03 PM, David Bird <dbird at google.com> wrote:
+>>
+>>> Hmm.. With --enable-dhcpradius, you can use ChilliSpot-DHCP-DNS1
+>>> and ChilliSpot-DHCP-DNS2 to influence the DHCP settings per device during
+>>> DHCP/MAC-Auth. Use with --strictmacauth so that DHCP does not reply before
+>>> getting the RADIUS response. To make it more robust, it would be nice if
+>>> you didn't need --strictmacauth and that you can *absolutely force*
+>>> sessions to a particular DNS server regardless of their configuration.
+>>> Would be also nice to be able to turn on / off / switch DNS server during
+>>> both mac-auth and captive portal login.
+>>>
+>>>
+>>> On Tue, Mar 25, 2014 at 3:27 AM, Alexander Szlezak <
+>>> alexander.szlezak at unwired.at> wrote:
+>>>
+>>>> Hi Folks,
+>>>>
+>>>> I was wondering if anybody has implemented a way to assign different
+>>>> dns servers via dhcp provided by chilli) to cpe's behind chilli. The
+>>>> assignement should be location based (per access point).
+>>>>
+>>>> I'm kind of looking into the same thing concerning proxy assignement in
+>>>> a scalable way on a location basis. Currently I'm afraid, that the ip
+>>>> tables rules generated here get too slow if you have a couple of thousands
+>>>> clients on one chilli (as we do run a centralized setup with one chilli
+>>>> instance for hundreds of access points).
+>>>>
+>>>> Thanks for your ideas!
+>>>>
+>>>> best,
+>>>> Alexander
+>>>>
+>>>> --
+>>>> Follow us on Twitter @
+>>>> http://twitter.com/unwirednetworks
+>>>> _____________________________________________________
+>>>> Mag. Alexander Szlezak          Unwired Networks GmbH
+>>>> Gesch?ftsf?hrer
+>>>>
+>>>> +43 660 1350410
+>>>> alexander.szlezak at unwired.at           www.unwired.at
+>>>> twitter.com/unwirednetworks
+>>>>
+>>>> Rechnungsadresse                        B?roanschrift
+>>>> Reischergasse 6/2                  Gonzagagasse 11/25
+>>>> 1130 Vienna, Austria         A-1010 Vienna, Austria
+>>>>
+>>>> _______________________________________________
+>>>> Chilli mailing list
+>>>> Chilli at coova.org
+>>>> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>>>>
+>>>
+>>>
+>>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20140327/44a628bb/attachment.html>
+
+From derek at hssl.ie  Thu Mar 27 21:38:00 2014
+From: derek at hssl.ie (Derek Conniffe)
+Date: Thu, 27 Mar 2014 21:38:00 +0000
+Subject: [Chilli] Best way to enforce MTU 1480?
+In-Reply-To: <CADo9JyU-7Ye3U+h54Lf5mZUWvm=JosZKk9-wSTJ94PghOoGL6A@mail.gmail.com>
+References: <CADSh-SPdkfuA+BVN2SvftYJnQdxqV=MGo+ZCuEiaHEAT+L3www@mail.gmail.com>
+ <CADo9JyU-7Ye3U+h54Lf5mZUWvm=JosZKk9-wSTJ94PghOoGL6A@mail.gmail.com>
+Message-ID: <53349A38.5030205@hssl.ie>
+
+Hi Ben,
+
+I use a MESH as well (with UBNT M radios & ATH9K with an AdHoc VAP) but 
+what I did was set the MTU of the MESH I/F to something like 1528 so 
+that standard (1500) packets get though OK.  Last year I was trying to 
+clamp MTU on a couple of I/Fs (for a different reason - it was on an EC2 
+instance with VPN & Squid and not MESH related) and it nearly broke my 
+spirit and cost me a couple of days in hair-pulling!
+
+Derek
+
+On 27/03/2014 20:52, David Bird wrote:
+> The MTU option will send the MTU value in DHCP, but doesn't mean it's 
+> always respected. You might refer to 
+> http://lartc.org/howto/lartc.cookbook.mtu-mss.html
+>
+>
+> On Thu, Mar 27, 2014 at 12:30 PM, Ben West <ben at gowasabi.net 
+> <mailto:ben at gowasabi.net>> wrote:
+>
+>     I'm running coovachilli v1.3.0 under OpenWRT AA on Ubiquiti
+>     Nanostation gear, with only 32Mbytes of RAM. Since these are nodes
+>     in a mesh managed by OLSR, I need to enforce MTU=1480 for all
+>     client sessions authorized by chilli.
+>
+>     From the online Changlog, it appears I can do this by adding a
+>     parameter to the start-up command in coovachilli's init script:
+>
+>     /usr/sbin/chilli --mtu 1480
+>
+>     However, the tap interface which I believe is what chilli sets up
+>     to manage bandwidth throttling on client sessions still reports
+>     MTU 1500:
+>
+>     tun0      Link encap:UNSPEC  HWaddr
+>     00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00
+>               inet addr:101.232.44.1 P-t-P:101.232.44.1 
+>     Mask:255.255.255.0
+>               UP POINTOPOINT RUNNING  MTU:1500  Metric:1
+>               RX packets:0 errors:0 dropped:0 overruns:0 frame:0
+>               TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
+>               collisions:0 txqueuelen:100
+>               RX bytes:0 (0.0 B)  TX bytes:0 (0.0 B)
+>
+>     ... where 101.232.44.1 is the NAP IP of the device where I quoted
+>     this from.
+>
+>     Is there a way I can ensure proper MTU settings on chilli client
+>     sessions?
+>
+>     -- 
+>     Ben West
+>     http://gowasabi.net
+>     ben at gowasabi.net <mailto:ben at gowasabi.net>
+>     314-246-9434 <tel:314-246-9434>
+>
+>     _______________________________________________
+>     Chilli mailing list
+>     Chilli at coova.org <mailto:Chilli at coova.org>
+>     http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+>
+>
+>
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20140327/f96619e7/attachment.html>
+
+From alexander.szlezak at unwired.at  Thu Mar 27 21:36:03 2014
+From: alexander.szlezak at unwired.at (Szlezak, Alexander)
+Date: Thu, 27 Mar 2014 22:36:03 +0100
+Subject: [Chilli] selective proxy / dns sever assignements via dhcp
+In-Reply-To: <CADo9JyUqBnPQo50nuoprP9k87K02ayKmCLHnOcqfONHjnEywuQ@mail.gmail.com>
+References: <53315A00.4080808@unwired.at>
+ <CADo9JyVvWibAEp5mpASXA62Sox9DC6+qOZqnSOGF1p731prrCQ@mail.gmail.com>
+ <CADo9JyUqBnPQo50nuoprP9k87K02ayKmCLHnOcqfONHjnEywuQ@mail.gmail.com>
+Message-ID: <CA+jq8kqQ4eOC2OH+5q2=EQ8zU7isqKkzPVzgvkaAvyuOQxAY3Q@mail.gmail.com>
+
+Hi David,
+
+Great, that sounds perfect, I will have that tested as soon as we fix our
+chilli compilation Problems on current openwrt trunk. Is it possible you
+need eglibc instead of the default?
+
+Thanks for your time,
+best Alex
+Am 27.03.2014 22:31 schrieb "David Bird" <dbird at google.com>:
+
+> Actually, combined with --uamanydns, the ChilliSpot-DHCP-DNS* attributes
+> should do what you want...
+>
+>
+> On Thu, Mar 27, 2014 at 2:03 PM, David Bird <dbird at google.com> wrote:
+>
+>> Hmm.. With --enable-dhcpradius, you can use ChilliSpot-DHCP-DNS1
+>> and ChilliSpot-DHCP-DNS2 to influence the DHCP settings per device during
+>> DHCP/MAC-Auth. Use with --strictmacauth so that DHCP does not reply before
+>> getting the RADIUS response. To make it more robust, it would be nice if
+>> you didn't need --strictmacauth and that you can *absolutely force*
+>> sessions to a particular DNS server regardless of their configuration.
+>> Would be also nice to be able to turn on / off / switch DNS server during
+>> both mac-auth and captive portal login.
+>>
+>>
+>> On Tue, Mar 25, 2014 at 3:27 AM, Alexander Szlezak <
+>> alexander.szlezak at unwired.at> wrote:
+>>
+>>> Hi Folks,
+>>>
+>>> I was wondering if anybody has implemented a way to assign different dns
+>>> servers via dhcp provided by chilli) to cpe's behind chilli. The
+>>> assignement should be location based (per access point).
+>>>
+>>> I'm kind of looking into the same thing concerning proxy assignement in
+>>> a scalable way on a location basis. Currently I'm afraid, that the ip
+>>> tables rules generated here get too slow if you have a couple of thousands
+>>> clients on one chilli (as we do run a centralized setup with one chilli
+>>> instance for hundreds of access points).
+>>>
+>>> Thanks for your ideas!
+>>>
+>>> best,
+>>> Alexander
+>>>
+>>> --
+>>> Follow us on Twitter @
+>>> http://twitter.com/unwirednetworks
+>>> _____________________________________________________
+>>> Mag. Alexander Szlezak          Unwired Networks GmbH
+>>> Gesch?ftsf?hrer
+>>>
+>>> +43 660 1350410
+>>> alexander.szlezak at unwired.at           www.unwired.at
+>>> twitter.com/unwirednetworks
+>>>
+>>> Rechnungsadresse                        B?roanschrift
+>>> Reischergasse 6/2                  Gonzagagasse 11/25
+>>> 1130 Vienna, Austria         A-1010 Vienna, Austria
+>>>
+>>> _______________________________________________
+>>> Chilli mailing list
+>>> Chilli at coova.org
+>>> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>>>
+>>
+>>
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20140327/209baa57/attachment-0001.html>
+
+From ben at gowasabi.net  Fri Mar 28 00:18:29 2014
+From: ben at gowasabi.net (Ben West)
+Date: Thu, 27 Mar 2014 19:18:29 -0500
+Subject: [Chilli] Best way to enforce MTU 1480?
+In-Reply-To: <CADo9JyU-7Ye3U+h54Lf5mZUWvm=JosZKk9-wSTJ94PghOoGL6A@mail.gmail.com>
+References: <CADSh-SPdkfuA+BVN2SvftYJnQdxqV=MGo+ZCuEiaHEAT+L3www@mail.gmail.com>
+ <CADo9JyU-7Ye3U+h54Lf5mZUWvm=JosZKk9-wSTJ94PghOoGL6A@mail.gmail.com>
+Message-ID: <CADSh-SPitij77bv+GOvcQ_gApO0eGxE=VEGx13r8FHGwSCkGNQ@mail.gmail.com>
+
+Thanks for the response, David.  Would you happen to know correct syntax
+for deploying such an iptables rules with coovachilli v1.3.0 under OpenWRT
+AA?  I.e. presumably within a connup/conndown or macup/macdown script?
+
+I'm not immediately sure what chain such an iptables rule should be
+appended to.
+
+iptables -A FORWARD -p tcp --tcp-flags SYN,RST SYN -j TCPMSS
+--clamp-mss-to-pmtu
+
+
+
+On Thu, Mar 27, 2014 at 3:52 PM, David Bird <dbird at google.com> wrote:
+
+> The MTU option will send the MTU value in DHCP, but doesn't mean it's
+> always respected. You might refer to
+> http://lartc.org/howto/lartc.cookbook.mtu-mss.html
+>
+>
+> On Thu, Mar 27, 2014 at 12:30 PM, Ben West <ben at gowasabi.net> wrote:
+>
+>> I'm running coovachilli v1.3.0 under OpenWRT AA on Ubiquiti Nanostation
+>> gear, with only 32Mbytes of RAM.  Since these are nodes in a mesh managed
+>> by OLSR, I need to enforce MTU=1480 for all client sessions authorized by
+>> chilli.
+>>
+>> From the online Changlog, it appears I can do this by adding a parameter
+>> to the start-up command in coovachilli's init script:
+>>
+>> /usr/sbin/chilli --mtu 1480
+>>
+>> However, the tap interface which I believe is what chilli sets up to
+>> manage bandwidth throttling on client sessions still reports MTU 1500:
+>>
+>> tun0      Link encap:UNSPEC  HWaddr
+>> 00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00
+>>           inet addr:101.232.44.1  P-t-P:101.232.44.1  Mask:255.255.255.0
+>>           UP POINTOPOINT RUNNING  MTU:1500  Metric:1
+>>           RX packets:0 errors:0 dropped:0 overruns:0 frame:0
+>>           TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
+>>           collisions:0 txqueuelen:100
+>>           RX bytes:0 (0.0 B)  TX bytes:0 (0.0 B)
+>>
+>> ... where 101.232.44.1 is the NAP IP of the device where I quoted this
+>> from.
+>>
+>> Is there a way I can ensure proper MTU settings on chilli client sessions?
+>>
+>> --
+>> Ben West
+>> http://gowasabi.net
+>> ben at gowasabi.net
+>> 314-246-9434
+>>
+>> _______________________________________________
+>> Chilli mailing list
+>> Chilli at coova.org
+>> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>>
+>>
+>
+
+
+-- 
+Ben West
+http://gowasabi.net
+ben at gowasabi.net
+314-246-9434
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20140327/ad0fb0c6/attachment.html>
+
+From ben at gowasabi.net  Fri Mar 28 15:24:30 2014
+From: ben at gowasabi.net (Ben West)
+Date: Fri, 28 Mar 2014 10:24:30 -0500
+Subject: [Chilli] Best way to enforce MTU 1480?
+In-Reply-To: <53349A38.5030205@hssl.ie>
+References: <CADSh-SPdkfuA+BVN2SvftYJnQdxqV=MGo+ZCuEiaHEAT+L3www@mail.gmail.com>
+ <CADo9JyU-7Ye3U+h54Lf5mZUWvm=JosZKk9-wSTJ94PghOoGL6A@mail.gmail.com>
+ <53349A38.5030205@hssl.ie>
+Message-ID: <CADSh-SMnfCKckQpP5cF_KGM74nF+g4bk=HMc2xkS7n__CJdqvg@mail.gmail.com>
+
+Thanks for the feedback Derek.  My original experience was that possible
+MTU issues w/ coovachilli seemed to occur on devices that were *below* a
+node on an OLSRd-managed mesh (e.g. a sub-mesh of OLSR nodes connected to
+the LAN port of a node in a larger OLSR mesh).  I hope to repeat that
+configuration soon to see if the command line param for chilli addresses it.
+
+My value of MTU 1480 comes from the docs provided with OLSRd (section 5.4)
+http://olsr.org/git/?p=olsrd.git;a=blob_plain;f=README-Olsr-Extensions;hb=release-0.6.5
+
+I was assuming the need for maximum MTU 1500, as I must have packets
+originating on a mesh forwarded through ethernet, e.g. for Internet
+gateway. Thus, 1480 from (ethernet max - OLSRd tunnel overhead).
+
+Indeed, the OLSRd overhead might compound with multiple layers of mesh, so
+I will also be testing with MTU 1440 too, if needed.  My hair falls out on
+its own, if you were curious. ;)
+
+
+
+On Thu, Mar 27, 2014 at 4:38 PM, Derek Conniffe <derek at hssl.ie> wrote:
+
+>  Hi Ben,
+>
+> I use a MESH as well (with UBNT M radios & ATH9K with an AdHoc VAP) but
+> what I did was set the MTU of the MESH I/F to something like 1528 so that
+> standard (1500) packets get though OK.  Last year I was trying to clamp MTU
+> on a couple of I/Fs (for a different reason - it was on an EC2 instance
+> with VPN & Squid and not MESH related) and it nearly broke my spirit and
+> cost me a couple of days in hair-pulling!
+>
+> Derek
+>
+>
+> On 27/03/2014 20:52, David Bird wrote:
+>
+> The MTU option will send the MTU value in DHCP, but doesn't mean it's
+> always respected. You might refer to
+> http://lartc.org/howto/lartc.cookbook.mtu-mss.html
+>
+>
+> On Thu, Mar 27, 2014 at 12:30 PM, Ben West <ben at gowasabi.net> wrote:
+>
+>>  I'm running coovachilli v1.3.0 under OpenWRT AA on Ubiquiti Nanostation
+>> gear, with only 32Mbytes of RAM.  Since these are nodes in a mesh managed
+>> by OLSR, I need to enforce MTU=1480 for all client sessions authorized by
+>> chilli.
+>>
+>>  From the online Changlog, it appears I can do this by adding a parameter
+>> to the start-up command in coovachilli's init script:
+>>
+>> /usr/sbin/chilli --mtu 1480
+>>
+>>  However, the tap interface which I believe is what chilli sets up to
+>> manage bandwidth throttling on client sessions still reports MTU 1500:
+>>
+>> tun0      Link encap:UNSPEC  HWaddr
+>> 00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00
+>>           inet addr:101.232.44.1  P-t-P:101.232.44.1  Mask:255.255.255.0
+>>           UP POINTOPOINT RUNNING  MTU:1500  Metric:1
+>>           RX packets:0 errors:0 dropped:0 overruns:0 frame:0
+>>           TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
+>>           collisions:0 txqueuelen:100
+>>           RX bytes:0 (0.0 B)  TX bytes:0 (0.0 B)
+>>
+>>  ... where 101.232.44.1 is the NAP IP of the device where I quoted this
+>> from.
+>>
+>>  Is there a way I can ensure proper MTU settings on chilli client
+>> sessions?
+>>
+>> --
+>> Ben West
+>> http://gowasabi.net
+>> ben at gowasabi.net
+>> 314-246-9434
+>>
+>> _______________________________________________
+>> Chilli mailing list
+>> Chilli at coova.org
+>> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>>
+>>
+>
+>
+> _______________________________________________
+> Chilli mailing listChilli at coova.orghttp://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+>
+>
+
+
+-- 
+Ben West
+http://gowasabi.net
+ben at gowasabi.net
+314-246-9434
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20140328/705eebe7/attachment.html>
+
+From maxxer at ufficyo.com  Mon Mar 31 07:31:41 2014
+From: maxxer at ufficyo.com (Lorenzo Milesi)
+Date: Mon, 31 Mar 2014 09:31:41 +0200 (CEST)
+Subject: [Chilli] Redirect when no WAN available
+In-Reply-To: <208918503.123522.1396250816442.JavaMail.zimbra@yetopen.it>
+Message-ID: <1439876729.123565.1396251101956.JavaMail.zimbra@yetopen.it>
+
+Hi.
+I need to be able to redirect to the Chilli login page even if the wan is not available.
+I changed my config this way:
+domain local
+domaindnslocal 
+dns1 10.1.0.1 
+
+I also have 
+uamanydns 
+usetap 
+uamanyip 
+
+This works great with Ubuntu and Android clients, but doesn't with iOS and Windows. Did anyone had similar needs? Any hint on how to solve?
+
+thanks
+-- 
+Lorenzo Milesi - lorenzo.milesi at yetopen.it
+
+YetOpen S.r.l. - http://www.yetopen.it/
+
+From bojan at gajba.net  Mon Mar 31 11:38:37 2014
+From: bojan at gajba.net (Bojan Pogacar)
+Date: Mon, 31 Mar 2014 13:38:37 +0200
+Subject: [Chilli] chilli_query .. connect through TCP, not only socket?
+Message-ID: <533953BD.5060202@gajba.net>
+
+Hello!
+
+Is it possible that chilli_query listens on certain TCP port for 
+commands, not only socket?
+
+BTW, where can I get all parameters of /etc/chilli/defaults that maps to 
+chilli.conf commands ?
+
+Thank you.
+
+B.R., Bojan
+

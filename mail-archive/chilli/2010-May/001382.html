@@ -1,0 +1,201 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] MAC blacklist and other security measures
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20MAC%20blacklist%20and%20other%20security%20measures&In-Reply-To=%3C4BF5EC74.10702%40hpp.org.br%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001384.html">
+   <LINK REL="Next"  HREF="001383.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] MAC blacklist and other security measures</H1>
+    <B>Felipe Augusto van de Wiel</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20MAC%20blacklist%20and%20other%20security%20measures&In-Reply-To=%3C4BF5EC74.10702%40hpp.org.br%3E"
+       TITLE="[Chilli] MAC blacklist and other security measures">felipe.wiel at hpp.org.br
+       </A><BR>
+    <I>Fri May 21 02:14:12 UTC 2010</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001384.html">[Chilli] Fix compiler errors/warnings in current SVN
+</A></li>
+        <LI>Next message: <A HREF="001383.html">[Chilli] MAC blacklist and other security measures
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1382">[ date ]</a>
+              <a href="thread.html#1382">[ thread ]</a>
+              <a href="subject.html#1382">[ subject ]</a>
+              <a href="author.html#1382">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA512
+
+Hi,
+
+	Let me revive this thread in order to add a
+few comments that would be nice to have and publicly
+archived, specially because a few things have changed.
+
+	:-)
+
+
+	Using the scenario where you reply with
+Access-Accept as a DEFAULT entry has a side effect,
+traffic is allowed on all other ports (if you do a
+full NAT) without needing to authenticate on the
+captive portal.
+
+
+On 06-04-2010 12:42, Felipe Augusto van de Wiel wrote:
+&gt;<i> On 21-03-2010 03:16, David Bird wrote:
+</I>&gt;&gt;<i> Hm.. one way might be to enable MAC authentication
+</I>&gt;&gt;<i> such that:
+</I>&gt;<i> 
+</I>&gt;<i> 	That means enable 'macauth', right?  Using
+</I>&gt;<i> only 'macauthdeny' didn't result in the expected
+</I>&gt;<i> behavior.
+</I>
+	Although it was not clear before, now it
+makes a lot of sense that macauthdeny depends on
+macauth, otherwise you are not authenticating MAC
+addresses.
+
+
+	In this new scenario, it would be great to
+have a way to &quot;drop&quot; clients that got a Access-Reject
+from RADIUS.
+
+
+
+&gt;&gt;<i> - You always return Access-Accept (plus attribute
+</I>&gt;&gt;<i>   Chillispot-Config = 'splash') for non-blocked
+</I>&gt;&gt;<i>   users.
+</I>&gt;<i> 
+</I>&gt;&gt;<i> - You can return an Access-Reject for blocked users.
+</I>&gt;&gt;<i>   When used with --macauthdeny, it means these
+</I>&gt;&gt;<i>   devices will be ignored.
+</I>&gt;<i> 
+</I>&gt;<i> 	The proper way to achieve that would be to
+</I>&gt;<i> use a DEFAULT user in RADIUS? Here is the relevant
+</I>&gt;<i> part of my FreeRADIUS' users file:
+</I>
+	I changed it, now I add multiple entries but
+I check Calling-Station-Id, that gives the MAC and
+it is sufficient to make a blacklist.
+
+
+&gt;<i> &lt;...&gt;
+</I>&gt;<i> | AA-BB-CC-DD-EE-FF  Auth-Type := Reject
+</I>&gt;<i> |                    Reply-Message = &quot;MAC address administratively blocked.&quot;
+</I>&gt;<i> |
+</I>&gt;<i> | 11-22-33-44-55-66  Auth-Type := Reject
+</I>&gt;<i> |                    Reply-Message = &quot;MAC address administratively blocked.&quot;
+</I>&gt;<i> |
+</I>&gt;<i> | DEFAULT            Auth-Type := Accept
+</I>&gt;<i> |                    Chillispot-config = 'splash',
+</I>&gt;<i> |                    Fall-Through = Yes
+</I>&gt;<i> |
+</I>&gt;<i> | &quot;user&quot;             Cleartext-Password := &quot;pass&quot;
+</I>&gt;<i> |                    Reply-Message = &quot;Hello, %{User-Name}&quot;
+</I>&gt;<i> &lt;...&gt;
+</I>
+	Instead of the above, I now use:
+
+&lt;...&gt;
+|<i> &quot;user&quot;	Calling-Station-Id == AA-BB-CC-DD-EE-FF, Auth-Type := Reject
+</I>|<i>		Reply-Message = &quot;MAC address administratively blocked.&quot;
+</I>|<i>
+</I>|<i> &quot;user&quot;	Calling-Station-Id == 11-22-33-44-55-66, Auth-Type := Reject
+</I>|<i>		Reply-Message = &quot;MAC address administratively blocked.&quot;
+</I>|<i>
+</I>|<i> &quot;user&quot;	Cleartext-Password := &quot;pass&quot;
+</I>|<i>		Reply-Message = &quot;Welcome to our network!&quot;
+</I>&lt;...&gt;
+
+
+	Of course, I had to disable the macauth and as
+this renders macauthdeny not very useful, I also turned
+it off.
+
+
+&gt;<i> 	Of course, that only worked after I added an
+</I>&gt;<i> include line inside /etc/freeradius/dictionary:
+</I>&gt;<i> 
+</I>&gt;<i> $INCLUDE        /etc/freeradius/dictionary.chillispot
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> 	Now, the MAC addresses listed on the users
+</I>&gt;<i> file gets a 'drop' state when chilli starts, the rest
+</I>&gt;<i> gets a 'splash' state and addresses in the ethers file
+</I>&gt;<i> stays as 'dnat'. Once the user authenticates thru the
+</I>&gt;<i> splash screen they change to 'pass' as expected.
+</I>
+	It then goes back to the behavior where everybody
+is 'dnat' until authenticated and changed to 'pass'.
+
+	I was wondering if it is possible to have the
+blocked MAC address to move to a 'drop' state after
+Access-Reject, is there such possibility in Coova?
+
+	The idea is that MAC addresses block can't
+even navigate on the authorized pages like search
+engines or map sites.
+
+
+	Once again, I do hope it help others looking for
+a blacklist implementation. :)
+
+Kind regards,
+- -- 
+Felipe Augusto van de Wiel &lt;<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">felipe.wiel at hpp.org.br</A>&gt;
+Tecnologia da Informa&#231;&#227;o (TI) - Complexo Pequeno Pr&#237;ncipe
+<A HREF="http://www.pequenoprincipe.org.br/">http://www.pequenoprincipe.org.br/</A>    T: +55 41 3310 1747
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.10 (GNU/Linux)
+Comment: Using GnuPG with Mozilla - <A HREF="http://enigmail.mozdev.org/">http://enigmail.mozdev.org/</A>
+
+iQIcBAEBCgAGBQJL9exwAAoJECCPPxLgxLxPlWUQAI+aMtcWDZDExxSqYQY4yAqS
+jqfwLrV3p5b9wiGIT6WLGLlDLyy5kqwrbVECGoO4zUUzzE3NjegpCuTAG15FEuYZ
+uAxPOxBeNcwbG9nhuM/u8gbIcgJRUyeK+xOGOqPizsWJxCr2CATTRE1BM+dIIulm
+87czEa6JJ7a0fCZbw1zDajGQCCSvjwLhlUVVpHIEP/slp/uyw+DoJfKMLa1CizYH
+bt9/SvfEhCj4HidSFPfIH/Ez8tQbIoYIAG2GiQWYb+6FjCcS7jVS4HS8KJagskWG
+ktLPm5BrPSWKbbyXQkuWId4xQfayI84ixsGE/mG+Kh75cSnm8UJpDO+D/r/HrC87
+WFm7JaVh57BPcZwul70qt56uyTQN4MSVZolo9Sxe61mPP3WxeyTncBM7K2XdSSzF
+9hgwM8GVDF8PYW+2grMU+TaYpAPQhrdgGI6B7sgvOvwzaTfRug0KJ/pjw+z1QVH0
+pznlVRgLdM6ptcGLolzumRuxNTlSxWPgzPkFGT4wI8CZtqsIXCfGES0gDkaEFzN8
+b8QtTF00PuJS0aSR/XeIiPVjc7W9gPE856hf22kmdEPtFdcVpVrohV9+Wj0ILvOJ
+F4yjgROMqyNK2Inu12jaLefMKZww0k1ydT0Jb+49CyUbA/dSofAYm6o04fj0GeEK
+SyOqkjtpFs2w2wsBfekN
+=91MV
+-----END PGP SIGNATURE-----
+</PRE>
+
+
+
+
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001384.html">[Chilli] Fix compiler errors/warnings in current SVN
+</A></li>
+	<LI>Next message: <A HREF="001383.html">[Chilli] MAC blacklist and other security measures
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1382">[ date ]</a>
+              <a href="thread.html#1382">[ thread ]</a>
+              <a href="subject.html#1382">[ subject ]</a>
+              <a href="author.html#1382">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

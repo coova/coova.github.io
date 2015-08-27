@@ -1,0 +1,998 @@
+From tim at skyrove.com  Thu Jul  8 10:15:20 2010
+From: tim at skyrove.com (Tim Long)
+Date: Thu, 8 Jul 2010 12:15:20 +0200
+Subject: [Chilli] CoovaAP from source
+Message-ID: <AANLkTinBgwhYbBFYdoKDZgefoeS4b5gRUggyaZH9GjQc@mail.gmail.com>
+
+Hi,
+
+Could someone direct me to some documentation on how to create the CoovaAP
+firmware from source? I've not had any luck trying to follow what sparse
+instructions there are.
+
+So far I have downloaded the whiterussian branch of openwrt. I've applied
+patch svn-rev-9287.patch and built it to get an image. However, I'm
+obviously missing some steps because there is no coova-chilli in the image.
+
+I am trying to do this so I can compile coova-chilli 1.2.2 with the
+--enable-radsec option, so if anyone has an image with that, it would be
+just as useful.
+
+Regards,
+Tim
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20100708/a0da0904/attachment.htm>
+
+From david at coova.com  Fri Jul  9 16:01:16 2010
+From: david at coova.com (David Bird)
+Date: Fri, 09 Jul 2010 18:01:16 +0200
+Subject: [Chilli] CoovaAP from source
+In-Reply-To: <AANLkTinBgwhYbBFYdoKDZgefoeS4b5gRUggyaZH9GjQc@mail.gmail.com>
+References: <AANLkTinBgwhYbBFYdoKDZgefoeS4b5gRUggyaZH9GjQc@mail.gmail.com>
+Message-ID: <1278691276.3632.28.camel@david-laptop>
+
+Hi Tim,
+
+Information on the packages added to OpenWrt can be found here:
+http://coova.org/CoovaAP/OpenWrtPackages
+
+You will probably want to upgrade to CoovaChilli 1.2.3 (current
+subversion head), which I will be releasing formally very soon. For a
+recent snapshot, see:
+
+http://coova-chilli.s3.amazonaws.com/coova-chilli-1.2.3-rc1.tar.gz
+
+Sorry for the delay with 1.2.3; we have been working with some customers
+on some new(er) features and have been trying to find more time to
+ensure proper init scripts and default configurations for more platform
+(at least for OpenWrt, SUSE, RedHat, Debian/Ubuntu). Any volunteers
+willing to help with packaging support/testing are welcome!!
+
+Cheers,
+David
+
+
+On Thu, 2010-07-08 at 12:15 +0200, Tim Long wrote:
+> Hi,
+> 
+> 
+> Could someone direct me to some documentation on how to create the
+> CoovaAP firmware from source? I've not had any luck trying to follow
+> what sparse instructions there are.
+> 
+> 
+> So far I have downloaded the whiterussian branch of openwrt. I've
+> applied patch svn-rev-9287.patch and built it to get an image.
+> However, I'm obviously missing some steps because there is no
+> coova-chilli in the image.
+> 
+> 
+> I am trying to do this so I can compile coova-chilli 1.2.2 with the
+> --enable-radsec option, so if anyone has an image with that, it would
+> be just as useful.
+> 
+> 
+> Regards,
+> Tim
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+
+
+From david at coova.com  Fri Jul  9 20:21:46 2010
+From: david at coova.com (David Bird)
+Date: Fri, 09 Jul 2010 22:21:46 +0200
+Subject: [Chilli] coova-chilli 1.2.3
+Message-ID: <1278706906.3632.34.camel@david-laptop>
+
+With several inquiring about 1.2.3, it's time for a release. Binaries
+will come a bit later on. 
+
+http://www.coova.org/CoovaChilli
+http://coova-chilli.s3.amazonaws.com/coova-chilli-1.2.3.tar.gz
+http://www.coova.org/CoovaChilli/ChangeLog
+
+
+Cheers,
+David
+
+
+From mail.gery at gmail.com  Sun Jul 11 21:02:14 2010
+From: mail.gery at gmail.com (Gergely Kiss)
+Date: Sun, 11 Jul 2010 23:02:14 +0200
+Subject: [Chilli] Almost there :D
+In-Reply-To: <f1cd8c6d0905300020s4e9ff5f9i16f00e8a3c25079a@mail.gmail.com>
+References: <3b8d169a0905290929u25393b32u31b98bdee15cd298@mail.gmail.com>
+	<f1cd8c6d0905300020s4e9ff5f9i16f00e8a3c25079a@mail.gmail.com>
+Message-ID: <AANLkTikiDACMU-QG75c7Eju1I3K6zczsjBhUT8cPym4N@mail.gmail.com>
+
+Hello there,
+
+I'm back with a brand new version of my web interface bundle, which is more
+clever and fixes some major bugs compared to the initial release.
+
+Let's see what's new in this version:
+
+- Timeouts are set to be more user-friendly, which means the user always has
+the time to read error messages and never has to wait too much if something
+goes wrong. Default timeouts: refresh status page every 5 secs, timeout JSON
+requests after 25 seconds, show error messages for 10 seconds before
+refreshing status.
+- Failed login attempts generate an error message - it's more logical, than
+just redirecting to the login screen without telling the user what happened
+- Redirections work correctly now - in some cases, the OS or the browser
+sends a request to some remote site, before a user-specified site opens in
+the browser, therefore a random site may be loaded after the user logs in. I
+fixed this by reading the "userurl" variable from the request which always
+seems to contain the URL entered by the user (or the browser's home page).
+- When the user disconnects, the wait page appears for half a second to give
+time to the logoff command to finish executing.
+- The bundle has been tested with 4 major browsers (IE6-8, FF2-3, Opera 10,
+Chrome). IE and FF run the code perfectly, while Opera and Chrome may have
+some issues, probably because of their "improved" JavaScript engines. Opera
+seems to silently ignore the URL passed to window.open (it just opens a
+blank browser window). Chrome does the same, except that it loads the URL
+(it's shown in the address bar), but refuses to run any JS code, just a
+plain white page is shown to the user. These issues need to be fixed to make
+the interface more compatible with different browsers.
+
+Probably you could include this in the source bundle to be used as a
+template, I made really easy to customize it. Just modify the placeholders
+in "index.html" and "splash.html" and the interface is ready to be used.
+
+
+Best regards
+Gergely Kiss
+
+On 30 May 2009 09:20, kissg <mail.gery at gmail.com> wrote:
+
+> Hi C?sar,
+>
+> we have customized installations of CoovaChilli at two companies. They use
+> it to provide internet access to guests, without risking the security of
+> their private network. I've slightly modified the login process of
+> CoovaChilli to fit the needs of our customers and to be as user friendly as
+> possible. The process looks like this:
+>
+> 1. The user opens a browser window and tries to browse a website.
+> 2. CoovaChilli redirects the user to the splash page.
+> 3. The splash page contains the logo of the company, some welcome text and
+> a button, which opens a popup window by using some simple JavaScript code.
+> 4. A small window appears on the top right part of the screen, asking for
+> the login credentials.
+> 5. After entering the username and password, the small window gets
+> minimized to the taskbar, and the requested page starts to load in the main
+> browser window.
+> 6. The login window stays opened as long as the connection is alive, so the
+> user can see a lot of useful information (like session time, total data
+> upload/download, idle timeout, session timeout, etc.). There is a button at
+> the bottom of this window, which can be used to disconnect from the network.
+> In case the user tries to close this window, a warning message appears on
+> screen, telling the user that he shouldn't close the window as long as he
+> want to surf the net. I've set idle timeout to 10 minutes, so it's not
+> really an issue if someone closes the window without logging off first.
+>
+> I attached the whole /etc/chilli directory to this message, so you can use
+> it as a template. Download the files and customize them for your liking. The
+> following files needs to be changed:
+>
+> - /etc/chilli/config: go through the options, and modify them as needed
+> - /etc/chilli/ipup.sh: replace ppp0 with the name of the interface your
+> server uses to connect to the internet.
+> - /etc/chilli/www/splash.html: enter your company's name and replace the
+> logo
+>
+> By using these files, you can easily create your own hotspot solution by
+> changing the logo on the splash page and replacing the name and website
+> address of your company (wherever you see "Your company's name" and "
+> www.yourcompanyswebsite.com").
+>
+> This solution is JavaScript-dependent, but this should not be a problem, as
+> modern systems have JavaScript installed and enabled, by default.
+>
+> I hope this may help you and other people to implement CoovaChilli
+> successfully.
+>
+> Regards
+> Gergely Kiss
+>
+> 2009/5/29 C?sar Araujo <cesarsilvaaraujo at gmail.com>
+>
+> Well i would like first to thank all of you that are helping-me :) cause im
+>> loving coova :D it is very powerfull.
+>>
+>> My problem now is that i dont have net.
+>>
+>> Explaining.
+>>
+>> I type www.google.com and i end on a url from
+>> http://10.1.0.1:3990/www/hotspot/coova.html?loginurl=https%3a%2f%2f10.1.0.1%2fhotspot%2fuam%2f%3fres%3dnotyet%26uamip%3d10.1.0.1%26uamport%3d3990%26challenge%3d88be6699daa6282bb61a2e312f3b1caf%26mac%3d00-1D-60-XX-XX-XX%26ip%3d10.1.0.13%26called%3d00-0C-6E-A3-53-27%26nasid%3dwifi%2540campingave%26userurl%3dhttp%253a%252f%252f10.1.0.1%253a3990%252fwww%252f%26md%3dEF87074574DD3A134A708A36CF65F059
+>> <http://10.1.0.1:3990/www/hotspot/coova.html?loginurl=https%3a%2f%2f10.1.0.1%2fhotspot%2fuam%2f%3fres%3dnotyet%26uamip%3d10.1.0.1%26uamport%3d3990%26challenge%3d88be6699daa6282bb61a2e312f3b1caf%26mac%3d00-1D-60-C8-10-E5%26ip%3d10.1.0.13%26called%3d00-0C-6E-A3-53-27%26nasid%3dwifi%2540campingave%26userurl%3dhttp%253a%252f%252f10.1.0.1%253a3990%252fwww%252f%26md%3dEF87074574DD3A134A708A36CF65F059>
+>>
+>> Then i should get http://10.1.0.1/portal/?q=hotspot and i end up on
+>> http://10.1.0.1/portal/?q=badquery but for now this is not my "major"
+>> problem, so i manualy type http://10.1.0.1/portal/?q=hotspot
+>>
+>> then i make login using test test and everything goes ok :D
+>>
+>> then when i type for example www.google.com on a browser i dont get
+>> nothing. i end up on "server is taking to long to respond" and i cant ping
+>> www.google.com
+>> nothing, no internet. :(
+>>
+>> Any help is always apreciated :D
+>>
+>> Thanks in advance.
+>>
+>>
+>> --
+>> --------------------------------------------------------------------
+>> Contactem-me para anima??o musical de eventos!
+>> --------------------------------------------------------------------
+>> AveFm - www.avefm.net
+>> --------------------------------------------------------------------
+>> Http://www.CesarAraujo.Net
+>> --------------------------------------------------------------------
+>> Msn: messenger at CesarAraujo.net
+>> --------------------------------------------------------------------
+>>
+>
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20100711/9ea2eb51/attachment-0001.htm>
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: chilli_web_interface_bundle_v2.zip
+Type: application/zip
+Size: 24978 bytes
+Desc: not available
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20100711/9ea2eb51/attachment-0001.zip>
+
+From mail.gery at gmail.com  Wed Jul 14 09:13:15 2010
+From: mail.gery at gmail.com (Gergely Kiss)
+Date: Wed, 14 Jul 2010 11:13:15 +0200
+Subject: [Chilli] Almost there :D
+In-Reply-To: <AANLkTim7ZegVMk1ZsM4M-bkQSwIG4knnBpexYQgsmlpt@mail.gmail.com>
+References: <3b8d169a0905290929u25393b32u31b98bdee15cd298@mail.gmail.com>
+	<f1cd8c6d0905300020s4e9ff5f9i16f00e8a3c25079a@mail.gmail.com>
+	<AANLkTikiDACMU-QG75c7Eju1I3K6zczsjBhUT8cPym4N@mail.gmail.com>
+	<AANLkTim7ZegVMk1ZsM4M-bkQSwIG4knnBpexYQgsmlpt@mail.gmail.com>
+Message-ID: <AANLkTinrhNrNkZK2KDt8lyOPmBbdDOe4_HvXA7-8DCdO@mail.gmail.com>
+
+Hi,
+
+this seems to be a problem with your chilli configuration. Make sure that
+your Chilli configuration has the HS_UAMSECRET and HS_UAMSERVICE variables
+unset:
+
+HS_UAMSECRET=
+HA_UAMSERVICE=
+
+Restart chilli and test if it works.
+
+
+Regards
+Gergely Kiss
+
+On 14 July 2010 06:53, Baobaz Barleyz <baobaz at gmail.com> wrote:
+
+> Hallo Gergely Kiss...
+>
+> I've a problem using your web interface ..
+> In my radcheck<http://localhost/phpmyadmin/sql.php?db=radius&token=35934835b1037531a972c36e77e409ac&table=radcheck&pos=0>table :
+>
+> id  Username  attribute           op  value
+> 1   baobaz    Cleartext-Password  :=  hallo
+>
+> When I want to Log in, there is an error
+> this is log file when I'm using radiusd -X (debug mode)
+>
+> Found Auth-Type = CHAP
+> +- entering group CHAP {...}
+> [chap] login attempt by "baobaz" with CHAP password
+> [chap] Using clear text password "hallo" for user baobaz authentication.
+> [chap] Password check failed
+> ++[chap] returns reject
+> Failed to authenticate the user.
+> Using Post-Auth-Type Reject
+> +- entering group REJECT {...}
+> [attr_filter.access_reject]     expand: %{User-Name} -> baobaz
+>  attr_filter: Matched entry DEFAULT at line 11
+> ++[attr_filter.access_reject] returns updated
+> Delaying reject of request 68 for 1 seconds
+> Going to the next request
+> Waking up in 0.9 seconds.
+> Sending delayed reject for request 68
+> Sending Access-Reject of id 186 to 127.0.0.1 port 45731
+> Waking up in 4.9 seconds.
+> Cleaning up request 68 ID 186 with timestamp +4241
+> Ready to process requests.
+>
+>
+> I dont, understand.. Can anybody help me? :)
+> thanks
+>
+>
+>   On Mon, Jul 12, 2010 at 4:02 AM, Gergely Kiss <mail.gery at gmail.com>wrote:
+>
+>>  Hello there,
+>>
+>> I'm back with a brand new version of my web interface bundle, which is
+>> more clever and fixes some major bugs compared to the initial release.
+>>
+>> Let's see what's new in this version:
+>>
+>> - Timeouts are set to be more user-friendly, which means the user always
+>> has the time to read error messages and never has to wait too much if
+>> something goes wrong. Default timeouts: refresh status page every 5 secs,
+>> timeout JSON requests after 25 seconds, show error messages for 10 seconds
+>> before refreshing status.
+>> - Failed login attempts generate an error message - it's more logical,
+>> than just redirecting to the login screen without telling the user what
+>> happened
+>> - Redirections work correctly now - in some cases, the OS or the browser
+>> sends a request to some remote site, before a user-specified site opens in
+>> the browser, therefore a random site may be loaded after the user logs in. I
+>> fixed this by reading the "userurl" variable from the request which always
+>> seems to contain the URL entered by the user (or the browser's home page).
+>> - When the user disconnects, the wait page appears for half a second to
+>> give time to the logoff command to finish executing.
+>> - The bundle has been tested with 4 major browsers (IE6-8, FF2-3, Opera
+>> 10, Chrome). IE and FF run the code perfectly, while Opera and Chrome may
+>> have some issues, probably because of their "improved" JavaScript engines.
+>> Opera seems to silently ignore the URL passed to window.open (it just opens
+>> a blank browser window). Chrome does the same, except that it loads the URL
+>> (it's shown in the address bar), but refuses to run any JS code, just a
+>> plain white page is shown to the user. These issues need to be fixed to make
+>> the interface more compatible with different browsers.
+>>
+>> Probably you could include this in the source bundle to be used as a
+>> template, I made really easy to customize it. Just modify the placeholders
+>> in "index.html" and "splash.html" and the interface is ready to be used.
+>>
+>>
+>> Best regards
+>> Gergely Kiss
+>>
+>> On 30 May 2009 09:20, kissg <mail.gery at gmail.com> wrote:
+>>
+>>> Hi C?sar,
+>>>
+>>> we have customized installations of CoovaChilli at two companies. They
+>>> use it to provide internet access to guests, without risking the security of
+>>> their private network. I've slightly modified the login process of
+>>> CoovaChilli to fit the needs of our customers and to be as user friendly as
+>>> possible. The process looks like this:
+>>>
+>>> 1. The user opens a browser window and tries to browse a website.
+>>> 2. CoovaChilli redirects the user to the splash page.
+>>> 3. The splash page contains the logo of the company, some welcome text
+>>> and a button, which opens a popup window by using some simple JavaScript
+>>> code.
+>>> 4. A small window appears on the top right part of the screen, asking for
+>>> the login credentials.
+>>> 5. After entering the username and password, the small window gets
+>>> minimized to the taskbar, and the requested page starts to load in the main
+>>> browser window.
+>>> 6. The login window stays opened as long as the connection is alive, so
+>>> the user can see a lot of useful information (like session time, total data
+>>> upload/download, idle timeout, session timeout, etc.). There is a button at
+>>> the bottom of this window, which can be used to disconnect from the network.
+>>> In case the user tries to close this window, a warning message appears on
+>>> screen, telling the user that he shouldn't close the window as long as he
+>>> want to surf the net. I've set idle timeout to 10 minutes, so it's not
+>>> really an issue if someone closes the window without logging off first.
+>>>
+>>> I attached the whole /etc/chilli directory to this message, so you can
+>>> use it as a template. Download the files and customize them for your liking.
+>>> The following files needs to be changed:
+>>>
+>>> - /etc/chilli/config: go through the options, and modify them as needed
+>>> - /etc/chilli/ipup.sh: replace ppp0 with the name of the interface your
+>>> server uses to connect to the internet.
+>>> - /etc/chilli/www/splash.html: enter your company's name and replace the
+>>> logo
+>>>
+>>> By using these files, you can easily create your own hotspot solution by
+>>> changing the logo on the splash page and replacing the name and website
+>>> address of your company (wherever you see "Your company's name" and "
+>>> www.yourcompanyswebsite.com").
+>>>
+>>> This solution is JavaScript-dependent, but this should not be a problem,
+>>> as modern systems have JavaScript installed and enabled, by default.
+>>>
+>>> I hope this may help you and other people to implement CoovaChilli
+>>> successfully.
+>>>
+>>> Regards
+>>> Gergely Kiss
+>>>
+>>> 2009/5/29 C?sar Araujo <cesarsilvaaraujo at gmail.com>
+>>>
+>>> Well i would like first to thank all of you that are helping-me :) cause
+>>>> im loving coova :D it is very powerfull.
+>>>>
+>>>> My problem now is that i dont have net.
+>>>>
+>>>> Explaining.
+>>>>
+>>>> I type www.google.com and i end on a url from
+>>>> http://10.1.0.1:3990/www/hotspot/coova.html?loginurl=https%3a%2f%2f10.1.0.1%2fhotspot%2fuam%2f%3fres%3dnotyet%26uamip%3d10.1.0.1%26uamport%3d3990%26challenge%3d88be6699daa6282bb61a2e312f3b1caf%26mac%3d00-1D-60-XX-XX-XX%26ip%3d10.1.0.13%26called%3d00-0C-6E-A3-53-27%26nasid%3dwifi%2540campingave%26userurl%3dhttp%253a%252f%252f10.1.0.1%253a3990%252fwww%252f%26md%3dEF87074574DD3A134A708A36CF65F059
+>>>>
+>>>> <http://10.1.0.1:3990/www/hotspot/coova.html?loginurl=https%3a%2f%2f10.1.0.1%2fhotspot%2fuam%2f%3fres%3dnotyet%26uamip%3d10.1.0.1%26uamport%3d3990%26challenge%3d88be6699daa6282bb61a2e312f3b1caf%26mac%3d00-1D-60-C8-10-E5%26ip%3d10.1.0.13%26called%3d00-0C-6E-A3-53-27%26nasid%3dwifi%2540campingave%26userurl%3dhttp%253a%252f%252f10.1.0.1%253a3990%252fwww%252f%26md%3dEF87074574DD3A134A708A36CF65F059>
+>>>>
+>>>> Then i should get http://10.1.0.1/portal/?q=hotspot and i end up on
+>>>> http://10.1.0.1/portal/?q=badquery but for now this is not my "major"
+>>>> problem, so i manualy type http://10.1.0.1/portal/?q=hotspot
+>>>>
+>>>> then i make login using test test and everything goes ok :D
+>>>>
+>>>> then when i type for example www.google.com on a browser i dont get
+>>>> nothing. i end up on "server is taking to long to respond" and i cant ping
+>>>> www.google.com
+>>>> nothing, no internet. :(
+>>>>
+>>>> Any help is always apreciated :D
+>>>>
+>>>> Thanks in advance.
+>>>>
+>>>>
+>>>> --
+>>>> --------------------------------------------------------------------
+>>>> Contactem-me para anima??o musical de eventos!
+>>>> --------------------------------------------------------------------
+>>>> AveFm - www.avefm.net
+>>>> --------------------------------------------------------------------
+>>>> Http://www.CesarAraujo.Net <http://www.cesararaujo.net/>
+>>>> --------------------------------------------------------------------
+>>>> Msn: messenger at CesarAraujo.net
+>>>> --------------------------------------------------------------------
+>>>>
+>>>
+>>>
+>>
+>> _______________________________________________
+>> Chilli mailing list
+>> Chilli at coova.org
+>> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>>
+>>
+>
+>
+> --
+> visit my blog at http://blog.omongkosong.com
+> visit our T'Lab shop at http://tlab.co.id
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20100714/9532944b/attachment.htm>
+
+From cmutuku at strathmore.edu  Thu Jul 15 13:22:52 2010
+From: cmutuku at strathmore.edu (Cornelius Mutuku)
+Date: Thu, 15 Jul 2010 16:22:52 +0300
+Subject: [Chilli] coovaP and linksys wrt120n
+Message-ID: <70A463FCFF36A941A61895C97017503F4F70524153@tsavo.strathmore.local>
+
+I would wish to install chilli on cisco wrt120n, any ideas
+
+I will appreciate any assistance
+
+Regards
+Cornelius mutuku
+
+
+________________________________
+Strathmore University provides all-round education in an atmosphere of freedom and responsibility.
+This email and any files transmitted with it are intended solely for use by the recipient(s) to whom it is addressed and may contain confidential information. If you have received this email in error please notify the sender immediately and permanently delete this email and/or any files attached to it from your computer. Please note that any views or opinions presented in this email are solely those of the author and do not necessarily represent those of Strathmore University. The University accepts no liability whatsoever for any loss or damages incurred, or suffered, resulting, or arising, from the use of this email and/or its attachments. The University warrants neither the integrity of the e-mail nor its freedom from errors, viruses, interception or any other form of interference.
+............................................................................
+Website: www.strathmore.edu
+
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20100715/a7c963f4/attachment.htm>
+
+From cmutuku at strathmore.edu  Thu Jul 15 13:48:22 2010
+From: cmutuku at strathmore.edu (Cornelius Mutuku)
+Date: Thu, 15 Jul 2010 16:48:22 +0300
+Subject: [Chilli] CoovaAP Firmware+cisco wrt120n router
+Message-ID: <70A463FCFF36A941A61895C97017503F4F70524156@tsavo.strathmore.local>
+
+Can CoopaAP run on cisco Linksys wrt120n?
+
+Any assistance will be appreciated
+
+________________________________
+Strathmore University provides all-round education in an atmosphere of freedom and responsibility.
+This email and any files transmitted with it are intended solely for use by the recipient(s) to whom it is addressed and may contain confidential information. If you have received this email in error please notify the sender immediately and permanently delete this email and/or any files attached to it from your computer. Please note that any views or opinions presented in this email are solely those of the author and do not necessarily represent those of Strathmore University. The University accepts no liability whatsoever for any loss or damages incurred, or suffered, resulting, or arising, from the use of this email and/or its attachments. The University warrants neither the integrity of the e-mail nor its freedom from errors, viruses, interception or any other form of interference.
+............................................................................
+Website: www.strathmore.edu
+
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20100715/7b61a072/attachment.htm>
+
+From mail.gery at gmail.com  Thu Jul 15 14:09:24 2010
+From: mail.gery at gmail.com (Gergely Kiss)
+Date: Thu, 15 Jul 2010 16:09:24 +0200
+Subject: [Chilli] coovaP and linksys wrt120n
+In-Reply-To: <70A463FCFF36A941A61895C97017503F4F70524153@tsavo.strathmore.local>
+References: <70A463FCFF36A941A61895C97017503F4F70524153@tsavo.strathmore.local>
+Message-ID: <AANLkTikX1vcR9A1Qfp4avbK7F2uvYCUtQwh9d3Dg8l3A@mail.gmail.com>
+
+Dear Cornelius,
+
+I'm afraid you won't be able to install CoovaChilli on your WRT120N device,
+as it doesn't seem to be supported by any of the popular third party
+firmwares. I've googled it: OpenWRT and DD-WRT doesn't support this device,
+it's very unlikely that other, less popular firmwares could be used on it.
+:(
+
+If you want to use Chilli, you'll need an external machine (or a VM) with
+CoovaChilli installed. Your Linksys device can only act as an access point
+in this case.
+
+
+Regards
+Gergely Kiss
+
+On 15 July 2010 15:22, Cornelius Mutuku <cmutuku at strathmore.edu> wrote:
+
+>  I would wish to install chilli on cisco wrt120n, any ideas
+>
+>
+>
+> I will appreciate any assistance
+>
+>
+>
+> Regards
+>
+> Cornelius mutuku
+>
+>
+>
+> ------------------------------
+> Strathmore University provides all-round education in an atmosphere of
+> freedom and responsibility.
+> This email and any files transmitted with it are intended solely for use by
+> the recipient(s) to whom it is addressed and may contain confidential
+> information. If you have received this email in error please notify the
+> sender immediately and permanently delete this email and/or any files
+> attached to it from your computer. Please note that any views or opinions
+> presented in this email are solely those of the author and do not
+> necessarily represent those of Strathmore University. The University accepts
+> no liability whatsoever for any loss or damages incurred, or suffered,
+> resulting, or arising, from the use of this email and/or its attachments.
+> The University warrants neither the integrity of the e-mail nor its freedom
+> from errors, viruses, interception or any other form of interference.
+> ?????????????????????????.
+> Website: www.strathmore.edu
+>
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20100715/be3a0d04/attachment.htm>
+
+From stelio at skyrove.com  Mon Jul 19 15:38:59 2010
+From: stelio at skyrove.com (Stelio Gouveia)
+Date: Mon, 19 Jul 2010 17:38:59 +0200
+Subject: [Chilli] coova-chilli 1.2.3
+In-Reply-To: <1278706906.3632.34.camel@david-laptop>
+References: <1278706906.3632.34.camel@david-laptop>
+Message-ID: <AANLkTikbfBSZRBajzGhDSDZoFg0uySc2crN1vaAbyaa7@mail.gmail.com>
+
+Hi David
+
+Thanks for the new release, i particularly like some of the more verbose log
+messaging and the RadSec changes ;)
+
+I'm trying to build coova-chilli for coova-ap (whiterussian rev 9287)
+
+I get the following error when building:
+
+make[6]: Entering directory
+`/home/openwrt/whiterussian/openwrt/build_mipsel/coova-chilli-1.2.3/src'
+/home/openwrt/whiterussian/openwrt/staging_dir_mipsel/bin/mipsel-linux-uclibc-gcc
+-DHAVE_CONFIG_H -I. -I..
+-I/home/openwrt/whiterussian/openwrt/staging_dir_mipsel/usr/include
+-I/home/openwrt/whiterussian/openwrt/staging_dir_mipsel/include
+-D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-strict-aliasing -O2
+-fomit-frame-pointer -funroll-loops -pipe
+-DDEFCHILLICONF='"/etc/chilli.conf"' -DDEFPIDFILE='"/var/run/chilli.pid"'
+-DDEFSTATEDIR='"/var/run"' -DSBINDIR='"/usr/sbin"' -I../bstring  -Os -pipe
+-mips32 -mtune=mips32 -funit-at-a-time -MT main-redir.o -MD -MP -MF
+.deps/main-redir.Tpo -c -o main-redir.o main-redir.c
+main-redir.c: In function `main':
+main-redir.c:555: error: structure has no member named `events'
+main-redir.c:555: error: structure has no member named `events'
+make[6]: *** [main-redir.o] Error 1
+make[6]: Leaving directory
+`/home/openwrt/whiterussian/openwrt/build_mipsel/coova-chilli-1.2.3/src'
+make[5]: *** [all-recursive] Error 1
+
+My build environment
+
+Using built-in specs.
+Target: i486-linux-gnu
+Configured with: ../src/configure -v --with-pkgversion='Debian 4.3.2-1.1'
+--with-bugurl=file:///usr/share/doc/gcc-4.3/README.Bugs
+--enable-languages=c,c++,fortran,objc,obj-c++ --prefix=/usr --enable-shared
+--with-system-zlib --libexecdir=/usr/lib --without-included-gettext
+--enable-threads=posix --enable-nls
+--with-gxx-include-dir=/usr/include/c++/4.3 --program-suffix=-4.3
+--enable-clocale=gnu --enable-libstdcxx-debug --enable-objc-gc --enable-mpfr
+--enable-targets=all --enable-cld --enable-checking=release
+--build=i486-linux-gnu --host=i486-linux-gnu --target=i486-linux-gnu
+Thread model: posix
+gcc version 4.3.2 (Debian 4.3.2-1.1)
+
+I don't get this error when compiling coova-chilli 1.2.2 in the same
+environment. The error can be bypassed if i comment out lines 555-557 of
+main-redir.c, think the object vars are out of scope or just not declared?
+
+- Stelio
+
+On Fri, Jul 9, 2010 at 10:21 PM, David Bird <david at coova.com> wrote:
+
+> With several inquiring about 1.2.3, it's time for a release. Binaries
+> will come a bit later on.
+>
+> http://www.coova.org/CoovaChilli
+> http://coova-chilli.s3.amazonaws.com/coova-chilli-1.2.3.tar.gz
+> http://www.coova.org/CoovaChilli/ChangeLog
+>
+>
+> Cheers,
+> David
+>
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20100719/96894443/attachment.htm>
+
+From ethariel at gmail.com  Mon Jul 26 07:33:00 2010
+From: ethariel at gmail.com (Ethariel)
+Date: Mon, 26 Jul 2010 09:33:00 +0200
+Subject: [Chilli] Help with chilli_radconfig
+Message-ID: <AANLkTik=EPpBVasPvLzfe7SFVb=qzVkMc-vn9S=UTEJn@mail.gmail.com>
+
+Hello,
+
+I've installed CoovaAP (1.0 beta 9) on my wrt54gl. When I run
+chilli_radconfig I've got a segmentation fault.
+I've migrate to openwrt (10.03) with provided package for coova-chilli and
+same error.
+I've recompiled coova-chilli 1.2.2 and 1.2.3 and same error.
+I've then migrate to openwrt 10.03 kernel 2.6 and still same error.
+
+The segmentation fault happens only when running a real request with
+--adminuser and --adminpasswd parameters. If I run chilli_radconfig
+--version or --help then it works.
+
+Is there anyone using chilli_radconfig on wrt54gl ? How can I have it to
+work ?
+
+Linksys WRT54GL v1.1
+CoovaAP 1.0 - beta 09
+OpenWrt 10.03 bcrm-2-4
+OpenWrt 10.03 bcrm47xxx
+
+Coova-chilli 1.2.2
+Coova-chilli 1.2.3
+
+
+Thks & Rgds,
+Ethariel
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20100726/db93293a/attachment.htm>
+
+From david at coova.com  Mon Jul 26 08:04:01 2010
+From: david at coova.com (David Bird)
+Date: Mon, 26 Jul 2010 10:04:01 +0200
+Subject: [Chilli] Help with chilli_radconfig
+In-Reply-To: <AANLkTik=EPpBVasPvLzfe7SFVb=qzVkMc-vn9S=UTEJn@mail.gmail.com>
+References: <AANLkTik=EPpBVasPvLzfe7SFVb=qzVkMc-vn9S=UTEJn@mail.gmail.com>
+Message-ID: <1280131441.4239.4.camel@david-laptop>
+
+Hi,
+
+Found the problem. Will be fixed in next subversion update. Thanks.
+
+David
+
+On Mon, 2010-07-26 at 09:33 +0200, Ethariel wrote:
+> Hello,
+> 
+> I've installed CoovaAP (1.0 beta 9) on my wrt54gl. When I run
+> chilli_radconfig I've got a segmentation fault.
+> I've migrate to openwrt (10.03) with provided package for coova-chilli
+> and same error.
+> I've recompiled coova-chilli 1.2.2 and 1.2.3 and same error.
+> I've then migrate to openwrt 10.03 kernel 2.6 and still same error.
+> 
+> The segmentation fault happens only when running a real request with
+> --adminuser and --adminpasswd parameters. If I run chilli_radconfig
+> --version or --help then it works.
+> 
+> Is there anyone using chilli_radconfig on wrt54gl ? How can I have it
+> to work ?
+> 
+> Linksys WRT54GL v1.1
+> CoovaAP 1.0 - beta 09
+> OpenWrt 10.03 bcrm-2-4
+> OpenWrt 10.03 bcrm47xxx
+> 
+> Coova-chilli 1.2.2
+> Coova-chilli 1.2.3
+> 
+> 
+> Thks & Rgds,
+> Ethariel
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+
+
+From m.simioni at gmail.com  Tue Jul 27 06:55:16 2010
+From: m.simioni at gmail.com (Marco Simioni)
+Date: Tue, 27 Jul 2010 08:55:16 +0200
+Subject: [Chilli] 100% cpu problem
+Message-ID: <AANLkTi=vfw-wOt5AdWzYiPVB_hWSri2Qd1yModDSeD1x@mail.gmail.com>
+
+Hi all, my customer is reporting a cpu problem.
+
+Chilli goes to consume all the processor, going to 100%.
+
+It is a brand new setup, bult on a VMWare ESXi Virtual Machine on HP ML115,
+1.8GHz CPU allocated,
+512MB RAM allocated,
+coova-chilli 1.2.2,
+Ubuntu 9.10 ( 2.6.31-14-server ).
+
+It's about three times it happens, solved it with a reboot.
+
+Very few clients, < 10.
+
+Suggestions ?
+
+How can i investigate and understand when it happens ?
+
+Thank i.a.
+
+Best regards,
+
+Marco
+
+From david at coova.com  Tue Jul 27 07:05:35 2010
+From: david at coova.com (David Bird)
+Date: Tue, 27 Jul 2010 09:05:35 +0200
+Subject: [Chilli] 100% cpu problem
+In-Reply-To: <AANLkTi=vfw-wOt5AdWzYiPVB_hWSri2Qd1yModDSeD1x@mail.gmail.com>
+References: <AANLkTi=vfw-wOt5AdWzYiPVB_hWSri2Qd1yModDSeD1x@mail.gmail.com>
+Message-ID: <1280214335.3366.10.camel@david-laptop>
+
+How quickly does this start to happen? Immediately? After how long? 
+
+Is chilli also not working during this time? Does chilli_query hang? 
+
+Are you able to attach gdb or use strace to get more info? 
+
+If able, you can try running in debug mode for additional log
+information? 
+
+Thanks,
+David
+
+
+On Tue, 2010-07-27 at 08:55 +0200, Marco Simioni wrote:
+> Hi all, my customer is reporting a cpu problem.
+> 
+> Chilli goes to consume all the processor, going to 100%.
+> 
+> It is a brand new setup, bult on a VMWare ESXi Virtual Machine on HP ML115,
+> 1.8GHz CPU allocated,
+> 512MB RAM allocated,
+> coova-chilli 1.2.2,
+> Ubuntu 9.10 ( 2.6.31-14-server ).
+> 
+> It's about three times it happens, solved it with a reboot.
+> 
+> Very few clients, < 10.
+> 
+> Suggestions ?
+> 
+> How can i investigate and understand when it happens ?
+> 
+> Thank i.a.
+> 
+> Best regards,
+> 
+> Marco
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+
+
+From wichert at wiggy.net  Tue Jul 27 07:02:51 2010
+From: wichert at wiggy.net (Wichert Akkerman)
+Date: Tue, 27 Jul 2010 09:02:51 +0200
+Subject: [Chilli] 100% cpu problem
+In-Reply-To: <AANLkTi=vfw-wOt5AdWzYiPVB_hWSri2Qd1yModDSeD1x@mail.gmail.com>
+References: <AANLkTi=vfw-wOt5AdWzYiPVB_hWSri2Qd1yModDSeD1x@mail.gmail.com>
+Message-ID: <4C4E849B.4030800@wiggy.net>
+
+On 2010-7-27 08:55, Marco Simioni wrote:
+> Hi all, my customer is reporting a cpu problem.
+>
+> Chilli goes to consume all the processor, going to 100%.
+>
+> It is a brand new setup, bult on a VMWare ESXi Virtual Machine on HP ML115,
+> 1.8GHz CPU allocated,
+> 512MB RAM allocated,
+> coova-chilli 1.2.2,
+> Ubuntu 9.10 ( 2.6.31-14-server ).
+>
+> It's about three times it happens, solved it with a reboot.
+
+Are you using WISPr/smart clients, or do you use SSL?
+
+Wichert.
+
+-- 
+Wichert Akkerman <wichert at wiggy.net>   It is simple to make things.
+http://www.wiggy.net/                  It is hard to make things simple.
+
+From info at easyhorpak.com  Tue Jul 27 08:25:11 2010
+From: info at easyhorpak.com (EasyHorpak.com)
+Date: Tue, 27 Jul 2010 15:25:11 +0700
+Subject: [Chilli] 100% cpu problem
+In-Reply-To: <AANLkTi=vfw-wOt5AdWzYiPVB_hWSri2Qd1yModDSeD1x@mail.gmail.com>
+References: <AANLkTi=vfw-wOt5AdWzYiPVB_hWSri2Qd1yModDSeD1x@mail.gmail.com>
+Message-ID: <4C4E97E7.10406@easyhorpak.com>
+
+On 27/07/2553 13:55, Marco Simioni wrote:
+> Hi all, my customer is reporting a cpu problem.
+>
+> Chilli goes to consume all the processor, going to 100%.
+>
+> It is a brand new setup, bult on a VMWare ESXi Virtual Machine on HP ML115,
+> 1.8GHz CPU allocated,
+> 512MB RAM allocated,
+> coova-chilli 1.2.2,
+> Ubuntu 9.10 ( 2.6.31-14-server ).
+>
+> It's about three times it happens, solved it with a reboot.
+>
+> Very few clients,<  10.
+>
+> Suggestions ?
+>
+> How can i investigate and understand when it happens ?
+>
+> Thank i.a.
+>
+> Best regards,
+>
+> Marco
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+>    
+htop
+please man.
+and show what is eating your cpu.
+
+From david at coova.com  Tue Jul 27 14:39:37 2010
+From: david at coova.com (David Bird)
+Date: Tue, 27 Jul 2010 16:39:37 +0200
+Subject: [Chilli] 100% cpu problem
+In-Reply-To: <AANLkTin1zNacK-T6L4UdJr=OBkRBG31GcH2YNxfjatYh@mail.gmail.com>
+References: <AANLkTi=vfw-wOt5AdWzYiPVB_hWSri2Qd1yModDSeD1x@mail.gmail.com>
+	<1280214335.3366.10.camel@david-laptop>
+	<AANLkTin1zNacK-T6L4UdJr=OBkRBG31GcH2YNxfjatYh@mail.gmail.com>
+Message-ID: <1280241577.2600.3.camel@david-laptop>
+
+Wichert asked a good question; are you using SSL features of
+CoovaChilli? 
+
+For info on gdb, you can google for it, of course. Here is a quick howto
+page:
+http://www.freebsd.org/doc/en/books/developers-handbook/debugging.html
+
+For strace, use "strace -p <pid>" and you will see the system calls
+being executed - if it is using 100%, there must be a runaway loop
+occurring. 
+
+David
+
+On Tue, 2010-07-27 at 09:20 +0200, Marco Simioni wrote:
+> It happened 3 times in a month,
+> 
+> not immediately but after some day of regular work.
+> 
+> "top" command sayd chilli was consuming 100% CPU.
+> 
+> customers reported that they could not get dhcp and then login page.
+> 
+> i will try to use chilli_query when will happen again.
+> 
+> how can i attach with gdb or strace? can you point me some documentation?
+> 
+> i can run it in debug mode only in console mode, with -fd, or also as
+> a service ?
+> 
+> thank you i.a.
+> 
+> regards,
+> 
+> Marco
+> 
+> 2010/7/27 David Bird <david at coova.com>:
+> > How quickly does this start to happen? Immediately? After how long?
+> >
+> > Is chilli also not working during this time? Does chilli_query hang?
+> >
+> > Are you able to attach gdb or use strace to get more info?
+> >
+> > If able, you can try running in debug mode for additional log
+> > information?
+> >
+> > Thanks,
+> > David
+> >
+> >
+> > On Tue, 2010-07-27 at 08:55 +0200, Marco Simioni wrote:
+> >> Hi all, my customer is reporting a cpu problem.
+> >>
+> >> Chilli goes to consume all the processor, going to 100%.
+> >>
+> >> It is a brand new setup, bult on a VMWare ESXi Virtual Machine on HP ML115,
+> >> 1.8GHz CPU allocated,
+> >> 512MB RAM allocated,
+> >> coova-chilli 1.2.2,
+> >> Ubuntu 9.10 ( 2.6.31-14-server ).
+> >>
+> >> It's about three times it happens, solved it with a reboot.
+> >>
+> >> Very few clients, < 10.
+> >>
+> >> Suggestions ?
+> >>
+> >> How can i investigate and understand when it happens ?
+> >>
+> >> Thank i.a.
+> >>
+> >> Best regards,
+> >>
+> >> Marco
+> >> _______________________________________________
+> >> Chilli mailing list
+> >> Chilli at coova.org
+> >> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+> >
+> >
+> >
+
+
+

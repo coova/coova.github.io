@@ -1,0 +1,4889 @@
+From honma at ictec.co.jp  Tue Mar  2 11:46:44 2010
+From: honma at ictec.co.jp (Masashi Honma)
+Date: Tue, 02 Mar 2010 20:46:44 +0900
+Subject: [Chilli]  Failed to make with latest svn
+Message-ID: <4B8CFAA4.3060109@ictec.co.jp>
+
+Hello.
+
+The building of CoovaChilli with latest svn fails with messages below.
+
+Is queue_test.c file needed ?
+
+
+gcc -DHAVE_CONFIG_H -I. -I..    -D_GNU_SOURCE -Wall -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -DDEFCHILLICONF='"/usr/local/etc/chilli.conf"' -DDEFPIDFILE='"/usr/local/var/run/chilli.pid"' -DDEFSTATEDIR='"/usr/local/var/run"' -DDEFCMDSOCK='"/usr/local/var/run/chilli.sock"' -DSBINDIR='"/usr/local/sbin"' -I../bstring  -g -O2 -MT cmdline.o -MD -MP -MF .deps/cmdline.Tpo -c -o cmdline.o cmdline.c
+mv -f .deps/cmdline.Tpo .deps/cmdline.Po
+/bin/bash ../libtool --tag=CC   --mode=link gcc -D_GNU_SOURCE -Wall -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -DDEFCHILLICONF='"/usr/local/etc/chilli.conf"' -DDEFPIDFILE='"/usr/local/var/run/chilli.pid"' -DDEFSTATEDIR='"/usr/local/var/run"' -DDEFCMDSOCK='"/usr/local/var/run/chilli.sock"' -DSBINDIR='"/usr/local/sbin"' -I../bstring  -g -O2   -o chilli_opt main-opt.o cmdline.o libchilli.la ../bstring/libbstring.la      -lrt 
+libtool: link: gcc -D_GNU_SOURCE -Wall -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -DDEFCHILLICONF=\"/usr/local/etc/chilli.conf\" -DDEFPIDFILE=\"/usr/local/var/run/chilli.pid\" -DDEFSTATEDIR=\"/usr/local/var/run\" -DDEFCMDSOCK=\"/usr/local/var/run/chilli.sock\" -DSBINDIR=\"/usr/local/sbin\" -I../bstring -g -O2 -o .libs/chilli_opt main-opt.o cmdline.o  ./.libs/libchilli.so ../bstring/.libs/libbstring.so -lrt
+make[2]: *** No rule to make target `queue_test.o', needed by `queue'.  Stop.
+make[2]: Leaving directory `/home/honma/coova-chilli-svn/coova-chilli/src'
+make[1]: *** [all-recursive] Error 1
+make[1]: Leaving directory `/home/honma/coova-chilli-svn/coova-chilli'
+make: *** [all] Error 2
+
+Regards,
+Masashi Honma.
+
+From david at coova.com  Tue Mar  2 12:08:13 2010
+From: david at coova.com (David Bird)
+Date: Tue, 02 Mar 2010 13:08:13 +0100
+Subject: [Chilli] Failed to make with latest svn
+In-Reply-To: <4B8CFAA4.3060109@ictec.co.jp>
+References: <4B8CFAA4.3060109@ictec.co.jp>
+Message-ID: <1267531693.29996.131.camel@david-laptop>
+
+Just need to remove 'queue' from sbin_PROGRAMS in src/Makefile.am, which
+we committed already. It's just a test program we have while looking
+into chilli operating with NFQUEUE. Thanks.
+
+David
+
+On Tue, 2010-03-02 at 20:46 +0900, Masashi Honma wrote:
+> Hello.
+> 
+> The building of CoovaChilli with latest svn fails with messages below.
+> 
+> Is queue_test.c file needed ?
+> 
+> 
+> gcc -DHAVE_CONFIG_H -I. -I..    -D_GNU_SOURCE -Wall -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -DDEFCHILLICONF='"/usr/local/etc/chilli.conf"' -DDEFPIDFILE='"/usr/local/var/run/chilli.pid"' -DDEFSTATEDIR='"/usr/local/var/run"' -DDEFCMDSOCK='"/usr/local/var/run/chilli.sock"' -DSBINDIR='"/usr/local/sbin"' -I../bstring  -g -O2 -MT cmdline.o -MD -MP -MF .deps/cmdline.Tpo -c -o cmdline.o cmdline.c
+> mv -f .deps/cmdline.Tpo .deps/cmdline.Po
+> /bin/bash ../libtool --tag=CC   --mode=link gcc -D_GNU_SOURCE -Wall -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -DDEFCHILLICONF='"/usr/local/etc/chilli.conf"' -DDEFPIDFILE='"/usr/local/var/run/chilli.pid"' -DDEFSTATEDIR='"/usr/local/var/run"' -DDEFCMDSOCK='"/usr/local/var/run/chilli.sock"' -DSBINDIR='"/usr/local/sbin"' -I../bstring  -g -O2   -o chilli_opt main-opt.o cmdline.o libchilli.la ../bstring/libbstring.la      -lrt 
+> libtool: link: gcc -D_GNU_SOURCE -Wall -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -DDEFCHILLICONF=\"/usr/local/etc/chilli.conf\" -DDEFPIDFILE=\"/usr/local/var/run/chilli.pid\" -DDEFSTATEDIR=\"/usr/local/var/run\" -DDEFCMDSOCK=\"/usr/local/var/run/chilli.sock\" -DSBINDIR=\"/usr/local/sbin\" -I../bstring -g -O2 -o .libs/chilli_opt main-opt.o cmdline.o  ./.libs/libchilli.so ../bstring/.libs/libbstring.so -lrt
+> make[2]: *** No rule to make target `queue_test.o', needed by `queue'.  Stop.
+> make[2]: Leaving directory `/home/honma/coova-chilli-svn/coova-chilli/src'
+> make[1]: *** [all-recursive] Error 1
+> make[1]: Leaving directory `/home/honma/coova-chilli-svn/coova-chilli'
+> make: *** [all] Error 2
+> 
+> Regards,
+> Masashi Honma.
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+
+
+From honma at ictec.co.jp  Tue Mar  2 12:21:46 2010
+From: honma at ictec.co.jp (Masashi Honma)
+Date: Tue, 02 Mar 2010 21:21:46 +0900
+Subject: [Chilli]  [PATCH] Fix: Memory leak on tun_discover()
+Message-ID: <4B8D02DA.6030902@ictec.co.jp>
+
+Hello.
+
+The ic.ifc_buf field is allocated by calloc() but not freed. This
+patch solves this issue and previous test program issue.
+
+Index: tun.c
+===================================================================
+--- tun.c	(revision 294)
++++ tun.c	(working copy)
+@@ -64,9 +64,16 @@
+   }
+ 
+   ic.ifc_buf = calloc((size_t)ic.ifc_len, 1);
++  if (ic.ifc_buf == NULL) {
++    log_err(errno, "calloc(ic.ifc_buf)");
++    close(fd);
++    return -1;
++  }
++
+   if (ioctl(fd, SIOCGIFCONF, &ic) < 0) {
+     log_err(errno, "ioctl(SIOCGIFCONF)");
+     close(fd);
++    free(ic.ifc_buf);
+     return -1;
+   }
+     
+@@ -203,6 +210,7 @@
+     }
+   }
+ 
++  free(ic.ifc_buf);
+   close(fd);
+   return 0;
+ }
+Index: Makefile.am
+===================================================================
+--- Makefile.am	(revision 294)
++++ Makefile.am	(working copy)
+@@ -3,7 +3,7 @@
+ EXTRA_DIST = cmdline.ggo cmdline.patch
+ 
+ lib_LTLIBRARIES = libchilli.la
+-sbin_PROGRAMS = chilli chilli_response chilli_radconfig chilli_query chilli_opt queue
++sbin_PROGRAMS = chilli chilli_response chilli_radconfig chilli_query chilli_opt
+ 
+ libchilli_la_SOURCES = \
+ chilli.c tun.c tun.h ippool.c ippool.h radius.h radius.c \
+
+
+Regards,
+Masashi Honma.
+
+From honma at ictec.co.jp  Tue Mar  2 12:33:27 2010
+From: honma at ictec.co.jp (Masashi Honma)
+Date: Tue, 02 Mar 2010 21:33:27 +0900
+Subject: [Chilli] [PATCH] Fix: Memory leak on tun_discover()
+In-Reply-To: <4B8D02DA.6030902@ictec.co.jp>
+References: <4B8D02DA.6030902@ictec.co.jp>
+Message-ID: <4B8D0597.3090906@ictec.co.jp>
+
+(2010/03/02 21:21), Masashi Honma wrote:
+> Hello.
+>
+> The ic.ifc_buf field is allocated by calloc() but not freed. This
+> patch solves this issue and previous test program issue.
+
+This is a patch torevision 295.
+
+Index: tun.c
+===================================================================
+--- tun.c	(revision 295)
++++ tun.c	(working copy)
+@@ -64,9 +64,16 @@
+    }
+  
+    ic.ifc_buf = calloc((size_t)ic.ifc_len, 1);
++  if (ic.ifc_buf == NULL) {
++    log_err(errno, "calloc(ic.ifc_buf)");
++    close(fd);
++    return -1;
++  }
++
+    if (ioctl(fd, SIOCGIFCONF, &ic) < 0) {
+      log_err(errno, "ioctl(SIOCGIFCONF)");
+      close(fd);
++    free(ic.ifc_buf);
+      return -1;
+    }
+      
+@@ -203,6 +210,7 @@
+      }
+    }
+  
++  free(ic.ifc_buf);
+    close(fd);
+    return 0;
+  }
+
+Regards,
+Masashi Honma.
+
+From fmacedo at cpd.ufrgs.br  Tue Mar  2 15:15:33 2010
+From: fmacedo at cpd.ufrgs.br (Fernando Dutra Fagundes Macedo)
+Date: Tue, 2 Mar 2010 12:15:33 -0300
+Subject: [Chilli] Chilli_redir using 100% cpu
+Message-ID: <87C8AADF9E20C14C811B0AFA1747DA541B33E2@filipides.ad.ufrgs.br>
+
+Hi,
+
+When I'm using chilli with ssl, the CPU load reaches 100%. Does anyone
+know what is happening? I've about 200 users logged and the last svn
+version.
+
+ 
+
+Regards,
+
+Fernando Macedo
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20100302/d24a85ac/attachment.htm>
+
+From honma at ictec.co.jp  Wed Mar  3 02:47:16 2010
+From: honma at ictec.co.jp (Masashi Honma)
+Date: Wed, 03 Mar 2010 11:47:16 +0900
+Subject: [Chilli]   [PATCH] Fix: Memory leak of iphash_new() on error path
+Message-ID: <4B8DCDB4.4040908@ictec.co.jp>
+
+Hello.
+
+The allocated "n" is not freed on error path. This patch solves this
+issue.
+
+Index: iphash.c
+===================================================================
+--- iphash.c	(revision 295)
++++ iphash.c	(working copy)
+@@ -95,6 +95,7 @@
+   
+   if (!(n->hash = calloc(sizeof(struct iphashm_t *), n->hashsize))){
+     log_err(0, "Failed to allocate memory for iphash");
++    free(n);
+     return -1;
+   }
+ 
+
+Regards,
+Masashi Honma.
+
+From oguzhank at bilkent.edu.tr  Wed Mar  3 10:31:45 2010
+From: oguzhank at bilkent.edu.tr (Oguzhan Kayhan)
+Date: Wed, 3 Mar 2010 12:31:45 +0200
+Subject: [Chilli] wispr upload limiting on coova 1.2.2
+Message-ID: <201003031231.45920.oguzhank@bilkent.edu.tr>
+
+Hello,
+I am using coova on ethernet interfaces to control wireless devices behind 
+it..
+Previously i was using 1.0.14 and noticed that my upload speed config does not 
+work.
+So decided to update to 1.2.2
+But still no luck..
+I tried some parameters..
+For ex. I set upload to 5 mbit and download to 10mbit.
+xx-xx-xx-xx-xx x.x.x.x pass 4b8e16d90000000c 1 7798 6/0 6/0 2722/0 3236/0 0 0 
+0/5000000 0/10000000
+
+And while testing download works fine with 10mbit but upload was going up to 
+100mbit..
+Anyway, i tested with 1mbit on both upload and download
+xx-xx-xx-xx-xx x.x.x.x pass 4b8e21260000000c 1 7798 48/0 1/0 4757101/0 
+4755507/0 0 0 99/1000000 99/1000000 http:/xxx.xxx.xxx.xxx
+
+while downloading it was 1mbit. but when uploading it stayed at 50mbit. maybe 
+because of my downloads saturation du e to ack packets..
+I assume that 99 on upload download is % size of saturation on that line.
+So..even i set very tiny numbers on upload and it reaches to %99.. no chance.. 
+it doesnt limit.
+I both used tun and tap as interface.. and i used both limiting from radius or 
+by coovas default upload limit parameters....same results..
+working on debian..
+
+
+PS: sorry for crosspost on both forum and maillist.
+But some users are making my network unstable due do high upload rates... so i 
+need that desperately..
+
+From david at coova.com  Wed Mar  3 10:57:31 2010
+From: david at coova.com (David Bird)
+Date: Wed, 03 Mar 2010 11:57:31 +0100
+Subject: [Chilli] wispr upload limiting on coova 1.2.2
+In-Reply-To: <201003031231.45920.oguzhank@bilkent.edu.tr>
+References: <201003031231.45920.oguzhank@bilkent.edu.tr>
+Message-ID: <1267613851.3395.100.camel@david-laptop>
+
+Can you also give your iptables rules?
+
+
+On Wed, 2010-03-03 at 12:31 +0200, Oguzhan Kayhan wrote:
+> Hello,
+> I am using coova on ethernet interfaces to control wireless devices behind 
+> it..
+> Previously i was using 1.0.14 and noticed that my upload speed config does not 
+> work.
+> So decided to update to 1.2.2
+> But still no luck..
+> I tried some parameters..
+> For ex. I set upload to 5 mbit and download to 10mbit.
+> xx-xx-xx-xx-xx x.x.x.x pass 4b8e16d90000000c 1 7798 6/0 6/0 2722/0 3236/0 0 0 
+> 0/5000000 0/10000000
+> 
+> And while testing download works fine with 10mbit but upload was going up to 
+> 100mbit..
+> Anyway, i tested with 1mbit on both upload and download
+> xx-xx-xx-xx-xx x.x.x.x pass 4b8e21260000000c 1 7798 48/0 1/0 4757101/0 
+> 4755507/0 0 0 99/1000000 99/1000000 http:/xxx.xxx.xxx.xxx
+> 
+> while downloading it was 1mbit. but when uploading it stayed at 50mbit. maybe 
+> because of my downloads saturation du e to ack packets..
+> I assume that 99 on upload download is % size of saturation on that line.
+> So..even i set very tiny numbers on upload and it reaches to %99.. no chance.. 
+> it doesnt limit.
+> I both used tun and tap as interface.. and i used both limiting from radius or 
+> by coovas default upload limit parameters....same results..
+> working on debian..
+> 
+> 
+> PS: sorry for crosspost on both forum and maillist.
+> But some users are making my network unstable due do high upload rates... so i 
+> need that desperately..
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+
+
+From oguzhank at bilkent.edu.tr  Wed Mar  3 11:49:38 2010
+From: oguzhank at bilkent.edu.tr (Oguzhan Kayhan)
+Date: Wed, 3 Mar 2010 13:49:38 +0200
+Subject: [Chilli] wispr upload limiting on coova 1.2.2
+In-Reply-To: <1267613851.3395.100.camel@david-laptop>
+References: <201003031231.45920.oguzhank@bilkent.edu.tr>
+	<1267613851.3395.100.camel@david-laptop>
+Message-ID: <201003031349.38739.oguzhank@bilkent.edu.tr>
+
+There is no rule about chilli-coova itself.
+It is one of our main routers, thats why we are only using our own network 
+rules..And there is no rules for that tun/tap interfaces or physical 
+interfaces that coova runs on it.
+
+Were there any rule on itables to let choova control up/down bw rates??
+If yes, which rule?
+We can add it additionally.
+
+
+
+On Wednesday 03 March 2010 12:57:31 pm David Bird wrote:
+> Can you also give your iptables rules?
+> 
+> On Wed, 2010-03-03 at 12:31 +0200, Oguzhan Kayhan wrote:
+> > Hello,
+> > I am using coova on ethernet interfaces to control wireless devices
+> > behind it..
+> > Previously i was using 1.0.14 and noticed that my upload speed config
+> > does not work.
+> > So decided to update to 1.2.2
+> > But still no luck..
+> > I tried some parameters..
+> > For ex. I set upload to 5 mbit and download to 10mbit.
+> > xx-xx-xx-xx-xx x.x.x.x pass 4b8e16d90000000c 1 7798 6/0 6/0 2722/0 3236/0
+> > 0 0 0/5000000 0/10000000
+> >
+> > And while testing download works fine with 10mbit but upload was going up
+> > to 100mbit..
+> > Anyway, i tested with 1mbit on both upload and download
+> > xx-xx-xx-xx-xx x.x.x.x pass 4b8e21260000000c 1 7798 48/0 1/0 4757101/0
+> > 4755507/0 0 0 99/1000000 99/1000000 http:/xxx.xxx.xxx.xxx
+> >
+> > while downloading it was 1mbit. but when uploading it stayed at 50mbit.
+> > maybe because of my downloads saturation du e to ack packets..
+> > I assume that 99 on upload download is % size of saturation on that line.
+> > So..even i set very tiny numbers on upload and it reaches to %99.. no
+> > chance.. it doesnt limit.
+> > I both used tun and tap as interface.. and i used both limiting from
+> > radius or by coovas default upload limit parameters....same results..
+> > working on debian..
+> >
+> >
+> > PS: sorry for crosspost on both forum and maillist.
+> > But some users are making my network unstable due do high upload rates...
+> > so i need that desperately..
+> > _______________________________________________
+> > Chilli mailing list
+> > Chilli at coova.org
+> > http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+> 
+
+From david at coova.com  Wed Mar  3 16:09:44 2010
+From: david at coova.com (David Bird)
+Date: Wed, 03 Mar 2010 17:09:44 +0100
+Subject: [Chilli] wispr upload limiting on coova 1.2.2
+In-Reply-To: <201003031349.38739.oguzhank@bilkent.edu.tr>
+References: <201003031231.45920.oguzhank@bilkent.edu.tr>
+	<1267613851.3395.100.camel@david-laptop>
+	<201003031349.38739.oguzhank@bilkent.edu.tr>
+Message-ID: <1267632584.3395.136.camel@david-laptop>
+
+Drop packets to/from the "dhcpif" interface... you don't want your
+kernel attempting to route that traffic. Have you noticed many duplicate
+packets on your network? 
+
+
+On Wed, 2010-03-03 at 13:49 +0200, Oguzhan Kayhan wrote:
+> There is no rule about chilli-coova itself.
+> It is one of our main routers, thats why we are only using our own network 
+> rules..And there is no rules for that tun/tap interfaces or physical 
+> interfaces that coova runs on it.
+> 
+> Were there any rule on itables to let choova control up/down bw rates??
+> If yes, which rule?
+> We can add it additionally.
+> 
+> 
+> 
+> On Wednesday 03 March 2010 12:57:31 pm David Bird wrote:
+> > Can you also give your iptables rules?
+> > 
+> > On Wed, 2010-03-03 at 12:31 +0200, Oguzhan Kayhan wrote:
+> > > Hello,
+> > > I am using coova on ethernet interfaces to control wireless devices
+> > > behind it..
+> > > Previously i was using 1.0.14 and noticed that my upload speed config
+> > > does not work.
+> > > So decided to update to 1.2.2
+> > > But still no luck..
+> > > I tried some parameters..
+> > > For ex. I set upload to 5 mbit and download to 10mbit.
+> > > xx-xx-xx-xx-xx x.x.x.x pass 4b8e16d90000000c 1 7798 6/0 6/0 2722/0 3236/0
+> > > 0 0 0/5000000 0/10000000
+> > >
+> > > And while testing download works fine with 10mbit but upload was going up
+> > > to 100mbit..
+> > > Anyway, i tested with 1mbit on both upload and download
+> > > xx-xx-xx-xx-xx x.x.x.x pass 4b8e21260000000c 1 7798 48/0 1/0 4757101/0
+> > > 4755507/0 0 0 99/1000000 99/1000000 http:/xxx.xxx.xxx.xxx
+> > >
+> > > while downloading it was 1mbit. but when uploading it stayed at 50mbit.
+> > > maybe because of my downloads saturation du e to ack packets..
+> > > I assume that 99 on upload download is % size of saturation on that line.
+> > > So..even i set very tiny numbers on upload and it reaches to %99.. no
+> > > chance.. it doesnt limit.
+> > > I both used tun and tap as interface.. and i used both limiting from
+> > > radius or by coovas default upload limit parameters....same results..
+> > > working on debian..
+> > >
+> > >
+> > > PS: sorry for crosspost on both forum and maillist.
+> > > But some users are making my network unstable due do high upload rates...
+> > > so i need that desperately..
+> > > _______________________________________________
+> > > Chilli mailing list
+> > > Chilli at coova.org
+> > > http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+> > 
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+
+
+From honma at ictec.co.jp  Thu Mar  4 02:16:21 2010
+From: honma at ictec.co.jp (Masashi Honma)
+Date: Thu, 04 Mar 2010 11:16:21 +0900
+Subject: [Chilli]  Can't read Gzip'd back logs
+Message-ID: <4B8F17F5.1000501@ictec.co.jp>
+
+Hello.
+
+I downloaded Gzip'd logs from the Chilli Archives [1] and gunzip these.
+But these does not include words but binary data. I want to grep these
+logs so I need to download these. Does anybody knows how to do it ?
+
+[1] http://lists.coova.org/pipermail/chilli/
+
+Regards,
+Masashi Honma.
+
+From jason at theallens.id.au  Thu Mar  4 03:52:11 2010
+From: jason at theallens.id.au (Jason Allen)
+Date: Thu, 4 Mar 2010 14:52:11 +1100
+Subject: [Chilli] Currently logged-in check?
+Message-ID: <3e888d0e1003031952t199a3d3cka7c1a91a85f2635@mail.gmail.com>
+
+Hi,
+
+Is there any way to test if a user is currently logged-in when the user
+arrives at the HS_UAMFORMAT (home) page?
+
+If, after sucessful login, the user closes the browser and later re-opens
+it I would like to check if they are currently logged-in and if so send them
+to a different page.
+
+
+Thanks.
+
+-- 
+Cheers,
+Jason
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20100304/6a704f25/attachment.htm>
+
+From david at coova.com  Thu Mar  4 06:05:00 2010
+From: david at coova.com (David Bird)
+Date: Thu, 04 Mar 2010 07:05:00 +0100
+Subject: [Chilli] Currently logged-in check?
+In-Reply-To: <3e888d0e1003031952t199a3d3cka7c1a91a85f2635@mail.gmail.com>
+References: <3e888d0e1003031952t199a3d3cka7c1a91a85f2635@mail.gmail.com>
+Message-ID: <1267682700.3395.149.camel@david-laptop>
+
+Yes, chilli sends a 'res' parameters string which will be 'notyet' when
+unauthorized, 'already' if already authorized, and 'success' if just
+authorized. However, if the authorized user closes their browser and
+re-opens, chances are they will NOT go to the captive portal (they will
+not be redirected, since they are logged in). 
+
+
+On Thu, 2010-03-04 at 14:52 +1100, Jason Allen wrote:
+> Hi,
+>  
+> Is there any way to test if a user is currently logged-in when the
+> user arrives at the HS_UAMFORMAT (home) page?
+>  
+> If, after sucessful login, the user closes the browser and later
+> re-opens it I would like to check if they are currently logged-in and
+> if so send them to a different page.
+>  
+>  
+> Thanks.
+> 
+> -- 
+> Cheers,
+> Jason
+> 
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+
+
+From honma at ictec.co.jp  Thu Mar  4 10:40:47 2010
+From: honma at ictec.co.jp (Masashi Honma)
+Date: Thu, 04 Mar 2010 19:40:47 +0900
+Subject: [Chilli]  How to set up CoovaChilli ?
+Message-ID: <4B8F8E2F.90601@ictec.co.jp>
+
+Hello.
+
+I'm configuring CoovaChilli with Debian testing and CoovaChilli 1.2.2.
+I'm connecting my PCs like Fig 1.
+
+     192.168.182.2   192.168.182.1       192.168.1.33   192.168.1.1
+PC1 ------------------------------- PC2 ---------------------------- PC3
+                             wlan1       eth0
+Fig 1.
+
+The PC2 is Captive portal, it includes CoovaChilli, FreeRADIUS 2.1.8
+and bind 9.6.1. The PC1 and the PC2 is connected with 802.11. The PC2
+and the PC3 is connected with the Ethernet. The PC1 is Captive portal
+client and it's IP address is provided by CoovaChilli DHCP server.
+
+Before RADIUS authentication, PC1 can only ping to 192.168.182.1.
+After RADIUS authentication, PC1 can ping to 192.168.1.33.
+(Of course 192.168.182.1 and 192.168.1.33 are interfaces of PC2.)
+But PC1 can't ping to 192.168.1.1.
+
+And the details are:
+
+1) The /proc/sys/net/ipv4/ip_forward is 1.
+
+2) The main.conf is this.
+------------------------------
+net 192.168.182.0/255.255.255.0
+uamlisten 192.168.182.1
+
+dns1 192.168.182.1
+
+radiusserver1 192.168.1.33
+radiusserver2 192.168.1.33
+radiussecret xxxxxx
+
+dhcpif wlan1
+uamserver http://192.168.1.33/cgi-bin/hotspotlogin.cgi
+------------------------------
+
+3) I build CoovaChilli without any option (only typed "./configure").
+
+4) The iptables has no rules without CoovaChilli script defined.
+
+5) I have added "routeif eth0" statement to the main.conf. But
+there was no change.
+
+I have read some source codes, but I couldn't solve the problem. Is anybody
+know what is a matter ?
+
+Regards,
+Masashi Honma.
+
+From ian.coffey at gmail.com  Thu Mar  4 22:03:56 2010
+From: ian.coffey at gmail.com (IanC)
+Date: Thu, 4 Mar 2010 17:03:56 -0500
+Subject: [Chilli] Multiple dynip
+Message-ID: <3ea93a691003041403x2dc19359h39d482b149933b16@mail.gmail.com>
+
+We are running Chilli with public address space and as such have a finite
+number of consecutive class c's we can allocate, which makes it difficult to
+work with the *dynip and net options*.
+
+Is there any way to declare multiple dynip options so we could allocate 4 or
+5 different non-consecutive class C's for assignment without having to run a
+separate DHCP server? As it is now, that doesn't seem possible.
+
+Thanks!
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20100304/7d0b2a60/attachment.htm>
+
+From honma at ictec.co.jp  Fri Mar  5 02:22:35 2010
+From: honma at ictec.co.jp (Masashi Honma)
+Date: Fri, 05 Mar 2010 11:22:35 +0900
+Subject: [Chilli] How to set up CoovaChilli ?
+In-Reply-To: <4B8F8E2F.90601@ictec.co.jp>
+References: <4B8F8E2F.90601@ictec.co.jp>
+Message-ID: <4B906AEB.8090504@ictec.co.jp>
+
+(2010/03/04 19:40), Masashi Honma wrote:
+> But PC1 can't ping to 192.168.1.1.
+
+I could ping to 192.168.1.1 and Google. After I typed this command.
+(And I changed dns1 to 192.168.1.1).
+
+# iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
+
+Is that right way ? I have thought CoovaChilli does NAT.
+
+Regards,
+Masashi Honma.
+
+From david at coova.com  Fri Mar  5 05:48:06 2010
+From: david at coova.com (David Bird)
+Date: Fri, 05 Mar 2010 06:48:06 +0100
+Subject: [Chilli] How to set up CoovaChilli ?
+In-Reply-To: <4B906AEB.8090504@ictec.co.jp>
+References: <4B8F8E2F.90601@ictec.co.jp>  <4B906AEB.8090504@ictec.co.jp>
+Message-ID: <1267768086.3395.305.camel@david-laptop>
+
+That is right. Chilli does not do the full masquerading, but it does
+indeed do NAT in certain circumstances. Some networks use chilli also
+without the masquerading too. 
+
+On Fri, 2010-03-05 at 11:22 +0900, Masashi Honma wrote:
+> (2010/03/04 19:40), Masashi Honma wrote:
+> > But PC1 can't ping to 192.168.1.1.
+> 
+> I could ping to 192.168.1.1 and Google. After I typed this command.
+> (And I changed dns1 to 192.168.1.1).
+> 
+> # iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
+> 
+> Is that right way ? I have thought CoovaChilli does NAT.
+> 
+> Regards,
+> Masashi Honma.
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+
+
+From honma at ictec.co.jp  Fri Mar  5 05:53:35 2010
+From: honma at ictec.co.jp (Masashi Honma)
+Date: Fri, 05 Mar 2010 14:53:35 +0900
+Subject: [Chilli]  [PATCH] Fix: Memory leak of opt_run()
+Message-ID: <4B909C5F.2020304@ictec.co.jp>
+
+Hello.
+
+The opt_run() passes arguments to chilli_opt. But the arguments can't
+be freed because the process calls execl() after calloc(). This patch
+replaces calloc() with array.
+
+
+Index: options.c
+===================================================================
+--- options.c	(revision 297)
++++ options.c	(working copy)
+@@ -115,11 +115,17 @@
+ }
+ 
+ static int opt_run(int argc, char **argv, int reload) {
+-  char **newargs;
++#define OPT_ARG_SIZE 16
++  char *newargs[OPT_ARG_SIZE];
+   char file[128];
+   int status;
+   int i;
+ 
++  if (argc + 4 > OPT_ARG_SIZE) {
++    log_err(0, "argument too much");
++    return -1;
++  }
++
+   chilli_binconfig(file, sizeof(file), 0);
+ 
+   log_dbg("(Re)processing options [%s]", file);
+@@ -133,10 +139,6 @@
+     return status;
+   }
+ 
+-  if (!(newargs = calloc(1, sizeof(char *) * (argc + 4)))) {
+-    return -1;
+-  }
+-  
+   for (i=1; i < argc; i++) {
+     newargs[i] = argv[i];
+   }
+@@ -145,6 +147,7 @@
+   newargs[i++] = "-b";
+   newargs[i++] = file;
+   newargs[i++] = reload ? "-r" : NULL;
++  newargs[i++] = NULL;
+ 
+   log_dbg("running chilli_opt on %s", file);
+ 
+
+
+Regards,
+Masashi Honma.
+
+From david at coova.com  Fri Mar  5 06:04:05 2010
+From: david at coova.com (David Bird)
+Date: Fri, 05 Mar 2010 07:04:05 +0100
+Subject: [Chilli] [PATCH] Fix: Memory leak of opt_run()
+In-Reply-To: <4B909C5F.2020304@ictec.co.jp>
+References: <4B909C5F.2020304@ictec.co.jp>
+Message-ID: <1267769045.3395.311.camel@david-laptop>
+
+Does it really matter? While technically the memory I guess is leaked,
+it is allocated in a forked process that is about to be replaced with
+execl(). And, since the memory in question is holding the arguments, the
+memory needs to be valid until the execl process exits. I believe the
+heap and stack approaches are basically the same. Are you running a tool
+that indicated the memory was a leaked?
+
+On Fri, 2010-03-05 at 14:53 +0900, Masashi Honma wrote:
+> Hello.
+> 
+> The opt_run() passes arguments to chilli_opt. But the arguments can't
+> be freed because the process calls execl() after calloc(). This patch
+> replaces calloc() with array.
+> 
+> 
+> Index: options.c
+> ===================================================================
+> --- options.c	(revision 297)
+> +++ options.c	(working copy)
+> @@ -115,11 +115,17 @@
+>  }
+>  
+>  static int opt_run(int argc, char **argv, int reload) {
+> -  char **newargs;
+> +#define OPT_ARG_SIZE 16
+> +  char *newargs[OPT_ARG_SIZE];
+>    char file[128];
+>    int status;
+>    int i;
+>  
+> +  if (argc + 4 > OPT_ARG_SIZE) {
+> +    log_err(0, "argument too much");
+> +    return -1;
+> +  }
+> +
+>    chilli_binconfig(file, sizeof(file), 0);
+>  
+>    log_dbg("(Re)processing options [%s]", file);
+> @@ -133,10 +139,6 @@
+>      return status;
+>    }
+>  
+> -  if (!(newargs = calloc(1, sizeof(char *) * (argc + 4)))) {
+> -    return -1;
+> -  }
+> -  
+>    for (i=1; i < argc; i++) {
+>      newargs[i] = argv[i];
+>    }
+> @@ -145,6 +147,7 @@
+>    newargs[i++] = "-b";
+>    newargs[i++] = file;
+>    newargs[i++] = reload ? "-r" : NULL;
+> +  newargs[i++] = NULL;
+>  
+>    log_dbg("running chilli_opt on %s", file);
+>  
+> 
+> 
+> Regards,
+> Masashi Honma.
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+
+
+From honma at ictec.co.jp  Fri Mar  5 06:38:14 2010
+From: honma at ictec.co.jp (Masashi Honma)
+Date: Fri, 05 Mar 2010 15:38:14 +0900
+Subject: [Chilli] [PATCH] Fix: Memory leak of opt_run()
+In-Reply-To: <1267769045.3395.311.camel@david-laptop>
+References: <4B909C5F.2020304@ictec.co.jp>
+	<1267769045.3395.311.camel@david-laptop>
+Message-ID: <4B90A6D6.2080705@ictec.co.jp>
+
+(2010/03/05 15:04), David Bird wrote:
+> Does it really matter? While technically the memory I guess is leaked,
+> it is allocated in a forked process that is about to be replaced with
+> execl(). And, since the memory in question is holding the arguments, the
+> memory needs to be valid until the execl process exits. I believe the
+> heap and stack approaches are basically the same. Are you running a tool
+> that indicated the memory was a leaked?
+
+Of course I did test about it like this.
+
+static**newargs_bk;  <-- add
+
+static int opt_run(int argc, char **argv, int reload) {
+   char **newargs;
+   char file[128];
+
+   newargs_bk = newargs;  <-- add
+
+
+void options_destroy() {
+   if (_options._data)
+     free(_options._data);
+   free(newargs_bk);  <-- add
+}
+
+I backuped newargs to newargs_bk and freed newargs_bk in options_destroy().
+The options_destroy() is called after "chilli_opt" process. (I checked this
+order by inserting printf() before the final line of main() of "main-opt.c"
+and options_destroy().) Linux kernel will output double free warning when
+newargs_bk was freed in options_destroy() if the newargs_bk was freed
+already. But no warning displayed. So I understood the memory is leaked.
+
+Regards,
+Masashi Honma.
+
+From honma at ictec.co.jp  Fri Mar  5 06:45:34 2010
+From: honma at ictec.co.jp (Masashi Honma)
+Date: Fri, 05 Mar 2010 15:45:34 +0900
+Subject: [Chilli] [PATCH] Fix: Memory leak of opt_run()
+In-Reply-To: <4B90A6D6.2080705@ictec.co.jp>
+References: <4B909C5F.2020304@ictec.co.jp>	<1267769045.3395.311.camel@david-laptop>
+	<4B90A6D6.2080705@ictec.co.jp>
+Message-ID: <4B90A88E.9030106@ictec.co.jp>
+
+(2010/03/05 15:38), Masashi Honma wrote:
+> static int opt_run(int argc, char **argv, int reload) {
+> char **newargs;
+> char file[128];
+>
+> newargs_bk = newargs; <-- add
+
+
+I omitted many lines. Right position is here.
+
+   if (!(newargs = calloc(1, sizeof(char *) * (argc + 4)))) {
+     return -1;
+   }
+
+   newargs_bk = newargs; <-- add
+
+   for (i=1; i < argc; i++) {
+     newargs[i] = argv[i];
+   }
+
+Regards,
+Masashi Honma.
+
+From david at coova.com  Fri Mar  5 08:08:47 2010
+From: david at coova.com (David Bird)
+Date: Fri, 05 Mar 2010 09:08:47 +0100
+Subject: [Chilli] [PATCH] Fix: Memory leak of opt_run()
+In-Reply-To: <4B90A88E.9030106@ictec.co.jp>
+References: <4B909C5F.2020304@ictec.co.jp>
+	<1267769045.3395.311.camel@david-laptop> <4B90A6D6.2080705@ictec.co.jp>
+	<4B90A88E.9030106@ictec.co.jp>
+Message-ID: <1267776527.3395.334.camel@david-laptop>
+
+Hello,
+
+I still don't see the problem. In opt_run(), one of the first things it
+does is a fork() and returns the parent process out of the function. The
+child continues, and allocated the memory in question, before going into
+execv(), which replaces the process. I believe your free(newargs_bk) in
+options_destroy() is trying to free uninitialized memory (newargs_bk
+isn't initialized in the parent, only the child). So, the question is,
+do you think memory is being leaked in the parent or child process? I
+would only be concerned about leaking memory in the parent (chilli)
+process as the child process is short-lived. 
+
+David
+
+On Fri, 2010-03-05 at 15:45 +0900, Masashi Honma wrote:
+> (2010/03/05 15:38), Masashi Honma wrote:
+> > static int opt_run(int argc, char **argv, int reload) {
+> > char **newargs;
+> > char file[128];
+> >
+> > newargs_bk = newargs; <-- add
+> 
+> 
+> I omitted many lines. Right position is here.
+> 
+>    if (!(newargs = calloc(1, sizeof(char *) * (argc + 4)))) {
+>      return -1;
+>    }
+> 
+>    newargs_bk = newargs; <-- add
+> 
+>    for (i=1; i < argc; i++) {
+>      newargs[i] = argv[i];
+>    }
+> 
+> Regards,
+> Masashi Honma.
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+
+
+From honma at ictec.co.jp  Fri Mar  5 08:57:33 2010
+From: honma at ictec.co.jp (Masashi Honma)
+Date: Fri, 05 Mar 2010 17:57:33 +0900
+Subject: [Chilli] [PATCH] Fix: Memory leak of opt_run()
+In-Reply-To: <1267776527.3395.334.camel@david-laptop>
+References: <4B909C5F.2020304@ictec.co.jp>	
+	<1267769045.3395.311.camel@david-laptop>
+	<4B90A6D6.2080705@ictec.co.jp>	 <4B90A88E.9030106@ictec.co.jp>
+	<1267776527.3395.334.camel@david-laptop>
+Message-ID: <4B90C77D.205@ictec.co.jp>
+
+(2010/03/05 17:08), David Bird wrote:
+> Hello,
+>
+> I still don't see the problem.
+
+Have you tested as I wrote ?
+
+> In opt_run(), one of the first things it
+> does is a fork() and returns the parent process out of the function. The
+> child continues, and allocated the memory in question, before going into
+> execv(), which replaces the process. I believe your free(newargs_bk) in
+> options_destroy() is trying to free uninitialized memory (newargs_bk
+> isn't initialized in the parent, only the child).
+
+No. I printed out the address of newargs just after calloc(). And I
+printed out the address of newargs_bk just before free(newargs_bk) in
+options_destroy(). They have identical address.
+
+> So, the question is,
+> do you think memory is being leaked in the parent or child process? I
+> would only be concerned about leaking memory in the parent (chilli)
+> process as the child process is short-lived.
+
+Do you think the newargs is freed when the child process finished ?
+If so, why free() in options_destroy() doesn't cause double free
+warning in my previous test code ?
+
+Regards,
+Masashi Honma.
+
+From david at coova.com  Fri Mar  5 09:18:03 2010
+From: david at coova.com (David Bird)
+Date: Fri, 05 Mar 2010 10:18:03 +0100
+Subject: [Chilli] [PATCH] Fix: Memory leak of opt_run()
+In-Reply-To: <4B90C77D.205@ictec.co.jp>
+References: <4B909C5F.2020304@ictec.co.jp>
+	<1267769045.3395.311.camel@david-laptop> <4B90A6D6.2080705@ictec.co.jp>
+	<4B90A88E.9030106@ictec.co.jp> <1267776527.3395.334.camel@david-laptop>
+	<4B90C77D.205@ictec.co.jp>
+Message-ID: <1267780683.3395.347.camel@david-laptop>
+
+No, I haven't tried it in chilli, because it doesn't make much sense.
+The following will demonstrate my point. 
+
+#include <stdio.h>
+#include <unistd.h>
+#include <stdlib.h>
+
+static void *m = 0;
+
+int main() {
+  pid_t pid = fork();
+  if (pid) {
+    /* parent */
+    sleep(1);
+    printf("%p\n", m);
+  }  else {
+    /* child */
+    m = malloc(1);
+    printf("%p\n", m);
+  }
+}
+
+$ gcc test.c 
+$ ./a.out 
+0x90dd008
+(nil)
+
+>From what you are saying, I think you expect the 'm' to be the same in
+the parent as in the child. Because opt_run() does a fork and allocated
+the newargs only in the child (which exits). You are then trying to free
+newargs from the parent, which isn't possible. 
+
+
+
+On Fri, 2010-03-05 at 17:57 +0900, Masashi Honma wrote:
+> (2010/03/05 17:08), David Bird wrote:
+> > Hello,
+> >
+> > I still don't see the problem.
+> 
+> Have you tested as I wrote ?
+> 
+> > In opt_run(), one of the first things it
+> > does is a fork() and returns the parent process out of the function. The
+> > child continues, and allocated the memory in question, before going into
+> > execv(), which replaces the process. I believe your free(newargs_bk) in
+> > options_destroy() is trying to free uninitialized memory (newargs_bk
+> > isn't initialized in the parent, only the child).
+> 
+> No. I printed out the address of newargs just after calloc(). And I
+> printed out the address of newargs_bk just before free(newargs_bk) in
+> options_destroy(). They have identical address.
+> 
+> > So, the question is,
+> > do you think memory is being leaked in the parent or child process? I
+> > would only be concerned about leaking memory in the parent (chilli)
+> > process as the child process is short-lived.
+> 
+> Do you think the newargs is freed when the child process finished ?
+> If so, why free() in options_destroy() doesn't cause double free
+> warning in my previous test code ?
+> 
+> Regards,
+> Masashi Honma.
+
+
+
+From honma at ictec.co.jp  Mon Mar  8 04:53:50 2010
+From: honma at ictec.co.jp (Masashi Honma)
+Date: Mon, 08 Mar 2010 13:53:50 +0900
+Subject: [Chilli] [PATCH] Fix: Memory leak of opt_run()
+In-Reply-To: <1267780683.3395.347.camel@david-laptop>
+References: <4B909C5F.2020304@ictec.co.jp>	
+	<1267769045.3395.311.camel@david-laptop>
+	<4B90A6D6.2080705@ictec.co.jp>	 <4B90A88E.9030106@ictec.co.jp>
+	<1267776527.3395.334.camel@david-laptop>	
+	<4B90C77D.205@ictec.co.jp> <1267780683.3395.347.camel@david-laptop>
+Message-ID: <4B9482DE.2060406@ictec.co.jp>
+
+(2010/03/05 18:18), David Bird wrote:
+> No, I haven't tried it in chilli, because it doesn't make much sense.
+> The following will demonstrate my point.
+
+I've tested your test code and gotten same result. But this code does
+not describe what I want to say. I wrote some codes to describe my
+thought. Try this patch and boot ChilliSpot with
+
+# chilli -f -d
+
+Index: main-opt.c
+===================================================================
+--- main-opt.c	(revision 297)
++++ main-opt.c	(working copy)
+@@ -78,7 +78,17 @@
+    char hostname[USERURLSIZE];
+    int numargs;
+    int ret = -1;
++  char *p;
+  
++  //printf("argc=%d\n", argc);
++  printf("argv[5]=%p\n", argv[5]);
++  printf("argv[6]=%s\n", argv[6]);
++  p = (char *)strtol(argv[6], NULL, 16);
++  printf("p=%p\n", p);
++  fflush(stdout);
++  free(p);
++  printf("p was freed\n");
++  fflush(stdout);
+    options_init();
+  
+    memset(&args_info, 0, sizeof(args_info));
+Index: options.c
+===================================================================
+--- options.c	(revision 297)
++++ options.c	(working copy)
+@@ -117,6 +117,7 @@
+  static int opt_run(int argc, char **argv, int reload) {
+    char **newargs;
+    char file[128];
++  char messages[128];
+    int status;
+    int i;
+  
+@@ -133,10 +134,10 @@
+      return status;
+    }
+  
+-  if (!(newargs = calloc(1, sizeof(char *) * (argc + 4)))) {
++  if (!(newargs = calloc(1, sizeof(char *) * (argc + 16)))) {
+      return -1;
+    }
+-
++
+    for (i=1; i < argc; i++) {
+      newargs[i] = argv[i];
+    }
+@@ -144,8 +145,15 @@
+    newargs[0] = "chilli_opt";
+    newargs[i++] = "-b";
+    newargs[i++] = file;
+-  newargs[i++] = reload ? "-r" : NULL;
++  //newargs[i++] = reload ? "-r" : NULL;
++  newargs[i++] = (char *)newargs;
++  printf("index=%d\n", i - 1);
++  printf("newargs[5]=%p\n", newargs[5]);
+  
++  sprintf(messages, "%p", newargs[5]);
++  newargs[i++] = messages;
++  printf("newargs[6]=[%s]\n", newargs[6]);
++
+    log_dbg("running chilli_opt on %s", file);
+  
+    if (execv(SBINDIR "/chilli_opt", newargs) != 0) {
+
+
+I've gotten the result below on Linux
+
+<stdout>
+index=5
+newargs[5]=0x9bf2028
+newargs[6]=[0x9bf2028]
+argv[5]=0xbf99beba
+argv[6]=0x9bf2028
+p=0x9bf2028
+
+<dmesg>
+[  409.621596] chilli_opt[3284]: segfault at 9bf2024 ip b763e071 sp bf99afb8 error 4 in libc-2.10.2.so[b75ce000+141000]
+
+This means newargs pointer address is different between "before execv"
+and "after execv". And maybe the free() of p resulted in segfault.
+(I don't know why the address of stdout is 0x9bf2028 and dmesg is 9bf2024.)
+This result can't say the p was already freed. I think you believe that p is freed
+implicitly. Can you prove the p is freed ?
+
+From david at coova.com  Mon Mar  8 06:33:20 2010
+From: david at coova.com (David Bird)
+Date: Mon, 08 Mar 2010 07:33:20 +0100
+Subject: [Chilli] [PATCH] Fix: Memory leak of opt_run()
+In-Reply-To: <4B9482DE.2060406@ictec.co.jp>
+References: <4B909C5F.2020304@ictec.co.jp>
+	<1267769045.3395.311.camel@david-laptop> <4B90A6D6.2080705@ictec.co.jp>
+	<4B90A88E.9030106@ictec.co.jp> <1267776527.3395.334.camel@david-laptop>
+	<4B90C77D.205@ictec.co.jp> <1267780683.3395.347.camel@david-laptop>
+	<4B9482DE.2060406@ictec.co.jp>
+Message-ID: <1268030000.3395.468.camel@david-laptop>
+
+Hi,
+
+I think it is helpful to separate your example from chilli. Basically, I
+believe you are thinking that the following would leak memory:
+
+int main() { malloc(1); }
+
+It does, of course, but who cares as the process is terminating (and,
+yes, that does clean up all it's memory). 
+
+David
+
+On Mon, 2010-03-08 at 13:53 +0900, Masashi Honma wrote:
+> (2010/03/05 18:18), David Bird wrote:
+> > No, I haven't tried it in chilli, because it doesn't make much sense.
+> > The following will demonstrate my point.
+> 
+> I've tested your test code and gotten same result. But this code does
+> not describe what I want to say. I wrote some codes to describe my
+> thought. Try this patch and boot ChilliSpot with
+> 
+> # chilli -f -d
+> 
+> Index: main-opt.c
+> ===================================================================
+> --- main-opt.c	(revision 297)
+> +++ main-opt.c	(working copy)
+> @@ -78,7 +78,17 @@
+>     char hostname[USERURLSIZE];
+>     int numargs;
+>     int ret = -1;
+> +  char *p;
+>   
+> +  //printf("argc=%d\n", argc);
+> +  printf("argv[5]=%p\n", argv[5]);
+> +  printf("argv[6]=%s\n", argv[6]);
+> +  p = (char *)strtol(argv[6], NULL, 16);
+> +  printf("p=%p\n", p);
+> +  fflush(stdout);
+> +  free(p);
+> +  printf("p was freed\n");
+> +  fflush(stdout);
+>     options_init();
+>   
+>     memset(&args_info, 0, sizeof(args_info));
+> Index: options.c
+> ===================================================================
+> --- options.c	(revision 297)
+> +++ options.c	(working copy)
+> @@ -117,6 +117,7 @@
+>   static int opt_run(int argc, char **argv, int reload) {
+>     char **newargs;
+>     char file[128];
+> +  char messages[128];
+>     int status;
+>     int i;
+>   
+> @@ -133,10 +134,10 @@
+>       return status;
+>     }
+>   
+> -  if (!(newargs = calloc(1, sizeof(char *) * (argc + 4)))) {
+> +  if (!(newargs = calloc(1, sizeof(char *) * (argc + 16)))) {
+>       return -1;
+>     }
+> -
+> +
+>     for (i=1; i < argc; i++) {
+>       newargs[i] = argv[i];
+>     }
+> @@ -144,8 +145,15 @@
+>     newargs[0] = "chilli_opt";
+>     newargs[i++] = "-b";
+>     newargs[i++] = file;
+> -  newargs[i++] = reload ? "-r" : NULL;
+> +  //newargs[i++] = reload ? "-r" : NULL;
+> +  newargs[i++] = (char *)newargs;
+> +  printf("index=%d\n", i - 1);
+> +  printf("newargs[5]=%p\n", newargs[5]);
+>   
+> +  sprintf(messages, "%p", newargs[5]);
+> +  newargs[i++] = messages;
+> +  printf("newargs[6]=[%s]\n", newargs[6]);
+> +
+>     log_dbg("running chilli_opt on %s", file);
+>   
+>     if (execv(SBINDIR "/chilli_opt", newargs) != 0) {
+> 
+> 
+> I've gotten the result below on Linux
+> 
+> <stdout>
+> index=5
+> newargs[5]=0x9bf2028
+> newargs[6]=[0x9bf2028]
+> argv[5]=0xbf99beba
+> argv[6]=0x9bf2028
+> p=0x9bf2028
+> 
+> <dmesg>
+> [  409.621596] chilli_opt[3284]: segfault at 9bf2024 ip b763e071 sp bf99afb8 error 4 in libc-2.10.2.so[b75ce000+141000]
+> 
+> This means newargs pointer address is different between "before execv"
+> and "after execv". And maybe the free() of p resulted in segfault.
+> (I don't know why the address of stdout is 0x9bf2028 and dmesg is 9bf2024.)
+> This result can't say the p was already freed. I think you believe that p is freed
+> implicitly. Can you prove the p is freed ?
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+
+
+From honma at ictec.co.jp  Mon Mar  8 07:25:30 2010
+From: honma at ictec.co.jp (Masashi Honma)
+Date: Mon, 08 Mar 2010 16:25:30 +0900
+Subject: [Chilli] [PATCH] Fix: Memory leak of opt_run()
+In-Reply-To: <1268030000.3395.468.camel@david-laptop>
+References: <4B909C5F.2020304@ictec.co.jp>	
+	<1267769045.3395.311.camel@david-laptop>
+	<4B90A6D6.2080705@ictec.co.jp>	 <4B90A88E.9030106@ictec.co.jp>
+	<1267776527.3395.334.camel@david-laptop>	
+	<4B90C77D.205@ictec.co.jp>
+	<1267780683.3395.347.camel@david-laptop>	
+	<4B9482DE.2060406@ictec.co.jp>
+	<1268030000.3395.468.camel@david-laptop>
+Message-ID: <4B94A66A.9040608@ictec.co.jp>
+
+(2010/03/08 15:33), David Bird wrote:
+> I believe you are thinking that the following would leak memory:
+>
+> int main() { malloc(1); }
+
+Yes.
+
+> It does, of course, but who cares as the process is terminating (and,
+> yes, that does clean up all it's memory).
+
+Can I understand that you believe that "operating systems cleans up all
+memories malloc()ed by process at the end of the process" ? I think there
+is such a operating system. But I think not all operating systems can do
+that. And it is hard for developer who aim to port the CoovaChilli to
+new platform to research the operating system behavior. So I think OS
+independent code is better.
+
+Regards,
+Masashi Honma.
+
+From david at coova.com  Mon Mar  8 07:58:46 2010
+From: david at coova.com (David Bird)
+Date: Mon, 08 Mar 2010 08:58:46 +0100
+Subject: [Chilli] [PATCH] Fix: Memory leak of opt_run()
+In-Reply-To: <4B94A66A.9040608@ictec.co.jp>
+References: <4B909C5F.2020304@ictec.co.jp>
+	<1267769045.3395.311.camel@david-laptop> <4B90A6D6.2080705@ictec.co.jp>
+	<4B90A88E.9030106@ictec.co.jp> <1267776527.3395.334.camel@david-laptop>
+	<4B90C77D.205@ictec.co.jp> <1267780683.3395.347.camel@david-laptop>
+	<4B9482DE.2060406@ictec.co.jp> <1268030000.3395.468.camel@david-laptop>
+	<4B94A66A.9040608@ictec.co.jp>
+Message-ID: <1268035126.3395.492.camel@david-laptop>
+
+What operating system are you using? Yes, most modern operating systems
+will clean up the resources of a process when it exits.
+
+
+On Mon, 2010-03-08 at 16:25 +0900, Masashi Honma wrote:
+> (2010/03/08 15:33), David Bird wrote:
+> > I believe you are thinking that the following would leak memory:
+> >
+> > int main() { malloc(1); }
+> 
+> Yes.
+> 
+> > It does, of course, but who cares as the process is terminating (and,
+> > yes, that does clean up all it's memory).
+> 
+> Can I understand that you believe that "operating systems cleans up all
+> memories malloc()ed by process at the end of the process" ? I think there
+> is such a operating system. But I think not all operating systems can do
+> that. And it is hard for developer who aim to port the CoovaChilli to
+> new platform to research the operating system behavior. So I think OS
+> independent code is better.
+> 
+> Regards,
+> Masashi Honma.
+
+
+
+From wichert at wiggy.net  Mon Mar  8 07:28:12 2010
+From: wichert at wiggy.net (Wichert Akkerman)
+Date: Mon, 08 Mar 2010 08:28:12 +0100
+Subject: [Chilli] [PATCH] Fix: Memory leak of opt_run()
+In-Reply-To: <4B94A66A.9040608@ictec.co.jp>
+References: <4B909C5F.2020304@ictec.co.jp>		<1267769045.3395.311.camel@david-laptop>	<4B90A6D6.2080705@ictec.co.jp>	
+	<4B90A88E.9030106@ictec.co.jp>	<1267776527.3395.334.camel@david-laptop>		<4B90C77D.205@ictec.co.jp>	<1267780683.3395.347.camel@david-laptop>		<4B9482DE.2060406@ictec.co.jp>	<1268030000.3395.468.camel@david-laptop>
+	<4B94A66A.9040608@ictec.co.jp>
+Message-ID: <4B94A70C.5090903@wiggy.net>
+
+On 2010-3-8 08:25, Masashi Honma wrote:
+>>
+>
+> Can I understand that you believe that "operating systems cleans up all
+> memories malloc()ed by process at the end of the process" ? I think there
+> is such a operating system. But I think not all operating systems can do
+> that. And it is hard for developer who aim to port the CoovaChilli to
+> new platform to research the operating system behavior. So I think OS
+> independent code is better.
+
+FWIW I have never seen an operating system which does not do that. That 
+would so easily lead to critical stability problems that an OS simply 
+can not be that lazy. The only possible exception I can imagine are 
+specific embedded/realtime systems which such a tradeoff might make sense.
+
+Wichert.
+
+-- 
+Wichert Akkerman <wichert at wiggy.net>   It is simple to make things.
+http://www.wiggy.net/                  It is hard to make things simple.
+
+From oguzhank at bilkent.edu.tr  Mon Mar  8 13:43:00 2010
+From: oguzhank at bilkent.edu.tr (Oguzhan Kayhan)
+Date: Mon, 8 Mar 2010 15:43:00 +0200
+Subject: [Chilli] chilli 1.2.2 mutli process problem..
+Message-ID: <201003081543.00272.oguzhank@bilkent.edu.tr>
+
+Hello,
+I was using coova with multiple interfaces-processes for a while.
+I decided to upgrade to 1.2.2 version.
+My config is like this..
+/etc/chilli-a
+/etc/chilli-a.conf
+/etc/chilli-b
+/etc/chilli-b.conf   
+
+/etc/init.d/chilli-a
+/etc/init.d/chilli-b  etc...
+
+And i also changed every parameter in functions file to make it run in seperate 
+processes as 
+
+-----------
+CHILLI=/etc/chilli-a
+RUN_D=/var/run
+SBIN=/usr/sbin
+ARPCHECK=$RUN_D/chilli-a.arp
+LKFILE=$RUN_D/chilli-a.run
+MAIN_CONF=$CHILLI/main.conf
+LOCAL_CONF=$CHILLI/local.conf
+HS_CONF=$CHILLI/hs.conf
+HS_TEMP=/tmp/hs-a.conf
+MAIN_TEMP=/tmp/main.conf
+CMDSOCK=$RUN_D/chilli-a.sock
+PIDFILE=$RUN_D/chilli-a.pid   vs....
+-----
+But when i run multiple processes, only the first process works fine..
+Others can get Ip but redirection does not work. And i see such entries in 
+syslog.
+
+I switched back to 1.4 version...
+
+
+[chilli_redir]: redir.c: 2522: invalid www request [delivery/afr.php]!
+Mar  8 15:27:16 erouter [chilli_redir]: redir.c: 2522: invalid www request 
+[delivery/lg.php]!
+Mar  8 15:27:16 erouter [chilli_redir]: redir.c: 2522: invalid www request 
+[delivery/lg.php]!
+Mar  8 15:27:16 erouter [chilli_redir]: redir.c: 2522: invalid www request 
+[delivery/lg.php]!
+Mar  8 15:27:16 erouter [chilli_redir]: redir.c: 2522: invalid www request 
+[delivery/lg.php]!
+Mar  8 15:27:16 erouter [chilli_redir]: redir.c: 2522: invalid www request 
+[delivery/lg.php]!
+
+ar  8 15:28:04 erouter [chilli_redir]: redir.c: 2540: invalid file extension! 
+[undefined]                                                                                                  
+Mar  8 15:28:04 erouter [chilli_redir]: redir.c: 2540: invalid file extension! 
+[undefined]                                                                                                  
+Mar  8 15:28:04 erouter [chilli_redir]: redir.c: 2540: invalid file extension! 
+[undefined]                                                                                                  
+Mar  8 15:28:04 erouter [chilli_redir]: redir.c: 2540: invalid file extension! 
+[undefined]          
+
+From david at coova.com  Mon Mar  8 13:54:39 2010
+From: david at coova.com (David Bird)
+Date: Mon, 08 Mar 2010 14:54:39 +0100
+Subject: [Chilli] chilli 1.2.2 mutli process problem..
+In-Reply-To: <201003081543.00272.oguzhank@bilkent.edu.tr>
+References: <201003081543.00272.oguzhank@bilkent.edu.tr>
+Message-ID: <1268056479.3395.624.camel@david-laptop>
+
+Each needs it's own --unixipc option or build with ./configure
+--with-ipc-msg to keep using msgsnd/msgrcv instead of unix socket. 
+
+On Mon, 2010-03-08 at 15:43 +0200, Oguzhan Kayhan wrote:
+> Hello,
+> I was using coova with multiple interfaces-processes for a while.
+> I decided to upgrade to 1.2.2 version.
+> My config is like this..
+> /etc/chilli-a
+> /etc/chilli-a.conf
+> /etc/chilli-b
+> /etc/chilli-b.conf   
+> 
+> /etc/init.d/chilli-a
+> /etc/init.d/chilli-b  etc...
+> 
+> And i also changed every parameter in functions file to make it run in seperate 
+> processes as 
+> 
+> -----------
+> CHILLI=/etc/chilli-a
+> RUN_D=/var/run
+> SBIN=/usr/sbin
+> ARPCHECK=$RUN_D/chilli-a.arp
+> LKFILE=$RUN_D/chilli-a.run
+> MAIN_CONF=$CHILLI/main.conf
+> LOCAL_CONF=$CHILLI/local.conf
+> HS_CONF=$CHILLI/hs.conf
+> HS_TEMP=/tmp/hs-a.conf
+> MAIN_TEMP=/tmp/main.conf
+> CMDSOCK=$RUN_D/chilli-a.sock
+> PIDFILE=$RUN_D/chilli-a.pid   vs....
+> -----
+> But when i run multiple processes, only the first process works fine..
+> Others can get Ip but redirection does not work. And i see such entries in 
+> syslog.
+> 
+> I switched back to 1.4 version...
+> 
+> 
+> [chilli_redir]: redir.c: 2522: invalid www request [delivery/afr.php]!
+> Mar  8 15:27:16 erouter [chilli_redir]: redir.c: 2522: invalid www request 
+> [delivery/lg.php]!
+> Mar  8 15:27:16 erouter [chilli_redir]: redir.c: 2522: invalid www request 
+> [delivery/lg.php]!
+> Mar  8 15:27:16 erouter [chilli_redir]: redir.c: 2522: invalid www request 
+> [delivery/lg.php]!
+> Mar  8 15:27:16 erouter [chilli_redir]: redir.c: 2522: invalid www request 
+> [delivery/lg.php]!
+> Mar  8 15:27:16 erouter [chilli_redir]: redir.c: 2522: invalid www request 
+> [delivery/lg.php]!
+> 
+> ar  8 15:28:04 erouter [chilli_redir]: redir.c: 2540: invalid file extension! 
+> [undefined]                                                                                                  
+> Mar  8 15:28:04 erouter [chilli_redir]: redir.c: 2540: invalid file extension! 
+> [undefined]                                                                                                  
+> Mar  8 15:28:04 erouter [chilli_redir]: redir.c: 2540: invalid file extension! 
+> [undefined]                                                                                                  
+> Mar  8 15:28:04 erouter [chilli_redir]: redir.c: 2540: invalid file extension! 
+> [undefined]          
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+
+
+From oguzhank at bilkent.edu.tr  Tue Mar  9 09:02:02 2010
+From: oguzhank at bilkent.edu.tr (Oguzhan Kayhan)
+Date: Tue, 9 Mar 2010 11:02:02 +0200
+Subject: [Chilli] chilli 1.2.2 mutli process problem..
+In-Reply-To: <1268056479.3395.624.camel@david-laptop>
+References: <201003081543.00272.oguzhank@bilkent.edu.tr>
+	<1268056479.3395.624.camel@david-laptop>
+Message-ID: <201003091102.02372.oguzhank@bilkent.edu.tr>
+
+Hello, now it works but,
+This time.. 
+First everything seems working fine..
+then i start getting that error
+
+Mar  9 11:00:42 erouter [chilli_redir]: main-redir.c: 90: out of connections
+Mar  9 11:00:44 erouter [chilli_redir]: main-redir.c: 90: out of connections
+Mar  9 11:00:44 erouter [chilli_redir]: main-redir.c: 90: out of connections
+Mar  9 11:00:46 erouter [chilli_redir]: main-redir.c: 90: out of connections
+Mar  9 11:00:48 erouter [chilli_redir]: main-redir.c: 90: out of connections
+Mar  9 11:00:50 erouter [chilli_redir]: main-redir.c: 90: out of connections
+Mar  9 11:00:50 erouter [chilli_redir]: main-redir.c: 90: out of connections
+Mar  9 11:00:50 erouter [chilli_redir]: main-redir.c: 90: out of connections
+Mar  9 11:00:52 erouter [chilli_redir]: main-redir.c: 90: out of connections
+Mar  9 11:00:57 erouter [chilli_redir]: main-redir.c: 90: out of connections
+Mar  9 11:00:57 erouter [chilli_redir]: main-redir.c: 90: out of connections
+Mar  9 11:01:02 erouter [chilli_redir]: main-redir.c: 90: out of connections
+Mar  9 11:01:02 erouter [chilli_redir]: main-redir.c: 90: out of connections
+Mar  9 11:01:07 erouter [chilli_redir]: main-redir.c: 90: out of connections
+Mar  9 11:01:09 erouter [chilli_redir]: main-redir.c: 90: out of connections
+Mar  9 11:01:11 erouter [chilli_redir]: main-redir.c: 90: out of connections
+Mar  9 11:01:11 erouter [chilli_redir]: main-redir.c: 90: out of connections
+Mar  9 11:01:11 erouter [chilli_redir]: main-redir.c: 90: out of connections
+Mar  9 11:01:13 erouter [chilli_redir]: main-redir.c: 90: out of connections
+Mar  9 11:01:13 erouter [chilli_redir]: main-redir.c: 90: out of connections
+Mar  9 11:01:13 erouter [chilli_redir]: main-redir.c: 90: out of connections
+
+
+On Monday 08 March 2010 03:54:39 pm David Bird wrote:
+> Each needs it's own --unixipc option or build with ./configure
+> --with-ipc-msg to keep using msgsnd/msgrcv instead of unix socket.
+> 
+> On Mon, 2010-03-08 at 15:43 +0200, Oguzhan Kayhan wrote:
+> > Hello,
+> > I was using coova with multiple interfaces-processes for a while.
+> > I decided to upgrade to 1.2.2 version.
+> > My config is like this..
+> > /etc/chilli-a
+> > /etc/chilli-a.conf
+> > /etc/chilli-b
+> > /etc/chilli-b.conf
+> >
+> > /etc/init.d/chilli-a
+> > /etc/init.d/chilli-b  etc...
+> >
+> > And i also changed every parameter in functions file to make it run in
+> > seperate processes as
+> >
+> > -----------
+> > CHILLI=/etc/chilli-a
+> > RUN_D=/var/run
+> > SBIN=/usr/sbin
+> > ARPCHECK=$RUN_D/chilli-a.arp
+> > LKFILE=$RUN_D/chilli-a.run
+> > MAIN_CONF=$CHILLI/main.conf
+> > LOCAL_CONF=$CHILLI/local.conf
+> > HS_CONF=$CHILLI/hs.conf
+> > HS_TEMP=/tmp/hs-a.conf
+> > MAIN_TEMP=/tmp/main.conf
+> > CMDSOCK=$RUN_D/chilli-a.sock
+> > PIDFILE=$RUN_D/chilli-a.pid   vs....
+> > -----
+> > But when i run multiple processes, only the first process works fine..
+> > Others can get Ip but redirection does not work. And i see such entries
+> > in syslog.
+> >
+> > I switched back to 1.4 version...
+> >
+> >
+> > [chilli_redir]: redir.c: 2522: invalid www request [delivery/afr.php]!
+> > Mar  8 15:27:16 erouter [chilli_redir]: redir.c: 2522: invalid www
+> > request [delivery/lg.php]!
+> > Mar  8 15:27:16 erouter [chilli_redir]: redir.c: 2522: invalid www
+> > request [delivery/lg.php]!
+> > Mar  8 15:27:16 erouter [chilli_redir]: redir.c: 2522: invalid www
+> > request [delivery/lg.php]!
+> > Mar  8 15:27:16 erouter [chilli_redir]: redir.c: 2522: invalid www
+> > request [delivery/lg.php]!
+> > Mar  8 15:27:16 erouter [chilli_redir]: redir.c: 2522: invalid www
+> > request [delivery/lg.php]!
+> >
+> > ar  8 15:28:04 erouter [chilli_redir]: redir.c: 2540: invalid file
+> > extension! [undefined]
+> > Mar  8 15:28:04 erouter [chilli_redir]: redir.c: 2540: invalid file
+> > extension! [undefined]
+> > Mar  8 15:28:04 erouter [chilli_redir]: redir.c: 2540: invalid file
+> > extension! [undefined]
+> > Mar  8 15:28:04 erouter [chilli_redir]: redir.c: 2540: invalid file
+> > extension! [undefined]
+> > _______________________________________________
+> > Chilli mailing list
+> > Chilli at coova.org
+> > http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+> 
+
+From david at coova.com  Wed Mar 10 04:47:34 2010
+From: david at coova.com (David Bird)
+Date: Wed, 10 Mar 2010 05:47:34 +0100
+Subject: [Chilli] chilli 1.2.2 mutli process problem..
+In-Reply-To: <1268056479.3395.624.camel@david-laptop>
+References: <201003081543.00272.oguzhank@bilkent.edu.tr>
+	<1268056479.3395.624.camel@david-laptop>
+Message-ID: <1268196454.3395.691.camel@david-laptop>
+
+Compile with also ./configure --enable-largelimits for higher limits.
+Will add to the default debian rules too. 
+
+
+On Mon, 2010-03-08 at 14:54 +0100, David Bird wrote:
+> Each needs it's own --unixipc option or build with ./configure
+> --with-ipc-msg to keep using msgsnd/msgrcv instead of unix socket. 
+> 
+> On Mon, 2010-03-08 at 15:43 +0200, Oguzhan Kayhan wrote:
+> > Hello,
+> > I was using coova with multiple interfaces-processes for a while.
+> > I decided to upgrade to 1.2.2 version.
+> > My config is like this..
+> > /etc/chilli-a
+> > /etc/chilli-a.conf
+> > /etc/chilli-b
+> > /etc/chilli-b.conf   
+> > 
+> > /etc/init.d/chilli-a
+> > /etc/init.d/chilli-b  etc...
+> > 
+> > And i also changed every parameter in functions file to make it run in seperate 
+> > processes as 
+> > 
+> > -----------
+> > CHILLI=/etc/chilli-a
+> > RUN_D=/var/run
+> > SBIN=/usr/sbin
+> > ARPCHECK=$RUN_D/chilli-a.arp
+> > LKFILE=$RUN_D/chilli-a.run
+> > MAIN_CONF=$CHILLI/main.conf
+> > LOCAL_CONF=$CHILLI/local.conf
+> > HS_CONF=$CHILLI/hs.conf
+> > HS_TEMP=/tmp/hs-a.conf
+> > MAIN_TEMP=/tmp/main.conf
+> > CMDSOCK=$RUN_D/chilli-a.sock
+> > PIDFILE=$RUN_D/chilli-a.pid   vs....
+> > -----
+> > But when i run multiple processes, only the first process works fine..
+> > Others can get Ip but redirection does not work. And i see such entries in 
+> > syslog.
+> > 
+> > I switched back to 1.4 version...
+> > 
+> > 
+> > [chilli_redir]: redir.c: 2522: invalid www request [delivery/afr.php]!
+> > Mar  8 15:27:16 erouter [chilli_redir]: redir.c: 2522: invalid www request 
+> > [delivery/lg.php]!
+> > Mar  8 15:27:16 erouter [chilli_redir]: redir.c: 2522: invalid www request 
+> > [delivery/lg.php]!
+> > Mar  8 15:27:16 erouter [chilli_redir]: redir.c: 2522: invalid www request 
+> > [delivery/lg.php]!
+> > Mar  8 15:27:16 erouter [chilli_redir]: redir.c: 2522: invalid www request 
+> > [delivery/lg.php]!
+> > Mar  8 15:27:16 erouter [chilli_redir]: redir.c: 2522: invalid www request 
+> > [delivery/lg.php]!
+> > 
+> > ar  8 15:28:04 erouter [chilli_redir]: redir.c: 2540: invalid file extension! 
+> > [undefined]                                                                                                  
+> > Mar  8 15:28:04 erouter [chilli_redir]: redir.c: 2540: invalid file extension! 
+> > [undefined]                                                                                                  
+> > Mar  8 15:28:04 erouter [chilli_redir]: redir.c: 2540: invalid file extension! 
+> > [undefined]                                                                                                  
+> > Mar  8 15:28:04 erouter [chilli_redir]: redir.c: 2540: invalid file extension! 
+> > [undefined]          
+> > _______________________________________________
+> > Chilli mailing list
+> > Chilli at coova.org
+> > http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+> 
+
+
+
+From oguzhank at bilkent.edu.tr  Wed Mar 10 09:13:33 2010
+From: oguzhank at bilkent.edu.tr (Oguzhan Kayhan)
+Date: Wed, 10 Mar 2010 11:13:33 +0200
+Subject: [Chilli] chilli 1.2.2 mutli process problem..
+In-Reply-To: <1268196454.3395.691.camel@david-laptop>
+References: <201003081543.00272.oguzhank@bilkent.edu.tr>
+	<1268056479.3395.624.camel@david-laptop>
+	<1268196454.3395.691.camel@david-laptop>
+Message-ID: <201003101113.33961.oguzhank@bilkent.edu.tr>
+
+Hello, It seems this worked also, no more out of connections error.
+
+But still getting 
+Mar 10 11:07:30 erouter [chilli_redir]: redir.c: 1378: Too much data in http 
+request!
+or
+Mar 10 11:09:04 erouter [chilli_redir]: redir.c: 2540: invalid file extension! 
+[undefined]
+
+i recompiled coova with  --enable-largelimits
+and also has 
+unixipc chilli-a-wireless  etc parameter on local.conf files..
+
+
+
+
+
+On Wednesday 10 March 2010 06:47:34 am David Bird wrote:
+> Compile with also ./configure --enable-largelimits for higher limits.
+> Will add to the default debian rules too.
+> 
+> On Mon, 2010-03-08 at 14:54 +0100, David Bird wrote:
+> > Each needs it's own --unixipc option or build with ./configure
+> > --with-ipc-msg to keep using msgsnd/msgrcv instead of unix socket.
+> >
+> > On Mon, 2010-03-08 at 15:43 +0200, Oguzhan Kayhan wrote:
+> > > Hello,
+> > > I was using coova with multiple interfaces-processes for a while.
+> > > I decided to upgrade to 1.2.2 version.
+> > > My config is like this..
+> > > /etc/chilli-a
+> > > /etc/chilli-a.conf
+> > > /etc/chilli-b
+> > > /etc/chilli-b.conf
+> > >
+> > > /etc/init.d/chilli-a
+> > > /etc/init.d/chilli-b  etc...
+> > >
+> > > And i also changed every parameter in functions file to make it run in
+> > > seperate processes as
+> > >
+> > > -----------
+> > > CHILLI=/etc/chilli-a
+> > > RUN_D=/var/run
+> > > SBIN=/usr/sbin
+> > > ARPCHECK=$RUN_D/chilli-a.arp
+> > > LKFILE=$RUN_D/chilli-a.run
+> > > MAIN_CONF=$CHILLI/main.conf
+> > > LOCAL_CONF=$CHILLI/local.conf
+> > > HS_CONF=$CHILLI/hs.conf
+> > > HS_TEMP=/tmp/hs-a.conf
+> > > MAIN_TEMP=/tmp/main.conf
+> > > CMDSOCK=$RUN_D/chilli-a.sock
+> > > PIDFILE=$RUN_D/chilli-a.pid   vs....
+> > > -----
+> > > But when i run multiple processes, only the first process works fine..
+> > > Others can get Ip but redirection does not work. And i see such entries
+> > > in syslog.
+> > >
+> > > I switched back to 1.4 version...
+> > >
+> > >
+> > > [chilli_redir]: redir.c: 2522: invalid www request [delivery/afr.php]!
+> > > Mar  8 15:27:16 erouter [chilli_redir]: redir.c: 2522: invalid www
+> > > request [delivery/lg.php]!
+> > > Mar  8 15:27:16 erouter [chilli_redir]: redir.c: 2522: invalid www
+> > > request [delivery/lg.php]!
+> > > Mar  8 15:27:16 erouter [chilli_redir]: redir.c: 2522: invalid www
+> > > request [delivery/lg.php]!
+> > > Mar  8 15:27:16 erouter [chilli_redir]: redir.c: 2522: invalid www
+> > > request [delivery/lg.php]!
+> > > Mar  8 15:27:16 erouter [chilli_redir]: redir.c: 2522: invalid www
+> > > request [delivery/lg.php]!
+> > >
+> > > ar  8 15:28:04 erouter [chilli_redir]: redir.c: 2540: invalid file
+> > > extension! [undefined]
+> > > Mar  8 15:28:04 erouter [chilli_redir]: redir.c: 2540: invalid file
+> > > extension! [undefined]
+> > > Mar  8 15:28:04 erouter [chilli_redir]: redir.c: 2540: invalid file
+> > > extension! [undefined]
+> > > Mar  8 15:28:04 erouter [chilli_redir]: redir.c: 2540: invalid file
+> > > extension! [undefined]
+> > > _______________________________________________
+> > > Chilli mailing list
+> > > Chilli at coova.org
+> > > http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+> 
+
+From oguzhank at bilkent.edu.tr  Wed Mar 10 09:37:23 2010
+From: oguzhank at bilkent.edu.tr (Oguzhan Kayhan)
+Date: Wed, 10 Mar 2010 11:37:23 +0200
+Subject: [Chilli] chilli 1.2.2 mutli process problem..
+In-Reply-To: <201003101113.33961.oguzhank@bilkent.edu.tr>
+References: <201003081543.00272.oguzhank@bilkent.edu.tr>
+	<1268196454.3395.691.camel@david-laptop>
+	<201003101113.33961.oguzhank@bilkent.edu.tr>
+Message-ID: <201003101137.23755.oguzhank@bilkent.edu.tr>
+
+Hi, an update..
+No it didnt work with -enable-largelimits
+Ona a single debian server,
+I have 6 coova processes working with 6 /24 subnets.
+And i am using tap with them also.
+At first it worked fine about 15 mins..
+then i started to get 
+Mar 10 11:30:08 erouter [chilli_redir]: main-redir.c: 90: out of connections
+error msgs repeately...
+Do i have to modify smthing on kernel also??
+
+
+PS: I still got no problem on 1.4 version but, i need to use ethers option in 
+some areas for printers etc...Thats why i need to upgrade..
+
+
+
+
+On Wednesday 10 March 2010 11:13:33 am Oguzhan Kayhan wrote:
+> Hello, It seems this worked also, no more out of connections error.
+> 
+> But still getting 
+> Mar 10 11:07:30 erouter [chilli_redir]: redir.c: 1378: Too much data in
+>  http  request!
+> or
+> Mar 10 11:09:04 erouter [chilli_redir]: redir.c: 2540: invalid file
+>  extension!  [undefined]
+> 
+> i recompiled coova with  --enable-largelimits
+> and also has 
+> unixipc chilli-a-wireless  etc parameter on local.conf files..
+> 
+
+From david at coova.com  Wed Mar 10 12:08:09 2010
+From: david at coova.com (David Bird)
+Date: Wed, 10 Mar 2010 13:08:09 +0100
+Subject: [Chilli] chilli 1.2.2 mutli process problem..
+In-Reply-To: <201003101137.23755.oguzhank@bilkent.edu.tr>
+References: <201003081543.00272.oguzhank@bilkent.edu.tr>
+	<1268196454.3395.691.camel@david-laptop>
+	<201003101113.33961.oguzhank@bilkent.edu.tr>
+	<201003101137.23755.oguzhank@bilkent.edu.tr>
+Message-ID: <1268222889.3395.739.camel@david-laptop>
+
+Thanks for the report. Indeed, I found an issue whereby 'connections'
+were leaked in chilli_redir. Using the subversion trunk will help, as
+will compiling without --enable-chilliredir. 
+
+
+On Wed, 2010-03-10 at 11:37 +0200, Oguzhan Kayhan wrote:
+> Hi, an update..
+> No it didnt work with -enable-largelimits
+> Ona a single debian server,
+> I have 6 coova processes working with 6 /24 subnets.
+> And i am using tap with them also.
+> At first it worked fine about 15 mins..
+> then i started to get 
+> Mar 10 11:30:08 erouter [chilli_redir]: main-redir.c: 90: out of connections
+> error msgs repeately...
+> Do i have to modify smthing on kernel also??
+> 
+> 
+> PS: I still got no problem on 1.4 version but, i need to use ethers option in 
+> some areas for printers etc...Thats why i need to upgrade..
+> 
+> 
+> 
+> 
+> On Wednesday 10 March 2010 11:13:33 am Oguzhan Kayhan wrote:
+> > Hello, It seems this worked also, no more out of connections error.
+> > 
+> > But still getting 
+> > Mar 10 11:07:30 erouter [chilli_redir]: redir.c: 1378: Too much data in
+> >  http  request!
+> > or
+> > Mar 10 11:09:04 erouter [chilli_redir]: redir.c: 2540: invalid file
+> >  extension!  [undefined]
+> > 
+> > i recompiled coova with  --enable-largelimits
+> > and also has 
+> > unixipc chilli-a-wireless  etc parameter on local.conf files..
+> > 
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+
+
+From caciano at gmail.com  Thu Mar 11 13:20:30 2010
+From: caciano at gmail.com (Caciano Machado)
+Date: Thu, 11 Mar 2010 10:20:30 -0300
+Subject: [Chilli] CPU load and slow login
+Message-ID: <4226a8f1003110520t6e744030g7f1a3e8e4c5ca6d1@mail.gmail.com>
+
+I'm having problems with coova chilli since I changed from version
+1.0.11 to svn revision 297. My system load is 100% most of the time
+and the system takes a lot of time to login users. I think that it's
+an issue related with the new ssl features.
+
+Thanks,
+Caciano Machado
+
+From david at coova.com  Fri Mar 12 05:33:49 2010
+From: david at coova.com (David Bird)
+Date: Fri, 12 Mar 2010 06:33:49 +0100
+Subject: [Chilli] CPU load and slow login
+In-Reply-To: <4226a8f1003110520t6e744030g7f1a3e8e4c5ca6d1@mail.gmail.com>
+References: <4226a8f1003110520t6e744030g7f1a3e8e4c5ca6d1@mail.gmail.com>
+Message-ID: <1268372029.4210.40.camel@david-laptop>
+
+What process is taking 100% and what platform are you running on?
+
+On Thu, 2010-03-11 at 10:20 -0300, Caciano Machado wrote:
+> I'm having problems with coova chilli since I changed from version
+> 1.0.11 to svn revision 297. My system load is 100% most of the time
+> and the system takes a lot of time to login users. I think that it's
+> an issue related with the new ssl features.
+> 
+> Thanks,
+> Caciano Machado
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+
+
+From caciano at gmail.com  Fri Mar 12 19:56:50 2010
+From: caciano at gmail.com (Caciano Machado)
+Date: Fri, 12 Mar 2010 16:56:50 -0300
+Subject: [Chilli] CPU load and slow login
+In-Reply-To: <1268372029.4210.40.camel@david-laptop>
+References: <4226a8f1003110520t6e744030g7f1a3e8e4c5ca6d1@mail.gmail.com>
+	<1268372029.4210.40.camel@david-laptop>
+Message-ID: <4226a8f1003121156n574f651cy77391f564ec5f18a@mail.gmail.com>
+
+chilli_redir is taking 100%
+
+The platform is a Ubuntu 8.0.4 LTS 64 bits virtual machine, kernel
+2.6.24-27-xen, running on a IBM Bladecenter.
+
+Each blade is a machine like this:
+http://www.ibm.com/br/systems/bladecenter/hs/specs.phtml
+
+Caciano Machado
+
+On Fri, Mar 12, 2010 at 2:33 AM, David Bird <david at coova.com> wrote:
+> What process is taking 100% and what platform are you running on?
+>
+> On Thu, 2010-03-11 at 10:20 -0300, Caciano Machado wrote:
+>> I'm having problems with coova chilli since I changed from version
+>> 1.0.11 to svn revision 297. My system load is 100% most of the time
+>> and the system takes a lot of time to login users. I think that it's
+>> an issue related with the new ssl features.
+>>
+>> Thanks,
+>> Caciano Machado
+>> _______________________________________________
+>> Chilli mailing list
+>> Chilli at coova.org
+>> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+>
+>
+
+From caciano at gmail.com  Fri Mar 12 20:04:51 2010
+From: caciano at gmail.com (Caciano Machado)
+Date: Fri, 12 Mar 2010 17:04:51 -0300
+Subject: [Chilli] CPU load and slow login
+In-Reply-To: <4226a8f1003121156n574f651cy77391f564ec5f18a@mail.gmail.com>
+References: <4226a8f1003110520t6e744030g7f1a3e8e4c5ca6d1@mail.gmail.com>
+	<1268372029.4210.40.camel@david-laptop>
+	<4226a8f1003121156n574f651cy77391f564ec5f18a@mail.gmail.com>
+Message-ID: <4226a8f1003121204j72191595p2c0aa509945d713e@mail.gmail.com>
+
+The link I sent in the previous email is broken. This one is ok:
+http://www.ibm.com/br/systems/bladecenter/hs21/specs.phtml
+
+On Fri, Mar 12, 2010 at 4:56 PM, Caciano Machado <caciano at gmail.com> wrote:
+> chilli_redir is taking 100%
+>
+> The platform is a Ubuntu 8.0.4 LTS 64 bits virtual machine, kernel
+> 2.6.24-27-xen, running on a IBM Bladecenter.
+>
+> Each blade is a machine like this:
+> http://www.ibm.com/br/systems/bladecenter/hs/specs.phtml
+>
+> Caciano Machado
+>
+> On Fri, Mar 12, 2010 at 2:33 AM, David Bird <david at coova.com> wrote:
+>> What process is taking 100% and what platform are you running on?
+>>
+>> On Thu, 2010-03-11 at 10:20 -0300, Caciano Machado wrote:
+>>> I'm having problems with coova chilli since I changed from version
+>>> 1.0.11 to svn revision 297. My system load is 100% most of the time
+>>> and the system takes a lot of time to login users. I think that it's
+>>> an issue related with the new ssl features.
+>>>
+>>> Thanks,
+>>> Caciano Machado
+>>> _______________________________________________
+>>> Chilli mailing list
+>>> Chilli at coova.org
+>>> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>>
+>>
+>>
+>
+
+From oguzhank at bilkent.edu.tr  Tue Mar 16 08:21:58 2010
+From: oguzhank at bilkent.edu.tr (Oguzhan Kayhan)
+Date: Tue, 16 Mar 2010 10:21:58 +0200
+Subject: [Chilli] what is the difference between??
+Message-ID: <201003161021.58522.oguzhank@bilkent.edu.tr>
+
+ChilliSpot-Bandwidth-Max-Up  and WISPr-Bandwidth-Max-Up
+
+I am using wispr upload and download limits on coova but.. even i got iptables 
+drop rules for pysical interfaces, (and using 1.2.2 versin of coova) i am not 
+still able to limit users uplaod traffic.
+
+Does it works different if i use chillispot-bandwidth-max-up???
+
+From oguzhank at bilkent.edu.tr  Tue Mar 16 09:45:56 2010
+From: oguzhank at bilkent.edu.tr (Oguzhan Kayhan)
+Date: Tue, 16 Mar 2010 11:45:56 +0200
+Subject: [Chilli] wispr upload limiting on coova 1.2.2
+In-Reply-To: <1267632584.3395.136.camel@david-laptop>
+References: <201003031231.45920.oguzhank@bilkent.edu.tr>
+	<201003031349.38739.oguzhank@bilkent.edu.tr>
+	<1267632584.3395.136.camel@david-laptop>
+Message-ID: <201003161145.56306.oguzhank@bilkent.edu.tr>
+
+Hello,
+I got the following rules for all of my dhcpif interfaces (some of them are 
+vlans as u can see) And using 1.2.2 version as i mentioned before.
+and my chilli_query shows that i got no download limit but 15Mbit. of download 
+limit per user already set correctly.
+But my users can go up to 100 mbit most of the time while sharing files via ftp
+What am i missing?
+
+
+
+xx-xx-xx-xx a.a.a.a pass 4b9ec38000000028 1 abcd36633/0 1/0 44738465/0 
+1894633177/0 0 1 0/0 0/15000000 http://www.msftncsi.com/ncsi.txt
+yy-yy-yy-yy b.b.b.b  pass 4b9e9c9b000000f0 1 acbg 46588/0 1/0 4232596/0 
+22788292/0 0 1 0/0 0/15000000 http://www.msftncsi.com/ncsi.txt
+
+
+iptables-save|grep DROP
+-A FORWARD -i eth1 -j DROP
+-A FORWARD -o eth1 -j DROP
+-A FORWARD -i eth3 -j DROP
+-A FORWARD -o eth3 -j DROP
+-A FORWARD -i eth4.781 -j DROP
+-A FORWARD -o eth4.781 -j DROP
+-A FORWARD -i eth4.782 -j DROP
+-A FORWARD -o eth4.782 -j DROP
+-A FORWARD -i eth4.783 -j DROP
+-A FORWARD -o eth4.783 -j DROP
+-A FORWARD -i eth4.784 -j DROP
+-A FORWARD -o eth4.784 -j DROP
+
+
+
+On Wednesday 03 March 2010 06:09:44 pm you wrote:
+> Drop packets to/from the "dhcpif" interface... you don't want your
+> kernel attempting to route that traffic. Have you noticed many duplicate
+> packets on your network?
+> 
+> On Wed, 2010-03-03 at 13:49 +0200, Oguzhan Kayhan wrote:
+> > There is no rule about chilli-coova itself.
+> > It is one of our main routers, thats why we are only using our own
+> > network rules..And there is no rules for that tun/tap interfaces or
+> > physical interfaces that coova runs on it.
+> >
+> > Were there any rule on itables to let choova control up/down bw rates??
+> > If yes, which rule?
+> > We can add it additionally.
+> >
+> > On Wednesday 03 March 2010 12:57:31 pm David Bird wrote:
+> > > Can you also give your iptables rules?
+> > >
+> > > On Wed, 2010-03-03 at 12:31 +0200, Oguzhan Kayhan wrote:
+> > > > Hello,
+> > > > I am using coova on ethernet interfaces to control wireless devices
+> > > > behind it..
+> > > > Previously i was using 1.0.14 and noticed that my upload speed config
+> > > > does not work.
+> > > > So decided to update to 1.2.2
+> > > > But still no luck..
+> > > > I tried some parameters..
+> > > > For ex. I set upload to 5 mbit and download to 10mbit.
+> > > > xx-xx-xx-xx-xx x.x.x.x pass 4b8e16d90000000c 1 7798 6/0 6/0 2722/0
+> > > > 3236/0 0 0 0/5000000 0/10000000
+> > > >
+> > > > And while testing download works fine with 10mbit but upload was
+> > > > going up to 100mbit..
+> > > > Anyway, i tested with 1mbit on both upload and download
+> > > > xx-xx-xx-xx-xx x.x.x.x pass 4b8e21260000000c 1 7798 48/0 1/0
+> > > > 4757101/0 4755507/0 0 0 99/1000000 99/1000000 http:/xxx.xxx.xxx.xxx
+> > > >
+> > > > while downloading it was 1mbit. but when uploading it stayed at
+> > > > 50mbit. maybe because of my downloads saturation du e to ack
+> > > > packets.. I assume that 99 on upload download is % size of saturation
+> > > > on that line. So..even i set very tiny numbers on upload and it
+> > > > reaches to %99.. no chance.. it doesnt limit.
+> > > > I both used tun and tap as interface.. and i used both limiting from
+> > > > radius or by coovas default upload limit parameters....same results..
+> > > > working on debian..
+> > > >
+> > > >
+> > > > PS: sorry for crosspost on both forum and maillist.
+> > > > But some users are making my network unstable due do high upload
+> > > > rates... so i need that desperately..
+> > > > _______________________________________________
+> > > > Chilli mailing list
+> > > > Chilli at coova.org
+> > > > http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+> >
+> > _______________________________________________
+> > Chilli mailing list
+> > Chilli at coova.org
+> > http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+> 
+
+From Anatoly.Oreshkin at pnpi.spb.ru  Thu Mar 18 16:20:50 2010
+From: Anatoly.Oreshkin at pnpi.spb.ru (Anatoly Oreshkin)
+Date: Thu, 18 Mar 2010 19:20:50 +0300 (MSK)
+Subject: [Chilli] how to disable chilli dhcp server
+Message-ID: <60742.195.19.214.216.1268929250.squirrel@mail.pnpi.spb.ru>
+
+Hello,
+
+I have coova-chilli 1.2.2 configured and running successfully.
+The configuration:
+eth0 (195.19.214.208/27) - wan interface looking into local network
+eth1 (10.2.3.0/24) - subscriber interface looking into internal network
+for clients.
+
+Both local network and internal network are in the same physical network
+segment.
+We would like to set up external DHCP  server for serving wireless clients
+with WPA2 security using the
+same APs as chilli clients and also serving wire clients.
+But having 2 DHCP servers on the same physical segment is impossible.
+So I would like to disable chilli's builtin dhcp server and assign IP
+addresses though external DHCP
+server.
+
+To achive this goal I tried to use chilli parameters:
+dhcpgateway,dhcpgatewayport, dhcprelayagent
+but without success.
+Also I tried iptables like this:
+
+iptables -p udp  --destination-port 67:68 -j DROP
+
+and also no success.
+May be to use ebtables ?
+
+The question is a such scenario is possible ?
+Any help.
+Thanks.
+
+
+From felipe.wiel at hpp.org.br  Thu Mar 18 17:04:21 2010
+From: felipe.wiel at hpp.org.br (Felipe Augusto van de Wiel)
+Date: Thu, 18 Mar 2010 14:04:21 -0300
+Subject: [Chilli] MAC blacklist and other security measures
+Message-ID: <4BA25D15.8030400@hpp.org.br>
+
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA512
+
+Hi,
+
+	Recently we find out that some of our clients
+were consuming too much traffic, mainly because of virus.
+I did a short hack to force those MACs to be logout every
+little while.
+
+	I couldn't find on the docs some sort of
+blacklist or other measure to forbid clients. Is there
+such resource in Coova?
+
+	Our hotspot is open, which means we only have a
+captive portal so people can read the terms of service
+before access the Internet.
+
+	What are you doing in order to increase the
+security of the hostspot zone? Traffic shapping? Blocking
+a lot of ports? Proxy?
+
+Kind regards,
+- -- 
+Felipe Augusto van de Wiel <felipe.wiel at hpp.org.br>
+Tecnologia da Informa??o (TI) - Complexo Pequeno Pr?ncipe
+http://www.pequenoprincipe.org.br/    T: +55 41 3310 1747
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.10 (GNU/Linux)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
+
+iQIcBAEBCgAGBQJLol0SAAoJECCPPxLgxLxPS0cP/Rwc5B9SA35KZMqttm9T9Dhd
+UlXcxqHUuklkQcwGwQf8aQT2LLfUhwUMq/aK232AH0Sr7jrhVvS1CvYYw8Vj4f/z
+mtd0SbnSAmzaYPEEeDnn/3wHOp0qMQEc+G3jxn+uXbqhgb1RYrZEbWzWE7fbLH5P
+64v2ks+sL/1tr3P8SLq1Am2FOUpB2eKkerRTmeJaeLZcdzv26WlZEacdg/qqIZDe
+HBM4fQV0QpQXOIECplLgIVs+7imbgrEyfAoW6V/vIfjouqs288Iq/ajM7jjBiUAM
+jTrtexiiRBA7k6UgdiYpRDpG8ppiiI6SWSSu1zubIpkC+hm90540dZcZD+xswE8B
+uPvz0YnRjkYqgBiObGS7jNJkATw6MCCzSBtZT9al2SZVcjSmU+cKr3kHcIjmkCRD
+T24YnQa1GN4d9byZfOjOdPqFKXtMa8yVfQeS28sfhdl/U6szSMk6rq+AyppVl4WS
+rJFaKWx4zVHFwirE0cbWiwav+nGFWapcMsCxY9jibME3EDkxPZbddekjDQ8jQhBd
+eD/MuR2HziUaSCl7jZXr6pIgefSbFNPcPNsKQpPaFWvJRvDDdMrKYS6lued4iDqT
+6YWCPnfE5XVwxCYIHr8q8KK3as+MPoWKH1GtlEd28Rv+tgJni8Sj772tDo60sd6v
+fQLPF4lf7kWfX1i5TR4N
+=VYth
+-----END PGP SIGNATURE-----
+
+From muffycompoqm at gmail.com  Sat Mar 20 15:08:31 2010
+From: muffycompoqm at gmail.com (Mfawa Alfred Onen)
+Date: Sat, 20 Mar 2010 16:08:31 +0100
+Subject: [Chilli] ISC DHCPd and Coova Chilli on the same Box
+Message-ID: <3060035c1003200808v7c235424u1f997176b56dd255@mail.gmail.com>
+
+Hi Everyone,
+How can I run ISC DHCPD and Coova chilli as a relayagent on the same server?
+A simple example of this scenario will be appreciated.
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20100320/478c4482/attachment.htm>
+
+From muffycompoqm at gmail.com  Sat Mar 20 15:12:31 2010
+From: muffycompoqm at gmail.com (Mfawa Alfred Onen)
+Date: Sat, 20 Mar 2010 16:12:31 +0100
+Subject: [Chilli] ISC DHCPd and Coova Chilli on the same Box
+In-Reply-To: <3060035c1003200808v7c235424u1f997176b56dd255@mail.gmail.com>
+References: <3060035c1003200808v7c235424u1f997176b56dd255@mail.gmail.com>
+Message-ID: <3060035c1003200812o21808782raa42e0f91fc75c57@mail.gmail.com>
+
+Hi Everyone,
+How can I run ISC DHCPD and Coova chilli as a relayagent on the same server?
+A simple example of this scenario will be appreciated.
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20100320/e1549ea0/attachment.htm>
+
+From venture37 at gmail.com  Sun Mar 21 05:17:07 2010
+From: venture37 at gmail.com (Sevan / Venture37)
+Date: Sun, 21 Mar 2010 05:17:07 +0000
+Subject: [Chilli] ChilliLibrary.js patch
+Message-ID: <4BA5ABD3.6030708@gmail.com>
+
+use LF
+specify the correct default IP address (10.1.0.1) in $chilliController
+
+
+Sevan / Venture37
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: patch-ChilliLibrary.js
+Type: application/x-javascript
+Size: 53721 bytes
+Desc: not available
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20100321/ca766729/attachment-0001.bin>
+
+From david at coova.com  Sun Mar 21 06:10:32 2010
+From: david at coova.com (David Bird)
+Date: Sun, 21 Mar 2010 07:10:32 +0100
+Subject: [Chilli] how to disable chilli dhcp server
+In-Reply-To: <60742.195.19.214.216.1268929250.squirrel@mail.pnpi.spb.ru>
+References: <60742.195.19.214.216.1268929250.squirrel@mail.pnpi.spb.ru>
+Message-ID: <1269151832.4135.163.camel@david-laptop>
+
+You can have chilli 'handle' the WPA network too.. in fact, you can have
+your AP send it's RADIUS through chilli in order to get RADIUS
+accounting (assuming your APs are not doing that already). You can also
+use chilli with the parameters you mention and an external server - but
+I've heard people complain about it not working when the DHCP server is
+also on localhost...
+
+On Thu, 2010-03-18 at 19:20 +0300, Anatoly Oreshkin wrote:
+> Hello,
+> 
+> I have coova-chilli 1.2.2 configured and running successfully.
+> The configuration:
+> eth0 (195.19.214.208/27) - wan interface looking into local network
+> eth1 (10.2.3.0/24) - subscriber interface looking into internal network
+> for clients.
+> 
+> Both local network and internal network are in the same physical network
+> segment.
+> We would like to set up external DHCP  server for serving wireless clients
+> with WPA2 security using the
+> same APs as chilli clients and also serving wire clients.
+> But having 2 DHCP servers on the same physical segment is impossible.
+> So I would like to disable chilli's builtin dhcp server and assign IP
+> addresses though external DHCP
+> server.
+> 
+> To achive this goal I tried to use chilli parameters:
+> dhcpgateway,dhcpgatewayport, dhcprelayagent
+> but without success.
+> Also I tried iptables like this:
+> 
+> iptables -p udp  --destination-port 67:68 -j DROP
+> 
+> and also no success.
+> May be to use ebtables ?
+> 
+> The question is a such scenario is possible ?
+> Any help.
+> Thanks.
+> 
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+
+
+From david at coova.com  Sun Mar 21 06:16:29 2010
+From: david at coova.com (David Bird)
+Date: Sun, 21 Mar 2010 07:16:29 +0100
+Subject: [Chilli] MAC blacklist and other security measures
+In-Reply-To: <4BA25D15.8030400@hpp.org.br>
+References: <4BA25D15.8030400@hpp.org.br>
+Message-ID: <1269152189.4135.167.camel@david-laptop>
+
+Hm.. one way might be to enable MAC authentication such that:
+
+- You always return Access-Accept (plus attribute Chillispot-Config =
+'splash') for non-blocked users.
+
+- You can return an Access-Reject for blocked users. When used with
+--macauthdeny, it means these devices will be ignored. 
+
+
+On Thu, 2010-03-18 at 14:04 -0300, Felipe Augusto van de Wiel wrote:
+> -----BEGIN PGP SIGNED MESSAGE-----
+> Hash: SHA512
+> 
+> Hi,
+> 
+> 	Recently we find out that some of our clients
+> were consuming too much traffic, mainly because of virus.
+> I did a short hack to force those MACs to be logout every
+> little while.
+> 
+> 	I couldn't find on the docs some sort of
+> blacklist or other measure to forbid clients. Is there
+> such resource in Coova?
+> 
+> 	Our hotspot is open, which means we only have a
+> captive portal so people can read the terms of service
+> before access the Internet.
+> 
+> 	What are you doing in order to increase the
+> security of the hostspot zone? Traffic shapping? Blocking
+> a lot of ports? Proxy?
+> 
+> Kind regards,
+> - -- 
+> Felipe Augusto van de Wiel <felipe.wiel at hpp.org.br>
+> Tecnologia da Informa??o (TI) - Complexo Pequeno Pr?ncipe
+> http://www.pequenoprincipe.org.br/    T: +55 41 3310 1747
+> -----BEGIN PGP SIGNATURE-----
+> Version: GnuPG v1.4.10 (GNU/Linux)
+> Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
+> 
+> iQIcBAEBCgAGBQJLol0SAAoJECCPPxLgxLxPS0cP/Rwc5B9SA35KZMqttm9T9Dhd
+> UlXcxqHUuklkQcwGwQf8aQT2LLfUhwUMq/aK232AH0Sr7jrhVvS1CvYYw8Vj4f/z
+> mtd0SbnSAmzaYPEEeDnn/3wHOp0qMQEc+G3jxn+uXbqhgb1RYrZEbWzWE7fbLH5P
+> 64v2ks+sL/1tr3P8SLq1Am2FOUpB2eKkerRTmeJaeLZcdzv26WlZEacdg/qqIZDe
+> HBM4fQV0QpQXOIECplLgIVs+7imbgrEyfAoW6V/vIfjouqs288Iq/ajM7jjBiUAM
+> jTrtexiiRBA7k6UgdiYpRDpG8ppiiI6SWSSu1zubIpkC+hm90540dZcZD+xswE8B
+> uPvz0YnRjkYqgBiObGS7jNJkATw6MCCzSBtZT9al2SZVcjSmU+cKr3kHcIjmkCRD
+> T24YnQa1GN4d9byZfOjOdPqFKXtMa8yVfQeS28sfhdl/U6szSMk6rq+AyppVl4WS
+> rJFaKWx4zVHFwirE0cbWiwav+nGFWapcMsCxY9jibME3EDkxPZbddekjDQ8jQhBd
+> eD/MuR2HziUaSCl7jZXr6pIgefSbFNPcPNsKQpPaFWvJRvDDdMrKYS6lued4iDqT
+> 6YWCPnfE5XVwxCYIHr8q8KK3as+MPoWKH1GtlEd28Rv+tgJni8Sj772tDo60sd6v
+> fQLPF4lf7kWfX1i5TR4N
+> =VYth
+> -----END PGP SIGNATURE-----
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+
+
+From david at coova.com  Sun Mar 21 06:19:07 2010
+From: david at coova.com (David Bird)
+Date: Sun, 21 Mar 2010 07:19:07 +0100
+Subject: [Chilli] ChilliLibrary.js patch
+In-Reply-To: <4BA5ABD3.6030708@gmail.com>
+References: <4BA5ABD3.6030708@gmail.com>
+Message-ID: <1269152347.4135.169.camel@david-laptop>
+
+Does the patch put a LF on every line? If not, could you send a version
+that only shows the changed lines instead? 
+
+On Sun, 2010-03-21 at 05:17 +0000, Sevan / Venture37 wrote:
+> use LF
+> specify the correct default IP address (10.1.0.1) in $chilliController
+> 
+> 
+> Sevan / Venture37
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+
+
+From david at coova.com  Sun Mar 21 06:25:53 2010
+From: david at coova.com (David Bird)
+Date: Sun, 21 Mar 2010 07:25:53 +0100
+Subject: [Chilli] wispr upload limiting on coova 1.2.2
+In-Reply-To: <201003161145.56306.oguzhank@bilkent.edu.tr>
+References: <201003031231.45920.oguzhank@bilkent.edu.tr>
+	<201003031349.38739.oguzhank@bilkent.edu.tr>
+	<1267632584.3395.136.camel@david-laptop>
+	<201003161145.56306.oguzhank@bilkent.edu.tr>
+Message-ID: <1269152753.4135.172.camel@david-laptop>
+
+Hi, are you saying the bandwidth control is only not working for you
+when users are transferring files between each other or also between the
+users and Internet? 
+
+
+On Tue, 2010-03-16 at 11:45 +0200, Oguzhan Kayhan wrote:
+> Hello,
+> I got the following rules for all of my dhcpif interfaces (some of them are 
+> vlans as u can see) And using 1.2.2 version as i mentioned before.
+> and my chilli_query shows that i got no download limit but 15Mbit. of download 
+> limit per user already set correctly.
+> But my users can go up to 100 mbit most of the time while sharing files via ftp
+> What am i missing?
+> 
+> 
+> 
+> xx-xx-xx-xx a.a.a.a pass 4b9ec38000000028 1 abcd36633/0 1/0 44738465/0 
+> 1894633177/0 0 1 0/0 0/15000000 http://www.msftncsi.com/ncsi.txt
+> yy-yy-yy-yy b.b.b.b  pass 4b9e9c9b000000f0 1 acbg 46588/0 1/0 4232596/0 
+> 22788292/0 0 1 0/0 0/15000000 http://www.msftncsi.com/ncsi.txt
+> 
+> 
+> iptables-save|grep DROP
+> -A FORWARD -i eth1 -j DROP
+> -A FORWARD -o eth1 -j DROP
+> -A FORWARD -i eth3 -j DROP
+> -A FORWARD -o eth3 -j DROP
+> -A FORWARD -i eth4.781 -j DROP
+> -A FORWARD -o eth4.781 -j DROP
+> -A FORWARD -i eth4.782 -j DROP
+> -A FORWARD -o eth4.782 -j DROP
+> -A FORWARD -i eth4.783 -j DROP
+> -A FORWARD -o eth4.783 -j DROP
+> -A FORWARD -i eth4.784 -j DROP
+> -A FORWARD -o eth4.784 -j DROP
+> 
+> 
+> 
+> On Wednesday 03 March 2010 06:09:44 pm you wrote:
+> > Drop packets to/from the "dhcpif" interface... you don't want your
+> > kernel attempting to route that traffic. Have you noticed many duplicate
+> > packets on your network?
+> > 
+> > On Wed, 2010-03-03 at 13:49 +0200, Oguzhan Kayhan wrote:
+> > > There is no rule about chilli-coova itself.
+> > > It is one of our main routers, thats why we are only using our own
+> > > network rules..And there is no rules for that tun/tap interfaces or
+> > > physical interfaces that coova runs on it.
+> > >
+> > > Were there any rule on itables to let choova control up/down bw rates??
+> > > If yes, which rule?
+> > > We can add it additionally.
+> > >
+> > > On Wednesday 03 March 2010 12:57:31 pm David Bird wrote:
+> > > > Can you also give your iptables rules?
+> > > >
+> > > > On Wed, 2010-03-03 at 12:31 +0200, Oguzhan Kayhan wrote:
+> > > > > Hello,
+> > > > > I am using coova on ethernet interfaces to control wireless devices
+> > > > > behind it..
+> > > > > Previously i was using 1.0.14 and noticed that my upload speed config
+> > > > > does not work.
+> > > > > So decided to update to 1.2.2
+> > > > > But still no luck..
+> > > > > I tried some parameters..
+> > > > > For ex. I set upload to 5 mbit and download to 10mbit.
+> > > > > xx-xx-xx-xx-xx x.x.x.x pass 4b8e16d90000000c 1 7798 6/0 6/0 2722/0
+> > > > > 3236/0 0 0 0/5000000 0/10000000
+> > > > >
+> > > > > And while testing download works fine with 10mbit but upload was
+> > > > > going up to 100mbit..
+> > > > > Anyway, i tested with 1mbit on both upload and download
+> > > > > xx-xx-xx-xx-xx x.x.x.x pass 4b8e21260000000c 1 7798 48/0 1/0
+> > > > > 4757101/0 4755507/0 0 0 99/1000000 99/1000000 http:/xxx.xxx.xxx.xxx
+> > > > >
+> > > > > while downloading it was 1mbit. but when uploading it stayed at
+> > > > > 50mbit. maybe because of my downloads saturation du e to ack
+> > > > > packets.. I assume that 99 on upload download is % size of saturation
+> > > > > on that line. So..even i set very tiny numbers on upload and it
+> > > > > reaches to %99.. no chance.. it doesnt limit.
+> > > > > I both used tun and tap as interface.. and i used both limiting from
+> > > > > radius or by coovas default upload limit parameters....same results..
+> > > > > working on debian..
+> > > > >
+> > > > >
+> > > > > PS: sorry for crosspost on both forum and maillist.
+> > > > > But some users are making my network unstable due do high upload
+> > > > > rates... so i need that desperately..
+> > > > > _______________________________________________
+> > > > > Chilli mailing list
+> > > > > Chilli at coova.org
+> > > > > http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+> > >
+> > > _______________________________________________
+> > > Chilli mailing list
+> > > Chilli at coova.org
+> > > http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+> > 
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+
+
+From venture37 at gmail.com  Sun Mar 21 14:19:42 2010
+From: venture37 at gmail.com (Sevan / Venture37)
+Date: Sun, 21 Mar 2010 14:19:42 +0000
+Subject: [Chilli] ChilliLibrary.js patch
+In-Reply-To: <1269152347.4135.169.camel@david-laptop>
+References: <4BA5ABD3.6030708@gmail.com>
+	<1269152347.4135.169.camel@david-laptop>
+Message-ID: <4BA62AFE.3080200@gmail.com>
+
+On 21/03/2010 06:19, David Bird wrote:
+> Does the patch put a LF on every line?
+
+Yes
+
+From muffycompoqm at gmail.com  Sun Mar 21 17:25:41 2010
+From: muffycompoqm at gmail.com (Mfawa Alfred Onen)
+Date: Sun, 21 Mar 2010 18:25:41 +0100
+Subject: [Chilli] Out of Connections Error
+Message-ID: <3060035c1003211025m43ce07a8p9b3759e18a8da8b8@mail.gmail.com>
+
+I am using Coova-Chilli 1.2.2 compiled with?--enable-largelimits but
+soon the network becomes slow when allocating IP address and the
+performance drops. When I check my Log (/var/log/messages), I see
+"Out of connections". What do I do?
+
+From oguzhank at bilkent.edu.tr  Mon Mar 22 13:27:01 2010
+From: oguzhank at bilkent.edu.tr (Oguzhan Kayhan)
+Date: Mon, 22 Mar 2010 15:27:01 +0200
+Subject: [Chilli] wispr upload limiting on coova 1.2.2
+In-Reply-To: <1269152753.4135.172.camel@david-laptop>
+References: <201003031231.45920.oguzhank@bilkent.edu.tr>
+	<201003161145.56306.oguzhank@bilkent.edu.tr>
+	<1269152753.4135.172.camel@david-laptop>
+Message-ID: <201003221527.01119.oguzhank@bilkent.edu.tr>
+
+Between eachother, it is normal that coova can not control upload/download 
+speeds.
+But i am mentioning about the users in different subnets, different coova 
+processes.
+Lets assume user A is on coova a , and user B is on coova b (or in any other 
+subnet)
+
+I can totally control download speeds of each users without any problem at 
+all.
+But when mentioning about upload speeds...It doesnt work.
+It doesnt matter the connection is thru internet or to another wan user...
+
+
+
+On Sunday 21 March 2010 08:25:53 am David Bird wrote:
+> Hi, are you saying the bandwidth control is only not working for you
+> when users are transferring files between each other or also between the
+> users and Internet?
+> 
+> On Tue, 2010-03-16 at 11:45 +0200, Oguzhan Kayhan wrote:
+> > Hello,
+> > I got the following rules for all of my dhcpif interfaces (some of them
+> > are vlans as u can see) And using 1.2.2 version as i mentioned before.
+> > and my chilli_query shows that i got no download limit but 15Mbit. of
+> > download limit per user already set correctly.
+> > But my users can go up to 100 mbit most of the time while sharing files
+> > via ftp What am i missing?
+> >
+> >
+> >
+> > xx-xx-xx-xx a.a.a.a pass 4b9ec38000000028 1 abcd36633/0 1/0 44738465/0
+> > 1894633177/0 0 1 0/0 0/15000000 http://www.msftncsi.com/ncsi.txt
+> > yy-yy-yy-yy b.b.b.b  pass 4b9e9c9b000000f0 1 acbg 46588/0 1/0 4232596/0
+> > 22788292/0 0 1 0/0 0/15000000 http://www.msftncsi.com/ncsi.txt
+> >
+> >
+> > iptables-save|grep DROP
+> > -A FORWARD -i eth1 -j DROP
+> > -A FORWARD -o eth1 -j DROP
+> > -A FORWARD -i eth3 -j DROP
+> > -A FORWARD -o eth3 -j DROP
+> > -A FORWARD -i eth4.781 -j DROP
+> > -A FORWARD -o eth4.781 -j DROP
+> > -A FORWARD -i eth4.782 -j DROP
+> > -A FORWARD -o eth4.782 -j DROP
+> > -A FORWARD -i eth4.783 -j DROP
+> > -A FORWARD -o eth4.783 -j DROP
+> > -A FORWARD -i eth4.784 -j DROP
+> > -A FORWARD -o eth4.784 -j DROP
+> >
+> > On Wednesday 03 March 2010 06:09:44 pm you wrote:
+> > > Drop packets to/from the "dhcpif" interface... you don't want your
+> > > kernel attempting to route that traffic. Have you noticed many
+> > > duplicate packets on your network?
+> > >
+> > > On Wed, 2010-03-03 at 13:49 +0200, Oguzhan Kayhan wrote:
+> > > > There is no rule about chilli-coova itself.
+> > > > It is one of our main routers, thats why we are only using our own
+> > > > network rules..And there is no rules for that tun/tap interfaces or
+> > > > physical interfaces that coova runs on it.
+> > > >
+> > > > Were there any rule on itables to let choova control up/down bw
+> > > > rates?? If yes, which rule?
+> > > > We can add it additionally.
+> > > >
+> > > > On Wednesday 03 March 2010 12:57:31 pm David Bird wrote:
+> > > > > Can you also give your iptables rules?
+> > > > >
+> > > > > On Wed, 2010-03-03 at 12:31 +0200, Oguzhan Kayhan wrote:
+> > > > > > Hello,
+> > > > > > I am using coova on ethernet interfaces to control wireless
+> > > > > > devices behind it..
+> > > > > > Previously i was using 1.0.14 and noticed that my upload speed
+> > > > > > config does not work.
+> > > > > > So decided to update to 1.2.2
+> > > > > > But still no luck..
+> > > > > > I tried some parameters..
+> > > > > > For ex. I set upload to 5 mbit and download to 10mbit.
+> > > > > > xx-xx-xx-xx-xx x.x.x.x pass 4b8e16d90000000c 1 7798 6/0 6/0
+> > > > > > 2722/0 3236/0 0 0 0/5000000 0/10000000
+> > > > > >
+> > > > > > And while testing download works fine with 10mbit but upload was
+> > > > > > going up to 100mbit..
+> > > > > > Anyway, i tested with 1mbit on both upload and download
+> > > > > > xx-xx-xx-xx-xx x.x.x.x pass 4b8e21260000000c 1 7798 48/0 1/0
+> > > > > > 4757101/0 4755507/0 0 0 99/1000000 99/1000000
+> > > > > > http:/xxx.xxx.xxx.xxx
+> > > > > >
+> > > > > > while downloading it was 1mbit. but when uploading it stayed at
+> > > > > > 50mbit. maybe because of my downloads saturation du e to ack
+> > > > > > packets.. I assume that 99 on upload download is % size of
+> > > > > > saturation on that line. So..even i set very tiny numbers on
+> > > > > > upload and it reaches to %99.. no chance.. it doesnt limit.
+> > > > > > I both used tun and tap as interface.. and i used both limiting
+> > > > > > from radius or by coovas default upload limit parameters....same
+> > > > > > results.. working on debian..
+> > > > > >
+> > > > > >
+> > > > > > PS: sorry for crosspost on both forum and maillist.
+> > > > > > But some users are making my network unstable due do high upload
+> > > > > > rates... so i need that desperately..
+> > > > > > _______________________________________________
+> > > > > > Chilli mailing list
+> > > > > > Chilli at coova.org
+> > > > > > http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+> > > >
+> > > > _______________________________________________
+> > > > Chilli mailing list
+> > > > Chilli at coova.org
+> > > > http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+> >
+> > _______________________________________________
+> > Chilli mailing list
+> > Chilli at coova.org
+> > http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+> 
+
+From Anatoly.Oreshkin at pnpi.spb.ru  Mon Mar 22 16:34:00 2010
+From: Anatoly.Oreshkin at pnpi.spb.ru (Anatoly Oreshkin)
+Date: Mon, 22 Mar 2010 19:34:00 +0300 (MSK)
+Subject: [Chilli] chilli with 802.1X  problem
+Message-ID: <44339.195.19.214.216.1269275640.squirrel@mail.pnpi.spb.ru>
+
+Hello,
+
+I've configured CoovaChilli 1.2.2  to work with WPA2 protocol.
+Access Point (AP) is configured with WPA2 and 802.1X authentication.
+chilli ip address 195.19.214.216 is set up as radius server in AP.
+
+The chilli file local.conf contains such lines:
+
+
+proxylisten 195.19.214.216   # 195.19.214.216 is chilli interface
+# address to listen radius request from AP (192.168.14.242)
+
+proxyport 1812
+proxyclient 192.168.14.242 #  192.168.14.242 is AP address
+proxysecret  <proxysecret>
+
+When I am trying to authenticate wireless client using WPA2 and 802.1X
+I see in /var/log/messages  such error messages:
+
+radius.c: 1677: Authenticator does not match request!
+radius.c: 335: No such id in radius queue: id=0!
+radius.c: 1672: Matching request was not found in queue: 0!
+radius.c: 335: No such id in radius queue: id=1!
+
+
+What's wrong ?
+Is chilli configuration correct ?
+
+What do the parameters
+HS_RADPROXY_LISTEN
+HS_RADPROXY_CLIENT
+
+in /usr/local/etc/chilli/defaults file  mean ?
+
+Can chilli work with multiple APs ?
+
+Thanks.
+
+
+
+
+From fahd.kasri at weblib.eu  Mon Mar 22 19:39:25 2010
+From: fahd.kasri at weblib.eu (Fahd Kasri)
+Date: Mon, 22 Mar 2010 20:39:25 +0100
+Subject: [Chilli] (no subject)
+Message-ID: <ddc827aa1003221239x1300e2cdtdbc456f4cf0d9b27@mail.gmail.com>
+
+Hi all,
+
+Is there an official init script for CoovaChilli on Kamikaze OpenWRT? There
+isn't one in the package. I've tried using the one in the CoovaAP package,
+but it somehow empties the /etc/chilli/config file instead of loading data
+from it.
+
+Regards,
+
+-- 
+Fahd
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20100322/96174e4c/attachment.htm>
+
+From fahd.kasri at weblib.eu  Mon Mar 22 21:10:44 2010
+From: fahd.kasri at weblib.eu (Fahd Kasri)
+Date: Mon, 22 Mar 2010 22:10:44 +0100
+Subject: [Chilli]  OpenWRT init script
+Message-ID: <ddc827aa1003221410i4d45898eh9b94fef6eaa84786@mail.gmail.com>
+
+Hi all,
+
+Is there an official init script for CoovaChilli on Kamikaze OpenWRT? There
+isn't one in the package. I've tried using the one in the CoovaAP package,
+but it somehow empties the /etc/chilli/config file instead of loading data
+from it.
+
+Regards,
+
+-- 
+Fahd
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20100322/933dc750/attachment.htm>
+
+From cmutuku at strathmore.edu  Tue Mar 23 08:12:59 2010
+From: cmutuku at strathmore.edu (Cornelius Mutuku)
+Date: Tue, 23 Mar 2010 11:12:59 +0300
+Subject: [Chilli] Coova ap or chiili on linksys wap 54g
+Message-ID: <70A463FCFF36A941A61895C97017503F48531112EF@tsavo.strathmore.local>
+
+Can anyone Please assist on how to configure the above mentioned on a Linksys wap 54 access points
+
+Warmest regards
+Cornelius
+
+________________________________
+Strathmore University provides all-round education in an atmosphere of freedom and responsibility.
+This email and any files transmitted with it are intended solely for use by the recipient(s) to whom it is addressed and may contain confidential information. If you have received this email in error please notify the sender immediately and permanently delete this email and/or any files attached to it from your computer. Please note that any views or opinions presented in this email are solely those of the author and do not necessarily represent those of Strathmore University. The University accepts no liability whatsoever for any loss or damages incurred, or suffered, resulting, or arising, from the use of this email and/or its attachments. The University warrants neither the integrity of the e-mail nor its freedom from errors, viruses, interception or any other form of interference.
+?????????????????????????.
+Website: www.strathmore.edu
+
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20100323/41ea7afd/attachment.htm>
+
+From Anatoly.Oreshkin at pnpi.spb.ru  Tue Mar 23 16:20:13 2010
+From: Anatoly.Oreshkin at pnpi.spb.ru (Anatoly Oreshkin)
+Date: Tue, 23 Mar 2010 19:20:13 +0300 (MSK)
+Subject: [Chilli] CoovaChilli  & (non CoovaAP) AP
+Message-ID: <37292.195.19.214.216.1269361213.squirrel@mail.pnpi.spb.ru>
+
+Hello,
+
+I have wireless Access Point 3Com AirConnect 9150 configured with WPA2/AES
+and 802.1X EAP-PEAP-MSCHAPv2 authentication. It uses Free Radius server
+for authentication and wireless clients get ip fixed addresses from DHCP
+server.
+I configured this AP with second SSID (without security) in order for
+wireless
+clients can authenticate through CoovaChilli using UAM method.
+It works.
+Now I would like to make both WPA2/802.1X and UAM authentication to work
+through  CoovaChilli. I can specify  CoovaChilli address as Radius server
+address in AP. But of course it's not enough. Is it possible at all to
+have CoovaChilli working in such configuration ?
+If so, how should I configure for this purpose CoovaChilli and Radius
+server ?
+
+Any hints.
+
+Thanks.
+
+
+From david at coova.com  Tue Mar 23 20:46:17 2010
+From: david at coova.com (David Bird)
+Date: Tue, 23 Mar 2010 21:46:17 +0100
+Subject: [Chilli] CoovaChilli  & (non CoovaAP) AP
+In-Reply-To: <37292.195.19.214.216.1269361213.squirrel@mail.pnpi.spb.ru>
+References: <37292.195.19.214.216.1269361213.squirrel@mail.pnpi.spb.ru>
+Message-ID: <1269377177.4135.204.camel@david-laptop>
+
+You can bridge the networks so that chilli controls them both, or run
+two instances of chilli. The instance handling the 802.1x network should
+have these options defined:
+
+$ chilli --help|grep proxy
+      --proxylisten=STRING      Proxy IP address to listen on
+      --proxyport=INT           Proxy UDP port to listen on (0 is off)  
+      --proxyclient=STRING      IP address of proxy client(s)
+      --proxysecret=STRING      Radius proxy shared secret
+
+And the 802.1x AP should use these settings for it's RADIUS.. chilli
+will proxy the authentication, provide accounting, and still control the
+network to enforce any limitations, etc.
+
+On Tue, 2010-03-23 at 19:20 +0300, Anatoly Oreshkin wrote:
+> Hello,
+> 
+> I have wireless Access Point 3Com AirConnect 9150 configured with WPA2/AES
+> and 802.1X EAP-PEAP-MSCHAPv2 authentication. It uses Free Radius server
+> for authentication and wireless clients get ip fixed addresses from DHCP
+> server.
+> I configured this AP with second SSID (without security) in order for
+> wireless
+> clients can authenticate through CoovaChilli using UAM method.
+> It works.
+> Now I would like to make both WPA2/802.1X and UAM authentication to work
+> through  CoovaChilli. I can specify  CoovaChilli address as Radius server
+> address in AP. But of course it's not enough. Is it possible at all to
+> have CoovaChilli working in such configuration ?
+> If so, how should I configure for this purpose CoovaChilli and Radius
+> server ?
+> 
+> Any hints.
+> 
+> Thanks.
+> 
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+
+
+From Anatoly.Oreshkin at pnpi.spb.ru  Wed Mar 24 17:20:59 2010
+From: Anatoly.Oreshkin at pnpi.spb.ru (Anatoly Oreshkin)
+Date: Wed, 24 Mar 2010 20:20:59 +0300 (MSK)
+Subject: [Chilli] CoovaChilli  & (non CoovaAP) AP
+In-Reply-To: <1269377177.4135.204.camel@david-laptop>
+References: <37292.195.19.214.216.1269361213.squirrel@mail.pnpi.spb.ru>
+	<1269377177.4135.204.camel@david-laptop>
+Message-ID: <43065.195.19.214.216.1269451259.squirrel@mail.pnpi.spb.ru>
+
+
+
+Hello,
+
+My CoovaChilli server is installed on Linux box.
+CoovaChilli is configured as:
+./configure --with-nfqueue --enable-chilliproxy --with-curl
+
+HS_WANIF=eth0
+HS_LANIF=eth1
+HS_NETWORK=10.2.3.0
+HS_NETMASK=255.255.255.0
+HS_UAMLISTEN=10.2.3.1
+HS_UAMPORT=3990
+HS_NASID=nas01
+HS_RADIUS=212.193.96.134
+HS_RADSECRET=CHILLI_HOTSPOT
+...
+HS_MODE=hotspot
+HS_TYPE=chillispot
+
+eth0 address = 195.19.214.216
+eth1 address = 10.2.3.1
+
+I've setup proxy parameters in /usr/local/etc/chilli/local.conf:
+
+
+
+proxylisten=195.19.214.216     #  eth0 address
+proxyport=1812
+proxyclient=192.168.14.242     #  my AP address
+proxysecret=CHILLI_HOTSPOT
+
+AP is configured as:
+-------------------
+
+WPA2/AES/802.1X
+Radius server: 195.19.214.216  (chilli address)
+Radius port: 1812
+Radius secret: CHILLI_HOTSPOT
+
+Radius server configured as:
+----------------------------
+
+clients.conf
+
+# chilli hotspot
+client 195.19.214.216 {
+        secret      = CHILLI_HOTSPOT
+        shortname   = Chilli
+        nastype     = other
+}
+
+The file "users" has user data:
+oreshkin Cleartext-Password := "mypassword", Calling-Station-Id ==
+"00-16-EA-8A-DE-38"
+
+When I am trying to authenticate wireless client through coovachilli
+then I getting such messages:
+
+On coovachili server in /var/log/messages
+
+radius.c: 1677: Authenticator does not match request!
+radius.c: 335: No such id in radius queue: id=0!
+radius.c: 1672: Matching request was not found in queue: 0!
+radius.c: 335: No such id in radius queue: id=1!
+radius.c: 1672: Matching request was not found in queue: 1!
+....
+
+
+On Radius server
+----------------
+
+Radius daemon running in debug mode gives output which indicates that it
+receives Access-Request packets from coovachilli.
+Below is extract from radius output:
+
+rad_recv: Access-Request packet from host 195.19.214.216 port 32859, id=0,
+length=146
+        Vendor-14559-Attr-8 = 0x312e322e32
+        User-Name = "oreshkin"
+        EAP-Message = 0x0200000d016f726573686b696e
+        Message-Authenticator = 0x45f4d1100685765bd2b5004f650d0a2e
+        Calling-Station-Id = "00-16-EA-8A-DE-38"
+        Called-Station-Id = "00-0E-0C-36-AE-AA"
+        NAS-Port-Type = Wireless-802.11
+        NAS-Port = 11
+        Service-Type = Login-User
+        NAS-IP-Address = 10.2.3.1
+        NAS-Identifier = "nas01"
++- entering group authorize {...}
+++[preprocess] returns ok
+++[chap] returns noop
+++[mschap] returns noop
+[suffix] No '@' in User-Name = "oreshkin", looking up realm NULL
+[suffix] Found realm "DEFAULT"
+[suffix] Adding Stripped-User-Name = "oreshkin"
+
+.....
+
+Sending Access-Challenge of id 0 to 195.19.214.216 port 32859
+        EAP-Message = 0x010100061920
+        Message-Authenticator = 0x00000000000000000000000000000000
+        State = 0x41e5100541e4098a17fe112e0fc89cb1
+Finished request 0.
+Going to the next request
+Waking up in 4.9 seconds.
+Cleaning up request 0 ID 0 with timestamp +54
+Ready to process requests.
+....
+
+Radius server receives from coovachilli  Access-Request packets and responds
+with Access-Challenge packets many times. But it never sends  Access-Accept
+packet and never output error messages.
+
+What might be wrong ? Configuration errors or do I need to do something
+else ?
+
+Coovachilli 1.2.2 has also some transparent proxy.
+/usr/local/sbin/chilli --help|grep proxy
+      --proxylisten=STRING      Proxy IP address to listen on
+      --proxyport=INT           Proxy UDP port to listen on (0 is off)
+      --proxyclient=STRING      IP address of proxy client(s)
+      --proxysecret=STRING      Radius proxy shared secret
+      --postauthproxy=STRING    IP of an upstream transparent proxy
+      --postauthproxyport=INT   Port of an upstream transparent proxy
+
+I don't know for what purpose transparent proxy is.
+May be it is of help ?
+
+Thanks.
+
+
+> You can bridge the networks so that chilli controls them both, or run
+> two instances of chilli. The instance handling the 802.1x network should
+> have these options defined:
+>
+> $ chilli --help|grep proxy
+>       --proxylisten=STRING      Proxy IP address to listen on
+>       --proxyport=INT           Proxy UDP port to listen on (0 is off)
+>       --proxyclient=STRING      IP address of proxy client(s)
+>       --proxysecret=STRING      Radius proxy shared secret
+>
+> And the 802.1x AP should use these settings for it's RADIUS.. chilli
+> will proxy the authentication, provide accounting, and still control the
+> network to enforce any limitations, etc.
+>
+> On Tue, 2010-03-23 at 19:20 +0300, Anatoly Oreshkin wrote:
+>> Hello,
+>>
+>> I have wireless Access Point 3Com AirConnect 9150 configured with
+>> WPA2/AES
+>> and 802.1X EAP-PEAP-MSCHAPv2 authentication. It uses Free Radius server
+>> for authentication and wireless clients get ip fixed addresses from DHCP
+>> server.
+>> I configured this AP with second SSID (without security) in order for
+>> wireless
+>> clients can authenticate through CoovaChilli using UAM method.
+>> It works.
+>> Now I would like to make both WPA2/802.1X and UAM authentication to work
+>> through  CoovaChilli. I can specify  CoovaChilli address as Radius
+>> server
+>> address in AP. But of course it's not enough. Is it possible at all to
+>> have CoovaChilli working in such configuration ?
+>> If so, how should I configure for this purpose CoovaChilli and Radius
+>> server ?
+>>
+>> Any hints.
+>>
+>> Thanks.
+>>
+>> _______________________________________________
+>> Chilli mailing list
+>> Chilli at coova.org
+>> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+>
+
+
+From adamanov at gmail.com  Fri Mar 26 11:16:54 2010
+From: adamanov at gmail.com (=?UTF-8?B?0JLRj9GH0LXRgdC70LDQsiDQkNC00LDQvNCw0L3QvtCy?=)
+Date: Fri, 26 Mar 2010 13:16:54 +0200
+Subject: [Chilli] CoovaChilli & (non CoovaAP) AP
+In-Reply-To: <43065.195.19.214.216.1269451259.squirrel@mail.pnpi.spb.ru>
+References: <37292.195.19.214.216.1269361213.squirrel@mail.pnpi.spb.ru>
+	<1269377177.4135.204.camel@david-laptop>
+	<43065.195.19.214.216.1269451259.squirrel@mail.pnpi.spb.ru>
+Message-ID: <7a50ad141003260416k16401b6bm5215c12cbb8688a7@mail.gmail.com>
+
+I too have faced such problem, but few times authorisation process
+passed successfully.
+
+
+chilli.c: 1943: 0 (Debug) RADIUS Access-Request received
+chilli.c: 1971: 0 (Debug) Calling Station ID is: 00-1D-4F-AC-36-DD
+dhcp.c: 389: 0 (Debug) DHCP newconn: 00:1d:4f:ac:36:dd
+chilli.c: 3225: 0 (Debug) New DHCP request from MAC=00-1D-4F-AC-36-DD
+chilli.c: 3228: 0 (Debug) New DHCP connection established
+radius.c: 1415: 0 (Debug) RADIUS to 192.168.1.4:1812
+radius.c: 330: 0 (Debug) No such id in radius queue: id=12!
+radius.c: 1666: 0 (Debug) Matching request was not found in queue: 12!
+chilli.c: 1943: 0 (Debug) RADIUS Access-Request received
+chilli.c: 1971: 0 (Debug) Calling Station ID is: 00-1D-4F-AC-36-DD
+chilli.c: 2045: 0 (Debug) Dropping RADIUS while waiting
+chilli.c: 3568: 0 (Debug) EAP Packet received
+chilli.c: 3589: 0 (Debug) Received EAP message, processing for authentication
+chilli.c: 1943: 0 (Debug) RADIUS Access-Request received
+chilli.c: 1971: 0 (Debug) Calling Station ID is: 00-1D-4F-AC-36-DD
+chilli.c: 2042: 0 (Debug) Giving up on previous packet.. not dropping this one
+radius.c: 1415: 0 (Debug) RADIUS to 192.168.1.4:1812
+radius.c: 330: 0 (Debug) No such id in radius queue: id=12!
+radius.c: 1666: 0 (Debug) Matching request was not found in queue: 12!
+radius.c: 330: 0 (Debug) No such id in radius queue: id=12!
+radius.c: 1666: 0 (Debug) Matching request was not found in queue: 12!
+
+2010/3/24 Anatoly Oreshkin <Anatoly.Oreshkin at pnpi.spb.ru>:
+>
+>
+> Hello,
+>
+> My CoovaChilli server is installed on Linux box.
+> CoovaChilli is configured as:
+> ./configure --with-nfqueue --enable-chilliproxy --with-curl
+>
+> HS_WANIF=eth0
+> HS_LANIF=eth1
+> HS_NETWORK=10.2.3.0
+> HS_NETMASK=255.255.255.0
+> HS_UAMLISTEN=10.2.3.1
+> HS_UAMPORT=3990
+> HS_NASID=nas01
+> HS_RADIUS=212.193.96.134
+> HS_RADSECRET=CHILLI_HOTSPOT
+> ...
+> HS_MODE=hotspot
+> HS_TYPE=chillispot
+>
+> eth0 address = 195.19.214.216
+> eth1 address = 10.2.3.1
+>
+> I've setup proxy parameters in /usr/local/etc/chilli/local.conf:
+>
+>
+>
+> proxylisten=195.19.214.216 ? ? # ?eth0 address
+> proxyport=1812
+> proxyclient=192.168.14.242 ? ? # ?my AP address
+> proxysecret=CHILLI_HOTSPOT
+>
+> AP is configured as:
+> -------------------
+>
+> WPA2/AES/802.1X
+> Radius server: 195.19.214.216 ?(chilli address)
+> Radius port: 1812
+> Radius secret: CHILLI_HOTSPOT
+>
+> Radius server configured as:
+> ----------------------------
+>
+> clients.conf
+>
+> # chilli hotspot
+> client 195.19.214.216 {
+> ? ? ? ?secret ? ? ?= CHILLI_HOTSPOT
+> ? ? ? ?shortname ? = Chilli
+> ? ? ? ?nastype ? ? = other
+> }
+>
+> The file "users" has user data:
+> oreshkin Cleartext-Password := "mypassword", Calling-Station-Id ==
+> "00-16-EA-8A-DE-38"
+>
+> When I am trying to authenticate wireless client through coovachilli
+> then I getting such messages:
+>
+> On coovachili server in /var/log/messages
+>
+> radius.c: 1677: Authenticator does not match request!
+> radius.c: 335: No such id in radius queue: id=0!
+> radius.c: 1672: Matching request was not found in queue: 0!
+> radius.c: 335: No such id in radius queue: id=1!
+> radius.c: 1672: Matching request was not found in queue: 1!
+> ....
+>
+>
+> On Radius server
+> ----------------
+>
+> Radius daemon running in debug mode gives output which indicates that it
+> receives Access-Request packets from coovachilli.
+> Below is extract from radius output:
+>
+> rad_recv: Access-Request packet from host 195.19.214.216 port 32859, id=0,
+> length=146
+> ? ? ? ?Vendor-14559-Attr-8 = 0x312e322e32
+> ? ? ? ?User-Name = "oreshkin"
+> ? ? ? ?EAP-Message = 0x0200000d016f726573686b696e
+> ? ? ? ?Message-Authenticator = 0x45f4d1100685765bd2b5004f650d0a2e
+> ? ? ? ?Calling-Station-Id = "00-16-EA-8A-DE-38"
+> ? ? ? ?Called-Station-Id = "00-0E-0C-36-AE-AA"
+> ? ? ? ?NAS-Port-Type = Wireless-802.11
+> ? ? ? ?NAS-Port = 11
+> ? ? ? ?Service-Type = Login-User
+> ? ? ? ?NAS-IP-Address = 10.2.3.1
+> ? ? ? ?NAS-Identifier = "nas01"
+> +- entering group authorize {...}
+> ++[preprocess] returns ok
+> ++[chap] returns noop
+> ++[mschap] returns noop
+> [suffix] No '@' in User-Name = "oreshkin", looking up realm NULL
+> [suffix] Found realm "DEFAULT"
+> [suffix] Adding Stripped-User-Name = "oreshkin"
+>
+> .....
+>
+> Sending Access-Challenge of id 0 to 195.19.214.216 port 32859
+> ? ? ? ?EAP-Message = 0x010100061920
+> ? ? ? ?Message-Authenticator = 0x00000000000000000000000000000000
+> ? ? ? ?State = 0x41e5100541e4098a17fe112e0fc89cb1
+> Finished request 0.
+> Going to the next request
+> Waking up in 4.9 seconds.
+> Cleaning up request 0 ID 0 with timestamp +54
+> Ready to process requests.
+> ....
+>
+> Radius server receives from coovachilli ?Access-Request packets and responds
+> with Access-Challenge packets many times. But it never sends ?Access-Accept
+> packet and never output error messages.
+>
+> What might be wrong ? Configuration errors or do I need to do something
+> else ?
+>
+> Coovachilli 1.2.2 has also some transparent proxy.
+> /usr/local/sbin/chilli --help|grep proxy
+> ? ? ?--proxylisten=STRING ? ? ?Proxy IP address to listen on
+> ? ? ?--proxyport=INT ? ? ? ? ? Proxy UDP port to listen on (0 is off)
+> ? ? ?--proxyclient=STRING ? ? ?IP address of proxy client(s)
+> ? ? ?--proxysecret=STRING ? ? ?Radius proxy shared secret
+> ? ? ?--postauthproxy=STRING ? ?IP of an upstream transparent proxy
+> ? ? ?--postauthproxyport=INT ? Port of an upstream transparent proxy
+>
+> I don't know for what purpose transparent proxy is.
+> May be it is of help ?
+>
+> Thanks.
+>
+>
+>> You can bridge the networks so that chilli controls them both, or run
+>> two instances of chilli. The instance handling the 802.1x network should
+>> have these options defined:
+>>
+>> $ chilli --help|grep proxy
+>> ? ? ? --proxylisten=STRING ? ? ?Proxy IP address to listen on
+>> ? ? ? --proxyport=INT ? ? ? ? ? Proxy UDP port to listen on (0 is off)
+>> ? ? ? --proxyclient=STRING ? ? ?IP address of proxy client(s)
+>> ? ? ? --proxysecret=STRING ? ? ?Radius proxy shared secret
+>>
+>> And the 802.1x AP should use these settings for it's RADIUS.. chilli
+>> will proxy the authentication, provide accounting, and still control the
+>> network to enforce any limitations, etc.
+>>
+>> On Tue, 2010-03-23 at 19:20 +0300, Anatoly Oreshkin wrote:
+>>> Hello,
+>>>
+>>> I have wireless Access Point 3Com AirConnect 9150 configured with
+>>> WPA2/AES
+>>> and 802.1X EAP-PEAP-MSCHAPv2 authentication. It uses Free Radius server
+>>> for authentication and wireless clients get ip fixed addresses from DHCP
+>>> server.
+>>> I configured this AP with second SSID (without security) in order for
+>>> wireless
+>>> clients can authenticate through CoovaChilli using UAM method.
+>>> It works.
+>>> Now I would like to make both WPA2/802.1X and UAM authentication to work
+>>> through ?CoovaChilli. I can specify ?CoovaChilli address as Radius
+>>> server
+>>> address in AP. But of course it's not enough. Is it possible at all to
+>>> have CoovaChilli working in such configuration ?
+>>> If so, how should I configure for this purpose CoovaChilli and Radius
+>>> server ?
+>>>
+>>> Any hints.
+>>>
+>>> Thanks.
+>>>
+>>> _______________________________________________
+>>> Chilli mailing list
+>>> Chilli at coova.org
+>>> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>>
+>>
+>
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+
+
+
+-- 
+__________________________
+Adamanov Vyacheslav
+87500, Ukraine, Mariupol,
+st. Apatova 136?
+mob: +38 (067) 621 32 61
+email: adamanov at gmail.com
+www: http://hl.ua
+
+From fahd.kasri at weblib.eu  Fri Mar 26 16:56:55 2010
+From: fahd.kasri at weblib.eu (Fahd Kasri)
+Date: Fri, 26 Mar 2010 17:56:55 +0100
+Subject: [Chilli]  dhcp.c Resetting connection on port 80
+Message-ID: <ddc827aa1003260956g3af5a25an7a101086a121da7f@mail.gmail.com>
+
+Hi all,
+
+I'm using 1.2.2 with miniportal. I can successfully get an IP address from
+coova, but when I try to visit a website, instead of being redirected to the
+uamserver I get a 'Connection was reset' message and chilli yields these
+error messages:
+
+dhcp.c: 1362: 0 (Debug) Resetting connection on port 80->56392
+dhcp.c: 1362: 0 (Debug) Resetting connection on port 80->56392
+dhcp.c: 1362: 0 (Debug) Resetting connection on port 80->56391
+dhcp.c: 1362: 0 (Debug) Resetting connection on port 80->56391
+dhcp.c: 1362: 0 (Debug) Resetting connection on port 80->56392
+.
+.
+.
+
+Any ideas on why this is happening?
+
+Thanks.
+
+-- 
+Fahd
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20100326/8165fcb2/attachment.htm>
+
+From surfingsteve at gmail.com  Sat Mar 27 00:16:49 2010
+From: surfingsteve at gmail.com (Stephen Potter)
+Date: Fri, 26 Mar 2010 17:16:49 -0700
+Subject: [Chilli] CoovaChilli init.d script for OpenWRT 8.09.2
+Message-ID: <2587f0781003261716u6bcef447m4c204522fe94fa51@mail.gmail.com>
+
+Hello,
+
+I am trying to install CoovaChlli on the kamikaze version of Openwrt.  I
+installed openwrt 8.09.2 and then the binary package from the wiki for
+openwrt 8.09.2 (http://coova.org/CoovaChilli/Binaries).
+
+After setting up the configuration file  I was unable to find the
+/etc/init.d/chilli or /etc/init.d/coovachilli startup script to start the
+program.  I installed the Ubuntu version of Coovachilli on my local machine
+and tried to modify it's startup script for openwrt, however I am not
+familiar enough with Openwrt to know what I am doing.
+
+I can start CoovaChilli on the openwrt box with chilli --fg --debug but it
+doesnt seem to work right.  While the chilli dhcp server does give out an IP
+address to my laptop, it does not redirect the webbrowser to the login
+page.  Instead it presents a "The connection was reset" error page when I
+try to visit a webpage outside of the walled garden.  If I visit a webpage
+that is allowed in the walled garden, such as paypal.com then it works
+fine.  Also, if I type in manual the address of the redirect
+http://192.168.182.1:3990/www/coova.html then I am presented with the login
+screen and everything works from there.
+
+Some of the output is included in this email.  I have a feeling that I have
+a mis-configuration in openwrt that might be handled by a startup file.
+Either that or I have something trivial wrong in my coovachilli
+configuration.
+
+If anyone has any ideas or spots anything wrong in my configuration please
+let me know.
+
+Thanks,
+Stephen
+
+
+
+
+Debug Output
+some content replaced with xx
+
+main-opt.c: 306: 0 (Debug) DHCP Listen: 192.168.182.1
+main-opt.c: 307: 0 (Debug) UAM Listen: 192.168.182.1
+garden.c: 72: 0 (Debug) Uamallowed coova.org
+garden.c: 54: 0 (Debug) Uamallowed IP address #0:128: proto=0
+host=174.129.195.118 port=0
+options.c: 478: 0 (Debug) reloaded binary options file
+chilli.c: 4302: 0 (Debug) clock realtime sec 1262250030 nsec 878531000
+chilli.c: 4305: 22 (Invalid argument) getting startup (monotonic) time
+chilli.c: 4307: 0 (Debug) clock monotonic sec 0 nsec 0
+tun.c: 506: 0 (Debug) TX queue length set to 100
+ippool.c: 234: 0 (Debug) Hashlog 8 253 256
+
+net.c: 778: 0 (Debug) device br-lan ifindex 5
+chilli.c: 4532: 0 (Debug) Waiting for client request...
+radius.c: 1421: 0 (Debug) RADIUS to *xx*:1813
+radius.c: 1421: 0 (Debug) RADIUS to *xx*:1812
+dhcp.c: 2330: 0 (Debug) Not for our MAC or broadcast: 00-24-1D-33-99-20
+dhcp.c: 2330: 0 (Debug) Not for our MAC or broadcast: 00-24-1D-33-99-20
+dhcp.c: 2361: 0 (Debug) Address not found (192.168.15.55)
+dhcp.c: 389: 0 (Debug) DHCP newconn: 00:24:1d:33:99:20
+chilli.c: 3248: 0 (Debug) New DHCP request from MAC=00-24-1D-33-99-20
+chilli.c: 3251: 0 (Debug) New DHCP connection established
+chilli.c: 3108: 0 (Debug) DHCP request for IP address
+chilli.c: 767: 0 (Debug) Starting radius authentication
+radius.c: 1421: 0 (Debug) RADIUS to *xx*:1812
+ippool.c: 344: 0 (Debug) Requesting new static ip: 192.168.15.55
+ippool.c: 364: 0 (Debug) Static IP address not allowed
+ippool.c: 344: 0 (Debug) Requesting new dynamic ip: 192.168.15.55
+chilli.c: 3209: 0 (Debug) Client MAC=00-24-1D-33-99-20 assigned IP
+192.168.182.2
+dhcp.c: 1198: 0 (Debug) Resetting connection on port 41435->22
+dhcp.c: 2462: 0 (Debug) dropping packet; not nat'ed
+dhcp.c: 1198: 0 (Debug) Resetting connection on port 41435->22
+dhcp.c: 2462: 0 (Debug) dropping packet; not nat'ed
+chilli.c: 2756: 0 (Debug) Received access request confirmation from radius
+server
+
+chilli.c: 2610: 0 (Debug) looking to replace: /etc/chilli/local.conf
+radius.c: 1421: 0 (Debug) RADIUS to *xx*:1813
+chilli.c: 92: 0 (Debug) SIGTERM: shutdown
+chilli.c: 92: 0 (Debug) SIGTERM: shutdown
+chilli.c: 86: 0 (Debug) received 18 signal
+chilli.c: 86: 0 (Debug) received 18 signal
+chilli.c: 4685: 0 (Debug) CoovaChilli shutting down
+radius.c: 1421: 0 (Debug) RADIUS to *xx*:1813
+radius.c: 1421: 0 (Debug) RADIUS to *xx*:1813
+
+
+
+
+
+*main.conf*
+
+# THIS FILE IS AUTOMATICALLY GENERATED
+cmdsocket       /var/run/chilli.sock
+pidfile         /var/run/chilli.pid
+net        192.168.182.0/255.255.255.0
+uamlisten    192.168.182.1
+uamport         3990
+dhcpif        br-lan
+adminuser       chillispot
+adminpasswd     chillispot
+uamallowed      coova.org
+
+uamdomain       paypalobjects.com
+uamdomain       paypal.112.2o7.net
+uamdomain       paypal.com
+uamdomain       *xx*.net
+uamdomain       wikipedia.com
+uamdomain       wikipedia.org
+uamdomain       wikimedia.org
+
+macpasswd       *xx*
+
+uamanydns
+
+domain lan
+dns1 208.67.222.222
+dns2 208.67.220.220
+uamhomepage http://192.168.182.1:3990/www/coova.html
+wisprlogin https://coova.org/app/uam/auth
+wwwdir /etc/chilli/www
+wwwbin /etc/chilli/wwwsh
+locationname "My HotSpot"
+radiuslocationname My_HotSpot
+radiuslocationid isocc=,cc=,ac=,network=Coova,
+radiusserver1    *xx*.net
+radiusserver2    *xx*.net
+radiussecret    *xx*
+radiusauthport  1812
+radiusacctport  1813
+uamserver    https://www.xx.net/login.pl
+radiusnasid    bda
+
+papalwaysok
+macauth
+uamsecret *xx*
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20100326/e69842d8/attachment.htm>
+
+From david at coova.com  Sat Mar 27 05:41:02 2010
+From: david at coova.com (David Bird)
+Date: Sat, 27 Mar 2010 06:41:02 +0100
+Subject: [Chilli] dhcp.c Resetting connection on port 80
+In-Reply-To: <ddc827aa1003260956g3af5a25an7a101086a121da7f@mail.gmail.com>
+References: <ddc827aa1003260956g3af5a25an7a101086a121da7f@mail.gmail.com>
+Message-ID: <1269668462.4135.234.camel@david-laptop>
+
+These connections are from source port 80 (on the subscriber), so they
+look like connections to/from the client device's web server (?) .. 
+
+
+On Fri, 2010-03-26 at 17:56 +0100, Fahd Kasri wrote:
+> Hi all,
+> 
+> 
+> I'm using 1.2.2 with miniportal. I can successfully get an IP address
+> from coova, but when I try to visit a website, instead of being
+> redirected to the uamserver I get a 'Connection was reset' message and
+> chilli yields these error messages:
+> 
+> 
+> dhcp.c: 1362: 0 (Debug) Resetting connection on port 80->56392
+> dhcp.c: 1362: 0 (Debug) Resetting connection on port 80->56392
+> dhcp.c: 1362: 0 (Debug) Resetting connection on port 80->56391
+> dhcp.c: 1362: 0 (Debug) Resetting connection on port 80->56391
+> dhcp.c: 1362: 0 (Debug) Resetting connection on port 80->56392
+> .
+> .
+> .
+> 
+> 
+> Any ideas on why this is happening?
+> 
+> 
+> Thanks.
+> 
+> -- 
+> Fahd 
+> 
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+
+
+From david at coova.com  Sat Mar 27 05:42:51 2010
+From: david at coova.com (David Bird)
+Date: Sat, 27 Mar 2010 06:42:51 +0100
+Subject: [Chilli] CoovaChilli  & (non CoovaAP) AP
+In-Reply-To: <43065.195.19.214.216.1269451259.squirrel@mail.pnpi.spb.ru>
+References: <37292.195.19.214.216.1269361213.squirrel@mail.pnpi.spb.ru>
+	<1269377177.4135.204.camel@david-laptop>
+	<43065.195.19.214.216.1269451259.squirrel@mail.pnpi.spb.ru>
+Message-ID: <1269668571.4135.235.camel@david-laptop>
+
+Upgrade to subversion code-base please...
+
+
+On Wed, 2010-03-24 at 20:20 +0300, Anatoly Oreshkin wrote:
+> 
+> Hello,
+> 
+> My CoovaChilli server is installed on Linux box.
+> CoovaChilli is configured as:
+> ./configure --with-nfqueue --enable-chilliproxy --with-curl
+> 
+> HS_WANIF=eth0
+> HS_LANIF=eth1
+> HS_NETWORK=10.2.3.0
+> HS_NETMASK=255.255.255.0
+> HS_UAMLISTEN=10.2.3.1
+> HS_UAMPORT=3990
+> HS_NASID=nas01
+> HS_RADIUS=212.193.96.134
+> HS_RADSECRET=CHILLI_HOTSPOT
+> ...
+> HS_MODE=hotspot
+> HS_TYPE=chillispot
+> 
+> eth0 address = 195.19.214.216
+> eth1 address = 10.2.3.1
+> 
+> I've setup proxy parameters in /usr/local/etc/chilli/local.conf:
+> 
+> 
+> 
+> proxylisten=195.19.214.216     #  eth0 address
+> proxyport=1812
+> proxyclient=192.168.14.242     #  my AP address
+> proxysecret=CHILLI_HOTSPOT
+> 
+> AP is configured as:
+> -------------------
+> 
+> WPA2/AES/802.1X
+> Radius server: 195.19.214.216  (chilli address)
+> Radius port: 1812
+> Radius secret: CHILLI_HOTSPOT
+> 
+> Radius server configured as:
+> ----------------------------
+> 
+> clients.conf
+> 
+> # chilli hotspot
+> client 195.19.214.216 {
+>         secret      = CHILLI_HOTSPOT
+>         shortname   = Chilli
+>         nastype     = other
+> }
+> 
+> The file "users" has user data:
+> oreshkin Cleartext-Password := "mypassword", Calling-Station-Id ==
+> "00-16-EA-8A-DE-38"
+> 
+> When I am trying to authenticate wireless client through coovachilli
+> then I getting such messages:
+> 
+> On coovachili server in /var/log/messages
+> 
+> radius.c: 1677: Authenticator does not match request!
+> radius.c: 335: No such id in radius queue: id=0!
+> radius.c: 1672: Matching request was not found in queue: 0!
+> radius.c: 335: No such id in radius queue: id=1!
+> radius.c: 1672: Matching request was not found in queue: 1!
+> ....
+> 
+> 
+> On Radius server
+> ----------------
+> 
+> Radius daemon running in debug mode gives output which indicates that it
+> receives Access-Request packets from coovachilli.
+> Below is extract from radius output:
+> 
+> rad_recv: Access-Request packet from host 195.19.214.216 port 32859, id=0,
+> length=146
+>         Vendor-14559-Attr-8 = 0x312e322e32
+>         User-Name = "oreshkin"
+>         EAP-Message = 0x0200000d016f726573686b696e
+>         Message-Authenticator = 0x45f4d1100685765bd2b5004f650d0a2e
+>         Calling-Station-Id = "00-16-EA-8A-DE-38"
+>         Called-Station-Id = "00-0E-0C-36-AE-AA"
+>         NAS-Port-Type = Wireless-802.11
+>         NAS-Port = 11
+>         Service-Type = Login-User
+>         NAS-IP-Address = 10.2.3.1
+>         NAS-Identifier = "nas01"
+> +- entering group authorize {...}
+> ++[preprocess] returns ok
+> ++[chap] returns noop
+> ++[mschap] returns noop
+> [suffix] No '@' in User-Name = "oreshkin", looking up realm NULL
+> [suffix] Found realm "DEFAULT"
+> [suffix] Adding Stripped-User-Name = "oreshkin"
+> 
+> .....
+> 
+> Sending Access-Challenge of id 0 to 195.19.214.216 port 32859
+>         EAP-Message = 0x010100061920
+>         Message-Authenticator = 0x00000000000000000000000000000000
+>         State = 0x41e5100541e4098a17fe112e0fc89cb1
+> Finished request 0.
+> Going to the next request
+> Waking up in 4.9 seconds.
+> Cleaning up request 0 ID 0 with timestamp +54
+> Ready to process requests.
+> ....
+> 
+> Radius server receives from coovachilli  Access-Request packets and responds
+> with Access-Challenge packets many times. But it never sends  Access-Accept
+> packet and never output error messages.
+> 
+> What might be wrong ? Configuration errors or do I need to do something
+> else ?
+> 
+> Coovachilli 1.2.2 has also some transparent proxy.
+> /usr/local/sbin/chilli --help|grep proxy
+>       --proxylisten=STRING      Proxy IP address to listen on
+>       --proxyport=INT           Proxy UDP port to listen on (0 is off)
+>       --proxyclient=STRING      IP address of proxy client(s)
+>       --proxysecret=STRING      Radius proxy shared secret
+>       --postauthproxy=STRING    IP of an upstream transparent proxy
+>       --postauthproxyport=INT   Port of an upstream transparent proxy
+> 
+> I don't know for what purpose transparent proxy is.
+> May be it is of help ?
+> 
+> Thanks.
+> 
+> 
+> > You can bridge the networks so that chilli controls them both, or run
+> > two instances of chilli. The instance handling the 802.1x network should
+> > have these options defined:
+> >
+> > $ chilli --help|grep proxy
+> >       --proxylisten=STRING      Proxy IP address to listen on
+> >       --proxyport=INT           Proxy UDP port to listen on (0 is off)
+> >       --proxyclient=STRING      IP address of proxy client(s)
+> >       --proxysecret=STRING      Radius proxy shared secret
+> >
+> > And the 802.1x AP should use these settings for it's RADIUS.. chilli
+> > will proxy the authentication, provide accounting, and still control the
+> > network to enforce any limitations, etc.
+> >
+> > On Tue, 2010-03-23 at 19:20 +0300, Anatoly Oreshkin wrote:
+> >> Hello,
+> >>
+> >> I have wireless Access Point 3Com AirConnect 9150 configured with
+> >> WPA2/AES
+> >> and 802.1X EAP-PEAP-MSCHAPv2 authentication. It uses Free Radius server
+> >> for authentication and wireless clients get ip fixed addresses from DHCP
+> >> server.
+> >> I configured this AP with second SSID (without security) in order for
+> >> wireless
+> >> clients can authenticate through CoovaChilli using UAM method.
+> >> It works.
+> >> Now I would like to make both WPA2/802.1X and UAM authentication to work
+> >> through  CoovaChilli. I can specify  CoovaChilli address as Radius
+> >> server
+> >> address in AP. But of course it's not enough. Is it possible at all to
+> >> have CoovaChilli working in such configuration ?
+> >> If so, how should I configure for this purpose CoovaChilli and Radius
+> >> server ?
+> >>
+> >> Any hints.
+> >>
+> >> Thanks.
+> >>
+> >> _______________________________________________
+> >> Chilli mailing list
+> >> Chilli at coova.org
+> >> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+> >
+> >
+> 
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+
+
+From jason at theallens.id.au  Mon Mar 29 04:08:19 2010
+From: jason at theallens.id.au (Jason Allen)
+Date: Mon, 29 Mar 2010 15:08:19 +1100
+Subject: [Chilli] Whitelist MAC to bypass authentication?
+Message-ID: <3e888d0e1003282108y50882b74w1ee5604c43b47f6c@mail.gmail.com>
+
+Hi,
+
+I have Coova setup and working as a captive portal, automatically
+redirecting user to a signup/logon page.
+
+Is it possible within Coova to have a bypass for this authentication
+redirection and give instant internet access? Ideally, I would like to
+define a few MAC addresses that don't get redirected and don't require logon
+etc.
+
+
+Thanks.
+
+-- 
+Cheers,
+Jason
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20100329/91831979/attachment.htm>
+
+From liran.tal at gmail.com  Mon Mar 29 06:13:26 2010
+From: liran.tal at gmail.com (Liran Tal)
+Date: Mon, 29 Mar 2010 09:13:26 +0300
+Subject: [Chilli] Whitelist MAC to bypass authentication?
+In-Reply-To: <3e888d0e1003282108y50882b74w1ee5604c43b47f6c@mail.gmail.com>
+References: <3e888d0e1003282108y50882b74w1ee5604c43b47f6c@mail.gmail.com>
+Message-ID: <81237f641003282313o1918dca0t7cb47b88230c0af9@mail.gmail.com>
+
+Hey Jason,
+
+Yes, by enabling the macauth option in chilli and creating the users where
+their username is the mac address
+then you actually tell chilli that whenever a new client is handed over an
+IP address it is also sent immediately
+a RADIUS auth request.
+
+
+Regards,
+Liran.
+
+
+On Mon, Mar 29, 2010 at 7:08 AM, Jason Allen <jason at theallens.id.au> wrote:
+
+> Hi,
+>
+> I have Coova setup and working as a captive portal, automatically
+> redirecting user to a signup/logon page.
+>
+> Is it possible within Coova to have a bypass for this authentication
+> redirection and give instant internet access? Ideally, I would like to
+> define a few MAC addresses that don't get redirected and don't require logon
+> etc.
+>
+>
+> Thanks.
+>
+> --
+> Cheers,
+> Jason
+>
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+>
+
+
+-- 
+-- 
+Sincerely, Liran Tal
+
+Founder and CTO
+Linux and Open Source
+Enginx - http://enginx.com
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20100329/a499d207/attachment.htm>
+
+From jason at theallens.id.au  Mon Mar 29 06:27:13 2010
+From: jason at theallens.id.au (Jason Allen)
+Date: Mon, 29 Mar 2010 17:27:13 +1100
+Subject: [Chilli] Whitelist MAC to bypass authentication?
+In-Reply-To: <81237f641003282313o1918dca0t7cb47b88230c0af9@mail.gmail.com>
+References: <3e888d0e1003282108y50882b74w1ee5604c43b47f6c@mail.gmail.com> 
+	<81237f641003282313o1918dca0t7cb47b88230c0af9@mail.gmail.com>
+Message-ID: <3e888d0e1003282327m38ad228cmcb121344145b5ebb@mail.gmail.com>
+
+Hi,
+
+Thanks for the response. This is what I've tried, but it's still not
+working. ...
+
+I have "HS_MACAUTH=on" in my /etc/chilli/config
+In my radius radcheck table, I've added the following ..
+username="<mac address>";attribute="Auth-Type";op=":=";value="Accept"
+
+Have I missed a step, or have something wrong?
+
+
+Thanks.
+
+
+On Mon, Mar 29, 2010 at 17:13, Liran Tal <liran.tal at gmail.com> wrote:
+
+> Hey Jason,
+>
+> Yes, by enabling the macauth option in chilli and creating the users where
+> their username is the mac address
+> then you actually tell chilli that whenever a new client is handed over an
+> IP address it is also sent immediately
+> a RADIUS auth request.
+>
+>
+> Regards,
+> Liran.
+>
+>
+> On Mon, Mar 29, 2010 at 7:08 AM, Jason Allen <jason at theallens.id.au>wrote:
+>
+>> Hi,
+>>
+>> I have Coova setup and working as a captive portal, automatically
+>> redirecting user to a signup/logon page.
+>>
+>> Is it possible within Coova to have a bypass for this authentication
+>> redirection and give instant internet access? Ideally, I would like to
+>> define a few MAC addresses that don't get redirected and don't require logon
+>> etc.
+>>
+>>
+>> Thanks.
+>>
+>> --
+>> Cheers,
+>> Jason
+>>
+>> _______________________________________________
+>> Chilli mailing list
+>> Chilli at coova.org
+>> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>>
+>>
+>
+>
+> --
+> --
+> Sincerely, Liran Tal
+>
+> Founder and CTO
+> Linux and Open Source
+> Enginx - http://enginx.com
+>
+
+
+
+-- 
+Cheers,
+Jason
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20100329/9b0138e8/attachment.htm>
+
+From liran.tal at gmail.com  Mon Mar 29 06:34:42 2010
+From: liran.tal at gmail.com (Liran Tal)
+Date: Mon, 29 Mar 2010 09:34:42 +0300
+Subject: [Chilli] Whitelist MAC to bypass authentication?
+In-Reply-To: <3e888d0e1003282327m38ad228cmcb121344145b5ebb@mail.gmail.com>
+References: <3e888d0e1003282108y50882b74w1ee5604c43b47f6c@mail.gmail.com> 
+	<81237f641003282313o1918dca0t7cb47b88230c0af9@mail.gmail.com> 
+	<3e888d0e1003282327m38ad228cmcb121344145b5ebb@mail.gmail.com>
+Message-ID: <81237f641003282334t5df84c5do9ea52ff5875e2519@mail.gmail.com>
+
+Possibly the format of the MAC address on the username is incorrect,
+maybe try 00-aa-bb. Or maybe you didn't add the NAS to the clients/nas table
+list?
+
+
+And also, divide and conquer is the best approach to any problem solving -
+at this point we're not sure
+if chilli isn't authentication the clients based on mac or freeradius is
+rejecting them - let's start there.
+Easy to check, monitor freeradius's log to see if requests for auth are
+coming in once you get a user
+associated with chilli.
+
+
+Regards,
+Liran.
+
+
+On Mon, Mar 29, 2010 at 9:27 AM, Jason Allen <jason at theallens.id.au> wrote:
+
+> Hi,
+>
+> Thanks for the response. This is what I've tried, but it's still not
+> working. ...
+>
+> I have "HS_MACAUTH=on" in my /etc/chilli/config
+> In my radius radcheck table, I've added the following ..
+> username="<mac address>";attribute="Auth-Type";op=":=";value="Accept"
+>
+> Have I missed a step, or have something wrong?
+>
+>
+> Thanks.
+>
+>
+> On Mon, Mar 29, 2010 at 17:13, Liran Tal <liran.tal at gmail.com> wrote:
+>
+>> Hey Jason,
+>>
+>> Yes, by enabling the macauth option in chilli and creating the users where
+>> their username is the mac address
+>> then you actually tell chilli that whenever a new client is handed over an
+>> IP address it is also sent immediately
+>> a RADIUS auth request.
+>>
+>>
+>> Regards,
+>> Liran.
+>>
+>>
+>> On Mon, Mar 29, 2010 at 7:08 AM, Jason Allen <jason at theallens.id.au>wrote:
+>>
+>>> Hi,
+>>>
+>>> I have Coova setup and working as a captive portal, automatically
+>>> redirecting user to a signup/logon page.
+>>>
+>>> Is it possible within Coova to have a bypass for this authentication
+>>> redirection and give instant internet access? Ideally, I would like to
+>>> define a few MAC addresses that don't get redirected and don't require logon
+>>> etc.
+>>>
+>>>
+>>> Thanks.
+>>>
+>>> --
+>>> Cheers,
+>>> Jason
+>>>
+>>> _______________________________________________
+>>> Chilli mailing list
+>>> Chilli at coova.org
+>>> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>>>
+>>>
+>>
+>>
+>> --
+>> --
+>> Sincerely, Liran Tal
+>>
+>> Founder and CTO
+>> Linux and Open Source
+>> Enginx - http://enginx.com
+>>
+>
+>
+>
+> --
+> Cheers,
+> Jason
+>
+
+
+
+-- 
+-- 
+Sincerely, Liran Tal
+
+Founder and CTO
+Linux and Open Source
+Enginx - http://enginx.com
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20100329/ab2d5107/attachment.htm>
+
+From jason at theallens.id.au  Mon Mar 29 06:55:01 2010
+From: jason at theallens.id.au (Jason Allen)
+Date: Mon, 29 Mar 2010 17:55:01 +1100
+Subject: [Chilli] Whitelist MAC to bypass authentication?
+In-Reply-To: <81237f641003282334t5df84c5do9ea52ff5875e2519@mail.gmail.com>
+References: <3e888d0e1003282108y50882b74w1ee5604c43b47f6c@mail.gmail.com> 
+	<81237f641003282313o1918dca0t7cb47b88230c0af9@mail.gmail.com> 
+	<3e888d0e1003282327m38ad228cmcb121344145b5ebb@mail.gmail.com> 
+	<81237f641003282334t5df84c5do9ea52ff5875e2519@mail.gmail.com>
+Message-ID: <3e888d0e1003282355w208aa6dbo23df37d183a12ae3@mail.gmail.com>
+
+Thank-you.
+It was the format. I was using AA:BB:CC, once I changed it to AA-BB-CC it
+worked fine.
+
+Much appreciated.
+
+On Mon, Mar 29, 2010 at 17:34, Liran Tal <liran.tal at gmail.com> wrote:
+
+>
+> Possibly the format of the MAC address on the username is incorrect,
+> maybe try 00-aa-bb. Or maybe you didn't add the NAS to the clients/nas
+> table list?
+>
+>
+> And also, divide and conquer is the best approach to any problem solving -
+> at this point we're not sure
+> if chilli isn't authentication the clients based on mac or freeradius is
+> rejecting them - let's start there.
+> Easy to check, monitor freeradius's log to see if requests for auth are
+> coming in once you get a user
+> associated with chilli.
+>
+>
+> Regards,
+> Liran.
+>
+>
+>
+> On Mon, Mar 29, 2010 at 9:27 AM, Jason Allen <jason at theallens.id.au>wrote:
+>
+>> Hi,
+>>
+>> Thanks for the response. This is what I've tried, but it's still not
+>> working. ...
+>>
+>> I have "HS_MACAUTH=on" in my /etc/chilli/config
+>> In my radius radcheck table, I've added the following ..
+>> username="<mac address>";attribute="Auth-Type";op=":=";value="Accept"
+>>
+>> Have I missed a step, or have something wrong?
+>>
+>>
+>> Thanks.
+>>
+>>
+>> On Mon, Mar 29, 2010 at 17:13, Liran Tal <liran.tal at gmail.com> wrote:
+>>
+>>> Hey Jason,
+>>>
+>>> Yes, by enabling the macauth option in chilli and creating the users
+>>> where their username is the mac address
+>>> then you actually tell chilli that whenever a new client is handed over
+>>> an IP address it is also sent immediately
+>>> a RADIUS auth request.
+>>>
+>>>
+>>> Regards,
+>>> Liran.
+>>>
+>>>
+>>> On Mon, Mar 29, 2010 at 7:08 AM, Jason Allen <jason at theallens.id.au>wrote:
+>>>
+>>>> Hi,
+>>>>
+>>>> I have Coova setup and working as a captive portal, automatically
+>>>> redirecting user to a signup/logon page.
+>>>>
+>>>> Is it possible within Coova to have a bypass for this authentication
+>>>> redirection and give instant internet access? Ideally, I would like to
+>>>> define a few MAC addresses that don't get redirected and don't require logon
+>>>> etc.
+>>>>
+>>>>
+>>>> Thanks.
+>>>>
+>>>> --
+>>>> Cheers,
+>>>> Jason
+>>>>
+>>>> _______________________________________________
+>>>> Chilli mailing list
+>>>> Chilli at coova.org
+>>>> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>>>>
+>>>>
+>>>
+>>>
+>>> --
+>>> --
+>>> Sincerely, Liran Tal
+>>>
+>>> Founder and CTO
+>>> Linux and Open Source
+>>> Enginx - http://enginx.com
+>>>
+>>
+>>
+>>
+>> --
+>> Cheers,
+>> Jason
+>>
+>
+>
+>
+> --
+> --
+> Sincerely, Liran Tal
+>
+> Founder and CTO
+> Linux and Open Source
+> Enginx - http://enginx.com
+>
+
+
+
+-- 
+Cheers,
+Jason
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20100329/d40449a7/attachment-0001.htm>
+
+From liran.tal at gmail.com  Mon Mar 29 11:33:11 2010
+From: liran.tal at gmail.com (Liran Tal)
+Date: Mon, 29 Mar 2010 14:33:11 +0300
+Subject: [Chilli] Whitelist MAC to bypass authentication?
+In-Reply-To: <3e888d0e1003282355w208aa6dbo23df37d183a12ae3@mail.gmail.com>
+References: <3e888d0e1003282108y50882b74w1ee5604c43b47f6c@mail.gmail.com> 
+	<81237f641003282313o1918dca0t7cb47b88230c0af9@mail.gmail.com> 
+	<3e888d0e1003282327m38ad228cmcb121344145b5ebb@mail.gmail.com> 
+	<81237f641003282334t5df84c5do9ea52ff5875e2519@mail.gmail.com> 
+	<3e888d0e1003282355w208aa6dbo23df37d183a12ae3@mail.gmail.com>
+Message-ID: <81237f641003290433i3a9b10e1gcd7e45c2de6cd01c@mail.gmail.com>
+
+Sure thing.
+
+
+Regards,
+Liran.
+
+
+On Mon, Mar 29, 2010 at 9:55 AM, Jason Allen <jason at theallens.id.au> wrote:
+
+> Thank-you.
+> It was the format. I was using AA:BB:CC, once I changed it to AA-BB-CC it
+> worked fine.
+>
+> Much appreciated.
+>
+> On Mon, Mar 29, 2010 at 17:34, Liran Tal <liran.tal at gmail.com> wrote:
+>
+>>
+>> Possibly the format of the MAC address on the username is incorrect,
+>> maybe try 00-aa-bb. Or maybe you didn't add the NAS to the clients/nas
+>> table list?
+>>
+>>
+>> And also, divide and conquer is the best approach to any problem solving -
+>> at this point we're not sure
+>> if chilli isn't authentication the clients based on mac or freeradius is
+>> rejecting them - let's start there.
+>> Easy to check, monitor freeradius's log to see if requests for auth are
+>> coming in once you get a user
+>> associated with chilli.
+>>
+>>
+>> Regards,
+>> Liran.
+>>
+>>
+>>
+>> On Mon, Mar 29, 2010 at 9:27 AM, Jason Allen <jason at theallens.id.au>wrote:
+>>
+>>> Hi,
+>>>
+>>> Thanks for the response. This is what I've tried, but it's still not
+>>> working. ...
+>>>
+>>> I have "HS_MACAUTH=on" in my /etc/chilli/config
+>>> In my radius radcheck table, I've added the following ..
+>>> username="<mac address>";attribute="Auth-Type";op=":=";value="Accept"
+>>>
+>>> Have I missed a step, or have something wrong?
+>>>
+>>>
+>>> Thanks.
+>>>
+>>>
+>>> On Mon, Mar 29, 2010 at 17:13, Liran Tal <liran.tal at gmail.com> wrote:
+>>>
+>>>> Hey Jason,
+>>>>
+>>>> Yes, by enabling the macauth option in chilli and creating the users
+>>>> where their username is the mac address
+>>>> then you actually tell chilli that whenever a new client is handed over
+>>>> an IP address it is also sent immediately
+>>>> a RADIUS auth request.
+>>>>
+>>>>
+>>>> Regards,
+>>>> Liran.
+>>>>
+>>>>
+>>>> On Mon, Mar 29, 2010 at 7:08 AM, Jason Allen <jason at theallens.id.au>wrote:
+>>>>
+>>>>> Hi,
+>>>>>
+>>>>> I have Coova setup and working as a captive portal, automatically
+>>>>> redirecting user to a signup/logon page.
+>>>>>
+>>>>> Is it possible within Coova to have a bypass for this authentication
+>>>>> redirection and give instant internet access? Ideally, I would like to
+>>>>> define a few MAC addresses that don't get redirected and don't require logon
+>>>>> etc.
+>>>>>
+>>>>>
+>>>>> Thanks.
+>>>>>
+>>>>> --
+>>>>> Cheers,
+>>>>> Jason
+>>>>>
+>>>>> _______________________________________________
+>>>>> Chilli mailing list
+>>>>> Chilli at coova.org
+>>>>> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>>>>>
+>>>>>
+>>>>
+>>>>
+>>>> --
+>>>> --
+>>>> Sincerely, Liran Tal
+>>>>
+>>>> Founder and CTO
+>>>> Linux and Open Source
+>>>> Enginx - http://enginx.com
+>>>>
+>>>
+>>>
+>>>
+>>> --
+>>> Cheers,
+>>> Jason
+>>>
+>>
+>>
+>>
+>> --
+>> --
+>> Sincerely, Liran Tal
+>>
+>> Founder and CTO
+>> Linux and Open Source
+>> Enginx - http://enginx.com
+>>
+>
+>
+>
+> --
+> Cheers,
+> Jason
+>
+
+
+
+-- 
+-- 
+Sincerely, Liran Tal
+
+Founder and CTO
+Linux and Open Source
+Enginx - http://enginx.com
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20100329/eda9b602/attachment.htm>
+
+From Anatoly.Oreshkin at pnpi.spb.ru  Tue Mar 30 15:50:47 2010
+From: Anatoly.Oreshkin at pnpi.spb.ru (Anatoly Oreshkin)
+Date: Tue, 30 Mar 2010 19:50:47 +0400 (MSD)
+Subject: [Chilli] CoovaChilli and dhcpgateway
+Message-ID: <47324.195.19.214.216.1269964247.squirrel@mail.pnpi.spb.ru>
+
+
+Hello,
+
+My coovachili has such configuration:
+
+HS_WANIF=eth0  (195.19.214.216)
+HS_LANIF=eth1
+HS_NETWORK=10.2.3.0
+HS_NETMASK=255.255.255.0
+HS_UAMLISTEN=10.2.3.1
+
+I've configured coovachilli with dhcpgateway in order to get ip addresses
+for clients from external dhcp server. For this goal I've specified in
+local.conf
+
+dhcpgateway=212.193.96.134   (external dhcp address)
+dhcpgatewayport=67
+dhcprelayagent=195.19.214.216  (chilli eth0 address)
+
+DHCP server is configured as:
+subnet 10.2.3.0 netmask 255.255.255.0 {
+option routers                  10.2.3.1;
+option subnet-mask              255.255.255.0;
+range  10.2.3.2  10.2.3.254;
+...
+}
+
+On chilli server in /var/log/messages I see
+
+New DHCP request from MAC=00-16-EA-8A-DE-38
+Client MAC=00-16-EA-8A-DE-38 assigned IP 10.2.3.53
+
+On dhcp server in /var/log/messages I see
+
+DHCPDISCOVER from 00:16:ea:8a:de:38 via 195.19.214.216
+DHCPOFFER on 10.2.3.2 to 00:16:ea:8a:de:38 (csd-notebook) via 195.19.214.216
+DHCPREQUEST for 10.2.3.2 (10.2.3.1) from 00:16:ea:8a:de:38 via 195.19.214.216
+DHCPACK on 10.2.3.2 to 00:16:ea:8a:de:38 via 195.19.214.216
+
+On client I see configuration
+IP-address: 10.2.3.2
+network mask: 255.255.255.0
+gateway: 10.2.3.1
+dhcp server: 10.2.3.1
+
+That is the client have got ip address from dhcp server rather than from
+chilli. As the consequence of this the client could not authenticate through
+chilli.
+
+What is wrong ?  What purpose is dhcpgateway designed for ?
+
+Thanks.
+
+
+
+
+
+
+
+
+From jason at theallens.id.au  Tue Mar 30 23:12:01 2010
+From: jason at theallens.id.au (Jason Allen)
+Date: Wed, 31 Mar 2010 10:12:01 +1100
+Subject: [Chilli] CoovaChilli and dhcpgateway
+In-Reply-To: <47324.195.19.214.216.1269964247.squirrel@mail.pnpi.spb.ru>
+References: <47324.195.19.214.216.1269964247.squirrel@mail.pnpi.spb.ru>
+Message-ID: <z2k3e888d0e1003301612m21d2723fx4d0a77de41298310@mail.gmail.com>
+
+Hi,
+
+Try a subnet mask on your HS_NETWORK ? Thus ...
+
+HS_NETWORK=10.2.3.0/24
+
+
+Cheers,
+Jason
+
+On Wed, Mar 31, 2010 at 02:50, Anatoly Oreshkin <
+Anatoly.Oreshkin at pnpi.spb.ru> wrote:
+
+>
+> Hello,
+>
+> My coovachili has such configuration:
+>
+> HS_WANIF=eth0  (195.19.214.216)
+> HS_LANIF=eth1
+> HS_NETWORK=10.2.3.0
+> HS_NETMASK=255.255.255.0
+> HS_UAMLISTEN=10.2.3.1
+>
+> I've configured coovachilli with dhcpgateway in order to get ip addresses
+> for clients from external dhcp server. For this goal I've specified in
+> local.conf
+>
+> dhcpgateway=212.193.96.134   (external dhcp address)
+> dhcpgatewayport=67
+> dhcprelayagent=195.19.214.216  (chilli eth0 address)
+>
+> DHCP server is configured as:
+> subnet 10.2.3.0 netmask 255.255.255.0 {
+> option routers                  10.2.3.1;
+> option subnet-mask              255.255.255.0;
+> range  10.2.3.2  10.2.3.254;
+> ...
+> }
+>
+> On chilli server in /var/log/messages I see
+>
+> New DHCP request from MAC=00-16-EA-8A-DE-38
+> Client MAC=00-16-EA-8A-DE-38 assigned IP 10.2.3.53
+>
+> On dhcp server in /var/log/messages I see
+>
+> DHCPDISCOVER from 00:16:ea:8a:de:38 via 195.19.214.216
+> DHCPOFFER on 10.2.3.2 to 00:16:ea:8a:de:38 (csd-notebook) via
+> 195.19.214.216
+> DHCPREQUEST for 10.2.3.2 (10.2.3.1) from 00:16:ea:8a:de:38 via
+> 195.19.214.216
+> DHCPACK on 10.2.3.2 to 00:16:ea:8a:de:38 via 195.19.214.216
+>
+> On client I see configuration
+> IP-address: 10.2.3.2
+> network mask: 255.255.255.0
+> gateway: 10.2.3.1
+> dhcp server: 10.2.3.1
+>
+> That is the client have got ip address from dhcp server rather than from
+> chilli. As the consequence of this the client could not authenticate
+> through
+> chilli.
+>
+> What is wrong ?  What purpose is dhcpgateway designed for ?
+>
+> Thanks.
+>
+>
+>
+>
+>
+>
+>
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+
+
+
+-- 
+Cheers,
+Jason
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20100331/c946e1c9/attachment.htm>
+
+From jason at theallens.id.au  Tue Mar 30 23:15:14 2010
+From: jason at theallens.id.au (Jason Allen)
+Date: Wed, 31 Mar 2010 10:15:14 +1100
+Subject: [Chilli] CoovaChilli and dhcpgateway
+In-Reply-To: <z2k3e888d0e1003301612m21d2723fx4d0a77de41298310@mail.gmail.com>
+References: <47324.195.19.214.216.1269964247.squirrel@mail.pnpi.spb.ru> 
+	<z2k3e888d0e1003301612m21d2723fx4d0a77de41298310@mail.gmail.com>
+Message-ID: <n2h3e888d0e1003301615m44817214hf4e39f3b7043b7d5@mail.gmail.com>
+
+Additionally, what's your HS_UAMALLOW? I think it should be;
+
+HS_UAMALLOW=10.2.3.0/24, 195.19.214.216
+
+
+
+Cheers,
+Jason
+
+
+On Wed, Mar 31, 2010 at 10:12, Jason Allen <jason at theallens.id.au> wrote:
+
+>
+> Hi,
+>
+> Try a subnet mask on your HS_NETWORK ? Thus ...
+>
+> HS_NETWORK=10.2.3.0/24
+>
+>
+> Cheers,
+> Jason
+>
+>
+> On Wed, Mar 31, 2010 at 02:50, Anatoly Oreshkin <
+> Anatoly.Oreshkin at pnpi.spb.ru> wrote:
+>
+>>
+>> Hello,
+>>
+>> My coovachili has such configuration:
+>>
+>> HS_WANIF=eth0  (195.19.214.216)
+>> HS_LANIF=eth1
+>> HS_NETWORK=10.2.3.0
+>> HS_NETMASK=255.255.255.0
+>> HS_UAMLISTEN=10.2.3.1
+>>
+>> I've configured coovachilli with dhcpgateway in order to get ip addresses
+>> for clients from external dhcp server. For this goal I've specified in
+>> local.conf
+>>
+>> dhcpgateway=212.193.96.134   (external dhcp address)
+>> dhcpgatewayport=67
+>> dhcprelayagent=195.19.214.216  (chilli eth0 address)
+>>
+>> DHCP server is configured as:
+>> subnet 10.2.3.0 netmask 255.255.255.0 {
+>> option routers                  10.2.3.1;
+>> option subnet-mask              255.255.255.0;
+>> range  10.2.3.2  10.2.3.254;
+>> ...
+>> }
+>>
+>> On chilli server in /var/log/messages I see
+>>
+>> New DHCP request from MAC=00-16-EA-8A-DE-38
+>> Client MAC=00-16-EA-8A-DE-38 assigned IP 10.2.3.53
+>>
+>> On dhcp server in /var/log/messages I see
+>>
+>> DHCPDISCOVER from 00:16:ea:8a:de:38 via 195.19.214.216
+>> DHCPOFFER on 10.2.3.2 to 00:16:ea:8a:de:38 (csd-notebook) via
+>> 195.19.214.216
+>> DHCPREQUEST for 10.2.3.2 (10.2.3.1) from 00:16:ea:8a:de:38 via
+>> 195.19.214.216
+>> DHCPACK on 10.2.3.2 to 00:16:ea:8a:de:38 via 195.19.214.216
+>>
+>> On client I see configuration
+>> IP-address: 10.2.3.2
+>> network mask: 255.255.255.0
+>> gateway: 10.2.3.1
+>> dhcp server: 10.2.3.1
+>>
+>> That is the client have got ip address from dhcp server rather than from
+>> chilli. As the consequence of this the client could not authenticate
+>> through
+>> chilli.
+>>
+>> What is wrong ?  What purpose is dhcpgateway designed for ?
+>>
+>> Thanks.
+>>
+>>
+>>
+>>
+>>
+>>
+>>
+>> _______________________________________________
+>> Chilli mailing list
+>> Chilli at coova.org
+>> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>>
+>
+>
+>
+> --
+> Cheers,
+> Jason
+>
+
+
+
+-- 
+Cheers,
+Jason
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20100331/cbbcbddc/attachment.htm>
+
+From david at coova.com  Wed Mar 31 04:28:23 2010
+From: david at coova.com (David Bird)
+Date: Wed, 31 Mar 2010 06:28:23 +0200
+Subject: [Chilli] CoovaChilli and dhcpgateway
+In-Reply-To: <z2k3e888d0e1003301612m21d2723fx4d0a77de41298310@mail.gmail.com>
+References: <47324.195.19.214.216.1269964247.squirrel@mail.pnpi.spb.ru>
+	<z2k3e888d0e1003301612m21d2723fx4d0a77de41298310@mail.gmail.com>
+Message-ID: <1270009703.18129.11.camel@david-laptop>
+
+Not needed... the HS_NETWORK and HS_NETMASK take care of it. 
+
+On Wed, 2010-03-31 at 10:12 +1100, Jason Allen wrote:
+> 
+> Hi,
+> 
+> Try a subnet mask on your HS_NETWORK ? Thus ...
+> 
+> HS_NETWORK=10.2.3.0/24
+> 
+> 
+> Cheers,
+> Jason
+> 
+> On Wed, Mar 31, 2010 at 02:50, Anatoly Oreshkin
+> <Anatoly.Oreshkin at pnpi.spb.ru> wrote:
+>         
+>         Hello,
+>         
+>         My coovachili has such configuration:
+>         
+>         HS_WANIF=eth0  (195.19.214.216)
+>         HS_LANIF=eth1
+>         HS_NETWORK=10.2.3.0
+>         HS_NETMASK=255.255.255.0
+>         HS_UAMLISTEN=10.2.3.1
+>         
+>         I've configured coovachilli with dhcpgateway in order to get
+>         ip addresses
+>         for clients from external dhcp server. For this goal I've
+>         specified in
+>         local.conf
+>         
+>         dhcpgateway=212.193.96.134   (external dhcp address)
+>         dhcpgatewayport=67
+>         dhcprelayagent=195.19.214.216  (chilli eth0 address)
+>         
+>         DHCP server is configured as:
+>         subnet 10.2.3.0 netmask 255.255.255.0 {
+>         option routers                  10.2.3.1;
+>         option subnet-mask              255.255.255.0;
+>         range  10.2.3.2  10.2.3.254;
+>         ...
+>         }
+>         
+>         On chilli server in /var/log/messages I see
+>         
+>         New DHCP request from MAC=00-16-EA-8A-DE-38
+>         Client MAC=00-16-EA-8A-DE-38 assigned IP 10.2.3.53
+>         
+>         On dhcp server in /var/log/messages I see
+>         
+>         DHCPDISCOVER from 00:16:ea:8a:de:38 via 195.19.214.216
+>         DHCPOFFER on 10.2.3.2 to 00:16:ea:8a:de:38 (csd-notebook) via
+>         195.19.214.216
+>         DHCPREQUEST for 10.2.3.2 (10.2.3.1) from 00:16:ea:8a:de:38 via
+>         195.19.214.216
+>         DHCPACK on 10.2.3.2 to 00:16:ea:8a:de:38 via 195.19.214.216
+>         
+>         On client I see configuration
+>         IP-address: 10.2.3.2
+>         network mask: 255.255.255.0
+>         gateway: 10.2.3.1
+>         dhcp server: 10.2.3.1
+>         
+>         That is the client have got ip address from dhcp server rather
+>         than from
+>         chilli. As the consequence of this the client could not
+>         authenticate through
+>         chilli.
+>         
+>         What is wrong ?  What purpose is dhcpgateway designed for ?
+>         
+>         Thanks.
+>         
+>         
+>         
+>         
+>         
+>         
+>         
+>         _______________________________________________
+>         Chilli mailing list
+>         Chilli at coova.org
+>         http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+> 
+> 
+> 
+> -- 
+> Cheers,
+> Jason
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+
+
+From david at coova.com  Wed Mar 31 04:35:21 2010
+From: david at coova.com (David Bird)
+Date: Wed, 31 Mar 2010 06:35:21 +0200
+Subject: [Chilli] CoovaChilli and dhcpgateway
+In-Reply-To: <47324.195.19.214.216.1269964247.squirrel@mail.pnpi.spb.ru>
+References: <47324.195.19.214.216.1269964247.squirrel@mail.pnpi.spb.ru>
+Message-ID: <1270010121.18129.12.camel@david-laptop>
+
+Are you also using uamanyip? If so, try without. 
+
+
+On Tue, 2010-03-30 at 19:50 +0400, Anatoly Oreshkin wrote:
+> Hello,
+> 
+> My coovachili has such configuration:
+> 
+> HS_WANIF=eth0  (195.19.214.216)
+> HS_LANIF=eth1
+> HS_NETWORK=10.2.3.0
+> HS_NETMASK=255.255.255.0
+> HS_UAMLISTEN=10.2.3.1
+> 
+> I've configured coovachilli with dhcpgateway in order to get ip addresses
+> for clients from external dhcp server. For this goal I've specified in
+> local.conf
+> 
+> dhcpgateway=212.193.96.134   (external dhcp address)
+> dhcpgatewayport=67
+> dhcprelayagent=195.19.214.216  (chilli eth0 address)
+> 
+> DHCP server is configured as:
+> subnet 10.2.3.0 netmask 255.255.255.0 {
+> option routers                  10.2.3.1;
+> option subnet-mask              255.255.255.0;
+> range  10.2.3.2  10.2.3.254;
+> ...
+> }
+> 
+> On chilli server in /var/log/messages I see
+> 
+> New DHCP request from MAC=00-16-EA-8A-DE-38
+> Client MAC=00-16-EA-8A-DE-38 assigned IP 10.2.3.53
+> 
+> On dhcp server in /var/log/messages I see
+> 
+> DHCPDISCOVER from 00:16:ea:8a:de:38 via 195.19.214.216
+> DHCPOFFER on 10.2.3.2 to 00:16:ea:8a:de:38 (csd-notebook) via 195.19.214.216
+> DHCPREQUEST for 10.2.3.2 (10.2.3.1) from 00:16:ea:8a:de:38 via 195.19.214.216
+> DHCPACK on 10.2.3.2 to 00:16:ea:8a:de:38 via 195.19.214.216
+> 
+> On client I see configuration
+> IP-address: 10.2.3.2
+> network mask: 255.255.255.0
+> gateway: 10.2.3.1
+> dhcp server: 10.2.3.1
+> 
+> That is the client have got ip address from dhcp server rather than from
+> chilli. As the consequence of this the client could not authenticate through
+> chilli.
+> 
+> What is wrong ?  What purpose is dhcpgateway designed for ?
+> 
+> Thanks.
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+
+
+From Anatoly.Oreshkin at pnpi.spb.ru  Wed Mar 31 07:20:03 2010
+From: Anatoly.Oreshkin at pnpi.spb.ru (Anatoly Oreshkin)
+Date: Wed, 31 Mar 2010 11:20:03 +0400 (MSD)
+Subject: [Chilli] CoovaChilli and dhcpgateway
+In-Reply-To: <1270010121.18129.12.camel@david-laptop>
+References: <47324.195.19.214.216.1269964247.squirrel@mail.pnpi.spb.ru>
+	<1270010121.18129.12.camel@david-laptop>
+Message-ID: <41892.195.19.214.216.1270020003.squirrel@mail.pnpi.spb.ru>
+
+You misunderstood me.
+
+I would like wireless clients to get addresses from external dhcp server,
+not from chilli. With dhcpgateway specified chilli relays dhcp request
+to our dhcp server which assigns address to client from pool.
+At the same time chilli itself assigns address to client.
+For example, dhcpserver assigns address 10.2.3.7 but chilli assigns
+10.2.3.45 and as I think, wants to work with client having address
+10.2.3.45.
+Really client has address 10.2.3.7 and I guess, because of
+this a client can't authenticate through chilli.
+How to make chilli not assign addresses  itself but get from external
+dhcp server ? Is it possible at all ?
+We need external dhcp server also for wire clients.
+
+My main idea  is the following:
+
+At present we have 3Com APs configured with security WPA2/AES
+EAP-PEAP-MSCHAPv2
+and authentication is performed via radius server. Wireless clients get
+their fixed addresses from dhcp server by their MAC addresses.
+
+Also we need temporary wireless connections (for workshops, conferences
+...) using UAM authentication regardless of MAC addresses, only with
+login and password.
+So we would like to use the same APs for UAM authenticaton too using chilli
+at the same time preserving secure authentication in secure SSID for
+permanent clients.
+For this end we configure on each AP second SSID but without security.
+Temporary clients should connect to this insecure SSID, get
+addresses from pool regardless of MAC addresses and authenticate through
+chilli using UAM.
+
+Any hints, ideas.
+Thanks.
+
+> Are you also using uamanyip? If so, try without.
+>
+>
+> On Tue, 2010-03-30 at 19:50 +0400, Anatoly Oreshkin wrote:
+>> Hello,
+>>
+>> My coovachili has such configuration:
+>>
+>> HS_WANIF=eth0  (195.19.214.216)
+>> HS_LANIF=eth1
+>> HS_NETWORK=10.2.3.0
+>> HS_NETMASK=255.255.255.0
+>> HS_UAMLISTEN=10.2.3.1
+>>
+>> I've configured coovachilli with dhcpgateway in order to get ip
+>> addresses
+>> for clients from external dhcp server. For this goal I've specified in
+>> local.conf
+>>
+>> dhcpgateway=212.193.96.134   (external dhcp address)
+>> dhcpgatewayport=67
+>> dhcprelayagent=195.19.214.216  (chilli eth0 address)
+>>
+>> DHCP server is configured as:
+>> subnet 10.2.3.0 netmask 255.255.255.0 {
+>> option routers                  10.2.3.1;
+>> option subnet-mask              255.255.255.0;
+>> range  10.2.3.2  10.2.3.254;
+>> ...
+>> }
+>>
+>> On chilli server in /var/log/messages I see
+>>
+>> New DHCP request from MAC=00-16-EA-8A-DE-38
+>> Client MAC=00-16-EA-8A-DE-38 assigned IP 10.2.3.53
+>>
+>> On dhcp server in /var/log/messages I see
+>>
+>> DHCPDISCOVER from 00:16:ea:8a:de:38 via 195.19.214.216
+>> DHCPOFFER on 10.2.3.2 to 00:16:ea:8a:de:38 (csd-notebook) via
+>> 195.19.214.216
+>> DHCPREQUEST for 10.2.3.2 (10.2.3.1) from 00:16:ea:8a:de:38 via
+>> 195.19.214.216
+>> DHCPACK on 10.2.3.2 to 00:16:ea:8a:de:38 via 195.19.214.216
+>>
+>> On client I see configuration
+>> IP-address: 10.2.3.2
+>> network mask: 255.255.255.0
+>> gateway: 10.2.3.1
+>> dhcp server: 10.2.3.1
+>>
+>> That is the client have got ip address from dhcp server rather than from
+>> chilli. As the consequence of this the client could not authenticate
+>> through
+>> chilli.
+>>
+>> What is wrong ?  What purpose is dhcpgateway designed for ?
+>>
+>> Thanks.
+>>
+>>
+>>
+>>
+>>
+>>
+>>
+>> _______________________________________________
+>> Chilli mailing list
+>> Chilli at coova.org
+>> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+>
+
+

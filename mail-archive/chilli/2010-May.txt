@@ -1,0 +1,2898 @@
+From david at coova.com  Mon May  3 06:52:12 2010
+From: david at coova.com (David Bird)
+Date: Mon, 03 May 2010 08:52:12 +0200
+Subject: [Chilli] uid and gid not working
+In-Reply-To: <1272612786.4496.868.camel@david-laptop>
+References: <1272523255.2040.1208.camel@localhost>
+	<1272612786.4496.868.camel@david-laptop>
+Message-ID: <1272869532.30617.1.camel@david-laptop>
+
+Hi Daniel, See the subversion repo for some changes with regard to
+uid/gid handling. Chilli will chown() the config.bin file
+appropriately. 
+
+On Fri, 2010-04-30 at 09:33 +0200, David Bird wrote:
+> Thanks, will review before putting out 1.2.3. 
+> 
+> The use of the binary configuration file comes from the desire to split
+> off the "parsing and resolving" of the configuration file from the main
+> chilli server. Previously, when chilli re-read it's configuration
+> (either from HUP or --interval), it would stall the main loop (meaning,
+> all traffic stops) while rereading the configuration - which involves
+> DNS lookups, etc. Now, chilli server kicks off the command line util
+> chilli_opt for configuration file parsing, resolving, and writing to a
+> binary file, which chilli server (and other chilli_* servers) can reread
+> with no waiting. It is also possible to run chilli_opt yourself and give
+> chilli the SIGUSR1 to have it reread the binary configuration. 
+> 
+> David
+> 
+> On Thu, 2010-04-29 at 08:40 +0200, Daniel Berteaud wrote:
+> > Hi.
+> > 
+> > I use coova-chilli 1.0.13 on my server, with uid and gid options to
+> > limit the privileges (I'm not very found of publically accessible
+> > daemons with root privileges). It's working, even if I get the following
+> > message in the log when I start chilli:
+> > 
+> > coova-chilli[11928]: chilli.c: 3766: 1 (Operation not permitted)
+> > setgid(460) failed while running with gid = 0
+> > 
+> > So it seems that droping uid works but not gid
+> > 
+> > I've tried with coova-chilli 1.2.2, but now uid and gid don't work at
+> > all because chilli generate the binary configuration in /tmp/chilli-XXX
+> > and this directory is 700 root:root
+> > 
+> > Are the uid/gid options not supported anymore ?
+> > 
+> > And why chilli now uses this binary config file in /tmp ?
+> > 
+> > Regards, Daniel
+> > 
+> 
+> 
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+
+
+From daniel at firewall-services.com  Mon May  3 06:55:20 2010
+From: daniel at firewall-services.com (Daniel Berteaud)
+Date: Mon, 03 May 2010 08:55:20 +0200
+Subject: [Chilli] uid and gid not working
+In-Reply-To: <1272869532.30617.1.camel@david-laptop>
+References: <1272523255.2040.1208.camel@localhost>
+	<1272612786.4496.868.camel@david-laptop>
+	<1272869532.30617.1.camel@david-laptop>
+Message-ID: <1272869720.20560.0.camel@localhost>
+
+
+Thanks, I'll try this ASAP.
+
+Regards, Daniel.
+
+Le lundi 03 mai 2010 ? 08:52 +0200, David Bird a ?crit :
+> Hi Daniel, See the subversion repo for some changes with regard to
+> uid/gid handling. Chilli will chown() the config.bin file
+> appropriately. 
+> 
+> On Fri, 2010-04-30 at 09:33 +0200, David Bird wrote:
+> > Thanks, will review before putting out 1.2.3. 
+> > 
+> > The use of the binary configuration file comes from the desire to split
+> > off the "parsing and resolving" of the configuration file from the main
+> > chilli server. Previously, when chilli re-read it's configuration
+> > (either from HUP or --interval), it would stall the main loop (meaning,
+> > all traffic stops) while rereading the configuration - which involves
+> > DNS lookups, etc. Now, chilli server kicks off the command line util
+> > chilli_opt for configuration file parsing, resolving, and writing to a
+> > binary file, which chilli server (and other chilli_* servers) can reread
+> > with no waiting. It is also possible to run chilli_opt yourself and give
+> > chilli the SIGUSR1 to have it reread the binary configuration. 
+> > 
+> > David
+> > 
+> > On Thu, 2010-04-29 at 08:40 +0200, Daniel Berteaud wrote:
+> > > Hi.
+> > > 
+> > > I use coova-chilli 1.0.13 on my server, with uid and gid options to
+> > > limit the privileges (I'm not very found of publically accessible
+> > > daemons with root privileges). It's working, even if I get the following
+> > > message in the log when I start chilli:
+> > > 
+> > > coova-chilli[11928]: chilli.c: 3766: 1 (Operation not permitted)
+> > > setgid(460) failed while running with gid = 0
+> > > 
+> > > So it seems that droping uid works but not gid
+> > > 
+> > > I've tried with coova-chilli 1.2.2, but now uid and gid don't work at
+> > > all because chilli generate the binary configuration in /tmp/chilli-XXX
+> > > and this directory is 700 root:root
+> > > 
+> > > Are the uid/gid options not supported anymore ?
+> > > 
+> > > And why chilli now uses this binary config file in /tmp ?
+> > > 
+> > > Regards, Daniel
+> > > 
+> > 
+> > 
+> > _______________________________________________
+> > Chilli mailing list
+> > Chilli at coova.org
+> > http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+> 
+> 
+
+-- 
+Daniel Berteaud
+FIREWALL-SERVICES SARL.
+Soci?t? de Services en Logiciels Libres
+Technop?le Montesquieu
+33650 MARTILLAC
+Tel : 05 56 64 15 32
+Fax : 05 56 64 15 32
+Mail: daniel at firewall-services.com
+Web : http://www.firewall-services.com
+
+
+From david at coova.com  Sat May  8 06:25:47 2010
+From: david at coova.com (David Bird)
+Date: Sat, 08 May 2010 08:25:47 +0200
+Subject: [Chilli] Running chilli as non-root
+Message-ID: <1273299947.30617.161.camel@david-laptop>
+
+Hello,
+
+Now in subversion is a new compile time option: --enable-chilliscript
+
+The option will have the utility program "chilli_script" built. This
+program will be installed with the setuid bit set, such that it is able
+to run as root. The utility is needed when running chilli under a
+non-root user in order to run script (like the up/down or conup/condown)
+that require root. 
+
+When compiled with the option, the utility program is built and chilli
+will use it when launching it's scripts. When chilli launches scripts,
+it does so using:
+
+  /path/chilli_script /path/config.bin /path/prog prog-args
+
+Where the first argument is the path to the running chilli binary
+configuration, the second argument is the target script, and what
+follows are arguments for the script. 
+
+What exactly does chilli_script do? Not that much, really. It just
+checks a couple things for security, then does a setuid(0) before
+calling the real script. Before calling setuid(0), it does the following
+checks:
+
+- chilli_script must be running as user root or "chilli" (this "chilli"
+username is hardcoded, changed with compile time define CHILLI_USER)
+
+- chilli_script must be running as group root or "chilli" (this "chilli"
+group is hardcoded, changed with compile time define CHILLI_GROUP)
+
+- the target script must be owned by root and group "chilli". (and must,
+of course, be readable for user "chilli")
+
+- the target script must also have the setuid bit set. 
+
+An alternative to using this is to use sudo and custom up/down scripts. 
+
+David
+
+
+From impossibleprobability at gmail.com  Mon May 10 14:56:13 2010
+From: impossibleprobability at gmail.com (Skept)
+Date: Mon, 10 May 2010 20:26:13 +0530
+Subject: [Chilli] Timeout's in the browser
+Message-ID: <AANLkTimPPGOBihy4y-sQTrh6w-nOv73576UYn31Llg8_@mail.gmail.com>
+
+Hello list,
+
+I see timeout's on the login page, when I try to login using the coova
+interface, and the page loads normally when I refresh. An example
+error message is
+
+The webpage at http://10.164.40.1:4990/www/login.chi?res=notyet&uamip=10.164.40.1&uamport=3990&challenge=55122a3e08f96f4886a53d9637d398ec&called=00-02-A5-41-6A-3D&mac=00-22-64-FD-C6-79&ip=10.164.40.5&nasid=nas2-nx-noc&sessionid=4be7fbc700000001&userurl=http%3a%2f%2fwww.paypal.com%2f&md=5BA0F927A20D2A7F7611D7B0A3B23E15
+might be temporarily down or it may have moved permanently to a new
+web address.
+
+Error 324 (net::ERR_EMPTY_RESPONSE): Unknown error.
+
+What could be the cause of it and how can I resolve them?
+
+Regards
+---
+perl -e'print(unpack"u*","*22!A;2!3:V5P=```")'
+
+From gdamjan at mail.net.mk  Wed May 12 11:25:23 2010
+From: gdamjan at mail.net.mk (Damjan)
+Date: Wed, 12 May 2010 13:25:23 +0200
+Subject: [Chilli] kmod-coova
+In-Reply-To: <1270617050.18129.899.camel@david-laptop>
+References: <1270617050.18129.899.camel@david-laptop>
+Message-ID: <20100512112523.GB30604@legolas.on.net.mk>
+
+> Been working on a concept for a kernel module for CoovaChilli. With the
+> subversion code, configure with "--with-nfcoova" to have the module
+> built. With the support built in, and the xt_coova module loaded, the
+> idea is that authenticated traffic goes straight through the kernel and
+> unauthorized traffic still goes through chilli user-space - enforcing
+> captive portal and doing the walled garden, etc. xt_coova (which borrows
+> from the 'recent' module) does a simple allow/drop decision based on
+> authentication status. Some specific configurations are needed for this
+> to work. 
+> 
+> The iptables rules might look like this:
+> 
+> iptables -I FORWARD -o eth0 --src 10.0.0.0/8 \
+>   -m coova --name chilli -j ACCEPT
+> iptables -I FORWARD -i eth0 --dst 10.0.0.0/8 \
+>   -m coova --name chilli --dest -j ACCEPT
+> 
+> iptables -I FORWARD --src 11.0.0.0/8 -j ACCEPT
+> iptables -I FORWARD --dst 11.0.0.0/8 -j ACCEPT
+> 
+> (where the assumption is that the default FORWARD rule is to DENY). The
+> idea is that traffic to/from eth0 (WAN) from source 10.0.0.0/8 (the
+> chilli DHCP IP space) is either allowed or dropped by the xt_coova
+> module based on authentication status. The 11.0.0.0/8 network, in this
+> example, is the network chilli has configured for it's uamlisten. 
+
+Have you considered using something like NF_QUEUE (i.e.
+libnetfilter_queue)
+
+This is a mechanism with which you can reroute some packets from
+netfilter to userspace. This could maybe simplify the packet capture
+part of chillispot
+
+
+http://netfilter.org/projects/libnetfilter_queue/index.html
+
+
+> I should mention that when using the kernel module, I have it setup such
+> that the dhcpif (eth1) is actually configured with IP address 10.1.0.1
+> and the same IP is configured in chilli as the 'dhcplisten' (note that
+> typically chilli doesn't want the dhcpif interface configured with an
+> IP). Chilli is then also configured with 'uamlisten' of 11.0.0.1 and
+> this is the IP address that gets assigned to tun0 (so note that
+> dhcplisten and uamlisten are different!). The high level concept is that
+> subscribers get a 10.1.0.0/24 IP address which is routed (when
+> authenticated) through the kernel. Chilli still monitors all traffic on
+> the dhcpif and when users are not authorized yet (i.e. their 10.1.0.0/24
+> address is not being forwarded), then chilli does the routing (after
+> doing a NAT translation from 10.1.0.0/24 to 11.1.0.0/24). 
+> 
+> Thus, chilli basically is only routing unauthorized traffic while
+> authorized traffic goes straight through the kernel. With some testing
+> on open-mesh routers, we have seen this can drastically increase
+> throughput for authenticated users.
+> 
+> With the iptables rules above, here is an example chilli.conf that I
+> have been using:
+> 
+> cat<<EOF>/tmp/chilli.conf
+> net 10.1.0.0/16
+> dynip 10.1.0.0/24
+> statip 10.1.1.0/24
+> 
+> uamlisten 11.1.0.1 
+> dhcplisten 10.1.0.1 
+> dhcpstart 10
+> uamaliasname chilli
+> ipup=
+> ipdown= 
+> 
+> radiusserver1 localhost
+> radiussecret testing123
+> dhcpif eth0
+> dns1 192.168.1.1
+> uamdomain coova.org
+> uamserver http://portal/hotspot
+> uamsecret uamsecret
+> cmdsock /var/run/chilli.sock
+> kname chilli
+> EOF
+> 
+> Give it a try if interested in testing! 
+> 
+> David
+> 
+> 
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+-- 
+damjan | ??????
+This is my jabber ID -->         damjan at bagra.net.mk 
+ -- not my mail address, it's a Jabber ID --^ :)
+
+From david at coova.com  Wed May 12 11:53:05 2010
+From: david at coova.com (David Bird)
+Date: Wed, 12 May 2010 13:53:05 +0200
+Subject: [Chilli] kmod-coova
+In-Reply-To: <20100512112523.GB30604@legolas.on.net.mk>
+References: <1270617050.18129.899.camel@david-laptop>
+	<20100512112523.GB30604@legolas.on.net.mk>
+Message-ID: <1273665185.901.7.camel@david-laptop>
+
+You will notice there is also a --with-nfqueue that uses some of the
+same code as when used with --with-nfcoova. Queue just takes packets (or
+just their headers) from kernel space to user space. Even with only
+capturing headers, our tests showed this method to always be slower than
+native chilli socket method of capturing complete packets. With the
+simple coova specific module instead, there is no need for authenticated
+session packets to enter user-space... Authenticated traffic goes
+straight though, while unauthenticated traffic is dropped by the kernel
+module as chilli will do packet switching (as normal) for that traffic. 
+
+On Wed, 2010-05-12 at 13:25 +0200, Damjan wrote:
+> > Been working on a concept for a kernel module for CoovaChilli. With the
+> > subversion code, configure with "--with-nfcoova" to have the module
+> > built. With the support built in, and the xt_coova module loaded, the
+> > idea is that authenticated traffic goes straight through the kernel and
+> > unauthorized traffic still goes through chilli user-space - enforcing
+> > captive portal and doing the walled garden, etc. xt_coova (which borrows
+> > from the 'recent' module) does a simple allow/drop decision based on
+> > authentication status. Some specific configurations are needed for this
+> > to work. 
+> > 
+> > The iptables rules might look like this:
+> > 
+> > iptables -I FORWARD -o eth0 --src 10.0.0.0/8 \
+> >   -m coova --name chilli -j ACCEPT
+> > iptables -I FORWARD -i eth0 --dst 10.0.0.0/8 \
+> >   -m coova --name chilli --dest -j ACCEPT
+> > 
+> > iptables -I FORWARD --src 11.0.0.0/8 -j ACCEPT
+> > iptables -I FORWARD --dst 11.0.0.0/8 -j ACCEPT
+> > 
+> > (where the assumption is that the default FORWARD rule is to DENY). The
+> > idea is that traffic to/from eth0 (WAN) from source 10.0.0.0/8 (the
+> > chilli DHCP IP space) is either allowed or dropped by the xt_coova
+> > module based on authentication status. The 11.0.0.0/8 network, in this
+> > example, is the network chilli has configured for it's uamlisten. 
+> 
+> Have you considered using something like NF_QUEUE (i.e.
+> libnetfilter_queue)
+> 
+> This is a mechanism with which you can reroute some packets from
+> netfilter to userspace. This could maybe simplify the packet capture
+> part of chillispot
+> 
+> 
+> http://netfilter.org/projects/libnetfilter_queue/index.html
+> 
+> 
+> > I should mention that when using the kernel module, I have it setup such
+> > that the dhcpif (eth1) is actually configured with IP address 10.1.0.1
+> > and the same IP is configured in chilli as the 'dhcplisten' (note that
+> > typically chilli doesn't want the dhcpif interface configured with an
+> > IP). Chilli is then also configured with 'uamlisten' of 11.0.0.1 and
+> > this is the IP address that gets assigned to tun0 (so note that
+> > dhcplisten and uamlisten are different!). The high level concept is that
+> > subscribers get a 10.1.0.0/24 IP address which is routed (when
+> > authenticated) through the kernel. Chilli still monitors all traffic on
+> > the dhcpif and when users are not authorized yet (i.e. their 10.1.0.0/24
+> > address is not being forwarded), then chilli does the routing (after
+> > doing a NAT translation from 10.1.0.0/24 to 11.1.0.0/24). 
+> > 
+> > Thus, chilli basically is only routing unauthorized traffic while
+> > authorized traffic goes straight through the kernel. With some testing
+> > on open-mesh routers, we have seen this can drastically increase
+> > throughput for authenticated users.
+> > 
+> > With the iptables rules above, here is an example chilli.conf that I
+> > have been using:
+> > 
+> > cat<<EOF>/tmp/chilli.conf
+> > net 10.1.0.0/16
+> > dynip 10.1.0.0/24
+> > statip 10.1.1.0/24
+> > 
+> > uamlisten 11.1.0.1 
+> > dhcplisten 10.1.0.1 
+> > dhcpstart 10
+> > uamaliasname chilli
+> > ipup=
+> > ipdown= 
+> > 
+> > radiusserver1 localhost
+> > radiussecret testing123
+> > dhcpif eth0
+> > dns1 192.168.1.1
+> > uamdomain coova.org
+> > uamserver http://portal/hotspot
+> > uamsecret uamsecret
+> > cmdsock /var/run/chilli.sock
+> > kname chilli
+> > EOF
+> > 
+> > Give it a try if interested in testing! 
+> > 
+> > David
+> > 
+> > 
+> > _______________________________________________
+> > Chilli mailing list
+> > Chilli at coova.org
+> > http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+> 
+
+
+
+From kg6hum at gmail.com  Wed May 12 23:08:08 2010
+From: kg6hum at gmail.com (Rob Campbell)
+Date: Wed, 12 May 2010 16:08:08 -0700
+Subject: [Chilli] Multiple VLANs and Subnets
+Message-ID: <AANLkTimLPdJY5hAh_mlosjSWi3jmVQRSFcNLVjkg7i-u@mail.gmail.com>
+
+Hello,
+
+I posted this to the online forum, but I don't know which place is
+better to ask something like this.  I am trying to get Coova-Chilli
+working on a network with 5 VLANs. I have not had any luck with the
+--ieee8021q option. I was able to do a little testing with multiple
+instances of chilli, but that will complicate sending CoAs.
+
+I also need to have both a /24 and /25 in some of the VLANs. I could
+not find any information on having more than one gateway per chilli
+instance. Is that possible?
+
+The setup will basically be like this.
+
+VLAN 2: 192.168.10.0/24 and 192.168.11/25
+VLAN 3: 192.168.11.128/25 and 192.168.12.0/24
+VLAN 4: 192.168.13.0/24 and 192.168.14.0/25
+VLAN 5: 192.168.14.128/25
+VLAN 6: 192.168.15.0/24
+
+Has anyone used Coova-Chilli in this way before? Any help would be
+greatly appreciated.
+
+--
+Rob Campbell
+
+From pieter at hollants.com  Sun May 16 11:19:06 2010
+From: pieter at hollants.com (IT-Systemmanagement Pieter Hollants)
+Date: Sun, 16 May 2010 13:19:06 +0200
+Subject: [Chilli] [Patch] Fix access_request() to conform with radius pack
+	ID semantics
+Message-ID: <4BEFD4AA.6010604@hollants.com>
+
+Short:
+Coova-Chilli 1.2.2 and current SVN have a bug in the radius packet ID
+semantics which (at least for me) prevented WPA-EAP from working.
+
+Long:
+Stemming from ChilliSpot are the structures radius_t, radius_queue_t and
+radius_packet_t for communication with the "upstream" proxy server.
+
+(struct radius_t)->queue is an array of radius_queue_t structures, each
+of which in turn contains in "p" a struct radius_packet_id, representing
+a single RADIUS packet that is supposed to be sent to the proxy server.
+radius_queue_t contains a timeout and the number of retransmissions so
+far, radius_packet_id contains an "id" field which is of importance here.
+
+In ChilliSpot, the array was of a fixed size, RADIUS_QUEUESIZE which was
+defined as 256. The comment "/* Same size as id address space */"
+already hinted at a simple indexing scheme used for the "queue" array.
+
+Any new packet that was to be stored was prepared with
+radius_default_pack():
+
+ pack->id = 0;
+
+When a packet was to be sent off with radius_req(), that function called
+radius_queue_in() which did this:
+
+ pack->id = this->next;
+ this->next;
+
+where this is the struct radius_t and "next" the next ID to be assigned.
+The IDs served as indexes into "queue" and since "next" was defined as
+an "int", it was supposed to magically wrap around to 0, in the event
+that all RADIUS_QUEUESIZE radius_queue_t slots had been used.
+
+Now in CoovaChilli, (struct radius_t)->queue was instead implemented to
+be optionally of a dynamic size below RADIUS_QUEUESIZE. Modulo operators
+were used to map IDs to actual indexes.
+
+In the process of this implementation, pack->id assignment was changed.
+radius_default_pack() now does (this->next was renamed to this->qnext):
+
+ if (this->qsize == 0)
+   pack->id = this->qnext;
+ else
+   pack->id = /* special magic */
+
+and radius_queue_in() no longer set pack->id itself.
+
+This breaks the access_request() function in chilli.c: there, a
+remainder of ChilliSpot origin, we read
+
+ radius_pack.id = pack->id;
+
+At the end radius_req() is called, which calls radius_queue_in(), which
+does not set radius_pack.id itself because it expects that the value
+chosen by radius_default_pack() is still there. Boom :) This gave nice
+error messages "No such id in radius queue" resp. "Matching request was
+not found in queue".
+
+Attached patch removes the offending line from access_request() and
+applies to both 1.2.2 and SVN. Actually, the line seems to have served
+no purpose anyway, neither in ChilliSpot nor in CoovaChilli. In
+ChilliSpot, as described, radius_queue_in() overwrote pack->id anyway.
+In CoovaChilli it caused the erroneous behaviour described above.
+
+The offending line was probably copied from other functions such as
+radius_access_reject(), where it is correct since radius_resp() is
+subsequently called, not radius_req().
+
+Please verify and have a nice Sunday :)
+
+-- 
+Dipl.-Wirtsch.-Inform. Pieter Hollants
+IT-Systemmanagement Pieter Hollants          Tel. : (+49) (0)6192-910717
+Rossertstra?e 80                             Fax  : (+49) (0)6192-910713
+65830 Kriftel                                eMail: pieter at hollants.com
+
+-------------- next part --------------
+An embedded and charset-unspecified text was scrubbed...
+Name: coova-chilli-1.2.2-access_request_radius_pack_id.diff
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20100516/2f5a37a5/attachment.txt>
+
+From serverinfo at iast.it  Mon May 17 17:40:58 2010
+From: serverinfo at iast.it (Iacopo Spalletti)
+Date: Mon, 17 May 2010 19:40:58 +0200
+Subject: [Chilli] Coova and FTP
+Message-ID: <201005171941.01946.serverinfo@iast.it>
+
+Hi, i'm trying to setup the firewall on a coova board, but apparently Coova 
+doesn't go along well with FTP conntrack module in Linux
+I have a shorewall-based firewall on the same host as coova which is basically 
+configured to block every connection except some destination ports (HTTP, and 
+such)
+As for FTP protocol rules are based on conntrack helper, but apparently it 
+can't detect connections routed via coova; this is the shorewall error message
+Shorewall:wlan2net:REJECT:IN=tun0 OUT=eth3 SRC=10.34.0.2 DST=$DEST_IP LEN=60 
+TOS=0x00 PREC=0x00 TTL=63 ID=51861 DF PROTO=TCP SPT=41279 DPT=65162 
+WINDOW=5840 RES=0x00 SYN URGP=0
+
+Where $DEST_IP is the FTP server on the internet, and the destination port is 
+the passive FTP
+
+I've tried both svn (rev 322) and 1.2.2 version with no success; i tried alse 
+enabling the NOTRACK options in 
+Any hint?
+
+BTW: Disabling coova makes FTP work, and nf_conntrack_ftp is loaded correctly 
+in both cases
+-- 
+
+Regards
+Iacopo Spalletti
+
+From pieter at hollants.com  Tue May 18 15:14:00 2010
+From: pieter at hollants.com (IT-Systemmanagement Pieter Hollants)
+Date: Tue, 18 May 2010 17:14:00 +0200
+Subject: [Chilli] [Patch] Disable user-caused logout when UAM is not used
+Message-ID: <4BF2AEB8.1000904@hollants.com>
+
+Currently, users have the possiblity to logout by accessing
+http://<chilliIP>:<chilliPort>/logout or by accessing http://logout.
+This makes sense with UAM, where the webbrowser was the "authentication
+device" used to gain access to the Internet.
+
+With EAPOL, WPA and MAC authentication, however, the "login" occurs
+using the client operating system's methods and dialogs, so this is
+where the user also expects to perform a "logoff", eg. by disassociating
+from the WPA-EAP perotected WLAN. (Yes, I know CoovaChilli itself can't
+notice a disassociation unless the access point sends accounting
+information).
+
+So to be consistent, the user-caused logout methods described above
+should not work outside of UAM, since that will only cause confusion:
+the user will be redirected to the uamhomepage Website and while he
+_can_ logon again there, this mixes up different auth. types and defeats
+the purpose of WPA-EAP.
+
+The attached patch therefore disables "logout" for all downlink
+protocols except UAM. It doesn't yet prevent authentication scripts from
+presenting a logout button, that's up to a seperate patch.
+
+Please review.
+
+-- 
+Dipl.-Wirtsch.-Inform. Pieter Hollants
+IT-Systemmanagement Pieter Hollants          Tel. : (+49) (0)6192-910717
+Rossertstra?e 80                             Fax  : (+49) (0)6192-910713
+65830 Kriftel                                eMail: pieter at hollants.com
+
+
+-------------- next part --------------
+An embedded and charset-unspecified text was scrubbed...
+Name: coova-chilli-1.2.2-logout_uamonly.diff
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20100518/d7a8ecf3/attachment.asc>
+
+From kg6hum at gmail.com  Tue May 18 20:15:15 2010
+From: kg6hum at gmail.com (Rob Campbell)
+Date: Tue, 18 May 2010 13:15:15 -0700
+Subject: [Chilli] Forcing chilli to recheck RADIUS
+Message-ID: <AANLkTilrBowD89e7ViaGpbWM2HK8k0W7j97NS0ko78HN@mail.gmail.com>
+
+Hello,
+
+I am getting close to having chilli working, but I have run into a bit
+of a problem.  I need to be able to force chilli to re-authenticate
+against RADIUS when an update is made.  I know I can do a chilli_query
+logout, but I would like to be able to do it automatically without
+having to login to the server.
+
+I tried sending RADIUS Disconnect requests.  If the user is already
+authorized a disconnect will work, but if they are still in the dnat
+state I cannot disconnect them.  It looks like a CoA would have the
+same problem.
+
+Is there any other way to do this?
+Thank you.
+
+--
+Rob Campbell
+
+From david at coova.com  Wed May 19 04:35:01 2010
+From: david at coova.com (David Bird)
+Date: Wed, 19 May 2010 06:35:01 +0200
+Subject: [Chilli] Forcing chilli to recheck RADIUS
+In-Reply-To: <AANLkTilrBowD89e7ViaGpbWM2HK8k0W7j97NS0ko78HN@mail.gmail.com>
+References: <AANLkTilrBowD89e7ViaGpbWM2HK8k0W7j97NS0ko78HN@mail.gmail.com>
+Message-ID: <1274243701.3531.228.camel@david-laptop>
+
+You can send the user (via browser) to the chilli URL
+http://uamip:uamport/macreauth to have it kick off a new MAC
+authentication. 
+
+On Tue, 2010-05-18 at 13:15 -0700, Rob Campbell wrote:
+> Hello,
+> 
+> I am getting close to having chilli working, but I have run into a bit
+> of a problem.  I need to be able to force chilli to re-authenticate
+> against RADIUS when an update is made.  I know I can do a chilli_query
+> logout, but I would like to be able to do it automatically without
+> having to login to the server.
+> 
+> I tried sending RADIUS Disconnect requests.  If the user is already
+> authorized a disconnect will work, but if they are still in the dnat
+> state I cannot disconnect them.  It looks like a CoA would have the
+> same problem.
+> 
+> Is there any other way to do this?
+> Thank you.
+> 
+> --
+> Rob Campbell
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+
+
+From david at coova.com  Wed May 19 04:38:51 2010
+From: david at coova.com (David Bird)
+Date: Wed, 19 May 2010 06:38:51 +0200
+Subject: [Chilli] [Patch] Disable user-caused logout when UAM is not used
+In-Reply-To: <4BF2AEB8.1000904@hollants.com>
+References: <4BF2AEB8.1000904@hollants.com>
+Message-ID: <1274243931.3531.232.camel@david-laptop>
+
+Thanks Pieter,
+
+Though, I don't really expect it to be an issue since generally your
+802.1x users will not even know of the portal (unless you want them to).
+Also, when using 802.1x, it doesn't necessarily mean you *can not* use
+the captive portal... For instance, you might grant 802.1x network
+access based on something other than a user login (maybe a Desktop
+login, or even just an anonymously) and then present the captive portal
+for further login. 
+
+David
+
+
+On Tue, 2010-05-18 at 17:14 +0200, IT-Systemmanagement Pieter Hollants
+wrote:
+> Currently, users have the possiblity to logout by accessing
+> http://<chilliIP>:<chilliPort>/logout or by accessing http://logout.
+> This makes sense with UAM, where the webbrowser was the "authentication
+> device" used to gain access to the Internet.
+> 
+> With EAPOL, WPA and MAC authentication, however, the "login" occurs
+> using the client operating system's methods and dialogs, so this is
+> where the user also expects to perform a "logoff", eg. by disassociating
+> from the WPA-EAP perotected WLAN. (Yes, I know CoovaChilli itself can't
+> notice a disassociation unless the access point sends accounting
+> information).
+> 
+> So to be consistent, the user-caused logout methods described above
+> should not work outside of UAM, since that will only cause confusion:
+> the user will be redirected to the uamhomepage Website and while he
+> _can_ logon again there, this mixes up different auth. types and defeats
+> the purpose of WPA-EAP.
+> 
+> The attached patch therefore disables "logout" for all downlink
+> protocols except UAM. It doesn't yet prevent authentication scripts from
+> presenting a logout button, that's up to a seperate patch.
+> 
+> Please review.
+> 
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+
+
+From pieter at hollants.com  Wed May 19 08:15:57 2010
+From: pieter at hollants.com (Pieter Hollants)
+Date: Wed, 19 May 2010 10:15:57 +0200
+Subject: [Chilli] [Patch] Disable user-caused logout when UAM is not used
+Message-ID: <4BF39E3D.9020403@hollants.com>
+
+Am 19.05.2010 06:38, schrieb David Bird:
+> Though, I don't really expect it to be an issue since generally your
+> 802.1x users will not even know of the portal (unless you want them to).
+
+Yes, I thought of the scenario where "uamhomepage" is your internal
+portal containing not just the auth form but also, say, manuals. I call
+such a portal "the reception desk", to communicate to the users it is
+not just a login screen. In this analogy, among giving "keys out" (to
+the Internet, in this case), the portal also provides help as to "where
+to go to".
+
+> Also, when using 802.1x, it doesn't necessarily mean you *can not* use
+> the captive portal... For instance, you might grant 802.1x network
+> access based on something other than a user login (maybe a Desktop
+> login, or even just an anonymously) and then present the captive portal
+> for further login. 
+
+Yes, you talk about "wpaguests", right? I kinda oversaw this but am
+already working on a revised patch.
+
+-- 
+Dipl.-Wirtsch.-Inform. Pieter Hollants
+IT-Systemmanagement Pieter Hollants          Tel. : (+49) (0)6192-910717
+Rossertstra?e 80                             Fax  : (+49) (0)6192-910713
+65830 Kriftel                                eMail: pieter at hollants.com
+
+From kg6hum at gmail.com  Wed May 19 08:55:39 2010
+From: kg6hum at gmail.com (Rob Campbell)
+Date: Wed, 19 May 2010 01:55:39 -0700
+Subject: [Chilli] Forcing chilli to recheck RADIUS
+In-Reply-To: <1274243701.3531.228.camel@david-laptop>
+References: <AANLkTilrBowD89e7ViaGpbWM2HK8k0W7j97NS0ko78HN@mail.gmail.com>
+	<1274243701.3531.228.camel@david-laptop>
+Message-ID: <AANLkTikFERPAdHmgR2glNhBM-qSXUXpdRYdPtRChvhcE@mail.gmail.com>
+
+Interesting.  Do they only need to request that page?  Is there a way
+to do it without having to redirect someone?
+
+--
+Rob Campbell
+
+On Tue, May 18, 2010 at 9:35 PM, David Bird <david at coova.com> wrote:
+> You can send the user (via browser) to the chilli URL
+> http://uamip:uamport/macreauth to have it kick off a new MAC
+> authentication.
+>
+> On Tue, 2010-05-18 at 13:15 -0700, Rob Campbell wrote:
+>> Hello,
+>>
+>> I am getting close to having chilli working, but I have run into a bit
+>> of a problem. ?I need to be able to force chilli to re-authenticate
+>> against RADIUS when an update is made. ?I know I can do a chilli_query
+>> logout, but I would like to be able to do it automatically without
+>> having to login to the server.
+>>
+>> I tried sending RADIUS Disconnect requests. ?If the user is already
+>> authorized a disconnect will work, but if they are still in the dnat
+>> state I cannot disconnect them. ?It looks like a CoA would have the
+>> same problem.
+>>
+>> Is there any other way to do this?
+>> Thank you.
+>>
+>> --
+>> Rob Campbell
+>> _______________________________________________
+>> Chilli mailing list
+>> Chilli at coova.org
+>> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+>
+>
+
+From pieter at hollants.com  Wed May 19 13:23:01 2010
+From: pieter at hollants.com (IT-Systemmanagement Pieter Hollants)
+Date: Wed, 19 May 2010 15:23:01 +0200
+Subject: [Chilli] [Patch] Fix access_request() to conform with radius
+ pack	ID semantics
+In-Reply-To: <4BEFD4AA.6010604@hollants.com>
+References: <4BEFD4AA.6010604@hollants.com>
+Message-ID: <4BF3E635.8070302@hollants.com>
+
+Please find attached a new version of my original patch posted on May
+16. There was another cause of "No such id in radius queue" errors
+within chilli.c:access_request(), caused by the modified RADIUS packet
+ID assignment semantics.
+
+David, all you need to know is inside the patch's new second hunk :)
+
+-- 
+Dipl.-Wirtsch.-Inform. Pieter Hollants
+IT-Systemmanagement Pieter Hollants          Tel. : (+49) (0)6192-910717
+Rossertstra?e 80                             Fax  : (+49) (0)6192-910713
+65830 Kriftel                                eMail: pieter at hollants.com
+
+-------------- next part --------------
+An embedded and charset-unspecified text was scrubbed...
+Name: coova-chilli-1.2.2-access_request_radius_pack_id.diff
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20100519/f0c77fc5/attachment.txt>
+
+From kg6hum at gmail.com  Wed May 19 17:38:58 2010
+From: kg6hum at gmail.com (Rob Campbell)
+Date: Wed, 19 May 2010 10:38:58 -0700
+Subject: [Chilli] Forcing chilli to recheck RADIUS
+In-Reply-To: <1274243701.3531.228.camel@david-laptop>
+References: <AANLkTilrBowD89e7ViaGpbWM2HK8k0W7j97NS0ko78HN@mail.gmail.com>
+	<1274243701.3531.228.camel@david-laptop>
+Message-ID: <AANLkTilaSRi-Vs1h7w3LMGqpGMQTWRjbapqNaUEVMCrm@mail.gmail.com>
+
+Ok.  I tried both the macreauth URL and the --macreauth command line
+option.  The problem I am having is that the user is still redirected
+to the splash and login pages.  It looks like it checks RADIUS, but
+doesn't wait for the reply and does the redirect.  On the second
+request it sees that they are authorized and then allows them through.
+ Being redirected back to the login page after they had already
+completed it would be confusing to the users.  Is there a way around
+this?
+
+If the splash page had a way to know they had been authorized, then it
+could redirect to userurl instead of loginurl.  The splash pages gets
+res=notyet though, so I don't see any way for it to know they were
+authorized during the redirect.
+
+--
+Rob Campbell
+
+On Tue, May 18, 2010 at 9:35 PM, David Bird <david at coova.com> wrote:
+> You can send the user (via browser) to the chilli URL
+> http://uamip:uamport/macreauth to have it kick off a new MAC
+> authentication.
+>
+> On Tue, 2010-05-18 at 13:15 -0700, Rob Campbell wrote:
+>> Hello,
+>>
+>> I am getting close to having chilli working, but I have run into a bit
+>> of a problem. ?I need to be able to force chilli to re-authenticate
+>> against RADIUS when an update is made. ?I know I can do a chilli_query
+>> logout, but I would like to be able to do it automatically without
+>> having to login to the server.
+>>
+>> I tried sending RADIUS Disconnect requests. ?If the user is already
+>> authorized a disconnect will work, but if they are still in the dnat
+>> state I cannot disconnect them. ?It looks like a CoA would have the
+>> same problem.
+>>
+>> Is there any other way to do this?
+>> Thank you.
+>>
+>> --
+>> Rob Campbell
+>> _______________________________________________
+>> Chilli mailing list
+>> Chilli at coova.org
+>> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+>
+>
+
+From david at coova.com  Thu May 20 05:09:56 2010
+From: david at coova.com (David Bird)
+Date: Thu, 20 May 2010 07:09:56 +0200
+Subject: [Chilli] [Patch] Fix access_request() to conform with radius
+ pack ID semantics
+In-Reply-To: <4BF3E635.8070302@hollants.com>
+References: <4BEFD4AA.6010604@hollants.com>  <4BF3E635.8070302@hollants.com>
+Message-ID: <1274332196.3531.437.camel@david-laptop>
+
+Hi Pieter,
+
+I will apply and test the patch today. Thanks!
+
+David
+
+
+On Wed, 2010-05-19 at 15:23 +0200, IT-Systemmanagement Pieter Hollants
+wrote:
+> Please find attached a new version of my original patch posted on May
+> 16. There was another cause of "No such id in radius queue" errors
+> within chilli.c:access_request(), caused by the modified RADIUS packet
+> ID assignment semantics.
+> 
+> David, all you need to know is inside the patch's new second hunk :)
+> 
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+
+
+From david at coova.com  Thu May 20 05:24:40 2010
+From: david at coova.com (David Bird)
+Date: Thu, 20 May 2010 07:24:40 +0200
+Subject: [Chilli] [Patch] Fix access_request() to conform with radius
+ pack ID semantics
+In-Reply-To: <4BF3E635.8070302@hollants.com>
+References: <4BEFD4AA.6010604@hollants.com>  <4BF3E635.8070302@hollants.com>
+Message-ID: <1274333080.3531.444.camel@david-laptop>
+
+Hi Pieter,
+
+Could you review your patch (first chunk) against the subversion? 
+
+I had made some changes around that code... specifically, I don't
+believe your patch takes note of the situation where access_request()
+returns a Reject. This is why the following is done:
+
+  int id;
+  ...
+  id = radius_pack.id;
+  radius_pack.id = pack->id;
+
+  ... possible radius_resp() with reject which needs id of req...
+
+  appconn->radiusid = pack->id;  // Noted so that later we can reply
+with correct id
+  ...
+  radius_pack.id = id;
+
+  return radius_req(radius, &radius_pack, appconn);
+
+David
+
+On Wed, 2010-05-19 at 15:23 +0200, IT-Systemmanagement Pieter Hollants
+wrote:
+> Please find attached a new version of my original patch posted on May
+> 16. There was another cause of "No such id in radius queue" errors
+> within chilli.c:access_request(), caused by the modified RADIUS packet
+> ID assignment semantics.
+> 
+> David, all you need to know is inside the patch's new second hunk :)
+> 
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+
+
+From wichert at wiggy.net  Thu May 20 11:29:07 2010
+From: wichert at wiggy.net (Wichert Akkerman)
+Date: Thu, 20 May 2010 13:29:07 +0200
+Subject: [Chilli] Username leakage
+Message-ID: <4BF51D03.5060301@wiggy.net>
+
+I noticed something interesting today with the current svn trunk. I did 
+the following:
+
+* attempt a WISPr login with invalid password for a user
+* connect the same machine directly using chilli_query without
+   specifying another username
+
+After this the machine was properly set to pass, but still associated 
+with the user name used for the WISPr request. It looks like somewhere
+some data is not being cleared properly.
+
+Wichert.
+
+
+-- 
+Wichert Akkerman <wichert at wiggy.net>   It is simple to make things.
+http://www.wiggy.net/                  It is hard to make things simple.
+
+From wichert at wiggy.net  Thu May 20 13:04:12 2010
+From: wichert at wiggy.net (Wichert Akkerman)
+Date: Thu, 20 May 2010 15:04:12 +0200
+Subject: [Chilli] Hostname for SSL-enabled WISPr redirect
+Message-ID: <4BF5334C.8000908@wiggy.net>
+
+With SSL enabled WISPr clients are directed to 
+https://<uamaliasip>:<uamuiport>/logon . There is a problem with this 
+URL: since it uses an IP address instead of a hostname verification of 
+the SSL certificate will always fail. Would it make sense to use 
+uamaliasname instead of uamaliasip in that URL?
+
+Wichert.
+
+-- 
+Wichert Akkerman <wichert at wiggy.net>   It is simple to make things.
+http://www.wiggy.net/                  It is hard to make things simple.
+
+From wichert at wiggy.net  Thu May 20 13:19:40 2010
+From: wichert at wiggy.net (Wichert Akkerman)
+Date: Thu, 20 May 2010 15:19:40 +0200
+Subject: [Chilli] Hostname for SSL-enabled WISPr redirect
+In-Reply-To: <4BF5334C.8000908@wiggy.net>
+References: <4BF5334C.8000908@wiggy.net>
+Message-ID: <4BF536EC.7080305@wiggy.net>
+
+On 2010-5-20 15:04, Wichert Akkerman wrote:
+> With SSL enabled WISPr clients are directed to
+> https://<uamaliasip>:<uamuiport>/logon . There is a problem with this
+> URL: since it uses an IP address instead of a hostname verification of
+> the SSL certificate will always fail. Would it make sense to use
+> uamaliasname instead of uamaliasip in that URL?
+
+I've commited a change to this effect.
+
+Wichert.
+
+-- 
+Wichert Akkerman <wichert at wiggy.net>   It is simple to make things.
+http://www.wiggy.net/                  It is hard to make things simple.
+
+From david at coova.com  Thu May 20 13:48:46 2010
+From: david at coova.com (David Bird)
+Date: Thu, 20 May 2010 15:48:46 +0200
+Subject: [Chilli] Hostname for SSL-enabled WISPr redirect
+In-Reply-To: <4BF536EC.7080305@wiggy.net>
+References: <4BF5334C.8000908@wiggy.net>  <4BF536EC.7080305@wiggy.net>
+Message-ID: <1274363326.3531.451.camel@david-laptop>
+
+After your changes, this builds a broken .deb for me:
+
+rm -rf /tmp/chilli ;
+ make dist &&
+ mkdir /tmp/chilli &&
+ cp coova-chilli-1.2.3-rc1.tar.gz /tmp/chilli &&
+ cd /tmp/chilli &&
+ tar xzf coova-chilli-1.2.3-rc1.tar.gz &&
+ cd coova-chilli-1.2.3-rc1 &&
+ debuild -b 
+
+How are you building? After changing the target back to debian/tmp, it's
+fine. I'm using Ubuntu 10.04.
+
+On Thu, 2010-05-20 at 15:19 +0200, Wichert Akkerman wrote:
+> On 2010-5-20 15:04, Wichert Akkerman wrote:
+> > With SSL enabled WISPr clients are directed to
+> > https://<uamaliasip>:<uamuiport>/logon . There is a problem with this
+> > URL: since it uses an IP address instead of a hostname verification of
+> > the SSL certificate will always fail. Would it make sense to use
+> > uamaliasname instead of uamaliasip in that URL?
+> 
+> I've commited a change to this effect.
+> 
+> Wichert.
+> 
+
+
+
+From wichert at wiggy.net  Thu May 20 15:37:04 2010
+From: wichert at wiggy.net (Wichert Akkerman)
+Date: Thu, 20 May 2010 17:37:04 +0200
+Subject: [Chilli] Hostname for SSL-enabled WISPr redirect
+In-Reply-To: <1274363326.3531.451.camel@david-laptop>
+References: <4BF5334C.8000908@wiggy.net> <4BF536EC.7080305@wiggy.net>
+	<1274363326.3531.451.camel@david-laptop>
+Message-ID: <4BF55720.4060803@wiggy.net>
+
+On 5/20/10 15:48 , David Bird wrote:
+> After your changes, this builds a broken .deb for me:
+>
+> rm -rf /tmp/chilli ;
+>   make dist&&
+>   mkdir /tmp/chilli&&
+>   cp coova-chilli-1.2.3-rc1.tar.gz /tmp/chilli&&
+>   cd /tmp/chilli&&
+>   tar xzf coova-chilli-1.2.3-rc1.tar.gz&&
+>   cd coova-chilli-1.2.3-rc1&&
+>   debuild -b
+>
+> How are you building? After changing the target back to debian/tmp, it's
+> fine. I'm using Ubuntu 10.04.
+
+Funny. Before my change the result would be a broken deb since debhelper 
+uses debian/<package-name> instead of debian/tmp, so the resulting 
+package was mostly empty. debian/tmp was essentialy obsoleted a number 
+of years ago and should never be used.
+
+My build process looks like this:
+
+cd src/coova-chilli
+svn up
+debian/rules clean
+./bootstrap2
+debian/rules build
+fakeroot debian/rules binary
+
+Wichert.
+
+
+
+From felipe.wiel at hpp.org.br  Thu May 20 16:32:10 2010
+From: felipe.wiel at hpp.org.br (Felipe Augusto van de Wiel)
+Date: Thu, 20 May 2010 13:32:10 -0300
+Subject: [Chilli] Hostname for SSL-enabled WISPr redirect
+In-Reply-To: <4BF55720.4060803@wiggy.net>
+References: <4BF5334C.8000908@wiggy.net>
+	<4BF536EC.7080305@wiggy.net>	<1274363326.3531.451.camel@david-laptop>
+	<4BF55720.4060803@wiggy.net>
+Message-ID: <4BF5640A.40704@hpp.org.br>
+
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA512
+
+On 20-05-2010 12:37, Wichert Akkerman wrote:
+> On 5/20/10 15:48 , David Bird wrote:
+>> After your changes, this builds a broken .deb for me:
+>>
+>> rm -rf /tmp/chilli ;
+>>   make dist&&
+>>   mkdir /tmp/chilli&&
+>>   cp coova-chilli-1.2.3-rc1.tar.gz /tmp/chilli&&
+>>   cd /tmp/chilli&&
+>>   tar xzf coova-chilli-1.2.3-rc1.tar.gz&&
+>>   cd coova-chilli-1.2.3-rc1&&
+>>   debuild -b
+>>
+>> How are you building? After changing the target back to debian/tmp, it's
+>> fine. I'm using Ubuntu 10.04.
+> 
+> Funny. Before my change the result would be a broken deb since debhelper
+> uses debian/<package-name> instead of debian/tmp, so the resulting
+> package was mostly empty. debian/tmp was essentialy obsoleted a number
+> of years ago and should never be used.
+> 
+> My build process looks like this:
+> 
+> cd src/coova-chilli
+> svn up
+> debian/rules clean
+> ./bootstrap2
+> debian/rules build
+> fakeroot debian/rules binary
+
+Speaking about building Debian packages, what about uploading
+coova to official Debian repositories. I saw Rudy was going
+to take a look at that and Wichert certainly knows much more
+about Debian packaging than me, but I would be happy to help,
+even review and upload the package to official archives. :)
+
+It would be probably nice to move www dir under usr/share,
+and I know some manpages needs updating due to recent added
+options, but other than that I think the package is in good
+shape.
+
+Kind regards,
+- -- 
+Felipe Augusto van de Wiel <felipe.wiel at hpp.org.br>
+Tecnologia da Informa??o (TI) - Complexo Pequeno Pr?ncipe
+http://www.pequenoprincipe.org.br/    T: +55 41 3310 1747
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.10 (GNU/Linux)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
+
+iQIcBAEBCgAGBQJL9WQHAAoJECCPPxLgxLxPSWYP/3k95edG6QVRgXnXLQkNbLih
+iFEMcd4XIgBkE4FIHIS/CtnLGMIPwOHDMmv4a8fZnxDADNAqGg1/6gYBgRAP6+gR
+y4kNH2+tzTHjL8PEYg9M7w1gPBatqAQH7HeREG8grrtmfm5D0kk35kKDYL4MQptM
+UI76n6cffzXzOtr3P01BlBmAAZzNndcTw3z0l+evBxAVO3LlGEo6w0VUh3migFiG
+9LxhA5W4bzjH/o6kYKaQaxHdl0Hs4pGFw3HB9gCam9C2+PX6MteN1elZ2s62IMBY
+z+68wbm9IIChzMoMyJqiG3W7UZShGlPAI6h0DPWJN3tuoN2i0yUjooA8kYAEviUy
+L2Zaj3HHGKNYb5SxWt4KmnI8YzUNd4II+zQ39uI8C6Tx0s9X/dTVrGmsvWq0RRpB
+/K66n/x028tU6k2UZD94vp2nMxUF8mpasoYpC2fhCXTCiDgwYOoF7YIT5X4eHe5s
+s9FpbBOAkCLm+zHQtcf/SnND0Zq2hOfIdZ3dSyWA5JbqsqLo5p0r9MHI6AswLFTw
+dsX+OgEievyCuHM+vbtxf1Ga5PPQZUW4B7rZFPnxuhQ5TZNMR27SO7+l+JmoPdUq
+iF3Z0NBcVlmGd3K1+a8mjEnZgtPxrDmEAfrSWO4y0tXPg2nBBE62JfWQH4zYrt6B
+HRrF//adODrCurlW8KRN
+=JH1C
+-----END PGP SIGNATURE-----
+
+From david at coova.com  Thu May 20 16:42:42 2010
+From: david at coova.com (David Bird)
+Date: Thu, 20 May 2010 18:42:42 +0200
+Subject: [Chilli] Hostname for SSL-enabled WISPr redirect
+In-Reply-To: <4BF55720.4060803@wiggy.net>
+References: <4BF5334C.8000908@wiggy.net>  <4BF536EC.7080305@wiggy.net>
+	<1274363326.3531.451.camel@david-laptop> <4BF55720.4060803@wiggy.net>
+Message-ID: <1274373762.3531.461.camel@david-laptop>
+
+Funny, indeed. Must be a version mixup/different between our debhelper
+tools? I'm afraid you'll probably keep finding me changing it back until
+resolved. I'd hate to distribute broken .deb's. 
+
+On Thu, 2010-05-20 at 17:37 +0200, Wichert Akkerman wrote:
+> On 5/20/10 15:48 , David Bird wrote:
+> > After your changes, this builds a broken .deb for me:
+> >
+> > rm -rf /tmp/chilli ;
+> >   make dist&&
+> >   mkdir /tmp/chilli&&
+> >   cp coova-chilli-1.2.3-rc1.tar.gz /tmp/chilli&&
+> >   cd /tmp/chilli&&
+> >   tar xzf coova-chilli-1.2.3-rc1.tar.gz&&
+> >   cd coova-chilli-1.2.3-rc1&&
+> >   debuild -b
+> >
+> > How are you building? After changing the target back to debian/tmp, it's
+> > fine. I'm using Ubuntu 10.04.
+> 
+> Funny. Before my change the result would be a broken deb since debhelper 
+> uses debian/<package-name> instead of debian/tmp, so the resulting 
+> package was mostly empty. debian/tmp was essentialy obsoleted a number 
+> of years ago and should never be used.
+> 
+> My build process looks like this:
+> 
+> cd src/coova-chilli
+> svn up
+> debian/rules clean
+> ./bootstrap2
+> debian/rules build
+> fakeroot debian/rules binary
+> 
+> Wichert.
+> 
+> 
+
+
+
+From pieter at hollants.com  Thu May 20 17:13:14 2010
+From: pieter at hollants.com (IT-Systemmanagement Pieter Hollants)
+Date: Thu, 20 May 2010 19:13:14 +0200
+Subject: [Chilli] [Patch] Fix access_request() to conform with radius
+ pack ID semantics
+In-Reply-To: <1274333080.3531.444.camel@david-laptop>
+References: <4BEFD4AA.6010604@hollants.com> <4BF3E635.8070302@hollants.com>
+	<1274333080.3531.444.camel@david-laptop>
+Message-ID: <4BF56DAA.2000104@hollants.com>
+
+Am 20.05.2010 07:24, schrieb David Bird:
+> Could you review your patch (first chunk) against the subversion? 
+> 
+> I had made some changes around that code... specifically, I don't
+> believe your patch takes note of the situation where access_request()
+> returns a Reject. This is why the following is done:
+[...]
+
+Ah, yes, your solution is way more correct then, of course. So I spotted
+a bug in 1.2.2 which you had already fixed :)
+
+The second chunk still applies, though.
+
+-- 
+Dipl.-Wirtsch.-Inform. Pieter Hollants
+IT-Systemmanagement Pieter Hollants          Tel. : (+49) (0)6192-910717
+Rossertstra?e 80                             Fax  : (+49) (0)6192-910713
+65830 Kriftel                                eMail: pieter at hollants.com
+
+
+From wichert at wiggy.net  Thu May 20 18:05:47 2010
+From: wichert at wiggy.net (Wichert Akkerman)
+Date: Thu, 20 May 2010 20:05:47 +0200
+Subject: [Chilli] Hostname for SSL-enabled WISPr redirect
+In-Reply-To: <1274373762.3531.461.camel@david-laptop>
+References: <4BF5334C.8000908@wiggy.net> <4BF536EC.7080305@wiggy.net>	
+	<1274363326.3531.451.camel@david-laptop>
+	<4BF55720.4060803@wiggy.net>
+	<1274373762.3531.461.camel@david-laptop>
+Message-ID: <4BF579FB.1070308@wiggy.net>
+
+On 2010-5-20 18:42, David Bird wrote:
+> Funny, indeed. Must be a version mixup/different between our debhelper
+> tools? I'm afraid you'll probably keep finding me changing it back until
+> resolved. I'd hate to distribute broken .deb's.
+
+Debhlper 7.0.15 here. Note that the change to not use debian/tmp anymore 
+was made in debhelper 2.0, which was released in 1999. I'm quite sure 
+Ubuntu never shipped with a version that old :)
+
+Wichert.
+
+-- 
+Wichert Akkerman <wichert at wiggy.net>   It is simple to make things.
+http://www.wiggy.net/                  It is hard to make things simple.
+
+From pieter at hollants.com  Thu May 20 18:06:20 2010
+From: pieter at hollants.com (IT-Systemmanagement Pieter Hollants)
+Date: Thu, 20 May 2010 20:06:20 +0200
+Subject: [Chilli] [Patch] Fix access_request() to conform with radius
+ pack ID semantics
+In-Reply-To: <4BF56DAA.2000104@hollants.com>
+References: <4BEFD4AA.6010604@hollants.com>
+	<4BF3E635.8070302@hollants.com>	<1274333080.3531.444.camel@david-laptop>
+	<4BF56DAA.2000104@hollants.com>
+Message-ID: <4BF57A1C.7030409@hollants.com>
+
+Am 20.05.2010 19:13, schrieb IT-Systemmanagement Pieter Hollants:
+> The second chunk still applies, though.
+
+Doh, stupid me, forget about the entire patch :)
+
+-- 
+Dipl.-Wirtsch.-Inform. Pieter Hollants
+IT-Systemmanagement Pieter Hollants          Tel. : (+49) (0)6192-910717
+Rossertstra?e 80                             Fax  : (+49) (0)6192-910713
+65830 Kriftel                                eMail: pieter at hollants.com
+
+
+From wichert at wiggy.net  Thu May 20 18:34:48 2010
+From: wichert at wiggy.net (Wichert Akkerman)
+Date: Thu, 20 May 2010 20:34:48 +0200
+Subject: [Chilli] ipass deployment guidelines
+Message-ID: <4BF580C8.8040301@wiggy.net>
+
+Since we have completed ipass testing on an chilli deployment and I've 
+been told someone else is in the process of going through their 
+production testplan I figured it might be helpful if I posted how our 
+deployment looks.
+
+iPass integration is fairly basic: it uses WISPr to authenticate with 
+RADIUS packets going through a special ipass radius proxy. SSL is 
+required for all requests after the initial request.
+
+The first step is to setup a RADIUS server which proxies the IPASS realm 
+to the ipass netserver software or server (ipass deployments can either 
+use a java daemon you install on a linux server or a full
+hardware box). We use FreeRADIUS, which is simple to configure and will 
+documented.
+
+Second step is to setup chilli. The usual chilli installation procedures 
+apply. You will need to enable SSL support, which is required. We 
+configure chilli like this:
+
+uamuissl
+uamaliasip       1.0.0.1
+domain           aas.attingo.nl
+uamaliasname     wispr
+sslkeyfile       /etc/ssl/private/aas.attingo.nl-key.pem
+sslcertfile      /etc/ssl/certs/aas.attingo.nl.pem
+uamallowed       "klm.aas.attingo.nl,crl.geotrust.com,pb.ipass.com"
+radiusnasid             KLM-WLAN
+radiuslocationid        "isocc=NL,cc=31,ac=020,network=KLM-Lounge"
+radiuslocationname      "Attingo Services,KLM Lounges"
+radiusnasporttype       19
+
+The RADIUS parameters are mandatory and must uniquely identify your 
+location.
+
+The SSL certificate must valid for the hostname used for uamaliasip, 
+which is formed by combining uamaliasname with the domain (which in our 
+case is wispr.aas.attingo.nl). The certificate must be signed by one of 
+the well known certification authorities, so no self-signed certs. The 
+CRL server for your SSL certificate must be listed in uamallowed, as 
+well as pb.ipass.com which ipass clients use to update their phonebook.
+
+Your UAM implementation must also use https and use a proper SSL 
+certificate. Extra care must be taken when redirecting back to chilli: 
+unless you use a svn snapshot from revision 326 or later (which will 
+become version 1.2.3) you must ignore the ssl parameter from chilli and 
+generate the hostname yourself; earlier versions of chilli incorrectly 
+use the IP address in the URL which leads to SSL validation errors.
+
+I have found uamaliasname to be somewhat unreliable: DNS requests 
+occasionally get both a response from chilli as well as a NXDOMAIN from 
+our normal nameserver. To circumvent this I would recommend to put the 
+uamaliasname in your DNS zone as well.
+
+We use a Pylons based application for our UAM. I've attached the 
+controller code which implements the UAM side of the WISPr handling.
+
+Wichert.
+
+-- 
+Wichert Akkerman <wichert at wiggy.net>   It is simple to make things.
+http://www.wiggy.net/                  It is hard to make things simple.
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: chilli.py
+Type: text/x-python-script
+Size: 4575 bytes
+Desc: not available
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20100520/c500d4f4/attachment.bin>
+
+From pieter at hollants.com  Thu May 20 18:57:47 2010
+From: pieter at hollants.com (IT-Systemmanagement Pieter Hollants)
+Date: Thu, 20 May 2010 20:57:47 +0200
+Subject: [Chilli] Fix compiler errors/warnings in current SVN
+Message-ID: <4BF5862B.3030604@hollants.com>
+
+I couldn't get current SVN to compile without the attached patch.
+
+-- 
+Dipl.-Wirtsch.-Inform. Pieter Hollants
+IT-Systemmanagement Pieter Hollants          Tel. : (+49) (0)6192-910717
+Rossertstra?e 80                             Fax  : (+49) (0)6192-910713
+65830 Kriftel                                eMail: pieter at hollants.com
+
+-------------- next part --------------
+An embedded and charset-unspecified text was scrubbed...
+Name: coova-chilli-1.2.3rc1-compilerstuff.diff
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20100520/703571f6/attachment.txt>
+
+From pieter at hollants.com  Thu May 20 19:07:02 2010
+From: pieter at hollants.com (IT-Systemmanagement Pieter Hollants)
+Date: Thu, 20 May 2010 21:07:02 +0200
+Subject: [Chilli] [Patch] Fix access_request() to conform with radius
+ pack ID semantics
+In-Reply-To: <1274333080.3531.444.camel@david-laptop>
+References: <4BEFD4AA.6010604@hollants.com> <4BF3E635.8070302@hollants.com>
+	<1274333080.3531.444.camel@david-laptop>
+Message-ID: <4BF58856.9060605@hollants.com>
+
+Hi David,
+
+now this got me really confused. But I still wasn't completely wrong.
+
+Am 20.05.2010 07:24, schrieb David Bird:
+> Hi Pieter,
+> I had made some changes around that code... specifically, I don't
+> believe your patch takes note of the situation where access_request()
+> returns a Reject. This is why the following is done:
+> 
+>   int id;
+>   ...
+>   id = radius_pack.id;
+>   radius_pack.id = pack->id;
+> 
+>   ... possible radius_resp() with reject which needs id of req...
+> 
+>   appconn->radiusid = pack->id;  // Noted so that later we can reply
+> with correct id
+>   ...
+>   radius_pack.id = id;
+> 
+>   return radius_req(radius, &radius_pack, appconn);
+
+I see the reason for overwriting radius_pack.id with pack->id. However,
+it does not make sense to preserve radius_pack.id in "id", because, my
+argument still holds true that an eventually called terminate_appconn()
+inbetween already used the value in "id".
+
+So, the first chunk in my patch was wrong, but the second chunk was
+correct: radius_default_pack() _must_ be called after the call to
+terminate_appconn() to get a new, valid ID.
+
+-- 
+Dipl.-Wirtsch.-Inform. Pieter Hollants
+IT-Systemmanagement Pieter Hollants          Tel. : (+49) (0)6192-910717
+Rossertstra?e 80                             Fax  : (+49) (0)6192-910713
+65830 Kriftel                                eMail: pieter at hollants.com
+
+
+From felipe.wiel at hpp.org.br  Fri May 21 02:14:12 2010
+From: felipe.wiel at hpp.org.br (Felipe Augusto van de Wiel)
+Date: Thu, 20 May 2010 23:14:12 -0300
+Subject: [Chilli] MAC blacklist and other security measures
+In-Reply-To: <4BBB5675.6090504@hpp.org.br>
+References: <4BA25D15.8030400@hpp.org.br>	<1269152189.4135.167.camel@david-laptop>
+	<4BBB5675.6090504@hpp.org.br>
+Message-ID: <4BF5EC74.10702@hpp.org.br>
+
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA512
+
+Hi,
+
+	Let me revive this thread in order to add a
+few comments that would be nice to have and publicly
+archived, specially because a few things have changed.
+
+	:-)
+
+
+	Using the scenario where you reply with
+Access-Accept as a DEFAULT entry has a side effect,
+traffic is allowed on all other ports (if you do a
+full NAT) without needing to authenticate on the
+captive portal.
+
+
+On 06-04-2010 12:42, Felipe Augusto van de Wiel wrote:
+> On 21-03-2010 03:16, David Bird wrote:
+>> Hm.. one way might be to enable MAC authentication
+>> such that:
+> 
+> 	That means enable 'macauth', right?  Using
+> only 'macauthdeny' didn't result in the expected
+> behavior.
+
+	Although it was not clear before, now it
+makes a lot of sense that macauthdeny depends on
+macauth, otherwise you are not authenticating MAC
+addresses.
+
+
+	In this new scenario, it would be great to
+have a way to "drop" clients that got a Access-Reject
+from RADIUS.
+
+
+
+>> - You always return Access-Accept (plus attribute
+>>   Chillispot-Config = 'splash') for non-blocked
+>>   users.
+> 
+>> - You can return an Access-Reject for blocked users.
+>>   When used with --macauthdeny, it means these
+>>   devices will be ignored.
+> 
+> 	The proper way to achieve that would be to
+> use a DEFAULT user in RADIUS? Here is the relevant
+> part of my FreeRADIUS' users file:
+
+	I changed it, now I add multiple entries but
+I check Calling-Station-Id, that gives the MAC and
+it is sufficient to make a blacklist.
+
+
+> <...>
+> | AA-BB-CC-DD-EE-FF  Auth-Type := Reject
+> |                    Reply-Message = "MAC address administratively blocked."
+> |
+> | 11-22-33-44-55-66  Auth-Type := Reject
+> |                    Reply-Message = "MAC address administratively blocked."
+> |
+> | DEFAULT            Auth-Type := Accept
+> |                    Chillispot-config = 'splash',
+> |                    Fall-Through = Yes
+> |
+> | "user"             Cleartext-Password := "pass"
+> |                    Reply-Message = "Hello, %{User-Name}"
+> <...>
+
+	Instead of the above, I now use:
+
+<...>
+| "user"	Calling-Station-Id == AA-BB-CC-DD-EE-FF, Auth-Type := Reject
+|		Reply-Message = "MAC address administratively blocked."
+|
+| "user"	Calling-Station-Id == 11-22-33-44-55-66, Auth-Type := Reject
+|		Reply-Message = "MAC address administratively blocked."
+|
+| "user"	Cleartext-Password := "pass"
+|		Reply-Message = "Welcome to our network!"
+<...>
+
+
+	Of course, I had to disable the macauth and as
+this renders macauthdeny not very useful, I also turned
+it off.
+
+
+> 	Of course, that only worked after I added an
+> include line inside /etc/freeradius/dictionary:
+> 
+> $INCLUDE        /etc/freeradius/dictionary.chillispot
+> 
+> 
+> 	Now, the MAC addresses listed on the users
+> file gets a 'drop' state when chilli starts, the rest
+> gets a 'splash' state and addresses in the ethers file
+> stays as 'dnat'. Once the user authenticates thru the
+> splash screen they change to 'pass' as expected.
+
+	It then goes back to the behavior where everybody
+is 'dnat' until authenticated and changed to 'pass'.
+
+	I was wondering if it is possible to have the
+blocked MAC address to move to a 'drop' state after
+Access-Reject, is there such possibility in Coova?
+
+	The idea is that MAC addresses block can't
+even navigate on the authorized pages like search
+engines or map sites.
+
+
+	Once again, I do hope it help others looking for
+a blacklist implementation. :)
+
+Kind regards,
+- -- 
+Felipe Augusto van de Wiel <felipe.wiel at hpp.org.br>
+Tecnologia da Informa??o (TI) - Complexo Pequeno Pr?ncipe
+http://www.pequenoprincipe.org.br/    T: +55 41 3310 1747
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.10 (GNU/Linux)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
+
+iQIcBAEBCgAGBQJL9exwAAoJECCPPxLgxLxPlWUQAI+aMtcWDZDExxSqYQY4yAqS
+jqfwLrV3p5b9wiGIT6WLGLlDLyy5kqwrbVECGoO4zUUzzE3NjegpCuTAG15FEuYZ
+uAxPOxBeNcwbG9nhuM/u8gbIcgJRUyeK+xOGOqPizsWJxCr2CATTRE1BM+dIIulm
+87czEa6JJ7a0fCZbw1zDajGQCCSvjwLhlUVVpHIEP/slp/uyw+DoJfKMLa1CizYH
+bt9/SvfEhCj4HidSFPfIH/Ez8tQbIoYIAG2GiQWYb+6FjCcS7jVS4HS8KJagskWG
+ktLPm5BrPSWKbbyXQkuWId4xQfayI84ixsGE/mG+Kh75cSnm8UJpDO+D/r/HrC87
+WFm7JaVh57BPcZwul70qt56uyTQN4MSVZolo9Sxe61mPP3WxeyTncBM7K2XdSSzF
+9hgwM8GVDF8PYW+2grMU+TaYpAPQhrdgGI6B7sgvOvwzaTfRug0KJ/pjw+z1QVH0
+pznlVRgLdM6ptcGLolzumRuxNTlSxWPgzPkFGT4wI8CZtqsIXCfGES0gDkaEFzN8
+b8QtTF00PuJS0aSR/XeIiPVjc7W9gPE856hf22kmdEPtFdcVpVrohV9+Wj0ILvOJ
+F4yjgROMqyNK2Inu12jaLefMKZww0k1ydT0Jb+49CyUbA/dSofAYm6o04fj0GeEK
+SyOqkjtpFs2w2wsBfekN
+=91MV
+-----END PGP SIGNATURE-----
+
+From david at coova.com  Fri May 21 04:46:39 2010
+From: david at coova.com (David Bird)
+Date: Fri, 21 May 2010 06:46:39 +0200
+Subject: [Chilli] MAC blacklist and other security measures
+In-Reply-To: <4BF5EC74.10702@hpp.org.br>
+References: <4BA25D15.8030400@hpp.org.br>
+	<1269152189.4135.167.camel@david-laptop> <4BBB5675.6090504@hpp.org.br>
+	<4BF5EC74.10702@hpp.org.br>
+Message-ID: <1274417199.3330.11.camel@david-laptop>
+
+Hi,
+
+
+> 	Let me revive this thread in order to add a
+> few comments that would be nice to have and publicly
+> archived, specially because a few things have changed.
+> 
+
+Thanks for your feedback!
+
+> 	Using the scenario where you reply with
+> Access-Accept as a DEFAULT entry has a side effect,
+> traffic is allowed on all other ports (if you do a
+> full NAT) without needing to authenticate on the
+> captive portal.
+> 
+
+Yes, giving an access-accept during MAC authentication will have it's
+side effects. There are a few options, however, that you can put into
+RADIUS replies, more on that below. 
+
+> 
+> On 06-04-2010 12:42, Felipe Augusto van de Wiel wrote:
+> > On 21-03-2010 03:16, David Bird wrote:
+> >> Hm.. one way might be to enable MAC authentication
+> >> such that:
+> > 
+> > 	That means enable 'macauth', right?  Using
+> > only 'macauthdeny' didn't result in the expected
+> > behavior.
+> 
+> 	Although it was not clear before, now it
+> makes a lot of sense that macauthdeny depends on
+> macauth, otherwise you are not authenticating MAC
+> addresses.
+> 
+
+Indeed, macauthdeny is used with macauth. It makes it such that an
+Access-Reject means the user session is put in DROP state (where there
+is no returning from). 
+
+> 
+> 	In this new scenario, it would be great to
+> have a way to "drop" clients that got a Access-Reject
+> from RADIUS.
+> 
+
+That is what the macauthdeny option does, really. If you don't want all
+Access-Accepted sessions to have full access, then you can try out the
+feature where you also return this in the access-accept:
+
+  ChilliSpot-Config = 'splash' 
+
+which will put the user in a 'splash' state (full Internet access, just
+with portal redirection). You can also try 'require-uam-auth' (which
+requires using option --wpaguests even if not using WPA, btw) which will
+put the user in the standard "DNAT" state. In an Access-Reject, you can
+also use ChilliSpot-Config = 'admin-reset' to release the DHCP release
+right away. Using that, you can also enforce a "DROP" state where you
+keep revoking the lease (but will also potentially mean you get a LOT of
+mac auth RADIUS requests). 
+
+> 
+> 
+> >> - You always return Access-Accept (plus attribute
+> >>   Chillispot-Config = 'splash') for non-blocked
+> >>   users.
+> > 
+> >> - You can return an Access-Reject for blocked users.
+> >>   When used with --macauthdeny, it means these
+> >>   devices will be ignored.
+> > 
+> > 	The proper way to achieve that would be to
+> > use a DEFAULT user in RADIUS? Here is the relevant
+> > part of my FreeRADIUS' users file:
+> 
+> 	I changed it, now I add multiple entries but
+> I check Calling-Station-Id, that gives the MAC and
+> it is sufficient to make a blacklist.
+> 
+> 
+> > <...>
+> > | AA-BB-CC-DD-EE-FF  Auth-Type := Reject
+> > |                    Reply-Message = "MAC address administratively blocked."
+> > |
+> > | 11-22-33-44-55-66  Auth-Type := Reject
+> > |                    Reply-Message = "MAC address administratively blocked."
+> > |
+> > | DEFAULT            Auth-Type := Accept
+> > |                    Chillispot-config = 'splash',
+> > |                    Fall-Through = Yes
+> > |
+> > | "user"             Cleartext-Password := "pass"
+> > |                    Reply-Message = "Hello, %{User-Name}"
+> > <...>
+> 
+> 	Instead of the above, I now use:
+> 
+> <...>
+> | "user"	Calling-Station-Id == AA-BB-CC-DD-EE-FF, Auth-Type := Reject
+> |		Reply-Message = "MAC address administratively blocked."
+> |
+> | "user"	Calling-Station-Id == 11-22-33-44-55-66, Auth-Type := Reject
+> |		Reply-Message = "MAC address administratively blocked."
+> |
+> | "user"	Cleartext-Password := "pass"
+> |		Reply-Message = "Welcome to our network!"
+> <...>
+> 
+> 
+> 	Of course, I had to disable the macauth and as
+> this renders macauthdeny not very useful, I also turned
+> it off.
+> 
+> 
+> > 	Of course, that only worked after I added an
+> > include line inside /etc/freeradius/dictionary:
+> > 
+> > $INCLUDE        /etc/freeradius/dictionary.chillispot
+> > 
+> > 
+> > 	Now, the MAC addresses listed on the users
+> > file gets a 'drop' state when chilli starts, the rest
+> > gets a 'splash' state and addresses in the ethers file
+> > stays as 'dnat'. Once the user authenticates thru the
+> > splash screen they change to 'pass' as expected.
+> 
+> 	It then goes back to the behavior where everybody
+> is 'dnat' until authenticated and changed to 'pass'.
+> 
+> 	I was wondering if it is possible to have the
+> blocked MAC address to move to a 'drop' state after
+> Access-Reject, is there such possibility in Coova?
+> 
+
+It might be nice to have a "ChilliSpot-Config = 'blocked'" option that
+can be used outside of macauthdeny for this kind of use. 
+
+> 	The idea is that MAC addresses block can't
+> even navigate on the authorized pages like search
+> engines or map sites.
+> 
+> 
+> 	Once again, I do hope it help others looking for
+> a blacklist implementation. :)
+
+
+
+From david at coova.com  Fri May 21 04:53:43 2010
+From: david at coova.com (David Bird)
+Date: Fri, 21 May 2010 06:53:43 +0200
+Subject: [Chilli] Fix compiler errors/warnings in current SVN
+In-Reply-To: <4BF5862B.3030604@hollants.com>
+References: <4BF5862B.3030604@hollants.com>
+Message-ID: <1274417623.3330.12.camel@david-laptop>
+
+Thx, I had similar changes in my working copy, which I've committed. Let
+me know if you have more. 
+
+
+On Thu, 2010-05-20 at 20:57 +0200, IT-Systemmanagement Pieter Hollants
+wrote:
+> I couldn't get current SVN to compile without the attached patch.
+> 
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+
+
+From david at coova.com  Fri May 21 18:15:26 2010
+From: david at coova.com (David Bird)
+Date: Fri, 21 May 2010 20:15:26 +0200
+Subject: [Chilli] [Patch] Fix access_request() to conform with radius
+ pack ID semantics
+In-Reply-To: <4BF58856.9060605@hollants.com>
+References: <4BEFD4AA.6010604@hollants.com>  <4BF3E635.8070302@hollants.com>
+	<1274333080.3531.444.camel@david-laptop>
+	<4BF58856.9060605@hollants.com>
+Message-ID: <1274465726.3330.112.camel@david-laptop>
+
+> The second chunk was
+> correct: radius_default_pack() _must_ be called after the call to
+> terminate_appconn() to get a new, valid ID.
+> 
+
+Agreed. thanks..
+
+
+
+From pieter at hollants.com  Fri May 21 19:14:50 2010
+From: pieter at hollants.com (IT-Systemmanagement Pieter Hollants)
+Date: Fri, 21 May 2010 21:14:50 +0200
+Subject: [Chilli] [Patch] Fix auth state in redir_main()
+Message-ID: <4BF6DBAA.5090904@hollants.com>
+
+Hi David,
+
+in current SVN you modified the redir_getreq() call in
+redir.c:redir_main() to inspect the error code returned:
+
+ state = redir_getreq(...)
+
+This breaks the code further below which relies on state to represent
+the auth. state (such as under REDIR_LOGIN).
+
+Attached patch uses a seperate variable for the redir_getreq() return code.
+
+-- 
+Dipl.-Wirtsch.-Inform. Pieter Hollants
+IT-Systemmanagement Pieter Hollants          Tel. : (+49) (0)6192-910717
+Rossertstra?e 80                             Fax  : (+49) (0)6192-910713
+65830 Kriftel                                eMail: pieter at hollants.com
+
+-------------- next part --------------
+An embedded and charset-unspecified text was scrubbed...
+Name: coova-chilli-1.2.3rc1_svn330-getreq_err.diff
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20100521/e3505f3f/attachment.asc>
+
+From felipe.wiel at hpp.org.br  Fri May 21 19:35:42 2010
+From: felipe.wiel at hpp.org.br (Felipe Augusto van de Wiel)
+Date: Fri, 21 May 2010 16:35:42 -0300
+Subject: [Chilli] MAC blacklist and other security measures
+In-Reply-To: <1274417199.3330.11.camel@david-laptop>
+References: <4BA25D15.8030400@hpp.org.br>	
+	<1269152189.4135.167.camel@david-laptop>
+	<4BBB5675.6090504@hpp.org.br>	 <4BF5EC74.10702@hpp.org.br>
+	<1274417199.3330.11.camel@david-laptop>
+Message-ID: <4BF6E08E.8070506@hpp.org.br>
+
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA512
+
+Hey!
+
+On 21-05-2010 01:46, David Bird wrote:
+>> 	Let me revive this thread in order to add a
+>> few comments that would be nice to have and publicly
+>> archived, specially because a few things have changed.
+>>
+> 
+> Thanks for your feedback!
+
+	You are very welcome!
+
+	Coova developers and contributors are very nice
+and kind with outsiders and sysadmins trying different
+things and giving crazy suggestions/ideas. :)
+
+	I always come back because there are always
+ideas and different suggestions and Coova is moving to
+add features that weeks before we talked on the list.
+
+	So, thank you for always paying attention.
+
+
+>> On 06-04-2010 12:42, Felipe Augusto van de Wiel wrote:
+>>> On 21-03-2010 03:16, David Bird wrote:
+>>>> Hm.. one way might be to enable MAC authentication
+>>>> such that:
+>>>
+>>> 	That means enable 'macauth', right?  Using
+>>> only 'macauthdeny' didn't result in the expected
+>>> behavior.
+>>
+>> 	Although it was not clear before, now it
+>> makes a lot of sense that macauthdeny depends on
+>> macauth, otherwise you are not authenticating MAC
+>> addresses.
+> 
+> Indeed, macauthdeny is used with macauth. It makes it
+> such that an Access-Reject means the user session is
+> put in DROP state (where there is no returning from).
+
+	This is exactly what we want and indeed it
+work as expected. As I mentioned before, the free
+wifi we provide for our clients/customers but
+sometimes we have some "corporate" users abusing it,
+so we blacklist them to avoid circumventing the
+firewall/proxy.
+
+	It was nice to know it worked perfectly.
+More and more we are trying to improve our RADIUS
+setup, specially around LDAP, so we are looking to
+have EAP and a more well organized infrastructure.
+
+
+>> 	In this new scenario, it would be great to
+>> have a way to "drop" clients that got a Access-Reject
+>> from RADIUS.
+> 
+> That is what the macauthdeny option does, really. If
+> you don't want all Access-Accepted sessions to have
+> full access, then you can try out the feature where
+> you also return this in the access-accept:
+> 
+>   ChilliSpot-Config = 'splash' 
+
+	I did that with the DEFAULT option, it even
+raised the "splash" bug that replaces the entire
+local.conf file.
+
+	And it worked as expected, traffic on other
+ports are allowed and web redirects to captive portal
+until authenticated.
+
+	We want to allow our users to use other ports,
+otherwise we could change the firewall to block it all.
+
+
+> which will put the user in a 'splash' state (full Internet
+> access, just with portal redirection). You can also try
+> 'require-uam-auth' (which requires using option --wpaguests
+> even if not using WPA, btw) which will put the user in the
+> standard "DNAT" state. In an Access-Reject, you can also
+> use ChilliSpot-Config = 'admin-reset' to release the DHCP
+> release right away. Using that, you can also enforce a
+> "DROP" state where you keep revoking the lease (but will
+> also potentially mean you get a LOT of mac auth RADIUS
+> requests).
+
+	The standard DNAT state would still allow the
+navigation of pages allowed by Coova until client
+authenticates in the Captive Portal. And indeed,
+'admin-reset' can cause a lot of auth requests.
+
+	As I understood it, right now I can't tell
+Coova to change clients to 'drop' unless I use macauth
+and macauthdeny. I was planning on investigate more on
+the RADIUS side to see if there are something I am
+missing, but I realize that probably is Coova that
+needs to process the answer.
+
+	Thanks for clarifying that. We can live with
+the clients being blocked on the Captive Portal and
+all other ports and only being able to navigate to
+some of the allowed pages.
+
+	One of the nice points of the macauthdeny is
+that the client can't even get an IP or bind to the
+AP, which leads the client to believe it is not
+working (and achieves the point we are expecting,
+preventing corporate users to abuse the free wifi
+with corporate computers). :)
+
+[...]
+>> 	I was wondering if it is possible to have the
+>> blocked MAC address to move to a 'drop' state after
+>> Access-Reject, is there such possibility in Coova?
+> 
+> It might be nice to have a "ChilliSpot-Config = 'blocked'"
+> option that can be used outside of macauthdeny for this
+> kind of use.
+
+	Indeed, that would be very cool! :-)
+
+Kind regards,
+- -- 
+Felipe Augusto van de Wiel <felipe.wiel at hpp.org.br>
+Tecnologia da Informa??o (TI) - Complexo Pequeno Pr?ncipe
+http://www.pequenoprincipe.org.br/    T: +55 41 3310 1747
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.10 (GNU/Linux)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
+
+iQIcBAEBCgAGBQJL9uCKAAoJECCPPxLgxLxP3XEP/1FLpkZmMb0GioPlI0evdFn2
+JiHrOXwNQz89qHKps5lOfHIYfJ/pvqEnNYxC/0iJ1LegKVt0v9JNIE8brFBUaR1F
+zPt7z9zL6Qx+VqWtMLdMWPxAv5izkIS7mzc0ck+IvfP7lmo4zvLHJDAQw1Cn0FMF
+i5KbGeJhgptlhhh3xr/r6mwD+qeMgY2STJzvwRbgq7925a/cWzkJAmafTYmKl2Up
+5pJZLdcWSCpqi0ijIKKQ5+aZgG6ELYifUvQC4pQFicV+YuSw/1YGOGbS5BysYN/z
+2vBW2o6DqX17/t8mVs8+e4cFdKnGCpJl1fqaiUuVkMPgttNBJ8I03Gw1yWGuK5F5
+kSgu5KFDutVSnHS4irGZKvOHRUThiSTdOmeZwAPirH7FjR/LU5dcI4puwORIYKbj
+7fDFNez7RO16IsnthGqdKp5LFtSFY/MQ0lUtFL9vTzcNNtIerhDQSQ3vcCUv7Qkn
+OYNSLceAb371QiKRKnEPYGYlpRguh0GVHdvFBGyGcBHj/VooxrS1In144eYteEw2
+0LXt5mCDGKxfI2CJ9XytZz2bZrivyLCSVV5oqyeQzugfoqhsBds2S/tBeMIaWebA
+sUOsQ+8T21bBZnGupu+jTSDJUyrv65ldfJCvcwqHqzNIpxs0DM3GL0dV4l99jiPo
+VKvdiEkmBP7iYjq86URQ
+=I8Vn
+-----END PGP SIGNATURE-----
+
+From david at coova.com  Sat May 22 05:06:30 2010
+From: david at coova.com (David Bird)
+Date: Sat, 22 May 2010 07:06:30 +0200
+Subject: [Chilli] MAC blacklist and other security measures
+In-Reply-To: <4BF6E08E.8070506@hpp.org.br>
+References: <4BA25D15.8030400@hpp.org.br>
+	<1269152189.4135.167.camel@david-laptop> <4BBB5675.6090504@hpp.org.br>
+	<4BF5EC74.10702@hpp.org.br> <1274417199.3330.11.camel@david-laptop>
+	<4BF6E08E.8070506@hpp.org.br>
+Message-ID: <1274504790.3330.115.camel@david-laptop>
+
+Hi Felipe,
+
+With regard to the 'splash' getting into local.conf bug, it's because of
+the use of DEFAULT. You are also returning the 'splash' attribute to the
+'administrative-user' login. Try setting --admuser="" to disable that. 
+
+David
+
+On Fri, 2010-05-21 at 16:35 -0300, Felipe Augusto van de Wiel wrote:
+> -----BEGIN PGP SIGNED MESSAGE-----
+> Hash: SHA512
+> 
+> Hey!
+> 
+> On 21-05-2010 01:46, David Bird wrote:
+> >> 	Let me revive this thread in order to add a
+> >> few comments that would be nice to have and publicly
+> >> archived, specially because a few things have changed.
+> >>
+> > 
+> > Thanks for your feedback!
+> 
+> 	You are very welcome!
+> 
+> 	Coova developers and contributors are very nice
+> and kind with outsiders and sysadmins trying different
+> things and giving crazy suggestions/ideas. :)
+> 
+> 	I always come back because there are always
+> ideas and different suggestions and Coova is moving to
+> add features that weeks before we talked on the list.
+> 
+> 	So, thank you for always paying attention.
+> 
+> 
+> >> On 06-04-2010 12:42, Felipe Augusto van de Wiel wrote:
+> >>> On 21-03-2010 03:16, David Bird wrote:
+> >>>> Hm.. one way might be to enable MAC authentication
+> >>>> such that:
+> >>>
+> >>> 	That means enable 'macauth', right?  Using
+> >>> only 'macauthdeny' didn't result in the expected
+> >>> behavior.
+> >>
+> >> 	Although it was not clear before, now it
+> >> makes a lot of sense that macauthdeny depends on
+> >> macauth, otherwise you are not authenticating MAC
+> >> addresses.
+> > 
+> > Indeed, macauthdeny is used with macauth. It makes it
+> > such that an Access-Reject means the user session is
+> > put in DROP state (where there is no returning from).
+> 
+> 	This is exactly what we want and indeed it
+> work as expected. As I mentioned before, the free
+> wifi we provide for our clients/customers but
+> sometimes we have some "corporate" users abusing it,
+> so we blacklist them to avoid circumventing the
+> firewall/proxy.
+> 
+> 	It was nice to know it worked perfectly.
+> More and more we are trying to improve our RADIUS
+> setup, specially around LDAP, so we are looking to
+> have EAP and a more well organized infrastructure.
+> 
+> 
+> >> 	In this new scenario, it would be great to
+> >> have a way to "drop" clients that got a Access-Reject
+> >> from RADIUS.
+> > 
+> > That is what the macauthdeny option does, really. If
+> > you don't want all Access-Accepted sessions to have
+> > full access, then you can try out the feature where
+> > you also return this in the access-accept:
+> > 
+> >   ChilliSpot-Config = 'splash' 
+> 
+> 	I did that with the DEFAULT option, it even
+> raised the "splash" bug that replaces the entire
+> local.conf file.
+> 
+> 	And it worked as expected, traffic on other
+> ports are allowed and web redirects to captive portal
+> until authenticated.
+> 
+> 	We want to allow our users to use other ports,
+> otherwise we could change the firewall to block it all.
+> 
+> 
+> > which will put the user in a 'splash' state (full Internet
+> > access, just with portal redirection). You can also try
+> > 'require-uam-auth' (which requires using option --wpaguests
+> > even if not using WPA, btw) which will put the user in the
+> > standard "DNAT" state. In an Access-Reject, you can also
+> > use ChilliSpot-Config = 'admin-reset' to release the DHCP
+> > release right away. Using that, you can also enforce a
+> > "DROP" state where you keep revoking the lease (but will
+> > also potentially mean you get a LOT of mac auth RADIUS
+> > requests).
+> 
+> 	The standard DNAT state would still allow the
+> navigation of pages allowed by Coova until client
+> authenticates in the Captive Portal. And indeed,
+> 'admin-reset' can cause a lot of auth requests.
+> 
+> 	As I understood it, right now I can't tell
+> Coova to change clients to 'drop' unless I use macauth
+> and macauthdeny. I was planning on investigate more on
+> the RADIUS side to see if there are something I am
+> missing, but I realize that probably is Coova that
+> needs to process the answer.
+> 
+> 	Thanks for clarifying that. We can live with
+> the clients being blocked on the Captive Portal and
+> all other ports and only being able to navigate to
+> some of the allowed pages.
+> 
+> 	One of the nice points of the macauthdeny is
+> that the client can't even get an IP or bind to the
+> AP, which leads the client to believe it is not
+> working (and achieves the point we are expecting,
+> preventing corporate users to abuse the free wifi
+> with corporate computers). :)
+> 
+> [...]
+> >> 	I was wondering if it is possible to have the
+> >> blocked MAC address to move to a 'drop' state after
+> >> Access-Reject, is there such possibility in Coova?
+> > 
+> > It might be nice to have a "ChilliSpot-Config = 'blocked'"
+> > option that can be used outside of macauthdeny for this
+> > kind of use.
+> 
+> 	Indeed, that would be very cool! :-)
+> 
+> Kind regards,
+> - -- 
+> Felipe Augusto van de Wiel <felipe.wiel at hpp.org.br>
+> Tecnologia da Informa??o (TI) - Complexo Pequeno Pr?ncipe
+> http://www.pequenoprincipe.org.br/    T: +55 41 3310 1747
+> -----BEGIN PGP SIGNATURE-----
+> Version: GnuPG v1.4.10 (GNU/Linux)
+> Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
+> 
+> iQIcBAEBCgAGBQJL9uCKAAoJECCPPxLgxLxP3XEP/1FLpkZmMb0GioPlI0evdFn2
+> JiHrOXwNQz89qHKps5lOfHIYfJ/pvqEnNYxC/0iJ1LegKVt0v9JNIE8brFBUaR1F
+> zPt7z9zL6Qx+VqWtMLdMWPxAv5izkIS7mzc0ck+IvfP7lmo4zvLHJDAQw1Cn0FMF
+> i5KbGeJhgptlhhh3xr/r6mwD+qeMgY2STJzvwRbgq7925a/cWzkJAmafTYmKl2Up
+> 5pJZLdcWSCpqi0ijIKKQ5+aZgG6ELYifUvQC4pQFicV+YuSw/1YGOGbS5BysYN/z
+> 2vBW2o6DqX17/t8mVs8+e4cFdKnGCpJl1fqaiUuVkMPgttNBJ8I03Gw1yWGuK5F5
+> kSgu5KFDutVSnHS4irGZKvOHRUThiSTdOmeZwAPirH7FjR/LU5dcI4puwORIYKbj
+> 7fDFNez7RO16IsnthGqdKp5LFtSFY/MQ0lUtFL9vTzcNNtIerhDQSQ3vcCUv7Qkn
+> OYNSLceAb371QiKRKnEPYGYlpRguh0GVHdvFBGyGcBHj/VooxrS1In144eYteEw2
+> 0LXt5mCDGKxfI2CJ9XytZz2bZrivyLCSVV5oqyeQzugfoqhsBds2S/tBeMIaWebA
+> sUOsQ+8T21bBZnGupu+jTSDJUyrv65ldfJCvcwqHqzNIpxs0DM3GL0dV4l99jiPo
+> VKvdiEkmBP7iYjq86URQ
+> =I8Vn
+> -----END PGP SIGNATURE-----
+
+
+
+From david at coova.com  Sat May 22 05:12:04 2010
+From: david at coova.com (David Bird)
+Date: Sat, 22 May 2010 07:12:04 +0200
+Subject: [Chilli] [Patch] Fix auth state in redir_main()
+In-Reply-To: <4BF6DBAA.5090904@hollants.com>
+References: <4BF6DBAA.5090904@hollants.com>
+Message-ID: <1274505124.3330.117.camel@david-laptop>
+
+Thanks, though, there isn't really any harm in reusing the variable
+since it's never part of any conditional. It amounts to:
+
+  int state = 0; /* initialization not really needed */
+
+  state = func();
+  if (state) /* something */
+
+  state = func();
+  switch(state) /* something */
+
+Thanks,
+David
+
+
+On Fri, 2010-05-21 at 21:14 +0200, IT-Systemmanagement Pieter Hollants
+wrote:
+> Hi David,
+> 
+> in current SVN you modified the redir_getreq() call in
+> redir.c:redir_main() to inspect the error code returned:
+> 
+>  state = redir_getreq(...)
+> 
+> This breaks the code further below which relies on state to represent
+> the auth. state (such as under REDIR_LOGIN).
+> 
+> Attached patch uses a seperate variable for the redir_getreq() return code.
+> 
+
+
+
+From david at coova.com  Sat May 22 05:15:45 2010
+From: david at coova.com (David Bird)
+Date: Sat, 22 May 2010 07:15:45 +0200
+Subject: [Chilli] Hostname for SSL-enabled WISPr redirect
+In-Reply-To: <4BF579FB.1070308@wiggy.net>
+References: <4BF5334C.8000908@wiggy.net> <4BF536EC.7080305@wiggy.net>
+	<1274363326.3531.451.camel@david-laptop> <4BF55720.4060803@wiggy.net>
+	<1274373762.3531.461.camel@david-laptop> <4BF579FB.1070308@wiggy.net>
+Message-ID: <1274505345.3330.119.camel@david-laptop>
+
+$ dpkg -s debhelper|grep Version
+Version: 7.4.15ubuntu1
+
+I don't understand it either... but, for me, debuild is looking to
+debian/tmp for the root... somehow configurable? 
+
+On Thu, 2010-05-20 at 20:05 +0200, Wichert Akkerman wrote:
+> On 2010-5-20 18:42, David Bird wrote:
+> > Funny, indeed. Must be a version mixup/different between our debhelper
+> > tools? I'm afraid you'll probably keep finding me changing it back until
+> > resolved. I'd hate to distribute broken .deb's.
+> 
+> Debhlper 7.0.15 here. Note that the change to not use debian/tmp anymore 
+> was made in debhelper 2.0, which was released in 1999. I'm quite sure 
+> Ubuntu never shipped with a version that old :)
+> 
+> Wichert.
+> 
+
+
+
+From pieter at hollants.com  Sat May 22 16:58:15 2010
+From: pieter at hollants.com (IT-Systemmanagement Pieter Hollants)
+Date: Sat, 22 May 2010 18:58:15 +0200
+Subject: [Chilli] [Patch] Fix auth state in redir_main()
+In-Reply-To: <1274505124.3330.117.camel@david-laptop>
+References: <4BF6DBAA.5090904@hollants.com>
+	<1274505124.3330.117.camel@david-laptop>
+Message-ID: <4BF80D27.3080108@hollants.com>
+
+Am 22.05.2010 07:12, schrieb David Bird:
+> Thanks, though, there isn't really any harm in reusing the variable
+> since it's never part of any conditional. It amounts to:
+> 
+>   int state = 0; /* initialization not really needed */
+> 
+>   state = func();
+>   if (state) /* something */
+> 
+>   state = func();
+>   switch(state) /* something */
+> 
+> Thanks,
+> David
+
+Uhm, yes it is, because the switch depends on the outcome of the first
+function call, redir->cb_getstate(), which returns 0 for unauth'ed, 1
+for auth'ed, not the second function call, redir_getreq.
+
+-- 
+Dipl.-Wirtsch.-Inform. Pieter Hollants
+IT-Systemmanagement Pieter Hollants          Tel. : (+49) (0)6192-910717
+Rossertstra?e 80                             Fax  : (+49) (0)6192-910713
+65830 Kriftel                                eMail: pieter at hollants.com
+
+
+From david at coova.com  Sat May 22 17:11:20 2010
+From: david at coova.com (David Bird)
+Date: Sat, 22 May 2010 19:11:20 +0200
+Subject: [Chilli] [Patch] Fix auth state in redir_main()
+In-Reply-To: <4BF80D27.3080108@hollants.com>
+References: <4BF6DBAA.5090904@hollants.com>
+	<1274505124.3330.117.camel@david-laptop>
+	<4BF80D27.3080108@hollants.com>
+Message-ID: <1274548280.3330.123.camel@david-laptop>
+
+Indeed, I see your point; that we wanted the first value later.
+committed in rev 332. 
+
+On Sat, 2010-05-22 at 18:58 +0200, IT-Systemmanagement Pieter Hollants
+wrote:
+> Am 22.05.2010 07:12, schrieb David Bird:
+> > Thanks, though, there isn't really any harm in reusing the variable
+> > since it's never part of any conditional. It amounts to:
+> > 
+> >   int state = 0; /* initialization not really needed */
+> > 
+> >   state = func();
+> >   if (state) /* something */
+> > 
+> >   state = func();
+> >   switch(state) /* something */
+> > 
+> > Thanks,
+> > David
+> 
+> Uhm, yes it is, because the switch depends on the outcome of the first
+> function call, redir->cb_getstate(), which returns 0 for unauth'ed, 1
+> for auth'ed, not the second function call, redir_getreq.
+> 
+
+
+
+From pieter at hollants.com  Sat May 22 20:27:26 2010
+From: pieter at hollants.com (IT-Systemmanagement Pieter Hollants)
+Date: Sat, 22 May 2010 22:27:26 +0200
+Subject: [Chilli] Thoughts on making Chilli's DHCP network interface aware
+Message-ID: <4BF83E2E.4010006@hollants.com>
+
+Hi all,
+
+as you might have noticed I'm working for a customer on the
+implementation of a "neat" seperation between the different access
+methods provided by CoovaChili. The idea is to allow a user-induced
+logout (via "logout" host or "http://x.y.z:3990/logout") only on the
+WLAN protected via UAM, while the WLAN using WPA-EAP should not offer
+such a possibility.
+
+While I have such functionality readily implemented, the problem with
+CoovaChilli's current connection handling is that it can not distinguish
+clients based on the network interface they're using. This means that a
+client who has authenticated to a WPA-EAP protected WLAN (we can
+detected he's using WPA-EAP because we act as radius proxy) correctly
+has a new "allow_logoff" flag set to 0. But when he switches to an
+ordinary WPA-PSK protected WLAN with UAM in the background, there is no
+way to detect this from within CoovaChilli: the client will obtain the
+same IP address via DHCP that he had on the WPA-EAP WLAN.
+
+I'm now thinking of extending the hashtable functions in dhcp.c to
+include the network interface over which the request came in in the hash
+calculation. This would mean that a user gets a new, seperate IP address
+when he changes to the WPA-PSK/UAM WLAN, meaning I can set the new
+"allow_logoff" flag properly.
+
+Naturally, this does not solve the problem when dhcpif and proxylisten
+use the same interface, but the way I see it such a setup would not make
+any sense: a WPA-PSK/UAM WLAN would use a seperate VLAN than the WPA-EAP
+protected WLAN, and as such a seperate local network interface.
+
+But, before I dive into the code, any comments? Anything obvious I
+oversaw why this can't work out anyway?
+
+-- 
+Dipl.-Wirtsch.-Inform. Pieter Hollants
+IT-Systemmanagement Pieter Hollants          Tel. : (+49) (0)6192-910717
+Rossertstra?e 80                             Fax  : (+49) (0)6192-910713
+65830 Kriftel                                eMail: pieter at hollants.com
+
+
+From david at coova.com  Sun May 23 04:40:47 2010
+From: david at coova.com (David Bird)
+Date: Sun, 23 May 2010 06:40:47 +0200
+Subject: [Chilli] Thoughts on making Chilli's DHCP network interface
+ aware
+In-Reply-To: <4BF83E2E.4010006@hollants.com>
+References: <4BF83E2E.4010006@hollants.com>
+Message-ID: <1274589647.3330.141.camel@david-laptop>
+
+Hi Pieter,
+
+You have all your EAP subscribers on one VLAN with UAM on the other? If
+so, then that is how you should reliably know which network (EAP/UAM)
+the user is on. If you are not getting any indication from the EAP NAS
+about the subscriber disconnect, then I don't see how chilli would
+otherwise know if that same client came back to UAM. It should work, but
+as you noted, chilli doesn't really know (because EAP and UAM *can* work
+together, of course). 
+
+Perhaps what you want is a VLAN based option to not allow logout? 
+
+I mentioned it before, but I personally think removing the logout
+ability is one thing, but probably more important is just to remove the
+LINK to the logout feature for these users. Another idea might be to add
+a query string parameter indicating a "auth=eap" so your portal can know
+not to show a logout link...
+
+David
+
+
+On Sat, 2010-05-22 at 22:27 +0200, IT-Systemmanagement Pieter Hollants
+wrote:
+> Hi all,
+> 
+> as you might have noticed I'm working for a customer on the
+> implementation of a "neat" seperation between the different access
+> methods provided by CoovaChili. The idea is to allow a user-induced
+> logout (via "logout" host or "http://x.y.z:3990/logout") only on the
+> WLAN protected via UAM, while the WLAN using WPA-EAP should not offer
+> such a possibility.
+> 
+> While I have such functionality readily implemented, the problem with
+> CoovaChilli's current connection handling is that it can not distinguish
+> clients based on the network interface they're using. This means that a
+> client who has authenticated to a WPA-EAP protected WLAN (we can
+> detected he's using WPA-EAP because we act as radius proxy) correctly
+> has a new "allow_logoff" flag set to 0. But when he switches to an
+> ordinary WPA-PSK protected WLAN with UAM in the background, there is no
+> way to detect this from within CoovaChilli: the client will obtain the
+> same IP address via DHCP that he had on the WPA-EAP WLAN.
+> 
+> I'm now thinking of extending the hashtable functions in dhcp.c to
+> include the network interface over which the request came in in the hash
+> calculation. This would mean that a user gets a new, seperate IP address
+> when he changes to the WPA-PSK/UAM WLAN, meaning I can set the new
+> "allow_logoff" flag properly.
+> 
+> Naturally, this does not solve the problem when dhcpif and proxylisten
+> use the same interface, but the way I see it such a setup would not make
+> any sense: a WPA-PSK/UAM WLAN would use a seperate VLAN than the WPA-EAP
+> protected WLAN, and as such a seperate local network interface.
+> 
+> But, before I dive into the code, any comments? Anything obvious I
+> oversaw why this can't work out anyway?
+> 
+
+
+
+From wichert at wiggy.net  Sun May 23 18:32:08 2010
+From: wichert at wiggy.net (Wichert Akkerman)
+Date: Sun, 23 May 2010 20:32:08 +0200
+Subject: [Chilli] CPU Usage
+Message-ID: <4BF974A8.5030806@wiggy.net>
+
+I noticed that after upgrading from chilli an 1.0.15~pre1 snapshot to 
+current svn that our CPU usage has gone up, as you can see in the 
+attached munin graph. Is that expected?
+
+Wichert.
+
+-- 
+Wichert Akkerman <wichert at wiggy.net>   It is simple to make things.
+http://www.wiggy.net/                  It is hard to make things simple.
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: cpu-week.png
+Type: image/png
+Size: 29482 bytes
+Desc: not available
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20100523/16e0b81f/attachment-0001.png>
+
+From pieter at hollants.com  Sun May 23 21:21:50 2010
+From: pieter at hollants.com (IT-Systemmanagement Pieter Hollants)
+Date: Sun, 23 May 2010 23:21:50 +0200
+Subject: [Chilli] Thoughts on making Chilli's DHCP network interface
+	aware
+In-Reply-To: <1274589647.3330.141.camel@david-laptop>
+References: <4BF83E2E.4010006@hollants.com>
+	<1274589647.3330.141.camel@david-laptop>
+Message-ID: <4BF99C6E.1030106@hollants.com>
+
+Hi David,
+
+Am 23.05.2010 06:40, schrieb David Bird:
+> You have all your EAP subscribers on one VLAN with UAM on the other? If
+> so, then that is how you should reliably know which network (EAP/UAM)
+> the user is on. If you are not getting any indication from the EAP NAS
+> about the subscriber disconnect, then I don't see how chilli would
+> otherwise know if that same client came back to UAM. It should work, but
+> as you noted, chilli doesn't really know (because EAP and UAM *can* work
+> together, of course). 
+
+Exactly there was the mistake in my thinking. First of all, I've read
+through IEEE 802.11i and IEEE 802.1x and there simply is no such thing
+as a disconnect indication from the access point to the RADIUS server.
+The AP simply doesn't share its state, so all CoovaChilli can see at any
+time is a request to "open the gate". Which is logical, since both
+standards don't want the RADIUS server (or a proxy such as CoovaChilli)
+to track state.
+
+Second, I was under the misconception that the two WLANs end up in
+different VLANs, which they actually do not currently -- I explicitly
+routed the EAP VLAN through CoovaChilli as well since I wanted to reuse
+the same IP network independent of the WLAN chosen and it doesn't hurt
+if CoovaChilli implements a "second switch" behind the AP, considering
+it acts as Radiusproxy.
+
+Now you got me thinking, however. Either use a seperate VLAN for EAP,
+then I'd have to assign a second IP net, or extend CoovaChilli so it can
+do "dhcpif" on two interfaces at once. Running two Chilli instances
+doesn't make much sense in this scenario, I guess.
+
+> Perhaps what you want is a VLAN based option to not allow logout? 
+> 
+> I mentioned it before, but I personally think removing the logout
+> ability is one thing, but probably more important is just to remove the
+> LINK to the logout feature for these users. Another idea might be to add
+> a query string parameter indicating a "auth=eap" so your portal can know
+> not to show a logout link...
+
+In the patch I developed so far I did something similar: I added a
+"allow_logoff" parameter so the portal knows whether it should show a
+link or not. Independently, I also had to consider the case where users
+enter the word "logout" because it's advertised all over the portal. So
+it makes sense to do both: indicate to the portal not to show the link
+but also disable the two ways the user has (http://IP/logout and "logout").
+
+-- 
+Dipl.-Wirtsch.-Inform. Pieter Hollants
+IT-Systemmanagement Pieter Hollants          Tel. : (+49) (0)6192-910717
+Rossertstra?e 80                             Fax  : (+49) (0)6192-910713
+65830 Kriftel                                eMail: pieter at hollants.com
+
+
+From david at coova.com  Mon May 24 05:09:59 2010
+From: david at coova.com (David Bird)
+Date: Mon, 24 May 2010 07:09:59 +0200
+Subject: [Chilli] Thoughts on making Chilli's DHCP network interface
+ aware
+In-Reply-To: <4BF99C6E.1030106@hollants.com>
+References: <4BF83E2E.4010006@hollants.com>
+	<1274589647.3330.141.camel@david-laptop>
+	<4BF99C6E.1030106@hollants.com>
+Message-ID: <1274677799.3330.181.camel@david-laptop>
+
+Hi Pieter,
+
+When using a VLAN, I don't think you'll have to create another ip space
+or another interface (unless you want to). If you can split your network
+up into VLANs on eth0, for example, then you can run chilli on dhcpif
+eth0 with --ieee8021q. Then chilli will detect and note the VLAN of each
+session (and it doesn't even really care what VLAN that is). Now, your
+no-logout feature can be linked to the VLAN, I'd imagine. 
+
+Also, if you plan on submitting your feature to chilli, could you please
+make it a compile time option too? 
+
+A couple notes:
+
+- Refer to configure.in for adding compile time options. Use an existing
+example. 
+
+- To add run-time options, see cmdline.ggo and try not to waste your
+time editing cmdline.[ch] by hand. (pretty much everyone misses the fact
+that cmdline.[ch] are generated files by gengetopt). 
+
+
+
+On Sun, 2010-05-23 at 23:21 +0200, IT-Systemmanagement Pieter Hollants
+wrote:
+> Hi David,
+> 
+> Am 23.05.2010 06:40, schrieb David Bird:
+> > You have all your EAP subscribers on one VLAN with UAM on the other? If
+> > so, then that is how you should reliably know which network (EAP/UAM)
+> > the user is on. If you are not getting any indication from the EAP NAS
+> > about the subscriber disconnect, then I don't see how chilli would
+> > otherwise know if that same client came back to UAM. It should work, but
+> > as you noted, chilli doesn't really know (because EAP and UAM *can* work
+> > together, of course). 
+> 
+> Exactly there was the mistake in my thinking. First of all, I've read
+> through IEEE 802.11i and IEEE 802.1x and there simply is no such thing
+> as a disconnect indication from the access point to the RADIUS server.
+> The AP simply doesn't share its state, so all CoovaChilli can see at any
+> time is a request to "open the gate". Which is logical, since both
+> standards don't want the RADIUS server (or a proxy such as CoovaChilli)
+> to track state.
+> 
+> Second, I was under the misconception that the two WLANs end up in
+> different VLANs, which they actually do not currently -- I explicitly
+> routed the EAP VLAN through CoovaChilli as well since I wanted to reuse
+> the same IP network independent of the WLAN chosen and it doesn't hurt
+> if CoovaChilli implements a "second switch" behind the AP, considering
+> it acts as Radiusproxy.
+> 
+> Now you got me thinking, however. Either use a seperate VLAN for EAP,
+> then I'd have to assign a second IP net, or extend CoovaChilli so it can
+> do "dhcpif" on two interfaces at once. Running two Chilli instances
+> doesn't make much sense in this scenario, I guess.
+> 
+> > Perhaps what you want is a VLAN based option to not allow logout? 
+> > 
+> > I mentioned it before, but I personally think removing the logout
+> > ability is one thing, but probably more important is just to remove the
+> > LINK to the logout feature for these users. Another idea might be to add
+> > a query string parameter indicating a "auth=eap" so your portal can know
+> > not to show a logout link...
+> 
+> In the patch I developed so far I did something similar: I added a
+> "allow_logoff" parameter so the portal knows whether it should show a
+> link or not. Independently, I also had to consider the case where users
+> enter the word "logout" because it's advertised all over the portal. So
+> it makes sense to do both: indicate to the portal not to show the link
+> but also disable the two ways the user has (http://IP/logout and "logout").
+> 
+
+
+
+From stelio at skyrove.com  Mon May 24 08:11:08 2010
+From: stelio at skyrove.com (Stelio Gouveia)
+Date: Mon, 24 May 2010 10:11:08 +0200
+Subject: [Chilli] Thoughts on making Chilli's DHCP network interface
+	aware
+In-Reply-To: <4BF99C6E.1030106@hollants.com>
+References: <4BF83E2E.4010006@hollants.com>
+	<1274589647.3330.141.camel@david-laptop>
+	<4BF99C6E.1030106@hollants.com>
+Message-ID: <AANLkTimdK_kFOkYkHV0ZN55mlaYSDdSnUGul3lSkt8ZY@mail.gmail.com>
+
+Hi Pieter
+
+Can you make this patch publicly available.
+
+I assume this makes it possible to change the query string parameters
+depending on
+which wireless network a client is connected to?
+
+- Stelio
+
+On Sun, May 23, 2010 at 11:21 PM, IT-Systemmanagement Pieter Hollants <
+pieter at hollants.com> wrote:
+
+> Hi David,
+>
+> Am 23.05.2010 06:40, schrieb David Bird:
+> > You have all your EAP subscribers on one VLAN with UAM on the other? If
+> > so, then that is how you should reliably know which network (EAP/UAM)
+> > the user is on. If you are not getting any indication from the EAP NAS
+> > about the subscriber disconnect, then I don't see how chilli would
+> > otherwise know if that same client came back to UAM. It should work, but
+> > as you noted, chilli doesn't really know (because EAP and UAM *can* work
+> > together, of course).
+>
+> Exactly there was the mistake in my thinking. First of all, I've read
+> through IEEE 802.11i and IEEE 802.1x and there simply is no such thing
+> as a disconnect indication from the access point to the RADIUS server.
+> The AP simply doesn't share its state, so all CoovaChilli can see at any
+> time is a request to "open the gate". Which is logical, since both
+> standards don't want the RADIUS server (or a proxy such as CoovaChilli)
+> to track state.
+>
+> Second, I was under the misconception that the two WLANs end up in
+> different VLANs, which they actually do not currently -- I explicitly
+> routed the EAP VLAN through CoovaChilli as well since I wanted to reuse
+> the same IP network independent of the WLAN chosen and it doesn't hurt
+> if CoovaChilli implements a "second switch" behind the AP, considering
+> it acts as Radiusproxy.
+>
+> Now you got me thinking, however. Either use a seperate VLAN for EAP,
+> then I'd have to assign a second IP net, or extend CoovaChilli so it can
+> do "dhcpif" on two interfaces at once. Running two Chilli instances
+> doesn't make much sense in this scenario, I guess.
+>
+> > Perhaps what you want is a VLAN based option to not allow logout?
+> >
+> > I mentioned it before, but I personally think removing the logout
+> > ability is one thing, but probably more important is just to remove the
+> > LINK to the logout feature for these users. Another idea might be to add
+> > a query string parameter indicating a "auth=eap" so your portal can know
+> > not to show a logout link...
+>
+> In the patch I developed so far I did something similar: I added a
+> "allow_logoff" parameter so the portal knows whether it should show a
+> link or not. Independently, I also had to consider the case where users
+> enter the word "logout" because it's advertised all over the portal. So
+> it makes sense to do both: indicate to the portal not to show the link
+> but also disable the two ways the user has (http://IP/logout and
+> "logout").
+>
+> --
+> Dipl.-Wirtsch.-Inform. Pieter Hollants
+> IT-Systemmanagement Pieter Hollants          Tel. : (+49) (0)6192-910717
+> Rossertstra?e 80                             Fax  : (+49) (0)6192-910713
+> 65830 Kriftel                                eMail: pieter at hollants.com
+>
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+
+--
+Skyrove Software Engineer,
+Skyrove (Pty) Ltd
+Technology Top 100 Award Winner (2006)
+Mobile: +27 82 34 09 120
+Tel: +27 861 ROVERS (0861 768 377)
+Fax: +27 86 6204077
+Email & Gtalk: stelio at skyrove.com
+Web:   www.skyrove.com
+
+This message contains confidential information. If you are not the intended
+recipient you are notified that disclosing, copying, distributing or taking
+any action in reliance on the contents of this information is strictly
+prohibited. E-mail transmission cannot be guaranteed to be secure or
+error-free as information could be intercepted, corrupted, lost, destroyed,
+arrive late or incomplete, or contain viruses. The sender therefore does not
+accept liability for any errors or omissions in the contents of this
+message.
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20100524/502790f7/attachment.htm>
+
+From wichert at wiggy.net  Mon May 24 10:28:46 2010
+From: wichert at wiggy.net (Wichert Akkerman)
+Date: Mon, 24 May 2010 12:28:46 +0200
+Subject: [Chilli] redir in busy-loop
+Message-ID: <4BFA54DE.9090509@wiggy.net>
+
+With svn revision 331 we noticed that after 2.5 days the redirect 
+process got stuck in a busy loop and was no longer processing requests. 
+An strace showed this:
+
+read(12, 0x92dc418, 5)                  = -1 EAGAIN (Resource 
+temporarily unavailable)
+read(12, 0x92dc418, 5)                  = -1 EAGAIN (Resource 
+temporarily unavailable)
+read(12, 0x92dc418, 5)                  = -1 EAGAIN (Resource 
+temporarily unavailable)
+read(12, 0x92dc418, 5)                  = -1 EAGAIN (Resource 
+temporarily unavailable)
+
+repeated at high rate. I had to send a KILL signal to the redir process 
+to stop it. I was half hoping that chilli would notice the redir process 
+going away and restart it, but alas that was not so and I had to restart 
+chilli.
+
+Wichert.
+
+From serverinfo at iast.it  Tue May 25 06:21:37 2010
+From: serverinfo at iast.it (Iacopo Spalletti)
+Date: Tue, 25 May 2010 08:21:37 +0200
+Subject: [Chilli] Coova and FTP
+In-Reply-To: <201005171941.01946.serverinfo@iast.it>
+References: <201005171941.01946.serverinfo@iast.it>
+Message-ID: <201005250821.40204.serverinfo@iast.it>
+
+Alle 19:40 di luned? 17 maggio 2010, Iacopo Spalletti ha scritto:
+> Hi, i'm trying to setup the firewall on a coova board, but apparently Coova
+> doesn't go along well with FTP conntrack module in Linux
+> I have a shorewall-based firewall on the same host as coova which is
+> basically configured to block every connection except some destination
+> ports (HTTP, and such)
+> As for FTP protocol rules are based on conntrack helper, but apparently it
+> can't detect connections routed via coova; this is the shorewall error
+> message Shorewall:wlan2net:REJECT:IN=tun0 OUT=eth3 SRC=10.34.0.2
+> DST=$DEST_IP LEN=60 TOS=0x00 PREC=0x00 TTL=63 ID=51861 DF PROTO=TCP
+> SPT=41279 DPT=65162 WINDOW=5840 RES=0x00 SYN URGP=0
+> 
+> Where $DEST_IP is the FTP server on the internet, and the destination port
+> is the passive FTP
+> 
+> I've tried both svn (rev 322) and 1.2.2 version with no success; i tried
+> alse enabling the NOTRACK options in
+> Any hint?
+> 
+> BTW: Disabling coova makes FTP work, and nf_conntrack_ftp is loaded
+> correctly in both cases
+
+I've made some more test: it really seems like conntrack modules (not just 
+FTP) is confused by chillispot
+Does anyone knows a workaround? NOTRACK is not an option because we need NAT.
+
+-- 
+
+Regards
+Iacopo Spalletti
+
+Nephila sas
+i.spalletti at nephila.it
+PGP key block: http://www.nephila.it/pgp
+
+From david at coova.com  Wed May 26 05:00:11 2010
+From: david at coova.com (David Bird)
+Date: Wed, 26 May 2010 07:00:11 +0200
+Subject: [Chilli] redir in busy-loop
+In-Reply-To: <4BFA54DE.9090509@wiggy.net>
+References: <4BFA54DE.9090509@wiggy.net>
+Message-ID: <1274850011.3330.214.camel@david-laptop>
+
+Hmm... I don't see where that read() would be immediately. By any
+chance, do you clean up files in /tmp/ or /var/run/ on any interval?
+After killing chilli_redir, you can also just start it up alone (with
+chilli running) using the exact same options you gave chilli. You can
+also start only chilli_redir in debug mode this way. 
+
+On Mon, 2010-05-24 at 12:28 +0200, Wichert Akkerman wrote:
+> With svn revision 331 we noticed that after 2.5 days the redirect 
+> process got stuck in a busy loop and was no longer processing requests. 
+> An strace showed this:
+> 
+> read(12, 0x92dc418, 5)                  = -1 EAGAIN (Resource 
+> temporarily unavailable)
+> read(12, 0x92dc418, 5)                  = -1 EAGAIN (Resource 
+> temporarily unavailable)
+> read(12, 0x92dc418, 5)                  = -1 EAGAIN (Resource 
+> temporarily unavailable)
+> read(12, 0x92dc418, 5)                  = -1 EAGAIN (Resource 
+> temporarily unavailable)
+> 
+> repeated at high rate. I had to send a KILL signal to the redir process 
+> to stop it. I was half hoping that chilli would notice the redir process 
+> going away and restart it, but alas that was not so and I had to restart 
+> chilli.
+> 
+> Wichert.
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+
+
+From tm at fwt.fr  Mon May 31 10:43:01 2010
+From: tm at fwt.fr (Thierry MUSEUX - www.fwt.fr -)
+Date: Mon, 31 May 2010 12:43:01 +0200
+Subject: [Chilli] cross compile error
+Message-ID: <180301cb00ae$0aa66e60$1ff34b20$@fr>
+
+Hi David
+I have a custom package for coova on openwrt.
+With the current trunk, r339, I have an error :
+cc1: warnings being treated as errors
+redir.c: In function 'redir_main':
+redir.c:2796: error: format '%ld' expects type 'long int', but argument 3
+has type 'uint64_t'?sprintf(buffer, "%ld", conn.s_state.input_octets);
+
+redir.c:2798: error: format '%ld' expects type 'long int', but argument 3
+has type 'uint64_t'?sprintf(buffer, "%ld", conn.s_state.output_octets);
+
+redir.c:2800: error: format '%ld' expects type 'long int', but argument 3
+has type 'uint64_t'?sprintf(buffer, "%ld", conn.s_params.sessiontimeout);
+
+
+after investigation the compilation works fine until r318, r319 fails. (but
+with another error)
+the exact same error (error: format '%ld' expects type 'long int') appears
+with r321
+
+i have made this bottom patch which solve the compile error.
+Could you include the patch in the trunk.
+With r339 there is no error if I compile natively on x86_32 and x86_64.
+The error appears when I compile in cross compile tools.
+
+Regards.
+
+
+Index: src/redir.c
+===================================================================
+--- src/redir.c (r?vision 339)
++++ src/redir.c (copie de travail)
+@@ -2793,11 +2793,11 @@
+          setenv("CHI_SESSION_ID", conn.s_state.sessionid, 1);
+          setenv("CHI_USERNAME", conn.s_state.redir.username, 1);
+          setenv("CHI_USERURL", conn.s_state.redir.userurl, 1);
+-         sprintf(buffer, "%ld", conn.s_state.input_octets);
++         sprintf(buffer, "%lld", conn.s_state.input_octets);
+          setenv("CHI_INPUT_BYTES", buffer, 1);
+-         sprintf(buffer, "%ld", conn.s_state.output_octets);
++         sprintf(buffer, "%lld", conn.s_state.output_octets);
+          setenv("CHI_OUTPUT_BYTES", buffer, 1);
+-         sprintf(buffer, "%ld", conn.s_params.sessiontimeout);
++         sprintf(buffer, "%lld", conn.s_params.sessiontimeout);
+          setenv("CHI_SESSION_TIMEOUT", buffer, 1);
+
+          redir_chartohex(conn.s_state.redir.uamchal, buffer, REDIR_MD5LEN);
+
+
+
+Thierry Museux
+France Wireless Technologies
+www.fwt.fr
+
+

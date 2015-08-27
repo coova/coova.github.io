@@ -1,0 +1,146 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] chilli 1.2.2 mutli process problem..
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20chilli%201.2.2%20mutli%20process%20problem..&In-Reply-To=%3C201003101113.33961.oguzhank%40bilkent.edu.tr%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001183.html">
+   <LINK REL="Next"  HREF="001185.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] chilli 1.2.2 mutli process problem..</H1>
+    <B>Oguzhan Kayhan</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20chilli%201.2.2%20mutli%20process%20problem..&In-Reply-To=%3C201003101113.33961.oguzhank%40bilkent.edu.tr%3E"
+       TITLE="[Chilli] chilli 1.2.2 mutli process problem..">oguzhank at bilkent.edu.tr
+       </A><BR>
+    <I>Wed Mar 10 09:13:33 UTC 2010</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001183.html">[Chilli] chilli 1.2.2 mutli process problem..
+</A></li>
+        <LI>Next message: <A HREF="001185.html">[Chilli] chilli 1.2.2 mutli process problem..
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1184">[ date ]</a>
+              <a href="thread.html#1184">[ thread ]</a>
+              <a href="subject.html#1184">[ subject ]</a>
+              <a href="author.html#1184">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hello, It seems this worked also, no more out of connections error.
+
+But still getting 
+Mar 10 11:07:30 erouter [chilli_redir]: redir.c: 1378: Too much data in http 
+request!
+or
+Mar 10 11:09:04 erouter [chilli_redir]: redir.c: 2540: invalid file extension! 
+[undefined]
+
+i recompiled coova with  --enable-largelimits
+and also has 
+unixipc chilli-a-wireless  etc parameter on local.conf files..
+
+
+
+
+
+On Wednesday 10 March 2010 06:47:34 am David Bird wrote:
+&gt;<i> Compile with also ./configure --enable-largelimits for higher limits.
+</I>&gt;<i> Will add to the default debian rules too.
+</I>&gt;<i> 
+</I>&gt;<i> On Mon, 2010-03-08 at 14:54 +0100, David Bird wrote:
+</I>&gt;<i> &gt; Each needs it's own --unixipc option or build with ./configure
+</I>&gt;<i> &gt; --with-ipc-msg to keep using msgsnd/msgrcv instead of unix socket.
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; On Mon, 2010-03-08 at 15:43 +0200, Oguzhan Kayhan wrote:
+</I>&gt;<i> &gt; &gt; Hello,
+</I>&gt;<i> &gt; &gt; I was using coova with multiple interfaces-processes for a while.
+</I>&gt;<i> &gt; &gt; I decided to upgrade to 1.2.2 version.
+</I>&gt;<i> &gt; &gt; My config is like this..
+</I>&gt;<i> &gt; &gt; /etc/chilli-a
+</I>&gt;<i> &gt; &gt; /etc/chilli-a.conf
+</I>&gt;<i> &gt; &gt; /etc/chilli-b
+</I>&gt;<i> &gt; &gt; /etc/chilli-b.conf
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt; /etc/init.d/chilli-a
+</I>&gt;<i> &gt; &gt; /etc/init.d/chilli-b  etc...
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt; And i also changed every parameter in functions file to make it run in
+</I>&gt;<i> &gt; &gt; seperate processes as
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt; -----------
+</I>&gt;<i> &gt; &gt; CHILLI=/etc/chilli-a
+</I>&gt;<i> &gt; &gt; RUN_D=/var/run
+</I>&gt;<i> &gt; &gt; SBIN=/usr/sbin
+</I>&gt;<i> &gt; &gt; ARPCHECK=$RUN_D/chilli-a.arp
+</I>&gt;<i> &gt; &gt; LKFILE=$RUN_D/chilli-a.run
+</I>&gt;<i> &gt; &gt; MAIN_CONF=$CHILLI/main.conf
+</I>&gt;<i> &gt; &gt; LOCAL_CONF=$CHILLI/local.conf
+</I>&gt;<i> &gt; &gt; HS_CONF=$CHILLI/hs.conf
+</I>&gt;<i> &gt; &gt; HS_TEMP=/tmp/hs-a.conf
+</I>&gt;<i> &gt; &gt; MAIN_TEMP=/tmp/main.conf
+</I>&gt;<i> &gt; &gt; CMDSOCK=$RUN_D/chilli-a.sock
+</I>&gt;<i> &gt; &gt; PIDFILE=$RUN_D/chilli-a.pid   vs....
+</I>&gt;<i> &gt; &gt; -----
+</I>&gt;<i> &gt; &gt; But when i run multiple processes, only the first process works fine..
+</I>&gt;<i> &gt; &gt; Others can get Ip but redirection does not work. And i see such entries
+</I>&gt;<i> &gt; &gt; in syslog.
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt; I switched back to 1.4 version...
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt; [chilli_redir]: redir.c: 2522: invalid www request [delivery/afr.php]!
+</I>&gt;<i> &gt; &gt; Mar  8 15:27:16 erouter [chilli_redir]: redir.c: 2522: invalid www
+</I>&gt;<i> &gt; &gt; request [delivery/lg.php]!
+</I>&gt;<i> &gt; &gt; Mar  8 15:27:16 erouter [chilli_redir]: redir.c: 2522: invalid www
+</I>&gt;<i> &gt; &gt; request [delivery/lg.php]!
+</I>&gt;<i> &gt; &gt; Mar  8 15:27:16 erouter [chilli_redir]: redir.c: 2522: invalid www
+</I>&gt;<i> &gt; &gt; request [delivery/lg.php]!
+</I>&gt;<i> &gt; &gt; Mar  8 15:27:16 erouter [chilli_redir]: redir.c: 2522: invalid www
+</I>&gt;<i> &gt; &gt; request [delivery/lg.php]!
+</I>&gt;<i> &gt; &gt; Mar  8 15:27:16 erouter [chilli_redir]: redir.c: 2522: invalid www
+</I>&gt;<i> &gt; &gt; request [delivery/lg.php]!
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt; ar  8 15:28:04 erouter [chilli_redir]: redir.c: 2540: invalid file
+</I>&gt;<i> &gt; &gt; extension! [undefined]
+</I>&gt;<i> &gt; &gt; Mar  8 15:28:04 erouter [chilli_redir]: redir.c: 2540: invalid file
+</I>&gt;<i> &gt; &gt; extension! [undefined]
+</I>&gt;<i> &gt; &gt; Mar  8 15:28:04 erouter [chilli_redir]: redir.c: 2540: invalid file
+</I>&gt;<i> &gt; &gt; extension! [undefined]
+</I>&gt;<i> &gt; &gt; Mar  8 15:28:04 erouter [chilli_redir]: redir.c: 2540: invalid file
+</I>&gt;<i> &gt; &gt; extension! [undefined]
+</I>&gt;<i> &gt; &gt; _______________________________________________
+</I>&gt;<i> &gt; &gt; Chilli mailing list
+</I>&gt;<i> &gt; &gt; <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">Chilli at coova.org</A>
+</I>&gt;<i> &gt; &gt; <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">http://lists.coova.org/cgi-bin/mailman/listinfo/chilli</A>
+</I>&gt;<i> 
+</I></PRE>
+
+
+
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001183.html">[Chilli] chilli 1.2.2 mutli process problem..
+</A></li>
+	<LI>Next message: <A HREF="001185.html">[Chilli] chilli 1.2.2 mutli process problem..
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1184">[ date ]</a>
+              <a href="thread.html#1184">[ thread ]</a>
+              <a href="subject.html#1184">[ subject ]</a>
+              <a href="author.html#1184">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

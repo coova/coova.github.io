@@ -1,0 +1,167 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] dhcp client hostname
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20%3D%3Futf-8%3Fq%3Fdhcp_client_hostname%3F%3D&In-Reply-To=%3C20120503113328.3657%40citromail.hu%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001943.html">
+   <LINK REL="Next"  HREF="001945.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] dhcp client hostname</H1>
+    <B>Fekete Tam&#225;s </B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20%3D%3Futf-8%3Fq%3Fdhcp_client_hostname%3F%3D&In-Reply-To=%3C20120503113328.3657%40citromail.hu%3E"
+       TITLE="[Chilli] dhcp client hostname">f.tomi7 at citromail.hu
+       </A><BR>
+    <I>Thu May  3 09:33:28 UTC 2012</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001943.html">[Chilli] dhcp client hostname
+</A></li>
+        <LI>Next message: <A HREF="001945.html">[Chilli] Revert from Coova2 to previous version
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1944">[ date ]</a>
+              <a href="thread.html#1944">[ thread ]</a>
+              <a href="subject.html#1944">[ subject ]</a>
+              <a href="author.html#1944">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE> Hello,
+
+thanks for the answers. 
+
+K&#246;szi Gerg&#337; a gyors v&#225;laszt Neked is.
+
+I have found all that things yet. But I would like to get the host name before radius authentication. I mean as soon as the dchp part gave ip to the client I want to store client information.
+
+I went through the interesting part of the code and my plan is to receive the required information in the cb_dhcp_request(...) part.
+Here I have a connection yet I can use for this.
+
+And do you mean that I can simple implement the following steps?
+*create radius message to fill that attributes
+*add attributes to that (client ip and host name or anything else)
+*call radius-req to send the radius message via the given connection
+*call radius response to receive the date
+*get attribute from that to save them into a file or store everywhere else
+
+It seems be the perfect solution (or at least good) as I think. Please tell me what do you think about my plan? Is it good direction?
+
+ps. I see in the chilli.c the cb_radius_auth_conf fnc that if radius is enabled the code asks for domain name. but it is not called if I have only dhcp connection as I checked the log file
+
+Tamas
+-- Eredeti &#252;zenet --
+Felad&#243;: David Bird  &lt;<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">david at coova.com</A>&gt;C&#237;mzett: Gergely Kiss  &lt;<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">mail.gery at gmail.com</A>&gt;, Gergely Kiss  &lt;<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">mail.gery at gmail.com</A>&gt;,  &lt;<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli at coova.org</A>&gt;Elk&#252;ldve: 2012. m&#225;jus 2. 15:55T&#225;rgy : Re: [Chilli] dhcp client hostname
+
+Hello,
+ 
+ These features are indeed implemented, and work well. Use the
+ --dhcpradius option (and compile with --enable-dhcpradius, which is the
+ default) and use --macauth. 
+ 
+ Attributes in chilli C are defined in src/radius_chillispot.h
+ 
+ Cheers,
+ David
+ 
+ On Sun, 2012-04-29 at 23:08 +0200, Gergely Kiss wrote:
+ &gt; Hi Tam&#225;s,
+ &gt; 
+ &gt; David wrote an article about using vendor-specific attributes to be
+ &gt; able to get the DHCP options from the clients (including the client's
+ &gt; hostname):
+ &gt; 
+ &gt; <A HREF="http://www.coova.org/node/118">http://www.coova.org/node/118</A>
+ &gt; 
+ &gt; I don't know if it's still a proposal or has been implemented already,
+ &gt; but taking a quick look at the source tells me the proposed DHCP
+ &gt; attributes are already included in the dictionary file:
+ &gt; 
+ &gt; <A HREF="http://dev.coova.org/svn/coova-chilli/doc/dictionary.chillispot">http://dev.coova.org/svn/coova-chilli/doc/dictionary.chillispot</A>
+ &gt; 
+ &gt; On the other hand, it seems the code does not use these attributes
+ &gt; anywhere, so I think you will need to change the source to get the
+ &gt; hostname as a RADIUS access request attribute.
+ &gt; 
+ &gt; Unfortunately, I'm not good enough at C++ programming to do the
+ &gt; coding, but basically you just need to fetch the hostname from the
+ &gt; DHCP request (DHCP option 12), store it in a property and pass it to
+ &gt; the RADIUS server when sending an access request packet during
+ &gt; authentication.
+ &gt; 
+ &gt; 
+ &gt; Regards,
+ &gt; Gergely Kiss
+ &gt; 
+ &gt; Ps. &#233;n is magyar vagyok! :)
+ &gt; 
+ &gt; On 29 April 2012 17:19, Fekete Tam&#225;s &lt;<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">f.tomi7 at citromail.hu</A>&gt; wrote:
+ &gt; &gt; Hello All,
+ &gt; &gt;
+ &gt; &gt; I would like to get the host name of the connected client. My plan was
+ &gt; &gt; simple modify the source code of chilli, but as I suppose it is not the best
+ &gt; &gt; way and anyway I have not idea how to do this. But I went ahead and I got
+ &gt; &gt; deeper and deeper in this topic. Now I find that radius server perfectly can
+ &gt; &gt; solve my problem. It is almost very good news, but I do not know how to
+ &gt; &gt; receive the wished attributes from that. Maybe someone can give me some
+ &gt; &gt; advice how I can do this.
+ &gt; &gt;
+ &gt; &gt; But I simple do not understand why the dhcp part cannot prove this
+ &gt; &gt; information. I think where I use dhcp server I want to know about client
+ &gt; &gt; there. And I do not want to depend on something else. But maybe this is only
+ &gt; &gt; my consideration.
+ &gt; &gt;
+ &gt; &gt; But the main point is now I would be really glad of getting some help in
+ &gt; &gt; question of getting hostname. :)
+ &gt; &gt;
+ &gt; &gt; Nice day,
+ &gt; &gt;
+ &gt; &gt; Tamas
+ &gt; &gt;
+ &gt; &gt; _______________________________________________
+ &gt; &gt; Chilli mailing list
+ &gt; &gt; <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">Chilli at coova.org</A> 
+ &gt; &gt; <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">http://lists.coova.org/cgi-bin/mailman/listinfo/chilli</A>
+ &gt; &gt;
+ &gt; _______________________________________________
+ &gt; Chilli mailing list
+ &gt; <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">Chilli at coova.org</A> 
+ &gt; <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">http://lists.coova.org/cgi-bin/mailman/listinfo/chilli</A>
+ 
+ 
+ 
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: &lt;<A HREF="http://lists.coova.org/pipermail/chilli/attachments/20120503/8ab043bd/attachment.html">http://lists.coova.org/pipermail/chilli/attachments/20120503/8ab043bd/attachment.html</A>&gt;
+</PRE>
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001943.html">[Chilli] dhcp client hostname
+</A></li>
+	<LI>Next message: <A HREF="001945.html">[Chilli] Revert from Coova2 to previous version
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1944">[ date ]</a>
+              <a href="thread.html#1944">[ thread ]</a>
+              <a href="subject.html#1944">[ subject ]</a>
+              <a href="author.html#1944">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

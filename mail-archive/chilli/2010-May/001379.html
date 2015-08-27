@@ -1,0 +1,128 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] ipass deployment guidelines
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20ipass%20deployment%20guidelines&In-Reply-To=%3C4BF580C8.8040301%40wiggy.net%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001390.html">
+   <LINK REL="Next"  HREF="001380.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] ipass deployment guidelines</H1>
+    <B>Wichert Akkerman</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20ipass%20deployment%20guidelines&In-Reply-To=%3C4BF580C8.8040301%40wiggy.net%3E"
+       TITLE="[Chilli] ipass deployment guidelines">wichert at wiggy.net
+       </A><BR>
+    <I>Thu May 20 18:34:48 UTC 2010</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001390.html">[Chilli] Hostname for SSL-enabled WISPr redirect
+</A></li>
+        <LI>Next message: <A HREF="001380.html">[Chilli] Fix compiler errors/warnings in current SVN
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1379">[ date ]</a>
+              <a href="thread.html#1379">[ thread ]</a>
+              <a href="subject.html#1379">[ subject ]</a>
+              <a href="author.html#1379">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Since we have completed ipass testing on an chilli deployment and I've 
+been told someone else is in the process of going through their 
+production testplan I figured it might be helpful if I posted how our 
+deployment looks.
+
+iPass integration is fairly basic: it uses WISPr to authenticate with 
+RADIUS packets going through a special ipass radius proxy. SSL is 
+required for all requests after the initial request.
+
+The first step is to setup a RADIUS server which proxies the IPASS realm 
+to the ipass netserver software or server (ipass deployments can either 
+use a java daemon you install on a linux server or a full
+hardware box). We use FreeRADIUS, which is simple to configure and will 
+documented.
+
+Second step is to setup chilli. The usual chilli installation procedures 
+apply. You will need to enable SSL support, which is required. We 
+configure chilli like this:
+
+uamuissl
+uamaliasip       1.0.0.1
+domain           aas.attingo.nl
+uamaliasname     wispr
+sslkeyfile       /etc/ssl/private/aas.attingo.nl-key.pem
+sslcertfile      /etc/ssl/certs/aas.attingo.nl.pem
+uamallowed       &quot;klm.aas.attingo.nl,crl.geotrust.com,pb.ipass.com&quot;
+radiusnasid             KLM-WLAN
+radiuslocationid        &quot;isocc=NL,cc=31,ac=020,network=KLM-Lounge&quot;
+radiuslocationname      &quot;Attingo Services,KLM Lounges&quot;
+radiusnasporttype       19
+
+The RADIUS parameters are mandatory and must uniquely identify your 
+location.
+
+The SSL certificate must valid for the hostname used for uamaliasip, 
+which is formed by combining uamaliasname with the domain (which in our 
+case is wispr.aas.attingo.nl). The certificate must be signed by one of 
+the well known certification authorities, so no self-signed certs. The 
+CRL server for your SSL certificate must be listed in uamallowed, as 
+well as pb.ipass.com which ipass clients use to update their phonebook.
+
+Your UAM implementation must also use https and use a proper SSL 
+certificate. Extra care must be taken when redirecting back to chilli: 
+unless you use a svn snapshot from revision 326 or later (which will 
+become version 1.2.3) you must ignore the ssl parameter from chilli and 
+generate the hostname yourself; earlier versions of chilli incorrectly 
+use the IP address in the URL which leads to SSL validation errors.
+
+I have found uamaliasname to be somewhat unreliable: DNS requests 
+occasionally get both a response from chilli as well as a NXDOMAIN from 
+our normal nameserver. To circumvent this I would recommend to put the 
+uamaliasname in your DNS zone as well.
+
+We use a Pylons based application for our UAM. I've attached the 
+controller code which implements the UAM side of the WISPr handling.
+
+Wichert.
+
+-- 
+Wichert Akkerman &lt;<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">wichert at wiggy.net</A>&gt;   It is simple to make things.
+<A HREF="http://www.wiggy.net/">http://www.wiggy.net/</A>                  It is hard to make things simple.
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: chilli.py
+Type: text/x-python-script
+Size: 4575 bytes
+Desc: not available
+URL: &lt;<A HREF="http://lists.coova.org/pipermail/chilli/attachments/20100520/c500d4f4/attachment.bin">http://lists.coova.org/pipermail/chilli/attachments/20100520/c500d4f4/attachment.bin</A>&gt;
+</PRE>
+
+
+
+
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001390.html">[Chilli] Hostname for SSL-enabled WISPr redirect
+</A></li>
+	<LI>Next message: <A HREF="001380.html">[Chilli] Fix compiler errors/warnings in current SVN
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1379">[ date ]</a>
+              <a href="thread.html#1379">[ thread ]</a>
+              <a href="subject.html#1379">[ subject ]</a>
+              <a href="author.html#1379">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

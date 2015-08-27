@@ -1,0 +1,124 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] Coovachilli and Squid Transparent on the same host
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Coovachilli%20and%20Squid%20Transparent%20on%20the%20same%20host&In-Reply-To=%3Cvmime.4fb9fce4.16a3.1cc15835d985ff93%40dkxllaa2.miniserver.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001970.html">
+   <LINK REL="Next"  HREF="001972.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] Coovachilli and Squid Transparent on the same host</H1>
+    <B>David Harrold</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Coovachilli%20and%20Squid%20Transparent%20on%20the%20same%20host&In-Reply-To=%3Cvmime.4fb9fce4.16a3.1cc15835d985ff93%40dkxllaa2.miniserver.com%3E"
+       TITLE="[Chilli] Coovachilli and Squid Transparent on the same host">david at dkxl.co.uk
+       </A><BR>
+    <I>Mon May 21 08:29:24 UTC 2012</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001970.html">[Chilli] Coovachilli and Squid Transparent on the same host
+</A></li>
+        <LI>Next message: <A HREF="001972.html">[Chilli] PostAuhtProxy with exception
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1971">[ date ]</a>
+              <a href="thread.html#1971">[ thread ]</a>
+              <a href="subject.html#1971">[ subject ]</a>
+              <a href="author.html#1971">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>&#160; 
+
+You can use a mangle entry to prevent unauthenticated users having access to squid.
+
+&#160;
+
+I use this combination of iptables rules:
+
+&#160;
+
+#Redirect all non-local http traffic to squid
+iptables -A PREROUTING -t nat -s $CLIENT_NET -p tcp --dport 80 ! -d $CLIENT_NET -j REDIRECT --to-port 3128
+
+&#160;
+
+#Block direct external access to the internal receiving port. This has to be done in the mangle part of iptables 
+
+#before NAT happens so that intercepted traffic does not get dropped. 
+iptables -A PREROUTING -t mangle -p tcp --dport 3128 -j DROP
+
+
+#Only allow client access to the squid intercept port from tun0, ie AFTER its been through the chilli gatekeeper
+iptables -I INPUT -i tun0 -p tcp --dport 3128&#160; -j ACCEPT&#160;&#160; 
+
+&#160;
+
+BR
+
+-David
+
+&#160;
+
+&#160;
+Maybe I'm close to the goal: &#160;if I use postauthproxy rather than redirect
+iptables rules, and I set 10.0.0.1 in the config file instead of 127.0.0.1 as
+you suggested, my traffic is dropped by the rule #8 in the INPUT chain
+in &#160;filter table!
+
+Chain INPUT (policy ACCEPT 77 packets, 5364 bytes)
+num pkts bytes target prot opt in out source destination
+1 139 19658 DROP all -- eth0 * 0.0.0.0/0 0.0.0.0/0
+2 0 0 ACCEPT icmp -- tun0 * 0.0.0.0/0 10.0.0.1
+3 1 82 ACCEPT udp -- tun0 * 0.0.0.0/0 10.0.0.1 udp dpt:53
+4 0 0 ACCEPT udp -- tun0 * 0.0.0.0/0 10.0.0.1 udp dpts:67:68
+5 0 0 ACCEPT udp -- tun0 * 0.0.0.0/0 255.255.255.255 udp dpts:67:68
+6 77 9558 ACCEPT tcp -- tun0 * 0.0.0.0/0 10.0.0.1 tcp dpt:4990
+7 80 11894 ACCEPT tcp -- tun0 * 0.0.0.0/0 10.0.0.1 tcp dpt:3990
+8 14 896 DROP all -- tun0 * 0.0.0.0/0 10.0.0.1 &lt;&lt;&lt; THIS ONE DROPS SQUID!
+
+If I add this rule
+iptables -I INPUT 8 -i tun0 -p tcp -m tcp --dport 3128 -j ACCEPT
+
+all works fine, but users will be able to surf setting explicit proxy,
+bypassing authentication!!!!!
+
+This is the reason why I find more logic to set postauthproxy to 127.0.0.1,
+but doing this, i can't get any way traffic processed by Squid...
+
+Any idea?
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: &lt;<A HREF="http://lists.coova.org/pipermail/chilli/attachments/20120521/f0c53e73/attachment-0001.html">http://lists.coova.org/pipermail/chilli/attachments/20120521/f0c53e73/attachment-0001.html</A>&gt;
+</PRE>
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001970.html">[Chilli] Coovachilli and Squid Transparent on the same host
+</A></li>
+	<LI>Next message: <A HREF="001972.html">[Chilli] PostAuhtProxy with exception
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1971">[ date ]</a>
+              <a href="thread.html#1971">[ thread ]</a>
+              <a href="subject.html#1971">[ subject ]</a>
+              <a href="author.html#1971">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,149 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] Repeated,	rapid-fire mac-auth requests received by the RADIUS server
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Repeated%2C%0A%09rapid-fire%20mac-auth%20requests%20received%20by%20the%20RADIUS%20server&In-Reply-To=%3C1332422155.73147.YahooMailNeo%40web160803.mail.bf1.yahoo.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001914.html">
+   <LINK REL="Next"  HREF="001911.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] Repeated,	rapid-fire mac-auth requests received by the RADIUS server</H1>
+    <B>Guy Kamanda</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Repeated%2C%0A%09rapid-fire%20mac-auth%20requests%20received%20by%20the%20RADIUS%20server&In-Reply-To=%3C1332422155.73147.YahooMailNeo%40web160803.mail.bf1.yahoo.com%3E"
+       TITLE="[Chilli] Repeated,	rapid-fire mac-auth requests received by the RADIUS server">guy_kamanda at yahoo.com
+       </A><BR>
+    <I>Thu Mar 22 13:15:55 UTC 2012</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001914.html">[Chilli] Repeated, apid-fire mac-auth requests received by the RADIUS server
+</A></li>
+        <LI>Next message: <A HREF="001911.html">[Chilli] WPAD support
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1913">[ date ]</a>
+              <a href="thread.html#1913">[ thread ]</a>
+              <a href="subject.html#1913">[ subject ]</a>
+              <a href="author.html#1913">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Dear All, 
+
+
+I have a project for hotspot deployment. How can I get help for setting Access control, Raduis, and payment with credits cards, paypal and cash. And what is the price for this?
+Forward me to someone who can work here.
+
+
+BR
+
+Guy
+
+
+
+________________________________
+ From: Adam Hammond &lt;<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">adam at freerunr.com</A>&gt;
+To: David Bird &lt;<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">david at coova.com</A>&gt; 
+Cc: <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli at coova.org</A> 
+Sent: Thursday, March 22, 2012 12:00 PM
+Subject: Re: [Chilli] Repeated, rapid-fire mac-auth requests received by the RADIUS server
+ 
+Great, thanks David.
+
+I'll be happy to help test any of this functionality if/when you implement it in the future.
+
+Adam
+
+On 22 Mar 2012, at 05:45, David Bird wrote:
+
+&gt;<i> Using strictmacauth (with macauth) should limit some radius requests. Chilli used to always be 'strict' in that it would not respond to the first dhcp request (instead sends radius which may return setting the IP to use). This made dhcp 'slow' even though most people do not probably use the IP setting feature. I will look into why chilli is sending too many macauth quickly. Though, it may be good for it to not just do it once and never again for the session (may seem to use macauth as primary auth mechanism after adding visitor Macs to database. Maybe I offer a new option for 'dhcpmacauth' that will continue to send auth for dhcp requests,&#160; with the default being only one Mac auth at first dhcp association (after IP was assigned) , and strictmacauth will have the one (or two) auths - one before IP assignment and possibly one after chilli had assigned an IP (if not otherwise assigned by first radius response).
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> -------- Original message --------
+</I>&gt;<i> Subject: Re: [Chilli] Repeated,&#160;&#160;&#160; rapid-fire mac-auth requests received by the RADIUS server 
+</I>&gt;<i> From: Adam Hammond &lt;<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">adam at freerunr.com</A>&gt; 
+</I>&gt;<i> To: Mike Puchol &lt;<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">puchol at me.com</A>&gt; 
+</I>&gt;<i> CC: <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli at coova.org</A> 
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> Hi Mike,
+</I>&gt;<i> 
+</I>&gt;<i> If my understanding is correct coova-chilli implements basic mac-auth functionality by sending an authentication packet every time is receives a DHCPREQUEST. If you look at your debug output you'll probably see that devices actually ask for all sorts of ip addresses when talking to dhcp servers and receiving an ip address (self signed, old addresses, the address that are given etc etc). Each request results in an auth attempt. 
+</I>&gt;<i> 
+</I>&gt;<i> I was looking into this the other day as I wanted a system where I only get one access request per device. There is an option that changes the way the macauth process works in chilli:
+</I>&gt;<i> 
+</I>&gt;<i> --strictmacauth&#160;&#160;&#160; Be strict about MAC Auth (no DHCP reply until we get RADIUS reply)&#160; (default=off)
+</I>&gt;<i> 
+</I>&gt;<i> ... which implements macauth functionality how it should be (IMO).
+</I>&gt;<i> 
+</I>&gt;<i> Unfortunately I can't get it to work on 1.2.9 (I haven't tried older versions). When added as an additional option to --macauth I still see lots of auth packets flying around. When I replace --macauth with --strictmacauth then mac auth functionality is un-enabled. I don't see any reference to this 'strictmacauth' in the 'functions' file so I'm not even sure it's implemented any more.
+</I>&gt;<i> 
+</I>&gt;<i> Hopefully David can clear this up and it's a feature I'd really like to use.
+</I>&gt;<i> 
+</I>&gt;<i> cheers,
+</I>&gt;<i> Adam
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> On 21 Mar 2012, at 12:51, Mike Puchol wrote:
+</I>&gt;<i> 
+</I>&gt;<i> &gt; Hi all,
+</I>&gt;<i> &gt; 
+</I>&gt;<i> &gt; I'm having an odd problem with my setup, involving Ubiquiti routers and a Radiator server, with MAC authentication against RADIUS enabled. The server will receive a seemingly random number of access-request packets, in rapid succession (even less than 1 second between them), usually between one and six packets.
+</I>&gt;<i> &gt; 
+</I>&gt;<i> &gt; My first thought is that chilli is sending out requests without a reply wait timer, or a timer set too low, and so it fires away until it gets a reply from the server.
+</I>&gt;<i> &gt; 
+</I>&gt;<i> &gt; Has anyone else come across this?
+</I>&gt;<i> &gt; 
+</I>&gt;<i> &gt; Cheers,
+</I>&gt;<i> &gt; 
+</I>&gt;<i> &gt; Mike
+</I>&gt;<i> &gt; _______________________________________________
+</I>&gt;<i> &gt; Chilli mailing list
+</I>&gt;<i> &gt; <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">Chilli at coova.org</A>
+</I>&gt;<i> &gt; <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">http://lists.coova.org/cgi-bin/mailman/listinfo/chilli</A>
+</I>&gt;<i> 
+</I>&gt;<i> _______________________________________________
+</I>&gt;<i> Chilli mailing list
+</I>&gt;<i> <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">Chilli at coova.org</A>
+</I>&gt;<i> <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">http://lists.coova.org/cgi-bin/mailman/listinfo/chilli</A>
+</I>
+_______________________________________________
+Chilli mailing list
+<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">Chilli at coova.org</A>
+<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">http://lists.coova.org/cgi-bin/mailman/listinfo/chilli</A>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: &lt;<A HREF="http://lists.coova.org/pipermail/chilli/attachments/20120322/efc81a8b/attachment.html">http://lists.coova.org/pipermail/chilli/attachments/20120322/efc81a8b/attachment.html</A>&gt;
+</PRE>
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001914.html">[Chilli] Repeated, apid-fire mac-auth requests received by the RADIUS server
+</A></li>
+	<LI>Next message: <A HREF="001911.html">[Chilli] WPAD support
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1913">[ date ]</a>
+              <a href="thread.html#1913">[ thread ]</a>
+              <a href="subject.html#1913">[ subject ]</a>
+              <a href="author.html#1913">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,76 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli]   [PATCH] Fix: Memory leak of iphash_new() on error path
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20%20%20%5BPATCH%5D%20Fix%3A%20Memory%20leak%20of%20iphash_new%28%29%20on%20error%20path&In-Reply-To=%3C4B8DCDB4.4040908%40ictec.co.jp%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001155.html">
+   <LINK REL="Next"  HREF="001157.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli]   [PATCH] Fix: Memory leak of iphash_new() on error path</H1>
+    <B>Masashi Honma</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20%20%20%5BPATCH%5D%20Fix%3A%20Memory%20leak%20of%20iphash_new%28%29%20on%20error%20path&In-Reply-To=%3C4B8DCDB4.4040908%40ictec.co.jp%3E"
+       TITLE="[Chilli]   [PATCH] Fix: Memory leak of iphash_new() on error path">honma at ictec.co.jp
+       </A><BR>
+    <I>Wed Mar  3 02:47:16 UTC 2010</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001155.html">[Chilli] Chilli_redir using 100% cpu
+</A></li>
+        <LI>Next message: <A HREF="001157.html">[Chilli] wispr upload limiting on coova 1.2.2
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1156">[ date ]</a>
+              <a href="thread.html#1156">[ thread ]</a>
+              <a href="subject.html#1156">[ subject ]</a>
+              <a href="author.html#1156">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hello.
+
+The allocated &quot;n&quot; is not freed on error path. This patch solves this
+issue.
+
+Index: iphash.c
+===================================================================
+--- iphash.c	(revision 295)
++++ iphash.c	(working copy)
+@@ -95,6 +95,7 @@
+   
+   if (!(n-&gt;hash = calloc(sizeof(struct iphashm_t *), n-&gt;hashsize))){
+     log_err(0, &quot;Failed to allocate memory for iphash&quot;);
++    free(n);
+     return -1;
+   }
+ 
+
+Regards,
+Masashi Honma.
+</PRE>
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001155.html">[Chilli] Chilli_redir using 100% cpu
+</A></li>
+	<LI>Next message: <A HREF="001157.html">[Chilli] wispr upload limiting on coova 1.2.2
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1156">[ date ]</a>
+              <a href="thread.html#1156">[ thread ]</a>
+              <a href="subject.html#1156">[ subject ]</a>
+              <a href="author.html#1156">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

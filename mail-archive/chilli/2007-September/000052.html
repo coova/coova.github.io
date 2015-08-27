@@ -1,0 +1,129 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> Problem with chillispot and dhcp relay
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20Problem%20with%20chillispot%20and%20dhcp%20relay&In-Reply-To=%3Cf9ccc70f0709080409g76545a2cxc4fcf7a92ebe31f%40mail.gmail.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000064.html">
+   <LINK REL="Next"  HREF="000057.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>Problem with chillispot and dhcp relay</H1>
+    <B>Giosue Pacifico</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20Problem%20with%20chillispot%20and%20dhcp%20relay&In-Reply-To=%3Cf9ccc70f0709080409g76545a2cxc4fcf7a92ebe31f%40mail.gmail.com%3E"
+       TITLE="Problem with chillispot and dhcp relay">giosue.pacifico at gmail.com
+       </A><BR>
+    <I>Sat Sep  8 11:09:56 UTC 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000064.html">DHCP - WLAN behaviour of Windows Notebooks
+</A></li>
+        <LI>Next message: <A HREF="000057.html">CAP upgrades
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#52">[ date ]</a>
+              <a href="thread.html#52">[ thread ]</a>
+              <a href="subject.html#52">[ subject ]</a>
+              <a href="author.html#52">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hi,
+I'm missing bites of conversation, is it normal?
+Could the duplicate packet be solved like an arp flux? Something like
+&quot;echo 1 &gt; /proc/sys/net/ipv4/conf/all/arp_filter&quot;.
+Ciao
+Giosu&#232;
+
+On 9/8/07, David Bird &lt;<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">mem.corruption at gmail.com</A>&gt; wrote:
+&gt;<i> That's great. Thanks for testing! I'm happy to have chilli work with
+</I>&gt;<i> more environments and now supports a DHCP relay. With regard to the
+</I>&gt;<i> ICMP duplicate packets... I think it could be the fact that the OS is
+</I>&gt;<i> replying to the ping from both the dhcpif _and_ the tun interfaces.
+</I>&gt;<i> With your installation, are you running the supplied configuration
+</I>&gt;<i> with the ip up/down scripts (which setup your firewall for chilli)?
+</I>&gt;<i> I'll try to reproduce the problem...
+</I>&gt;<i>
+</I>&gt;<i> Thanks again.
+</I>&gt;<i> David
+</I>&gt;<i>
+</I>&gt;<i> On 9/8/07, Lai Zit Seng &lt;<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">lzs at pobox.com</A>&gt; wrote:
+</I>&gt;<i> &gt; Ok, was too eager to try the svn update so I came back to test anyway.
+</I>&gt;<i> &gt; Your latest update works great! Thanks. Especially since I imagine my
+</I>&gt;<i> &gt; DHCP relay configuration is rather unusual :)
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; May I bug you with one more item. This is not show stopper but
+</I>&gt;<i> &gt; nevertheless something that bothers me. I can ping across chillispot
+</I>&gt;<i> &gt; just fine. But if the clients ping chillispot IP itself, they get
+</I>&gt;<i> &gt; duplicate replies. I.e. 1 echo-request, 2 echo-replies come back. This
+</I>&gt;<i> &gt; is the case for both wired and wireless clients (so it is not a
+</I>&gt;<i> &gt; quirkness of the WLC in my environment).
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; The tcpdump at the client, chillispot's tun interface and chillispot's
+</I>&gt;<i> &gt; dhcpif interface shows the duplicate echo-replies. The tun interface
+</I>&gt;<i> &gt; capture does show something odd: There is actually an echo-reply going
+</I>&gt;<i> &gt; out first, then the echo-request in, then echo-reply out. I can send the
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; I can send you the tcpdump if needed :)
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; Regards,
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; .lzs
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; ps: Copying back to mailing list.
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; On 9/8/07 1:30 AM, David Bird wrote:
+</I>&gt;<i> &gt; &gt; Thanks,
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt;  From a quick review, I think my (and the current svn) version does
+</I>&gt;<i> &gt; &gt; roughly the same thing. Though, I think mine is a little cleaner in that
+</I>&gt;<i> &gt; &gt; I moved the call to dhcp_getreq() up above the newconn() in the
+</I>&gt;<i> &gt; &gt; receive_ip method. And, it returns out of receive_ip -- since the
+</I>&gt;<i> &gt; &gt; request has actually already been replied to. The newconn() method is
+</I>&gt;<i> &gt; &gt; also called from within dhcp_getreq() - and I instantiate the connection
+</I>&gt;<i> &gt; &gt; with the chaddr in the event of a relay. I look forward to hearing how
+</I>&gt;<i> &gt; &gt; the current snapshot does in your environment.
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt; David
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; ---------------------------------------------------------------------
+</I>&gt;<i> &gt; To unsubscribe, e-mail: <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli-unsubscribe at coova.org</A>
+</I>&gt;<i> &gt; For additional commands, e-mail: <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli-help at coova.org</A>
+</I>&gt;<i> &gt; Wiki: <A HREF="http://coova.org/wiki/index.php/CoovaChilli">http://coova.org/wiki/index.php/CoovaChilli</A>
+</I>&gt;<i> &gt; Forum: <A HREF="http://coova.org/phpBB3/viewforum.php?f=4">http://coova.org/phpBB3/viewforum.php?f=4</A>
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt;
+</I>&gt;<i>
+</I>&gt;<i> ---------------------------------------------------------------------
+</I>&gt;<i> To unsubscribe, e-mail: <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli-unsubscribe at coova.org</A>
+</I>&gt;<i> For additional commands, e-mail: <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli-help at coova.org</A>
+</I>&gt;<i> Wiki: <A HREF="http://coova.org/wiki/index.php/CoovaChilli">http://coova.org/wiki/index.php/CoovaChilli</A>
+</I>&gt;<i> Forum: <A HREF="http://coova.org/phpBB3/viewforum.php?f=4">http://coova.org/phpBB3/viewforum.php?f=4</A>
+</I>&gt;<i>
+</I>&gt;<i>
+</I>
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000064.html">DHCP - WLAN behaviour of Windows Notebooks
+</A></li>
+	<LI>Next message: <A HREF="000057.html">CAP upgrades
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#52">[ date ]</a>
+              <a href="thread.html#52">[ thread ]</a>
+              <a href="subject.html#52">[ subject ]</a>
+              <a href="author.html#52">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

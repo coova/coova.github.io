@@ -1,0 +1,174 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] [PATCH] Binconfigfile not moved after chilliredir fork - Rev. 257
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20%5BPATCH%5D%20Binconfigfile%20not%20moved%20after%20chilliredir%20fork%0A%20-%20Rev.%20257&In-Reply-To=%3C1260999624.3743.59.camel%40alberto-laptop%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001070.html">
+   <LINK REL="Next"  HREF="001071.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] [PATCH] Binconfigfile not moved after chilliredir fork - Rev. 257</H1>
+    <B>Alberto Bellettato</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20%5BPATCH%5D%20Binconfigfile%20not%20moved%20after%20chilliredir%20fork%0A%20-%20Rev.%20257&In-Reply-To=%3C1260999624.3743.59.camel%40alberto-laptop%3E"
+       TITLE="[Chilli] [PATCH] Binconfigfile not moved after chilliredir fork - Rev. 257">albesvs at yahoo.it
+       </A><BR>
+    <I>Wed Dec 16 21:40:24 UTC 2009</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001070.html">[Chilli] [PATCH] Binstatusfile not moved after chilliredir fork - Rev. 257
+</A></li>
+        <LI>Next message: <A HREF="001071.html">[Chilli] MAX-ALL-SESSIOn
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1072">[ date ]</a>
+              <a href="thread.html#1072">[ thread ]</a>
+              <a href="subject.html#1072">[ subject ]</a>
+              <a href="author.html#1072">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>I dug into the code, not easy to understand the flow of the code with the forks and the binconfig passing form one to another, personally I would 
+not have choosen a so articulated path...
+
+I figured out that the main chilli forks a process chilli_opt to create the binconfig file, then it changes the directory of the binconfig to match
+its own parent PID, it makes all kind of stuff, including the forking of the chilli_redir and others sub-programs like that. Is that correct?
+However I do not understand how the chilli_opt PID can be less than the main chilli one... usually a child forked process has a greater number than
+the parent...
+
+Anyhow I succeded in having the binconfig file in the right /tmp/chilli-PID directory and the child process [chilli_redir] using the same file
+with the &quot;-b&quot;.
+
+Here it is an example:
+# ps|grep chilli
+5800 root      5304 S    /usr/sbin/chilli 
+5806 root      4236 S    [chilli_redir] -b /tmp/chilli-5800/config.bin 
+
+# ls /tmp
+chilli-5800
+
+# ls /tmp/chilli-5800
+config.bin
+
+The patch follows.
+
+HOWEVER 2 problems are still there:
+
+1. Inside the config.bin there is the wrong binconfig file path (and I am not suprised about it because the file generated with the chilli_opt's PID
+                                                                 has been moved by rename() to the new directory without recreating it )
+Example (in the same context of the previous ones, showing only a part of the output):
+# cat /tmp/chilli-5800/config.bin
+....../tmp/chilli-5797/config.bin/var/run/chilli.pid192.168.182.0/24/255.255.255.0.......
+
+I suppose the PID 5797 is the chilli_opt's one, that created the binfile just before the chilli server started and moved the file to the new dir.
+
+Does this impact on some functionality?? I.E. is the binconfig path read from the file itself for some weird reason?
+I saw that in the previous revisions it was not written to the file.
+
+2. The command line parameter -b (or --bin) does not work. For example specifying --bin=/tmp/test.bin has no effect.
+   Looking at the code I was supposing that after chilli_opt calls chilli_binconfig() passing to it pid 0, it should have got the _option.binconfig 
+   value (bc var), that was passed through configuration or command line.
+   However debugging the code I discovered that _option.binconfig is always set to /tmp/chilli-PID_OF_CHILLI_OPT/config.bin. How is it possible??
+   I can not find the point where that happens.
+
+3. Sometimes the /tmp/chilli-xxxx dir is not deleted (usually it does)
+
+
+Index: src/chilli.c
+===================================================================
+--- src/chilli.c	(revisione 259)
++++ src/chilli.c	(copia locale)
+@@ -152,11 +152,13 @@
+ 
+ int chilli_binconfig(char *file, size_t flen, pid_t pid) {
+   char * bc = _options.binconfig;
+-  if (bc) {
+-    return snprintf(file, flen, &quot;%s&quot;, bc);
+-  } else {
+-    if (pid == 0) pid = chilli_pid;
+-    if (pid == 0) pid = getpid();
++  if (pid == 0) {
++    if (bc) {
++      return snprintf(file, flen, &quot;%s&quot;, bc);
++    } else {
++      pid = chilli_pid;
++      if (pid == 0) pid = getpid();
++    }
+   }
+   return snprintf(file, flen, &quot;/tmp/chilli-%d/config.bin&quot;, pid);
+ }
+@@ -4170,7 +4172,7 @@
+ 	log_err(errno, file2);
+ 
+       chilli_binconfig(file, sizeof(file), cpid);
+-      snprintf(file2, sizeof(file2), &quot;/tmp/chilli-%d/config.bin&quot;, getpid());
++      chilli_binconfig(file2, sizeof(file2), getpid());
+ 
+       if (rename(file, file2)) log_err(errno, file);
+
+
+
+Il giorno mar, 15/12/2009 alle 19.44 +0100, Alberto Bellettato ha
+scritto:
+&gt;<i> Sorry, too quick submitting the patch.. the code is NOT working fine
+</I>&gt;<i> yet.
+</I>&gt;<i> There is still a problem with [chill_redir] child staying linked to the
+</I>&gt;<i> old config.bin directory.
+</I>&gt;<i> 
+</I>&gt;<i> If I have got time tomorrow I will dig the code..
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> &gt; In rev. 257 there is a problem with the binstatusfile, that issues a message in the log files &quot;(Directory not empty) /tmp/chilli-xxxxx&quot;.
+</I>&gt;<i> &gt; 
+</I>&gt;<i> &gt; That is caused by the rename(file,file2) not working (not moving the bin file) because file = file2 = file with old PID.
+</I>&gt;<i> &gt; Infact file2 is set by chilli_binconfig(), that used the &quot;bc = _options.binconfig&quot; value (set to the old PID).
+</I>&gt;<i> &gt; 
+</I>&gt;<i> &gt; I think the /tmp/chilli-xxxxx dir should be clean when chilli stop too, but it is not a priority since it uses only 16 bytes.
+</I>&gt;<i> &gt; 
+</I>&gt;<i> &gt; Here is the patch.
+</I>&gt;<i> &gt; 
+</I>&gt;<i> &gt; Index: src/chilli.c
+</I>&gt;<i> &gt; ===================================================================
+</I>&gt;<i> &gt; --- src/chilli.c        (revisione 257)
+</I>&gt;<i> &gt; +++ src/chilli.c        (copia locale)
+</I>&gt;<i> &gt; @@ -4170,9 +4170,9 @@
+</I>&gt;<i> &gt;         log_err(errno, file2);
+</I>&gt;<i> &gt; 
+</I>&gt;<i> &gt;        chilli_binconfig(file, sizeof(file), cpid);
+</I>&gt;<i> &gt; -      chilli_binconfig(file2, sizeof(file2), getpid());
+</I>&gt;<i> &gt; +      snprintf(file2, sizeof(file2), &quot;/tmp/chilli-%d/config.bin&quot;, getpid());
+</I>&gt;<i> &gt; 
+</I>&gt;<i> &gt; -      rename(file, file2);
+</I>&gt;<i> &gt; +      if (rename(file, file2)) log_err(errno, file);
+</I>&gt;<i> &gt; 
+</I>&gt;<i> &gt;        umask(process_mask);
+</I>&gt;<i> &gt; 
+</I>&gt;<i> 
+</I>
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001070.html">[Chilli] [PATCH] Binstatusfile not moved after chilliredir fork - Rev. 257
+</A></li>
+	<LI>Next message: <A HREF="001071.html">[Chilli] MAX-ALL-SESSIOn
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1072">[ date ]</a>
+              <a href="thread.html#1072">[ thread ]</a>
+              <a href="subject.html#1072">[ subject ]</a>
+              <a href="author.html#1072">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

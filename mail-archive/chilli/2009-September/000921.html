@@ -1,0 +1,124 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> Log out client when no accounting updates received
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20Log%20out%20client%20when%20no%20accounting%20updates%20received&In-Reply-To=%3C4AC32589.6040008%40amobia.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000918.html">
+   <LINK REL="Next"  HREF="000919.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>Log out client when no accounting updates received</H1>
+    <B>Johan Meiring</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20Log%20out%20client%20when%20no%20accounting%20updates%20received&In-Reply-To=%3C4AC32589.6040008%40amobia.com%3E"
+       TITLE="Log out client when no accounting updates received">jmeiring at amobia.com
+       </A><BR>
+    <I>Wed Sep 30 09:31:53 UTC 2009</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000918.html">Log out client when no accounting updates received
+</A></li>
+        <LI>Next message: <A HREF="000919.html">Log out client when no accounting updates received
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#921">[ date ]</a>
+              <a href="thread.html#921">[ thread ]</a>
+              <a href="subject.html#921">[ subject ]</a>
+              <a href="author.html#921">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>wlanmac wrote:
+&gt;<i> I think it could be an option.. even a compile-time option + runtime
+</I>&gt;<i> configuration for number of missed acct'ing responses. But, it's not a
+</I>&gt;<i> feature I would imagine many would use. 
+</I>&gt;<i> 
+</I>
+Whether people would use it or not, is probably a case of people don't know 
+that they need it.
+
+Hope the following makes sense.....
+
+I process about 2 million radius accounting records per month (probably very 
+few in some people's book).
+I discovered (by accident) that accounting data sometimes got lost,  I would 
+never have known about it, had I not stumbled on a &quot;weird&quot; session.
+
+Let me explain how this can go wrong.
+
+You have a NAS (chillispot) natted behind an ADSL line.  It handles few 
+users with long sessions.
+
+A Linux device (probably every ADSL router out there) is handling the DSL 
+line.  In the Linux conntrack table, the authentication and accounting 
+become tracked (and masqueraded/source natted).
+
+Now the authentication conntrack times out, but the accounting conntrack 
+session stays, (few authentications, but frequent accounting updates).
+
+Now the ADSL connection is dropped and re-established with a new IP.
+
+Because the accounting conntrack still exists, the accounting packets are 
+source natted behind the old IP, and therefore gets lost.  The 
+authentication is behind the new IP, and works.  Now everyone on this 
+hotspot gets free bandwidth.
+
+I realise there are other ways to fix the spesific issue above (manipulting 
+the conntrack table in ip-up/ip-down) but as Wickert mentioned, lots of 
+people have seperate authentication and accounting systems.  The one system 
+does not neccesarily know the other is down, and now people can use 
+resources without being billed for them.
+
+It would be interesting for everyone on the list that may have hotspots 
+behind dymanic IP connections, to see how many successfull authentications 
+they have without any accounting data.
+
+The problem could be solved from the radius side (using COA), but only if 
+the Radius server can contact the NAS - which it can't if the NAS is behind 
+a NATTED connection.
+
+If the Radius server received no Radius Accounting, it has no opportunity to 
+stop (COA) the client.
+
+Hope this makes sense.
+
+
+If you think it is worth implementing, I can offer to help wherever I can. 
+My c skills is limited to &quot;copy and paste&quot; programming, but I am willing to 
+assist.
+
+
+-- 
+
+
+Johan Meiring
+Amobia Communications
+Tel: (0861) AMOBIA / (0861) 266242
+Fax: (0861) AMOFAX / (0861) 266329
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000918.html">Log out client when no accounting updates received
+</A></li>
+	<LI>Next message: <A HREF="000919.html">Log out client when no accounting updates received
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#921">[ date ]</a>
+              <a href="thread.html#921">[ thread ]</a>
+              <a href="subject.html#921">[ subject ]</a>
+              <a href="author.html#921">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

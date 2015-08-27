@@ -1,0 +1,107 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] cross compile error
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20cross%20compile%20error&In-Reply-To=%3C180301cb00ae%240aa66e60%241ff34b20%24%40fr%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001401.html">
+   
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] cross compile error</H1>
+    <B>Thierry MUSEUX - www.fwt.fr -</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20cross%20compile%20error&In-Reply-To=%3C180301cb00ae%240aa66e60%241ff34b20%24%40fr%3E"
+       TITLE="[Chilli] cross compile error">tm at fwt.fr
+       </A><BR>
+    <I>Mon May 31 10:43:01 UTC 2010</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001401.html">[Chilli] redir in busy-loop
+</A></li>
+        
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1402">[ date ]</a>
+              <a href="thread.html#1402">[ thread ]</a>
+              <a href="subject.html#1402">[ subject ]</a>
+              <a href="author.html#1402">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hi David
+I have a custom package for coova on openwrt.
+With the current trunk, r339, I have an error :
+cc1: warnings being treated as errors
+redir.c: In function 'redir_main':
+redir.c:2796: error: format '%ld' expects type 'long int', but argument 3
+has type 'uint64_t'&#160;sprintf(buffer, &quot;%ld&quot;, conn.s_state.input_octets);
+
+redir.c:2798: error: format '%ld' expects type 'long int', but argument 3
+has type 'uint64_t'&#160;sprintf(buffer, &quot;%ld&quot;, conn.s_state.output_octets);
+
+redir.c:2800: error: format '%ld' expects type 'long int', but argument 3
+has type 'uint64_t'&#160;sprintf(buffer, &quot;%ld&quot;, conn.s_params.sessiontimeout);
+
+
+after investigation the compilation works fine until r318, r319 fails. (but
+with another error)
+the exact same error (error: format '%ld' expects type 'long int') appears
+with r321
+
+i have made this bottom patch which solve the compile error.
+Could you include the patch in the trunk.
+With r339 there is no error if I compile natively on x86_32 and x86_64.
+The error appears when I compile in cross compile tools.
+
+Regards.
+
+
+Index: src/redir.c
+===================================================================
+--- src/redir.c (r&#233;vision 339)
++++ src/redir.c (copie de travail)
+@@ -2793,11 +2793,11 @@
+          setenv(&quot;CHI_SESSION_ID&quot;, conn.s_state.sessionid, 1);
+          setenv(&quot;CHI_USERNAME&quot;, conn.s_state.redir.username, 1);
+          setenv(&quot;CHI_USERURL&quot;, conn.s_state.redir.userurl, 1);
+-         sprintf(buffer, &quot;%ld&quot;, conn.s_state.input_octets);
++         sprintf(buffer, &quot;%lld&quot;, conn.s_state.input_octets);
+          setenv(&quot;CHI_INPUT_BYTES&quot;, buffer, 1);
+-         sprintf(buffer, &quot;%ld&quot;, conn.s_state.output_octets);
++         sprintf(buffer, &quot;%lld&quot;, conn.s_state.output_octets);
+          setenv(&quot;CHI_OUTPUT_BYTES&quot;, buffer, 1);
+-         sprintf(buffer, &quot;%ld&quot;, conn.s_params.sessiontimeout);
++         sprintf(buffer, &quot;%lld&quot;, conn.s_params.sessiontimeout);
+          setenv(&quot;CHI_SESSION_TIMEOUT&quot;, buffer, 1);
+
+          redir_chartohex(conn.s_state.redir.uamchal, buffer, REDIR_MD5LEN);
+
+
+
+Thierry Museux
+France Wireless Technologies
+www.fwt.fr
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001401.html">[Chilli] redir in busy-loop
+</A></li>
+	
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1402">[ date ]</a>
+              <a href="thread.html#1402">[ thread ]</a>
+              <a href="subject.html#1402">[ subject ]</a>
+              <a href="author.html#1402">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

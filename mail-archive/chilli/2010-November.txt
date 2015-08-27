@@ -1,0 +1,1689 @@
+From david at coova.com  Tue Nov  2 06:24:49 2010
+From: david at coova.com (David Bird)
+Date: Tue, 02 Nov 2010 07:24:49 +0100
+Subject: [Chilli] FON Firmware Restore
+Message-ID: <1288679089.7352.21.camel@david-laptop>
+
+Also contains upgrade to CoovaChilli 1.2.5
+
+http://coova-ap.s3.amazonaws.com/FoneraRestore.jar.pdf
+
+enjoy! 
+
+David
+
+
+From david at coova.com  Tue Nov  2 06:31:36 2010
+From: david at coova.com (David Bird)
+Date: Tue, 02 Nov 2010 07:31:36 +0100
+Subject: [Chilli] CoovaRADIUS 1.0.1
+Message-ID: <1288679496.7352.26.camel@david-laptop>
+
+Hi all,
+
+We are pleased to release CoovaRADIUS 1.0.1 for Ubuntu, CentOS,
+openSUSE, Windows, MacOSX, VMware, LiveCD, Install/Preload CD, or
+anywhere else Java runs! 
+
+https://license.coova.net/
+
+http://coova-radius.s3.amazonaws.com/CoovaRADIUS-1.0.1.pdf
+(doc will be updated as we make it more complete)
+
+New in this release:
+
+- A couple minor bug fixes from CoovaRADIUS 1.0.0 release
+- Basic embedded (pure Java) captive portal
+- Support for 802.1x natively in Java (requires Sun JRE)
+- RadSec support
+
+Enjoy!
+
+David
+
+
+From m.simioni at gmail.com  Thu Nov  4 16:45:32 2010
+From: m.simioni at gmail.com (Marco Simioni)
+Date: Thu, 4 Nov 2010 17:45:32 +0100
+Subject: [Chilli] 1.2.5 build problem on ubuntu 9
+Message-ID: <AANLkTim13qT8XYmFWN9w=QcJX-Sj8Jn53P3pRigbDcf6@mail.gmail.com>
+
+Hi,
+
+just to let you know that i have problems building the debian package of 1.2.5.
+
+Building with
+
+root at izc:~# debuild -b -us -uc
+
+generates an "invalid" deb:
+
+-rw-r--r--  1 root          root           31340 2010-11-04 17:22
+coova-chilli_1.2.5_amd64.deb
+
+just 31k, while normally it takes nearly 600k.
+
+if i try to install it, it doesn't install correctly, only performs
+some "configuration" tasks.
+
+current configuration:
+
+root at izc:~# cat /etc/issue
+Ubuntu 9.10 \n \l
+
+root at izc:~# uname -a
+Linux izc 2.6.31-14-server #48-Ubuntu SMP Fri Oct 16 15:07:34 UTC 2009
+x86_64 GNU/Linux
+
+
+regards,
+
+marco
+
+From m.simioni at gmail.com  Thu Nov  4 17:09:57 2010
+From: m.simioni at gmail.com (Marco Simioni)
+Date: Thu, 4 Nov 2010 18:09:57 +0100
+Subject: [Chilli] 1.2.5 build problem on ubuntu 9
+In-Reply-To: <AANLkTim13qT8XYmFWN9w=QcJX-Sj8Jn53P3pRigbDcf6@mail.gmail.com>
+References: <AANLkTim13qT8XYmFWN9w=QcJX-Sj8Jn53P3pRigbDcf6@mail.gmail.com>
+Message-ID: <AANLkTik7HOyVD3NKZ8apCKD6fHUcVG_-Tn0hACeD0x2K@mail.gmail.com>
+
+Compiled it on a 10.04.1 box too, have the same problem:
+
+root at pbx:/usr/src# cat /etc/issue
+Ubuntu 10.04.1 LTS \n \l
+
+root at pbx:/usr/src# uname -a
+Linux pbx 2.6.32-21-generic #32-Ubuntu SMP Fri Apr 16 08:10:02 UTC
+2010 i686 GNU/Linux
+
+root at pbx:/usr/src# ls -la coova-chilli_1.2.5_i386.deb
+-rw-r--r-- 1 root src 31328 2010-11-04 18:07 coova-chilli_1.2.5_i386.deb
+
+2010/11/4 Marco Simioni <m.simioni at gmail.com>:
+> Hi,
+>
+> just to let you know that i have problems building the debian package of 1.2.5.
+>
+> Building with
+>
+> root at izc:~# debuild -b -us -uc
+>
+> generates an "invalid" deb:
+>
+> -rw-r--r-- ?1 root ? ? ? ? ?root ? ? ? ? ? 31340 2010-11-04 17:22
+> coova-chilli_1.2.5_amd64.deb
+>
+> just 31k, while normally it takes nearly 600k.
+>
+> if i try to install it, it doesn't install correctly, only performs
+> some "configuration" tasks.
+>
+> current configuration:
+>
+> root at izc:~# cat /etc/issue
+> Ubuntu 9.10 \n \l
+>
+> root at izc:~# uname -a
+> Linux izc 2.6.31-14-server #48-Ubuntu SMP Fri Oct 16 15:07:34 UTC 2009
+> x86_64 GNU/Linux
+>
+>
+> regards,
+>
+> marco
+>
+
+From ybart.lists at gmail.com  Tue Nov  9 09:54:28 2010
+From: ybart.lists at gmail.com (=?ISO-8859-1?Q?Yvan_BARTH=C9LEMY?=)
+Date: Tue, 9 Nov 2010 10:54:28 +0100
+Subject: [Chilli] CoovaChilli monitoring strategy
+Message-ID: <AANLkTinD4ivYOtUuCi09UeT_oKSpeds_RJ=Xr0WF2cvK@mail.gmail.com>
+
+Hello,
+
+I have an installation of CoovaChilli 1.2.3 in production built using
+the rpm spec available in the source package. In this configuration
+the following flags are enabled:
+
+%configure \
+        --disable-static \
+        --enable-shared \
+        --enable-largelimits \
+        --enable-miniportal \
+        --enable-chilliproxy \
+        --enable-chilliredir \
+        --enable-chilliscript \
+        --with-poll \
+        --with-curl \
+%if %{!?_without_ssl:1}0
+        --with-openssl \
+        --enable-chilliradsec \
+%endif
+
+The portal works and clients are able to connect using miniportal, but
+for an unknown reason, the redirection sometimes stops working (we are
+not able to reproduce this in our office so it is difficult to
+troubleshot). We were able to workaround this using a shell script
+that  fetches http://10.36.0.1:3990/www/coova.html every 5 minutes
+using curl and that relaunches CoovaChilli when it gets no response.
+
+We are not happy with this solution as it involves some down time
+between the detection and the restarting of the service.
+
+I believe that removing --enable-chilliredir might help to get rid of
+the problem. When doing this we are not able to fetch
+http://10.36.0.1:3990/www/coova.html or any coova-chilli url anymore.
+
+Do you know a way to fetch this url or to check redirection is working
+when the compile flag --enable-chilliredir is off ?
+
+Many thanks in advance for any help or suggestion about this issue.
+
+From mctiew at yahoo.com  Wed Nov 10 01:42:29 2010
+From: mctiew at yahoo.com (Ming-Ching Tiew)
+Date: Tue, 9 Nov 2010 17:42:29 -0800 (PST)
+Subject: [Chilli] Multiple SSID, multiple uamhome,
+	and multiple radius server ?
+Message-ID: <977584.18115.qm@web31503.mail.mud.yahoo.com>
+
+There is this idea that one want to host multiple captive portals using the same access controller. So the idea is that by exposing multiple SSID, when a user connects to a separate Wireless SSID, he is prompted with different uam home login page, and then authenticated against different radius server.
+
+Is this possible at all ? 
+
+Running multiple coova chilli on the same hardware each listening to separate VLAN dhcp interface ?
+
+Another idea is to just run one copy of coova chilli, but enable VLAN support. The user coming in from each SSID corresponds to a separate VLAN ID. When the VLAN information is passed to the http server, it detects the VLAN ID and present the user with different login page. Is this a possible solution ?
+
+But still coova chilli will pass all authentication to the same radius server. Perhaps even the radius server need to pick up the VLAN ID and treat them as separate realm and authenticate them differently ?
+
+Has anyone encountered this situation before and what is the most elegant way out to this ?
+
+
+      
+
+From david at coova.com  Wed Nov 10 05:49:04 2010
+From: david at coova.com (David Bird)
+Date: Wed, 10 Nov 2010 06:49:04 +0100
+Subject: [Chilli] Multiple SSID, multiple uamhome,
+ and multiple radius server ?
+In-Reply-To: <977584.18115.qm@web31503.mail.mud.yahoo.com>
+References: <977584.18115.qm@web31503.mail.mud.yahoo.com>
+Message-ID: <1289368144.3432.10.camel@david-laptop>
+
+When the core (RADIUS, etc) settings are different per network/signal,
+it makes sense to have multiple chilli instances per network. If on a
+router with very limited memory, this might be a problem, however.
+Though, making chilli able to have multiple configurations in one
+running instance will also mean chilli grows in size. So, I'd say run
+multiple chilli instances. To have them handled with a single instance,
+then the vlan is a good idea to separate out the networks for handling
+by the RADIUS server and captive portal. You can give different web
+pages and your RADIUS server can proxy based on the VLAN too. 
+
+On Tue, 2010-11-09 at 17:42 -0800, Ming-Ching Tiew wrote:
+> There is this idea that one want to host multiple captive portals using the same access controller. So the idea is that by exposing multiple SSID, when a user connects to a separate Wireless SSID, he is prompted with different uam home login page, and then authenticated against different radius server.
+> 
+> Is this possible at all ? 
+> 
+> Running multiple coova chilli on the same hardware each listening to separate VLAN dhcp interface ?
+> 
+> Another idea is to just run one copy of coova chilli, but enable VLAN support. The user coming in from each SSID corresponds to a separate VLAN ID. When the VLAN information is passed to the http server, it detects the VLAN ID and present the user with different login page. Is this a possible solution ?
+> 
+> But still coova chilli will pass all authentication to the same radius server. Perhaps even the radius server need to pick up the VLAN ID and treat them as separate realm and authenticate them differently ?
+> 
+> Has anyone encountered this situation before and what is the most elegant way out to this ?
+> 
+> 
+>       
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+
+
+From david at coova.com  Wed Nov 10 05:51:49 2010
+From: david at coova.com (David Bird)
+Date: Wed, 10 Nov 2010 06:51:49 +0100
+Subject: [Chilli] uamdomain / uamallowed
+Message-ID: <1289368309.3432.13.camel@david-laptop>
+
+In an effort to make uamdomain a bit more flexible, a change is
+required. Right now, DNS queries ending in any uamdomain defined are
+added to the garden when resolved. This means it's always "*uamdomain"
+in the match. Instead, maybe the "*" should have to be explicitly, as in
+"uamdomain=*.domain.com" so that you can also do single hostnames such
+as "uamdomain=singlehost.domain.com". ? 
+
+Or, uamdomain could be kept as-is (and via an option) hostnames in
+uamallowed can be "re-checked" against DNS to pick up any round-robin
+(or just new) IP addresses to add to garden ?  This way, the syntax for
+uamdomain does not need to change and hostnames used in uamallowed will
+update the walled garden when those hostnames are resolved by users (and
+not just resolved on start-up). 
+
+Thoughts?
+
+
+
+From david at coova.com  Wed Nov 10 05:56:00 2010
+From: david at coova.com (David Bird)
+Date: Wed, 10 Nov 2010 06:56:00 +0100
+Subject: [Chilli] CoovaChilli monitoring strategy
+In-Reply-To: <AANLkTinD4ivYOtUuCi09UeT_oKSpeds_RJ=Xr0WF2cvK@mail.gmail.com>
+References: <AANLkTinD4ivYOtUuCi09UeT_oKSpeds_RJ=Xr0WF2cvK@mail.gmail.com>
+Message-ID: <1289368560.3432.17.camel@david-laptop>
+
+Upgrade. There were a couple "crashing" bugs in older 1.2.x versions.
+Also, the compile time option --enable-chilliredir will no longer
+automatically mean the chilli_redir process is forked off... you now
+have to also use --redir at runtime. So, it's safe to compile with
+--enable-chilliredir and you can make the --redir decision at runtime. 
+
+On Tue, 2010-11-09 at 10:54 +0100, Yvan BARTH?LEMY wrote:
+> Hello,
+> 
+> I have an installation of CoovaChilli 1.2.3 in production built using
+> the rpm spec available in the source package. In this configuration
+> the following flags are enabled:
+> 
+> %configure \
+>         --disable-static \
+>         --enable-shared \
+>         --enable-largelimits \
+>         --enable-miniportal \
+>         --enable-chilliproxy \
+>         --enable-chilliredir \
+>         --enable-chilliscript \
+>         --with-poll \
+>         --with-curl \
+> %if %{!?_without_ssl:1}0
+>         --with-openssl \
+>         --enable-chilliradsec \
+> %endif
+> 
+> The portal works and clients are able to connect using miniportal, but
+> for an unknown reason, the redirection sometimes stops working (we are
+> not able to reproduce this in our office so it is difficult to
+> troubleshot). We were able to workaround this using a shell script
+> that  fetches http://10.36.0.1:3990/www/coova.html every 5 minutes
+> using curl and that relaunches CoovaChilli when it gets no response.
+> 
+> We are not happy with this solution as it involves some down time
+> between the detection and the restarting of the service.
+> 
+> I believe that removing --enable-chilliredir might help to get rid of
+> the problem. When doing this we are not able to fetch
+> http://10.36.0.1:3990/www/coova.html or any coova-chilli url anymore.
+> 
+> Do you know a way to fetch this url or to check redirection is working
+> when the compile flag --enable-chilliredir is off ?
+> 
+> Many thanks in advance for any help or suggestion about this issue.
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+
+
+From wichert at wiggy.net  Wed Nov 10 08:46:47 2010
+From: wichert at wiggy.net (Wichert Akkerman)
+Date: Wed, 10 Nov 2010 09:46:47 +0100
+Subject: [Chilli] uamdomain / uamallowed
+In-Reply-To: <1289368309.3432.13.camel@david-laptop>
+References: <1289368309.3432.13.camel@david-laptop>
+Message-ID: <4CDA5BF7.8040701@wiggy.net>
+
+On 11/10/10 06:51 , David Bird wrote:
+> In an effort to make uamdomain a bit more flexible, a change is
+> required. Right now, DNS queries ending in any uamdomain defined are
+> added to the garden when resolved. This means it's always "*uamdomain"
+> in the match. Instead, maybe the "*" should have to be explicitly, as in
+> "uamdomain=*.domain.com" so that you can also do single hostnames such
+> as "uamdomain=singlehost.domain.com". ?
+
+I had always expected uamdomain to specify a single domain, not a 
+wildcard. I feel pretty strongly wildcards should be explicitly 
+specified since they can be a security risk.
+
+> Or, uamdomain could be kept as-is (and via an option) hostnames in
+> uamallowed can be "re-checked" against DNS to pick up any round-robin
+> (or just new) IP addresses to add to garden ?  This way, the syntax for
+> uamdomain does not need to change and hostnames used in uamallowed will
+> update the walled garden when those hostnames are resolved by users (and
+> not just resolved on start-up).
+
+Perhaps cache entries for a configurable amount of time?
+
+Wichert.
+
+From david at coova.com  Wed Nov 10 10:05:09 2010
+From: david at coova.com (David Bird)
+Date: Wed, 10 Nov 2010 11:05:09 +0100
+Subject: [Chilli] uamdomain / uamallowed
+In-Reply-To: <4CDA5BF7.8040701@wiggy.net>
+References: <1289368309.3432.13.camel@david-laptop>
+	<4CDA5BF7.8040701@wiggy.net>
+Message-ID: <1289383509.3432.25.camel@david-laptop>
+
+By "single domain" you then mean an implicit "*.domain" match? I suppose
+that is just nomenclature, but I think most would consider a "domain" a
+group of hostnames, not just one (even if that "hostname" is
+"coova.org"). Hmm.. maybe we do explicitly require *-wildcard matching,
+but automatically add the "*" prefix if the uamdomain starts with a
+'.' (for those who already use ".coova.org", for example, in their
+configurations). 
+
+On Wed, 2010-11-10 at 09:46 +0100, Wichert Akkerman wrote:
+> On 11/10/10 06:51 , David Bird wrote:
+> > In an effort to make uamdomain a bit more flexible, a change is
+> > required. Right now, DNS queries ending in any uamdomain defined are
+> > added to the garden when resolved. This means it's always "*uamdomain"
+> > in the match. Instead, maybe the "*" should have to be explicitly, as in
+> > "uamdomain=*.domain.com" so that you can also do single hostnames such
+> > as "uamdomain=singlehost.domain.com". ?
+> 
+> I had always expected uamdomain to specify a single domain, not a 
+> wildcard. I feel pretty strongly wildcards should be explicitly 
+> specified since they can be a security risk.
+> 
+> > Or, uamdomain could be kept as-is (and via an option) hostnames in
+> > uamallowed can be "re-checked" against DNS to pick up any round-robin
+> > (or just new) IP addresses to add to garden ?  This way, the syntax for
+> > uamdomain does not need to change and hostnames used in uamallowed will
+> > update the walled garden when those hostnames are resolved by users (and
+> > not just resolved on start-up).
+> 
+> Perhaps cache entries for a configurable amount of time?
+> 
+> Wichert.
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+
+
+From wichert at wiggy.net  Wed Nov 10 14:21:09 2010
+From: wichert at wiggy.net (Wichert Akkerman)
+Date: Wed, 10 Nov 2010 15:21:09 +0100
+Subject: [Chilli] uamdomain / uamallowed
+In-Reply-To: <1289383509.3432.25.camel@david-laptop>
+References: <1289368309.3432.13.camel@david-laptop>	
+	<4CDA5BF7.8040701@wiggy.net>
+	<1289383509.3432.25.camel@david-laptop>
+Message-ID: <4CDAAA55.8090802@wiggy.net>
+
+On 11/10/10 11:05 , David Bird wrote:
+> By "single domain" you then mean an implicit "*.domain" match?
+
+No. My wording was bad here. In general if I give access to 
+"host.example.com" I really only want to give access to a thing called 
+"hots.exmaple.com". If I want to give include its children as well the 
+usual syntax is to give access to ".host.example.com". That is a pretty 
+common syntax, and it would be nice of chilli supported that as well.
+
+Wichert.
+
+From henk at skyrove.com  Wed Nov 10 14:18:25 2010
+From: henk at skyrove.com (Henk Kleynhans)
+Date: Wed, 10 Nov 2010 16:18:25 +0200
+Subject: [Chilli] uamdomain / uamallowed
+In-Reply-To: <1289383509.3432.25.camel@david-laptop>
+References: <1289368309.3432.13.camel@david-laptop>
+	<4CDA5BF7.8040701@wiggy.net>
+	<1289383509.3432.25.camel@david-laptop>
+Message-ID: <AANLkTikbANusYQkOG3pz_CZ+VsgFzHUT2PZtEn+ZaR=e@mail.gmail.com>
+
+I fall into the "most would consider camp" here... For example, if I give
+access to google.com, I expect there to be access to maps.google.com,
+mail.google.com, translate.google.com etc without explicitly setting a
+wildcard.
+
+If I wanted to provide access to only a few subdomains, I would specify each
+of them explicitly.
+
+Henk
+
+
+
+On Wed, Nov 10, 2010 at 12:05 PM, David Bird <david at coova.com> wrote:
+
+> By "single domain" you then mean an implicit "*.domain" match? I suppose
+> that is just nomenclature, but I think most would consider a "domain" a
+> group of hostnames, not just one (even if that "hostname" is
+> "coova.org"). Hmm.. maybe we do explicitly require *-wildcard matching,
+> but automatically add the "*" prefix if the uamdomain starts with a
+> '.' (for those who already use ".coova.org", for example, in their
+> configurations).
+>
+> On Wed, 2010-11-10 at 09:46 +0100, Wichert Akkerman wrote:
+> > On 11/10/10 06:51 , David Bird wrote:
+> > > In an effort to make uamdomain a bit more flexible, a change is
+> > > required. Right now, DNS queries ending in any uamdomain defined are
+> > > added to the garden when resolved. This means it's always "*uamdomain"
+> > > in the match. Instead, maybe the "*" should have to be explicitly, as
+> in
+> > > "uamdomain=*.domain.com" so that you can also do single hostnames such
+> > > as "uamdomain=singlehost.domain.com". ?
+> >
+> > I had always expected uamdomain to specify a single domain, not a
+> > wildcard. I feel pretty strongly wildcards should be explicitly
+> > specified since they can be a security risk.
+> >
+> > > Or, uamdomain could be kept as-is (and via an option) hostnames in
+> > > uamallowed can be "re-checked" against DNS to pick up any round-robin
+> > > (or just new) IP addresses to add to garden ?  This way, the syntax for
+> > > uamdomain does not need to change and hostnames used in uamallowed will
+> > > update the walled garden when those hostnames are resolved by users
+> (and
+> > > not just resolved on start-up).
+> >
+> > Perhaps cache entries for a configurable amount of time?
+> >
+> > Wichert.
+> > _______________________________________________
+> > Chilli mailing list
+> > Chilli at coova.org
+> > http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+>
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+
+
+
+-- 
+Henk Kleynhans
+CEO & Founder
+Skyrove (Pty) Ltd
+Technology Top 100 - Most Promising Emerging Enterprise
+Tel: 0861 768 377
+Cell: +27 (84) 3073451
+Fax: +27 (86) 6204077
+henk at skyrove.com
+ blog: www.geekrebel.com
+
+------
+
+"A person with ubuntu is open and available to others, affirming of others,
+does not feel threatened that others are able and good, for he or she has a
+proper self-assurance that comes from knowing that he or she belongs in a
+greater whole and is diminished when others are humiliated or diminished,
+when others are tortured or oppressed." - Desmond Tutu
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20101110/a10b5ebd/attachment.htm>
+
+From david at coova.com  Wed Nov 10 16:03:34 2010
+From: david at coova.com (David Bird)
+Date: Wed, 10 Nov 2010 17:03:34 +0100
+Subject: [Chilli] uamdomain / uamallowed
+In-Reply-To: <AANLkTikbANusYQkOG3pz_CZ+VsgFzHUT2PZtEn+ZaR=e@mail.gmail.com>
+References: <1289368309.3432.13.camel@david-laptop>
+	<4CDA5BF7.8040701@wiggy.net> <1289383509.3432.25.camel@david-laptop>
+	<AANLkTikbANusYQkOG3pz_CZ+VsgFzHUT2PZtEn+ZaR=e@mail.gmail.com>
+Message-ID: <1289405014.3432.36.camel@david-laptop>
+
+Well, here is where the change would be... that "google.com" would NOT
+mean "*google.com" (and "*.google.com isn't the same since it excludes
+"google.com" itself). 
+
+Thinking that the best approach might be to basically keep it the way it
+is, that a uamdomain is always "*domain". The addition will be that
+hostnames in uamallowed could also be checked in DNS responses to pick
+up new/round-robin IPs. Why not just re-check the uamallowed at an
+interval? We do already, but that still would not pick up more dynamic
+DNS responses (again, round-robin IPs, etc). If "*domain" isn't wanted,
+then use uamallowed with the hostname. ? We could also add a '!' prefix
+to dis-authorize hostnames that are otherwise in the uamdomain. 
+
+
+On Wed, 2010-11-10 at 16:18 +0200, Henk Kleynhans wrote:
+> I fall into the "most would consider camp" here... For example, if I
+> give access to google.com, I expect there to be access to
+> maps.google.com, mail.google.com, translate.google.com etc without
+> explicitly setting a wildcard.
+> 
+> 
+> If I wanted to provide access to only a few subdomains, I would
+> specify each of them explicitly. 
+> 
+> 
+> Henk
+> 
+> 
+> 
+> 
+> On Wed, Nov 10, 2010 at 12:05 PM, David Bird <david at coova.com> wrote:
+>         By "single domain" you then mean an implicit "*.domain" match?
+>         I suppose
+>         that is just nomenclature, but I think most would consider a
+>         "domain" a
+>         group of hostnames, not just one (even if that "hostname" is
+>         "coova.org"). Hmm.. maybe we do explicitly require *-wildcard
+>         matching,
+>         but automatically add the "*" prefix if the uamdomain starts
+>         with a
+>         '.' (for those who already use ".coova.org", for example, in
+>         their
+>         configurations).
+>         
+>         
+>         On Wed, 2010-11-10 at 09:46 +0100, Wichert Akkerman wrote:
+>         > On 11/10/10 06:51 , David Bird wrote:
+>         > > In an effort to make uamdomain a bit more flexible, a
+>         change is
+>         > > required. Right now, DNS queries ending in any uamdomain
+>         defined are
+>         > > added to the garden when resolved. This means it's always
+>         "*uamdomain"
+>         > > in the match. Instead, maybe the "*" should have to be
+>         explicitly, as in
+>         > > "uamdomain=*.domain.com" so that you can also do single
+>         hostnames such
+>         > > as "uamdomain=singlehost.domain.com". ?
+>         >
+>         > I had always expected uamdomain to specify a single domain,
+>         not a
+>         > wildcard. I feel pretty strongly wildcards should be
+>         explicitly
+>         > specified since they can be a security risk.
+>         >
+>         > > Or, uamdomain could be kept as-is (and via an option)
+>         hostnames in
+>         > > uamallowed can be "re-checked" against DNS to pick up any
+>         round-robin
+>         > > (or just new) IP addresses to add to garden ?  This way,
+>         the syntax for
+>         > > uamdomain does not need to change and hostnames used in
+>         uamallowed will
+>         > > update the walled garden when those hostnames are resolved
+>         by users (and
+>         > > not just resolved on start-up).
+>         >
+>         > Perhaps cache entries for a configurable amount of time?
+>         >
+>         > Wichert.
+>         > _______________________________________________
+>         > Chilli mailing list
+>         > Chilli at coova.org
+>         > http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>         
+>         
+>         _______________________________________________
+>         Chilli mailing list
+>         Chilli at coova.org
+>         http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>         
+> 
+> 
+> 
+> -- 
+> Henk Kleynhans
+> CEO & Founder
+> Skyrove (Pty) Ltd
+> Technology Top 100 - Most Promising Emerging Enterprise
+> Tel: 0861 768 377
+> Cell: +27 (84) 3073451
+> Fax: +27 (86) 6204077
+> henk at skyrove.com
+>  blog: www.geekrebel.com 
+> 
+> ------
+> 
+> "A person with ubuntu is open and available to others, affirming of
+> others, does not feel threatened that others are able and good, for he
+> or she has a proper self-assurance that comes from knowing that he or
+> she belongs in a greater whole and is diminished when others are
+> humiliated or diminished, when others are tortured or oppressed." -
+> Desmond Tutu
+> 
+> 
+> 
+
+
+
+From wichert at wiggy.net  Wed Nov 10 16:34:08 2010
+From: wichert at wiggy.net (Wichert Akkerman)
+Date: Wed, 10 Nov 2010 17:34:08 +0100
+Subject: [Chilli] uamdomain / uamallowed
+In-Reply-To: <1289405014.3432.36.camel@david-laptop>
+References: <1289368309.3432.13.camel@david-laptop>	<4CDA5BF7.8040701@wiggy.net>
+	<1289383509.3432.25.camel@david-laptop>	<AANLkTikbANusYQkOG3pz_CZ+VsgFzHUT2PZtEn+ZaR=e@mail.gmail.com>
+	<1289405014.3432.36.camel@david-laptop>
+Message-ID: <4CDAC980.9020507@wiggy.net>
+
+Hi David,
+
+If you say "uamdomain example.com" will match "*example.com", does that 
+mean it will also match "badexample.com"? If so that could be a security 
+problem.
+
+Wichert.
+
+
+On 11/10/10 17:03 , David Bird wrote:
+> Well, here is where the change would be... that "google.com" would NOT
+> mean "*google.com" (and "*.google.com isn't the same since it excludes
+> "google.com" itself).
+>
+> Thinking that the best approach might be to basically keep it the way it
+> is, that a uamdomain is always "*domain". The addition will be that
+> hostnames in uamallowed could also be checked in DNS responses to pick
+> up new/round-robin IPs. Why not just re-check the uamallowed at an
+> interval? We do already, but that still would not pick up more dynamic
+> DNS responses (again, round-robin IPs, etc). If "*domain" isn't wanted,
+> then use uamallowed with the hostname. ? We could also add a '!' prefix
+> to dis-authorize hostnames that are otherwise in the uamdomain.
+>
+>
+> On Wed, 2010-11-10 at 16:18 +0200, Henk Kleynhans wrote:
+>> I fall into the "most would consider camp" here... For example, if I
+>> give access to google.com, I expect there to be access to
+>> maps.google.com, mail.google.com, translate.google.com etc without
+>> explicitly setting a wildcard.
+>>
+>>
+>> If I wanted to provide access to only a few subdomains, I would
+>> specify each of them explicitly.
+>>
+>>
+>> Henk
+>>
+>>
+>>
+>>
+>> On Wed, Nov 10, 2010 at 12:05 PM, David Bird<david at coova.com>  wrote:
+>>          By "single domain" you then mean an implicit "*.domain" match?
+>>          I suppose
+>>          that is just nomenclature, but I think most would consider a
+>>          "domain" a
+>>          group of hostnames, not just one (even if that "hostname" is
+>>          "coova.org"). Hmm.. maybe we do explicitly require *-wildcard
+>>          matching,
+>>          but automatically add the "*" prefix if the uamdomain starts
+>>          with a
+>>          '.' (for those who already use ".coova.org", for example, in
+>>          their
+>>          configurations).
+>>
+>>
+>>          On Wed, 2010-11-10 at 09:46 +0100, Wichert Akkerman wrote:
+>>          >  On 11/10/10 06:51 , David Bird wrote:
+>>          >  >  In an effort to make uamdomain a bit more flexible, a
+>>          change is
+>>          >  >  required. Right now, DNS queries ending in any uamdomain
+>>          defined are
+>>          >  >  added to the garden when resolved. This means it's always
+>>          "*uamdomain"
+>>          >  >  in the match. Instead, maybe the "*" should have to be
+>>          explicitly, as in
+>>          >  >  "uamdomain=*.domain.com" so that you can also do single
+>>          hostnames such
+>>          >  >  as "uamdomain=singlehost.domain.com". ?
+>>          >
+>>          >  I had always expected uamdomain to specify a single domain,
+>>          not a
+>>          >  wildcard. I feel pretty strongly wildcards should be
+>>          explicitly
+>>          >  specified since they can be a security risk.
+>>          >
+>>          >  >  Or, uamdomain could be kept as-is (and via an option)
+>>          hostnames in
+>>          >  >  uamallowed can be "re-checked" against DNS to pick up any
+>>          round-robin
+>>          >  >  (or just new) IP addresses to add to garden ?  This way,
+>>          the syntax for
+>>          >  >  uamdomain does not need to change and hostnames used in
+>>          uamallowed will
+>>          >  >  update the walled garden when those hostnames are resolved
+>>          by users (and
+>>          >  >  not just resolved on start-up).
+>>          >
+>>          >  Perhaps cache entries for a configurable amount of time?
+>>          >
+>>          >  Wichert.
+>>          >  _______________________________________________
+>>          >  Chilli mailing list
+>>          >  Chilli at coova.org
+>>          >  http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>>
+>>
+>>          _______________________________________________
+>>          Chilli mailing list
+>>          Chilli at coova.org
+>>          http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>>
+>>
+>>
+>>
+>> --
+>> Henk Kleynhans
+>> CEO&  Founder
+>> Skyrove (Pty) Ltd
+>> Technology Top 100 - Most Promising Emerging Enterprise
+>> Tel: 0861 768 377
+>> Cell: +27 (84) 3073451
+>> Fax: +27 (86) 6204077
+>> henk at skyrove.com
+>>   blog: www.geekrebel.com
+>>
+>> ------
+>>
+>> "A person with ubuntu is open and available to others, affirming of
+>> others, does not feel threatened that others are able and good, for he
+>> or she has a proper self-assurance that comes from knowing that he or
+>> she belongs in a greater whole and is diminished when others are
+>> humiliated or diminished, when others are tortured or oppressed." -
+>> Desmond Tutu
+>>
+>>
+>>
+>
+>
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+
+From david at coova.com  Wed Nov 10 18:48:21 2010
+From: david at coova.com (David Bird)
+Date: Wed, 10 Nov 2010 19:48:21 +0100
+Subject: [Chilli] uamdomain / uamallowed
+In-Reply-To: <4CDAC980.9020507@wiggy.net>
+References: <1289368309.3432.13.camel@david-laptop>
+	<4CDA5BF7.8040701@wiggy.net> <1289383509.3432.25.camel@david-laptop>
+	<AANLkTikbANusYQkOG3pz_CZ+VsgFzHUT2PZtEn+ZaR=e@mail.gmail.com>
+	<1289405014.3432.36.camel@david-laptop>  <4CDAC980.9020507@wiggy.net>
+Message-ID: <1289414901.3432.70.camel@david-laptop>
+
+Hmm.. then, the considerations are:
+
+- use a wildcard match (regex or fnmatch) to check DNS names
+
+- run through uamallowed (hostnames only) through the uamdomain DNS
+response "dynamic walled garden" routine [?]
+
+- to assume any wildcard, such that "google.com" might auto translate to
+"^(.+\.)?google.com" (in regex form, for example) [?]
+
+David
+
+PS: need a regex tester? 
+
+cat <<EOF > test-regex.c
+#include <sys/types.h>
+#include <regex.h>
+
+int main(int argc, char *argv[])
+{
+  regex_t r;
+  if (argc < 3) { printf("%s regex string",argv[0]); exit(1); }
+  if (regcomp(&r, argv[1], REG_EXTENDED|REG_NOSUB)) {
+    perror("regcomp");
+    exit(-1);
+  }
+  if (regexec(&r, argv[2], 0, 0, 0)) {
+    perror("no match");
+    exit(-1);
+  }
+  regfree(&r);
+  printf("match!\n");
+}
+EOF
+gcc -o test_regex test-regex.c
+./test_regex "^(.+\.)?google.com" "google.com"
+match!
+
+On Wed, 2010-11-10 at 17:34 +0100, Wichert Akkerman wrote:
+> Hi David,
+> 
+> If you say "uamdomain example.com" will match "*example.com", does that 
+> mean it will also match "badexample.com"? If so that could be a security 
+> problem.
+> 
+> Wichert.
+> 
+> 
+> On 11/10/10 17:03 , David Bird wrote:
+> > Well, here is where the change would be... that "google.com" would NOT
+> > mean "*google.com" (and "*.google.com isn't the same since it excludes
+> > "google.com" itself).
+> >
+> > Thinking that the best approach might be to basically keep it the way it
+> > is, that a uamdomain is always "*domain". The addition will be that
+> > hostnames in uamallowed could also be checked in DNS responses to pick
+> > up new/round-robin IPs. Why not just re-check the uamallowed at an
+> > interval? We do already, but that still would not pick up more dynamic
+> > DNS responses (again, round-robin IPs, etc). If "*domain" isn't wanted,
+> > then use uamallowed with the hostname. ? We could also add a '!' prefix
+> > to dis-authorize hostnames that are otherwise in the uamdomain.
+> >
+> >
+> > On Wed, 2010-11-10 at 16:18 +0200, Henk Kleynhans wrote:
+> >> I fall into the "most would consider camp" here... For example, if I
+> >> give access to google.com, I expect there to be access to
+> >> maps.google.com, mail.google.com, translate.google.com etc without
+> >> explicitly setting a wildcard.
+> >>
+> >>
+> >> If I wanted to provide access to only a few subdomains, I would
+> >> specify each of them explicitly.
+> >>
+> >>
+> >> Henk
+> >>
+> >>
+> >>
+> >>
+> >> On Wed, Nov 10, 2010 at 12:05 PM, David Bird<david at coova.com>  wrote:
+> >>          By "single domain" you then mean an implicit "*.domain" match?
+> >>          I suppose
+> >>          that is just nomenclature, but I think most would consider a
+> >>          "domain" a
+> >>          group of hostnames, not just one (even if that "hostname" is
+> >>          "coova.org"). Hmm.. maybe we do explicitly require *-wildcard
+> >>          matching,
+> >>          but automatically add the "*" prefix if the uamdomain starts
+> >>          with a
+> >>          '.' (for those who already use ".coova.org", for example, in
+> >>          their
+> >>          configurations).
+> >>
+> >>
+> >>          On Wed, 2010-11-10 at 09:46 +0100, Wichert Akkerman wrote:
+> >>          >  On 11/10/10 06:51 , David Bird wrote:
+> >>          >  >  In an effort to make uamdomain a bit more flexible, a
+> >>          change is
+> >>          >  >  required. Right now, DNS queries ending in any uamdomain
+> >>          defined are
+> >>          >  >  added to the garden when resolved. This means it's always
+> >>          "*uamdomain"
+> >>          >  >  in the match. Instead, maybe the "*" should have to be
+> >>          explicitly, as in
+> >>          >  >  "uamdomain=*.domain.com" so that you can also do single
+> >>          hostnames such
+> >>          >  >  as "uamdomain=singlehost.domain.com". ?
+> >>          >
+> >>          >  I had always expected uamdomain to specify a single domain,
+> >>          not a
+> >>          >  wildcard. I feel pretty strongly wildcards should be
+> >>          explicitly
+> >>          >  specified since they can be a security risk.
+> >>          >
+> >>          >  >  Or, uamdomain could be kept as-is (and via an option)
+> >>          hostnames in
+> >>          >  >  uamallowed can be "re-checked" against DNS to pick up any
+> >>          round-robin
+> >>          >  >  (or just new) IP addresses to add to garden ?  This way,
+> >>          the syntax for
+> >>          >  >  uamdomain does not need to change and hostnames used in
+> >>          uamallowed will
+> >>          >  >  update the walled garden when those hostnames are resolved
+> >>          by users (and
+> >>          >  >  not just resolved on start-up).
+> >>          >
+> >>          >  Perhaps cache entries for a configurable amount of time?
+> >>          >
+> >>          >  Wichert.
+> >>          >  _______________________________________________
+> >>          >  Chilli mailing list
+> >>          >  Chilli at coova.org
+> >>          >  http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+> >>
+> >>
+> >>          _______________________________________________
+> >>          Chilli mailing list
+> >>          Chilli at coova.org
+> >>          http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+> >>
+> >>
+> >>
+> >>
+> >> --
+> >> Henk Kleynhans
+> >> CEO&  Founder
+> >> Skyrove (Pty) Ltd
+> >> Technology Top 100 - Most Promising Emerging Enterprise
+> >> Tel: 0861 768 377
+> >> Cell: +27 (84) 3073451
+> >> Fax: +27 (86) 6204077
+> >> henk at skyrove.com
+> >>   blog: www.geekrebel.com
+> >>
+> >> ------
+> >>
+> >> "A person with ubuntu is open and available to others, affirming of
+> >> others, does not feel threatened that others are able and good, for he
+> >> or she has a proper self-assurance that comes from knowing that he or
+> >> she belongs in a greater whole and is diminished when others are
+> >> humiliated or diminished, when others are tortured or oppressed." -
+> >> Desmond Tutu
+> >>
+> >>
+> >>
+> >
+> >
+> > _______________________________________________
+> > Chilli mailing list
+> > Chilli at coova.org
+> > http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+> 
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+
+
+From jmeiring at amobia.com  Thu Nov 11 08:27:06 2010
+From: jmeiring at amobia.com (Johan Meiring)
+Date: Thu, 11 Nov 2010 10:27:06 +0200
+Subject: [Chilli] uamdomain / uamallowed
+In-Reply-To: <1289405014.3432.36.camel@david-laptop>
+References: <1289368309.3432.13.camel@david-laptop>	<4CDA5BF7.8040701@wiggy.net>
+	<1289383509.3432.25.camel@david-laptop>	<AANLkTikbANusYQkOG3pz_CZ+VsgFzHUT2PZtEn+ZaR=e@mail.gmail.com>
+	<1289405014.3432.36.camel@david-laptop>
+Message-ID: <4CDBA8DA.5070803@amobia.com>
+
+On 2010/11/10 06:03 PM, David Bird wrote:
+> ............... If "*domain" isn't wanted,
+> then use uamallowed with the hostname. ?
+
+It sound like assumptions are being made about the amount of dots in a 
+domainname.  How would you differentiate between a hostname and a domainname?
+
+If "google.com" is a domainname.
+I assume "www.google.com" is a hostame.
+
+What is "pcservices.co.za" ?
+and "www.pcservices.co.za" ?
+
+My vote would be for how squid works.
+
+google.com  means  google.com
+.google.com means  *google.com (including google.com)
+
+As long as it is documented well, everyone will understand.
+
+-- 
+
+
+Johan Meiring
+Amobia Communications
+Tel: (0861) AMOBIA / (0861) 266242
+Fax: (0861) AMOFAX / (0861) 266329
+
+
+From henk at skyrove.com  Thu Nov 11 11:13:19 2010
+From: henk at skyrove.com (Henk Kleynhans)
+Date: Thu, 11 Nov 2010 13:13:19 +0200
+Subject: [Chilli] uamdomain / uamallowed
+In-Reply-To: <4CDBA8DA.5070803@amobia.com>
+References: <1289368309.3432.13.camel@david-laptop>
+	<4CDA5BF7.8040701@wiggy.net>
+	<1289383509.3432.25.camel@david-laptop>
+	<AANLkTikbANusYQkOG3pz_CZ+VsgFzHUT2PZtEn+ZaR=e@mail.gmail.com>
+	<1289405014.3432.36.camel@david-laptop> <4CDBA8DA.5070803@amobia.com>
+Message-ID: <AANLkTimCVxT3+PKb+sBkMQQxa5UtgjFTgQux80B+gG11@mail.gmail.com>
+
+Quote: "As long as it is documented well, everyone will understand." <-
+Assuming people read documentation! :-)
+
+I'm happy for uamdomain="google.com" to mean google.com/ and all subdomains,
+as it currently is.
+
+And for uamdomain="mail.google.com" to only refer to mail.google.com/
+
+I find this more intuitive and it's important to be intuitive when using 3rd
+party contractors who are happy to assume dots and forwardslashes are
+optional.
+
+Henk
+
+p.s. What's the answer to Wichert's question? Will uamdomain="example.com"
+also give access to badexample.com as things are at the moment?
+
+
+On Thu, Nov 11, 2010 at 10:27 AM, Johan Meiring <jmeiring at amobia.com> wrote:
+
+> On 2010/11/10 06:03 PM, David Bird wrote:
+>
+>> ............... If "*domain" isn't wanted,
+>>
+>> then use uamallowed with the hostname. ?
+>>
+>
+> It sound like assumptions are being made about the amount of dots in a
+> domainname.  How would you differentiate between a hostname and a
+> domainname?
+>
+> If "google.com" is a domainname.
+> I assume "www.google.com" is a hostame.
+>
+> What is "pcservices.co.za" ?
+> and "www.pcservices.co.za" ?
+>
+> My vote would be for how squid works.
+>
+> google.com  means  google.com
+> .google.com means  *google.com (including google.com)
+>
+> As long as it is documented well, everyone will understand.
+>
+> --
+>
+>
+> Johan Meiring
+> Amobia Communications
+> Tel: (0861) AMOBIA / (0861) 266242
+> Fax: (0861) AMOFAX / (0861) 266329
+>
+>
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+
+
+
+-- 
+Henk Kleynhans
+CEO & Founder
+Skyrove (Pty) Ltd
+Technology Top 100 - Most Promising Emerging Enterprise
+Tel: 0861 768 377
+Cell: +27 (84) 3073451
+Fax: +27 (86) 6204077
+henk at skyrove.com
+ blog: www.geekrebel.com
+
+------
+
+"A person with ubuntu is open and available to others, affirming of others,
+does not feel threatened that others are able and good, for he or she has a
+proper self-assurance that comes from knowing that he or she belongs in a
+greater whole and is diminished when others are humiliated or diminished,
+when others are tortured or oppressed." - Desmond Tutu
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20101111/82d1484b/attachment.htm>
+
+From jmeiring at amobia.com  Thu Nov 11 12:06:54 2010
+From: jmeiring at amobia.com (Johan Meiring)
+Date: Thu, 11 Nov 2010 14:06:54 +0200
+Subject: [Chilli] uamdomain / uamallowed
+In-Reply-To: <AANLkTimCVxT3+PKb+sBkMQQxa5UtgjFTgQux80B+gG11@mail.gmail.com>
+References: <1289368309.3432.13.camel@david-laptop>
+	<4CDA5BF7.8040701@wiggy.net>
+	<1289383509.3432.25.camel@david-laptop>
+	<AANLkTikbANusYQkOG3pz_CZ+VsgFzHUT2PZtEn+ZaR=e@mail.gmail.com>
+	<1289405014.3432.36.camel@david-laptop>
+	<4CDBA8DA.5070803@amobia.com>
+	<AANLkTimCVxT3+PKb+sBkMQQxa5UtgjFTgQux80B+gG11@mail.gmail.com>
+Message-ID: <4CDBDC5E.509@amobia.com>
+
+On 2010/11/11 01:13 PM, Henk Kleynhans wrote:
+> I'm happy for uamdomain="google.com" to mean
+> google.com and all subdomains, as it currently is.
+>
+> And for uamdomain="mail.google.com" to only
+> refer to mail.google.com
+
+How must chilli know that "google.com" is a domainname and "mail.google.com" 
+is a hostnname?
+
+
+
+
+-- 
+
+
+Johan Meiring
+Amobia Communications
+Tel: (0861) AMOBIA / (0861) 266242
+Fax: (0861) AMOFAX / (0861) 266329
+
+
+From wichert at wiggy.net  Thu Nov 11 12:08:30 2010
+From: wichert at wiggy.net (Wichert Akkerman)
+Date: Thu, 11 Nov 2010 13:08:30 +0100
+Subject: [Chilli] uamdomain / uamallowed
+In-Reply-To: <4CDBDC5E.509@amobia.com>
+References: <1289368309.3432.13.camel@david-laptop>	<4CDA5BF7.8040701@wiggy.net>	<1289383509.3432.25.camel@david-laptop>	<AANLkTikbANusYQkOG3pz_CZ+VsgFzHUT2PZtEn+ZaR=e@mail.gmail.com>	<1289405014.3432.36.camel@david-laptop>	<4CDBA8DA.5070803@amobia.com>	<AANLkTimCVxT3+PKb+sBkMQQxa5UtgjFTgQux80B+gG11@mail.gmail.com>
+	<4CDBDC5E.509@amobia.com>
+Message-ID: <4CDBDCBE.3030606@wiggy.net>
+
+On 11/11/10 13:06 , Johan Meiring wrote:
+> On 2010/11/11 01:13 PM, Henk Kleynhans wrote:
+>> I'm happy for uamdomain="google.com" to mean
+>> google.com and all subdomains, as it currently is.
+>>
+>> And for uamdomain="mail.google.com" to only
+>> refer to mail.google.com
+>
+> How must chilli know that "google.com" is a domainname and
+> "mail.google.com" is a hostnname?
+
+It can't - DNS has no concept of 'hostname' or 'domain'.
+
+Wichert.
+
+From jmeiring at amobia.com  Thu Nov 11 12:19:15 2010
+From: jmeiring at amobia.com (Johan Meiring)
+Date: Thu, 11 Nov 2010 14:19:15 +0200
+Subject: [Chilli] uamdomain / uamallowed
+In-Reply-To: <4CDBDCBE.3030606@wiggy.net>
+References: <1289368309.3432.13.camel@david-laptop>	<4CDA5BF7.8040701@wiggy.net>	<1289383509.3432.25.camel@david-laptop>	<AANLkTikbANusYQkOG3pz_CZ+VsgFzHUT2PZtEn+ZaR=e@mail.gmail.com>	<1289405014.3432.36.camel@david-laptop>	<4CDBA8DA.5070803@amobia.com>	<AANLkTimCVxT3+PKb+sBkMQQxa5UtgjFTgQux80B+gG11@mail.gmail.com>	<4CDBDC5E.509@amobia.com>
+	<4CDBDCBE.3030606@wiggy.net>
+Message-ID: <4CDBDF43.20302@amobia.com>
+
+On 2010/11/11 02:08 PM, Wichert Akkerman wrote:
+> On 11/11/10 13:06 , Johan Meiring wrote:
+>> On 2010/11/11 01:13 PM, Henk Kleynhans wrote:
+>>> I'm happy for uamdomain="google.com" to mean
+>>> google.com and all subdomains, as it currently is.
+>>>
+>>> And for uamdomain="mail.google.com" to only
+>>> refer to mail.google.com
+>>
+>> How must chilli know that "google.com" is a domainname and
+>> "mail.google.com" is a hostnname?
+>
+> It can't - DNS has no concept of 'hostname' or 'domain'.
+>
+
+Therefore having "google.com" include subdomains and "mail.google.com" not 
+include subdomains is impossible.
+
+Suggesting .google.com for subdomains again....
+
+-- 
+
+
+Johan Meiring
+Amobia Communications
+Tel: (0861) AMOBIA / (0861) 266242
+Fax: (0861) AMOFAX / (0861) 266329
+
+
+From david at coova.com  Thu Nov 11 12:37:15 2010
+From: david at coova.com (David Bird)
+Date: Thu, 11 Nov 2010 13:37:15 +0100
+Subject: [Chilli] uamdomain / uamallowed
+In-Reply-To: <4CDBDF43.20302@amobia.com>
+References: <1289368309.3432.13.camel@david-laptop>
+	<4CDA5BF7.8040701@wiggy.net>	<1289383509.3432.25.camel@david-laptop>
+	<AANLkTikbANusYQkOG3pz_CZ+VsgFzHUT2PZtEn+ZaR=e@mail.gmail.com>
+	<1289405014.3432.36.camel@david-laptop>	<4CDBA8DA.5070803@amobia.com>
+	<AANLkTimCVxT3+PKb+sBkMQQxa5UtgjFTgQux80B+gG11@mail.gmail.com>
+	<4CDBDC5E.509@amobia.com> <4CDBDCBE.3030606@wiggy.net>
+	<4CDBDF43.20302@amobia.com>
+Message-ID: <1289479035.3432.98.camel@david-laptop>
+
+Well, since the option is "uamdomain", I think we can assume the "user"
+is thinking "uamdomain" plus "*.uamdomain" ... so, we change the logic
+to fix the issue of '*uamdomain' (as it is always now) to being:
+
+(assuming 'question' is the hostname being resolved)
+
+if question equals uamdomain exactly OR
+   question is longer than uamdomain and ends with ".uamdomain"
+
+So that "google.com" will match "google.com" or "*.google.com". 
+
+As for using regex for matching, I'm thinking of making it only for use
+with a new compile time option --enable-domainfile which will allow the
+loading of bulk regex based "dynamic walled garden" domain names. 
+
+
+On Thu, 2010-11-11 at 14:19 +0200, Johan Meiring wrote:
+> On 2010/11/11 02:08 PM, Wichert Akkerman wrote:
+> > On 11/11/10 13:06 , Johan Meiring wrote:
+> >> On 2010/11/11 01:13 PM, Henk Kleynhans wrote:
+> >>> I'm happy for uamdomain="google.com" to mean
+> >>> google.com and all subdomains, as it currently is.
+> >>>
+> >>> And for uamdomain="mail.google.com" to only
+> >>> refer to mail.google.com
+> >>
+> >> How must chilli know that "google.com" is a domainname and
+> >> "mail.google.com" is a hostnname?
+> >
+> > It can't - DNS has no concept of 'hostname' or 'domain'.
+> >
+> 
+> Therefore having "google.com" include subdomains and "mail.google.com" not 
+> include subdomains is impossible.
+> 
+> Suggesting .google.com for subdomains again....
+> 
+
+
+
+From david at coova.com  Thu Nov 11 15:59:32 2010
+From: david at coova.com (David Bird)
+Date: Thu, 11 Nov 2010 16:59:32 +0100
+Subject: [Chilli] uamdomain / uamallowed
+In-Reply-To: <1289479035.3432.98.camel@david-laptop>
+References: <1289368309.3432.13.camel@david-laptop>
+	<4CDA5BF7.8040701@wiggy.net>	<1289383509.3432.25.camel@david-laptop>
+	<AANLkTikbANusYQkOG3pz_CZ+VsgFzHUT2PZtEn+ZaR=e@mail.gmail.com>
+	<1289405014.3432.36.camel@david-laptop>	<4CDBA8DA.5070803@amobia.com>
+	<AANLkTimCVxT3+PKb+sBkMQQxa5UtgjFTgQux80B+gG11@mail.gmail.com>
+	<4CDBDC5E.509@amobia.com> <4CDBDCBE.3030606@wiggy.net>
+	<4CDBDF43.20302@amobia.com>  <1289479035.3432.98.camel@david-laptop>
+Message-ID: <1289491172.3432.106.camel@david-laptop>
+
+In subversion:
+
+* Added compile time option ''--enable-layer3'' and run-time option
+''--layer3'' to enable a Layer3 (IP-Only) style captive portal - no DHCP
+* Change to ''chilli_query logout'' to identify sessions based on
+options ''sessionid ...'' or ''ip ...'', not just MAC address
+* Added compile time option ''--enable-uamdomainfile'' and run-time
+option ''--uamdomainfile filename'' to load regex style uamdomains
+* Added compile time option ''--enable-redirdnsreq'' and run-time option
+''--redirdnsreq'' to have chilli send a DNS query for the hostname found
+in the redirect (useful when relying heavily on DNS based walled garden
+using ''uamdomain'' or ''uamdomainfile'')
+* Fixed ''uamdomain'' such that it will only match exactly the given
+name or prefixed with anything dot ('.') name
+* Added Pragma no cache and Expires headers to redirect HTTP responses
+* Fixed ''chilli_proxy'' bug for when DNS is down
+
+
+
+On Thu, 2010-11-11 at 13:37 +0100, David Bird wrote:
+> Well, since the option is "uamdomain", I think we can assume the "user"
+> is thinking "uamdomain" plus "*.uamdomain" ... so, we change the logic
+> to fix the issue of '*uamdomain' (as it is always now) to being:
+> 
+> (assuming 'question' is the hostname being resolved)
+> 
+> if question equals uamdomain exactly OR
+>    question is longer than uamdomain and ends with ".uamdomain"
+> 
+> So that "google.com" will match "google.com" or "*.google.com". 
+> 
+> As for using regex for matching, I'm thinking of making it only for use
+> with a new compile time option --enable-domainfile which will allow the
+> loading of bulk regex based "dynamic walled garden" domain names. 
+> 
+> 
+> On Thu, 2010-11-11 at 14:19 +0200, Johan Meiring wrote:
+> > On 2010/11/11 02:08 PM, Wichert Akkerman wrote:
+> > > On 11/11/10 13:06 , Johan Meiring wrote:
+> > >> On 2010/11/11 01:13 PM, Henk Kleynhans wrote:
+> > >>> I'm happy for uamdomain="google.com" to mean
+> > >>> google.com and all subdomains, as it currently is.
+> > >>>
+> > >>> And for uamdomain="mail.google.com" to only
+> > >>> refer to mail.google.com
+> > >>
+> > >> How must chilli know that "google.com" is a domainname and
+> > >> "mail.google.com" is a hostnname?
+> > >
+> > > It can't - DNS has no concept of 'hostname' or 'domain'.
+> > >
+> > 
+> > Therefore having "google.com" include subdomains and "mail.google.com" not 
+> > include subdomains is impossible.
+> > 
+> > Suggesting .google.com for subdomains again....
+> > 
+> 
+> 
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+
+
+From ybart.lists at gmail.com  Mon Nov 15 13:14:04 2010
+From: ybart.lists at gmail.com (=?ISO-8859-1?Q?Yvan_BARTH=C9LEMY?=)
+Date: Mon, 15 Nov 2010 14:14:04 +0100
+Subject: [Chilli] CoovaChilli monitoring strategy
+In-Reply-To: <1289368560.3432.17.camel@david-laptop>
+References: <AANLkTinD4ivYOtUuCi09UeT_oKSpeds_RJ=Xr0WF2cvK@mail.gmail.com>
+	<1289368560.3432.17.camel@david-laptop>
+Message-ID: <AANLkTi=BgCJs6sUD=syhkcuPiZrqFpdLtJB7Pca6TdJq@mail.gmail.com>
+
+I followed your advice and upgraded a testing server to coova-chilli
+1.2.5. I'm now facing a new problem, the HTTP AAA is not working for
+me anymore, In my hs.local, I have the following that seems correct:
+
+uamaaaurl "https://127.0.0.1/cgi-bin/aaa-cgi"
+
+However, when I type credentials, I obtain the message 'Username
+and/or passowd was not valid', and in the log I have the following
+message: 'redir.c: 2351: Radius request timed out'
+
+Is there any compile or runtime option that might have change between
+1.2.3 and 1.2.5 about HTTP AAA authentication ?
+
+2010/11/10 David Bird <david at coova.com>:
+> Upgrade. There were a couple "crashing" bugs in older 1.2.x versions.
+> Also, the compile time option --enable-chilliredir will no longer
+> automatically mean the chilli_redir process is forked off... you now
+> have to also use --redir at runtime. So, it's safe to compile with
+> --enable-chilliredir and you can make the --redir decision at runtime.
+>
+> On Tue, 2010-11-09 at 10:54 +0100, Yvan BARTH?LEMY wrote:
+>> Hello,
+>>
+>> I have an installation of CoovaChilli 1.2.3 in production built using
+>> the rpm spec available in the source package. In this configuration
+>> the following flags are enabled:
+>>
+>> %configure \
+>> ? ? ? ? --disable-static \
+>> ? ? ? ? --enable-shared \
+>> ? ? ? ? --enable-largelimits \
+>> ? ? ? ? --enable-miniportal \
+>> ? ? ? ? --enable-chilliproxy \
+>> ? ? ? ? --enable-chilliredir \
+>> ? ? ? ? --enable-chilliscript \
+>> ? ? ? ? --with-poll \
+>> ? ? ? ? --with-curl \
+>> %if %{!?_without_ssl:1}0
+>> ? ? ? ? --with-openssl \
+>> ? ? ? ? --enable-chilliradsec \
+>> %endif
+>>
+>> The portal works and clients are able to connect using miniportal, but
+>> for an unknown reason, the redirection sometimes stops working (we are
+>> not able to reproduce this in our office so it is difficult to
+>> troubleshot). We were able to workaround this using a shell script
+>> that ?fetches http://10.36.0.1:3990/www/coova.html every 5 minutes
+>> using curl and that relaunches CoovaChilli when it gets no response.
+>>
+>> We are not happy with this solution as it involves some down time
+>> between the detection and the restarting of the service.
+>>
+>> I believe that removing --enable-chilliredir might help to get rid of
+>> the problem. When doing this we are not able to fetch
+>> http://10.36.0.1:3990/www/coova.html or any coova-chilli url anymore.
+>>
+>> Do you know a way to fetch this url or to check redirection is working
+>> when the compile flag --enable-chilliredir is off ?
+>>
+>> Many thanks in advance for any help or suggestion about this issue.
+>> _______________________________________________
+>> Chilli mailing list
+>> Chilli at coova.org
+>> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+>
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+
+From no-reply at dropboxmail.com  Wed Nov 17 11:54:20 2010
+From: no-reply at dropboxmail.com (Dropbox)
+Date: Wed, 17 Nov 2010 11:54:20 +0000
+Subject: [Chilli] Cesar Araujp invited you to Dropbox
+Message-ID: <20101117115420.542014070B0@mailman-2.dropboxmail.com>
+
+Cesar Araujp wants you to use Dropbox to sync and share files online and across computers.
+
+Get started here: http://www.dropbox.com/link/20.PUdsVfEjjp/NjQ2NDE5Njk4Nw
+
+- The Dropbox Team
+
+____________________________________________________ 
+To stop receiving invites from Dropbox, please go to http://www.dropbox.com/bl/3468b044041c/chilli%40coova.org
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20101117/362d8cfb/attachment.htm>
+
+From david at coova.com  Wed Nov 24 09:10:38 2010
+From: david at coova.com (David Bird)
+Date: Wed, 24 Nov 2010 10:10:38 +0100
+Subject: [Chilli] module based features...
+Message-ID: <1290589838.2016.57.camel@david-laptop>
+
+Been thinking about the concept of dynamically loadable modules for
+chilli to implement certain features this way instead of requiring
+patches or compile-time inclusion... thoughts?
+
+Use --enable-modules in subversion code.
+
+http://dev.coova.org/svn/coova-chilli/src/chilli_module.h
+http://dev.coova.org/svn/coova-chilli/src/chilli_module.c
+
+Sample module:
+http://dev.coova.org/svn/coova-chilli/src/sample-mod.c
+
+Loaded with run-time option: --module sample
+
+
+From muffycompoqm at gmail.com  Wed Nov 24 12:58:32 2010
+From: muffycompoqm at gmail.com (Mfawa Alfred Onen)
+Date: Wed, 24 Nov 2010 13:58:32 +0100
+Subject: [Chilli] Chilli Digest, Vol 14, Issue 10
+In-Reply-To: <mailman.1.1290600003.8417.chilli@coova.org>
+References: <mailman.1.1290600003.8417.chilli@coova.org>
+Message-ID: <AANLkTimyhFTDd8x+DMwrx7L7_BHV+QHznfCtxibwVzKP@mail.gmail.com>
+
+That is will be great David. Nice idea.
+
+On Wed, Nov 24, 2010 at 1:00 PM, <chilli-request at coova.org> wrote:
+
+> Send Chilli mailing list submissions to
+>        chilli at coova.org
+>
+> To subscribe or unsubscribe via the World Wide Web, visit
+>        http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+> or, via email, send a message with subject or body 'help' to
+>        chilli-request at coova.org
+>
+> You can reach the person managing the list at
+>        chilli-owner at coova.org
+>
+> When replying, please edit your Subject line so it is more specific
+> than "Re: Contents of Chilli digest..."
+>
+>
+> Today's Topics:
+>
+>   1. module based features... (David Bird)
+>
+>
+> ----------------------------------------------------------------------
+>
+> Message: 1
+> Date: Wed, 24 Nov 2010 10:10:38 +0100
+> From: David Bird <david at coova.com>
+> Subject: [Chilli] module based features...
+> To: chilli at coova.org
+> Message-ID: <1290589838.2016.57.camel at david-laptop>
+> Content-Type: text/plain; charset="UTF-8"
+>
+> Been thinking about the concept of dynamically loadable modules for
+> chilli to implement certain features this way instead of requiring
+> patches or compile-time inclusion... thoughts?
+>
+> Use --enable-modules in subversion code.
+>
+> http://dev.coova.org/svn/coova-chilli/src/chilli_module.h
+> http://dev.coova.org/svn/coova-chilli/src/chilli_module.c
+>
+> Sample module:
+> http://dev.coova.org/svn/coova-chilli/src/sample-mod.c
+>
+> Loaded with run-time option: --module sample
+>
+>
+>
+> ------------------------------
+>
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+>
+> End of Chilli Digest, Vol 14, Issue 10
+> **************************************
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20101124/5a25ba80/attachment.htm>
+
+From rnalrd at gmail.com  Fri Nov 26 16:09:38 2010
+From: rnalrd at gmail.com (Leonardo Arena)
+Date: Fri, 26 Nov 2010 17:09:38 +0100
+Subject: [Chilli] chilli-1.2.5 sigsegv at dns.c:102
+Message-ID: <AANLkTi=MHZQJae9ZxrGD6-7N-Z62J=72ht5zrvQ2Sg63@mail.gmail.com>
+
+Hi,
+
+after a while (2~4h) chilli crash on my alpine linux router 2.1
+
+Linux router 2.6.35.8-grsec #4-Alpine SMP Fri Nov 12 09:49:19 UTC 2010
+i686 GNU/Linux
+
+The program was compiled with the following options:
+
+        ./configure --prefix=/usr \
+                --sysconfdir=/etc \
+                --mandir=/usr/share/man \
+                --infodir=/usr/share/info \
+                --localstatedir=/var/run/chilli \
+                --libdir=/usr/lib \
+                --sysconfdir=/etc \
+                --with-openssl
+
+This is the backtrace:
+
+Core was generated by `/usr/sbin/chilli --pidfile=/var/run/chilli/chilli.pid'.
+Program terminated with signal 11, Segmentation fault.
+#0  dns_getname (pktp=0xbfffbd88, left=0xbfffbd84,
+    name=0xbfffbd90
+"<as06jb11bhcobqrhuckvt1xuu0kjc2s0kym0tps64rwrhgr1631ced3mba2l<3tvd4tqkdxnotodycjoatv5bhaksscqpo5epsgt16fc4przg5tt203zu0olo<jsfoafzt1e2le3jbyss5rfrejpt066nls4wlyplykpyf4tq0b3ojg6ljzy6m4tjlroprm4oa5q45b"...,
+namesz=1500, nameln=0xbfffbd80) at dns.c:102
+102	dns.c: No such file or directory.
+	in dns.c
+(gdb) bt
+#0  dns_getname (pktp=0xbfffbd88, left=0xbfffbd84,
+    name=0xbfffbd90
+"<as06jb11bhcobqrhuckvt1xuu0kjc2s0kym0tps64rwrhgr1631ced3mba2l<3tvd4tqkdxnotodycjoatv5bhaksscqpo5epsgt16fc4przg5tt203zu0olo<jsfoafzt1e2le3jbyss5rfrejpt066nls4wlyplykpyf4tq0b3ojg6ljzy6m4tjlroprm4oa5q45b"...,
+namesz=1500, nameln=0xbfffbd80) at dns.c:102
+#1  0xb777aaa0 in dns_copy_res (conn=0xb77b3570, q=0, pktp=0xbfffc400,
+left=0xbfffc404, opkt=0xbfffcf96 "\006\206\203\200", olen=258,
+    question=0xbfffcc08
+"as06jb11bhcobqrhuckvt1xuu0kjc2s0kym0tps64rwrhgr1631ced3mba2l.3tvd4tqkdxnotodycjoatv5bhaksscqpo5epsgt16fc4przg5tt203zu0olo.jsfoafzt1e2le3jbyss5rfrejpt066nls4wlyplykpyf4tq0b3ojg6ljzy6m.tjlroprm4oa5q45bk"...,
+qsize=512) at dns.c:185
+#2  0xb7771de5 in dhcp_dns (conn=0xb77b3570, pack=0xbfffcf6c "",
+plen=312, isReq=0 '\000') at dhcp.c:1411
+#3  0xb7776783 in dhcp_dnsunDNAT (conn=0xb77b3570, pack=0xbfffe0ac
+"E\210\001*", len=298, ethhdr=0) at dhcp.c:1735
+#4  dhcp_data_req (conn=0xb77b3570, pack=0xbfffe0ac "E\210\001*",
+len=298, ethhdr=0) at dhcp.c:3720
+#5  0xb7761d9d in cb_tun_ind (tun=0xb7799140, pack=0xbfffe0ac,
+len=298, idx=0) at chilli.c:2036
+#6  0xb7762f9b in tun_decaps_cb (ctx=0xbfffe8e4, packet=0xbfffe0ac,
+length=298) at tun.c:761
+#7  0xb777c8ff in net_read_dispatch (netif=0xb7799158, func=0xb7762e30
+<tun_decaps_cb>, ctx=0xbfffe8e4) at net.c:664
+#8  0xb77640ee in tun_decaps (this=0xb7799140, idx=0) at tun.c:773
+#9  0xb777c813 in net_run_selected (sctx=0xbfffe95c, status=1) at net.c:581
+#10 0xb7762ca5 in chilli_main (argc=2, argv=0xbfffee94) at chilli.c:5242
+#11 0xb77966e0 in main (argc=Cannot access memory at address 0xffff9bb7
+) at main.c:98
+
+
+Thank you
+
+- leonardo
+
+From david at coova.com  Mon Nov 29 07:23:15 2010
+From: david at coova.com (David Bird)
+Date: Mon, 29 Nov 2010 08:23:15 +0100
+Subject: [Chilli] a question of size, if it matters
+Message-ID: <1291015395.2016.186.camel@david-laptop>
+
+Hello out there...
+
+Chilli has used gengetopt to generate the configuration parser from the
+beginning. It's a handy tool, that uses the cmdline.ggo file which
+defines all the possible configuration options. Gengetopt allows for a
+wide range of "configuration configurations" :) . You can define options
+that are flags, that optionally take arguments, that can be repeated
+(giving the min/max number of times), and so on... Options can be used
+on the command line (in the getopt_long() --<option> style) or loaded
+from a file. The gengetopt project even added the ability to 'include
+<file>' from a configuration file suggested by our patch that did the
+same. Yet, chilli really doesn't use many of the gengetopt features, and
+the generated cmdline.c isn't exactly the smallest of code (cmdline.o
+being one of the larger .o's in the project). I am now testing a new
+stripped down configuration parser generated from the same cmdline.ggo
+and only implementing the needed features and includes none of the help
+text. Enable at compile-time with ./configure --enable-miniconfig. Doing
+so will switch from using cmdline.c to using cmdline.mini.c when
+building chilli_opt. 
+
+
+From rnalrd at gmail.com  Mon Nov 29 15:33:38 2010
+From: rnalrd at gmail.com (Leonardo Arena)
+Date: Mon, 29 Nov 2010 16:33:38 +0100
+Subject: [Chilli] chilli-1.2.5 sigsegv at dns.c:102
+In-Reply-To: <AANLkTi=MHZQJae9ZxrGD6-7N-Z62J=72ht5zrvQ2Sg63@mail.gmail.com>
+References: <AANLkTi=MHZQJae9ZxrGD6-7N-Z62J=72ht5zrvQ2Sg63@mail.gmail.com>
+Message-ID: <AANLkTimUbYS=QM93N4FbCKUSqeraXUfM7-=DSdasqjJ+@mail.gmail.com>
+
+On Fri, Nov 26, 2010 at 5:09 PM, Leonardo Arena <rnalrd at gmail.com> wrote:
+> Hi,
+>
+> after a while (2~4h) chilli crash on my alpine linux router 2.1
+>
+
+[...]
+
+More on this issue. Looks like that what makes chilli crash is a bogus
+dns request:
+
+Nov 29 14:44:42 b1-17-01-30-rd-rtr1 coova-chilli[23567]: dns.c: 234:
+Q: at35uqs1fxa526k5nv2aavr0ga0l3yl45b14w2xbmjh2r0aut5vgxvwgcgdk.prup1hrwlsbpjc5ezpyvlev3ffrjm3kt42oxrfm1r3n5kpj5rq2o2nolq0p2.1y22q21xbc23db4suq3lad5ro44ktafudlengjd6xpxuahdk44so23rab4zn.rwvcodco2u1ec4w4jbmmswywxs6gy35tfnho6mfnmhzh1raq2tfq.access.skype.net
+
+I dunno why chilli should intercept dns queries.
+
+My PaX kernel kills it, evidently because is does some bad operation
+in memory (due to some wrong buffer size?)
+On non-PaX kernels it might not crash. I'm not c coder, so I rely on
+someone else if he could have a look at it.
+
+I'm not security expert either, but could it be a security related bug?
+
+Attached there is the debug log and core files.
+
+Thank you
+
+- leonardo
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: chilli-1.2.5-debug.log.gz
+Type: application/x-gzip
+Size: 60281 bytes
+Desc: not available
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20101129/f2e8a5cd/attachment-0002.bin>
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: chilli-1.2.5-core.gz
+Type: application/x-gzip
+Size: 101669 bytes
+Desc: not available
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20101129/f2e8a5cd/attachment-0003.bin>
+

@@ -1,0 +1,115 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> check for  request for authentication server allows bypassing?
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20check%20for%20%20request%20for%20authentication%20server%20allows%20bypassing%3F&In-Reply-To=%3C1218132845.7110.53.camel%40david-laptop%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000440.html">
+   <LINK REL="Next"  HREF="000442.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>check for  request for authentication server allows bypassing?</H1>
+    <B>wlanmac</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20check%20for%20%20request%20for%20authentication%20server%20allows%20bypassing%3F&In-Reply-To=%3C1218132845.7110.53.camel%40david-laptop%3E"
+       TITLE="check for  request for authentication server allows bypassing?">wlan at mac.com
+       </A><BR>
+    <I>Thu Aug  7 18:14:05 UTC 2008</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000440.html">check for  request for authentication server allows bypassing?
+</A></li>
+        <LI>Next message: <A HREF="000442.html">check for  request for authentication server allows bypassing?
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#441">[ date ]</a>
+              <a href="thread.html#441">[ thread ]</a>
+              <a href="subject.html#441">[ subject ]</a>
+              <a href="author.html#441">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>I seem to recall commenting it out because I found only checking http
+and https ports was too restrictive. It should probably parse out the
+uamserver url port number to check with, in the case it is not a
+standard port being used. I suppose this can be overcome with adding
+uamallowed entries for the authip:port.. For your proxy issue, you could
+always run it on another IP address. I would hate to make a change back
+like this only to have many sites, using alternate ports, not work.
+Suggestions are welcome. 
+
+David
+
+
+On Tue, 2008-08-05 at 19:34 +0200, Peter Warasin wrote:
+&gt;<i> Hi guys
+</I>&gt;<i> 
+</I>&gt;<i> I found out that coovachilli allows access to the whole uamlisten ip 
+</I>&gt;<i> address whether the user is authenticated or not.
+</I>&gt;<i> 
+</I>&gt;<i> In my case there is a squid running on the same host, which then allows 
+</I>&gt;<i> people to bypass the hotspot by manually configure their browsers in 
+</I>&gt;<i> order to use that proxy.
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> This is due to some lines commented out in dhcp.c:1936, which makes the 
+</I>&gt;<i> check whether it is a request for the auth server or not less specific.
+</I>&gt;<i> 
+</I>&gt;<i> ------------------------- snip ----------------------------------
+</I>&gt;<i>    /* Was it a request for authentication server? */
+</I>&gt;<i>    for (i = 0; i&lt;this-&gt;authiplen; i++) {
+</I>&gt;<i>      if ((pack-&gt;iph.daddr == this-&gt;authip[i].s_addr) /* &amp;&amp;
+</I>&gt;<i> 	(pack-&gt;iph.protocol == PKT_IP_PROTO_TCP) &amp;&amp;
+</I>&gt;<i> 	((tcph-&gt;dst == htons(DHCP_HTTP)) ||
+</I>&gt;<i> 	(tcph-&gt;dst == htons(DHCP_HTTPS)))*/)
+</I>&gt;<i>        return 0; /* Destination was authentication server */
+</I>&gt;<i>    }
+</I>&gt;<i> ------------------------- snap ----------------------------------
+</I>&gt;<i> 
+</I>&gt;<i> I would like to ask why these lines are commented out and if it is safe 
+</I>&gt;<i> to remove the comment and bring them back in? That would close the hole.
+</I>&gt;<i> 
+</I>&gt;<i> I tested with the correct check (lines not commented out), which is 
+</I>&gt;<i> working fine for me (dhcp and anyip). uamallow is also working fine.
+</I>&gt;<i> 
+</I>&gt;<i> So I am wondering if there is some reason, something I am missing, why 
+</I>&gt;<i> this check has been made less specific.
+</I>&gt;<i> 
+</I>&gt;<i> I attach a patch which removes the comment, for the case that there is 
+</I>&gt;<i> no reason for disabling that lines.
+</I>&gt;<i> 
+</I>&gt;<i> kind regards
+</I>&gt;<i> 
+</I>&gt;<i> peter
+</I>&gt;<i> 
+</I>&gt;<i> ---------------------------------------------------------------------
+</I>&gt;<i> To unsubscribe, e-mail: <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli-unsubscribe at coova.org</A>
+</I>&gt;<i> For additional commands, e-mail: <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli-help at coova.org</A>
+</I>&gt;<i> Wiki: <A HREF="http://coova.org/wiki/index.php/CoovaChilli">http://coova.org/wiki/index.php/CoovaChilli</A>
+</I>&gt;<i> Forum: <A HREF="http://coova.org/phpBB3/viewforum.php?f=4">http://coova.org/phpBB3/viewforum.php?f=4</A>
+</I>
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000440.html">check for  request for authentication server allows bypassing?
+</A></li>
+	<LI>Next message: <A HREF="000442.html">check for  request for authentication server allows bypassing?
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#441">[ date ]</a>
+              <a href="thread.html#441">[ thread ]</a>
+              <a href="subject.html#441">[ subject ]</a>
+              <a href="author.html#441">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

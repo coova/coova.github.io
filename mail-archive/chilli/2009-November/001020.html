@@ -1,0 +1,167 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] SSL on Chili
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20SSL%20on%20Chili&In-Reply-To=%3Cf1cd8c6d0911191233r6ffa398ao1e9c14fdb2f736f2%40mail.gmail.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001019.html">
+   <LINK REL="Next"  HREF="001021.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] SSL on Chili</H1>
+    <B>Gergely Kiss</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20SSL%20on%20Chili&In-Reply-To=%3Cf1cd8c6d0911191233r6ffa398ao1e9c14fdb2f736f2%40mail.gmail.com%3E"
+       TITLE="[Chilli] SSL on Chili">mail.gery at gmail.com
+       </A><BR>
+    <I>Thu Nov 19 20:33:00 UTC 2009</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001019.html">[Chilli] SSL on Chili
+</A></li>
+        <LI>Next message: <A HREF="001021.html">[Chilli] SSL on Chili
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1020">[ date ]</a>
+              <a href="thread.html#1020">[ thread ]</a>
+              <a href="subject.html#1020">[ subject ]</a>
+              <a href="author.html#1020">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Here is my idea: let's redirect all HTTPS requests to a HTTPS-enabled
+Apache server which will then point the browser to the login screen
+(HTTP) via the UrlRewrite module. For normal HTTP requests, Chilli
+should do the trick by itself. For example, create an iptables rule
+like this:
+
+iptables -t nat -I PREROUTING -p tcp --dport 443 -j DNAT --to 192.168.1.1:443
+
+where 192.168.1.1 is the IP of your Apache server. The server catches
+the request and after the SSL tunnel has been established, it can
+redirect the browser to any other URL. After a successful login, you
+create a rule that resolves the redirection rule for the client:
+
+iptables -t nat -I PREROUTING -s &lt;client IP&gt; -p tcp --dport 443 -j ACCEPT
+
+You can achieve this by using the --conup and --condown parameters of
+the chilli daemon. The client IP address can be easily determined,
+because Chilli exports a couple of useful environment variables just
+before running the script. Therefore, you need only a single command:
+
+#!/bin/sh
+
+if [ -n &quot;$FRAMED_IP_ADDRESS&quot; ] ; then
+  iptables -t nat -I PREROUTING -s ${FRAMED_IP_ADDRESS} -p tcp --dport
+443 -j ACCEPT
+fi
+
+For the logout event, use the following script:
+
+#!/bin/sh
+if [ -n &quot;$FRAMED_IP_ADDRESS&quot; ] ; then
+  iptables -t nat -D PREROUTING -s ${FRAMED_IP_ADDRESS} -p tcp --dport
+443 -j ACCEPT
+fi
+
+I'm not able to test this right now, but theoretically it should solve
+the issue.
+
+Regards
+George
+
+Ps.: hopefully this is an acceptable solution for you, as I'm not 100%
+sure that I understood your problem correctly.
+
+2009/11/19 Fernando Dutra Fagundes Macedo &lt;<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">fmacedo at cpd.ufrgs.br</A>&gt;:
+&gt;<i> I think that I wasn't enough clear describing the problem in the last
+</I>&gt;<i> message. I'll try to explain this issue with more details:
+</I>&gt;<i>
+</I>&gt;<i> The problem happens When coova chilli is configured to work with ssl and a
+</I>&gt;<i> client tries to connect to a http server (port 80). In this sittuation,
+</I>&gt;<i> coova redirects the connection to port 3990 which is working with ssl.
+</I>&gt;<i> Although, the client have made a request to connect to a http server, not
+</I>&gt;<i> https. So, the ssl negotiation fails, the client didn't connect properly and
+</I>&gt;<i> presents a blank page to the user.
+</I>&gt;<i>
+</I>&gt;<i> We have been trying to solve this issue but we hadn't any good ideas until
+</I>&gt;<i> now. The best solution we thought was to redirect the connection to apache
+</I>&gt;<i> and after do a http redirection from http to https and then return back the
+</I>&gt;<i> connection to coova.
+</I>&gt;<i>
+</I>&gt;<i> The scenario now is like this:
+</I>&gt;<i> 1. http request to <A HREF="http://www.abcdefgh.com">http://www.abcdefgh.com</A>
+</I>&gt;<i> 2. coova redirects to port 3990 with ssl
+</I>&gt;<i> 3. ssl negotiation fails
+</I>&gt;<i>
+</I>&gt;<i> And we want coova to work like this:
+</I>&gt;<i> 1. http request to <A HREF="http://www.abcdefgh.com">http://www.abcdefgh.com</A>
+</I>&gt;<i> 2. coova redirects to apache port 80
+</I>&gt;<i> 3. apache makes a http to https redirection to coova
+</I>&gt;<i> 4. coova receives https connection on port 3990 and the ssl negotiation
+</I>&gt;<i> succeeds
+</I>&gt;<i>
+</I>&gt;<i> Could someone help us or give us some directions on how to modify the code
+</I>&gt;<i> to solve this problem?
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> Regards,
+</I>&gt;<i>
+</I>&gt;<i> Fernando Macedo
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> De: <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli-bounces at coova.org</A> [mailto:<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli-bounces at coova.org</A>] Em nome de
+</I>&gt;<i> Fernando Dutra Fagundes Macedo
+</I>&gt;<i> Enviada: quinta-feira, 12 de novembro de 2009 12:51
+</I>&gt;<i> Para: <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli at coova.org</A>
+</I>&gt;<i> Assunto: [Chilli] SSL on Chili
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> Hi,
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> When using ssl on chilli, the first page that a user must open must be HTTPS
+</I>&gt;<i> because chilli will respond only connections over ssl. How can I accept the
+</I>&gt;<i> two types of redirection (80 and 443) when using ssl?
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> Regards,
+</I>&gt;<i>
+</I>&gt;<i> Fernando
+</I>&gt;<i>
+</I>&gt;<i> _______________________________________________
+</I>&gt;<i> Chilli mailing list
+</I>&gt;<i> <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">Chilli at coova.org</A>
+</I>&gt;<i> <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">http://lists.coova.org/cgi-bin/mailman/listinfo/chilli</A>
+</I>&gt;<i>
+</I>&gt;<i>
+</I></PRE>
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001019.html">[Chilli] SSL on Chili
+</A></li>
+	<LI>Next message: <A HREF="001021.html">[Chilli] SSL on Chili
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1020">[ date ]</a>
+              <a href="thread.html#1020">[ thread ]</a>
+              <a href="subject.html#1020">[ subject ]</a>
+              <a href="author.html#1020">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

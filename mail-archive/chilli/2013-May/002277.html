@@ -1,0 +1,197 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] CoovaChiili Permit Server IP
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20CoovaChiili%20Permit%20Server%20IP&In-Reply-To=%3C011401ce5d59%24ee25cbd0%24ca716370%24%40cabocom.cv%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="002270.html">
+   <LINK REL="Next"  HREF="002278.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] CoovaChiili Permit Server IP</H1>
+    <B>Luis Ferreira</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20CoovaChiili%20Permit%20Server%20IP&In-Reply-To=%3C011401ce5d59%24ee25cbd0%24ca716370%24%40cabocom.cv%3E"
+       TITLE="[Chilli] CoovaChiili Permit Server IP">lferreira at cabocom.cv
+       </A><BR>
+    <I>Thu May 30 17:20:05 UTC 2013</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="002270.html">[Chilli] CoovaChiili Permit Server IP
+</A></li>
+        <LI>Next message: <A HREF="002278.html">[Chilli] CoovaChiili Permit Server IP
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2277">[ date ]</a>
+              <a href="thread.html#2277">[ thread ]</a>
+              <a href="subject.html#2277">[ subject ]</a>
+              <a href="author.html#2277">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hi Russell,
+
+ 
+
+You should put the IP of the client.
+
+ 
+
+For instance, I've got a client that ISC-DHCP always gives the same address
+(192.168.10.250) on the VLAN ID 10.
+
+ 
+
+So what we have to do is a script running on the chillibox that runs the
+command if the user is not online. Your mistake is running the command
+outside the chillibox.
+
+ 
+
+The script for you, should be this:
+
+ 
+
+
+#!/bi/bash
+
+usercheck=$(/usr/local/sbin/chilli_query -s
+/usr/local/var/run/chilli.vlanxx.sock list |grep -c &quot;1 prabhpal &quot;)
+
+if [ $usercheck = '0' ];
+then
+      /usr/local/sbin/chilli_query -s  /var/run/chilli.vlan888.sock login ip
+41.139.29.251 username prabhal password rootantipass
+fi
+
+ 
+
+1th         - If it does not work, try to identify the problem. First see if
+you can ping the client from within Chillibox.
+
+2nd        - run the command &quot;/usr/local/sbin/chilli_query -s
+/usr/local/var/run/chilli.vlanxx.sock list&quot; and see if it return the online
+users like this:
+
+
+10.1.10.195 51a7872300000005 0 - 0/0 0/0 0/0 0/0 0 0 0/0 0/0
+<A HREF="http://crl.microsoft.com/pki/crl/products/MicCodSigPCA_08-31-2010.crl">http://crl.microsoft.com/pki/crl/products/MicCodSigPCA_08-31-2010.crl</A>
+
+10.1.10.23 51a7864800000004 0 - 0/0 0/0 0/0 0/0 0 0 0/0 0/0 -
+
+10.1.10.196 51a7863800000003 0 - 0/0 0/0 0/0 0/0 0 0 0/0 0/0 -
+
+10.1.10.192 51a785810000000c 0 - 0/0 0/0 0/0 0/0 0 0 0/0 0/0
+<A HREF="http://www.apple.com/library/test/success.html">http://www.apple.com/library/test/success.html</A>
+
+10.1.10.142 51a7851700000013 0 - 0/0 0/0 0/0 0/0 0 0 0/0 0/0 <A HREF="http:///">http:///</A>
+
+
+10.1.10.129 51a7841f00000009 0 - 0/0 0/0 0/0 0/0 0 0 0/0 0/0
+<A HREF="http://www.msftncsi.com/ncsi.txt">http://www.msftncsi.com/ncsi.txt</A>
+
+.
+
+ 
+
+3rd         - run then /usr/local/sbin/chilli_query -s
+/usr/local/var/run/chilli.vlanxx.sock list |grep -c &quot;1 &lt;username&gt;&quot; and see
+if the return is 0 or 1, depending if the user is online or not.
+
+Regards,
+
+Luis
+
+ 
+
+ 
+
+ 
+
+Dear Luis Ferreira,
+
+ 
+
+Thanks for everything in past, i am true with my lab and was testing this
+bash script. but still unable to reach device behind the Chilli Box. here
+are my details. 
+
+ 
+
+My CoovaChilli: 1.3.0 UB_12.4
+
+IP Camera Behind CoovaChilli: 41.139.29.251 (device is CoovaChilli LAN Side,
+entring through WAN side to reach device)
+
+My Username: prabhpal
+
+My Password: rootantipass
+
+My location: /var/run/chilli.vlan888.sock
+
+ 
+
+Here is my script: 
+
+ 
+
+#!/bin/bash
+
+usercheck=$(/usr/local/sbin/chilli_query -s /var/run/chilli.vlan888.sock
+list | grep -c &quot;1 prabhpal&quot;)
+
+ if [ $usercheck = '0' ];
+
+then
+
+        echo &quot;Logging in accountname&quot;
+
+        /usr/local/sbin/chilli_query -s /var/run/chilli.vlan888.sock login
+ip 41.139.29.251 username prabhpal password rootantipass
+
+fi
+
+ 
+
+When i run this script chilli should be able to ping 41.139.29.251 ip right
+? and entry should be seen the 41.139.29.251 in &quot;chilli_query list&quot; No? 
+
+ 
+
+Thanks / Regards
+
+RM --
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: &lt;<A HREF="http://lists.coova.org/pipermail/chilli/attachments/20130530/18b34364/attachment.html">http://lists.coova.org/pipermail/chilli/attachments/20130530/18b34364/attachment.html</A>&gt;
+</PRE>
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="002270.html">[Chilli] CoovaChiili Permit Server IP
+</A></li>
+	<LI>Next message: <A HREF="002278.html">[Chilli] CoovaChiili Permit Server IP
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2277">[ date ]</a>
+              <a href="thread.html#2277">[ thread ]</a>
+              <a href="subject.html#2277">[ subject ]</a>
+              <a href="author.html#2277">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

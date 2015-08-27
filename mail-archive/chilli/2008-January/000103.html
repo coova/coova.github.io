@@ -1,0 +1,146 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> centralized coova
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20centralized%20coova&In-Reply-To=%3C5DF28D29-0FB5-4B76-B22E-7A5AA9C04DD8%40mac.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000102.html">
+   <LINK REL="Next"  HREF="000104.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>centralized coova</H1>
+    <B>wlan at mac.com</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20centralized%20coova&In-Reply-To=%3C5DF28D29-0FB5-4B76-B22E-7A5AA9C04DD8%40mac.com%3E"
+       TITLE="centralized coova">wlan at mac.com
+       </A><BR>
+    <I>Wed Jan  9 16:26:49 UTC 2008</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000102.html">centralized coova
+</A></li>
+        <LI>Next message: <A HREF="000104.html">ChilliSpot-Lang back to CoovaChilli
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#103">[ date ]</a>
+              <a href="thread.html#103">[ thread ]</a>
+              <a href="subject.html#103">[ subject ]</a>
+              <a href="author.html#103">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Actually, each of my hotspot has a DHCP server. And I have in my AAA  
+server the list of the subnets. when a user connects, I retrieve the  
+connection place using the Framed-IP-Address (which I use to find the  
+subnet and then the exact location).
+
+
+Is it chilli that is currently sending you the Framed-IP-Address or  
+something else? Are you able to relay the AP DHCP to chilli?
+
+Actually, we want a centralised architecture: each hotspot sets up a  
+tunnel to the central site, and IP connectivity is ensured for users,  
+up to the centralized access gateway - that can be coova.
+
+
+When you say coova, I assume you really mean coova-chilli (or just  
+&quot;chilli&quot;).
+
+ &gt; What do you mean with &quot;External transparent web proxy for  
+unauthenticatd
+ &gt; users&quot;?
+
+What we also would like is the possibility for coova to redirect at  
+TCP/IP level unauthorised traffic, and not only sending a 302  
+redirect to the device.
+
+Actually, what I want to do is (I'm not strong at ASCCI-art ;)):
+
+Hotspot-1-----+     AAA
+               |      |
+    ...        +----Coova------(NAT)------INTERNET
+               |      |
+Hotspot-N-----+      +-Squid Proxy
+                      |
+                                       +-Login portal
+                      |
+                      +-DNS
+
+Correct me if I'm wrong. For a standard Coova deployement, when a  
+user opens a browser and requests www.google.com:
+- He gets a HTTP-302 that redirects its browser to Coova login page  
+(either on coova or on the back-end).
+- Once on the login page, the user enter login and password, and they  
+are posted to Coova
+- Coova sends RADIUS requests to the AAA
+- AAA Accepts the connection
+- Coova opens the connection
+
+
+Yeah, that's right.
+
+What I would like to do is:
+- User requests www.google.com
+- Coova redirects (changes dest IP and TCP port) to Squid
+- Squid, with a redirector chooses :
+    + to server the page (free web site)
+    + to send a 302 redirect to the user
+- The workflow described above goes on.
+
+
+There is already an option for 'post-auth proxy' in coova-chilli that  
+does this for authorized traffic. What you describe is not that  
+different.
+
+I wonder if this is possible with IP tables rules?
+
+
+You can easily make an IP tables rule for all traffic to go through  
+the proxy. There are conup/condown scripts possible in chilli if you  
+want to change firewall settings based on login/logout.
+
+Furthermore, I would like to do prepaid (volume and/or time based). ie:
+- User connects
+- AAA allocates 10 Mb and 1 hour
+- Allocated volume is elapsed
+- Coova requests more volume to the AAA - wihtout disconnecting the user
+- AAA provides 10Mb
+- Session geos on
+
+
+&quot;Without disconnecting the user&quot; meaning no redirect, just a RADIUS  
+re-auth? not sure I see the value in that...
+
+Would it be difficult to implement?
+
+Thanks
+
+Geoff.
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: &lt;<A HREF="http://lists.coova.org/pipermail/chilli/attachments/20080109/c77c94c5/attachment.htm">http://lists.coova.org/pipermail/chilli/attachments/20080109/c77c94c5/attachment.htm</A>&gt;
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000102.html">centralized coova
+</A></li>
+	<LI>Next message: <A HREF="000104.html">ChilliSpot-Lang back to CoovaChilli
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#103">[ date ]</a>
+              <a href="thread.html#103">[ thread ]</a>
+              <a href="subject.html#103">[ subject ]</a>
+              <a href="author.html#103">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

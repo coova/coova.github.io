@@ -1,0 +1,234 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] CoovaChilli  &amp; (non CoovaAP) AP
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20CoovaChilli%20%20%26%20%28non%20CoovaAP%29%20AP&In-Reply-To=%3C43065.195.19.214.216.1269451259.squirrel%40mail.pnpi.spb.ru%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001210.html">
+   <LINK REL="Next"  HREF="001212.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] CoovaChilli  &amp; (non CoovaAP) AP</H1>
+    <B>Anatoly Oreshkin</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20CoovaChilli%20%20%26%20%28non%20CoovaAP%29%20AP&In-Reply-To=%3C43065.195.19.214.216.1269451259.squirrel%40mail.pnpi.spb.ru%3E"
+       TITLE="[Chilli] CoovaChilli  &amp; (non CoovaAP) AP">Anatoly.Oreshkin at pnpi.spb.ru
+       </A><BR>
+    <I>Wed Mar 24 17:20:59 UTC 2010</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001210.html">[Chilli] CoovaChilli  &amp; (non CoovaAP) AP
+</A></li>
+        <LI>Next message: <A HREF="001212.html">[Chilli] CoovaChilli &amp; (non CoovaAP) AP
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1211">[ date ]</a>
+              <a href="thread.html#1211">[ thread ]</a>
+              <a href="subject.html#1211">[ subject ]</a>
+              <a href="author.html#1211">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>
+
+Hello,
+
+My CoovaChilli server is installed on Linux box.
+CoovaChilli is configured as:
+./configure --with-nfqueue --enable-chilliproxy --with-curl
+
+HS_WANIF=eth0
+HS_LANIF=eth1
+HS_NETWORK=10.2.3.0
+HS_NETMASK=255.255.255.0
+HS_UAMLISTEN=10.2.3.1
+HS_UAMPORT=3990
+HS_NASID=nas01
+HS_RADIUS=212.193.96.134
+HS_RADSECRET=CHILLI_HOTSPOT
+...
+HS_MODE=hotspot
+HS_TYPE=chillispot
+
+eth0 address = 195.19.214.216
+eth1 address = 10.2.3.1
+
+I've setup proxy parameters in /usr/local/etc/chilli/local.conf:
+
+
+
+proxylisten=195.19.214.216     #  eth0 address
+proxyport=1812
+proxyclient=192.168.14.242     #  my AP address
+proxysecret=CHILLI_HOTSPOT
+
+AP is configured as:
+-------------------
+
+WPA2/AES/802.1X
+Radius server: 195.19.214.216  (chilli address)
+Radius port: 1812
+Radius secret: CHILLI_HOTSPOT
+
+Radius server configured as:
+----------------------------
+
+clients.conf
+
+# chilli hotspot
+client 195.19.214.216 {
+        secret      = CHILLI_HOTSPOT
+        shortname   = Chilli
+        nastype     = other
+}
+
+The file &quot;users&quot; has user data:
+oreshkin Cleartext-Password := &quot;mypassword&quot;, Calling-Station-Id ==
+&quot;00-16-EA-8A-DE-38&quot;
+
+When I am trying to authenticate wireless client through coovachilli
+then I getting such messages:
+
+On coovachili server in /var/log/messages
+
+radius.c: 1677: Authenticator does not match request!
+radius.c: 335: No such id in radius queue: id=0!
+radius.c: 1672: Matching request was not found in queue: 0!
+radius.c: 335: No such id in radius queue: id=1!
+radius.c: 1672: Matching request was not found in queue: 1!
+....
+
+
+On Radius server
+----------------
+
+Radius daemon running in debug mode gives output which indicates that it
+receives Access-Request packets from coovachilli.
+Below is extract from radius output:
+
+rad_recv: Access-Request packet from host 195.19.214.216 port 32859, id=0,
+length=146
+        Vendor-14559-Attr-8 = 0x312e322e32
+        User-Name = &quot;oreshkin&quot;
+        EAP-Message = 0x0200000d016f726573686b696e
+        Message-Authenticator = 0x45f4d1100685765bd2b5004f650d0a2e
+        Calling-Station-Id = &quot;00-16-EA-8A-DE-38&quot;
+        Called-Station-Id = &quot;00-0E-0C-36-AE-AA&quot;
+        NAS-Port-Type = Wireless-802.11
+        NAS-Port = 11
+        Service-Type = Login-User
+        NAS-IP-Address = 10.2.3.1
+        NAS-Identifier = &quot;nas01&quot;
++- entering group authorize {...}
+++[preprocess] returns ok
+++[chap] returns noop
+++[mschap] returns noop
+[suffix] No '@' in User-Name = &quot;oreshkin&quot;, looking up realm NULL
+[suffix] Found realm &quot;DEFAULT&quot;
+[suffix] Adding Stripped-User-Name = &quot;oreshkin&quot;
+
+.....
+
+Sending Access-Challenge of id 0 to 195.19.214.216 port 32859
+        EAP-Message = 0x010100061920
+        Message-Authenticator = 0x00000000000000000000000000000000
+        State = 0x41e5100541e4098a17fe112e0fc89cb1
+Finished request 0.
+Going to the next request
+Waking up in 4.9 seconds.
+Cleaning up request 0 ID 0 with timestamp +54
+Ready to process requests.
+....
+
+Radius server receives from coovachilli  Access-Request packets and responds
+with Access-Challenge packets many times. But it never sends  Access-Accept
+packet and never output error messages.
+
+What might be wrong ? Configuration errors or do I need to do something
+else ?
+
+Coovachilli 1.2.2 has also some transparent proxy.
+/usr/local/sbin/chilli --help|grep proxy
+      --proxylisten=STRING      Proxy IP address to listen on
+      --proxyport=INT           Proxy UDP port to listen on (0 is off)
+      --proxyclient=STRING      IP address of proxy client(s)
+      --proxysecret=STRING      Radius proxy shared secret
+      --postauthproxy=STRING    IP of an upstream transparent proxy
+      --postauthproxyport=INT   Port of an upstream transparent proxy
+
+I don't know for what purpose transparent proxy is.
+May be it is of help ?
+
+Thanks.
+
+
+&gt;<i> You can bridge the networks so that chilli controls them both, or run
+</I>&gt;<i> two instances of chilli. The instance handling the 802.1x network should
+</I>&gt;<i> have these options defined:
+</I>&gt;<i>
+</I>&gt;<i> $ chilli --help|grep proxy
+</I>&gt;<i>       --proxylisten=STRING      Proxy IP address to listen on
+</I>&gt;<i>       --proxyport=INT           Proxy UDP port to listen on (0 is off)
+</I>&gt;<i>       --proxyclient=STRING      IP address of proxy client(s)
+</I>&gt;<i>       --proxysecret=STRING      Radius proxy shared secret
+</I>&gt;<i>
+</I>&gt;<i> And the 802.1x AP should use these settings for it's RADIUS.. chilli
+</I>&gt;<i> will proxy the authentication, provide accounting, and still control the
+</I>&gt;<i> network to enforce any limitations, etc.
+</I>&gt;<i>
+</I>&gt;<i> On Tue, 2010-03-23 at 19:20 +0300, Anatoly Oreshkin wrote:
+</I>&gt;&gt;<i> Hello,
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> I have wireless Access Point 3Com AirConnect 9150 configured with
+</I>&gt;&gt;<i> WPA2/AES
+</I>&gt;&gt;<i> and 802.1X EAP-PEAP-MSCHAPv2 authentication. It uses Free Radius server
+</I>&gt;&gt;<i> for authentication and wireless clients get ip fixed addresses from DHCP
+</I>&gt;&gt;<i> server.
+</I>&gt;&gt;<i> I configured this AP with second SSID (without security) in order for
+</I>&gt;&gt;<i> wireless
+</I>&gt;&gt;<i> clients can authenticate through CoovaChilli using UAM method.
+</I>&gt;&gt;<i> It works.
+</I>&gt;&gt;<i> Now I would like to make both WPA2/802.1X and UAM authentication to work
+</I>&gt;&gt;<i> through  CoovaChilli. I can specify  CoovaChilli address as Radius
+</I>&gt;&gt;<i> server
+</I>&gt;&gt;<i> address in AP. But of course it's not enough. Is it possible at all to
+</I>&gt;&gt;<i> have CoovaChilli working in such configuration ?
+</I>&gt;&gt;<i> If so, how should I configure for this purpose CoovaChilli and Radius
+</I>&gt;&gt;<i> server ?
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> Any hints.
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> Thanks.
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> _______________________________________________
+</I>&gt;&gt;<i> Chilli mailing list
+</I>&gt;&gt;<i> <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">Chilli at coova.org</A>
+</I>&gt;&gt;<i> <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">http://lists.coova.org/cgi-bin/mailman/listinfo/chilli</A>
+</I>&gt;<i>
+</I>&gt;<i>
+</I>
+</PRE>
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001210.html">[Chilli] CoovaChilli  &amp; (non CoovaAP) AP
+</A></li>
+	<LI>Next message: <A HREF="001212.html">[Chilli] CoovaChilli &amp; (non CoovaAP) AP
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1211">[ date ]</a>
+              <a href="thread.html#1211">[ thread ]</a>
+              <a href="subject.html#1211">[ subject ]</a>
+              <a href="author.html#1211">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

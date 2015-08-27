@@ -1,0 +1,219 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> chilli dhcp helper no ACK!
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20chilli%20dhcp%20helper%20no%20ACK%21&In-Reply-To=%3C1217052473.6720.2.camel%40david-laptop%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000414.html">
+   <LINK REL="Next"  HREF="000418.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>chilli dhcp helper no ACK!</H1>
+    <B>wlanmac</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20chilli%20dhcp%20helper%20no%20ACK%21&In-Reply-To=%3C1217052473.6720.2.camel%40david-laptop%3E"
+       TITLE="chilli dhcp helper no ACK!">wlan at mac.com
+       </A><BR>
+    <I>Sat Jul 26 06:07:53 UTC 2008</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000414.html">chilli dhcp helper no ACK!
+</A></li>
+        <LI>Next message: <A HREF="000418.html">chilli dhcp helper no ACK!
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#416">[ date ]</a>
+              <a href="thread.html#416">[ thread ]</a>
+              <a href="subject.html#416">[ subject ]</a>
+              <a href="author.html#416">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Try adding:
+
+  case DHCPACK:
+
+in the switch block at about line 1681 of dhcp.c
+
+David
+
+
+On Fri, 2008-07-25 at 23:56 +0200, Thomas Baumann wrote:
+&gt;<i> Hello list,
+</I>&gt;<i> 
+</I>&gt;<i> I use Version 1.0.12.
+</I>&gt;<i> 
+</I>&gt;<i> When I define a dhcp gateway (e.g. 192.168.178.10:67) with
+</I>&gt;<i> option dhcpgateway and dhcpgatewayport the all requests of
+</I>&gt;<i> the client go to the dhcp-server. this is correct.
+</I>&gt;<i> BUT there never comes an ACK!
+</I>&gt;<i> 
+</I>&gt;<i> I hope sb. can give me a hint how to solve this problem.
+</I>&gt;<i> That's why I cant use a third party dhcp server :-/
+</I>&gt;<i> 
+</I>&gt;<i> setup:
+</I>&gt;<i> 192.168.178.10 = dhcpserver
+</I>&gt;<i> 192.168.252.1  = <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chillispot at chilli0</A>
+</I>&gt;<i> 192.168.178.21 = <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chillispot at eth0</A>
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">syslog at 192.168.178.10</A>
+</I>&gt;<i> 
+</I>&gt;<i> Jul 25 19:48:07 dhcp-server dhcpd: DHCPOFFER on 192.168.252.249 to
+</I>&gt;<i> 00:04:23:82:b8:df (winclient)
+</I>&gt;<i> via 192.168.252.1
+</I>&gt;<i> Jul 25 19:48:10 dhcp-server dhcpd: DHCPDISCOVER from 00:04:23:82:b8:df
+</I>&gt;<i> (winclient) via 192.168.252.1
+</I>&gt;<i> Jul 25 19:48:10 dhcp-server dhcpd: DHCPOFFER on 192.168.252.249 to
+</I>&gt;<i> 00:04:23:82:b8:df (winclient)
+</I>&gt;<i> via 192.168.252.1
+</I>&gt;<i> Jul 25 19:48:19 dhcp-server dhcpd: DHCPDISCOVER from 00:04:23:82:b8:df
+</I>&gt;<i> (winclient) via 192.168.252.1
+</I>&gt;<i> Jul 25 19:48:19 dhcp-server dhcpd: DHCPOFFER on 192.168.252.249 to
+</I>&gt;<i> 00:04:23:82:b8:df (winclient)
+</I>&gt;<i> via 192.168.252.1
+</I>&gt;<i> Jul 25 19:48:34 dhcp-server dhcpd: DHCPDISCOVER from 00:04:23:82:b8:df
+</I>&gt;<i> (winclient) via 192.168.252.1
+</I>&gt;<i> Jul 25 19:48:34 dhcp-server dhcpd: DHCPOFFER on 192.168.252.249 to
+</I>&gt;<i> 00:04:23:82:b8:df (winclient)
+</I>&gt;<i> via 192.168.252.1
+</I>&gt;<i> 
+</I>&gt;<i> <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">syslog at chilli-accesspoint</A>
+</I>&gt;<i> Jul 25 19:43:28 chilli-accesspoint kernel: [77032.310794] IN= OUT=eth0
+</I>&gt;<i> SRC=192.168.178.21
+</I>&gt;<i> DST=192.168.178.10 LEN=328 TOS=0x00 PREC=0x00 TTL=64 ID=0 DF PROTO=UDP
+</I>&gt;<i> SPT=68 DPT=67
+</I>&gt;<i> LEN=308
+</I>&gt;<i> Jul 25 19:43:40 chilli-accesspoint kernel: [77044.257305] IN= OUT=eth0
+</I>&gt;<i> SRC=192.168.178.21
+</I>&gt;<i> DST=192.168.178.10 LEN=328 TOS=0x00 PREC=0x00 TTL=64 ID=0 DF PROTO=UDP
+</I>&gt;<i> SPT=68 DPT=67
+</I>&gt;<i> LEN=308
+</I>&gt;<i> Jul 25 19:43:42 chilli-accesspoint kernel: [77046.121562] IN= OUT=eth0
+</I>&gt;<i> SRC=192.168.178.21
+</I>&gt;<i> DST=192.168.178.10 LEN=328 TOS=0x00 PREC=0x00 TTL=64 ID=0 DF PROTO=UDP
+</I>&gt;<i> SPT=68 DPT=67
+</I>&gt;<i> LEN=308
+</I>&gt;<i> Jul 25 19:43:57 chilli-accesspoint kernel: [77061.076492] IN= OUT=eth0
+</I>&gt;<i> SRC=192.168.178.21
+</I>&gt;<i> DST=192.168.178.10 LEN=328 TOS=0x00 PREC=0x00 TTL=64 ID=0 DF PROTO=UDP
+</I>&gt;<i> SPT=68 DPT=67
+</I>&gt;<i> LEN=308
+</I>&gt;<i> Jul 25 19:44:21 chilli-accesspoint kernel: [77085.101844] IN= OUT=eth0
+</I>&gt;<i> SRC=192.168.178.21
+</I>&gt;<i> DST=192.168.178.10 LEN=328 TOS=0x00 PREC=0x00 TTL=64 ID=0 DF PROTO=UDP
+</I>&gt;<i> SPT=68 DPT=67
+</I>&gt;<i> LEN=308
+</I>&gt;<i> Jul 25 19:44:25 chilli-accesspoint kernel: [77089.046526] IN= OUT=eth0
+</I>&gt;<i> SRC=192.168.178.21
+</I>&gt;<i> DST=192.168.178.10 LEN=328 TOS=0x00 PREC=0x00 TTL=64 ID=0 DF PROTO=UDP
+</I>&gt;<i> SPT=68 DPT=67
+</I>&gt;<i> LEN=308
+</I>&gt;<i> Jul 25 19:44:29 chilli-accesspoint kernel: [77092.991370] IN= OUT=eth0
+</I>&gt;<i> SRC=192.168.178.21
+</I>&gt;<i> DST=192.168.178.10 LEN=328 TOS=0x00 PREC=0x00 TTL=64 ID=0 DF PROTO=UDP
+</I>&gt;<i> SPT=68 DPT=67
+</I>&gt;<i> LEN=308
+</I>&gt;<i> Jul 25 19:44:31 chilli-accesspoint kernel: [77095.027715] IN=chilli0
+</I>&gt;<i> OUT= PHYSIN=wlan1
+</I>&gt;<i> MAC=ff:ff:ff:ff:ff:ff:00:04:23:82:b8:df:08:00 SRC=169.254.178.182
+</I>&gt;<i> DST=169.254.255.255
+</I>&gt;<i> LEN=96 TOS=0x00 PREC=0x00 TTL=128 ID=12375 PROTO=UDP SPT=137 DPT=137 LEN=76
+</I>&gt;<i> Jul 25 19:44:31 chilli-accesspoint kernel: [77095.032067] IN=
+</I>&gt;<i> OUT=chilli0 PHYSIN=wlan1
+</I>&gt;<i> PHYSOUT=eth1 SRC=169.254.178.182 DST=169.254.255.255 LEN=96 TOS=0x00
+</I>&gt;<i> PREC=0x00 TTL=128
+</I>&gt;<i> ID=12375 PROTO=UDP SPT=137 DPT=137 LEN=76
+</I>&gt;<i> Jul 25 19:44:32 chilli-accesspoint kernel: [77096.092961] IN= OUT=eth0
+</I>&gt;<i> SRC=192.168.178.21
+</I>&gt;<i> DST=192.168.178.10 LEN=328 TOS=0x00 PREC=0x00 TTL=64 ID=0 DF PROTO=UDP
+</I>&gt;<i> SPT=68 DPT=67
+</I>&gt;<i> LEN=308
+</I>&gt;<i> Jul 25 19:44:34 chilli-accesspoint kernel: [77097.764413] IN= OUT=eth0
+</I>&gt;<i> SRC=192.168.178.21
+</I>&gt;<i> DST=192.168.178.10 LEN=328 TOS=0x00 PREC=0x00 TTL=64 ID=0 DF PROTO=UDP
+</I>&gt;<i> SPT=68 DPT=67
+</I>&gt;<i> LEN=308
+</I>&gt;<i> Jul 25 19:44:35 chilli-accesspoint kernel: [77098.710027] IN= OUT=eth0
+</I>&gt;<i> SRC=192.168.178.21
+</I>&gt;<i> DST=192.168.178.10 LEN=328 TOS=0x00 PREC=0x00 TTL=64 ID=0 DF PROTO=UDP
+</I>&gt;<i> SPT=68 DPT=67
+</I>&gt;<i> LEN=308
+</I>&gt;<i> Jul 25 19:44:40 chilli-accesspoint kernel: [77103.006176] IN=eth0 OUT=
+</I>&gt;<i> MAC=ff:ff:ff:ff:ff:ff:00:0b:5d:04:72:e5:08:00 SRC=192.168.100.127
+</I>&gt;<i> DST=192.168.100.255
+</I>&gt;<i> LEN=239 TOS=0x00 PREC=0x00 TTL=128 ID=12397 PROTO=UDP SPT=138 DPT=138 LEN=219
+</I>&gt;<i> Jul 25 19:44:40 chilli-accesspoint kernel: [77103.012566] IN=chilli0
+</I>&gt;<i> OUT= PHYSIN=wlan1
+</I>&gt;<i> MAC=ff:ff:ff:ff:ff:ff:00:04:23:82:b8:df:08:00 SRC=169.254.178.182
+</I>&gt;<i> DST=169.254.255.255
+</I>&gt;<i> LEN=204 TOS=0x00 PREC=0x00 TTL=128 ID=12395 PROTO=UDP SPT=138 DPT=138 LEN=184
+</I>&gt;<i> Jul 25 19:44:40 chilli-accesspoint kernel: [77103.012566] IN=
+</I>&gt;<i> OUT=chilli0 PHYSIN=wlan1
+</I>&gt;<i> PHYSOUT=eth1 SRC=169.254.178.182 DST=169.254.255.255 LEN=204 TOS=0x00
+</I>&gt;<i> PREC=0x00 TTL=128
+</I>&gt;<i> ID=12395 PROTO=UDP SPT=138 DPT=138 LEN=184
+</I>&gt;<i> Jul 25 19:44:40 chilli-accesspoint kernel: [77103.474933] IN= OUT=eth0
+</I>&gt;<i> SRC=192.168.178.21
+</I>&gt;<i> DST=192.168.178.10 LEN=328 TOS=0x00 PREC=0x00 TTL=64 ID=0 DF PROTO=UDP
+</I>&gt;<i> SPT=68 DPT=67
+</I>&gt;<i> LEN=308
+</I>&gt;<i> Jul 25 19:44:45 chilli-accesspoint kernel: [77108.418662] IN= OUT=eth0
+</I>&gt;<i> SRC=192.168.178.21
+</I>&gt;<i> DST=192.168.178.10 LEN=328 TOS=0x00 PREC=0x00 TTL=64 ID=0 DF PROTO=UDP
+</I>&gt;<i> SPT=68 DPT=67
+</I>&gt;<i> LEN=308
+</I>&gt;<i> Jul 25 19:44:47 chilli-accesspoint kernel: [77110.364099] IN= OUT=eth0
+</I>&gt;<i> SRC=192.168.178.21
+</I>&gt;<i> DST=192.168.178.10 LEN=328 TOS=0x00 PREC=0x00 TTL=64 ID=0 DF PROTO=UDP
+</I>&gt;<i> SPT=68 DPT=67
+</I>&gt;<i> LEN=308
+</I>&gt;<i> Jul 25 19:44:55 chilli-accesspoint kernel: [77118.677339] IN=eth0 OUT=
+</I>&gt;<i> MAC=ff:ff:ff:ff:ff:ff:00:0b:5d:04:72:e5:08:00 SRC=192.168.100.127
+</I>&gt;<i> DST=192.168.100.255
+</I>&gt;<i> LEN=239 TOS=0x00 PREC=0x00 TTL=128 ID=12418 PROTO=UDP SPT=138 DPT=138 LEN=219
+</I>&gt;<i> Jul 25 19:45:03 chilli-accesspoint kernel: [77126.250382] IN= OUT=eth0
+</I>&gt;<i> SRC=192.168.178.21
+</I>&gt;<i> DST=192.168.178.10 LEN=328 TOS=0x00 PREC=0x00 TTL=64 ID=0 DF PROTO=UDP
+</I>&gt;<i> SPT=68 DPT=67
+</I>&gt;<i> LEN=308
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> ----------------------------------------------------------------
+</I>&gt;<i> This message was sent using IMP, the Internet Messaging Program.
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> ---------------------------------------------------------------------
+</I>&gt;<i> To unsubscribe, e-mail: <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli-unsubscribe at coova.org</A>
+</I>&gt;<i> For additional commands, e-mail: <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli-help at coova.org</A>
+</I>&gt;<i> Wiki: <A HREF="http://coova.org/wiki/index.php/CoovaChilli">http://coova.org/wiki/index.php/CoovaChilli</A>
+</I>&gt;<i> Forum: <A HREF="http://coova.org/phpBB3/viewforum.php?f=4">http://coova.org/phpBB3/viewforum.php?f=4</A>
+</I>&gt;<i> 
+</I>
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000414.html">chilli dhcp helper no ACK!
+</A></li>
+	<LI>Next message: <A HREF="000418.html">chilli dhcp helper no ACK!
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#416">[ date ]</a>
+              <a href="thread.html#416">[ thread ]</a>
+              <a href="subject.html#416">[ subject ]</a>
+              <a href="author.html#416">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,136 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] Multiple Login Pages With CoovaChilli_1.3.0 [SOLVED	!!!!!!]
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Multiple%20Login%20Pages%20With%20CoovaChilli_1.3.0%20%5BSOLVED%0A%09%21%21%21%21%21%21%5D&In-Reply-To=%3CCADao4CqZi3TeGzv4CB16gV45rji4OoLM%2BH9BpDyagkkwuaetZA%40mail.gmail.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="002320.html">
+   <LINK REL="Next"  HREF="002328.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] Multiple Login Pages With CoovaChilli_1.3.0 [SOLVED	!!!!!!]</H1>
+    <B>Russell Mike</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Multiple%20Login%20Pages%20With%20CoovaChilli_1.3.0%20%5BSOLVED%0A%09%21%21%21%21%21%21%5D&In-Reply-To=%3CCADao4CqZi3TeGzv4CB16gV45rji4OoLM%2BH9BpDyagkkwuaetZA%40mail.gmail.com%3E"
+       TITLE="[Chilli] Multiple Login Pages With CoovaChilli_1.3.0 [SOLVED	!!!!!!]">radius.sir at gmail.com
+       </A><BR>
+    <I>Mon Jul 29 17:04:54 UTC 2013</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="002320.html">[Chilli] Prevent start of double instances.
+</A></li>
+        <LI>Next message: <A HREF="002328.html">[Chilli] Multiple Login Pages With CoovaChilli_1.3.0 [SOLVED	!!!!!!]
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2324">[ date ]</a>
+              <a href="thread.html#2324">[ thread ]</a>
+              <a href="subject.html#2324">[ subject ]</a>
+              <a href="author.html#2324">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hi CoovaChilli List,
+
+i have coovachilli_1.3.0 running as central server in multi
+tenancy environment (ISP Data Center) using VLANs. CoocaChilli is serving
+about 50 hotspots across the city. A separate CoovaChilli instance is
+running on each VLAN. All instances work normal, without any issue. But i
+have asked to provide separate landing page for each customer with their
+company logo on the login page.
+
+i have the following setup:
+
+<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">root at captive</A>:/usr/local/etc/chilli# ls -l uploads/
+
+drwxr-xr-x  7 www-data www-data 4096 Jul 29 16:04 ./
+drwxr-xr-x 10 root     root     4096 Jul 25 15:06 ../
+drwxrwxr-x  5 chilli   www-data 4096 Jul 29 15:24 www-cafeclub/
+drwxrwxr-x  4 chilli   www-data 4096 Jul 29 16:17 www-yzone/
+
+*nano /usr/local/etc/chilli/coova-vlan10/config*
+
+HS_WWWDIR=/usr/local/etc/chilli/uploads/www-cafeclub
+HS_WWWBIN=/usr/local/etc/chilli/upload/wwwsh
+HS_UAMFORMAT=<A HREF="http://">http://</A>
+\$HS_UAMLISTEN:\$HS_UAMUIPORT/uploads/www-cafeclub/login.chi
+HS_UAMHOMEPAGE=<A HREF="http://">http://</A>
+\$HS_UAMLISTEN:\$HS_UAMPORT/uploads/www-cafeclub/coova.html
+*nano /usr/local/etc/chilli/coova-vlan20/config*
+
+HS_WWWDIR=/usr/local/etc/chilli/uploads/www-yzone
+HS_WWWBIN=/usr/local/etc/chilli/upload/wwwsh
+HS_UAMFORMAT=<A HREF="http://">http://</A>
+\$HS_UAMLISTEN:\$HS_UAMUIPORT/uploads/www-yzone/login.chi
+HS_UAMHOMEPAGE=<A HREF="http://">http://</A>
+\$HS_UAMLISTEN:\$HS_UAMPORT/uploads/www-yzone/coova.html
+Firefox Reports: Firefox has detected that the server is redirecting the
+request for this address in a way that will never complete.
+
+*SOLUTION: *
+i wish to reply my own post because i am able to solve the problem. Here is
+the solution for following requirement.
+
+# Phrase Included For Google Search From Archives
+CoovaChilli Multi-Tenancy Running Multiple VLANs, Separate Login Page For
+Each Customer / Client. Different Landing Page For Each Client / Customer,
+Multiple Login Pages CoovaChilli
+
+*<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">root at captive</A>:/usr/local/etc/chilli# ls -l uploads/*
+drwxr-xr-x  7 www-data www-data 4096 Jul 29 16:04 ./
+drwxr-xr-x 10 root     root     4096 Jul 25 15:06 ../
+drwxrwxr-x  5 chilli   www-data 4096 Jul 29 15:24 www-cafeclub/
+drwxrwxr-x  4 chilli   www-data 4096 Jul 29 16:17 www-yzone/
+
+*nano /usr/local/etc/chilli/coova-vlan10/config*
+HS_WWWDIR=/usr/local/etc/chilli/uploads/www-cafeclub
+HS_WWWBIN=/usr/local/etc/chilli/wwwsh
+HS_UAMFORMAT=<A HREF="http://\$HS_UAMLISTEN:\$HS_UAMUIPORT/www/login.chi">http://\$HS_UAMLISTEN:\$HS_UAMUIPORT/www/login.chi</A>
+HS_UAMHOMEPAGE=<A HREF="http://\$HS_UAMLISTEN:\$HS_UAMPORT/www/coova.html">http://\$HS_UAMLISTEN:\$HS_UAMPORT/www/coova.html</A>
+*
+*
+*nano /usr/local/etc/chilli/coova-vlan20/config*
+HS_WWWDIR=/usr/local/etc/chilli/uploads/www-yzone
+HS_WWWBIN=/usr/local/etc/chilli/wwwsh
+HS_UAMFORMAT=<A HREF="http://\$HS_UAMLISTEN:\$HS_UAMUIPORT/www/login.chi">http://\$HS_UAMLISTEN:\$HS_UAMUIPORT/www/login.chi</A>
+HS_UAMHOMEPAGE=<A HREF="http://\$HS_UAMLISTEN:\$HS_UAMPORT/www/coova.html">http://\$HS_UAMLISTEN:\$HS_UAMPORT/www/coova.html</A>
+
+restart chilli daemon(s)
+Please do not forget to check the permissions etc... on the &quot;www&quot;
+directories
+
+
+Thanks / Regards
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: &lt;<A HREF="http://lists.coova.org/pipermail/chilli/attachments/20130729/e39e1791/attachment.html">http://lists.coova.org/pipermail/chilli/attachments/20130729/e39e1791/attachment.html</A>&gt;
+</PRE>
+
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="002320.html">[Chilli] Prevent start of double instances.
+</A></li>
+	<LI>Next message: <A HREF="002328.html">[Chilli] Multiple Login Pages With CoovaChilli_1.3.0 [SOLVED	!!!!!!]
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2324">[ date ]</a>
+              <a href="thread.html#2324">[ thread ]</a>
+              <a href="subject.html#2324">[ subject ]</a>
+              <a href="author.html#2324">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

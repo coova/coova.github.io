@@ -1,0 +1,158 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] Disassociate clients that don't authorize themselves	via portal?
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Disassociate%20clients%20that%20don%27t%20authorize%20themselves%0A%09via%20portal%3F&In-Reply-To=%3CCADSh-SPDLK2YwxbBU%3Dy_1eMBr9GtOaBB_KCJ1wZaanV%2Bwj3N8g%40mail.gmail.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="002614.html">
+   <LINK REL="Next"  HREF="002617.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] Disassociate clients that don't authorize themselves	via portal?</H1>
+    <B>Ben West</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Disassociate%20clients%20that%20don%27t%20authorize%20themselves%0A%09via%20portal%3F&In-Reply-To=%3CCADSh-SPDLK2YwxbBU%3Dy_1eMBr9GtOaBB_KCJ1wZaanV%2Bwj3N8g%40mail.gmail.com%3E"
+       TITLE="[Chilli] Disassociate clients that don't authorize themselves	via portal?">ben at gowasabi.net
+       </A><BR>
+    <I>Sun Mar  9 01:01:46 UTC 2014</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="002614.html">[Chilli] Disassociate clients that don't authorize themselves	via portal?
+</A></li>
+        <LI>Next message: <A HREF="002617.html">[Chilli] Disassociate clients that don't authorize themselves	via portal?
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2616">[ date ]</a>
+              <a href="thread.html#2616">[ thread ]</a>
+              <a href="subject.html#2616">[ subject ]</a>
+              <a href="author.html#2616">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Thank you, David, for the clarification.
+
+Yes, I do agree that trying to kick off lingering unauthorized wifi clients
+(i.e. using &quot;iw wlan0 station del ...&quot;) would probably just prompt the
+client to automatically reconnect, and be ineffective.  The underlying
+motivation for my question was observation of a few client apparently
+parking themselves on an AP for long periods of time and never clicking
+thru the portal.  OpenWRT tools like &quot;iw wlan0 station dump&quot; and &quot;bmon&quot;
+seem to show some of these clients downloading substantial traffic
+(Mbytes), comparable to other clients on the same AP that are authorized.
+Snooping the nf_conntrack table for these clients only yields port 3990
+connections to the HS_UAMLISTEN address and DNS queries to HS_DNS1.
+Possibly, these misbehaving clients are doing something sneaky like DNS
+tunneling, i.e. to bypass RADIUS auth (and thus the bandwidth caps).  Or,
+they're just repeatedly hitting the captive portal and going no further.
+
+However, instead of trying to pursue a whack-a-mole game, I'm more curious
+about the prospect of applying bandwidth caps to *unauthorized* clients, at
+least so that anyone who may be attempting casual DOS attacks or DNS
+tunneling would have an upper limit placed on the bandwidth available to
+them (i.e. comparable to the limit they would otherwise see by clicking
+thru the portal). Traffic shaping under OpenWRT that is tagged to a
+specific destination IP or MAC address does indeed look to be possible.  I
+think the key here would be to deploy such shaping to each unauthorized
+client upon issuance of a DHCP lease, and then use coovachill's conup
+script to flush those iptables rules upon session authorization, i.e where
+coovachilli takes over the session's bandwidth control.
+
+I'm guessing there is no ability to have coovachilli launch an external
+script upon each lease issued. So, I would need to have an external tool
+with such capability (i.e. dnsmasq) handle clients' DHCP, right?
+
+Also, Jed, the open APs are operated so by intention, i.e. to provide
+limited free wifi comparable to that found in coffeeshops, grocery stores,
+etc.  My coovachilli/firmware config is nearly identical to that used by
+Cloudtrax and WifiMesh.  Additionally, I use RADIUS to assert bandwidth
+caps and session lengths.  (Closed APs with WPA2 encryption are also used
+where desired.)
+
+Thank you again.
+
+
+
+On Sat, Mar 8, 2014 at 1:18 PM, David Bird &lt;<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">dbird at google.com</A>&gt; wrote:
+
+&gt;<i> No, there isn't such a feature. You could disassociate clients perhaps
+</I>&gt;<i> through the driver, but chances are the client will just re-associate
+</I>&gt;<i> (unless there is another network it knows). You could have chilli drop
+</I>&gt;<i> everything for the station, but that will not prevent the client from still
+</I>&gt;<i> taking up airtime trying to (re)send packets. However, depending on the
+</I>&gt;<i> client, it may drop the signal itself if it thinks it lost layer2
+</I>&gt;<i> connectivity.
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> On Sat, Mar 8, 2014 at 7:21 AM, Ben West &lt;<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">ben at gowasabi.net</A>&gt; wrote:
+</I>&gt;<i>
+</I>&gt;&gt;<i> I&quot;m curious if coovachilli v1.3.0, in my instance running under OpenWRT
+</I>&gt;&gt;<i> Attitude Adjustment, offers a way to actively disassociate clients who do
+</I>&gt;&gt;<i> not authorize themselves via the captive portal, but which still remain
+</I>&gt;&gt;<i> associated with the hotspot.
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> The particular scenario I'm envisioning is someone's phone or tablet that
+</I>&gt;&gt;<i> automatically associates to an open SSID, but where the user doesn't bother
+</I>&gt;&gt;<i> clicking through the captive portal.  The device continues to try to
+</I>&gt;&gt;<i> periodically pull down content (e.g. app updates), sometimes quite
+</I>&gt;&gt;<i> furiously, causing a fair amount of useless traffic over the wifi channel,
+</I>&gt;&gt;<i> chewing up airtime.
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> Or, instead of actively dissociating such an unauthorized client, perhaps
+</I>&gt;&gt;<i> instead have coovachilli run an iptables script after some inactivity
+</I>&gt;&gt;<i> timeout to begin throttling traffic to the client?
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> Thank you.
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> --
+</I>&gt;&gt;<i> Ben West
+</I>&gt;&gt;<i> <A HREF="http://gowasabi.net">http://gowasabi.net</A>
+</I>&gt;&gt;<i> <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">ben at gowasabi.net</A>
+</I>&gt;&gt;<i> 314-246-9434
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> _______________________________________________
+</I>&gt;&gt;<i> Chilli mailing list
+</I>&gt;&gt;<i> <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">Chilli at coova.org</A>
+</I>&gt;&gt;<i> <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">http://lists.coova.org/cgi-bin/mailman/listinfo/chilli</A>
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i>
+</I>&gt;<i>
+</I>
+
+-- 
+Ben West
+<A HREF="http://gowasabi.net">http://gowasabi.net</A>
+<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">ben at gowasabi.net</A>
+314-246-9434
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: &lt;<A HREF="http://lists.coova.org/pipermail/chilli/attachments/20140308/1e01a428/attachment-0001.html">http://lists.coova.org/pipermail/chilli/attachments/20140308/1e01a428/attachment-0001.html</A>&gt;
+</PRE>
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="002614.html">[Chilli] Disassociate clients that don't authorize themselves	via portal?
+</A></li>
+	<LI>Next message: <A HREF="002617.html">[Chilli] Disassociate clients that don't authorize themselves	via portal?
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2616">[ date ]</a>
+              <a href="thread.html#2616">[ thread ]</a>
+              <a href="subject.html#2616">[ subject ]</a>
+              <a href="author.html#2616">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

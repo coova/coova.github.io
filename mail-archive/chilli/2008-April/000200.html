@@ -1,0 +1,95 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> Accounting badly broken in v1.0.11
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20Accounting%20badly%20broken%20in%20v1.0.11&In-Reply-To=%3C4807C441.2000609%40gmail.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000194.html">
+   <LINK REL="Next"  HREF="000201.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>Accounting badly broken in v1.0.11</H1>
+    <B>Gunther Mayer</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20Accounting%20badly%20broken%20in%20v1.0.11&In-Reply-To=%3C4807C441.2000609%40gmail.com%3E"
+       TITLE="Accounting badly broken in v1.0.11">gunther.mayer at googlemail.com
+       </A><BR>
+    <I>Thu Apr 17 21:42:25 UTC 2008</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000194.html">Easy login from your phone (or firefox)
+</A></li>
+        <LI>Next message: <A HREF="000201.html">Accounting badly broken in v1.0.11
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#200">[ date ]</a>
+              <a href="thread.html#200">[ thread ]</a>
+              <a href="subject.html#200">[ subject ]</a>
+              <a href="author.html#200">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hi guys,
+
+I just wanted to share my experiences with v1.0.11 with everyone 
+thinking of upgrading to that &quot;latest&quot; release. At first I noticed our 
+radius/db accounting entries got all messed up for some sessions and 
+when I started investigating in more detail I stumbled across a whack 
+load of spurious radius packets that chilli sends to the radius server 
+halfway through the session or even after it ended:
+
+    * replays of entire previous sessions (from accounting start to all
+      interim updates, sometimes even all the way to accounting stop)
+    * replay of current session (from accounting start to zero or more
+      interim updates)
+    * accounting-on packets
+
+This can get really hairy to try and work around in the radius server 
+code and is giving me grey hair. It seems like quite a serious bug to me 
+but others here may have more robust radius code than mine so perhaps 
+haven't noticed this yet.
+
+David if this is all new to you I'll gladly follow up with a whole bunch 
+of tcpdump's that I've prepared which isolate the problems. Reproducing 
+this is fairly easy too, just fire up a session and watch the radius 
+packets that flow past...
+
+Has anyone been bitten by this too? Has anyone worked around this 
+successfully? Has anyone experienced something similar at least in post 
+svn r147 (1.0.11)?
+
+I'm stuck here trying to release an upgrade to our system which involves 
+JSON (I'm currently based on 1.0.6 just before JSON got introduced) but 
+clearly cannot use latest release, am a bit wary of using bleeding edge 
+trunk in production but also don't want to successively test each 
+earlier release (1.0.10 has known issues, 1.0.7-9 anyone?) in the light 
+of this.
+
+Gunther
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: &lt;<A HREF="http://lists.coova.org/pipermail/chilli/attachments/20080417/f524c277/attachment.htm">http://lists.coova.org/pipermail/chilli/attachments/20080417/f524c277/attachment.htm</A>&gt;
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000194.html">Easy login from your phone (or firefox)
+</A></li>
+	<LI>Next message: <A HREF="000201.html">Accounting badly broken in v1.0.11
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#200">[ date ]</a>
+              <a href="thread.html#200">[ thread ]</a>
+              <a href="subject.html#200">[ subject ]</a>
+              <a href="author.html#200">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

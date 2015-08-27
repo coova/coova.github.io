@@ -1,0 +1,112 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] IPTABLES
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20IPTABLES&In-Reply-To=%3C6239A24C38D2594FB682374DF81215836A51158129%40GBDCCCR01.PaperlinX-EU.Local%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="002756.html">
+   <LINK REL="Next"  HREF="002757.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] IPTABLES</H1>
+    <B>Dennehy, Liam</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20IPTABLES&In-Reply-To=%3C6239A24C38D2594FB682374DF81215836A51158129%40GBDCCCR01.PaperlinX-EU.Local%3E"
+       TITLE="[Chilli] IPTABLES">Liam.Dennehy at paperlinx.com
+       </A><BR>
+    <I>Thu Jun  5 08:04:52 UTC 2014</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="002756.html">[Chilli] IPTABLES
+</A></li>
+        <LI>Next message: <A HREF="002757.html">[Chilli] Coova multi-session accounting
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2762">[ date ]</a>
+              <a href="thread.html#2762">[ thread ]</a>
+              <a href="subject.html#2762">[ subject ]</a>
+              <a href="author.html#2762">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Has anyone got back to you on this?
+
+Simply:
+iptables -I FORWARD 1 -s 10.1.0.0/24 -d 192.168.1.0/24 -j DROP
+
+To prevent people on your LAN talking to you guests:
+iptables -I FORWARD 1 -d 10.1.0.0/24 -s 192.168.1.0/24 -j DROP
+
+This inserts a rule on the first line of the FORWARD (routing) iptable dropping packets from and then to the subnets in question (-s for &quot;source&quot; and -d for &quot;destination&quot;).
+
+The best starting point is a decent understanding of how IP does routing, and from there take a look at the diagram here that explains how packets flow through the kernel's various tables:
+<A HREF="http://l7-filter.sourceforge.net/PacketFlow.png">http://l7-filter.sourceforge.net/PacketFlow.png</A>
+
+Without any parameters, the iptables command acts on the &quot;filter&quot; table, as with the two commands above. The NAT table is the one that does your address translation and is specified using &quot;-t nat&quot;.
+
+Liam Dennehy
+Technical Design Authority
+PaperlinX Europe
+M: +31 621 877 185
+
+-----Original Message-----
+From: <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli-bounces at coova.org</A> [mailto:<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli-bounces at coova.org</A>] On Behalf Of Stephen Davies
+Sent: 28 May 2014 20:55
+To: <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli at coova.org</A>
+Subject: [Chilli] IPTABLES
+
+Hello all,
+
+Does anyone have any experience with IPTABLES and setting up rules to
+prevent access from the captive portal clients to the local LAN. My
+wireless Coovachilli access point is plugged into my LAN and is assigned
+(HS_WANIF) an IP in the range of 192.168.1.x. The wireless captive
+portal side (HS_LANIF) is running a subnet of 10.1.0.x.
+
+When a client is authenticated and granted internet access, the client
+can access services or ping any device in the private LAN of
+192.168.1.x. I want to prevent this for security reasons. I have tried
+and tried with various settings in IPTABLES but I am not getting very
+far. Does anyone have any pointers or rules examples. I am guessing this
+is a very important subject for public access Coovachilli installations.
+
+Thanks
+Steve
+
+_______________________________________________
+Chilli mailing list
+<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">Chilli at coova.org</A>
+<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">http://lists.coova.org/cgi-bin/mailman/listinfo/chilli</A>
+
+This email is privileged and confidential and is intended only for those to whom it is addressed. If you are not the intended recipient then any disclosure, dissemination, copying or use of the information is strictly prohibited. If you have received this email in error, please notify this office immediately by return email.
+
+Before opening any attachments please make sure they have been checked for viruses and defects.
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="002756.html">[Chilli] IPTABLES
+</A></li>
+	<LI>Next message: <A HREF="002757.html">[Chilli] Coova multi-session accounting
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2762">[ date ]</a>
+              <a href="thread.html#2762">[ thread ]</a>
+              <a href="subject.html#2762">[ subject ]</a>
+              <a href="author.html#2762">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

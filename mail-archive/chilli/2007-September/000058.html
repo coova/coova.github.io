@@ -1,0 +1,190 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> Accessing AP through eth1
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20Accessing%20AP%20through%20eth1&In-Reply-To=%3Cef21d1850709080850n3b79e010m10fded9a68b2b189%40mail.gmail.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000056.html">
+   <LINK REL="Next"  HREF="000061.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>Accessing AP through eth1</H1>
+    <B>David Bird</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20Accessing%20AP%20through%20eth1&In-Reply-To=%3Cef21d1850709080850n3b79e010m10fded9a68b2b189%40mail.gmail.com%3E"
+       TITLE="Accessing AP through eth1">mem.corruption at gmail.com
+       </A><BR>
+    <I>Sat Sep  8 15:50:07 UTC 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000056.html">Accessing AP through eth1 
+</A></li>
+        <LI>Next message: <A HREF="000061.html">Accessing AP through eth1
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#58">[ date ]</a>
+              <a href="thread.html#58">[ thread ]</a>
+              <a href="subject.html#58">[ subject ]</a>
+              <a href="author.html#58">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>First of all, there are many possible configurations with chilli (plus
+iptables, etc) - I can't claim to have tried them all. So, when in doubt,
+give it a try! But, to keep things manageable for any kind of support, there
+are some &quot;best practices&quot; and such. I consider un-setting the dhcpif IP
+address a &quot;best practice&quot;. In your configuration, you're essentially
+overlaying two networks on your eth1 network -- which is cool, if you know
+what you're doing. You need to ensure proper access controls on both
+networks - only one of which is utilizing chilli (if done correctly).
+
+The cleanest way for chilli to operate is to completely own the dhcpif, with
+no routing (forwarding in iptables) for the traffic on that interface --
+instead, only for the traffic to/from the chilli tunnel interface. Yet, when
+you assign an IP to dhcpif, you're probably wanting your system to route
+traffic directly to that interface. Now you have an overlay network
+bypassing chilli.
+
+So, it isn't a matter of chilli geting confused. Rather, it becomes
+increasingly possible that traffic is bypassing chilli or even being passed
+through chilli _and_ being picked up by the kernel (like in conn_track or
+even for routing). How all this interacts with iptables and its various
+modules is something to test. Some things to watch out for: DHCP responses
+from something other than chilli on your dhcpif; duplicate packets on your
+dhcpif or WAN; the ability to by-pass chilli altogether; and, proper NAT and
+conn-tracking (for VPNs, etc, if that is of any importance to you) in
+iptables.
+
+David
+
+On 9/8/07, SR Infosyst&#232;mes &lt;<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">contact at sriviere.info</A>&gt; wrote:
+&gt;<i>
+</I>&gt;<i> Hi David,
+</I>&gt;<i>
+</I>&gt;<i> Thanks for your fast answer !
+</I>&gt;<i>
+</I>&gt;<i> &gt; I think I must come to your island to help you out! :)
+</I>&gt;<i>
+</I>&gt;<i> You're welcome ! Sail, wind-surf, surf, dive, kite-surf, plane, see,
+</I>&gt;<i> horses, bicycle, sun... But I'm at work, even week-ends :)))
+</I>&gt;<i>
+</I>&gt;<i> Since the guy who have to setup the test platform has given up (too
+</I>&gt;<i> difficult, he says, after trying many things around NoCat for weeks. I
+</I>&gt;<i> restart the project from the ground and, after intensive googling,
+</I>&gt;<i> choose CoovaChilli : better design, faster software and alive project. I
+</I>&gt;<i> use hotcake to manage accounts, hotcake is a new project, very promising.
+</I>&gt;<i>
+</I>&gt;<i> More seriously, I'm basically a software and hardware engineer,
+</I>&gt;<i> definitly not an experienced network engineer. I discover theses days
+</I>&gt;<i> netfilter/iptables and so on. But I'm stubborn, and I want to learn and
+</I>&gt;<i> make things work together, gracefully if possible :)
+</I>&gt;<i>
+</I>&gt;<i> &gt; Have you tested authenticating multiple users from the same AP?
+</I>&gt;<i>
+</I>&gt;<i> I start CoovaChilli
+</I>&gt;<i>
+</I>&gt;<i> I switch on pc1 wifi card
+</I>&gt;<i> log says client mac_wifi_card_pc1 assigned 192.168.1.5
+</I>&gt;<i>
+</I>&gt;<i> I switch on pc2 wifi card
+</I>&gt;<i> log says client mac_wifi_car_pc2 assigned 192.168.1.6
+</I>&gt;<i>
+</I>&gt;<i> I log test01 user on pc1
+</I>&gt;<i> log says Successful UAM login from username=test01 IP=192.168.1.5
+</I>&gt;<i>
+</I>&gt;<i> I log test01 user on pc2
+</I>&gt;<i> log says Successful UAM login from username=test02 IP=192.168.1.6
+</I>&gt;<i>
+</I>&gt;<i> I know my APs mac adresses and my PC mac adresses : there is no ambiguity.
+</I>&gt;<i>
+</I>&gt;<i> &gt; I typically don't assign my dhcpif an IP address, but others do. You
+</I>&gt;<i> &gt; indeed just need to be a lot more careful with your iptables rules.
+</I>&gt;<i>
+</I>&gt;<i> &gt; For instance, if someone made the their default gateway that of your
+</I>&gt;<i> &gt; eth1 instead of the chilli tunnel, are they bypassing authentication?
+</I>&gt;<i>
+</I>&gt;<i> Must I give eth1 a real IP OUTSIDE my Chilli network class (192.168.1.x)
+</I>&gt;<i> choosing 192.168.3.x for example ? and affect IP of APs in the same
+</I>&gt;<i> 192.168.3 class ?
+</I>&gt;<i>
+</I>&gt;<i> eth0 : 192.168.0.0/24, ip 192.168.0.251 via /etc/network/interfaces
+</I>&gt;<i>
+</I>&gt;<i> tun0 : 192.168.1.0/24, ip 192.168.1.1 via chilli.conf
+</I>&gt;<i>
+</I>&gt;<i> eth1 : 192.168.2.0/24, ip 192.168.2.251 via /etc/network/interfaces
+</I>&gt;<i>
+</I>&gt;<i> If I setup AP1 like this :
+</I>&gt;<i>
+</I>&gt;<i> ip : 192.168.2.241
+</I>&gt;<i> gateway : 192.168.2.251
+</I>&gt;<i>
+</I>&gt;<i> May I hope avoiding interference between Chilli and AP maintenance via
+</I>&gt;<i> SSH doing like this  ?
+</I>&gt;<i>
+</I>&gt;<i> &gt; You need to be careful what traffic gets picked up and handled by the
+</I>&gt;<i> &gt; kernel and what gets switched through chilli...
+</I>&gt;<i>
+</I>&gt;<i> Despite the iptables rules to avoid unauthentication bypassing, why
+</I>&gt;<i> CoovaChilli is confused when I give a real IP to eth1 ?
+</I>&gt;<i>
+</I>&gt;<i> Because I melt tun0 and eth1 in the same network class (192.168.1.0/24) ?
+</I>&gt;<i>
+</I>&gt;<i> If I understood well the Chilli design :
+</I>&gt;<i>
+</I>&gt;<i> 1) Chilli listen to DHCP request. At this stage, Chilli don't mind
+</I>&gt;<i> network class or ip of eth1, it just listen eth1 to dhcp request.
+</I>&gt;<i>
+</I>&gt;<i> 2) When it receives a dhcp request, it affects an ip address (inside
+</I>&gt;<i> network class settings in chilli.conf) through its internal dhcp and
+</I>&gt;<i> make a tunnel between the client and Chilli.
+</I>&gt;<i>
+</I>&gt;<i> Thanks again for your help.
+</I>&gt;<i>
+</I>&gt;<i> Sorry to disturb you with newbie questions.
+</I>&gt;<i>
+</I>&gt;<i> Stephane Riviere
+</I>&gt;<i>
+</I>&gt;<i> --
+</I>&gt;<i> LA SOLUTION &#224; vos probl&#232;mes INFORMATIQUES
+</I>&gt;<i>
+</I>&gt;<i> SR Infosyst&#232;mes
+</I>&gt;<i> 15, rue du Temple
+</I>&gt;<i> 17310 St Pierre d'Ol&#233;ron
+</I>&gt;<i> Ile d'Ol&#233;ron - France
+</I>&gt;<i>
+</I>&gt;<i> Mobile : 06 89 29 88 44
+</I>&gt;<i> Fixe :   09 54 10 55 60 (appel local)
+</I>&gt;<i> Fax :    05 46 36 30 59
+</I>&gt;<i> Site :   www.sriviere.info
+</I>&gt;<i> Email :  <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">contact at sriviere.info</A>
+</I>&gt;<i> Skype :  stephane.riviere
+</I>&gt;<i>
+</I>&gt;<i> Certificat X509 : disponible sur le site
+</I>&gt;<i>
+</I>-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: &lt;<A HREF="http://lists.coova.org/pipermail/chilli/attachments/20070908/13b46c47/attachment.htm">http://lists.coova.org/pipermail/chilli/attachments/20070908/13b46c47/attachment.htm</A>&gt;
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000056.html">Accessing AP through eth1 
+</A></li>
+	<LI>Next message: <A HREF="000061.html">Accessing AP through eth1
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#58">[ date ]</a>
+              <a href="thread.html#58">[ thread ]</a>
+              <a href="subject.html#58">[ subject ]</a>
+              <a href="author.html#58">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,159 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] Fixed IP addresses for APs and DHCP for clients
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Fixed%20IP%20addresses%20for%20APs%20and%20DHCP%20for%20clients&In-Reply-To=%3C1263106346.4180.9.camel%40david-laptop%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001097.html">
+   <LINK REL="Next"  HREF="001107.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] Fixed IP addresses for APs and DHCP for clients</H1>
+    <B>David Bird</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Fixed%20IP%20addresses%20for%20APs%20and%20DHCP%20for%20clients&In-Reply-To=%3C1263106346.4180.9.camel%40david-laptop%3E"
+       TITLE="[Chilli] Fixed IP addresses for APs and DHCP for clients">david at coova.com
+       </A><BR>
+    <I>Sun Jan 10 06:52:26 UTC 2010</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001097.html">[Chilli] Fixed IP addresses for APs and DHCP for clients
+</A></li>
+        <LI>Next message: <A HREF="001107.html">[Chilli] Fixed IP addresses for APs and DHCP for clients
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1098">[ date ]</a>
+              <a href="thread.html#1098">[ thread ]</a>
+              <a href="subject.html#1098">[ subject ]</a>
+              <a href="author.html#1098">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hi Felipe,
+
+It sounds like your APs will be in bridge mode? 
+
+Either way, it isn't obvious really what solution is the &quot;right&quot; one.
+Changes are, you could have some options how you set it up. 
+
+If you are going to use Framed-IP-Address in MAC auth, then you will
+also need the option (in chilli 1.2.0) --strictmacauth ... this option
+was added to keep chilli doing what it does now: when DHCP request comes
+in, the first one is ignored while RADIUS is performed for MAC
+authentication. The DHCP is ignored, because chilli *might* learn of the
+correct IP to return from RADIUS. This, however, makes all clients
+connect a bit slower... as they all have to reissue a DHCP request after
+a timeout. Chilli was changed per default to just return the DHCP reply
+without waiting (MAC auth still happens, just after the client has an
+IP, which means Framed-IP-Address in MAC auth now requires the new
+option). 
+
+I hope this is clear.
+
+David
+
+
+On Fri, 2010-01-08 at 19:41 -0200, Felipe Augusto van de Wiel wrote:
+&gt;<i> -----BEGIN PGP SIGNED MESSAGE-----
+</I>&gt;<i> Hash: SHA512
+</I>&gt;<i> 
+</I>&gt;<i> Hi,
+</I>&gt;<i> 
+</I>&gt;<i> 	First of all, thanks for all your great work with
+</I>&gt;<i> Coova Chilli, it is a great solution for managing Wi-Fi
+</I>&gt;<i> Hot Spots. :-)
+</I>&gt;<i> 
+</I>&gt;<i> 	When I first deployed it where I work I was
+</I>&gt;<i> thinking about using ISC DHCP (at that time, it was not
+</I>&gt;<i> clear to me how Coova works). The idea was to provide,
+</I>&gt;<i> from DHCP, the IP address for the APs, that way they
+</I>&gt;<i> will have a &quot;fixed IP&quot;, but once we need to change the
+</I>&gt;<i> range we could do it remotely and automatically.
+</I>&gt;<i> 
+</I>&gt;<i> 	In other words, I would like to have a static
+</I>&gt;<i> IP range that DHCP will send to the access points and
+</I>&gt;<i> a dynamic IP range that DHCP will send to the clients,
+</I>&gt;<i> but those ranges don't necessarily have to be a full
+</I>&gt;<i> subnet like /25 or /28. The APs don't necessarily have
+</I>&gt;<i> to access the Internet, we just need to access them to
+</I>&gt;<i> check radio settings and config options.
+</I>&gt;<i> 
+</I>&gt;<i> 	With this message, I'm searching for some
+</I>&gt;<i> orientation on the best approach to deal with the IPs.
+</I>&gt;<i> - From the documentation and forums I had the impression
+</I>&gt;<i> that there are three possible approaches to achieve
+</I>&gt;<i> the above described scenario.
+</I>&gt;<i> 
+</I>&gt;<i>  1) Use dynip and statip config options
+</I>&gt;<i>  2) Use macallowed and Framed-IP-Address
+</I>&gt;<i>  3) Use macauth and Framed-IP-Address
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> 	I think (2) would be the easiest to maintain
+</I>&gt;<i> when we need to add more APs and would not waste IPs
+</I>&gt;<i> from a subnet, since it is a moderately large change,
+</I>&gt;<i> I'm checking with the list before trying to deploy it.
+</I>&gt;<i> 
+</I>&gt;<i> 	Any comments, recommendations, considerations?
+</I>&gt;<i> And of course, it would be great if somebody just write
+</I>&gt;<i> to say: &quot;hey, that's exactly the way to go&quot;. :-)
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> Kind regards,
+</I>&gt;<i> - -- 
+</I>&gt;<i> Felipe Augusto van de Wiel &lt;<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">felipe.wiel at hpp.org.br</A>&gt;
+</I>&gt;<i> Tecnologia da Informa&#231;&#227;o (TI) - Complexo Pequeno Pr&#237;ncipe
+</I>&gt;<i> <A HREF="http://www.pequenoprincipe.org.br/">http://www.pequenoprincipe.org.br/</A>    T: +55 41 3310 1747
+</I>&gt;<i> -----BEGIN PGP SIGNATURE-----
+</I>&gt;<i> Version: GnuPG v1.4.10 (GNU/Linux)
+</I>&gt;<i> Comment: Using GnuPG with Mozilla - <A HREF="http://enigmail.mozdev.org/">http://enigmail.mozdev.org/</A>
+</I>&gt;<i> 
+</I>&gt;<i> iQIcBAEBCgAGBQJLR6adAAoJECCPPxLgxLxPDN8QAIc0KcZRu0r9ZwFVwOqXJZWy
+</I>&gt;<i> n+wTLdsCBh5+yLxyKSst4NwncQn9fCc3yvKI6rdw+tbxbtiRmGR9KtnktUYb0RmC
+</I>&gt;<i> 7y+BElij+8J6IsyU1jLRSCdyzR1pA3s6+oSRpv6UmUg791oPKkoVOtovdoU/ZsH4
+</I>&gt;<i> R4+ntQempP3knLtX3IFvUrmHeAkA6W8mP2zdkf8CG/dT9VNZuj7G7/B9sgGhr6tQ
+</I>&gt;<i> yX5Gih8jSgSonHNcdk505udIp712Midr4fcxcTwIhN+bteu8X6RKtE5GgjwW6Aoc
+</I>&gt;<i> NZLywOma0qP95ugF5WoaOGrSe+CjZIhVeIrjwEr8sipl71+rPLqF1zGZhJPIyhU/
+</I>&gt;<i> r6ZDdvnHsQJStooOM/VdLEOPW11UmZRg3hnXxv+2fklVbtLssmOezEnkrjv67q9h
+</I>&gt;<i> n5Ki/C+Pk7XP6RwupkTh/bqrK82344fPqQmNrL65OshKpAo8w8tcS9yIYDA/pgse
+</I>&gt;<i> lLe3vJCMxcDiFZkzIREY86XitLA5v2n6l/LYmJn84qZ5YF01JIdJ6PCQ1xC6Nrua
+</I>&gt;<i> v4dTKBtKo206ux0vfCtH0SkT50NzVDlP8+0l9Pta/bLoj8QzJo0Y+yQCK0Xjzazh
+</I>&gt;<i> Bd32gVgGRDUdU+j9lss4JBBZnmg5qJ/st4WcgH8YyRnn/Xo7Y0zMhGYaBd+juvPM
+</I>&gt;<i> OclHdnBgibOValKmIOk5
+</I>&gt;<i> =Hfwq
+</I>&gt;<i> -----END PGP SIGNATURE-----
+</I>&gt;<i> _______________________________________________
+</I>&gt;<i> Chilli mailing list
+</I>&gt;<i> <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">Chilli at coova.org</A>
+</I>&gt;<i> <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">http://lists.coova.org/cgi-bin/mailman/listinfo/chilli</A>
+</I>
+
+</PRE>
+
+
+
+
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001097.html">[Chilli] Fixed IP addresses for APs and DHCP for clients
+</A></li>
+	<LI>Next message: <A HREF="001107.html">[Chilli] Fixed IP addresses for APs and DHCP for clients
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1098">[ date ]</a>
+              <a href="thread.html#1098">[ thread ]</a>
+              <a href="subject.html#1098">[ subject ]</a>
+              <a href="author.html#1098">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

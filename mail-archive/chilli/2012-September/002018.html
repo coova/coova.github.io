@@ -1,0 +1,129 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] Chilli 1.2.9 sudently crash
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Chilli%201.2.9%20sudently%20crash&In-Reply-To=%3C1347056402.5914.13.camel%40david-laptop%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="002017.html">
+   <LINK REL="Next"  HREF="002019.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] Chilli 1.2.9 sudently crash</H1>
+    <B>David Bird</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Chilli%201.2.9%20sudently%20crash&In-Reply-To=%3C1347056402.5914.13.camel%40david-laptop%3E"
+       TITLE="[Chilli] Chilli 1.2.9 sudently crash">david at coova.com
+       </A><BR>
+    <I>Fri Sep  7 22:20:02 UTC 2012</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="002017.html">[Chilli] Chilli 1.2.9 sudently crash
+</A></li>
+        <LI>Next message: <A HREF="002019.html">[Chilli] Chilli 1.2.9 sudently crash
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2018">[ date ]</a>
+              <a href="thread.html#2018">[ thread ]</a>
+              <a href="subject.html#2018">[ subject ]</a>
+              <a href="author.html#2018">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Thanks for the gdb output. The &quot;this&quot; pointer being NULL in
+dhcp_data_req() is certainly a problem. The &quot;dhcp connection&quot; must have
+been cleared out without the &quot;app connection&quot; being reset -- certainly
+an edge case which &quot;should&quot; never happen. I've committed a check in that
+function to prevent it going further and segfaulting in this case. If
+could give it a test to see if the crash continues. 
+
+Cheers,
+David
+
+
+On Fri, 2012-09-07 at 10:25 +0430, Mohsen Saeedi wrote:
+&gt;<i> Hi David
+</I>&gt;<i> I had this problem too. chilli crash in layer 2 with some mac address
+</I>&gt;<i> that sends a dhcp request. i installed gdb and abrtd service for core
+</I>&gt;<i> dump.
+</I>&gt;<i> i have many dump for several crashes. if it is helpful i can send it
+</I>&gt;<i> to you. we had this problem with 1.2.9 and 1.3-dev too. 
+</I>&gt;<i> it happened when chilli receive a dhcp request for some mac address
+</I>&gt;<i> not for all. 
+</I>&gt;<i> I attached our dump. i think it is a important chilli bug and it is
+</I>&gt;<i> better to fix. 
+</I>&gt;<i> and i checked the abrtd dump and each backtrace dump was same as other
+</I>&gt;<i> dump. for this reason, i attached just one the dumps. 
+</I>&gt;<i> Thanks
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> David Bird &lt;<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">david at coova.com</A>&gt; wrote on Thu, 06 Sep 2012 21:25:27 -0700:
+</I>&gt;<i> &gt; You can google for how to setup your system to save core dumps on
+</I>&gt;<i> &gt; crashing... if you compile chilli with -g option, it would be helpful
+</I>&gt;<i> &gt; too in combination. You can then run gdb on your coredump and binary for
+</I>&gt;<i> &gt; a glimpse at where it crashed. What version is this? if not a recent
+</I>&gt;<i> &gt; one, you should try upgrading. Also, and features you are using (compile
+</I>&gt;<i> &gt; and runtime) might be relevant. 
+</I>&gt;<i> &gt; 
+</I>&gt;<i> &gt; On Wed, 2012-09-05 at 21:39 +0200, John Paul wrote:
+</I>&gt;<i> &gt; &gt; Hi,
+</I>&gt;<i> &gt; &gt; I deployed a coova chilli solution based on freeradius coupled with postgres.
+</I>&gt;<i> &gt; &gt; The customer related several crash, followed each time by a reboot.
+</I>&gt;<i> &gt; &gt; In that case, it's not really obvious to obtain the crash's reasons...
+</I>&gt;<i> &gt; &gt; 
+</I>&gt;<i> &gt; &gt; Recently, once I was with the customer, a crash arose, chilli was dead without 
+</I>&gt;<i> &gt; &gt; any particular reason. Nothing in dmesh, either in /var/log/messages.
+</I>&gt;<i> &gt; &gt; 
+</I>&gt;<i> &gt; &gt; The only way I had on that time, was to open a wired ssh connection and 
+</I>&gt;<i> &gt; &gt; restart chilli. Curiously, I lost the ssh connection, never met until that 
+</I>&gt;<i> &gt; &gt; case. Ping or any other ssh try was responding.
+</I>&gt;<i> &gt; &gt; 
+</I>&gt;<i> &gt; &gt; I didn't have enough time to diagnose what happened, I rebooted the server.
+</I>&gt;<i> &gt; &gt; 
+</I>&gt;<i> &gt; &gt; As I read, I'm not alone in that case.
+</I>&gt;<i> &gt; &gt; 
+</I>&gt;<i> &gt; &gt; Is it possible to have some trace when chili crash without to start it in a 
+</I>&gt;<i> &gt; &gt; full debug mode ?
+</I>&gt;<i> &gt; &gt; 
+</I>&gt;<i> &gt; &gt; Thanks
+</I>&gt;<i> &gt; &gt; J. Paul
+</I>&gt;<i> &gt; &gt; _______________________________________________
+</I>&gt;<i> &gt; &gt; Chilli mailing list
+</I>&gt;<i> &gt; &gt; <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">Chilli at coova.org</A>
+</I>&gt;<i> &gt; &gt; <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">http://lists.coova.org/cgi-bin/mailman/listinfo/chilli</A>
+</I>&gt;<i> &gt; 
+</I>&gt;<i> &gt; _______________________________________________
+</I>&gt;<i> &gt; Chilli mailing list
+</I>&gt;<i> &gt; <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">Chilli at coova.org</A>
+</I>&gt;<i> &gt; <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">http://lists.coova.org/cgi-bin/mailman/listinfo/chilli</A>
+</I>
+
+</PRE>
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="002017.html">[Chilli] Chilli 1.2.9 sudently crash
+</A></li>
+	<LI>Next message: <A HREF="002019.html">[Chilli] Chilli 1.2.9 sudently crash
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2018">[ date ]</a>
+              <a href="thread.html#2018">[ thread ]</a>
+              <a href="subject.html#2018">[ subject ]</a>
+              <a href="author.html#2018">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

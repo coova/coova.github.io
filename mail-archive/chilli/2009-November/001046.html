@@ -1,0 +1,231 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] How to put uamport behind SSL?
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20How%20to%20put%20uamport%20behind%20SSL%3F&In-Reply-To=%3C1259524782.3969.65.camel%40david-laptop%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001045.html">
+   <LINK REL="Next"  HREF="001047.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] How to put uamport behind SSL?</H1>
+    <B>David Bird</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20How%20to%20put%20uamport%20behind%20SSL%3F&In-Reply-To=%3C1259524782.3969.65.camel%40david-laptop%3E"
+       TITLE="[Chilli] How to put uamport behind SSL?">david at coova.com
+       </A><BR>
+    <I>Sun Nov 29 19:59:42 UTC 2009</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001045.html">[Chilli] How to put uamport behind SSL?
+</A></li>
+        <LI>Next message: <A HREF="001047.html">[Chilli] How to put uamport behind SSL?
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1046">[ date ]</a>
+              <a href="thread.html#1046">[ thread ]</a>
+              <a href="subject.html#1046">[ subject ]</a>
+              <a href="author.html#1046">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>The hijacking doesn't impact other services.. just like hijacking port
+80 doesn't mean you can't run apache locally on port 80 as well. 
+
+On Sun, 2009-11-29 at 14:42 -0500, Outback Dingo wrote:
+&gt;<i> hijacking a port like 443 that could be in use by say apache isnt a
+</I>&gt;<i> great idea
+</I>&gt;<i> it would negate the use of chilli and a ssl web server on the same
+</I>&gt;<i> system
+</I>&gt;<i> 
+</I>&gt;<i> On Sun, Nov 29, 2009 at 2:36 PM, David Bird &lt;<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">david at coova.com</A>&gt; wrote:
+</I>&gt;<i>         Fixed in rev 250. Though, it doesn't do what you outlined. It
+</I>&gt;<i>         will
+</I>&gt;<i>         hijack port 443 and with security error redirect to the
+</I>&gt;<i>         captive portal.
+</I>&gt;<i>         It doesn't do SSL on the UAM port. I suppose it is a straight
+</I>&gt;<i>         forward
+</I>&gt;<i>         feature (perhaps for uamuiport leaving uamport as is).  With
+</I>&gt;<i>         that said,
+</I>&gt;<i>         chilli uses the chap challenge/response style login to secure
+</I>&gt;<i>         the
+</I>&gt;<i>         password. It does reveal a username over plain HTTP, but then
+</I>&gt;<i>         again you
+</I>&gt;<i>         can always use anonymous codes or one-time-passwords. At this
+</I>&gt;<i>         point, I
+</I>&gt;<i>         would use a relay -- chilli already has all the facilities for
+</I>&gt;<i>         SSL
+</I>&gt;<i>         (using openssl at least).
+</I>&gt;<i>         
+</I>&gt;<i>         David
+</I>&gt;<i>         
+</I>&gt;<i>         
+</I>&gt;<i>         
+</I>&gt;<i>         On Sun, 2009-11-29 at 15:34 +0200, Gunther Mayer wrote:
+</I>&gt;<i>         &gt; Hi guys,
+</I>&gt;<i>         &gt;
+</I>&gt;<i>         &gt; I've been trying to enable clients to communicate to
+</I>&gt;<i>         chilli's uamport
+</I>&gt;<i>         &gt; over SSL for authentication. Our uamserver has been running
+</I>&gt;<i>         with SSL
+</I>&gt;<i>         &gt; from day one but the uamport access is currently still over
+</I>&gt;<i>         ordinary
+</I>&gt;<i>         &gt; http for lack of a better alternative. With newer browsers
+</I>&gt;<i>         &gt; increasingly complaining about mixed content the time has
+</I>&gt;<i>         come to ssl
+</I>&gt;<i>         &gt; enable chilli's uamport as well (I know - we'll have to get
+</I>&gt;<i>         a
+</I>&gt;<i>         &gt; commercial certificate but that's OK).
+</I>&gt;<i>         &gt;
+</I>&gt;<i>         &gt; But how?
+</I>&gt;<i>         &gt;
+</I>&gt;<i>         &gt; At first I thought there's a simple solution: use
+</I>&gt;<i>         matrixtunnel (or its
+</I>&gt;<i>         &gt; successor xrelayd with xyssl/polarssl) in front of chilli,
+</I>&gt;<i>         i.e. as a
+</I>&gt;<i>         &gt; proxy to provide a &quot;fake&quot; SSL port for clients which is then
+</I>&gt;<i>         forwarded
+</I>&gt;<i>         &gt; to chilli's normal http uamport. I've got xrelayd installed
+</I>&gt;<i>         and
+</I>&gt;<i>         &gt; working but if I point my browser to
+</I>&gt;<i>         &gt;
+</I>&gt;<i>         &gt; <A HREF="https://ua.m.lis.ten:8443/prelogin">https://ua.m.lis.ten:8443/prelogin</A>
+</I>&gt;<i>         &gt;
+</I>&gt;<i>         &gt; I just get an empty page instead of the normal login page
+</I>&gt;<i>         that I get
+</I>&gt;<i>         &gt; when using the plain <A HREF="http://ua.m.lis.ten:uamport/prelogin">http://ua.m.lis.ten:uamport/prelogin</A>
+</I>&gt;<i>         (8443 is the
+</I>&gt;<i>         &gt; port xrelayd is forwarding to chilli's uamport). I think
+</I>&gt;<i>         that's
+</I>&gt;<i>         &gt; because chilli only sees the http request as originating
+</I>&gt;<i>         from the
+</I>&gt;<i>         &gt; local machine instead of from the client and hence doesn't
+</I>&gt;<i>         know what
+</I>&gt;<i>         &gt; to do. Or am I doing something wrong here?
+</I>&gt;<i>         &gt;
+</I>&gt;<i>         &gt; Then I saw the very recent openssl support that David put in
+</I>&gt;<i>         trunk
+</I>&gt;<i>         &gt; this month and thought perhaps that's the solution. However,
+</I>&gt;<i>         latest
+</I>&gt;<i>         &gt; svn (r249) doesn't even compile:
+</I>&gt;<i>         &gt;
+</I>&gt;<i>         &gt; $ svn co <A HREF="http://dev.coova.org/svn/coova-chilli">http://dev.coova.org/svn/coova-chilli</A>
+</I>&gt;<i>         &gt; $ ./bootstrap2 # ./bootstrap no longer works here :-(
+</I>&gt;<i>         &gt; $ ./configure --with-openssl
+</I>&gt;<i>         &gt; $ make
+</I>&gt;<i>         &gt; cd . &amp;&amp; /bin/bash ./config.status config.h
+</I>&gt;<i>         &gt; config.status: creating config.h
+</I>&gt;<i>         &gt; config.status: config.h is unchanged
+</I>&gt;<i>         &gt; make  all-recursive
+</I>&gt;<i>         &gt; make[1]: Entering directory
+</I>&gt;<i>         `/Coova/coova-chilli-1.0.15-pre-r249'
+</I>&gt;<i>         &gt; Making all in bstring
+</I>&gt;<i>         &gt; make[2]: Entering directory
+</I>&gt;<i>         &gt; `/Coova/coova-chilli-1.0.15-pre-r249/bstring'
+</I>&gt;<i>         &gt; make[2]: Nothing to be done for `all'.
+</I>&gt;<i>         &gt; make[2]: Leaving directory
+</I>&gt;<i>         &gt; `/Coova/coova-chilli-1.0.15-pre-r249/bstring'
+</I>&gt;<i>         &gt; Making all in src
+</I>&gt;<i>         &gt; make[2]: Entering directory
+</I>&gt;<i>         `/Coova/coova-chilli-1.0.15-pre-r249/src'
+</I>&gt;<i>         &gt; /bin/bash ../libtool --tag=CC   --mode=compile gcc
+</I>&gt;<i>         -DHAVE_CONFIG_H -I.
+</I>&gt;<i>         &gt; -I..    -D_GNU_SOURCE -Wall -fno-builtin
+</I>&gt;<i>         -fno-strict-aliasing -O2
+</I>&gt;<i>         &gt; -fomit-frame-pointer -funroll-loops -pipe
+</I>&gt;<i>         &gt; -DDEFCHILLICONF='&quot;/usr/local/etc/chilli.conf&quot;'
+</I>&gt;<i>         &gt; -DDEFPIDFILE='&quot;/usr/local/var/run/chilli.pid&quot;'
+</I>&gt;<i>         &gt; -DDEFSTATEDIR='&quot;/usr/local/var/run&quot;'
+</I>&gt;<i>         &gt; -DDEFCMDSOCK='&quot;/usr/local/var/run/chilli.sock&quot;'
+</I>&gt;<i>         &gt; -DSBINDIR='&quot;/usr/local/sbin&quot;' -I../bstring  -g -O2 -MT
+</I>&gt;<i>         chilli.lo -MD
+</I>&gt;<i>         &gt; -MP -MF .deps/chilli.Tpo -c -o chilli.lo chilli.c
+</I>&gt;<i>         &gt; libtool: compile:  gcc -DHAVE_CONFIG_H -I. -I..
+</I>&gt;<i>         -D_GNU_SOURCE -Wall
+</I>&gt;<i>         &gt; -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer
+</I>&gt;<i>         &gt; -funroll-loops -pipe -DDEFCHILLICONF=
+</I>&gt;<i>         \&quot;/usr/local/etc/chilli.conf\&quot;
+</I>&gt;<i>         &gt; -DDEFPIDFILE=\&quot;/usr/local/var/run/chilli.pid\&quot;
+</I>&gt;<i>         -DDEFSTATEDIR=
+</I>&gt;<i>         &gt; \&quot;/usr/local/var/run\&quot; -DDEFCMDSOCK=
+</I>&gt;<i>         \&quot;/usr/local/var/run/chilli.sock\&quot;
+</I>&gt;<i>         &gt; -DSBINDIR=\&quot;/usr/local/sbin\&quot; -I../bstring -g -O2 -MT
+</I>&gt;<i>         chilli.lo -MD
+</I>&gt;<i>         &gt; -MP -MF .deps/chilli.Tpo -c chilli.c  -fPIC -DPIC
+</I>&gt;<i>         -o .libs/chilli.o
+</I>&gt;<i>         &gt; chilli.c: In function &#8216;cb_redir_getstate&#8217;:
+</I>&gt;<i>         &gt; chilli.c:1682: error: &#8216;struct dhcp_conn_t&#8217; has no member
+</I>&gt;<i>         named
+</I>&gt;<i>         &gt; &#8216;dnatport&#8217;
+</I>&gt;<i>         &gt; chilli.c:1683: error: &#8216;struct dhcp_conn_t&#8217; has no member
+</I>&gt;<i>         named
+</I>&gt;<i>         &gt; &#8216;dnatstate&#8217;
+</I>&gt;<i>         &gt; chilli.c: In function &#8216;config_radius_session&#8217;:
+</I>&gt;<i>         &gt; chilli.c:2429: warning: passing argument 3 of
+</I>&gt;<i>         &gt; &#8216;pass_throughs_from_string&#8217; from incompatible pointer type
+</I>&gt;<i>         &gt; garden.h:53: note: expected &#8216;size_t *&#8217; but argument is of
+</I>&gt;<i>         type
+</I>&gt;<i>         &gt; &#8216;uint32_t *&#8217;
+</I>&gt;<i>         &gt; chilli.c: In function &#8216;cmdsock_accept&#8217;:
+</I>&gt;<i>         &gt; chilli.c:3756: warning: passing argument 3 of &#8216;accept&#8217; from
+</I>&gt;<i>         &gt; incompatible pointer type
+</I>&gt;<i>         &gt; /usr/include/sys/socket.h:214: note: expected &#8216;socklen_t *
+</I>&gt;<i>         &gt; __restrict__&#8217; but argument is of type &#8216;size_t *&#8217;
+</I>&gt;<i>         &gt; chilli.c: In function &#8216;redir_msg&#8217;:
+</I>&gt;<i>         &gt; chilli.c:3997: warning: passing argument 3 of &#8216;accept&#8217; from
+</I>&gt;<i>         &gt; incompatible pointer type
+</I>&gt;<i>         &gt; /usr/include/sys/socket.h:214: note: expected &#8216;socklen_t *
+</I>&gt;<i>         &gt; __restrict__&#8217; but argument is of type &#8216;size_t *&#8217;
+</I>&gt;<i>         &gt; make[2]: *** [chilli.lo] Error 1
+</I>&gt;<i>         &gt; make[2]: Leaving directory
+</I>&gt;<i>         `/Coova/coova-chilli-1.0.15-pre-r249/src'
+</I>&gt;<i>         &gt; make[1]: *** [all-recursive] Error 1
+</I>&gt;<i>         &gt; make[1]: Leaving directory
+</I>&gt;<i>         `/Coova/coova-chilli-1.0.15-pre-r249'
+</I>&gt;<i>         &gt; make: *** [all] Error 2
+</I>&gt;<i>         &gt;
+</I>&gt;<i>         &gt; Now I'm really stuck. How do I achieve my goal?
+</I>&gt;<i>         &gt;
+</I>&gt;<i>         &gt; Gunther
+</I>&gt;<i>         
+</I>&gt;<i>         
+</I>&gt;<i>         &gt; _______________________________________________
+</I>&gt;<i>         &gt; Chilli mailing list
+</I>&gt;<i>         &gt; <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">Chilli at coova.org</A>
+</I>&gt;<i>         &gt; <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">http://lists.coova.org/cgi-bin/mailman/listinfo/chilli</A>
+</I>&gt;<i>         
+</I>&gt;<i>         
+</I>&gt;<i>         _______________________________________________
+</I>&gt;<i>         Chilli mailing list
+</I>&gt;<i>         <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">Chilli at coova.org</A>
+</I>&gt;<i>         <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">http://lists.coova.org/cgi-bin/mailman/listinfo/chilli</A>
+</I>&gt;<i>         
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>
+
+</PRE>
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001045.html">[Chilli] How to put uamport behind SSL?
+</A></li>
+	<LI>Next message: <A HREF="001047.html">[Chilli] How to put uamport behind SSL?
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1046">[ date ]</a>
+              <a href="thread.html#1046">[ thread ]</a>
+              <a href="subject.html#1046">[ subject ]</a>
+              <a href="author.html#1046">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

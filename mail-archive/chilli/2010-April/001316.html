@@ -1,0 +1,160 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] OpenSSL &amp; redirssl etc
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20OpenSSL%20%26%20redirssl%20etc&In-Reply-To=%3C4BD1B7B5.5000404%40gmail.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001306.html">
+   <LINK REL="Next"  HREF="001317.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] OpenSSL &amp; redirssl etc</H1>
+    <B>Timothy</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20OpenSSL%20%26%20redirssl%20etc&In-Reply-To=%3C4BD1B7B5.5000404%40gmail.com%3E"
+       TITLE="[Chilli] OpenSSL &amp; redirssl etc">nzkbuk at gmail.com
+       </A><BR>
+    <I>Fri Apr 23 15:07:33 UTC 2010</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001306.html">[Chilli] OpenSSL &amp; redirssl etc
+</A></li>
+        <LI>Next message: <A HREF="001317.html">[Chilli] OpenSSL &amp; redirssl etc
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1316">[ date ]</a>
+              <a href="thread.html#1316">[ thread ]</a>
+              <a href="subject.html#1316">[ subject ]</a>
+              <a href="author.html#1316">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hi David,
+
+I look to still be having the problem.
+
+When running in debug &amp; connecting via http to a static file in
+/etc/chilli/www
+
+redir.c: 2524: 0 (Debug) Calling redir_getstate()
+redir.c: 2550: 0 (Debug) Receiving HTTP Request
+redir.c: 1497: 0 (Debug) The path: www/test.html
+redir.c: 1567: 0 (Debug) Host: &lt;removed&gt;:3990
+redir.c: 1584: 0 (Debug) User-Agent: Mozilla/5.0 (Windows; U; Windows NT
+5.1; en-GB; rv:1.9.1.8) Gecko/20100202 Firefox/3.5.8 (.NET CLR 3.5.30729)
+redir.c: 1550: 0 (Debug) end of http-request
+redir.c: 1693: 0 (Debug) Serving file test.html
+redir.c: 2598: 0 (Debug) Processing HTTP Request
+redir.c: 2318: 0 (Debug) close_exit
+chilli.c: 73: 0 (Debug) received 18 signal
+
+When trying with https:// I get
+
+redir.c: 1385: 0 (Debug) HTTP request timeout!
+redir.c: 1706: 0 (Debug) --&gt;&gt; Setting userurl=[<A HREF="http:///]">http:///]</A>
+redir.c: 2598: 0 (Debug) Processing HTTP Request
+redir.c: 2839: 0 (Debug) Processing received request
+redir.c: 3051: 0 (Debug) redir_accept: Original request
+redir.c: 3072: 0 (Debug) ----&gt;&gt;&gt; resetting challenge:
+c62d84b69bd8916fc3a536a63e7b5976
+redir.c: 3083: 0 (Debug) ----&gt;&gt;&gt; challenge: c62d84b69bd8916fc3a536a63e7b5976
+redir.c: 2318: 0 (Debug) close_exit
+chilli.c: 73: 0 (Debug) received 18 signal
+
+
+
+
+Compiled with ENABLE_CHILLIPROXY ENABLE_CHILLIRADSEC ENABLE_CHILLIXML
+ENABLE_IEEE8021Q ENABLE_JSON ENABLE_LEAKYBUCKET ENABLE_SESSGARDEN
+HAVE_OPENSSL
+
+I think there may need to be some additional items for radsec config
+still (remote server(s) and port(s), I might be misreading the defaults
+and functions file though). I can see where radsec is configured to
+listen on localhost. Does HS_RADPROXY=on cause coova-chilli to speak to
+the local proxy and then HS_RADIUS= is the remote server ?
+
+    [ -n &quot;$HS_SSLKEYFILE&quot; -a -n &quot;$HS_SSLCERTFILE&quot; ] &amp;&amp; {
+        addconfig2 &quot;sslkeyfile $HS_SSLKEYFILE&quot;
+        addconfig2 &quot;sslcertfile $HS_SSLCERTFILE&quot;
+    }
+
+Should that contain sslcafile.
+
+Maybe I've just been looking at this too long and not thinking clearly
+enough
+
+Tim
+
+David Bird wrote:
+&gt;<i> Hi Tim,
+</I>&gt;<i>
+</I>&gt;<i> You are always encouraged to check against the current subversion; and
+</I>&gt;<i> to restate your problem if it persists. I'm testing various features
+</I>&gt;<i> now, including redirssl, uamuissl, and radsec, and have success. I'm
+</I>&gt;<i> currently configured with:  ./configure --enable-largelimits
+</I>&gt;<i> --enable-proxyvsa --enable-miniportal --enable-chilliredir
+</I>&gt;<i> --enable-chilliproxy --enable-binstatusfile --with-poll
+</I>&gt;<i> --enable-chilliradsec --with-openssl , btw, I took your off-line
+</I>&gt;<i> suggestion and you'll find this also in the subversion version:
+</I>&gt;<i>
+</I>&gt;<i> $ chilli --help
+</I>&gt;<i> coova-chilli 1.2.3-rc1
+</I>&gt;<i>
+</I>&gt;<i> ...
+</I>&gt;<i>
+</I>&gt;<i> Compiled with ENABLE_BINSTATFILE ENABLE_CHILLIPROXY ENABLE_CHILLIRADSEC
+</I>&gt;<i> ENABLE_CHILLIREDIR ENABLE_CHILLIXML ENABLE_IEEE8021Q ENABLE_JSON
+</I>&gt;<i> ENABLE_LARGELIMITS ENABLE_LEAKYBUCKET ENABLE_MINIPORTAL ENABLE_PROXYVSA
+</I>&gt;<i> ENABLE_SESSGARDEN ENABLE_STATFILE HAVE_OPENSSL USING_POLL 
+</I>&gt;<i>
+</I>&gt;<i> David
+</I>&gt;<i>
+</I>&gt;<i> On Tue, 2010-04-20 at 13:23 +0100, Timothy wrote:
+</I>&gt;<i>   
+</I>&gt;&gt;<i> Hi,
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> A while ago there were some issues with REDIRSSL and OpenSSL (matrix SSL
+</I>&gt;&gt;<i> worked fine)
+</I>&gt;&gt;<i> The error was ssl_error_rx_record_too_long
+</I>&gt;&gt;<i> Has anyone been able to get this working correctly with openssl (rather
+</I>&gt;&gt;<i> than matrix) or is this issue still outstanding ?
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> I'm trying to get UAMUISSL working but I get the
+</I>&gt;&gt;<i> ssl_error_rx_record_too_long.
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> Tim
+</I>&gt;&gt;<i> _______________________________________________
+</I>&gt;&gt;<i> Chilli mailing list
+</I>&gt;&gt;<i> <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">Chilli at coova.org</A>
+</I>&gt;&gt;<i> <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">http://lists.coova.org/cgi-bin/mailman/listinfo/chilli</A>
+</I>&gt;&gt;<i>     
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>   
+</I>
+</PRE>
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001306.html">[Chilli] OpenSSL &amp; redirssl etc
+</A></li>
+	<LI>Next message: <A HREF="001317.html">[Chilli] OpenSSL &amp; redirssl etc
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1316">[ date ]</a>
+              <a href="thread.html#1316">[ thread ]</a>
+              <a href="subject.html#1316">[ subject ]</a>
+              <a href="author.html#1316">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

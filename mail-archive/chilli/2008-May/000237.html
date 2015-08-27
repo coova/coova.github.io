@@ -1,0 +1,151 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> uamanyip patch
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20uamanyip%20patch&In-Reply-To=%3C481CBA09.8050604%40gmail.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000236.html">
+   <LINK REL="Next"  HREF="000240.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>uamanyip patch</H1>
+    <B>Gunther Mayer</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20uamanyip%20patch&In-Reply-To=%3C481CBA09.8050604%40gmail.com%3E"
+       TITLE="uamanyip patch">gunther.mayer at googlemail.com
+       </A><BR>
+    <I>Sat May  3 19:16:25 UTC 2008</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000236.html">macallowlocal with uamanyip doesn't work
+</A></li>
+        <LI>Next message: <A HREF="000240.html">uamanyip patch
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#237">[ date ]</a>
+              <a href="thread.html#237">[ thread ]</a>
+              <a href="subject.html#237">[ subject ]</a>
+              <a href="author.html#237">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>lc wrote:
+&gt;<i> Hi,
+</I>&gt;<i>
+</I>&gt;<i> This is an interesting point. I use a different subnet to have access 
+</I>&gt;<i> to access points on the chilli network. So I think the suggested 
+</I>&gt;<i> uamanyipignorelan option would be excellent if the network to be 
+</I>&gt;<i> ignored could be defined.
+</I>I rewrote my previous patch which wasn't working too well and submitted 
+the now tested and working version as r168. As originally advertised it 
+ignores (i.e. doesn't spoof) all arp requests within chilli's own 
+subnet. I'm busy rolling this out to a couple of live sites but I don't 
+expect any issues as I've tested it quite substantially, it's a very 
+minor patch as well.
+
+Regarding an option to specify such a subnet to ignore, I've started on 
+a customisable &quot;noarp &lt;subnet&gt;,&lt;subnet&gt;,...&quot; option but gave up soon 
+after I realised just how many source files need to be changed in order 
+to add a new option. I don't have time right now for such an extensive 
+patch but I'm willing to assist anyone who does.
+&gt;<i>
+</I>&gt;<i> Am 04.04.2008 um 00:07 schrieb Gunther Mayer:
+</I>&gt;<i>
+</I>&gt;&gt;<i> Hi David,
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> I've recently tried out the uamanyip option in coova and was very 
+</I>&gt;&gt;<i> pleased at how well it works. I want to use it all the time in future 
+</I>&gt;&gt;<i> across our network to simplify troubleshooting, should save a couple 
+</I>&gt;&gt;<i> of support calls ;-)
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> However, I found a very annoying side effect of uamanyip: It spoofs 
+</I>&gt;&gt;<i> ARP requests for just about anything. While that's the point of 
+</I>&gt;&gt;<i> uamanyip, it makes it impossible to have other devices such as access 
+</I>&gt;&gt;<i> points that you have to access for management purposes on the chilli 
+</I>&gt;&gt;<i> network. Say chilli listens on 192.168.182.1 and there's another 
+</I>&gt;&gt;<i> access point with static ip 192.168.182.2 (of course not part of the 
+</I>&gt;&gt;<i> dynip range) to increase wireless coverage. As soon as anybody tries 
+</I>&gt;&gt;<i> to ping or otherwise access 192.168.182.2 because chilli will 
+</I>&gt;&gt;<i> immediately claim it through arp before the real device has a chance 
+</I>&gt;&gt;<i> to answer - it creates a race condition. Putting such devices on 
+</I>&gt;&gt;<i> entirely different subnets makes no difference as their ip's will be 
+</I>&gt;&gt;<i> stolen too. The only though somewhat ugly way I found around that was 
+</I>&gt;&gt;<i> to clear the arp cache on my client and then force a mapping with arp 
+</I>&gt;&gt;<i> -s.
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> So, I thought wouldn't it be cool to let chilli ignore arp requests 
+</I>&gt;&gt;<i> for anything other than itself but only on its own subnet. Anything 
+</I>&gt;&gt;<i> else will still be caught and spoofed as usual. Hence I came up with 
+</I>&gt;&gt;<i> the below patch, I created it against 1.0.11-stable but applying it 
+</I>&gt;&gt;<i> to svn (r161) proved trivial, as it's a very short patch.
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> I think this should be done by default as it allows devices on the 
+</I>&gt;&gt;<i> chilli subnet to talk to each other properly (of course for real 
+</I>&gt;&gt;<i> isolation one would use something like ebtables or a/p isolation). 
+</I>&gt;&gt;<i> But of course the patch could be extended to make this optional 
+</I>&gt;&gt;<i> (uamanyipignorelan?) if people wanted to keep the current behaviour. 
+</I>&gt;&gt;<i> Thoughts?
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> Gunther
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> Index: dhcp.c
+</I>&gt;&gt;<i> ===================================================================
+</I>&gt;&gt;<i> --- dhcp.c      (revision 161)
+</I>&gt;&gt;<i> +++ dhcp.c      (working copy)
+</I>&gt;&gt;<i> @@ -2595,6 +2595,14 @@
+</I>&gt;&gt;<i>      return 0; /* Only reply if he asked for his router address */
+</I>&gt;&gt;<i>    }
+</I>&gt;&gt;<i>  }
+</I>&gt;&gt;<i> +  else if ((taraddr.s_addr != options.dhcplisten.s_addr) &amp;&amp;
+</I>&gt;&gt;<i> +        ((conn-&gt;hisip.s_addr &amp; conn-&gt;hismask.s_addr) ==
+</I>&gt;&gt;<i> +        (reqaddr.s_addr &amp; conn-&gt;hismask.s_addr))) {
+</I>&gt;&gt;<i> +    /* when uamanyip is on we should ignore arp requests that ARE 
+</I>&gt;&gt;<i> within our subnet except of course the ones for ourselves*/
+</I>&gt;&gt;<i> +    if (options.debug)
+</I>&gt;&gt;<i> +      log_dbg(&quot;ARP: request for ip other than us within our 
+</I>&gt;&gt;<i> subnet(uamanyip on), ignoring&quot;);
+</I>&gt;&gt;<i> +    return 0;
+</I>&gt;&gt;<i> +  }
+</I>&gt;&gt;<i>  conn-&gt;lasttime = mainclock;
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> ---------------------------------------------------------------------
+</I>&gt;&gt;<i> To unsubscribe, e-mail: <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli-unsubscribe at coova.org</A>
+</I>&gt;&gt;<i> For additional commands, e-mail: <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli-help at coova.org</A>
+</I>&gt;&gt;<i> Wiki: <A HREF="http://coova.org/wiki/index.php/CoovaChilli">http://coova.org/wiki/index.php/CoovaChilli</A>
+</I>&gt;&gt;<i> Forum: <A HREF="http://coova.org/phpBB3/viewforum.php?f=4">http://coova.org/phpBB3/viewforum.php?f=4</A>
+</I>&gt;&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> ---------------------------------------------------------------------
+</I>&gt;<i> To unsubscribe, e-mail: <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli-unsubscribe at coova.org</A>
+</I>&gt;<i> For additional commands, e-mail: <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli-help at coova.org</A>
+</I>&gt;<i> Wiki: <A HREF="http://coova.org/wiki/index.php/CoovaChilli">http://coova.org/wiki/index.php/CoovaChilli</A>
+</I>&gt;<i> Forum: <A HREF="http://coova.org/phpBB3/viewforum.php?f=4">http://coova.org/phpBB3/viewforum.php?f=4</A>
+</I>&gt;<i>
+</I>&gt;<i>
+</I>
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000236.html">macallowlocal with uamanyip doesn't work
+</A></li>
+	<LI>Next message: <A HREF="000240.html">uamanyip patch
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#237">[ date ]</a>
+              <a href="thread.html#237">[ thread ]</a>
+              <a href="subject.html#237">[ subject ]</a>
+              <a href="author.html#237">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,287 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] Transparent proxying and forwarding loop detected
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Transparent%20proxying%20and%20forwarding%20loop%20detected&In-Reply-To=%3Cc88abdeded8e05994dbff48d6c81b2bc.squirrel%40linuxbox.co.uk%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="002786.html">
+   <LINK REL="Next"  HREF="002788.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] Transparent proxying and forwarding loop detected</H1>
+    <B>Peter Smith</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Transparent%20proxying%20and%20forwarding%20loop%20detected&In-Reply-To=%3Cc88abdeded8e05994dbff48d6c81b2bc.squirrel%40linuxbox.co.uk%3E"
+       TITLE="[Chilli] Transparent proxying and forwarding loop detected">pete at linuxbox.co.uk
+       </A><BR>
+    <I>Thu Jul 10 14:16:02 UTC 2014</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="002786.html">[Chilli] porn in login process
+</A></li>
+        <LI>Next message: <A HREF="002788.html">[Chilli] Transparent proxying and forwarding loop detected
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2787">[ date ]</a>
+              <a href="thread.html#2787">[ thread ]</a>
+              <a href="subject.html#2787">[ subject ]</a>
+              <a href="author.html#2787">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hi list,
+
+I'm running Squid 3.3 and CoovaChilli 1.3.0 on Linux as part of a
+wireless hotspot solution.
+
+The box has two network interfaces: one to the outside world, the
+other a private LAN with IP 10.0.0.1. On the LAN I'm using CoovaChilli
+as an active portal.
+
+I'd like to transparently intercept and cache web traffic from wifi
+clients. Coova has a configuration option for the IP and port of an
+optional proxy - all web traffic from wireless clients will be routed
+through this. I've set it to 10.0.0.1:3128
+
+Here's my squid config:
+
+acl localnet src 10.0.0.0/255.0.0.0   # RFC1918 possible internal
+network acl SSL_ports port 443
+acl Safe_ports port 80          # http
+acl Safe_ports port 21          # ftp
+acl Safe_ports port 443         # https
+acl Safe_ports port 70          # gopher
+acl Safe_ports port 210         # wais
+acl Safe_ports port 1025-65535  # unregistered ports
+acl Safe_ports port 280         # http-mgmt
+acl Safe_ports port 488         # gss-http
+acl Safe_ports port 591         # filemaker
+acl Safe_ports port 777         # multiling http
+acl CONNECT method CONNECT
+http_access allow localnet
+http_access deny all
+
+http_port 10.0.0.1:3128 transparent
+http_port 10.0.0.1:3127
+
+coredump_dir /var/spool/squid3
+refresh_pattern ^ftp:           1440    20%     10080
+refresh_pattern ^gopher:        1440    0%      1440
+refresh_pattern -i (/cgi-bin/|\?) 0     0%      0
+refresh_pattern (Release|Packages(.gz)*)$      0       20%     2880
+refresh_pattern .               0       20%     4320
+
+Unfortunately this throws &quot;WARNING: Forwarding loop detected&quot; warnings
+(and in the client's browser an &quot;Access Denied&quot; error from Squid) and
+I can't figure out why.
+
+Running Squid in debugging mode (level 2), here's what I see when one
+of the clients generates some Windows-related traffic
+
+
+2014/07/10 13:43:57.438| client_side.cc(2316) parseHttpRequest: HTTP
+Client local=10.0.0.1:3128 remote=10.0.0.4:60976 FD 8 flags=33
+2014/07/10 13:43:57.438| client_side.cc(2317) parseHttpRequest: HTTP
+Client REQUEST:
+---------
+GET /ncsi.txt HTTP/1.1
+Connection: Close
+User-Agent: Microsoft NCSI
+Host: www.msftncsi.com
+
+
+----------
+2014/07/10 13:43:57.449| client_side_request.cc(786)
+clientAccessCheckDone: The request GET
+<A HREF="http://www.msftncsi.com/ncsi.txt">http://www.msftncsi.com/ncsi.txt</A> is ALLOWED, because it matched
+'localnet'
+2014/07/10 13:43:57.449| client_side_request.cc(760)
+clientAccessCheck2: No adapted_http_access configuration. default: ALLOW
+2014/07/10 13:43:57.449| client_side_request.cc(786)
+clientAccessCheckDone: The request GET
+<A HREF="http://www.msftncsi.com/ncsi.txt">http://www.msftncsi.com/ncsi.txt</A> is ALLOWED, because it matched
+'localnet'
+2014/07/10 13:43:57.450| forward.cc(121) FwdState: Forwarding client
+request local=10.0.0.1:3128 remote=10.0.0.4:60976 FD 8 flags=33,
+url=<A HREF="http://www.msftncsi.com/ncsi.txt">http://www.msftncsi.com/ncsi.txt</A>
+2014/07/10 13:43:57.451| peer_select.cc(289) peerSelectDnsPaths: Found
+sources for '<A HREF="http://www.msftncsi.com/ncsi.txt">http://www.msftncsi.com/ncsi.txt</A>'
+2014/07/10 13:43:57.451| peer_select.cc(290) peerSelectDnsPaths:  
+always_direct = DENIED
+2014/07/10 13:43:57.451| peer_select.cc(291) peerSelectDnsPaths:   
+never_direct = DENIED
+2014/07/10 13:43:57.451| peer_select.cc(295) peerSelectDnsPaths:
+   DIRECT = local=0.0.0.0 remote=10.0.0.1:3128 flags=1
+2014/07/10 13:43:57.451| peer_select.cc(304) peerSelectDnsPaths:
+ timedout = 0
+2014/07/10 13:43:57.454| http.cc(2204) sendRequest: HTTP Server
+local=10.0.0.1:35439 remote=10.0.0.1:3128 FD 11 flags=1
+2014/07/10 13:43:57.455| http.cc(2205) sendRequest: HTTP Server
+REQUEST: ---------
+GET /ncsi.txt HTTP/1.1
+User-Agent: Microsoft NCSI
+Host: www.msftncsi.com
+Via: 1.1 c3me-pete (squid/3.3.8)
+X-Forwarded-For: 10.0.0.4
+Cache-Control: max-age=259200
+Connection: keep-alive
+
+
+----------
+2014/07/10 13:43:57.456| client_side.cc(2316) parseHttpRequest: HTTP
+Client local=10.0.0.1:3128 remote=10.0.0.1:35439 FD 13 flags=33
+2014/07/10 13:43:57.456| client_side.cc(2317) parseHttpRequest: HTTP
+Client REQUEST:
+---------
+GET /ncsi.txt HTTP/1.1
+User-Agent: Microsoft NCSI
+Host: www.msftncsi.com
+Via: 1.1 c3me-pete (squid/3.3.8)
+X-Forwarded-For: 10.0.0.4
+Cache-Control: max-age=259200
+Connection: keep-alive
+
+
+----------
+2014/07/10 13:43:57.459| client_side_request.cc(786)
+clientAccessCheckDone: The request GET
+<A HREF="http://www.msftncsi.com/ncsi.txt">http://www.msftncsi.com/ncsi.txt</A> is ALLOWED, because it matched
+'localnet'
+2014/07/10 13:43:57.459| client_side_request.cc(760)
+clientAccessCheck2: No adapted_http_access configuration. default: ALLOW
+2014/07/10 13:43:57.459| client_side_request.cc(786)
+clientAccessCheckDone: The request GET
+<A HREF="http://www.msftncsi.com/ncsi.txt">http://www.msftncsi.com/ncsi.txt</A> is ALLOWED, because it matched
+'localnet'
+2014/07/10 13:43:57.459| WARNING: Forwarding loop detected for:
+GET /ncsi.txt HTTP/1.1
+User-Agent: Microsoft NCSI
+Host: www.msftncsi.com
+Via: 1.1 c3me-pete (squid/3.3.8)
+X-Forwarded-For: 10.0.0.4
+Cache-Control: max-age=259200
+Connection: keep-alive
+
+
+2014/07/10 13:43:57.460| errorpage.cc(1281) BuildContent: No existing
+error page language negotiated for ERR_ACCESS_DENIED. Using default
+error file.
+2014/07/10 13:43:57.463| client_side_reply.cc(1974)
+processReplyAccessResult: The reply for GET
+<A HREF="http://www.msftncsi.com/ncsi.txt">http://www.msftncsi.com/ncsi.txt</A> is ALLOWED, because it matched
+'localnet'
+2014/07/10 13:43:57.463| client_side.cc(1377) sendStartOfMessage: HTTP
+Client local=10.0.0.1:3128 remote=10.0.0.1:35439 FD 13 flags=33
+2014/07/10 13:43:57.463| client_side.cc(1378) sendStartOfMessage: HTTP
+Client REPLY:
+---------
+HTTP/1.1 403 Forbidden
+Server: squid/3.3.8
+Mime-Version: 1.0
+Date: Thu, 10 Jul 2014 12:43:57 GMT
+Content-Type: text/html
+Content-Length: 3279
+X-Squid-Error: ERR_ACCESS_DENIED 0
+Vary: Accept-Language
+Content-Language: en
+X-Cache: MISS from c3me-pete
+X-Cache-Lookup: MISS from c3me-pete:3127
+Via: 1.1 c3me-pete (squid/3.3.8)
+Connection: keep-alive
+
+
+My firewall looks like so:
+
+
+Chain INPUT (policy ACCEPT)
+target     prot opt source               destination
+DROP       all  --  0.0.0.0/0            0.0.0.0/0
+ACCEPT     icmp --  0.0.0.0/0            10.0.0.1
+ACCEPT     udp  --  0.0.0.0/0            10.0.0.1             udp
+dpt:53 ACCEPT     udp  --  0.0.0.0/0            10.0.0.1            
+udp
+dpts:67:68
+ACCEPT     udp  --  0.0.0.0/0            255.255.255.255      udp
+dpts:67:68
+ACCEPT     tcp  --  0.0.0.0/0            10.0.0.1             tcp
+dpt:3128
+ACCEPT     tcp  --  0.0.0.0/0            10.0.0.1             tcp
+dpt:4990
+ACCEPT     tcp  --  0.0.0.0/0            10.0.0.1             tcp
+dpt:3990
+DROP       all  --  0.0.0.0/0            10.0.0.1
+
+Chain FORWARD (policy ACCEPT)
+target     prot opt source               destination
+ACCEPT     all  --  0.0.0.0/0            0.0.0.0/0
+TCPMSS     tcp  --  0.0.0.0/0            0.0.0.0/0            tcp
+flags:0x06/0x02 TCPMSS clamp to PMTU
+ACCEPT     all  --  0.0.0.0/0            0.0.0.0/0
+ACCEPT     all  --  0.0.0.0/0            0.0.0.0/0
+DROP       all  --  0.0.0.0/0            0.0.0.0/0
+DROP       all  --  0.0.0.0/0            0.0.0.0/0
+
+Chain OUTPUT (policy ACCEPT)
+target     prot opt source               destination
+
+---
+
+
+Chain PREROUTING (policy ACCEPT)
+target     prot opt source               destination
+
+Chain INPUT (policy ACCEPT)
+target     prot opt source               destination
+
+Chain OUTPUT (policy ACCEPT)
+target     prot opt source               destination
+
+Chain POSTROUTING (policy ACCEPT)
+target     prot opt source               destination
+MASQUERADE  all  --  0.0.0.0/0            0.0.0.0/0
+
+
+In my chilli config I have:
+
+HS_POSTAUTH_PROXY=10.0.0.1
+HS_POSTAUTH_PROXYPORT=3128
+
+
+Thanks,
+Pete
+
+
+
+
+
+
+</PRE>
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="002786.html">[Chilli] porn in login process
+</A></li>
+	<LI>Next message: <A HREF="002788.html">[Chilli] Transparent proxying and forwarding loop detected
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2787">[ date ]</a>
+              <a href="thread.html#2787">[ thread ]</a>
+              <a href="subject.html#2787">[ subject ]</a>
+              <a href="author.html#2787">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

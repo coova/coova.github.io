@@ -1,0 +1,769 @@
+From david at coova.com  Fri Jul  8 06:58:20 2011
+From: david at coova.com (David Bird)
+Date: Fri, 08 Jul 2011 08:58:20 +0200
+Subject: [Chilli] please test from subversion
+Message-ID: <1310108300.6925.23.camel@david-laptop>
+
+== ChangeLog (CoovaChilli current svn revision) ==
+
+* New option ''--uamdomainttl'' to define a rewrite value for the DNS
+TTL on uamdomain matched responses
+* Made the dynamic garden able to overwrite the oldest entries to make
+way for the new
+* Increased the max packet size for ''--enable-largelimits'' and
+implemented ICMP fragmentation when packets truncated
+* Added support for a DNS handler in loadable modules which will be able
+to mange DNS passing through
+* Added feature to adjust TCP Window based on leaky bucket remaining
+size
+* Bug fix: in main-proxy use of error_buffer with cURL
+* Bug fix: resetting leaky bucket state during logout
+* Bug fix: DHCP gateway assignment missing value
+
+
+From nqsepas at gmail.com  Fri Jul  8 17:41:24 2011
+From: nqsepas at gmail.com (Noel Quintana Sepas)
+Date: Fri, 8 Jul 2011 12:41:24 -0500
+Subject: [Chilli] Coova-Chilli WISPr problem
+Message-ID: <CAHnB-A-CAt2GGVYL6=+uYC1k-ch7Wq9fxmMAtsMjv2NY+5wYxA@mail.gmail.com>
+
+Hi,
+
+i installed a coova-chilli 1.2.6 gateway on ubuntu and "its working
+ok", clients can access the internet after they manually authenticate
+to chilli.
+My problem is chilli its not sending WISPr related XML, so no
+automatic login for clients supporting WISPr.
+
+i tried using the embedded captive portal and also the
+hotspotlogin.cgi without success.
+
+please any hints on what i'm missing,
+
+thanks in advance,
+
+From mail at frank-muennich.com  Tue Jul 12 18:35:57 2011
+From: mail at frank-muennich.com (Frank Muennich)
+Date: Tue, 12 Jul 2011 20:35:57 +0200 (CEST)
+Subject: [Chilli] Compiling error in ssl.c
+Message-ID: <1736800460.129026.1310495757460.JavaMail.open-xchange@oxltgw05.schlund.de>
+
+Dear all,
+?
+when I try to compile coova-chilli-1.2.7 (or 1.2.8 now) through OpenWRT
+buildroot, I get an error saying that
+?
+cc1: warnings being treated as errors
+ssl.c: In function '_openssl_env_init':
+ssl.c:197:15: error: assignment discards qualifiers from pointer target type
+ssl.c: In function 'openssl_check_accept':
+ssl.c:395:11: error: assignment discards qualifiers from pointer target type
+?
+and thus compilation fails and aborts.
+I'm by no means a C expert, so if anyone could tell me what to do, or has a
+patch for those two lines, I'd greatly appreciate it.
+Best regards
+Frank
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20110712/1c73267b/attachment.html>
+
+From a.szlezak at unwired.at  Tue Jul 12 23:12:38 2011
+From: a.szlezak at unwired.at (Alexander Szlezak)
+Date: Wed, 13 Jul 2011 01:12:38 +0200
+Subject: [Chilli] Coova Chilli IPv6
+Message-ID: <4E1CD4E6.2060107@unwired.at>
+
+Dear all,
+
+What is the current status of IPv6 Support in Coova Chilli. Is something 
+planned. I saw a fork providing the support but it is abandonned by now.
+
+thanks,
+Alex
+
+-- 
+Follow me on Twitter @ http://twitter.com/magicshark
+__________________________________________________________________
+Mag. Alexander SZLEZAK                            Unwired Networks
+Inhaber
+Tel.: +43 699 13504101                           Reischergasse 6/2
+Fax.: +43 720 345179                        A-1130 Vienna, Austria
+
+
+From a.szlezak at unwired.at  Tue Jul 12 23:04:14 2011
+From: a.szlezak at unwired.at (Alexander Szlezak)
+Date: Wed, 13 Jul 2011 01:04:14 +0200
+Subject: [Chilli] Questions concerning large scale deployment of coova chilli
+Message-ID: <4E1CD2EE.4010004@unwired.at>
+
+Dear All,
+
+Thanks for the great work so far and for the contineous development of 
+Coova Chilli. We've been using wifidog so far and we're thinking about 
+using coova in a large scale open source project. Thus we do have a few 
+questions concerning coova chilli. A few facts about the planned setup:
+
+- one central uplink with a core2quad, 8gb ram debian squeeze server for 
+nat/firewalling/captive portal/openvpn termination
+- 300 to up to  3000 openwrt based access points connecting to the 
+server via openvpn layer 2 tunnel
+
+How would you setup coova to satisfy these requirements - we've tested a 
+little bit and found out the following:
+
+a) coova & openvpn kernel/userspace switching for each packet consumes a 
+lot cpu (much more than e.g. l2tp tunneling in kernel mode) - is there 
+any kind of optimization, multi processor support etc?
+
+b) a pentium 4 3ghz single core without hyperthreading can server around 
+120 mbit with coova and openvpn running until maxxed out - do you have 
+conducted similar tests and if yes what was the result - I could only 
+find an entry on the mailinglist mentioning max. 1000 ap's on a single 
+server
+
+c) how do you work around the limitations of briding tables (max 1024 
+devices on linux bridge and openvpn bridge)  if you have lot's of vpn 
+interfaces - can you cascade bridges and coova chilli will still work?
+
+d) we use layer2  tunnels (with client isolation on wlan and openvpn) to 
+allow wifi clients to roam between access points. Coova chilli is 
+installed centrally, not on the access points. How should we setup Coova 
+to handle max 26000 devices (macs) and provide dhcp service
+
+e) splash pages for the clients need to be regionalized - thus groups of 
+ap's present a certain login page - we thus need to know which ap the 
+client is on and when it is roaming - currently we get this information 
+from openvpn - you mention in your blog that certain enterprise ap's can 
+talk to chilli using radius and update chilli about the events - would 
+that work with hostapd on openwrt too or what solution do you propose to 
+personalize based on the ap a client comes from
+
+f) what is the management interface of your choice for managing the 
+freeradius db in mysql - currently we try daloradius - it is great, just 
+not useful for the enduser administrator creating a new access point
+
+Thank you for your answers and opinions!
+
+thanks,
+Alexander
+-
+
+-- 
+Follow me on Twitter @ http://twitter.com/magicshark
+__________________________________________________________________
+Mag. Alexander SZLEZAK                            Unwired Networks
+Inhaber
+Tel.: +43 699 13504101                           Reischergasse 6/2
+Fax.: +43 720 345179                        A-1130 Vienna, Austria
+
+
+From kl522 at yahoo.com  Wed Jul 13 13:58:16 2011
+From: kl522 at yahoo.com (kl)
+Date: Wed, 13 Jul 2011 06:58:16 -0700 (PDT)
+Subject: [Chilli] EAP-SIM authentication and captive portal access controller
+Message-ID: <1310565496.61566.YahooMailClassic@web65408.mail.ac4.yahoo.com>
+
+Anyone could help me with the understanding of EAP-SIM authentication and it's relationship with a WIFI captive portal access controller such as chilli ?
+
+>From what I understand about EAP-SIM, it simplifies the authentication of a mobile user and the Mobile user acting as a Wifi station will communication with the Access Point using some protocols and then the Access Point will then contact the radius server for final authentication.
+
+The thing is the whole works only concentrate on AUTHENTICATION whereas in a complete value chain of a typical WIFI access, there are other issues such as AUTHORIZATION ( eg bandwidth restriction ) and Accounting. But the thing is this users has already been authenticated using EAP-SIM using an alternative channel, and chilli does not even aware of it, how is chilli going to know the ID of the user and then assign the right authorization and keep track of session data ?
+
+Appreciate your comments.
+
+From kalil at brasilsite.com.br  Wed Jul 13 21:29:34 2011
+From: kalil at brasilsite.com.br (Kalil Costa - Brasilsite)
+Date: Wed, 13 Jul 2011 18:29:34 -0300
+Subject: [Chilli] DHCP BUFFER  ERROR
+Message-ID: <4E1E0E3E.4040204@brasilsite.com.br>
+
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20110713/32edb238/attachment.html>
+
+From kalil at brasilsite.com.br  Wed Jul 13 21:32:08 2011
+From: kalil at brasilsite.com.br (Kalil Costa - Brasilsite)
+Date: Wed, 13 Jul 2011 18:32:08 -0300
+Subject: [Chilli] DHCP BUFFER  ERROR
+Message-ID: <4E1E0ED8.5000004@brasilsite.com.br>
+
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20110713/c5ec6d13/attachment.html>
+
+From vega.marco82 at gmail.com  Thu Jul 14 00:33:24 2011
+From: vega.marco82 at gmail.com (Marco Vega)
+Date: Wed, 13 Jul 2011 19:33:24 -0500
+Subject: [Chilli] Fedora RPM
+Message-ID: <CAOmSAyR_-i4GERb8bYc2kKj5D_V421BpXduXb4xPiVMth_2PEg@mail.gmail.com>
+
+Hello. Has anyone been able to make coova 1.2.5 or later work with Fedora's
+RPM? I have created my own and it does not work on Fedora 8. Apparently it
+does not create the coova daemon  and it cannot find the appropriate
+folders. Here is the error that it gives me:
+chilli: which: no start-stop-daemon in
+(/usr/kerberos/sbin:/usr/kerberos/bin:/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin:/root/bin)
+
+I have checked and in those folders there are chilli files, or at least
+files with that name. Also I tried the dpkg solution and still no luck .
+Thank you
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20110713/50f0daeb/attachment.html>
+
+From kl522 at yahoo.com  Thu Jul 14 01:34:50 2011
+From: kl522 at yahoo.com (kl)
+Date: Wed, 13 Jul 2011 18:34:50 -0700 (PDT)
+Subject: [Chilli] EAP-SIM authentication and captive portal access
+	controller
+In-Reply-To: <1310565496.61566.YahooMailClassic@web65408.mail.ac4.yahoo.com>
+References: <1310565496.61566.YahooMailClassic@web65408.mail.ac4.yahoo.com>
+Message-ID: <1310607290.90825.YahooMailNeo@web65405.mail.ac4.yahoo.com>
+
+Assuming EAP-SIM authentication is supported by hostapd, then is there a way to
+integrate hostapd with coova chilli so that coova chilli will see the hostapd 
+
+authenticated user as authenticated by coova chilli and continue to manage
+the authorization and accounting things ?
+
+
+
+----- Original Message -----
+From: kl <kl522 at yahoo.com>
+To: chilli at coova.org
+Cc: 
+Sent: Wednesday, July 13, 2011 9:58 PM
+Subject: [Chilli] EAP-SIM authentication and captive portal access controller
+
+Anyone could help me with the understanding of EAP-SIM authentication and it's relationship with a WIFI captive portal access controller such as chilli ?
+
+>From what I understand about EAP-SIM, it simplifies the authentication of a mobile user and the Mobile user acting as a Wifi station will communication with the Access Point using some protocols and then the Access Point will then contact the radius server for final authentication.
+
+The thing is the whole works only concentrate on AUTHENTICATION whereas in a complete value chain of a typical WIFI access, there are other issues such as AUTHORIZATION ( eg bandwidth restriction ) and Accounting. But the thing is this users has already been authenticated using EAP-SIM using an alternative channel, and chilli does not even aware of it, how is chilli going to know the ID of the user and then assign the right authorization and keep track of session data ?
+
+Appreciate your comments.
+_______________________________________________
+Chilli mailing list
+Chilli at coova.org
+http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+
+From auerswald at fg-networking.de  Fri Jul 15 10:11:02 2011
+From: auerswald at fg-networking.de (Erik Auerswald)
+Date: Fri, 15 Jul 2011 12:11:02 +0200
+Subject: [Chilli] [PATCH] Remove hardcoded www.coova.org from walled garden
+Message-ID: <20110715101102.GH29454@fgnfs.fg-networking.de>
+
+Hi,
+
+currently the site www.coova.org is a hard-coded entry in the walled garden
+list. While I understand the wish to advertise the site, this should be
+done using an overridable way or using a comment, but not by hard-coding
+the access exception.
+
+The attached patch simply removes www.coova.org from the walled garden.
+Please consider it for inclusion.
+
+Thanks,
+Erik
+-- 
+Dipl.-Inform. Erik Auerswald                http://www.fg-networking.de/
+auerswald at fg-networking.de Tel: +49-631-4149988-0 Fax: +49-631-4149988-9
+
+Gesellschaft f?r Fundamental Generic Networking mbH
+Gesch?ftsf?hrung: Volker Bauer, J?rg Mayer
+Gerichtsstand: Amtsgericht Kaiserslautern - HRB: 3630
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: coova-chilli-remove-hardcoded-www.coova.org-from-walled-garden.patch
+Type: text/x-diff
+Size: 427 bytes
+Desc: not available
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20110715/5c9677d3/attachment.patch>
+
+From auerswald at fg-networking.de  Fri Jul 15 10:44:23 2011
+From: auerswald at fg-networking.de (Erik Auerswald)
+Date: Fri, 15 Jul 2011 12:44:23 +0200
+Subject: [Chilli] [PATCH] Add an LSB header to the debian init script
+Message-ID: <20110715104423.GK29454@fgnfs.fg-networking.de>
+
+Hi,
+
+since Squeeze, Debian GNU/Linux uses the LSB headers (see
+http://refspecs.freestandards.org/LSB_4.1.0/LSB-Core-generic/LSB-Core-generic/initscrcomconv.html)
+for the dependency based boot system. The attached patch adds an LSB
+header that works fine on my test systems.
+
+Please consider the patch for inclusion.
+
+Thanks,
+Erik
+-- 
+Dipl.-Inform. Erik Auerswald                http://www.fg-networking.de/
+auerswald at fg-networking.de Tel: +49-631-4149988-0 Fax: +49-631-4149988-9
+
+Gesellschaft f?r Fundamental Generic Networking mbH
+Gesch?ftsf?hrung: Volker Bauer, J?rg Mayer
+Gerichtsstand: Amtsgericht Kaiserslautern - HRB: 3630
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: coova-chilli-add-lsb-header-to-debian-init-script.patch
+Type: text/x-diff
+Size: 577 bytes
+Desc: not available
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20110715/e31a0d2c/attachment.patch>
+
+From a.szlezak at unwired.at  Fri Jul 15 16:06:31 2011
+From: a.szlezak at unwired.at (Alexander Szlezak)
+Date: Fri, 15 Jul 2011 18:06:31 +0200
+Subject: [Chilli] hostapd radius accounting via coova chilli
+Message-ID: <4E206587.8010700@unwired.at>
+
+Dear all,
+
+I've configured hostapd on an openwrt 10.03 backfire to access point to 
+report via radius to coovachilli.
+
+My goal is to have the connect/disconnect events of wlan clients 
+available in chilli/radius db.
+
+Hostapd is reporting properly (checked via tcpdump), but allways gets a 
+"connection refused" when trying to reach coovachilli.
+
+First I had chilli radiusproxy running on 1812/1813 and it conflicted 
+with the local freeradius, but still on another port coovachilli does 
+not seem to open the radiusproxy port.
+
+
+Configuration on Chilli (/etc/chilli/default)
+
+HS_RADPROXY=on
+HS_RADPROXY_LISTEN=172.31.0.1
+HS_RADPROXY_CLIENT=172.31.0.0/16
+HS_RADPROXY_PORT=1651
+HS_RADPROXY_SECRET=$HS_RADSECRET
+HS_RADPROXY_MACACCEPT=on
+HS_RADPROXY_LOCATTR=32
+
+
+Configuration on OpenWRT:
+
+
+ctrl_interface=/var/run/hostapd-phy0
+driver=nl80211
+wmm_ac_bk_cwmin=4
+wmm_ac_bk_cwmax=10
+wmm_ac_bk_aifs=7
+wmm_ac_bk_txop_limit=0
+wmm_ac_bk_acm=0
+wmm_ac_be_aifs=3
+wmm_ac_be_cwmin=4
+wmm_ac_be_cwmax=10
+wmm_ac_be_txop_limit=0
+wmm_ac_be_acm=0
+wmm_ac_vi_aifs=2
+wmm_ac_vi_cwmin=3
+wmm_ac_vi_cwmax=4
+wmm_ac_vi_txop_limit=94
+wmm_ac_vi_acm=0
+wmm_ac_vo_aifs=2
+wmm_ac_vo_cwmin=2
+wmm_ac_vo_cwmax=3
+wmm_ac_vo_txop_limit=47
+wmm_ac_vo_acm=0
+tx_queue_data3_aifs=7
+tx_queue_data3_cwmin=15
+tx_queue_data3_cwmax=1023
+tx_queue_data3_burst=0
+tx_queue_data2_aifs=3
+tx_queue_data2_cwmin=15
+tx_queue_data2_cwmax=63
+tx_queue_data2_burst=0
+tx_queue_data1_aifs=1
+tx_queue_data1_cwmin=7
+tx_queue_data1_cwmax=15
+tx_queue_data1_burst=3.0
+tx_queue_data0_aifs=1
+tx_queue_data0_cwmin=3
+tx_queue_data0_cwmax=7
+tx_queue_data0_burst=1.5
+hw_mode=g
+channel=1
+ieee80211n=1
+ht_capab=[HT20][SHORT-GI-20][SHORT-GI-40][TX-STBC][RX-STBC1][DSSS_CCK-40]
+interface=wlan0
+ap_isolate=1
+auth_algs=1
+wpa=0
+ssid=xxxx
+bridge=br-lan
+wmm_enabled=1
+bssid=00:27:22:06:6B:F3
+ignore_broadcast_ssid=0
+#ieee8021x=1
+#auth_algs=1
+#eap_server=0
+#eapol_key_index_workaround=1
+own_ip_addr=172.31.0.178 # ip of the openvpn management tunnel interface 
+connected to the openvpn server
+nas_identifier=ap
+#auth_server_addr=172.31.0.1 # Where is the radius server
+#auth_server_port=1651      # The port the radius server runs on
+#auth_server_shared_secret=xxxx
+acct_server_addr=172.31.0.1
+acct_server_port=1651
+acct_server_shared_secret=xxxx
+-- 
+Follow me on Twitter @ http://twitter.com/magicshark
+__________________________________________________________________
+Mag. Alexander SZLEZAK                            Unwired Networks
+Inhaber
+Tel.: +43 699 13504101                           Reischergasse 6/2
+Fax.: +43 720 345179                        A-1130 Vienna, Austria
+
+From caciano at gmail.com  Fri Jul 15 18:58:39 2011
+From: caciano at gmail.com (Caciano Machado)
+Date: Fri, 15 Jul 2011 15:58:39 -0300
+Subject: [Chilli] Remove specific IPs from DHCP Pool
+Message-ID: <CAGOemL86SYZ8xoX85EM=yoWL1h=MGHFocW3MEDUa01PoMvnL9Q@mail.gmail.com>
+
+Hi,
+
+Is there a way to remove specific IPs from chilli DHCP pool? I mean, make
+chilli not to offer these IPs to clients.
+
+Best Regards
+Caciano Machado
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20110715/be0d86bb/attachment.html>
+
+From adam at freerunr.com  Mon Jul 18 10:13:26 2011
+From: adam at freerunr.com (Adam Hammond)
+Date: Mon, 18 Jul 2011 11:13:26 +0100
+Subject: [Chilli] Remove specific IPs from DHCP Pool
+In-Reply-To: <CAGOemL86SYZ8xoX85EM=yoWL1h=MGHFocW3MEDUa01PoMvnL9Q@mail.gmail.com>
+References: <CAGOemL86SYZ8xoX85EM=yoWL1h=MGHFocW3MEDUa01PoMvnL9Q@mail.gmail.com>
+Message-ID: <99E1CEEE-9EA4-4324-9E38-82404BB66B9F@freerunr.com>
+
+I think what you're after is a way of setting the DHCP pool so it  
+doesn't use all the address space in your network.
+
+e.g. ( in /etc/chilli/local.conf )
+
+dhcpstart=10
+dhcpend=254
+
+regards,
+Adam
+
+On 15 Jul 2011, at 19:58, Caciano Machado wrote:
+
+> Hi,
+>
+> Is there a way to remove specific IPs from chilli DHCP pool? I mean,  
+> make chilli not to offer these IPs to clients.
+>
+> Best Regards
+> Caciano Machado
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+
+From caciano at gmail.com  Mon Jul 18 13:07:44 2011
+From: caciano at gmail.com (Caciano Machado)
+Date: Mon, 18 Jul 2011 10:07:44 -0300
+Subject: [Chilli] Remove specific IPs from DHCP Pool
+In-Reply-To: <99E1CEEE-9EA4-4324-9E38-82404BB66B9F@freerunr.com>
+References: <CAGOemL86SYZ8xoX85EM=yoWL1h=MGHFocW3MEDUa01PoMvnL9Q@mail.gmail.com>
+	<99E1CEEE-9EA4-4324-9E38-82404BB66B9F@freerunr.com>
+Message-ID: <CAGOemL92NaEXVLUEwGFwP9xYE_G+hu=af3KF3rY9kTm+j42VtA@mail.gmail.com>
+
+Thank you Adam,
+
+But it's not exactly what I'm after. What I need is to avoid chilli offering
+specific IPs within the pool.
+
+For example:
+If my pool is 192.168.0.10-192.168.0.250 and I want to avoid chilli offering
+192.168.0.50.
+
+I think static host entries like the ones used in ISC dhcp can solve my
+problem.
+
+Regards,
+Caciano Machado
+
+On Mon, Jul 18, 2011 at 7:13 AM, Adam Hammond <adam at freerunr.com> wrote:
+
+> I think what you're after is a way of setting the DHCP pool so it doesn't
+> use all the address space in your network.
+>
+> e.g. ( in /etc/chilli/local.conf )
+>
+> dhcpstart=10
+> dhcpend=254
+>
+> regards,
+> Adam
+>
+>
+> On 15 Jul 2011, at 19:58, Caciano Machado wrote:
+>
+>  Hi,
+>>
+>> Is there a way to remove specific IPs from chilli DHCP pool? I mean, make
+>> chilli not to offer these IPs to clients.
+>>
+>> Best Regards
+>> Caciano Machado
+>> ______________________________**_________________
+>> Chilli mailing list
+>> Chilli at coova.org
+>> http://lists.coova.org/cgi-**bin/mailman/listinfo/chilli<http://lists.coova.org/cgi-bin/mailman/listinfo/chilli>
+>>
+>
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20110718/27cbdd32/attachment.html>
+
+From kalil at brasilsite.com.br  Mon Jul 18 23:22:48 2011
+From: kalil at brasilsite.com.br (Kalil Costa - Brasilsite)
+Date: Mon, 18 Jul 2011 20:22:48 -0300
+Subject: [Chilli] dhcp buffer error
+Message-ID: <4E24C048.5080608@brasilsite.com.br>
+
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20110718/cfdb90dd/attachment.html>
+
+From kalil at brasilsite.com.br  Tue Jul 19 20:20:24 2011
+From: kalil at brasilsite.com.br (Kalil Costa - Brasilsite)
+Date: Tue, 19 Jul 2011 17:20:24 -0300
+Subject: [Chilli] Fwd: dhcp buffer error
+Message-ID: <4E25E708.1050500@brasilsite.com.br>
+
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20110719/0bf6adfd/attachment.html>
+
+From mail at frank-muennich.com  Wed Jul 20 17:12:20 2011
+From: mail at frank-muennich.com (=?UTF-8?B?RnJhbmsgTcO8bm5pY2g=?=)
+Date: Wed, 20 Jul 2011 19:12:20 +0200
+Subject: [Chilli] [PATCH] Re: Compiling error in ssl.c
+In-Reply-To: <1736800460.129026.1310495757460.JavaMail.open-xchange@oxltgw05.schlund.de>
+References: <1736800460.129026.1310495757460.JavaMail.open-xchange@oxltgw05.schlund.de>
+Message-ID: <4E270C74.9090400@frank-muennich.com>
+
+Dear All,
+
+in my attempts to resolve the problems I got when compiling CoovaChilli
+--with-openssl for the current OpenWRT trunk , I found out that
+apparently there have been changes to the header files from OpenSSL
+somewhere between 0.9.8 and 1.0.0.d.  Building OpenWRT trunk also
+usually fetches the most recent OpenSSL source could and builds it.
+
+I created a patch for CoovaChilli that worked for me, however: I'm a C
+beginner and thus would kindly ask for anyone with some spare time to
+review and test the attached patch.
+Thanks in advance
+Frank
+
+Attached: patch-ssl.patch  and a GPG signature to it
+
+
+On 12.07.2011 20:35, Frank Muennich wrote:
+>
+> Dear all,
+>
+>  
+>
+> when I try to compile coova-chilli-1.2.7 (or 1.2.8 now) through
+> OpenWRT buildroot, I get an error saying that
+>
+>  
+>
+> cc1: warnings being treated as errors
+> ssl.c: In function '_openssl_env_init':
+> ssl.c:197:15: error: assignment discards qualifiers from pointer
+> target type
+> ssl.c: In function 'openssl_check_accept':
+> ssl.c:395:11: error: assignment discards qualifiers from pointer
+> target type
+>
+>  
+>
+> and thus compilation fails and aborts.
+> I'm by no means a C expert, so if anyone could tell me what to do, or
+> has a patch for those two lines, I'd greatly appreciate it.
+> Best regards
+>
+> Frank
+>
+>
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+-------------- next part --------------
+An embedded and charset-unspecified text was scrubbed...
+Name: patch-ssl.patch
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20110720/16d3c157/attachment.ksh>
+-------------- next part --------------
+An embedded and charset-unspecified text was scrubbed...
+Name: patch-ssl.patch.asc
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20110720/16d3c157/attachment.asc>
+
+From mctiew at yahoo.com  Thu Jul 21 04:19:08 2011
+From: mctiew at yahoo.com (Ming-Ching Tiew)
+Date: Wed, 20 Jul 2011 21:19:08 -0700 (PDT)
+Subject: [Chilli] Invalid credential for CoovaChilli with WPA Captive Portal
+Message-ID: <1311221948.93729.YahooMailClassic@web161421.mail.bf1.yahoo.com>
+
+
+According to this url link :-
+
+http://coova.org/CoovaChilli/WPACaptivePortal :-
+
+    *   a user presenting valid credentials get on-line without restriction while
+    * a user presenting in-valid credentials will still gain WPA access, but be subject to a captive portal and walled garden.
+
+I found that when a user is presented with in-valid credentials, the STA will continue to seek authentication rendering it impossible to get to a captive portal and walled garden.
+
+Anyone has also tested this ?
+
+
+From mctiew at yahoo.com  Thu Jul 21 04:31:07 2011
+From: mctiew at yahoo.com (Ming-Ching Tiew)
+Date: Wed, 20 Jul 2011 21:31:07 -0700 (PDT)
+Subject: [Chilli] Invalid credential for CoovaChilli with WPA Captive
+	Portal
+In-Reply-To: <1311221948.93729.YahooMailClassic@web161421.mail.bf1.yahoo.com>
+Message-ID: <1311222667.21000.YahooMailClassic@web161426.mail.bf1.yahoo.com>
+
+
+Sorry please ignore my previous post as I haven't read the whole thing. It seems the support for this is not automatic, or rather, the radius server has to be configured/modified to accomplish this.
+
+Regards.
+
+--- On Thu, 7/21/11, Ming-Ching Tiew <mctiew at yahoo.com> wrote:
+
+> From: Ming-Ching Tiew <mctiew at yahoo.com>
+> Subject: [Chilli] Invalid credential for CoovaChilli with WPA Captive Portal
+> To: "chilli list" <chilli at coova.org>
+> Date: Thursday, July 21, 2011, 4:19 AM
+> 
+> According to this url link :-
+> 
+> http://coova.org/CoovaChilli/WPACaptivePortal :-
+> 
+> ? ? *???a user presenting valid
+> credentials get on-line without restriction while
+> ? ? * a user presenting in-valid credentials will
+> still gain WPA access, but be subject to a captive portal
+> and walled garden.
+> 
+> I found that when a user is presented with in-valid
+> credentials, the STA will continue to seek authentication
+> rendering it impossible to get to a captive portal and
+> walled garden.
+> 
+> Anyone has also tested this ?
+> 
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+> 
+
+From auerswald at fg-networking.de  Thu Jul 21 07:48:06 2011
+From: auerswald at fg-networking.de (Erik Auerswald)
+Date: Thu, 21 Jul 2011 09:48:06 +0200
+Subject: [Chilli] [PATCH] Re: Compiling error in ssl.c
+In-Reply-To: <4E270C74.9090400@frank-muennich.com>
+References: <1736800460.129026.1310495757460.JavaMail.open-xchange@oxltgw05.schlund.de>
+	<4E270C74.9090400@frank-muennich.com>
+Message-ID: <20110721074806.GB27843@fgnfs.fg-networking.de>
+
+Hi,
+
+On Wed, Jul 20, 2011 at 07:12:20PM +0200, Frank M?nnich wrote:
+> I created a patch for CoovaChilli that worked for me, however: I'm a C
+> beginner and thus would kindly ask for anyone with some spare time to
+> review and test the attached patch.
+
+No time for testing, sorry, but FWIW to me the patch looks good.
+
+> > when I try to compile coova-chilli-1.2.7 (or 1.2.8 now) through
+> > OpenWRT buildroot, I get an error saying that
+> >
+> > cc1: warnings being treated as errors
+
+This causes the compile to abort, it would probably work anyway if warnings
+were accepted (-Werror compiler flag treats warnings as errors). A warning
+free build is a worthy goal to pursue, so I am in favour of the patch.
+
+> > ssl.c: In function '_openssl_env_init':
+> > ssl.c:197:15: error: assignment discards qualifiers from pointer
+> > target type
+> > ssl.c: In function 'openssl_check_accept':
+> > ssl.c:395:11: error: assignment discards qualifiers from pointer
+> > target type
+> >
+> > and thus compilation fails and aborts.
+
+Regards,
+Erik
+-- 
+Dipl.-Inform. Erik Auerswald                http://www.fg-networking.de/
+auerswald at fg-networking.de Tel: +49-631-4149988-0 Fax: +49-631-4149988-9
+
+Gesellschaft f?r Fundamental Generic Networking mbH
+Gesch?ftsf?hrung: Volker Bauer, J?rg Mayer
+Gerichtsstand: Amtsgericht Kaiserslautern - HRB: 3630
+
+From mctiew at yahoo.com  Thu Jul 21 10:44:22 2011
+From: mctiew at yahoo.com (Ming-Ching Tiew)
+Date: Thu, 21 Jul 2011 03:44:22 -0700 (PDT)
+Subject: [Chilli] Invalid credential for CoovaChilli with WPA Captive
+	Portal
+In-Reply-To: <1311222667.21000.YahooMailClassic@web161426.mail.bf1.yahoo.com>
+Message-ID: <1311245062.21575.YahooMailClassic@web161422.mail.bf1.yahoo.com>
+
+
+
+--- On Thu, 7/21/11, Ming-Ching Tiew <mctiew at yahoo.com> wrote:
+
+> > 
+> > According to this url link :-
+> > 
+> > http://coova.org/CoovaChilli/WPACaptivePortal :-
+
+Based on this url, when a user presenting in-valid credentials will
+still gain WPA access, but be subject to a captive portal and walled garden.
+
+However I also found this url on the net :-
+
+http://lists.cistron.nl/pipermail/freeradius-users/2011-June/msg00435.html
+
+Basically it says it is not possible to change EAP reject to accept. 
+So now my question is why is it possible for jradius to accomplish this ?
+What is the trick which jradius does to get over this problem ?
+
+Best regards.
+
+
+From mctiew at yahoo.com  Wed Jul 27 07:24:07 2011
+From: mctiew at yahoo.com (Ming-Ching Tiew)
+Date: Wed, 27 Jul 2011 07:24:07 -0000
+Subject: [Chilli] VLAN based routing
+Message-ID: <1311751446.62740.YahooMailClassic@web161425.mail.bf1.yahoo.com>
+
+Assuming coova chilli has 8021q enabled and it is happily managing traffic coming in from a few VLANs. Based on the VLAN input traffic, I would like to route it to different gateways.
+
+Assuming the dhcp interface is eth0 and the tunnel interface is tun0. Now when the 8021q VLAN traffic comes in, is it appearing in tun0.VLAN_ID or
+it is still just appearing in tun0 ? If I want to route them separately, I need to have a way to identify the traffic. How could this be accomplished ?
+
+Regards
+

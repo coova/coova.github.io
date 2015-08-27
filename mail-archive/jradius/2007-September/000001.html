@@ -1,0 +1,198 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Jradius-users] Fix for missed possible values in VSAs
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:jradius%40coova.org?Subject=Re%3A%20%5BJradius-users%5D%20Fix%20for%20missed%20possible%20values%20in%20VSAs&In-Reply-To=%3CA3073CA7-B13A-4F5C-A2FB-FEBF6DC37A38%40mac.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   
+   <LINK REL="Next"  HREF="000002.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Jradius-users] Fix for missed possible values in VSAs</H1>
+    <B>wlan at mac.com</B> 
+    <A HREF="mailto:jradius%40coova.org?Subject=Re%3A%20%5BJradius-users%5D%20Fix%20for%20missed%20possible%20values%20in%20VSAs&In-Reply-To=%3CA3073CA7-B13A-4F5C-A2FB-FEBF6DC37A38%40mac.com%3E"
+       TITLE="[Jradius-users] Fix for missed possible values in VSAs">wlan at mac.com
+       </A><BR>
+    <I>Thu Sep 13 15:02:29 UTC 2007</I>
+    <P><UL>
+        
+        <LI>Next message: <A HREF="000002.html">JRadius svn update
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1">[ date ]</a>
+              <a href="thread.html#1">[ thread ]</a>
+              <a href="subject.html#1">[ subject ]</a>
+              <a href="author.html#1">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hi,
+
+Thanks for that!.. I've committed the changes to my current repo (and  
+cc'ed the new mailing list):
+<A HREF="http://dev.coova.org/svn/cjradius/">http://dev.coova.org/svn/cjradius/</A>
+
+Actually, you will find that I rearranged how the dictionary works  
+internally, but the interface is roughly the same.
+
+Cheers,
+David
+
+On Sep 13, 2007, at 3:40 PM, <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/jradius">Marcel.Natz at swisscom.com</A> wrote:
+
+&gt;<i> Hi
+</I>&gt;<i>
+</I>&gt;<i> We created our own vendor specific attributes in a new dictionary.
+</I>&gt;<i> Unfortunately the values didnt show up in the created Java-classes.
+</I>&gt;<i> Because none of the other VSA did have possible values I had a look  
+</I>&gt;<i> into
+</I>&gt;<i> the code. I'm not sure if omitting this values was a bug or a  
+</I>&gt;<i> feature. A
+</I>&gt;<i> feature because there are some troubles with variable naming.
+</I>&gt;<i>
+</I>&gt;<i> Because I like to have this human readable values I adapted the  
+</I>&gt;<i> code and
+</I>&gt;<i> I don't want to detain it in case somebody else is interested in it:
+</I>&gt;<i>
+</I>&gt;<i> The reason why the values didn't show up was found in the method
+</I>&gt;<i> &quot;readline()&quot; at the following part:
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> else if (upperLine.startsWith(&quot;VALUE&quot;))
+</I>&gt;<i> {
+</I>&gt;<i>     String parts[] = line.split(&quot;[\t ]+&quot;);
+</I>&gt;<i>     String attrName = null;
+</I>&gt;<i>     String attrValueName = null;
+</I>&gt;<i>     String attrValueNum = null;
+</I>&gt;<i>     for (int i = 1; i &lt; parts.length; i++)
+</I>&gt;<i>     {
+</I>&gt;<i>         String p = parts[i].trim();
+</I>&gt;<i>         if (p.length() == 0) continue;
+</I>&gt;<i>         if (attrName == null) attrName = p;
+</I>&gt;<i>         else if (attrValueName == null) attrValueName = p;
+</I>&gt;<i>         else if (attrValueNum == null) attrValueNum = p;
+</I>&gt;<i>     }
+</I>&gt;<i>     if (attrName != null &amp;&amp; attrValueNum != null &amp;&amp; attrValueName !=
+</I>&gt;<i> null)
+</I>&gt;<i>     {
+</I>&gt;<i>         AttrDesc desc = (AttrDesc)attrMap.get(attrName);
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>         // NEW CODE
+</I>&gt;<i>         if(desc == null) {
+</I>&gt;<i>         	VendorDesc vendorDesc = (VendorDesc)
+</I>&gt;<i> vendorMap.get(cVendor);
+</I>&gt;<i>         	desc = (AttrDesc) vendorDesc.attrMap.get(attrName);
+</I>&gt;<i>         }
+</I>&gt;<i>         // END NEW CODE
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>         if (desc != null)
+</I>&gt;<i>         {
+</I>&gt;<i>             AttrValueDesc avd;
+</I>&gt;<i>             if (desc.values == null) desc.values = new LinkedHashMap 
+</I>&gt;<i> ();
+</I>&gt;<i>             if ((avd = (AttrValueDesc)desc.values.get 
+</I>&gt;<i> (attrValueNum)) ==
+</I>&gt;<i> null)
+</I>&gt;<i>                 desc.values.put(attrValueNum, new
+</I>&gt;<i> AttrValueDesc(attrValueName, attrValueNum));
+</I>&gt;<i>             else
+</I>&gt;<i>                 avd.addName(attrValueName);
+</I>&gt;<i>         }
+</I>&gt;<i>     }
+</I>&gt;<i> }
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> Now the values show up in the code but now there are some problems  
+</I>&gt;<i> with
+</I>&gt;<i> generated variable names starting with a digit. The following  
+</I>&gt;<i> change in
+</I>&gt;<i> the mertho clean() fixed it:
+</I>&gt;<i>
+</I>&gt;<i> private String clean(String s)
+</I>&gt;<i> {
+</I>&gt;<i>     s = s.replaceAll(&quot;[^a-zA-Z0-9]&quot;, &quot;&quot;);
+</I>&gt;<i>
+</I>&gt;<i>     // NEW CODE
+</I>&gt;<i>     if(Character.isDigit(s.charAt(0))) {
+</I>&gt;<i>     	s = &quot;_&quot; + s;
+</I>&gt;<i>     }
+</I>&gt;<i>     // END NEW CODE
+</I>&gt;<i>
+</I>&gt;<i>     return s;
+</I>&gt;<i> }
+</I>&gt;<i>
+</I>&gt;<i> And finally there is a &quot;L&quot; required where new Long() are created (in
+</I>&gt;<i> method writeAttrMap()) because the compile said that the integer is to
+</I>&gt;<i> large or out of range:
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> while (iter2.hasNext())
+</I>&gt;<i> {
+</I>&gt;<i>     AttrValueDesc vdesc = (AttrValueDesc)iter2.next();
+</I>&gt;<i>     for (Iterator i = vdesc.names.iterator(); i.hasNext(); )
+</I>&gt;<i>     {
+</I>&gt;<i>         // The last one defined is the one used for number to String
+</I>&gt;<i> lookups!
+</I>&gt;<i>         String name = (String)i.next();
+</I>&gt;<i>
+</I>&gt;<i>         // NEW: &quot;L&quot; added after vdesc.num the declare a long  
+</I>&gt;<i> instead of
+</I>&gt;<i> a int
+</I>&gt;<i>         writer.println(&quot;        valueMap.put(new Long(&quot; + vdesc.num +
+</I>&gt;<i> &quot;L), &quot; + clean(name) + &quot;);&quot;);
+</I>&gt;<i>         writer.println(&quot;        valueMap.put(&quot; + clean(name) + &quot;, new
+</I>&gt;<i> Long(&quot; + vdesc.num + &quot;L));&quot;);
+</I>&gt;<i>     }
+</I>&gt;<i> }
+</I>&gt;<i>
+</I>&gt;<i> Thats it. Well, almost. The dictonary &quot;karlnet&quot; produces so many lines
+</I>&gt;<i> of code the the java compiler just said &quot;code to large&quot;. Comment it in
+</I>&gt;<i> the root dictionary file and everything works fine.
+</I>&gt;<i>
+</I>&gt;<i> Have fun with JRadius!
+</I>&gt;<i>
+</I>&gt;<i> Marcel
+</I>&gt;<i>
+</I>&gt;<i> Sorry, that I can't provide a patch. Eclipse can't create a patch  
+</I>&gt;<i> from a
+</I>&gt;<i> compare-editor or I just do not know how ;-).
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> ---------------------------------------------------------------------- 
+</I>&gt;<i> ---
+</I>&gt;<i> This SF.net email is sponsored by: Microsoft
+</I>&gt;<i> Defy all challenges. Microsoft(R) Visual Studio 2005.
+</I>&gt;<i> <A HREF="http://clk.atdmt.com/MRT/go/vse0120000070mrt/direct/01/">http://clk.atdmt.com/MRT/go/vse0120000070mrt/direct/01/</A>
+</I>&gt;<i> _______________________________________________
+</I>&gt;<i> Jradius-users mailing list
+</I>&gt;<i> <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/jradius">Jradius-users at lists.sourceforge.net</A>
+</I>&gt;<i> <A HREF="https://lists.sourceforge.net/lists/listinfo/jradius-users">https://lists.sourceforge.net/lists/listinfo/jradius-users</A>
+</I>
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	
+	<LI>Next message: <A HREF="000002.html">JRadius svn update
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1">[ date ]</a>
+              <a href="thread.html#1">[ thread ]</a>
+              <a href="subject.html#1">[ subject ]</a>
+              <a href="author.html#1">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/jradius">More information about the Jradius
+mailing list</a><br>
+</body></html>

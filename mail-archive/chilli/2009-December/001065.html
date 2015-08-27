@@ -1,0 +1,197 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] Bug in password handling - Rev 257 PATCH
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Bug%20in%20password%20handling%20-%20Rev%20257%20PATCH&In-Reply-To=%3C1260881202.3837.45.camel%40alberto-laptop%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001063.html">
+   <LINK REL="Next"  HREF="001068.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] Bug in password handling - Rev 257 PATCH</H1>
+    <B>Alberto Bellettato</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Bug%20in%20password%20handling%20-%20Rev%20257%20PATCH&In-Reply-To=%3C1260881202.3837.45.camel%40alberto-laptop%3E"
+       TITLE="[Chilli] Bug in password handling - Rev 257 PATCH">albesvs at yahoo.it
+       </A><BR>
+    <I>Tue Dec 15 12:46:42 UTC 2009</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001063.html">[Chilli] changelog
+</A></li>
+        <LI>Next message: <A HREF="001068.html">[Chilli] Bug in password handling - Rev 257 PATCH
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1065">[ date ]</a>
+              <a href="thread.html#1065">[ thread ]</a>
+              <a href="subject.html#1065">[ subject ]</a>
+              <a href="author.html#1065">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Long passwords still did not work with the latest svn rev. 257, so I dug into the code and I found a real problem.
+
+In 3 code's rows, the length of the password string is calculated through strlen(), that considers the first NUL as the end of the string, as you surely know.
+
+But in function redir_hextochar() (redir.c row 78), sscanf() is used to transform the password from hex string to char (row 87).
+
+And here is the big problem:
+the hex password string is the result of the md5() encryption so it _can_ contain the hex '00', that will be converted to NUL by sscanf().
+
+You can easily test it with this example:
+
+--------------------------------------------
+#include &lt;stdio.h&gt; 
+
+main () {
+  char x[3];
+  int y;
+  char ds[7];
+
+  x[0] = '0';
+  x[1] = '0';
+  x[2] = 0;
+  if (sscanf(x, &quot;%2x&quot;, &amp;y) != 1) 
+    printf(&quot;\nError\n&quot;);
+  ds[0]='s';
+  ds[1]='t';
+  ds[2]='r';
+  ds[3]=(char)y;
+  ds[4]='n';
+  ds[5]='g';
+  ds[6]='\0';
+  printf(&quot;\n%s\n&quot;,ds);
+}
+----------------------------------------------
+
+The output will be 'str' and NOT 'str0ng' !!
+
+Obviously this problem shows more frequently as the password's length increase because the probability of finding a HEX '00' increases with it.
+
+So I patched the code to remove all the strlen() use with password strings, and I optimized some parts too.
+I tested it with Rev 257 configured with --enable-chilliredir and it works fine with every password length.
+NOTE: if password's length (sent by UAM service) is more than 128 chars (RFC2865 maximum length) it is truncated to the first 128 chars.
+
+Here is the patch for Rev 257:
+
+Index: src/redir.c
+===================================================================
+--- src/redir.c	(revisione 257)
++++ src/redir.c	(copia locale)
+@@ -85,10 +85,8 @@
+     x[1] = src[n*2+1];
+     x[2] = 0;
+     if (sscanf(x, &quot;%2x&quot;, &amp;y) != 1) {
+-      /*log_err(0, &quot;HEX conversion failed!&quot;);
+-	return -1;*/
+-      dst[n] = 0;
+-      break;
++      log_err(0, &quot;HEX conversion failed!&quot;);
++      return -1;
+     }
+     dst[n] = (unsigned char) y;
+   }
+@@ -405,7 +403,7 @@
+   
+   hex[0]=0;
+   for (i=0; i&lt;16; i++)
+-    sprintf(hex+strlen(hex), &quot;%.2X&quot;, cksum[i]);
++    sprintf(hex+2*i, &quot;%.2X&quot;, cksum[i]);
+   
+   bcatcstr(str, amp);
+   bcatcstr(str, &quot;md=&quot;);
+@@ -1570,8 +1568,11 @@
+ 	conn-&gt;password[0] = 0;
+       }
+       else if (!redir_getparam(redir, httpreq-&gt;qs, &quot;password&quot;, bt)) {
+-	redir_hextochar(bt-&gt;data, conn-&gt;password, RADIUS_PWSIZE);
+-	conn-&gt;password[RADIUS_PWSIZE-1]=0;
++	conn-&gt;password_len = bt-&gt;slen/2;
++	log_dbg(&quot;Password length: %d&quot;,conn-&gt;password_len);
++	if (conn-&gt;password_len &gt; RADIUS_PWSIZE)
++	  conn-&gt;password_len = RADIUS_PWSIZE;
++	redir_hextochar(bt-&gt;data, conn-&gt;password, conn-&gt;password_len);
+ 	conn-&gt;chap = 0;
+ 	conn-&gt;chappassword[0] = 0;
+       } else {
+@@ -1798,7 +1799,7 @@
+       for (n=0; n &lt; REDIR_MD5LEN; m++, n++)
+ 	user_password[m] = conn-&gt;password[m] ^ chap_challenge[n];
+     
+-    user_password[strlen((char *)conn-&gt;password)] = 0;
++    user_password[conn-&gt;password_len] = 0;
+ 
+ #ifdef HAVE_OPENSSL
+     if (_options.mschapv2) {
+@@ -1810,7 +1811,7 @@
+       
+       GenerateNTResponse(chap_challenge, /*peer*/chap_challenge,
+ 			 conn-&gt;s_state.redir.username, strlen(conn-&gt;s_state.redir.username),
+-			 user_password, strlen(user_password),
++			 user_password, conn-&gt;password_len,
+ 			 ntresponse);
+       
+       /* peer challenge - same as auth challenge */
+@@ -1831,7 +1832,7 @@
+ #endif
+       
+       radius_addattr(radius, &amp;radius_pack, RADIUS_ATTR_USER_PASSWORD, 0, 0, 0,
+-		     user_password, strlen((char*)user_password));
++		     user_password, conn-&gt;password_len);
+ 
+ #ifdef HAVE_OPENSSL
+     }
+Index: src/redir.h
+===================================================================
+--- src/redir.h	(revisione 257)
++++ src/redir.h	(copia locale)
+@@ -79,6 +79,7 @@
+   int response; /* 0: No radius response yet; 1:Reject; 2:Accept; 3:Timeout */
+   uint8_t chappassword[RADIUS_CHAPSIZE];
+   uint8_t password[RADIUS_PWSIZE];
++  int password_len;
+   uint8_t chap_ident;
+   
+   /* 
+Index: src/radius.c
+===================================================================
+--- src/radius.c	(revisione 257)
++++ src/radius.c	(copia locale)
+@@ -1064,7 +1064,7 @@
+     *dstlen = srclen;                 /* No padding */
+ 
+   /* Is dstsize too small ? */
+-  if (dstsize &lt;= *dstlen) {
++  if (dstsize &lt; *dstlen) {
+     *dstlen = 0;
+     return -1;
+   }
+
+
+
+</PRE>
+
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001063.html">[Chilli] changelog
+</A></li>
+	<LI>Next message: <A HREF="001068.html">[Chilli] Bug in password handling - Rev 257 PATCH
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1065">[ date ]</a>
+              <a href="thread.html#1065">[ thread ]</a>
+              <a href="subject.html#1065">[ subject ]</a>
+              <a href="author.html#1065">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

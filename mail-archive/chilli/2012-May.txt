@@ -1,0 +1,2153 @@
+From david at coova.com  Wed May  2 13:55:37 2012
+From: david at coova.com (David Bird)
+Date: Wed, 02 May 2012 15:55:37 +0200
+Subject: [Chilli] dhcp client hostname
+In-Reply-To: <CAF-mK=VXFS+v6SiTXw31+RkTS0JPrEDuQCqp-9tKiJ8RDTQu0w@mail.gmail.com>
+References: <20120429171900.911@citromail.hu>
+	<CAF-mK=VXFS+v6SiTXw31+RkTS0JPrEDuQCqp-9tKiJ8RDTQu0w@mail.gmail.com>
+Message-ID: <1335966937.7186.19.camel@david-laptop>
+
+Hello,
+
+These features are indeed implemented, and work well. Use the
+--dhcpradius option (and compile with --enable-dhcpradius, which is the
+default) and use --macauth. 
+
+Attributes in chilli C are defined in src/radius_chillispot.h
+
+Cheers,
+David
+
+On Sun, 2012-04-29 at 23:08 +0200, Gergely Kiss wrote:
+> Hi Tam?s,
+> 
+> David wrote an article about using vendor-specific attributes to be
+> able to get the DHCP options from the clients (including the client's
+> hostname):
+> 
+> http://www.coova.org/node/118
+> 
+> I don't know if it's still a proposal or has been implemented already,
+> but taking a quick look at the source tells me the proposed DHCP
+> attributes are already included in the dictionary file:
+> 
+> http://dev.coova.org/svn/coova-chilli/doc/dictionary.chillispot
+> 
+> On the other hand, it seems the code does not use these attributes
+> anywhere, so I think you will need to change the source to get the
+> hostname as a RADIUS access request attribute.
+> 
+> Unfortunately, I'm not good enough at C++ programming to do the
+> coding, but basically you just need to fetch the hostname from the
+> DHCP request (DHCP option 12), store it in a property and pass it to
+> the RADIUS server when sending an access request packet during
+> authentication.
+> 
+> 
+> Regards,
+> Gergely Kiss
+> 
+> Ps. ?n is magyar vagyok! :)
+> 
+> On 29 April 2012 17:19, Fekete Tam?s <f.tomi7 at citromail.hu> wrote:
+> > Hello All,
+> >
+> > I would like to get the host name of the connected client. My plan was
+> > simple modify the source code of chilli, but as I suppose it is not the best
+> > way and anyway I have not idea how to do this. But I went ahead and I got
+> > deeper and deeper in this topic. Now I find that radius server perfectly can
+> > solve my problem. It is almost very good news, but I do not know how to
+> > receive the wished attributes from that. Maybe someone can give me some
+> > advice how I can do this.
+> >
+> > But I simple do not understand why the dhcp part cannot prove this
+> > information. I think where I use dhcp server I want to know about client
+> > there. And I do not want to depend on something else. But maybe this is only
+> > my consideration.
+> >
+> > But the main point is now I would be really glad of getting some help in
+> > question of getting hostname. :)
+> >
+> > Nice day,
+> >
+> > Tamas
+> >
+> > _______________________________________________
+> > Chilli mailing list
+> > Chilli at coova.org
+> > http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+> >
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+
+
+From f.tomi7 at citromail.hu  Thu May  3 09:33:28 2012
+From: f.tomi7 at citromail.hu (=?UTF-8?B?RmVrZXRlIFRhbcOhcyA=?=)
+Date: Thu, 3 May 2012 11:33:28 +0200
+Subject: [Chilli] =?utf-8?q?dhcp_client_hostname?=
+In-Reply-To: <1335966937.7186.19.camel@david-laptop>
+Message-ID: <20120503113328.3657@citromail.hu>
+
+ Hello,
+
+thanks for the answers. 
+
+K?szi Gerg? a gyors v?laszt Neked is.
+
+I have found all that things yet. But I would like to get the host name before radius authentication. I mean as soon as the dchp part gave ip to the client I want to store client information.
+
+I went through the interesting part of the code and my plan is to receive the required information in the cb_dhcp_request(...) part.
+Here I have a connection yet I can use for this.
+
+And do you mean that I can simple implement the following steps?
+*create radius message to fill that attributes
+*add attributes to that (client ip and host name or anything else)
+*call radius-req to send the radius message via the given connection
+*call radius response to receive the date
+*get attribute from that to save them into a file or store everywhere else
+
+It seems be the perfect solution (or at least good) as I think. Please tell me what do you think about my plan? Is it good direction?
+
+ps. I see in the chilli.c the cb_radius_auth_conf fnc that if radius is enabled the code asks for domain name. but it is not called if I have only dhcp connection as I checked the log file
+
+Tamas
+-- Eredeti ?zenet --
+Felad?: David Bird  &lt;david at coova.com&gt;C?mzett: Gergely Kiss  &lt;mail.gery at gmail.com&gt;, Gergely Kiss  &lt;mail.gery at gmail.com&gt;,  &lt;chilli at coova.org&gt;Elk?ldve: 2012. m?jus 2. 15:55T?rgy : Re: [Chilli] dhcp client hostname
+
+Hello,
+ 
+ These features are indeed implemented, and work well. Use the
+ --dhcpradius option (and compile with --enable-dhcpradius, which is the
+ default) and use --macauth. 
+ 
+ Attributes in chilli C are defined in src/radius_chillispot.h
+ 
+ Cheers,
+ David
+ 
+ On Sun, 2012-04-29 at 23:08 +0200, Gergely Kiss wrote:
+ &gt; Hi Tam?s,
+ &gt; 
+ &gt; David wrote an article about using vendor-specific attributes to be
+ &gt; able to get the DHCP options from the clients (including the client's
+ &gt; hostname):
+ &gt; 
+ &gt; http://www.coova.org/node/118
+ &gt; 
+ &gt; I don't know if it's still a proposal or has been implemented already,
+ &gt; but taking a quick look at the source tells me the proposed DHCP
+ &gt; attributes are already included in the dictionary file:
+ &gt; 
+ &gt; http://dev.coova.org/svn/coova-chilli/doc/dictionary.chillispot
+ &gt; 
+ &gt; On the other hand, it seems the code does not use these attributes
+ &gt; anywhere, so I think you will need to change the source to get the
+ &gt; hostname as a RADIUS access request attribute.
+ &gt; 
+ &gt; Unfortunately, I'm not good enough at C++ programming to do the
+ &gt; coding, but basically you just need to fetch the hostname from the
+ &gt; DHCP request (DHCP option 12), store it in a property and pass it to
+ &gt; the RADIUS server when sending an access request packet during
+ &gt; authentication.
+ &gt; 
+ &gt; 
+ &gt; Regards,
+ &gt; Gergely Kiss
+ &gt; 
+ &gt; Ps. ?n is magyar vagyok! :)
+ &gt; 
+ &gt; On 29 April 2012 17:19, Fekete Tam?s &lt;f.tomi7 at citromail.hu&gt; wrote:
+ &gt; &gt; Hello All,
+ &gt; &gt;
+ &gt; &gt; I would like to get the host name of the connected client. My plan was
+ &gt; &gt; simple modify the source code of chilli, but as I suppose it is not the best
+ &gt; &gt; way and anyway I have not idea how to do this. But I went ahead and I got
+ &gt; &gt; deeper and deeper in this topic. Now I find that radius server perfectly can
+ &gt; &gt; solve my problem. It is almost very good news, but I do not know how to
+ &gt; &gt; receive the wished attributes from that. Maybe someone can give me some
+ &gt; &gt; advice how I can do this.
+ &gt; &gt;
+ &gt; &gt; But I simple do not understand why the dhcp part cannot prove this
+ &gt; &gt; information. I think where I use dhcp server I want to know about client
+ &gt; &gt; there. And I do not want to depend on something else. But maybe this is only
+ &gt; &gt; my consideration.
+ &gt; &gt;
+ &gt; &gt; But the main point is now I would be really glad of getting some help in
+ &gt; &gt; question of getting hostname. :)
+ &gt; &gt;
+ &gt; &gt; Nice day,
+ &gt; &gt;
+ &gt; &gt; Tamas
+ &gt; &gt;
+ &gt; &gt; _______________________________________________
+ &gt; &gt; Chilli mailing list
+ &gt; &gt; Chilli at coova.org 
+ &gt; &gt; http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+ &gt; &gt;
+ &gt; _______________________________________________
+ &gt; Chilli mailing list
+ &gt; Chilli at coova.org 
+ &gt; http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+ 
+ 
+ 
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20120503/8ab043bd/attachment.html>
+
+From maxxer at ufficyo.com  Thu May  3 11:06:04 2012
+From: maxxer at ufficyo.com (Lorenzo Milesi)
+Date: Thu, 3 May 2012 13:06:04 +0200 (CEST)
+Subject: [Chilli] Revert from Coova2 to previous version
+In-Reply-To: <190518991.10608.1336043088488.JavaMail.root@quaglia>
+Message-ID: <1712127188.10611.1336043164397.JavaMail.root@quaglia>
+
+I flashed a WRT54GL using Coova Desktop 2, but now I'd like to revert back to a previous version I downloaded from coova.org (openwrt-wrt54g-squashfs.bin).
+
+I was trying to tftp the file but it seems that CD disabled the reset button.
+How can I reset and reflash my router?
+
+thanks
+
+-- 
+Lorenzo Milesi - lorenzo.milesi at yetopen.it
+
+GPG/PGP Key-Id: 0xE704E230 - http://keyserver.linux.it
+
+
+From maxxer at ufficyo.com  Thu May  3 11:10:35 2012
+From: maxxer at ufficyo.com (Lorenzo Milesi)
+Date: Thu, 3 May 2012 13:10:35 +0200 (CEST)
+Subject: [Chilli] Auto login (bypass login form)
+In-Reply-To: <4F911F1A.3010304@gmail.com>
+Message-ID: <575666536.10614.1336043435399.JavaMail.root@quaglia>
+
+> I wan't to give access to users without authentication. Just to land
+> on
+> welcome page and consider authondicated.
+> Is it possible to accomplise that? In other words, is it possible to
+> have a predifined username and password into freeradius and force
+> each
+> new user, after he get an ip from coovachilli to automatically
+> authondicated by these credentials without a login form?
+
+I don't know if there's some other way, but you can eventually use mac auth.
+when a user lands to login page you create the database settings and then issue a macreauth, so that they're logged in.
+should work.
+-- 
+Lorenzo Milesi - lorenzo.milesi at yetopen.it
+
+GPG/PGP Key-Id: 0xE704E230 - http://keyserver.linux.it
+
+
+
+From maxxer at ufficyo.com  Thu May  3 13:27:37 2012
+From: maxxer at ufficyo.com (Lorenzo Milesi)
+Date: Thu, 3 May 2012 15:27:37 +0200 (CEST)
+Subject: [Chilli] Revert from Coova2 to previous version
+In-Reply-To: <1712127188.10611.1336043164397.JavaMail.root@quaglia>
+Message-ID: <2024041180.11264.1336051657322.JavaMail.root@quaglia>
+
+> How can I reset and reflash my router?
+
+figured out by myself.
+
+login via ssh to the router and issue these commands:
+
+nvram set boot_wait=on
+nvram set wait_time=10
+nvram commit && reboot
+
+
+then on my linux host 
+echo -e "binary\nrexmt 1\ntimeout 60\ntrace\nput openwrt-xxx-x.x-xxx.bin\n" | tftp 192.168.1.1
+
+ref to: 
+http://wiki.openwrt.org/toh/linksys/wrt54g#using.the.tftp.method
+http://wiki.openwrt.org/doc/howto/generic.flashing.tftp#bootloader.contains.tftp.server
+-- 
+Lorenzo Milesi - lorenzo.milesi at yetopen.it
+
+GPG/PGP Key-Id: 0xE704E230 - http://keyserver.linux.it
+
+
+From maxxer at ufficyo.com  Thu May  3 15:01:53 2012
+From: maxxer at ufficyo.com (Lorenzo Milesi)
+Date: Thu, 3 May 2012 17:01:53 +0200 (CEST)
+Subject: [Chilli] Mac auth & idle timeout
+In-Reply-To: <1591299878.12411.1336057041565.JavaMail.root@quaglia>
+Message-ID: <85977207.12462.1336057313667.JavaMail.root@quaglia>
+
+Hi.
+
+I was testing out coova ap, mac auth and macreauth url, and everything seems to work.
+But I found something strange about Idle-Timeout. The Mac user I configured just has the Auth-Type Accept option, and I had set the default idle timeout in CoovaAP config to 600s. The problem is that after that exact time the mac is disconnected, even if it's accessing the internet, and even if on the coovaap web panel I see the idle time much lower than the limit!
+
+
+Also, when I disconnect the device from the AP the session remains open. with ChilliSpot it used to disconnect the user once it received the dhcp release. 
+
+So far I only tried with an android 4 phone.
+
+thanks
+-- 
+Lorenzo Milesi - lorenzo.milesi at yetopen.it
+
+GPG/PGP Key-Id: 0xE704E230 - http://keyserver.linux.it
+
+
+
+From ravikant.4784 at gmail.com  Fri May  4 06:20:38 2012
+From: ravikant.4784 at gmail.com (Ravikant Patil)
+Date: Fri, 4 May 2012 11:50:38 +0530
+Subject: [Chilli] Auto login (bypass login form)
+In-Reply-To: <575666536.10614.1336043435399.JavaMail.root@quaglia>
+References: <4F911F1A.3010304@gmail.com>
+	<575666536.10614.1336043435399.JavaMail.root@quaglia>
+Message-ID: <CAGPhq8LzgGa0G_+-6=5QKRchELNQ=3v1_ubwTQtYJdf5vGoXwA@mail.gmail.com>
+
+Mac Auth will serve the purpose.
+
+Also, another easy way is to use dummy username/password combination hidden
+in welcome page. User do not have to see or enter this username, but this
+username/password is used by chilli for authentication purpose internally.
+
+Hope this helps.
+
+
+On Thu, May 3, 2012 at 4:40 PM, Lorenzo Milesi <maxxer at ufficyo.com> wrote:
+
+> > I wan't to give access to users without authentication. Just to land
+> > on
+> > welcome page and consider authondicated.
+> > Is it possible to accomplise that? In other words, is it possible to
+> > have a predifined username and password into freeradius and force
+> > each
+> > new user, after he get an ip from coovachilli to automatically
+> > authondicated by these credentials without a login form?
+>
+> I don't know if there's some other way, but you can eventually use mac
+> auth.
+> when a user lands to login page you create the database settings and then
+> issue a macreauth, so that they're logged in.
+> should work.
+> --
+> Lorenzo Milesi - lorenzo.milesi at yetopen.it
+>
+> GPG/PGP Key-Id: 0xE704E230 - http://keyserver.linux.it
+>
+>
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+
+
+
+-- 
+
+Regards,
+
+Ravikant
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20120504/a4317d21/attachment.html>
+
+From germano.paciocco at gmail.com  Wed May 16 17:49:28 2012
+From: germano.paciocco at gmail.com (Germano Paciocco)
+Date: Wed, 16 May 2012 19:49:28 +0200
+Subject: [Chilli] Coovachilli and Squid Transparent on the same host
+Message-ID: <CAENMwEB6C0rOmfRbRSWBu=DxMC5REeYnSntahJOmbsiJZx++og@mail.gmail.com>
+
+Hi all.
+I'm tryng to setup a Coovachilli installation with the same server of a
+transparent squid proxy. I read this thread
+http://lists.coova.org/pipermail/chilli/2010-April/001315.html, and it
+reports that HS_POSTAUTH_PROXY and HS_POSTAUTH_PROXYPORT are only for
+upstream (external?) proxies, is ti true? I read that in prior versions of
+Coovachilli there were HS_PROXY and HS_PROXYPORT that maybe would have
+worked in my scenario: are they unsupported on later versions?
+
+If firewall rules are the only solution, anyone can help me with iptables
+to do the same job? I need all traffic of authenticated session should pass
+through a squid proxy listening on 127.0.0.1... I tried some simple rule,
+and I can't get packets forwarded to the listening proxy, that I checked
+working on localhost:3128.
+
+It seems that Daniel Berteaud, on the last post to the thread i linked
+before, posted his script, but I can't find it attached!
+
+Thank you very much... kind regards!
+
+-- 
+GP
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20120516/48c39035/attachment.html>
+
+From mohsen.saeedi at gmail.com  Wed May 16 18:25:26 2012
+From: mohsen.saeedi at gmail.com (Mohsen Saeedi)
+Date: Wed, 16 May 2012 22:55:26 +0430
+Subject: [Chilli] Coovachilli and Squid Transparent on the same host
+In-Reply-To: <CAENMwEB6C0rOmfRbRSWBu=DxMC5REeYnSntahJOmbsiJZx++og@mail.gmail.com>
+References: <CAENMwEB6C0rOmfRbRSWBu=DxMC5REeYnSntahJOmbsiJZx++og@mail.gmail.com>
+Message-ID: <4FB3F116.1070802@gmail.com>
+
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20120516/77d07e44/attachment.html>
+
+From kaevee at gmail.com  Wed May 16 18:01:00 2012
+From: kaevee at gmail.com (Venkatesh K)
+Date: Wed, 16 May 2012 23:31:00 +0530
+Subject: [Chilli] Coovachilli and Squid Transparent on the same host
+In-Reply-To: <CAENMwEB6C0rOmfRbRSWBu=DxMC5REeYnSntahJOmbsiJZx++og@mail.gmail.com>
+References: <CAENMwEB6C0rOmfRbRSWBu=DxMC5REeYnSntahJOmbsiJZx++og@mail.gmail.com>
+Message-ID: <CAE=_RaVng+0J4s=eKqpNqvMYsWU88=gzUMsfdSYx=qU_LuRpaA@mail.gmail.com>
+
+Hi,
+
+You don't need to setup any iptables rules. As long as you have configured
+Squid as transparent proxy and setup proxy/port in Coova Chilli config, it
+will work. The proxy can exist in same server.
+
+Regards,
+
+Venkatesh. K
+
+
+On Wed, May 16, 2012 at 11:19 PM, Germano Paciocco <
+germano.paciocco at gmail.com> wrote:
+
+> Hi all.
+> I'm tryng to setup a Coovachilli installation with the same server of a
+> transparent squid proxy. I read this thread
+> http://lists.coova.org/pipermail/chilli/2010-April/001315.html, and it
+> reports that HS_POSTAUTH_PROXY and HS_POSTAUTH_PROXYPORT are only for
+> upstream (external?) proxies, is ti true? I read that in prior versions of
+> Coovachilli there were HS_PROXY and HS_PROXYPORT that maybe would have
+> worked in my scenario: are they unsupported on later versions?
+>
+> If firewall rules are the only solution, anyone can help me with iptables
+> to do the same job? I need all traffic of authenticated session should pass
+> through a squid proxy listening on 127.0.0.1... I tried some simple rule,
+> and I can't get packets forwarded to the listening proxy, that I checked
+> working on localhost:3128.
+>
+> It seems that Daniel Berteaud, on the last post to the thread i linked
+> before, posted his script, but I can't find it attached!
+>
+> Thank you very much... kind regards!
+>
+> --
+> GP
+>
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20120516/a0291c35/attachment.html>
+
+From mohsen.saeedi at gmail.com  Wed May 16 18:41:54 2012
+From: mohsen.saeedi at gmail.com (Mohsen Saeedi)
+Date: Wed, 16 May 2012 23:11:54 +0430
+Subject: [Chilli] Coovachilli and Squid Transparent on the same host
+In-Reply-To: <CAE=_RaVng+0J4s=eKqpNqvMYsWU88=gzUMsfdSYx=qU_LuRpaA@mail.gmail.com>
+References: <CAENMwEB6C0rOmfRbRSWBu=DxMC5REeYnSntahJOmbsiJZx++og@mail.gmail.com>
+	<CAE=_RaVng+0J4s=eKqpNqvMYsWU88=gzUMsfdSYx=qU_LuRpaA@mail.gmail.com>
+Message-ID: <4FB3F4F2.9070301@gmail.com>
+
+Hi
+
+Thanks. i'm going to set as you said. which parameter, should i set on 
+defaults config file for chilli?
+
+Do you know about performance? do you compare proxy/port solution with 
+iptables rules solution?
+
+
+Thanks
+
+
+/*Venkatesh K <kaevee at gmail.com>*/ wrote on Wed, 16 May 2012 23:31:00 +0530:
+> Hi,
+>
+> You don't need to setup any iptables rules. As long as you have 
+> configured Squid as transparent proxy and setup proxy/port in Coova 
+> Chilli config, it will work. The proxy can exist in same server.
+>
+> Regards,
+>
+> Venkatesh. K
+>
+>
+> On Wed, May 16, 2012 at 11:19 PM, Germano Paciocco 
+> <germano.paciocco at gmail.com <mailto:germano.paciocco at gmail.com>> wrote:
+>
+>     Hi all.
+>     I'm tryng to setup a Coovachilli installation with the same server
+>     of a transparent squid proxy. I read this thread
+>     http://lists.coova.org/pipermail/chilli/2010-April/001315.html,
+>     and it reports that HS_POSTAUTH_PROXY and HS_POSTAUTH_PROXYPORT
+>     are only for upstream (external?) proxies, is ti true? I read that
+>     in prior versions of Coovachilli there were HS_PROXY and
+>     HS_PROXYPORT that maybe would have worked in my scenario: are they
+>     unsupported on later versions?
+>
+>     If firewall rules are the only solution, anyone can help me with
+>     iptables to do the same job? I need all traffic of authenticated
+>     session should pass through a squid proxy listening on
+>     127.0.0.1... I tried some simple rule, and I can't get packets
+>     forwarded to the listening proxy, that I checked working on
+>     localhost:3128.
+>
+>     It seems that Daniel Berteaud, on the last post to the thread i
+>     linked before, posted his script, but I can't find it attached!
+>
+>     Thank you very much... kind regards!
+>
+>     -- 
+>     GP
+>
+>     _______________________________________________
+>     Chilli mailing list
+>     Chilli at coova.org <mailto:Chilli at coova.org>
+>     http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+>
+>
+>
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+From kaevee at gmail.com  Wed May 16 18:49:29 2012
+From: kaevee at gmail.com (Venkatesh K)
+Date: Thu, 17 May 2012 00:19:29 +0530
+Subject: [Chilli] Coovachilli and Squid Transparent on the same host
+In-Reply-To: <4FB3F4F2.9070301@gmail.com>
+References: <CAENMwEB6C0rOmfRbRSWBu=DxMC5REeYnSntahJOmbsiJZx++og@mail.gmail.com>
+	<CAE=_RaVng+0J4s=eKqpNqvMYsWU88=gzUMsfdSYx=qU_LuRpaA@mail.gmail.com>
+	<4FB3F4F2.9070301@gmail.com>
+Message-ID: <CAE=_RaVReUvTtC0G=DkxS02LG42e6Zv7ZFwku=qo+YyjnwK2dg@mail.gmail.com>
+
+Hi you need to set
+
+HS_POSTAUTH_PROXY=<host or ip>
+HS_POSTAUTH_PROXYPORT=<port>
+
+I have't done any performance comparision with iptables forwarding. I
+believe coova-chilli forwarding directly to proxy should not have any
+performance impact. I could be wrong.
+
+Venkatesh. K
+
+
+On Thu, May 17, 2012 at 12:11 AM, Mohsen Saeedi <mohsen.saeedi at gmail.com>wrote:
+
+> Hi
+>
+> Thanks. i'm going to set as you said. which parameter, should i set on
+> defaults config file for chilli?
+>
+> Do you know about performance? do you compare proxy/port solution with
+> iptables rules solution?
+>
+>
+> Thanks
+>
+>
+> /*Venkatesh K <kaevee at gmail.com>*/ wrote on Wed, 16 May 2012 23:31:00
+> +0530:
+>
+>> Hi,
+>>
+>> You don't need to setup any iptables rules. As long as you have
+>> configured Squid as transparent proxy and setup proxy/port in Coova Chilli
+>> config, it will work. The proxy can exist in same server.
+>>
+>> Regards,
+>>
+>> Venkatesh. K
+>>
+>>
+>> On Wed, May 16, 2012 at 11:19 PM, Germano Paciocco <
+>> germano.paciocco at gmail.com <mailto:germano.paciocco@**gmail.com<germano.paciocco at gmail.com>>>
+>> wrote:
+>>
+>>    Hi all.
+>>    I'm tryng to setup a Coovachilli installation with the same server
+>>    of a transparent squid proxy. I read this thread
+>>    http://lists.coova.org/**pipermail/chilli/2010-April/**001315.html<http://lists.coova.org/pipermail/chilli/2010-April/001315.html>
+>> ,
+>>    and it reports that HS_POSTAUTH_PROXY and HS_POSTAUTH_PROXYPORT
+>>    are only for upstream (external?) proxies, is ti true? I read that
+>>    in prior versions of Coovachilli there were HS_PROXY and
+>>    HS_PROXYPORT that maybe would have worked in my scenario: are they
+>>    unsupported on later versions?
+>>
+>>    If firewall rules are the only solution, anyone can help me with
+>>    iptables to do the same job? I need all traffic of authenticated
+>>    session should pass through a squid proxy listening on
+>>    127.0.0.1... I tried some simple rule, and I can't get packets
+>>    forwarded to the listening proxy, that I checked working on
+>>    localhost:3128.
+>>
+>>    It seems that Daniel Berteaud, on the last post to the thread i
+>>    linked before, posted his script, but I can't find it attached!
+>>
+>>    Thank you very much... kind regards!
+>>
+>>    --     GP
+>>
+>>    ______________________________**_________________
+>>    Chilli mailing list
+>>    Chilli at coova.org <mailto:Chilli at coova.org>
+>>    http://lists.coova.org/cgi-**bin/mailman/listinfo/chilli<http://lists.coova.org/cgi-bin/mailman/listinfo/chilli>
+>>
+>>
+>>
+>>
+>>
+>> ______________________________**_________________
+>> Chilli mailing list
+>> Chilli at coova.org
+>> http://lists.coova.org/cgi-**bin/mailman/listinfo/chilli<http://lists.coova.org/cgi-bin/mailman/listinfo/chilli>
+>>
+> ______________________________**_________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-**bin/mailman/listinfo/chilli<http://lists.coova.org/cgi-bin/mailman/listinfo/chilli>
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20120517/bfb40111/attachment-0001.html>
+
+From mohsen.saeedi at gmail.com  Wed May 16 18:53:02 2012
+From: mohsen.saeedi at gmail.com (Mohsen Saeedi)
+Date: Wed, 16 May 2012 23:23:02 +0430
+Subject: [Chilli] Coovachilli and Squid Transparent on the same host
+In-Reply-To: <CAE=_RaVReUvTtC0G=DkxS02LG42e6Zv7ZFwku=qo+YyjnwK2dg@mail.gmail.com>
+References: <CAENMwEB6C0rOmfRbRSWBu=DxMC5REeYnSntahJOmbsiJZx++og@mail.gmail.com>
+	<CAE=_RaVng+0J4s=eKqpNqvMYsWU88=gzUMsfdSYx=qU_LuRpaA@mail.gmail.com>
+	<4FB3F4F2.9070301@gmail.com>
+	<CAE=_RaVReUvTtC0G=DkxS02LG42e6Zv7ZFwku=qo+YyjnwK2dg@mail.gmail.com>
+Message-ID: <4FB3F78E.6040104@gmail.com>
+
+I know coova works with pcap. and kmod-coova is in experimental state 
+and it doesn't do anything now.
+
+I have some idea. do can we replace pcap with pf_ring? pf_ring is very 
+faster than pcap. I think 100 or 1000 times faster.
+
+do coova uses pcap for forwarding traffic to squid? which library or 
+technique it use to do this task.
+
+Thanks
+
+
+/*Venkatesh K <kaevee at gmail.com>*/ wrote on Thu, 17 May 2012 00:19:29 +0530:
+> Hi you need to set
+>
+> HS_POSTAUTH_PROXY=<host or ip>
+> HS_POSTAUTH_PROXYPORT=<port>
+>
+> I have't done any performance comparision with iptables forwarding. I 
+> believe coova-chilli forwarding directly to proxy should not have any 
+> performance impact. I could be wrong.
+>
+> Venkatesh. K
+>
+>
+> On Thu, May 17, 2012 at 12:11 AM, Mohsen Saeedi 
+> <mohsen.saeedi at gmail.com <mailto:mohsen.saeedi at gmail.com>> wrote:
+>
+>     Hi
+>
+>     Thanks. i'm going to set as you said. which parameter, should i
+>     set on defaults config file for chilli?
+>
+>     Do you know about performance? do you compare proxy/port solution
+>     with iptables rules solution?
+>
+>
+>     Thanks
+>
+>
+>     /*Venkatesh K <kaevee at gmail.com <mailto:kaevee at gmail.com>>*/ wrote
+>     on Wed, 16 May 2012 23:31:00 +0530:
+>
+>         Hi,
+>
+>         You don't need to setup any iptables rules. As long as you
+>         have configured Squid as transparent proxy and setup
+>         proxy/port in Coova Chilli config, it will work. The proxy can
+>         exist in same server.
+>
+>         Regards,
+>
+>         Venkatesh. K
+>
+>
+>         On Wed, May 16, 2012 at 11:19 PM, Germano Paciocco
+>         <germano.paciocco at gmail.com
+>         <mailto:germano.paciocco at gmail.com>
+>         <mailto:germano.paciocco at gmail.com
+>         <mailto:germano.paciocco at gmail.com>>> wrote:
+>
+>            Hi all.
+>            I'm tryng to setup a Coovachilli installation with the same
+>         server
+>            of a transparent squid proxy. I read this thread
+>         http://lists.coova.org/pipermail/chilli/2010-April/001315.html,
+>            and it reports that HS_POSTAUTH_PROXY and HS_POSTAUTH_PROXYPORT
+>            are only for upstream (external?) proxies, is ti true? I
+>         read that
+>            in prior versions of Coovachilli there were HS_PROXY and
+>            HS_PROXYPORT that maybe would have worked in my scenario:
+>         are they
+>            unsupported on later versions?
+>
+>            If firewall rules are the only solution, anyone can help me
+>         with
+>            iptables to do the same job? I need all traffic of
+>         authenticated
+>            session should pass through a squid proxy listening on
+>            127.0.0.1... I tried some simple rule, and I can't get packets
+>            forwarded to the listening proxy, that I checked working on
+>            localhost:3128.
+>
+>            It seems that Daniel Berteaud, on the last post to the thread i
+>            linked before, posted his script, but I can't find it attached!
+>
+>            Thank you very much... kind regards!
+>
+>            --     GP
+>
+>            _______________________________________________
+>            Chilli mailing list
+>         Chilli at coova.org <mailto:Chilli at coova.org>
+>         <mailto:Chilli at coova.org <mailto:Chilli at coova.org>>
+>         http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+>
+>
+>
+>
+>         _______________________________________________
+>         Chilli mailing list
+>         Chilli at coova.org <mailto:Chilli at coova.org>
+>         http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+>     _______________________________________________
+>     Chilli mailing list
+>     Chilli at coova.org <mailto:Chilli at coova.org>
+>     http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+>
+>
+>
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+From germano.paciocco at gmail.com  Wed May 16 19:03:40 2012
+From: germano.paciocco at gmail.com (Germano Paciocco)
+Date: Wed, 16 May 2012 21:03:40 +0200
+Subject: [Chilli] Coovachilli and Squid Transparent on the same host
+Message-ID: <CAENMwEAqYw9G-fSYME-_cMdNF65hwoq_TRBREycwV6uJibVHeA@mail.gmail.com>
+
+Venkatesh. K said:
+
+> You don't need to setup any iptables rules. As long as you have configured
+> Squid as transparent proxy and setup proxy/port in Coova Chilli config, it
+> will work. The proxy can exist in same server.
+
+Great! But I tried and it didn't work.
+I setup separately Coova (smooth setup, working good) and Squid Transparent
+(like this: http://www.lesismore.co.za/squid3.html), and both works fine.
+So I launched Coova, with HS_POSTAUTHPROXY=127.0.0.1 and
+HS_POSTAUTHPROXYPORT=3128: authentication works, but it seems that packets
+does not pass through Squid... (if I sniff I can see packets to 127.0.0.1:3128,
+but Squid access.log remains empty, and no site is opened...)
+I tried both with and without squid redirect rule
+(iptables -t nat -A PREROUTING -i eth0 -p tcp --dport 80 -j REDIRECT
+--to-port 3128,
+I tried also with iptables -t nat -A PREROUTING -i tun0 -p tcp --dport
+80 -j REDIRECT --to-port 3128)
+but I had no success.
+What do you suggest?
+Thank you.
+
+--
+GP
+
+From kaevee at gmail.com  Wed May 16 19:05:52 2012
+From: kaevee at gmail.com (Venkatesh K)
+Date: Thu, 17 May 2012 00:35:52 +0530
+Subject: [Chilli] Coovachilli and Squid Transparent on the same host
+In-Reply-To: <CAENMwEAqYw9G-fSYME-_cMdNF65hwoq_TRBREycwV6uJibVHeA@mail.gmail.com>
+References: <CAENMwEAqYw9G-fSYME-_cMdNF65hwoq_TRBREycwV6uJibVHeA@mail.gmail.com>
+Message-ID: <CAE=_RaVyHOenJGsJMjcptC_KCvHCAnvsTTJXqXxX2wOwRk4Bfw@mail.gmail.com>
+
+I suspect your squid is not started?
+
+Regards,
+
+Venkatesh. K
+
+
+On Thu, May 17, 2012 at 12:33 AM, Germano Paciocco <
+germano.paciocco at gmail.com> wrote:
+
+> Venkatesh. K said:
+>
+> > You don't need to setup any iptables rules. As long as you have
+> configured
+> > Squid as transparent proxy and setup proxy/port in Coova Chilli config,
+> it
+> > will work. The proxy can exist in same server.
+>
+> Great! But I tried and it didn't work.
+> I setup separately Coova (smooth setup, working good) and Squid Transparent
+> (like this: http://www.lesismore.co.za/squid3.html), and both works fine.
+> So I launched Coova, with HS_POSTAUTHPROXY=127.0.0.1 and
+> HS_POSTAUTHPROXYPORT=3128: authentication works, but it seems that packets
+> does not pass through Squid... (if I sniff I can see packets to
+> 127.0.0.1:3128,
+> but Squid access.log remains empty, and no site is opened...)
+> I tried both with and without squid redirect rule
+> (iptables -t nat -A PREROUTING -i eth0 -p tcp --dport 80 -j REDIRECT
+> --to-port 3128,
+> I tried also with iptables -t nat -A PREROUTING -i tun0 -p tcp --dport
+> 80 -j REDIRECT --to-port 3128)
+> but I had no success.
+> What do you suggest?
+> Thank you.
+>
+> --
+> GP
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20120517/9dda1840/attachment.html>
+
+From germano.paciocco at gmail.com  Wed May 16 19:54:20 2012
+From: germano.paciocco at gmail.com (Germano Paciocco)
+Date: Wed, 16 May 2012 21:54:20 +0200
+Subject: [Chilli] Coovachilli and Squid Transparent on the same host
+In-Reply-To: <CAENMwEAiwBonP_siHXxGdePoum4pRzeiY=5CwPSi6+X0CLWBaw@mail.gmail.com>
+References: <CAENMwEAqYw9G-fSYME-_cMdNF65hwoq_TRBREycwV6uJibVHeA@mail.gmail.com>
+	<CAE=_RaVyHOenJGsJMjcptC_KCvHCAnvsTTJXqXxX2wOwRk4Bfw@mail.gmail.com>
+	<CAENMwEAiwBonP_siHXxGdePoum4pRzeiY=5CwPSi6+X0CLWBaw@mail.gmail.com>
+Message-ID: <CAENMwEBM8yrzRwxFFi0=SL39qiPFBhp73__uJBBWsfoOx9r=9A@mail.gmail.com>
+
+/*Venkatesh K <kaevee at gmail.com>*/ wrote:
+
+> I suspect your squid is not started?
+
+Squid is started, working and listening on 127.0.0.1:3128. I tried with
+
+terminal1 -> hotspot$ export http_proxy=http://localhost:3128 && lynx
+terminal2 ->hotspot# tail -f /var/log/squid3/access.log
+
+squid is proxing and I can surf the web.
+
+and btw:
+
+hotspot# ps aux | grep squid
+proxy      895  0.0  0.3  13068  6732 ?        Ss   21:30   0:00
+/usr/sbin/squid3 -N -YC -f /etc/squid3/squid.conf
+hotspot# ps aux | grep chilli
+root      2134  0.0  0.0   7712  1104 ?        Ss   21:34   0:00
+/sbin/chilli -c /etc/chilli.conf
+
+here's my config:
+
+[main.conf]
+cmdsocket       /var/run/chilli.eth1.sock
+unixipc         chilli.eth1.ipc
+pidfile         /var/run/chilli.eth1.pid
+net		10.0.0.0/255.255.255.0
+uamlisten	10.0.0.1
+uamport         3990
+dhcpif		eth1
+uamallowed	"www.coova.org,10.0.0.1,www.coova.org"
+uamanydns
+statip 10.0.0.1/255.255.255.0
+domain "lan"
+dns1 "10.0.0.1"
+dns2 "192.168.196.1"
+uamhomepage http://10.0.0.1:3990/www/coova.html
+wwwdir /etc/chilli/www
+wwwbin /etc/chilli/wwwsh
+uamuiport 4990
+locationname "GePs Spot"
+radiuslocationname "GePs_Spot"
+radiuslocationid "isocc=,cc=,ac=,network=Coova,"
+
+[hs.conf]
+radiusserver1	"localhost"
+radiusserver2	"localhost"
+radiussecret	"testing123"
+radiusauthport  1812
+radiusacctport  1813
+uamserver	"http://10.0.0.1:4990/www/login.chi"
+radiusnasid	"nas01"
+papalwaysok
+uamaliasname "chilli"
+adminupdatefile "/etc/chilli/local.conf"
+uamsecret "uamsecret"
+postauthproxy 127.0.0.1
+postauthproxyport 3128
+
+[squid.conf]
+acl manager proto cache_object
+acl localhost src 127.0.0.1/32 ::1
+acl to_localhost dst 127.0.0.0/8 0.0.0.0/32 ::1
+#acl localnet src 10.0.0.0/8
+acl SSL_ports port 443
+acl Safe_ports port 80
+acl Safe_ports port 21
+acl Safe_ports port 443
+acl Safe_ports port 70
+acl Safe_ports port 210
+acl Safe_ports port 1025-65535
+acl Safe_ports port 280
+acl Safe_ports port 488
+acl Safe_ports port 591
+acl Safe_ports port 777
+acl CONNECT method CONNECT
+http_access allow manager localhost
+http_access deny manager
+http_access deny !Safe_ports
+http_access deny CONNECT !SSL_ports
+#http_access allow localnet
+http_access allow localhost
+http_access deny all
+always_direct allow all
+http_port 3128 transparent
+coredump_dir /var/spool/squid3
+refresh_pattern ^ftp:		1440	20%	10080
+refresh_pattern ^gopher:	1440	0%	1440
+refresh_pattern -i (/cgi-bin/|\?) 0	0%	0
+refresh_pattern (Release|Packages(.gz)*)$      0       20%     2880
+refresh_pattern .		0	20%	4320
+
+--
+GP
+
+From mohsen.saeedi at gmail.com  Wed May 16 20:02:44 2012
+From: mohsen.saeedi at gmail.com (Mohsen Saeedi)
+Date: Thu, 17 May 2012 00:32:44 +0430
+Subject: [Chilli] Coovachilli and Squid Transparent on the same host
+In-Reply-To: <CAENMwEBM8yrzRwxFFi0=SL39qiPFBhp73__uJBBWsfoOx9r=9A@mail.gmail.com>
+References: <CAENMwEAqYw9G-fSYME-_cMdNF65hwoq_TRBREycwV6uJibVHeA@mail.gmail.com>
+	<CAE=_RaVyHOenJGsJMjcptC_KCvHCAnvsTTJXqXxX2wOwRk4Bfw@mail.gmail.com>
+	<CAENMwEAiwBonP_siHXxGdePoum4pRzeiY=5CwPSi6+X0CLWBaw@mail.gmail.com>
+	<CAENMwEBM8yrzRwxFFi0=SL39qiPFBhp73__uJBBWsfoOx9r=9A@mail.gmail.com>
+Message-ID: <4FB407E4.8090906@gmail.com>
+
+It doesn't work for me too! but iptables rules works very well.
+
+what is your idea?
+
+
+/*Germano Paciocco <germano.paciocco at gmail.com>*/ wrote on Wed, 16 May 
+2012 21:54:20 +0200:
+> /*Venkatesh K<kaevee at gmail.com>*/ wrote:
+>
+>> I suspect your squid is not started?
+> Squid is started, working and listening on 127.0.0.1:3128. I tried with
+>
+> terminal1 ->  hotspot$ export http_proxy=http://localhost:3128&&  lynx
+> terminal2 ->hotspot# tail -f /var/log/squid3/access.log
+>
+> squid is proxing and I can surf the web.
+>
+> and btw:
+>
+> hotspot# ps aux | grep squid
+> proxy      895  0.0  0.3  13068  6732 ?        Ss   21:30   0:00
+> /usr/sbin/squid3 -N -YC -f /etc/squid3/squid.conf
+> hotspot# ps aux | grep chilli
+> root      2134  0.0  0.0   7712  1104 ?        Ss   21:34   0:00
+> /sbin/chilli -c /etc/chilli.conf
+>
+> here's my config:
+>
+> [main.conf]
+> cmdsocket       /var/run/chilli.eth1.sock
+> unixipc         chilli.eth1.ipc
+> pidfile         /var/run/chilli.eth1.pid
+> net		10.0.0.0/255.255.255.0
+> uamlisten	10.0.0.1
+> uamport         3990
+> dhcpif		eth1
+> uamallowed	"www.coova.org,10.0.0.1,www.coova.org"
+> uamanydns
+> statip 10.0.0.1/255.255.255.0
+> domain "lan"
+> dns1 "10.0.0.1"
+> dns2 "192.168.196.1"
+> uamhomepage http://10.0.0.1:3990/www/coova.html
+> wwwdir /etc/chilli/www
+> wwwbin /etc/chilli/wwwsh
+> uamuiport 4990
+> locationname "GePs Spot"
+> radiuslocationname "GePs_Spot"
+> radiuslocationid "isocc=,cc=,ac=,network=Coova,"
+>
+> [hs.conf]
+> radiusserver1	"localhost"
+> radiusserver2	"localhost"
+> radiussecret	"testing123"
+> radiusauthport  1812
+> radiusacctport  1813
+> uamserver	"http://10.0.0.1:4990/www/login.chi"
+> radiusnasid	"nas01"
+> papalwaysok
+> uamaliasname "chilli"
+> adminupdatefile "/etc/chilli/local.conf"
+> uamsecret "uamsecret"
+> postauthproxy 127.0.0.1
+> postauthproxyport 3128
+>
+> [squid.conf]
+> acl manager proto cache_object
+> acl localhost src 127.0.0.1/32 ::1
+> acl to_localhost dst 127.0.0.0/8 0.0.0.0/32 ::1
+> #acl localnet src 10.0.0.0/8
+> acl SSL_ports port 443
+> acl Safe_ports port 80
+> acl Safe_ports port 21
+> acl Safe_ports port 443
+> acl Safe_ports port 70
+> acl Safe_ports port 210
+> acl Safe_ports port 1025-65535
+> acl Safe_ports port 280
+> acl Safe_ports port 488
+> acl Safe_ports port 591
+> acl Safe_ports port 777
+> acl CONNECT method CONNECT
+> http_access allow manager localhost
+> http_access deny manager
+> http_access deny !Safe_ports
+> http_access deny CONNECT !SSL_ports
+> #http_access allow localnet
+> http_access allow localhost
+> http_access deny all
+> always_direct allow all
+> http_port 3128 transparent
+> coredump_dir /var/spool/squid3
+> refresh_pattern ^ftp:		1440	20%	10080
+> refresh_pattern ^gopher:	1440	0%	1440
+> refresh_pattern -i (/cgi-bin/|\?) 0	0%	0
+> refresh_pattern (Release|Packages(.gz)*)$      0       20%     2880
+> refresh_pattern .		0	20%	4320
+>
+> --
+> GP
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+From germano.paciocco at gmail.com  Wed May 16 20:10:51 2012
+From: germano.paciocco at gmail.com (Germano Paciocco)
+Date: Wed, 16 May 2012 22:10:51 +0200
+Subject: [Chilli] Coovachilli and Squid Transparent on the same host
+Message-ID: <CAENMwEBBqtofPMK96Tmi4F8NNOs3WUSkHx5jjcJyhMzdDfx-9A@mail.gmail.com>
+
+On Thu, May 17 Mohsen Saeedi <mohsen.saeedi at gmail.com> wrote:
+
+> It doesn't work for me too! but iptables rules works very well.
+
+I will try your rules tomorrow and let you know
+
+> what is your idea?
+
+Do you have bridged if? I have routed. Do you think I better make bridge?
+
+-- 
+GP
+
+From mohsen.saeedi at gmail.com  Wed May 16 20:26:09 2012
+From: mohsen.saeedi at gmail.com (Mohsen Saeedi)
+Date: Thu, 17 May 2012 00:56:09 +0430
+Subject: [Chilli] Coovachilli and Squid Transparent on the same host
+In-Reply-To: <CAENMwEBBqtofPMK96Tmi4F8NNOs3WUSkHx5jjcJyhMzdDfx-9A@mail.gmail.com>
+References: <CAENMwEBBqtofPMK96Tmi4F8NNOs3WUSkHx5jjcJyhMzdDfx-9A@mail.gmail.com>
+Message-ID: <4FB40D61.8050309@gmail.com>
+
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20120517/de53ff4b/attachment.html>
+
+From david at coova.com  Thu May 17 09:03:10 2012
+From: david at coova.com (David Bird)
+Date: Thu, 17 May 2012 11:03:10 +0200
+Subject: [Chilli] Support and development work
+Message-ID: <1337245390.27842.42.camel@david-laptop>
+
+Hello,
+
+I'm interested in hearing from established consultants or companies that
+are in the position to be able to help Coova with some support and
+development work. If you have core knowledge of CoovaChilli, or at least
+a very deep understanding of how it works, how it is compiled and
+configured, and the related networking technologies, please get in
+contact with me directly.
+
+Cheers,
+David
+
+
+From outbackdingo at gmail.com  Thu May 17 18:16:20 2012
+From: outbackdingo at gmail.com (Outback Dingo)
+Date: Thu, 17 May 2012 14:16:20 -0400
+Subject: [Chilli] Support and development work
+In-Reply-To: <1337245390.27842.42.camel@david-laptop>
+References: <1337245390.27842.42.camel@david-laptop>
+Message-ID: <CAKYr3zwcaKy-FW3mA8fLkK3RJvRMjiUBjhkV_HXk2qap0Dn0Yw@mail.gmail.com>
+
+On Thu, May 17, 2012 at 5:03 AM, David Bird <david at coova.com> wrote:
+> Hello,
+>
+> I'm interested in hearing from established consultants or companies that
+> are in the position to be able to help Coova with some support and
+> development work. If you have core knowledge of CoovaChilli, or at least
+> a very deep understanding of how it works, how it is compiled and
+> configured, and the related networking technologies, please get in
+> contact with me directly.
+
+Hi David,
+
+Im capable of helping out, I know we discussed this a long time ago,
+Id be interested in hearing your thoughts on this.
+
+Scott
+
+>
+> Cheers,
+> David
+>
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+From germano.paciocco at gmail.com  Sat May 19 10:33:40 2012
+From: germano.paciocco at gmail.com (Germano Paciocco)
+Date: Sat, 19 May 2012 12:33:40 +0200
+Subject: [Chilli] Coovachilli and Squid Transparent on the same host
+In-Reply-To: <CAENMwEBBqtofPMK96Tmi4F8NNOs3WUSkHx5jjcJyhMzdDfx-9A@mail.gmail.com>
+References: <CAENMwEBBqtofPMK96Tmi4F8NNOs3WUSkHx5jjcJyhMzdDfx-9A@mail.gmail.com>
+Message-ID: <CAENMwEAWETzsE=hQfhVf_iVf0xHjXb4FQMO79LppFJGpAryX0g@mail.gmail.com>
+
+I can't understand the reason why, but it still not working for me.
+I noticed that your firewall rules ar not matching in my configuration.
+On my next hop I can't see packets coming from HS network.
+I attach all my configuration files here, including the complete list
+of iptables rule: please help me I'm going crazy!
+
+[iptables rules]
+
+# iptables -L -t nat --line-number -n -v && iptables -L --line-numbers
+-n -v
+
+Chain PREROUTING (policy ACCEPT 2526 packets, 161K bytes)
+num   pkts bytes target     prot opt in     out     source
+  destination
+1        0     0 REDIRECT   tcp  --  tun0   *       0.0.0.0/0
+  10.0.0.1             tcp dpt:443 redir ports 3128 <<<< NOT MATCHING
+2        0     0 REDIRECT   tcp  --  tun0   *       0.0.0.0/0
+  10.0.0.1             tcp dpt:80 redir ports 3128 <<<< NOT MATCHING
+
+Chain INPUT (policy ACCEPT 61 packets, 4220 bytes)
+num   pkts bytes target     prot opt in     out     source
+  destination
+
+Chain OUTPUT (policy ACCEPT 8 packets, 2134 bytes)
+num   pkts bytes target     prot opt in     out     source
+  destination
+
+Chain POSTROUTING (policy ACCEPT 112 packets, 9055 bytes)
+num   pkts bytes target     prot opt in     out     source
+  destination
+Chain INPUT (policy ACCEPT 1793 packets, 94754 bytes)
+num   pkts bytes target     prot opt in     out     source
+  destination
+1        0     0 ACCEPT     tcp  --  *      *       0.0.0.0/0
+  0.0.0.0/0            tcp dpt:3128flags: 0x17/0x02 <<<< NOT MATCHING
+2        1   328 DROP       all  --  eth1   *       0.0.0.0/0
+  0.0.0.0/0
+3        0     0 ACCEPT     icmp --  tun0   *       0.0.0.0/0
+  10.0.0.1
+4       48  3195 ACCEPT     udp  --  tun0   *       0.0.0.0/0
+  10.0.0.1             udp dpt:53
+5        0     0 ACCEPT     udp  --  tun0   *       0.0.0.0/0
+  10.0.0.1             udp dpts:67:68
+6        0     0 ACCEPT     udp  --  tun0   *       0.0.0.0/0
+  255.255.255.255      udp dpts:67:68
+7        0     0 ACCEPT     tcp  --  tun0   *       0.0.0.0/0
+  10.0.0.1             tcp dpt:443
+8        0     0 ACCEPT     tcp  --  tun0   *       0.0.0.0/0
+  10.0.0.1             tcp dpt:80
+9       80  9751 ACCEPT     tcp  --  tun0   *       0.0.0.0/0
+  10.0.0.1             tcp dpt:4990
+10     122 15651 ACCEPT     tcp  --  tun0   *       0.0.0.0/0
+  10.0.0.1             tcp dpt:3990
+11       2    64 DROP       all  --  tun0   *       0.0.0.0/0
+  10.0.0.1
+
+Chain FORWARD (policy ACCEPT 0 packets, 0 bytes)
+num   pkts bytes target     prot opt in     out     source
+  destination
+1        0     0 DROP       all  --  tun0   !eth0   0.0.0.0/0
+  0.0.0.0/0
+2      136  8324 TCPMSS     tcp  --  *      *       0.0.0.0/0
+  0.0.0.0/0            tcpflags: 0x06/0x02 TCPMSS clamp to PMTU
+3      654  137K ACCEPT     all  --  *      tun0    0.0.0.0/0
+  0.0.0.0/0
+4      879 99006 ACCEPT     all  --  tun0   *       0.0.0.0/0
+  0.0.0.0/0
+5        0     0 DROP       all  --  *      eth1    0.0.0.0/0
+  0.0.0.0/0
+6        0     0 DROP       all  --  eth1   *       0.0.0.0/0
+  0.0.0.0/0
+
+Chain OUTPUT (policy ACCEPT 2017 packets, 470K bytes)
+num   pkts bytes target     prot opt in     out     source
+  destination
+
+[main.conf]
+cmdsocket       /var/run/chilli.eth1.sock
+unixipc         chilli.eth1.ipc
+pidfile         /var/run/chilli.eth1.pid
+net		10.0.0.0/255.255.255.0
+uamlisten	10.0.0.1
+uamport         3990
+dhcpif		eth1
+uamallowed	"www.coova.org,10.0.0.1,www.coova.org"
+uamanydns
+statip 10.0.0.1/255.255.255.0
+domain "lan"
+dns1 "10.0.0.1"
+dns2 "192.168.196.1"
+uamhomepage http://10.0.0.1:3990/www/coova.html
+wwwdir /etc/chilli/www
+wwwbin /etc/chilli/wwwsh
+uamuiport 4990
+locationname "GePs Spot"
+radiuslocationname "GePs_Spot"
+radiuslocationid "isocc=,cc=,ac=,network=Coova,"
+
+[hs.conf]
+radiusserver1   "localhost"
+radiusserver2   "localhost"
+radiussecret    "testing123"
+radiusauthport  1812
+radiusacctport  1813
+uamserver       "http://10.0.0.1:4990/www/login.chi"
+radiusnasid     "nas01"
+papalwaysok
+uamaliasname "chilli"
+adminupdatefile "/etc/chilli/local.conf"
+uamsecret "uamsecret"
+postauthproxy 127.0.0.1
+postauthproxyport 3128
+
+[ipup.conf]
+iptables -I INPUT -p tcp -m tcp --dport 3128 --tcp-flags
+FIN,SYN,RST,ACK SYN -j ACCEPT
+iptables -t nat -A PREROUTING -d 10.0.0.1 -i tun0 -p tcp -m tcp
+--dport 443 -j REDIRECT --to-ports 3128
+iptables -t nat -A PREROUTING -d 10.0.0.1 -i tun0 -p tcp -m tcp
+--dport 80 -j REDIRECT --to-ports 3128
+
+[squid.conf]
+acl manager proto cache_object
+acl localhost src 127.0.0.1/32 ::1
+acl to_localhost dst 127.0.0.0/8 0.0.0.0/32 ::1
+acl localnet src 10.0.0.0/24    # RFC1918 possible internal network
+acl SSL_ports port 443
+acl Safe_ports port 80          # http
+acl Safe_ports port 21          # ftp
+acl Safe_ports port 443         # https
+acl Safe_ports port 70          # gopher
+acl Safe_ports port 210         # wais
+acl Safe_ports port 1025-65535  # unregistered ports
+acl Safe_ports port 280         # http-mgmt
+acl Safe_ports port 488         # gss-http
+acl Safe_ports port 591         # filemaker
+acl Safe_ports port 777         # multiling http
+acl CONNECT method CONNECT
+http_access allow manager localhost
+http_access deny manager
+http_access deny !Safe_ports
+http_access deny CONNECT !SSL_ports
+http_access allow localnet
+http_access allow localhost
+http_access deny all
+always_direct allow all
+http_port 3128 transparent
+coredump_dir /var/spool/squid3
+refresh_pattern ^ftp:           1440    20%     10080
+refresh_pattern ^gopher:        1440    0%      1440
+refresh_pattern -i (/cgi-bin/|\?) 0     0%      0
+refresh_pattern (Release|Packages(.gz)*)$      0       20%     2880
+refresh_pattern .               0       20%     4320
+
+
+
+> That rules works fine. I setup it on the multiple box on different location.
+> no. i used route. I don't link bridge mode.
+
+
+-- 
+GP
+
+From david at coova.com  Sat May 19 15:09:59 2012
+From: david at coova.com (David Bird)
+Date: Sat, 19 May 2012 17:09:59 +0200
+Subject: [Chilli] Coovachilli and Squid Transparent on the same host
+In-Reply-To: <CAENMwEAWETzsE=hQfhVf_iVf0xHjXb4FQMO79LppFJGpAryX0g@mail.gmail.com>
+References: <CAENMwEBBqtofPMK96Tmi4F8NNOs3WUSkHx5jjcJyhMzdDfx-9A@mail.gmail.com>
+	<CAENMwEAWETzsE=hQfhVf_iVf0xHjXb4FQMO79LppFJGpAryX0g@mail.gmail.com>
+Message-ID: <1337440199.27842.63.camel@david-laptop>
+
+A couple things to try:
+
+- Try either the postauthproxy or the iptables REDIRECT, both shouldn't
+be needed.
+
+- Try using 10.0.0.1 instead of 127.0.0.1 for the squid listen and for
+the postauthproxy.
+
+- If using the REDIRECT method, try without the postauthproxy and will
+out a destination match in your iptables rule.
+
+Cheers,
+David
+
+On Sat, 2012-05-19 at 12:33 +0200, Germano Paciocco wrote:
+> I can't understand the reason why, but it still not working for me.
+> I noticed that your firewall rules ar not matching in my configuration.
+> On my next hop I can't see packets coming from HS network.
+> I attach all my configuration files here, including the complete list
+> of iptables rule: please help me I'm going crazy!
+> 
+> [iptables rules]
+> 
+> # iptables -L -t nat --line-number -n -v && iptables -L --line-numbers
+> -n -v
+> 
+> Chain PREROUTING (policy ACCEPT 2526 packets, 161K bytes)
+> num   pkts bytes target     prot opt in     out     source
+>   destination
+> 1        0     0 REDIRECT   tcp  --  tun0   *       0.0.0.0/0
+>   10.0.0.1             tcp dpt:443 redir ports 3128 <<<< NOT MATCHING
+> 2        0     0 REDIRECT   tcp  --  tun0   *       0.0.0.0/0
+>   10.0.0.1             tcp dpt:80 redir ports 3128 <<<< NOT MATCHING
+> 
+> Chain INPUT (policy ACCEPT 61 packets, 4220 bytes)
+> num   pkts bytes target     prot opt in     out     source
+>   destination
+> 
+> Chain OUTPUT (policy ACCEPT 8 packets, 2134 bytes)
+> num   pkts bytes target     prot opt in     out     source
+>   destination
+> 
+> Chain POSTROUTING (policy ACCEPT 112 packets, 9055 bytes)
+> num   pkts bytes target     prot opt in     out     source
+>   destination
+> Chain INPUT (policy ACCEPT 1793 packets, 94754 bytes)
+> num   pkts bytes target     prot opt in     out     source
+>   destination
+> 1        0     0 ACCEPT     tcp  --  *      *       0.0.0.0/0
+>   0.0.0.0/0            tcp dpt:3128flags: 0x17/0x02 <<<< NOT MATCHING
+> 2        1   328 DROP       all  --  eth1   *       0.0.0.0/0
+>   0.0.0.0/0
+> 3        0     0 ACCEPT     icmp --  tun0   *       0.0.0.0/0
+>   10.0.0.1
+> 4       48  3195 ACCEPT     udp  --  tun0   *       0.0.0.0/0
+>   10.0.0.1             udp dpt:53
+> 5        0     0 ACCEPT     udp  --  tun0   *       0.0.0.0/0
+>   10.0.0.1             udp dpts:67:68
+> 6        0     0 ACCEPT     udp  --  tun0   *       0.0.0.0/0
+>   255.255.255.255      udp dpts:67:68
+> 7        0     0 ACCEPT     tcp  --  tun0   *       0.0.0.0/0
+>   10.0.0.1             tcp dpt:443
+> 8        0     0 ACCEPT     tcp  --  tun0   *       0.0.0.0/0
+>   10.0.0.1             tcp dpt:80
+> 9       80  9751 ACCEPT     tcp  --  tun0   *       0.0.0.0/0
+>   10.0.0.1             tcp dpt:4990
+> 10     122 15651 ACCEPT     tcp  --  tun0   *       0.0.0.0/0
+>   10.0.0.1             tcp dpt:3990
+> 11       2    64 DROP       all  --  tun0   *       0.0.0.0/0
+>   10.0.0.1
+> 
+> Chain FORWARD (policy ACCEPT 0 packets, 0 bytes)
+> num   pkts bytes target     prot opt in     out     source
+>   destination
+> 1        0     0 DROP       all  --  tun0   !eth0   0.0.0.0/0
+>   0.0.0.0/0
+> 2      136  8324 TCPMSS     tcp  --  *      *       0.0.0.0/0
+>   0.0.0.0/0            tcpflags: 0x06/0x02 TCPMSS clamp to PMTU
+> 3      654  137K ACCEPT     all  --  *      tun0    0.0.0.0/0
+>   0.0.0.0/0
+> 4      879 99006 ACCEPT     all  --  tun0   *       0.0.0.0/0
+>   0.0.0.0/0
+> 5        0     0 DROP       all  --  *      eth1    0.0.0.0/0
+>   0.0.0.0/0
+> 6        0     0 DROP       all  --  eth1   *       0.0.0.0/0
+>   0.0.0.0/0
+> 
+> Chain OUTPUT (policy ACCEPT 2017 packets, 470K bytes)
+> num   pkts bytes target     prot opt in     out     source
+>   destination
+> 
+> [main.conf]
+> cmdsocket       /var/run/chilli.eth1.sock
+> unixipc         chilli.eth1.ipc
+> pidfile         /var/run/chilli.eth1.pid
+> net		10.0.0.0/255.255.255.0
+> uamlisten	10.0.0.1
+> uamport         3990
+> dhcpif		eth1
+> uamallowed	"www.coova.org,10.0.0.1,www.coova.org"
+> uamanydns
+> statip 10.0.0.1/255.255.255.0
+> domain "lan"
+> dns1 "10.0.0.1"
+> dns2 "192.168.196.1"
+> uamhomepage http://10.0.0.1:3990/www/coova.html
+> wwwdir /etc/chilli/www
+> wwwbin /etc/chilli/wwwsh
+> uamuiport 4990
+> locationname "GePs Spot"
+> radiuslocationname "GePs_Spot"
+> radiuslocationid "isocc=,cc=,ac=,network=Coova,"
+> 
+> [hs.conf]
+> radiusserver1   "localhost"
+> radiusserver2   "localhost"
+> radiussecret    "testing123"
+> radiusauthport  1812
+> radiusacctport  1813
+> uamserver       "http://10.0.0.1:4990/www/login.chi"
+> radiusnasid     "nas01"
+> papalwaysok
+> uamaliasname "chilli"
+> adminupdatefile "/etc/chilli/local.conf"
+> uamsecret "uamsecret"
+> postauthproxy 127.0.0.1
+> postauthproxyport 3128
+> 
+> [ipup.conf]
+> iptables -I INPUT -p tcp -m tcp --dport 3128 --tcp-flags
+> FIN,SYN,RST,ACK SYN -j ACCEPT
+> iptables -t nat -A PREROUTING -d 10.0.0.1 -i tun0 -p tcp -m tcp
+> --dport 443 -j REDIRECT --to-ports 3128
+> iptables -t nat -A PREROUTING -d 10.0.0.1 -i tun0 -p tcp -m tcp
+> --dport 80 -j REDIRECT --to-ports 3128
+> 
+> [squid.conf]
+> acl manager proto cache_object
+> acl localhost src 127.0.0.1/32 ::1
+> acl to_localhost dst 127.0.0.0/8 0.0.0.0/32 ::1
+> acl localnet src 10.0.0.0/24    # RFC1918 possible internal network
+> acl SSL_ports port 443
+> acl Safe_ports port 80          # http
+> acl Safe_ports port 21          # ftp
+> acl Safe_ports port 443         # https
+> acl Safe_ports port 70          # gopher
+> acl Safe_ports port 210         # wais
+> acl Safe_ports port 1025-65535  # unregistered ports
+> acl Safe_ports port 280         # http-mgmt
+> acl Safe_ports port 488         # gss-http
+> acl Safe_ports port 591         # filemaker
+> acl Safe_ports port 777         # multiling http
+> acl CONNECT method CONNECT
+> http_access allow manager localhost
+> http_access deny manager
+> http_access deny !Safe_ports
+> http_access deny CONNECT !SSL_ports
+> http_access allow localnet
+> http_access allow localhost
+> http_access deny all
+> always_direct allow all
+> http_port 3128 transparent
+> coredump_dir /var/spool/squid3
+> refresh_pattern ^ftp:           1440    20%     10080
+> refresh_pattern ^gopher:        1440    0%      1440
+> refresh_pattern -i (/cgi-bin/|\?) 0     0%      0
+> refresh_pattern (Release|Packages(.gz)*)$      0       20%     2880
+> refresh_pattern .               0       20%     4320
+> 
+> 
+> 
+> > That rules works fine. I setup it on the multiple box on different location.
+> > no. i used route. I don't link bridge mode.
+> 
+> 
+
+
+
+From germano.paciocco at gmail.com  Sun May 20 10:22:54 2012
+From: germano.paciocco at gmail.com (Germano Paciocco)
+Date: Sun, 20 May 2012 12:22:54 +0200
+Subject: [Chilli] Coovachilli and Squid Transparent on the same host
+Message-ID: <CAENMwEA3VMTOhEHmc0Qpk=Kn0ffvUNoTzbCSFFUoL3BEjy-0WQ@mail.gmail.com>
+
+David Bird wrote:
+
+> A couple things to try:
+
+> - Try either the postauthproxy or the iptables REDIRECT, both shouldn't
+> be needed.
+
+> - Try using 10.0.0.1 instead of 127.0.0.1 for the squid listen and for the
+> postauthproxy.
+
+Thank you for interesting.
+
+Maybe I'm close to the goal:  if I use postauthproxy rather than redirect
+iptables rules, and I set 10.0.0.1 in the config file instead of 127.0.0.1 as
+you suggested, my traffic is dropped by the rule #8 in the INPUT chain
+in  filter table!
+
+Chain INPUT (policy ACCEPT 77 packets, 5364 bytes)
+num pkts bytes target prot opt in out source destination
+1 139 19658 DROP all -- eth0 * 0.0.0.0/0 0.0.0.0/0
+2 0 0 ACCEPT icmp -- tun0 * 0.0.0.0/0 10.0.0.1
+3 1 82 ACCEPT udp -- tun0 * 0.0.0.0/0 10.0.0.1 udp dpt:53
+4 0 0 ACCEPT udp -- tun0 * 0.0.0.0/0 10.0.0.1 udp dpts:67:68
+5 0 0 ACCEPT udp -- tun0 * 0.0.0.0/0 255.255.255.255 udp dpts:67:68
+6 77 9558 ACCEPT tcp -- tun0 * 0.0.0.0/0 10.0.0.1 tcp dpt:4990
+7 80 11894 ACCEPT tcp -- tun0 * 0.0.0.0/0 10.0.0.1 tcp dpt:3990
+8 14 896 DROP all -- tun0 * 0.0.0.0/0 10.0.0.1 <<< THIS ONE DROPS SQUID!
+
+If I add this rule
+iptables -I INPUT 8 -i tun0 -p tcp -m tcp --dport 3128 -j ACCEPT
+
+all works fine, but users will be able to surf setting explicit proxy,
+bypassing authentication!!!!!
+
+This is the reason why I find more logic to set postauthproxy to 127.0.0.1,
+but doing this, i can't get any way traffic processed by Squid...
+
+Any idea?
+
+Kind regards.
+
+-- 
+GP
+
+From kaevee at gmail.com  Sun May 20 11:47:27 2012
+From: kaevee at gmail.com (Venkatesh K)
+Date: Sun, 20 May 2012 17:17:27 +0530
+Subject: [Chilli] Coovachilli and Squid Transparent on the same host
+In-Reply-To: <CAENMwEA3VMTOhEHmc0Qpk=Kn0ffvUNoTzbCSFFUoL3BEjy-0WQ@mail.gmail.com>
+References: <CAENMwEA3VMTOhEHmc0Qpk=Kn0ffvUNoTzbCSFFUoL3BEjy-0WQ@mail.gmail.com>
+Message-ID: <CAE=_RaX1brXrimcWOCotZ-8EiUa0eXyTwZv87+TUNSBAVoDGQg@mail.gmail.com>
+
+Why don't you revisit the postauthproxy use 127.0.0.1/3128. Make sure your
+firewall rules don't block input traffic from/to lo0.
+
+Thanks,
+
+Venkatesh. K
+
+
+On Sun, May 20, 2012 at 3:52 PM, Germano Paciocco <
+germano.paciocco at gmail.com> wrote:
+
+> David Bird wrote:
+>
+> > A couple things to try:
+>
+> > - Try either the postauthproxy or the iptables REDIRECT, both shouldn't
+> > be needed.
+>
+> > - Try using 10.0.0.1 instead of 127.0.0.1 for the squid listen and for
+> the
+> > postauthproxy.
+>
+> Thank you for interesting.
+>
+> Maybe I'm close to the goal:  if I use postauthproxy rather than redirect
+> iptables rules, and I set 10.0.0.1 in the config file instead of 127.0.0.1
+> as
+> you suggested, my traffic is dropped by the rule #8 in the INPUT chain
+> in  filter table!
+>
+> Chain INPUT (policy ACCEPT 77 packets, 5364 bytes)
+> num pkts bytes target prot opt in out source destination
+> 1 139 19658 DROP all -- eth0 * 0.0.0.0/0 0.0.0.0/0
+> 2 0 0 ACCEPT icmp -- tun0 * 0.0.0.0/0 10.0.0.1
+> 3 1 82 ACCEPT udp -- tun0 * 0.0.0.0/0 10.0.0.1 udp dpt:53
+> 4 0 0 ACCEPT udp -- tun0 * 0.0.0.0/0 10.0.0.1 udp dpts:67:68
+> 5 0 0 ACCEPT udp -- tun0 * 0.0.0.0/0 255.255.255.255 udp dpts:67:68
+> 6 77 9558 ACCEPT tcp -- tun0 * 0.0.0.0/0 10.0.0.1 tcp dpt:4990
+> 7 80 11894 ACCEPT tcp -- tun0 * 0.0.0.0/0 10.0.0.1 tcp dpt:3990
+> 8 14 896 DROP all -- tun0 * 0.0.0.0/0 10.0.0.1 <<< THIS ONE DROPS SQUID!
+>
+> If I add this rule
+> iptables -I INPUT 8 -i tun0 -p tcp -m tcp --dport 3128 -j ACCEPT
+>
+> all works fine, but users will be able to surf setting explicit proxy,
+> bypassing authentication!!!!!
+>
+> This is the reason why I find more logic to set postauthproxy to 127.0.0.1,
+> but doing this, i can't get any way traffic processed by Squid...
+>
+> Any idea?
+>
+> Kind regards.
+>
+> --
+> GP
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20120520/ff610520/attachment.html>
+
+From germano.paciocco at gmail.com  Sun May 20 16:23:40 2012
+From: germano.paciocco at gmail.com (Germano Paciocco)
+Date: Sun, 20 May 2012 18:23:40 +0200
+Subject: [Chilli] Coovachilli and Squid Transparent on the same host
+In-Reply-To: <CAENMwEA3VMTOhEHmc0Qpk=Kn0ffvUNoTzbCSFFUoL3BEjy-0WQ@mail.gmail.com>
+References: <CAENMwEA3VMTOhEHmc0Qpk=Kn0ffvUNoTzbCSFFUoL3BEjy-0WQ@mail.gmail.com>
+Message-ID: <CAENMwEAz8Xpgi1S82svQ4fd6jxZveSXATA13+1WjfM3H+8_cwQ@mail.gmail.com>
+
+/*Venkatesh K <kaevee at gmail.com>*/ wrote:
+
+> Why don't you revisit the postauthproxy use 127.0.0.1/3128.
+
+when I use 127.0.0.1 as postauthproxy, i can't see log in
+/var/squid/access.log
+
+(consider that when I set postauthproxy=127.0.0.1, I modified also
+squid.conf from this:
+
+http_port 10.0.0.1:3128 transparent
+
+to this
+
+http_port 127.0.0.1:3128 transparent
+
+unlike the previous case, the rule that blocks Squid's traffic is the
+last one (#6) of FORWARD chain of filter table (see rules
+below). So to allow the traffic I should  insert this new rule:
+
+iptables -I FORWARD 6 -i eth0 -j ACCEPT
+
+This works, but as i said before, I can't see any log
+on /var/log/squid/access.log, so I don't know if Squid is
+processing the traffic (and I'm doing all this only to have
+Squid logs)!
+So if I use 10.0.0.1 as POSTAUTHPROXY, I get a security hole; if I use
+127.0.0.1 I can't get traffic log.
+In both case I have to add a rule to make all working POSTAUTHPROXY
+(unlike of what David Bird wrote).
+
+> Make sure your firewall rules don't block input traffic from/to lo0.
+
+Why my firewall should do this?
+However, to try I added the following rules
+
+iptables -I INPUT -i lo -j ACCEPT
+iptables -I OUTPUT -o lo -j ACCEPT
+iptables -I FORWARD -i lo -j ACCEPT
+iptables -I FORWARD -o lo -j ACCEPT
+
+but nothing changes...
+
+I know I'm doing some mistake, but I can't understand which...
+
+This is the firewall as coovachilli did it, with no rules added:
+
+--->>> FILTER <<<---
+
+Chain INPUT (policy ACCEPT 339 packets, 19593 bytes)
+num pkts bytes target prot opt in out source destination
+1 3 458 DROP all -- eth0 * 0.0.0.0/0 0.0.0.0/0
+2 0 0 ACCEPT icmp -- tun0 * 0.0.0.0/0 10.0.0.1
+3 2 130 ACCEPT udp -- tun0 * 0.0.0.0/0 10.0.0.1 udp dpt:53
+4 0 0 ACCEPT udp -- tun0 * 0.0.0.0/0 10.0.0.1 udp dpts:67:68
+5 0 0 ACCEPT udp -- tun0 * 0.0.0.0/0 255.255.255.255 udp dpts:67:68
+6 0 0 ACCEPT tcp -- tun0 * 0.0.0.0/0 10.0.0.1 tcp dpt:4990
+7 0 0 ACCEPT tcp -- tun0 * 0.0.0.0/0 10.0.0.1 tcp dpt:3990
+8 0 0 DROP all -- tun0 * 0.0.0.0/0 10.0.0.1
+
+Chain FORWARD (policy ACCEPT 0 packets, 0 bytes)
+num pkts bytes target prot opt in out source destination
+1 0 0 DROP all -- tun0 !eth1 0.0.0.0/0 0.0.0.0/0
+2 18 1088 TCPMSS tcp -- * * 0.0.0.0/0 0.0.0.0/0 tcp flags:0x06/0x02
+TCPMSS clamp to PMTU
+3 5 260 ACCEPT all -- * tun0 0.0.0.0/0 0.0.0.0/0
+4 5 200 ACCEPT all -- tun0 * 0.0.0.0/0 0.0.0.0/0
+5 0 0 DROP all -- * eth0 0.0.0.0/0 0.0.0.0/0
+6 23 1468 DROP all -- eth0 * 0.0.0.0/0 0.0.0.0/0 <<< *
+* THIS ONE DROPS ME IF I USE 127.0.0.1 as POSTAUTHPROXY
+
+Chain OUTPUT (policy ACCEPT 323 packets, 78326 bytes)
+num pkts bytes target prot opt in out source destination
+
+--->>> NAT <<<---
+
+Chain PREROUTING (policy ACCEPT 24 packets, 1776 bytes)
+num pkts bytes target prot opt in out source destination
+
+Chain POSTROUTING (policy ACCEPT 6 packets, 496 bytes)
+num pkts bytes target prot opt in out source destination
+
+Chain OUTPUT (policy ACCEPT 6 packets, 496 bytes)
+num pkts bytes target prot opt in out source destination
+
+--->>> MANGLE <<<---
+
+Chain PREROUTING (policy ACCEPT 377 packets, 22109 bytes)
+num pkts bytes target prot opt in out source destination
+
+Chain INPUT (policy ACCEPT 344 packets, 20181 bytes)
+num pkts bytes target prot opt in out source destination
+
+Chain FORWARD (policy ACCEPT 33 packets, 1928 bytes)
+num pkts bytes target prot opt in out source destination
+1 18 1088 TCPMSS tcp -- * * 0.0.0.0/0 0.0.0.0/0 tcp flags:0x06/0x02
+TCPMSS clamp to PMTU
+
+Chain OUTPUT (policy ACCEPT 323 packets, 78326 bytes)
+num pkts bytes target prot opt in out source destination
+
+Chain POSTROUTING (policy ACCEPT 333 packets, 78786 bytes)
+num pkts bytes target prot opt in out source destination
+
+
+-- 
+GP
+
+From kaevee at gmail.com  Sun May 20 17:11:51 2012
+From: kaevee at gmail.com (Venkatesh K)
+Date: Sun, 20 May 2012 22:41:51 +0530
+Subject: [Chilli] Coovachilli and Squid Transparent on the same host
+In-Reply-To: <CAENMwEAz8Xpgi1S82svQ4fd6jxZveSXATA13+1WjfM3H+8_cwQ@mail.gmail.com>
+References: <CAENMwEA3VMTOhEHmc0Qpk=Kn0ffvUNoTzbCSFFUoL3BEjy-0WQ@mail.gmail.com>
+	<CAENMwEAz8Xpgi1S82svQ4fd6jxZveSXATA13+1WjfM3H+8_cwQ@mail.gmail.com>
+Message-ID: <CAE=_RaVVQNSXQPUYnkwofkfZX9VEh+h7P8fj0mSP5_uyxqjqRA@mail.gmail.com>
+
+Let's take one step at a time.
+
+1. Setup Postauthproxy to IP address of eth0 and port 3128
+2. Make sure you have added the chilli network to squid ACL
+3. Disable the firewall to make sure the packets are not dropped in firewall
+
+You can use "tcpdump -i eth0 port 3128" to check whether coova-chilli is
+forwarding the packets.
+
+Regards,
+
+Venkatesh. K
+
+
+On Sun, May 20, 2012 at 9:53 PM, Germano Paciocco <
+germano.paciocco at gmail.com> wrote:
+
+> /*Venkatesh K <kaevee at gmail.com>*/ wrote:
+>
+> > Why don't you revisit the postauthproxy use 127.0.0.1/3128.
+>
+> when I use 127.0.0.1 as postauthproxy, i can't see log in
+> /var/squid/access.log
+>
+> (consider that when I set postauthproxy=127.0.0.1, I modified also
+> squid.conf from this:
+>
+> http_port 10.0.0.1:3128 transparent
+>
+> to this
+>
+> http_port 127.0.0.1:3128 transparent
+>
+> unlike the previous case, the rule that blocks Squid's traffic is the
+> last one (#6) of FORWARD chain of filter table (see rules
+> below). So to allow the traffic I should  insert this new rule:
+>
+> iptables -I FORWARD 6 -i eth0 -j ACCEPT
+>
+> This works, but as i said before, I can't see any log
+> on /var/log/squid/access.log, so I don't know if Squid is
+> processing the traffic (and I'm doing all this only to have
+> Squid logs)!
+> So if I use 10.0.0.1 as POSTAUTHPROXY, I get a security hole; if I use
+> 127.0.0.1 I can't get traffic log.
+> In both case I have to add a rule to make all working POSTAUTHPROXY
+> (unlike of what David Bird wrote).
+>
+> > Make sure your firewall rules don't block input traffic from/to lo0.
+>
+> Why my firewall should do this?
+> However, to try I added the following rules
+>
+> iptables -I INPUT -i lo -j ACCEPT
+> iptables -I OUTPUT -o lo -j ACCEPT
+> iptables -I FORWARD -i lo -j ACCEPT
+> iptables -I FORWARD -o lo -j ACCEPT
+>
+> but nothing changes...
+>
+> I know I'm doing some mistake, but I can't understand which...
+>
+> This is the firewall as coovachilli did it, with no rules added:
+>
+> --->>> FILTER <<<---
+>
+> Chain INPUT (policy ACCEPT 339 packets, 19593 bytes)
+> num pkts bytes target prot opt in out source destination
+> 1 3 458 DROP all -- eth0 * 0.0.0.0/0 0.0.0.0/0
+> 2 0 0 ACCEPT icmp -- tun0 * 0.0.0.0/0 10.0.0.1
+> 3 2 130 ACCEPT udp -- tun0 * 0.0.0.0/0 10.0.0.1 udp dpt:53
+> 4 0 0 ACCEPT udp -- tun0 * 0.0.0.0/0 10.0.0.1 udp dpts:67:68
+> 5 0 0 ACCEPT udp -- tun0 * 0.0.0.0/0 255.255.255.255 udp dpts:67:68
+> 6 0 0 ACCEPT tcp -- tun0 * 0.0.0.0/0 10.0.0.1 tcp dpt:4990
+> 7 0 0 ACCEPT tcp -- tun0 * 0.0.0.0/0 10.0.0.1 tcp dpt:3990
+> 8 0 0 DROP all -- tun0 * 0.0.0.0/0 10.0.0.1
+>
+> Chain FORWARD (policy ACCEPT 0 packets, 0 bytes)
+> num pkts bytes target prot opt in out source destination
+> 1 0 0 DROP all -- tun0 !eth1 0.0.0.0/0 0.0.0.0/0
+> 2 18 1088 TCPMSS tcp -- * * 0.0.0.0/0 0.0.0.0/0 tcp flags:0x06/0x02
+> TCPMSS clamp to PMTU
+> 3 5 260 ACCEPT all -- * tun0 0.0.0.0/0 0.0.0.0/0
+> 4 5 200 ACCEPT all -- tun0 * 0.0.0.0/0 0.0.0.0/0
+> 5 0 0 DROP all -- * eth0 0.0.0.0/0 0.0.0.0/0
+> 6 23 1468 DROP all -- eth0 * 0.0.0.0/0 0.0.0.0/0 <<< *
+> * THIS ONE DROPS ME IF I USE 127.0.0.1 as POSTAUTHPROXY
+>
+> Chain OUTPUT (policy ACCEPT 323 packets, 78326 bytes)
+> num pkts bytes target prot opt in out source destination
+>
+> --->>> NAT <<<---
+>
+> Chain PREROUTING (policy ACCEPT 24 packets, 1776 bytes)
+> num pkts bytes target prot opt in out source destination
+>
+> Chain POSTROUTING (policy ACCEPT 6 packets, 496 bytes)
+> num pkts bytes target prot opt in out source destination
+>
+> Chain OUTPUT (policy ACCEPT 6 packets, 496 bytes)
+> num pkts bytes target prot opt in out source destination
+>
+> --->>> MANGLE <<<---
+>
+> Chain PREROUTING (policy ACCEPT 377 packets, 22109 bytes)
+> num pkts bytes target prot opt in out source destination
+>
+> Chain INPUT (policy ACCEPT 344 packets, 20181 bytes)
+> num pkts bytes target prot opt in out source destination
+>
+> Chain FORWARD (policy ACCEPT 33 packets, 1928 bytes)
+> num pkts bytes target prot opt in out source destination
+> 1 18 1088 TCPMSS tcp -- * * 0.0.0.0/0 0.0.0.0/0 tcp flags:0x06/0x02
+> TCPMSS clamp to PMTU
+>
+> Chain OUTPUT (policy ACCEPT 323 packets, 78326 bytes)
+> num pkts bytes target prot opt in out source destination
+>
+> Chain POSTROUTING (policy ACCEPT 333 packets, 78786 bytes)
+> num pkts bytes target prot opt in out source destination
+>
+>
+> --
+> GP
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20120520/ff2f2aa7/attachment.html>
+
+From germano.paciocco at gmail.com  Sun May 20 18:10:52 2012
+From: germano.paciocco at gmail.com (Germano Paciocco)
+Date: Sun, 20 May 2012 20:10:52 +0200
+Subject: [Chilli] Coovachilli and Squid Transparent on the same host
+Message-ID: <CAENMwEBfSx9j6E+njNKBmjnjOGakn=3-=-CeAQGKHwA+6YZbhQ@mail.gmail.com>
+
+First, many thanks for your precious support
+
+/*Venkatesh K <kaevee at gmail.com>*/ wrote:
+
+> 1. Setup Postauthproxy to IP address of eth0 and port 3128
+
+You gave me an idea that made me save the day :)
+
+First of all, I noticed that if I set up a IP adress on the physical
+network interface eth0, once coovachilli starts and raises up tun0,
+eth0 becomes unnumbered, so I was using the following interface file
+(debian):
+
+auto lo
+iface lo inet loopback
+
+# LAN
+auto eth0
+
+# WAN
+allow-hotplug eth1
+auto eth1
+iface eth1 inet static
+	address 192.168.196.100
+	netmask 255.255.255.0
+	gateway 192.168.196.1
+
+Now I set an address for the physical interface after having started
+coovachilli:
+
+# /etc/init.d/chilli starts && ifconfig eth0 172.16.0.1 netmask 255.255.255.0
+
+and set Squid to listen on 172.16.0.1
+
+http_port 172.16.0.1:3128 transparent
+
+now it is working as I wanted... but I have to big doubt:
+
+1) Maybe Squid does not work well when listening on the loopback?
+It is a known issue?
+2) Why coovachilli sets physical HS interface unnumbered?
+Is there a way to avoid this, and so avoid manual set of IP address after
+coovachilli start?
+I think it shouldn't give security problem, because if a client sets an
+eth0's class IP on his NIC (172.16.0.x in my case), he should not be able
+to surf due the #8 rule of INPUT chain (see one of my other message).
+
+-- 
+GP
+
+From david at dkxl.co.uk  Mon May 21 08:29:24 2012
+From: david at dkxl.co.uk (=?windows-1252?Q?David_Harrold?=)
+Date: Mon, 21 May 2012 09:29:24 +0100
+Subject: [Chilli] Coovachilli and Squid Transparent on the same host
+In-Reply-To: <mailman.1.1337515202.25228.chilli@coova.org>
+References: <mailman.1.1337515202.25228.chilli@coova.org>
+Message-ID: <vmime.4fb9fce4.16a3.1cc15835d985ff93@dkxllaa2.miniserver.com>
+
+? 
+
+You can use a mangle entry to prevent unauthenticated users having access to squid.
+
+?
+
+I use this combination of iptables rules:
+
+?
+
+#Redirect all non-local http traffic to squid
+iptables -A PREROUTING -t nat -s $CLIENT_NET -p tcp --dport 80 ! -d $CLIENT_NET -j REDIRECT --to-port 3128
+
+?
+
+#Block direct external access to the internal receiving port. This has to be done in the mangle part of iptables 
+
+#before NAT happens so that intercepted traffic does not get dropped. 
+iptables -A PREROUTING -t mangle -p tcp --dport 3128 -j DROP
+
+
+#Only allow client access to the squid intercept port from tun0, ie AFTER its been through the chilli gatekeeper
+iptables -I INPUT -i tun0 -p tcp --dport 3128? -j ACCEPT?? 
+
+?
+
+BR
+
+-David
+
+?
+
+?
+Maybe I'm close to the goal: ?if I use postauthproxy rather than redirect
+iptables rules, and I set 10.0.0.1 in the config file instead of 127.0.0.1 as
+you suggested, my traffic is dropped by the rule #8 in the INPUT chain
+in ?filter table!
+
+Chain INPUT (policy ACCEPT 77 packets, 5364 bytes)
+num pkts bytes target prot opt in out source destination
+1 139 19658 DROP all -- eth0 * 0.0.0.0/0 0.0.0.0/0
+2 0 0 ACCEPT icmp -- tun0 * 0.0.0.0/0 10.0.0.1
+3 1 82 ACCEPT udp -- tun0 * 0.0.0.0/0 10.0.0.1 udp dpt:53
+4 0 0 ACCEPT udp -- tun0 * 0.0.0.0/0 10.0.0.1 udp dpts:67:68
+5 0 0 ACCEPT udp -- tun0 * 0.0.0.0/0 255.255.255.255 udp dpts:67:68
+6 77 9558 ACCEPT tcp -- tun0 * 0.0.0.0/0 10.0.0.1 tcp dpt:4990
+7 80 11894 ACCEPT tcp -- tun0 * 0.0.0.0/0 10.0.0.1 tcp dpt:3990
+8 14 896 DROP all -- tun0 * 0.0.0.0/0 10.0.0.1 <<< THIS ONE DROPS SQUID!
+
+If I add this rule
+iptables -I INPUT 8 -i tun0 -p tcp -m tcp --dport 3128 -j ACCEPT
+
+all works fine, but users will be able to surf setting explicit proxy,
+bypassing authentication!!!!!
+
+This is the reason why I find more logic to set postauthproxy to 127.0.0.1,
+but doing this, i can't get any way traffic processed by Squid...
+
+Any idea?
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20120521/f0c53e73/attachment-0001.html>
+
+From tr23101 at yahoo.com  Thu May 24 03:24:32 2012
+From: tr23101 at yahoo.com (Tarik)
+Date: Wed, 23 May 2012 20:24:32 -0700 (PDT)
+Subject: [Chilli] PostAuhtProxy with exception
+Message-ID: <1337829872.30878.YahooMailNeo@web113316.mail.gq1.yahoo.com>
+
+Hello
+is it possible to configure postauthproxy with exception of urls or IPs?
+
+Because, I see that all http requests, including to the destination tun0 IP also are going through proxy, after authentication.?
+
+From maxxer at ufficyo.com  Wed May 30 15:20:07 2012
+From: maxxer at ufficyo.com (Lorenzo Milesi)
+Date: Wed, 30 May 2012 17:20:07 +0200 (CEST)
+Subject: [Chilli] Problem with chillilibary && WISPr-Session-Terminate-time
+In-Reply-To: <819554487.873308.1338390909901.JavaMail.root@quaglia>
+Message-ID: <1325899240.873363.1338391207461.JavaMail.root@quaglia>
+
+Hi.
+
+I'm doing some tests using ChilliLibrary, and I'm experiencing some problems.
+I'm using CoovaAP Firmware - version 1.0 beta.12.
+I enter user informations into the radius database, then perform login, but it seems that the
+WISPr-Session-Terminate-Time	:=	2012-05-30T17:01:54
+parameter is ignored!
+Once I'm logged in I never get disconected!
+
+Is this normal? or do I have something wrong in my configuration?
+thanks
+-- 
+Lorenzo Milesi - lorenzo.milesi at yetopen.it
+
+GPG/PGP Key-Id: 0xE704E230 - http://keyserver.linux.it
+
+
+From tr23101 at yahoo.com  Wed May 30 15:37:48 2012
+From: tr23101 at yahoo.com (Tariq Ramadan)
+Date: Wed, 30 May 2012 08:37:48 -0700 (PDT)
+Subject: [Chilli] Problem with chillilibary &&
+	WISPr-Session-Terminate-time
+In-Reply-To: <1325899240.873363.1338391207461.JavaMail.root@quaglia>
+References: <819554487.873308.1338390909901.JavaMail.root@quaglia>
+	<1325899240.873363.1338391207461.JavaMail.root@quaglia>
+Message-ID: <1338392268.71750.YahooMailNeo@web113309.mail.gq1.yahoo.com>
+
+I think you shouldn't use leading zero in the month and day of the date
+Try as 2012-5-30T17:01:54
+
+
+----- Original Message -----
+From: Lorenzo Milesi <maxxer at ufficyo.com>
+To: chilli at coova.org
+Cc: 
+Sent: Wednesday, May 30, 2012 6:20 PM
+Subject: [Chilli] Problem with chillilibary && WISPr-Session-Terminate-time
+
+Hi.
+
+I'm doing some tests using ChilliLibrary, and I'm experiencing some problems.
+I'm using CoovaAP Firmware - version 1.0 beta.12.
+I enter user informations into the radius database, then perform login, but it seems that the
+WISPr-Session-Terminate-Time??? :=??? 2012-05-30T17:01:54
+parameter is ignored!
+Once I'm logged in I never get disconected!
+
+Is this normal? or do I have something wrong in my configuration?
+thanks
+-- 
+Lorenzo Milesi - lorenzo.milesi at yetopen.it
+
+GPG/PGP Key-Id: 0xE704E230 - http://keyserver.linux.it
+
+_______________________________________________
+Chilli mailing list
+Chilli at coova.org
+http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+
+From maxxer at ufficyo.com  Wed May 30 15:45:32 2012
+From: maxxer at ufficyo.com (Lorenzo Milesi)
+Date: Wed, 30 May 2012 17:45:32 +0200 (CEST)
+Subject: [Chilli] Problem with chillilibary &&
+ WISPr-Session-Terminate-time
+In-Reply-To: <1338392268.71750.YahooMailNeo@web113309.mail.gq1.yahoo.com>
+Message-ID: <1634509065.873604.1338392732516.JavaMail.root@quaglia>
+
+> I think you shouldn't use leading zero in the month and day of the
+> date
+> Try as 2012-5-30T17:01:54
+
+thanks but I've other users working fine with leading zeros, so it shouldn't be this.
+
+
+-- 
+Lorenzo Milesi - lorenzo.milesi at yetopen.it
+
+GPG/PGP Key-Id: 0xE704E230 - http://keyserver.linux.it
+
+
+
+From maxxer at ufficyo.com  Wed May 30 16:09:56 2012
+From: maxxer at ufficyo.com (Lorenzo Milesi)
+Date: Wed, 30 May 2012 18:09:56 +0200 (CEST)
+Subject: [Chilli] Problem with chillilibary &&
+	WISPr-Session-Terminate-time
+In-Reply-To: <1325899240.873363.1338391207461.JavaMail.root@quaglia>
+Message-ID: <1288301313.873817.1338394195034.JavaMail.root@quaglia>
+
+> I'm using CoovaAP Firmware - version 1.0 beta.12.
+
+Looks like there's something wrong with CoovaAP, I tried a traditional login and I'm not logged out upon reaching the defined expire time :(
+Am I missing some setting in CoovaAP?
+-- 
+Lorenzo Milesi - lorenzo.milesi at yetopen.it
+
+GPG/PGP Key-Id: 0xE704E230 - http://keyserver.linux.it
+
+
+
+From maxxer at ufficyo.com  Wed May 30 16:12:19 2012
+From: maxxer at ufficyo.com (Lorenzo Milesi)
+Date: Wed, 30 May 2012 18:12:19 +0200 (CEST)
+Subject: [Chilli] Problem with chillilibary &&
+	WISPr-Session-Terminate-time
+In-Reply-To: <1325899240.873363.1338391207461.JavaMail.root@quaglia>
+Message-ID: <961877479.873818.1338394338192.JavaMail.root@quaglia>
+
+> I'm using CoovaAP Firmware - version 1.0 beta.12.
+
+Looks like there's something wrong with CoovaAP, I tried a traditional login and I'm not logged out upon reaching the defined expire time :(
+Am I missing some setting in CoovaAP?
+
+thanks
+-- 
+Lorenzo Milesi - lorenzo.milesi at yetopen.it
+
+GPG/PGP Key-Id: 0xE704E230 - http://keyserver.linux.it
+
+
+

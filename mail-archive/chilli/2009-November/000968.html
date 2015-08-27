@@ -1,0 +1,219 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] Ippool exhaustion bug?
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Ippool%20exhaustion%20bug%3F&In-Reply-To=%3C4AFBC376.1070401%40gmail.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000953.html">
+   <LINK REL="Next"  HREF="000974.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] Ippool exhaustion bug?</H1>
+    <B>Gunther Mayer</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Ippool%20exhaustion%20bug%3F&In-Reply-To=%3C4AFBC376.1070401%40gmail.com%3E"
+       TITLE="[Chilli] Ippool exhaustion bug?">gunther.mayer at googlemail.com
+       </A><BR>
+    <I>Thu Nov 12 08:12:38 UTC 2009</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000953.html">[Chilli] Ippool exhaustion bug?
+</A></li>
+        <LI>Next message: <A HREF="000974.html">[Chilli] Ippool exhaustion bug?
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#968">[ date ]</a>
+              <a href="thread.html#968">[ thread ]</a>
+              <a href="subject.html#968">[ subject ]</a>
+              <a href="author.html#968">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Ok, seeing that nobody seems to have similar problems I'm now posting my 
+findings so far: There really /is/ a problem in the chilli code though I 
+haven't been able to locate the precise spot where this occurs. So far 
+I've carefully inserted / adjusted a whole bunch of log_err(0, ...) 
+statements in ippool.c and chilli.c and have the following sample output 
+for you, based on the same sample configuration as in my original email 
+below (dhcpstart 10.0.0.129, dhcpend 10.0.0.133). It happened after a 
+fresh restart of chilli, presumably when the client (my laptop) still 
+had a valid lease cached locally:
+
+2009-11-12T09:47:54+02:00 41.144.95.148 coova-chilli[1283]: 
+CoovaChilli(ChilliSpot) 1.0.14. Copyright 2002-2005 Mondru AB. Licensed 
+under GPL. Copyright 2006-2009 Coova Technologies &lt;<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">support at coova.com</A>&gt;. 
+Licensed under GPL. See <A HREF="http://coova.org/">http://coova.org/</A> for details.
+2009-11-12T09:47:54+02:00 41.144.95.148 coova-chilli[1283]: tun.c: 497: 
+TX queue length set to 100
+2009-11-12T09:47:54+02:00 41.144.95.148 kernel: device br-lan entered 
+promiscuous mode
+2009-11-12T09:47:56+02:00 41.144.95.148 coova-chilli[1283]: chilli.c: 
+1418: cb_tun_ind: trying to allocate newip
+2009-11-12T09:47:56+02:00 41.144.95.148 coova-chilli[1283]: ippool.c: 
+334: Requesting new static ip: 10.0.0.131
+2009-11-12T09:47:56+02:00 41.144.95.148 coova-chilli[1283]: ippool.c: 
+427: In ippool_newip just allocated dynamic address from pool:
+2009-11-12T09:47:56+02:00 41.144.95.148 coova-chilli[1283]: ippool.c: 
+34: Listsize 132, Firstdyn 0, Lastdyn 3, Firststat 4, Laststat 131
+2009-11-12T09:47:56+02:00 41.144.95.148 coova-chilli[1283]: ippool.c: 
+43: Unit 0 inuse 0 prev 1431469324 next 1 addr 10.0.0.129
+2009-11-12T09:47:56+02:00 41.144.95.148 coova-chilli[1283]: ippool.c: 
+43: Unit 1 inuse 0 prev 0 next 3 addr 10.0.0.130
+2009-11-12T09:47:56+02:00 41.144.95.148 coova-chilli[1283]: ippool.c: 
+43: Unit 2 inuse 1 prev 1431469324 next 1431469324 addr 10.0.0.131
+2009-11-12T09:47:56+02:00 41.144.95.148 coova-chilli[1283]: ippool.c: 
+43: Unit 3 inuse 0 prev 1 next 1431469324 addr 10.0.0.132
+
+The above shows that cb_tun_ind() function allocates a &quot;static&quot; ip 
+(.131) from the dynamic pool BEFORE the dhcp request is even registered:
+
+2009-11-12T09:48:00+02:00 41.144.95.148 coova-chilli[1283]: chilli.c: 
+3015: New DHCP request from MAC=00-11-22-33-44-55
+2009-11-12T09:48:00+02:00 41.144.95.148 coova-chilli[1283]: ippool.c: 
+334: Requesting new static ip: 0.0.0.0
+2009-11-12T09:48:00+02:00 41.144.95.148 coova-chilli[1283]: ippool.c: 
+334: Requesting new dynamic ip: 0.0.0.0
+2009-11-12T09:48:00+02:00 41.144.95.148 coova-chilli[1283]: ippool.c: 
+427: In ippool_newip just allocated dynamic address from pool:
+2009-11-12T09:48:00+02:00 41.144.95.148 coova-chilli[1283]: ippool.c: 
+34: Listsize 132, Firstdyn 1, Lastdyn 3, Firststat 4, Laststat 131
+2009-11-12T09:48:00+02:00 41.144.95.148 coova-chilli[1283]: ippool.c: 
+43: Unit 0 inuse 1 prev 1431469324 next 1431469324 addr 10.0.0.129
+2009-11-12T09:48:00+02:00 41.144.95.148 coova-chilli[1283]: ippool.c: 
+43: Unit 1 inuse 0 prev 1431469324 next 3 addr 10.0.0.130
+2009-11-12T09:48:00+02:00 41.144.95.148 coova-chilli[1283]: ippool.c: 
+43: Unit 2 inuse 1 prev 1431469324 next 1431469324 addr 10.0.0.131
+2009-11-12T09:48:00+02:00 41.144.95.148 coova-chilli[1283]: ippool.c: 
+43: Unit 3 inuse 0 prev 1 next 1431469324 addr 10.0.0.132
+
+Somehow the normal log message &quot;Client MAC=00-11-22-33-44-55 assigned IP 
+10.0.0.129&quot; is missing but you can tell that only in the above piece did 
+the real dynamic ip allocation happen. I've set &quot;lease 60&quot; in my 
+chilli.conf for debugging purposes so when the ip wasn't renewed in time 
+1.5 min later chilli releases the lease and frees the dynamic ip:
+
+2009-11-12T09:49:24+02:00 41.144.95.148 coova-chilli[1283]: chilli.c: 
+3146: DHCP addr released by MAC=00-11-22-33-44-55 IP=10.0.0.129
+2009-11-12T09:49:24+02:00 41.144.95.148 coova-chilli[1283]: ippool.c: 
+504: In ippool_freeip just reinserted ip into list of unused dynamic ips:
+2009-11-12T09:49:24+02:00 41.144.95.148 coova-chilli[1283]: ippool.c: 
+34: Listsize 132, Firstdyn 1, Lastdyn 0, Firststat 4, Laststat 131
+2009-11-12T09:49:24+02:00 41.144.95.148 coova-chilli[1283]: ippool.c: 
+43: Unit 0 inuse 0 prev 3 next 1431469324 addr 10.0.0.129
+2009-11-12T09:49:24+02:00 41.144.95.148 coova-chilli[1283]: ippool.c: 
+43: Unit 1 inuse 0 prev 1431469324 next 3 addr 10.0.0.130
+2009-11-12T09:49:24+02:00 41.144.95.148 coova-chilli[1283]: ippool.c: 
+43: Unit 2 inuse 1 prev 1431469324 next 1431469324 addr 10.0.0.131
+2009-11-12T09:49:24+02:00 41.144.95.148 coova-chilli[1283]: ippool.c: 
+43: Unit 3 inuse 0 prev 1 next 0 addr 10.0.0.132
+
+10.0.0.129 has now been successfully freed and returned to the pool 
+(inuse 0). But the 10.0.0.131 address assigned by cb_tun_ind remains 
+there until the end of days, slowly filling up the pool until it is 
+exhausted and nobody can use the hotspot anymore.
+
+Please could somebody (David?) with better knowledge of the source look 
+into chilli.c and tell me where the bug is? It will take me forever to 
+track it down because my C skills are not that great. Attached is the 
+patch relative to 1.0.14 on to enable the above log messages so you can 
+reproduce this yourself (just use the below config snippets together 
+with &quot;lease 60&quot;, start chilli, restart and check out the logs).
+
+Thanks,
+
+Gunther
+
+Gunther Mayer wrote:
+&gt;<i> Hi guys,
+</I>&gt;<i>
+</I>&gt;<i> I've stumbled across the following VERY frustrating problem which is 
+</I>&gt;<i> giving me and hundreds of our customers endless grey hair. I have a 
+</I>&gt;<i> uamanyip setup with a /24 net, the first /25 subnet of which is for 
+</I>&gt;<i> statip and the rest for dynip (implicitly) but specified with 
+</I>&gt;<i> dhcpstart and dhcpend for flexibility. After quite a long time, when 
+</I>&gt;<i> most ip's have been recycled a fair number of times chilli refuses to 
+</I>&gt;<i> hand out any more ip addresses dynamically and chokes with the 
+</I>&gt;<i> following appearing ad infinitum in the logs:
+</I>&gt;<i>
+</I>&gt;<i> 2009-11-09T01:00:14+02:00 coova-chilli[1378]: chilli.c: 3012: New DHCP 
+</I>&gt;<i> request from MAC=xx-xx-xx-xx-xx-xx
+</I>&gt;<i> 2009-11-09T01:00:14+02:00 coova-chilli[1378]: ippool.c: 397: No more 
+</I>&gt;<i> IP addresses available
+</I>&gt;<i> 2009-11-09T01:00:14+02:00 coova-chilli[1378]: chilli.c: 332: Failed to 
+</I>&gt;<i> allocate either static or dynamic IP address
+</I>&gt;<i>
+</I>&gt;<i> Of course reproducing my production settings would take forever (about 
+</I>&gt;<i> 127 ip addresses between dhcpstart and dhcpend) so I decided to cut it 
+</I>&gt;<i> down to the following testing example in chilli.conf:
+</I>&gt;<i>
+</I>&gt;<i> uamlisten 10.0.0.1
+</I>&gt;<i> net 10.0.0.0/24
+</I>&gt;<i> dhcpstart 129
+</I>&gt;<i> dhcpend 133
+</I>&gt;<i> statip 10.0.0.0/25
+</I>&gt;<i> uamanyip
+</I>&gt;<i>
+</I>&gt;<i> That is, 10.0.0.2-10.0.0.127 or 125 ip's are reserved for static 
+</I>&gt;<i> ip/anyip clients and 10.0.0.129-10.0.0.132 or 4 ip's for dynamic/dhcp 
+</I>&gt;<i> clients. Now to reproduce the ippool bug, connect your linux laptop 
+</I>&gt;<i> via cable to the chilli box and do something like
+</I>&gt;<i>
+</I>&gt;<i> $ dhclient eth0 # should give you 10.0.0.129 first time, then .130 and 
+</I>&gt;<i> so on
+</I>&gt;<i> $ killall dhclient
+</I>&gt;<i> $ ifconfig eth0 0.0.0.0 down
+</I>&gt;<i> $ ifconfig eth0 hw ether xx:xx:xx:xx:xx:xx+1
+</I>&gt;<i>
+</I>&gt;<i> and repeat. Of course the fifth time you do this chilli will 
+</I>&gt;<i> legitimately run out of ip addresses because it still has all the 
+</I>&gt;<i> other allocated. Until such time that they all time out so wait a bit 
+</I>&gt;<i> longer than 10 minutes and start from scratch. Unfortunately I'm no 
+</I>&gt;<i> longer able to reproduce this but I could last night, I'll figure out 
+</I>&gt;<i> an easy way in time but in the meantime, has anyone seen such problems 
+</I>&gt;<i> before? Does anyone have a suggestion?
+</I>&gt;<i>
+</I>&gt;<i> It looks strongly like some dynamic ip addresses not being properly 
+</I>&gt;<i> released in ippool.c but I haven't been able to figure it out.
+</I>&gt;<i> This bug has been present in 1.0.13(r199) and 1.0.14(r208), the two 
+</I>&gt;<i> I've tested with so far.
+</I>&gt;<i>
+</I>&gt;<i> Thanks,
+</I>&gt;<i>
+</I>&gt;<i> Gunther
+</I>&gt;<i>
+</I>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: &lt;<A HREF="http://lists.coova.org/pipermail/chilli/attachments/20091112/5cb3b2c3/attachment-0001.htm">http://lists.coova.org/pipermail/chilli/attachments/20091112/5cb3b2c3/attachment-0001.htm</A>&gt;
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: 1.0.14_ippool_debug.patch
+Type: text/x-diff
+Size: 5078 bytes
+Desc: not available
+URL: &lt;<A HREF="http://lists.coova.org/pipermail/chilli/attachments/20091112/5cb3b2c3/attachment-0001.patch">http://lists.coova.org/pipermail/chilli/attachments/20091112/5cb3b2c3/attachment-0001.patch</A>&gt;
+</PRE>
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000953.html">[Chilli] Ippool exhaustion bug?
+</A></li>
+	<LI>Next message: <A HREF="000974.html">[Chilli] Ippool exhaustion bug?
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#968">[ date ]</a>
+              <a href="thread.html#968">[ thread ]</a>
+              <a href="subject.html#968">[ subject ]</a>
+              <a href="author.html#968">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

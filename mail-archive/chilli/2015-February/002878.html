@@ -1,0 +1,154 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] Apparent intrusion attempt on AP running coova-chilli 1.2.9, ways to mitigate?
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Apparent%20intrusion%20attempt%20on%20AP%20running%20coova-chilli%0A%201.2.9%2C%20ways%20to%20mitigate%3F&In-Reply-To=%3CCADSh-SNMXbAoh690tRgWZcM2u4wS6gVy7rjO_M0DN0RgPaGfEQ%40mail.gmail.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="002877.html">
+   <LINK REL="Next"  HREF="002879.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] Apparent intrusion attempt on AP running coova-chilli 1.2.9, ways to mitigate?</H1>
+    <B>Ben West</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Apparent%20intrusion%20attempt%20on%20AP%20running%20coova-chilli%0A%201.2.9%2C%20ways%20to%20mitigate%3F&In-Reply-To=%3CCADSh-SNMXbAoh690tRgWZcM2u4wS6gVy7rjO_M0DN0RgPaGfEQ%40mail.gmail.com%3E"
+       TITLE="[Chilli] Apparent intrusion attempt on AP running coova-chilli 1.2.9, ways to mitigate?">ben at gowasabi.net
+       </A><BR>
+    <I>Sun Feb 15 22:57:55 UTC 2015</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="002877.html">[Chilli] Apparent intrusion attempt on AP running coova-chilli 1.2.9, ways to mitigate?
+</A></li>
+        <LI>Next message: <A HREF="002879.html">[Chilli] Apparent intrusion attempt on AP running coova-chilli 1.2.9, ways to mitigate?
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2878">[ date ]</a>
+              <a href="thread.html#2878">[ thread ]</a>
+              <a href="subject.html#2878">[ subject ]</a>
+              <a href="author.html#2878">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Thank you, Xavier, for the tip about possible API calls from a wayward
+Android client.  I also couldn't Google anything meaningful about the
+filenames&quot;apkupdate.php,&quot; etc and assumed the client was malicious.
+
+Are there options for dealing with chilli clients who open many many many
+simultaneous connections, for whatever reason?  For example use iptables
+connlimit module to limit the number of new connections per unit time on
+unauthenticated clients?
+<A HREF="https://unix.stackexchange.com/questions/139285/limit-max-connections-per-ip-address-and-new-connections-per-second-with-iptable">https://unix.stackexchange.com/questions/139285/limit-max-connections-per-ip-address-and-new-connections-per-second-with-iptable</A>
+
+I'd hate to apply filters that could potentially impede portal
+authentication for all clients, but having a small handful of misbehaving
+clients (whether intentional or not) crash the AP is also problematic.
+
+P.S. Thank you also for your answer to my question about chilli_query in
+the previous thread!
+
+
+On Sun, Feb 15, 2015 at 4:13 PM, Xabier Oneca -- xOneca &lt;<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">xoneca at gmail.com</A>&gt;
+wrote:
+
+&gt;<i> Hello Ben,
+</I>&gt;<i>
+</I>&gt;<i> 2015-02-15 22:35 GMT+01:00 Ben West &lt;<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">ben at gowasabi.net</A>&gt;:
+</I>&gt;<i> &gt; A Nanostation M2 running Openwrt AA with coova-chilli v1.2.9 stopped its
+</I>&gt;<i> &gt; periodic heartbeat, and I had a chance to SSH in locally w/in 1 hour of
+</I>&gt;<i> the
+</I>&gt;<i> &gt; last heartbeat.
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; I didn't get a chance to inspect the APs local state very well before
+</I>&gt;<i> having
+</I>&gt;<i> &gt; to issue a &quot;reboot -f&quot; after the initial SSH session appeared to freeze.
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; Besides, the device only have 1Mbyte of remaining free memory, I did
+</I>&gt;<i> notice
+</I>&gt;<i> &gt; these log messages from coova-chilli (trimmed and anonymized):
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; Feb 15 20:43:56 Openwrt local6.notice coova-chilli[2056]: chilli.c: 5005:
+</I>&gt;<i> &gt; Client MAC=8C-84-01-XX-XX-XX assigned IP 101.209.43.124
+</I>&gt;<i> &gt; Feb 15 20:44:16 Openwrt local6.err coova-chilli[18240]: redir.c: 3462:
+</I>&gt;<i> &gt; invalid file extension! [wwwroot/apkupdate.php]
+</I>&gt;<i> &gt; Feb 15 20:44:19 Openwrt local6.err coova-chilli[18243]: redir.c: 3462:
+</I>&gt;<i> &gt; invalid file extension! [wwwroot/xmlupdate.php]
+</I>&gt;<i> &gt; ...
+</I>&gt;<i> &gt; Feb 15 20:44:42 Openwrt local6.err coova-chilli[18283]: redir.c: 3462:
+</I>&gt;<i> &gt; invalid file extension! [getTasklist.php]
+</I>&gt;<i> &gt; Feb 15 20:44:42 Openwrt local6.err coova-chilli[18284]: redir.c: 3462:
+</I>&gt;<i> &gt; invalid file extension! [getAccountNum.php]
+</I>&gt;<i> &gt; Feb 15 20:44:46 Openwrt daemon.info hostapd: wlan0: STA
+</I>&gt;<i> 8c:84:01:XX:XX:XX
+</I>&gt;<i> &gt; IEEE 802.11: authenticated
+</I>&gt;<i> &gt; Feb 15 20:44:48 Openwrt daemon.info hostapd: wlan0: STA
+</I>&gt;<i> 8c:84:01:XX:XX:XX
+</I>&gt;<i> &gt; IEEE 802.11: authenticated
+</I>&gt;<i> &gt; Feb 15 20:44:48 Openwrt daemon.info hostapd: wlan0: STA
+</I>&gt;<i> 8c:84:01:XX:XX:XX
+</I>&gt;<i> &gt; IEEE 802.11: associated (aid 3)
+</I>&gt;<i> &gt; Feb 15 20:44:48 Openwrt daemon.info hostapd: wlan0: STA
+</I>&gt;<i> 8c:84:01:XX:XX:XX
+</I>&gt;<i> &gt; RADIUS: starting accounting session 0000002F-000001AD
+</I>&gt;<i> &gt; Feb 15 20:59:46 Openwrt local6.err coova-chilli[18919]: redir.c: 3462:
+</I>&gt;<i> &gt; invalid file extension! [getTasklist.php]
+</I>&gt;<i> &gt; ...
+</I>&gt;<i> &gt; Feb 15 20:59:49 Openwrt local6.err coova-chilli[18923]: redir.c: 3462:
+</I>&gt;<i> &gt; invalid file extension! [getTasklist2.php]
+</I>&gt;<i> &gt; ...
+</I>&gt;<i>
+</I>&gt;<i> The PHP file names seem like Android API function calls. Maybe it's
+</I>&gt;<i> some sort of Android managing software that has a web interface, and
+</I>&gt;<i> the App is making calls to it, thinking Chilli is the manager
+</I>&gt;<i> server...
+</I>&gt;<i>
+</I>&gt;<i> I googled those names, but the searches came empty.
+</I>&gt;<i>
+</I>&gt;<i> Cheers,
+</I>&gt;<i>
+</I>&gt;<i> Xabier Oneca_,,_
+</I>&gt;<i>
+</I>
+
+
+-- 
+Ben West
+<A HREF="http://gowasabi.net">http://gowasabi.net</A>
+<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">ben at gowasabi.net</A>
+314-246-9434
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: &lt;<A HREF="http://lists.coova.org/pipermail/chilli/attachments/20150215/6803e08c/attachment.html">http://lists.coova.org/pipermail/chilli/attachments/20150215/6803e08c/attachment.html</A>&gt;
+</PRE>
+
+
+
+
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="002877.html">[Chilli] Apparent intrusion attempt on AP running coova-chilli 1.2.9, ways to mitigate?
+</A></li>
+	<LI>Next message: <A HREF="002879.html">[Chilli] Apparent intrusion attempt on AP running coova-chilli 1.2.9, ways to mitigate?
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2878">[ date ]</a>
+              <a href="thread.html#2878">[ thread ]</a>
+              <a href="subject.html#2878">[ subject ]</a>
+              <a href="author.html#2878">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

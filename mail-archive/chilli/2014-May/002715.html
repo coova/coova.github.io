@@ -1,0 +1,786 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] Building Coova-Chilli with clang
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Building%20Coova-Chilli%20with%20clang&In-Reply-To=%3CCA%2BU3Mf4coSrhDJ32HzGLf6HA4B%2BDCByCH1wOAUYx_bzbJvnjPw%40mail.gmail.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="002737.html">
+   <LINK REL="Next"  HREF="002731.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] Building Coova-Chilli with clang</H1>
+    <B>Sevan / Venture37</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Building%20Coova-Chilli%20with%20clang&In-Reply-To=%3CCA%2BU3Mf4coSrhDJ32HzGLf6HA4B%2BDCByCH1wOAUYx_bzbJvnjPw%40mail.gmail.com%3E"
+       TITLE="[Chilli] Building Coova-Chilli with clang">venture37 at gmail.com
+       </A><BR>
+    <I>Fri May  9 22:53:42 UTC 2014</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="002737.html">[Chilli] CoovaChilli 1.3.1
+</A></li>
+        <LI>Next message: <A HREF="002731.html">[Chilli] Building Coova-Chilli with clang
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2715">[ date ]</a>
+              <a href="thread.html#2715">[ thread ]</a>
+              <a href="subject.html#2715">[ subject ]</a>
+              <a href="author.html#2715">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hi,
+The source code in its current state will not build when using the
+clang, the attached diff fixes that. This work is part of getting
+Coova-Chill to run on FreeBSD 10 &amp; newer however these changes affect
+all platforms not just FreeBSD so I'm posting the diff here to ask for
+testing/feedback.
+I'm currently unable to do propper testing as there is more prep work
+that needs to be done on FreeBSD so that everything is running
+correctly.
+There will also be another diff coming up which fixes the network side
+of things on FreeBSD.
+This diff is against the latest sources in the GitHub repository.
+You should test this diff if you are still using GCC as your compiler.
+
+Sevan / Venture37
+-------------- next part --------------
+diff --git a/src/dhcp.c b/src/dhcp.c
+index 023c1f7..53dd369 100644
+--- a/src/dhcp.c
++++ b/src/dhcp.c
+@@ -4131,6 +4131,64 @@ int dhcp_receive_ip(struct dhcp_ctx *ctx, uint8_t *pack, size_t len) {
+ }
+ 
+ #ifdef ENABLE_IPV6
++void check_options(int datalen, uint8_t *data, uint8_t b[256]) {
++        if (datalen &gt; 0) {
++          uint8_t t, l;
++          int i=0;
++          while (datalen &gt; 0) {
++            int dlen = -1;
++            t = data[i++]; datalen--;
++            if (!datalen) break;
++            l = data[i++]; datalen--;
++            if (!datalen) break;
++            switch(t) {
++            case 1: /* source link-layer address */
++            case 2: /* target link-layer address */
++              dlen = l * PKT_ETH_ALEN;
++              break;
++            default:
++              log_dbg(0, &quot;could not parse ICMP option&quot;);
++              datalen = 0;
++              break;
++            }
++            if (dlen &gt; 0) {
++              if (dlen &lt;= datalen) {
++                log_dbg(&quot;ICMPv6 Option %d %d %d&quot;,(int)t,(int)l,dlen);
++                memcpy(b, data + i, dlen);
++                switch(t) {
++                case 1: /* source link-layer address */
++                case 2: /* target link-layer address */
++              dlen = l * PKT_ETH_ALEN;
++              break;
++            default:
++              log_dbg(0, &quot;could not parse ICMP option&quot;);
++              datalen = 0;
++              break;
++            }
++            if (dlen &gt; 0) {
++              if (dlen &lt;= datalen) {
++                log_dbg(&quot;ICMPv6 Option %d %d %d&quot;,(int)t,(int)l,dlen);
++                memcpy(b, data + i, dlen);
++                switch(t) {
++                case 1: /* source link-layer address */
++                case 2: /* target link-layer address */
++                  log_dbg(&quot;ICMPv6 Source Link-Layer Address Option &quot;MAC_FMT,
++                          MAC_ARG(b));
++                  break;
++                default:
++                  break;
++                }
++              }
++
++              i += dlen;
++              datalen -= dlen;
++            }
++          }
++        }
++}
++}
++}
++
+ int dhcp_receive_ipv6(struct dhcp_ctx *ctx, uint8_t *pack, size_t len) {
+   struct dhcp_t *this = ctx-&gt;parent;
+   struct pkt_ethhdr_t *ethh = pkt_ethhdr(pack);
+@@ -4151,53 +4209,13 @@ int dhcp_receive_ipv6(struct dhcp_ctx *ctx, uint8_t *pack, size_t len) {
+   case ICMPv6_NEXT_HEADER:
+     {
+       int datalen = 0;
+-      uint8_t b[256], *data;
++      uint8_t b[256], *data = NULL;
+       
+       struct pkt_icmphdr_t * icmphdr = 
+ 	(struct pkt_icmphdr_t *)
+ 	(((uint8_t *)iphdr) + sizeof(struct pkt_ip6hdr_t));
+ 
+-      void check_options() {
+-	if (datalen &gt; 0) {
+-	  uint8_t t, l;
+-	  int i=0;
+-	  while (datalen &gt; 0) {
+-	    int dlen = -1;
+-	    t = data[i++]; datalen--;
+-	    if (!datalen) break;
+-	    l = data[i++]; datalen--;
+-	    if (!datalen) break;
+-	    switch(t) {
+-	    case 1: /* source link-layer address */
+-	    case 2: /* target link-layer address */
+-	      dlen = l * PKT_ETH_ALEN;
+-	      break;
+-	    default:
+-	      log_dbg(0, &quot;could not parse ICMP option&quot;);
+-	      datalen = 0;
+-	      break;
+-	    }
+-	    if (dlen &gt; 0) {
+-	      if (dlen &lt;= datalen) {
+-		log_dbg(&quot;ICMPv6 Option %d %d %d&quot;,(int)t,(int)l,dlen);
+-		memcpy(b, data + i, dlen);
+-		switch(t) {
+-		case 1: /* source link-layer address */
+-		case 2: /* target link-layer address */
+-		  log_dbg(&quot;ICMPv6 Source Link-Layer Address Option &quot;MAC_FMT,
+-			  MAC_ARG(b));
+-		  break;
+-		default:
+-		  break;
+-		}
+-	      }
+-	      
+-	      i += dlen;
+-	      datalen -= dlen;
+-	    }
+-	  }
+-	}
+-      }
++      check_options(datalen, data, b);
+ 
+       data = ((uint8_t *)icmphdr) + sizeof(struct pkt_icmphdr_t);
+       
+@@ -4231,7 +4249,7 @@ int dhcp_receive_ipv6(struct dhcp_ctx *ctx, uint8_t *pack, size_t len) {
+ 
+ 	data += 4;
+ 	datalen -= 4;
+-	check_options();
++	check_options(datalen, data, b);
+ 	
+ 	/*	  
+ 	  4.2. Router Advertisement Message Format
+@@ -4388,7 +4406,7 @@ int dhcp_receive_ipv6(struct dhcp_ctx *ctx, uint8_t *pack, size_t len) {
+ 	  data += 16;
+ 	  datalen -= 16;
+ 
+-	  check_options();
++	  check_options(datalen, data, b);
+ 	  
+ 	  memset(packet, 0, sizeof(packet));
+ 	  copy_ethproto(pack, packet);
+diff --git a/src/garden.c b/src/garden.c
+index fbc5458..65089c1 100644
+--- a/src/garden.c
++++ b/src/garden.c
+@@ -53,7 +53,8 @@ void garden_print_list(int fd, pass_through *ptlist, int ptcnt) {
+ #endif
+ 		  );
+     
+-    if (!safe_write(fd, line, strlen(line))) /* error */;
++    if (!safe_write(fd, line, strlen(line))) /* error */
++	;
+   }
+ }
+ 
+@@ -103,7 +104,8 @@ void garden_print(int fd) {
+ 		&quot;static garden (%d/%d):\n&quot;,
+ 		_options.num_pass_throughs,
+ 		MAX_PASS_THROUGHS);
+-  if (!safe_write(fd, line, strlen(line))) /* error */;
++  if (!safe_write(fd, line, strlen(line))) /* error */
++	;
+ 
+ #ifdef HAVE_PATRICIA
+   if (dhcp-&gt;ptree) {
+@@ -118,7 +120,8 @@ void garden_print(int fd) {
+ 		&quot;dynamic garden (%d/%d):\n&quot;,
+ 		dhcp-&gt;num_pass_throughs,
+ 		MAX_PASS_THROUGHS);
+-  if (!safe_write(fd, line, strlen(line))) /* error */;
++  if (!safe_write(fd, line, strlen(line))) /* error */
++	;
+   
+ #ifdef HAVE_PATRICIA
+   if (dhcp-&gt;ptree_dyn) {
+diff --git a/src/ippool.c b/src/ippool.c
+index 61a6243..3f2b883 100644
+--- a/src/ippool.c
++++ b/src/ippool.c
+@@ -501,7 +501,7 @@ int ippool_newip(struct ippool_t *this,
+     /* Find in hash table */
+     hash = ippool_hash4(addr) &amp; this-&gt;hashmask;
+     for (p = this-&gt;hash[hash]; p; p = p-&gt;nexthash) {
+-      if ((p-&gt;addr.s_addr == addr-&gt;s_addr)) {
++      if (p-&gt;addr.s_addr == addr-&gt;s_addr) {
+ 	p2 = p;
+ 	break;
+       }
+diff --git a/src/md5.c b/src/md5.c
+index 849e2f8..93c71af 100644
+--- a/src/md5.c
++++ b/src/md5.c
+@@ -140,7 +140,7 @@ void MD5Final(unsigned char digest[16], struct MD5Context *ctx)
+     MD5Transform(ctx-&gt;buf, (uint32_t *) ctx-&gt;in);
+     byteReverse((unsigned char *) ctx-&gt;buf, 4);
+     memcpy(digest, ctx-&gt;buf, 16);
+-    memset(ctx, 0, sizeof(ctx));	/* In case it's sensitive */
++    memset(ctx, 0, sizeof(*ctx));	/* In case it's sensitive */
+ }
+ 
+ /* The four core functions - F1 is optimized somewhat */
+diff --git a/src/redir.c b/src/redir.c
+index 9d6d63e..80401bb 100644
+--- a/src/redir.c
++++ b/src/redir.c
+@@ -955,6 +955,26 @@ void redir_wispr1_reply (struct redir_t *redir, struct redir_conn_t *conn,
+   bdestroy(bt);
+ }
+ 
++void write_authentication_msg_header (struct redir_conn_t *conn, bstring b) {
++  if (conn-&gt;authdata.type == REDIR_AUTH_EAP) {
++    bcatcstr(b,
++             &quot;&lt;EAPAuthenticationReply&gt;\r\n&quot;
++             &quot;&lt;MessageType&gt;121&lt;/MessageType&gt;\r\n&quot;); /* response to authentication notification */
++  } else {
++    bcatcstr(b,
++             &quot;&lt;AuthenticationReply&gt;\r\n&quot;
++             &quot;&lt;MessageType&gt;120&lt;/MessageType&gt;\r\n&quot;); /* response to authentication notification */
++  }
++}
++
++void write_authentication_msg_footer(struct redir_conn_t *conn, bstring b) {
++  if (conn-&gt;authdata.type == REDIR_AUTH_EAP) {
++    bcatcstr(b, &quot;&lt;/EAPAuthenticationReply&gt;\r\n&quot;);
++  } else {
++    bcatcstr(b, &quot;&lt;/AuthenticationReply&gt;\r\n&quot;);
++  }
++}
++
+ /* Make a WISPr 2.0 XML reply 
+  * Note: This method must be called if Coova advertises the support of both 
+  * WISPr 1.0 and WISPr 2.0 in the &quot;NOTYET&quot; phase */
+@@ -964,26 +984,6 @@ void redir_wispr2_reply (struct redir_t *redir, struct redir_conn_t *conn,
+   bstring bt = bfromcstr(&quot;&quot;);
+   char eap64str [MAX_EAP_LEN*2];
+   
+-  void write_authentication_msg_header () {
+-    if (conn-&gt;authdata.type == REDIR_AUTH_EAP) {
+-      bcatcstr(b, 
+-	       &quot;&lt;EAPAuthenticationReply&gt;\r\n&quot;
+-	       &quot;&lt;MessageType&gt;121&lt;/MessageType&gt;\r\n&quot;); /* response to authentication notification */
+-    } else {
+-      bcatcstr(b, 
+-	       &quot;&lt;AuthenticationReply&gt;\r\n&quot; 
+-	       &quot;&lt;MessageType&gt;120&lt;/MessageType&gt;\r\n&quot;); /* response to authentication notification */
+-    }
+-  }
+-  
+-  void write_authentication_msg_footer() {
+-    if (conn-&gt;authdata.type == REDIR_AUTH_EAP) {
+-      bcatcstr(b, &quot;&lt;/EAPAuthenticationReply&gt;\r\n&quot;);
+-    } else {
+-      bcatcstr(b, &quot;&lt;/AuthenticationReply&gt;\r\n&quot;);
+-    }
+-  }
+-
+   log_dbg(&quot;%s&quot;, __FUNCTION__);
+   
+   bcatcstr(b,
+@@ -1056,7 +1056,7 @@ void redir_wispr2_reply (struct redir_t *redir, struct redir_conn_t *conn,
+     break;
+     
+   case REDIR_FAILED_REJECT:
+-    write_authentication_msg_header();     
++    write_authentication_msg_header(conn,b);
+     
+     bcatcstr(b, 
+ 	     &quot;&lt;ResponseCode&gt;100&lt;/ResponseCode&gt;\r\n&quot;); /* login failed (Access REJECT) */
+@@ -1069,33 +1069,33 @@ void redir_wispr2_reply (struct redir_t *redir, struct redir_conn_t *conn,
+       bcatcstr(b, &quot;&lt;ReplyMessage&gt;Invalid Password&lt;/ReplyMessage&gt;\r\n&quot;);
+     }
+         
+-    write_authentication_msg_footer();
++    write_authentication_msg_footer(conn,b);
+     break;
+     
+   case REDIR_FAILED_NOROUTE:
+-    write_authentication_msg_header();     
++    write_authentication_msg_header(conn,b);
+     
+     bcatcstr(b, 
+ 	     &quot;&lt;ResponseCode&gt;105&lt;/ResponseCode&gt;\r\n&quot;); /* RADIUS serveur error/timeout */
+     
+     bcatcstr(b, &quot;&lt;ReplyMessage&gt;no route for realm&lt;/ReplyMessage&gt;\r\n&quot;);
+     
+-    write_authentication_msg_footer();
++    write_authentication_msg_footer(conn,b);
+     break;
+     
+   case REDIR_FAILED_MTU:
+-    write_authentication_msg_header();     
++    write_authentication_msg_header(conn,b);
+     
+     bcatcstr(b, 
+ 	     &quot;&lt;ResponseCode&gt;253&lt;/ResponseCode&gt;\r\n&quot;); /* MTU is too big */
+     
+     bcatcstr(b, &quot;&lt;ReplyMessage&gt;AAA MTU is too big&lt;/ReplyMessage&gt;\r\n&quot;);
+     
+-    write_authentication_msg_footer();
++    write_authentication_msg_footer(conn,b);
+     break;
+     
+   case REDIR_FAILED_TIMEOUT:
+-    write_authentication_msg_header();     
++    write_authentication_msg_header(conn,b);
+     
+     bcatcstr(b, 
+ 	     &quot;&lt;ResponseCode&gt;102&lt;/ResponseCode&gt;\r\n&quot;); /* RADIUS serveur timeout */
+@@ -1107,11 +1107,11 @@ void redir_wispr2_reply (struct redir_t *redir, struct redir_conn_t *conn,
+       bcatcstr(b, &quot;&lt;ReplyMessage&gt;Radius timeout&lt;/ReplyMessage&gt;\r\n&quot;);
+     }
+     
+-    write_authentication_msg_footer();
++    write_authentication_msg_footer(conn,b);
+     break;
+     
+   case REDIR_ERROR_PROTOCOL:
+-    write_authentication_msg_header();     
++    write_authentication_msg_header(conn,b);
+     
+     bcatcstr(b, 
+ 	     &quot;&lt;ResponseCode&gt;254&lt;/ResponseCode&gt;\r\n&quot;); /* WISPr 2.0 protocol error */
+@@ -1123,11 +1123,11 @@ void redir_wispr2_reply (struct redir_t *redir, struct redir_conn_t *conn,
+       bcatcstr(b, &quot;&lt;ReplyMessage&gt;WISPr 2.0 protocol error&lt;/ReplyMessage&gt;\r\n&quot;);
+     }
+     
+-    write_authentication_msg_footer();
++    write_authentication_msg_footer(conn,b);
+     break;
+     
+   case REDIR_FAILED_OTHER:
+-    write_authentication_msg_header();     
++    write_authentication_msg_header(conn,b);
+     
+     bcatcstr(b, 
+ 	     &quot;&lt;ResponseCode&gt;255&lt;/ResponseCode&gt;\r\n&quot;); /* RADIUS serveur error */
+@@ -1139,7 +1139,7 @@ void redir_wispr2_reply (struct redir_t *redir, struct redir_conn_t *conn,
+       bcatcstr(b, &quot;&lt;ReplyMessage&gt;Radius error&lt;/ReplyMessage&gt;\r\n&quot;);
+     }
+     
+-    write_authentication_msg_footer();
++    write_authentication_msg_footer(conn,b);
+     break;
+     
+   case REDIR_CHALLENGE:
+@@ -1167,7 +1167,7 @@ void redir_wispr2_reply (struct redir_t *redir, struct redir_conn_t *conn,
+     break;
+     
+   case REDIR_SUCCESS:
+-    write_authentication_msg_header();     
++    write_authentication_msg_header(conn,b);
+     
+     bcatcstr(b, 
+ 	     &quot;&lt;ResponseCode&gt;50&lt;/ResponseCode&gt;\r\n&quot;); 
+@@ -1204,7 +1204,7 @@ void redir_wispr2_reply (struct redir_t *redir, struct redir_conn_t *conn,
+       bconcat(b, bt);
+     }
+     
+-    write_authentication_msg_footer();
++    write_authentication_msg_footer(conn,b);
+     break;
+     
+   case REDIR_LOGOFF:
+@@ -1911,6 +1918,7 @@ int redir_getparam(struct redir_t *redir, char *src, char *param, bstring dst) {
+ 
+   return 0;
+ }
++char forked;
+ 
+ /* Read the an HTTP request from a client */
+ static int redir_getreq(struct redir_t *redir, struct redir_socket_t *sock,
+@@ -1930,7 +1938,7 @@ static int redir_getreq(struct redir_t *redir, struct redir_socket_t *sock,
+ 
+   char *path = httpreq-&gt;path;
+ 
+-  char forked = (rreq == 0);
++  forked = (rreq == 0);
+ 
+   char wblock = 0, done = 0, eoh = 0;
+ 
+@@ -3182,6 +3190,25 @@ pid_t redir_fork(int in, int out) {
+   return pid;
+ }
+ 
++int redir_main_exit(struct redir_socket_t *socket) {
++    /* if (httpreq-&gt;data_in) bdestroy(httpreq-&gt;data_in); */
++    /* if (!forked) return 0; XXXX*/
++#ifdef HAVE_SSL
++    if (socket.sslcon) {
++#if(_debug_ &gt; 1)
++      log_dbg(&quot;Shutting down SSL&quot;);
++#endif
++      openssl_shutdown(socket.sslcon, 2);
++      openssl_free(socket.sslcon);
++      socket.sslcon = 0;
++      if (rreq)
++        rreq-&gt;sslcon = 0;
++    }
++#endif
++    if (forked) _redir_close_exit(socket-&gt;fd[0], socket-&gt;fd[1]);
++    return _redir_close(socket-&gt;fd[0], socket-&gt;fd[1]);
++}
++
+ int redir_main(struct redir_t *redir, 
+ 	       int infd, int outfd, 
+ 	       struct sockaddr_in *address, 
+@@ -3215,25 +3242,6 @@ int redir_main(struct redir_t *redir,
+   int forked = (rreq == 0);
+   int err;
+ 
+-  int redir_main_exit() {
+-    /* if (httpreq-&gt;data_in) bdestroy(httpreq-&gt;data_in); */
+-    /* if (!forked) return 0; XXXX*/
+-#ifdef HAVE_SSL
+-    if (socket.sslcon) {
+-#if(_debug_ &gt; 1)
+-      log_dbg(&quot;Shutting down SSL&quot;);
+-#endif
+-      openssl_shutdown(socket.sslcon, 2);
+-      openssl_free(socket.sslcon);
+-      socket.sslcon = 0;
+-      if (rreq) 
+-	rreq-&gt;sslcon = 0;
+-    }
+-#endif
+-    if (forked) _redir_close_exit(socket.fd[0], socket.fd[1]);
+-    return _redir_close(socket.fd[0], socket.fd[1]);
+-  }
+-
+ 
+   memset(&amp;httpreq,0,sizeof(httpreq));
+   httpreq.allow_post = isui || _options.uamallowpost;
+@@ -3260,7 +3268,7 @@ int redir_main(struct redir_t *redir,
+   memcpy(&amp;msg.mdata.redir, &amp;conn.s_state.redir, sizeof(msg.mdata.redir)); \
+   if (redir_send_msg(redir, &amp;msg) &lt; 0) { \
+     log_err(errno, &quot;write() failed! msgfd=%d type=%d len=%d&quot;, redir-&gt;msgfd, msg.mtype, sizeof(msg.mdata)); \
+-    return redir_main_exit(); \
++    return redir_main_exit(&amp;socket); \
+   } 
+ #else
+ #define redir_msg_send(msgopt) \
+@@ -3271,7 +3279,7 @@ int redir_main(struct redir_t *redir,
+   memcpy(&amp;msg.mdata.redir, &amp;conn.s_state.redir, sizeof(msg.mdata.redir)); \
+   if (msgsnd(redir-&gt;msgid, (void *)&amp;msg, sizeof(msg.mdata), 0) &lt; 0) { \
+     log_err(errno, &quot;msgsnd() failed! msgid=%d type=%d len=%d&quot;, redir-&gt;msgid, msg.mtype, sizeof(msg.mdata)); \
+-    return redir_main_exit(); \
++    return redir_main_exit(&amp;socket); \
+   } 
+ #endif
+ 
+@@ -3291,7 +3299,7 @@ int redir_main(struct redir_t *redir,
+   /*
+   if (ndelay_on(socket.fd[0])) {
+     log_err(errno, &quot;fcntl() failed&quot;);
+-    return redir_main_exit();
++    return redir_main_exit(&amp;socket);
+   }
+   */
+ 
+@@ -3307,7 +3315,7 @@ int redir_main(struct redir_t *redir,
+ 
+   if (!redir-&gt;cb_getstate) { 
+     log_err(0, &quot;No cb_getstate() defined!&quot;); 
+-    return redir_main_exit();
++    return redir_main_exit(&amp;socket);
+   }
+ 
+   /* get_state returns 0 for unauth'ed and 1 for auth'ed */
+@@ -3331,7 +3339,7 @@ int redir_main(struct redir_t *redir,
+     } else 
+ #endif
+     {
+-      return redir_main_exit();
++      return redir_main_exit(&amp;socket);
+     }
+   }
+   
+@@ -3371,7 +3379,7 @@ int redir_main(struct redir_t *redir,
+ #if(_debug_ &gt; 1)
+ 	log_dbg(&quot;redir error, redir_main_exit&quot;);
+ #endif
+-	return redir_main_exit();
++	return redir_main_exit(&amp;socket);
+       case 1:
+ 	if (!loop) {
+ 	  log_dbg(&quot;Continue... SSL pending&quot;);
+@@ -3402,7 +3410,7 @@ int redir_main(struct redir_t *redir,
+     return 1;
+   default:
+     log_dbg(&quot;Error calling get_req. Terminating %d&quot;, err);
+-    return redir_main_exit();
++    return redir_main_exit(&amp;socket);
+   }
+ 
+ #if(_debug_ &gt; 1)
+@@ -3445,7 +3453,7 @@ int redir_main(struct redir_t *redir,
+ 	if (isEWT) {
+ 	  if (!(conn.s_params.flags &amp; ADMIN_LOGIN)) {
+ 	    log_warn(0, &quot;Permission denied to EWT API&quot;);
+-	    return redir_main_exit();
++	    return redir_main_exit(&amp;socket);
+ 	  }
+ 	} else 
+ #endif
+@@ -3471,7 +3479,7 @@ int redir_main(struct redir_t *redir,
+ 	    if (*p &gt;= '0' &amp;&amp; *p &lt;= '9') continue;
+ 	    /* invalid file name! */
+ 	    log_err(0, &quot;invalid www request [%s]!&quot;, filename);
+-	    return redir_main_exit();
++	    return redir_main_exit(&amp;socket);
+ 	  }
+ 	}
+ 
+@@ -3505,7 +3513,7 @@ int redir_main(struct redir_t *redir,
+ 	else { 
+ 	  /* we do not serve it! */
+ 	  log_err(0, &quot;invalid file extension! [%s]&quot;, filename);
+-	  return redir_main_exit();
++	  return redir_main_exit(&amp;socket);
+ 	}
+ 	
+ 	if (!forked) {
+@@ -3515,7 +3523,7 @@ int redir_main(struct redir_t *redir,
+ 	   */
+ 	  forkpid = redir_fork(infd, outfd);
+ 	  if (forkpid) { /* parent or error */
+-	    return redir_main_exit();
++	    return redir_main_exit(&amp;socket);
+ 	  }
+ 	}
+ 	
+@@ -3523,7 +3531,7 @@ int redir_main(struct redir_t *redir,
+ 	  
+ 	  if (!_options.wwwbin) {
+ 	    log_err(0, &quot;the 'wwwbin' setting must be configured for CGI use&quot;);
+-	    return redir_main_exit();
++	    return redir_main_exit(&amp;socket);
+ 	  }
+ 
+ 	  if (ndelay_off(socket.fd[0])) {
+@@ -3542,14 +3550,14 @@ int redir_main(struct redir_t *redir,
+ 	    
+ 	    if (pipe(ptoc) == -1 || pipe(ctop) == -1) {
+ 	      log_err(errno, &quot;pipe() failed&quot;);
+-	      return redir_main_exit();
++	      return redir_main_exit(&amp;socket);
+ 	    }
+ 	    
+ 	    forkpid = redir_fork(ptoc[0], ctop[1]);
+ 	    
+ 	    if (forkpid &lt; 0) {
+ 	      log_err(errno, &quot;fork() failed&quot;);
+-	      return redir_main_exit();
++	      return redir_main_exit(&amp;socket);
+ 	    }
+ 	    
+ 	    forked = 1;
+@@ -3573,7 +3581,7 @@ int redir_main(struct redir_t *redir,
+ 		if ((buflen = openssl_read(socket.sslcon, buffer, rd, 0)) &gt; 0) {
+ 		  if (safe_write(ptoc[1], buffer, (size_t) buflen) &lt; 0) {
+ 		    log_err(errno, &quot;error&quot;);
+-		    return redir_main_exit();
++		    return redir_main_exit(&amp;socket);
+ 		  }
+ 		  clen -= buflen;
+ 		}
+@@ -3609,7 +3617,7 @@ int redir_main(struct redir_t *redir,
+ 	      safe_close(ptoc[1]);
+ 	      safe_close(ctop[0]);
+ 	      
+-	      return redir_main_exit();
++	      return redir_main_exit(&amp;socket);
+ 	      
+ 	    } else {
+ 	      /* child */
+@@ -3691,7 +3699,7 @@ int redir_main(struct redir_t *redir,
+ 	    break;
+ 	  }
+ 	  
+-	  return redir_main_exit();
++	  return redir_main_exit(&amp;socket);
+ 	}
+ 	
+ 	if ( (_options.uid == 0 &amp;&amp; !chroot(_options.wwwdir) &amp;&amp; !chdir(&quot;/&quot;)) ||
+@@ -3739,7 +3747,7 @@ int redir_main(struct redir_t *redir,
+       }
+       else log_err(0, &quot;Required: 'wwwdir' (in chilli.conf) and 'file' query-string param&quot;); 
+       
+-      return redir_main_exit();
++      return redir_main_exit(&amp;socket);
+     }
+   }
+ 
+@@ -3774,7 +3782,7 @@ int redir_main(struct redir_t *redir,
+ 		    (char *)conn.s_params.url, conn.hismac, 
+ 		    &amp;conn.hisip, httpreq.qs);
+ 	
+-	return redir_main_exit();
++	return redir_main_exit(&amp;socket);
+       }
+     }
+ 
+@@ -3792,7 +3800,7 @@ int redir_main(struct redir_t *redir,
+ 		  0, hexchal, NULL, NULL, NULL, 
+ 		  0, conn.hismac, &amp;conn.hisip, httpreq.qs);
+ 
+-      return redir_main_exit();
++      return redir_main_exit(&amp;socket);
+     }
+ 
+     if (is_local_user(redir, &amp;conn)) { 
+@@ -3813,7 +3821,7 @@ int redir_main(struct redir_t *redir,
+ 	 */
+ 	pid_t forkpid = redir_fork(infd, outfd);
+ 	if (forkpid) { /* parent or error */
+-	  return redir_main_exit();
++	  return redir_main_exit(&amp;socket);
+ 	}
+       }
+ 
+@@ -3829,7 +3837,7 @@ int redir_main(struct redir_t *redir,
+ 	    flags |= modresult;
+ 	    switch(chilli_mod_state(modresult)) {
+ 	    case CHILLI_MOD_ERROR:
+-	      return redir_main_exit();
++	      return redir_main_exit(&amp;socket);
+ 	    default: 
+ 	      break;
+ 	    }
+@@ -3905,7 +3913,7 @@ int redir_main(struct redir_t *redir,
+     }    
+ 
+     log_dbg(&quot;--&gt;&gt; Msg userurl=[%s]\n&quot;,conn.s_state.redir.userurl);
+-    return redir_main_exit();
++    return redir_main_exit(&amp;socket);
+   }
+ 
+   case REDIR_LOGOUT:
+@@ -3919,7 +3927,7 @@ int redir_main(struct redir_t *redir,
+ 		  hexchal, NULL, conn.s_state.redir.userurl, NULL, 
+ 		  NULL, conn.hismac, &amp;conn.hisip, httpreq.qs);
+       
+-      return redir_main_exit();
++      return redir_main_exit(&amp;socket);
+     }
+     
+   case REDIR_MACREAUTH:
+@@ -3950,7 +3958,7 @@ int redir_main(struct redir_t *redir,
+ 		  NULL, 0, hexchal, NULL, conn.s_state.redir.userurl, NULL, 
+ 		  NULL, conn.hismac, &amp;conn.hisip, httpreq.qs);
+     }
+-    return redir_main_exit();
++    return redir_main_exit(&amp;socket);
+ 
+   case REDIR_ABORT:
+     if (state == 1) {
+@@ -3966,12 +3974,12 @@ int redir_main(struct redir_t *redir,
+ 		  NULL, 0, hexchal, NULL, conn.s_state.redir.userurl, NULL, 
+ 		  NULL, conn.hismac, &amp;conn.hisip, httpreq.qs);
+     }
+-    return redir_main_exit();
++    return redir_main_exit(&amp;socket);
+ 
+   case REDIR_ABOUT:
+     redir_reply(redir, &amp;socket, &amp;conn, REDIR_ABOUT, NULL, 
+ 		0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, httpreq.qs);
+-    return redir_main_exit();
++    return redir_main_exit(&amp;socket);
+ 
+   case REDIR_STATUS:
+     {
+@@ -3998,13 +4006,13 @@ int redir_main(struct redir_t *redir,
+ 		  conn.s_state.redir.userurl, conn.reply, 
+ 		  0, conn.hismac, &amp;conn.hisip, httpreq.qs);
+       
+-      return redir_main_exit();
++      return redir_main_exit(&amp;socket);
+     }
+ 
+   case REDIR_MSDOWNLOAD:
+     safe_snprintf(buffer, bufsize, &quot;HTTP/1.0 403 Forbidden\r\n\r\n&quot;);
+     redir_write(&amp;socket, buffer, strlen(buffer));
+-    return redir_main_exit();
++    return redir_main_exit(&amp;socket);
+ 
+ #if(0)
+   {
+@@ -4043,7 +4051,7 @@ int redir_main(struct redir_t *redir,
+ 
+     safe_snprintf(buffer, bufsize, cnt);
+     redir_write(&amp;socket, buffer, strlen(buffer));
+-    return redir_main_exit();
++    return redir_main_exit(&amp;socket);
+   }
+ #endif
+ 
+@@ -4223,7 +4231,7 @@ int redir_main(struct redir_t *redir,
+ 		NULL, conn.hismac, &amp;conn.hisip, httpreq.qs);
+   }
+ 
+-  return redir_main_exit();
++  return redir_main_exit(&amp;socket);
+ }
+ 
+ 
+</PRE>
+
+
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="002737.html">[Chilli] CoovaChilli 1.3.1
+</A></li>
+	<LI>Next message: <A HREF="002731.html">[Chilli] Building Coova-Chilli with clang
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2715">[ date ]</a>
+              <a href="thread.html#2715">[ thread ]</a>
+              <a href="subject.html#2715">[ subject ]</a>
+              <a href="author.html#2715">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

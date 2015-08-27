@@ -1,0 +1,148 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] How to put uamport behind SSL?
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20How%20to%20put%20uamport%20behind%20SSL%3F&In-Reply-To=%3C4B127868.6040001%40gmail.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001041.html">
+   <LINK REL="Next"  HREF="001043.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] How to put uamport behind SSL?</H1>
+    <B>Gunther Mayer</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20How%20to%20put%20uamport%20behind%20SSL%3F&In-Reply-To=%3C4B127868.6040001%40gmail.com%3E"
+       TITLE="[Chilli] How to put uamport behind SSL?">gunther.mayer at googlemail.com
+       </A><BR>
+    <I>Sun Nov 29 13:34:32 UTC 2009</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001041.html">[Chilli] HS_UAMALLOW
+</A></li>
+        <LI>Next message: <A HREF="001043.html">[Chilli] How to put uamport behind SSL?
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1042">[ date ]</a>
+              <a href="thread.html#1042">[ thread ]</a>
+              <a href="subject.html#1042">[ subject ]</a>
+              <a href="author.html#1042">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hi guys,
+
+I've been trying to enable clients to communicate to chilli's uamport 
+over SSL for authentication. Our uamserver has been running with SSL 
+from day one but the uamport access is currently still over ordinary 
+http for lack of a better alternative. With newer browsers increasingly 
+complaining about mixed content the time has come to ssl enable chilli's 
+uamport as well (I know - we'll have to get a commercial certificate but 
+that's OK).
+
+But how?
+
+At first I thought there's a simple solution: use matrixtunnel (or its 
+successor xrelayd with xyssl/polarssl) in front of chilli, i.e. as a 
+proxy to provide a &quot;fake&quot; SSL port for clients which is then forwarded 
+to chilli's normal http uamport. I've got xrelayd installed and working 
+but if I point my browser to
+
+<A HREF="https://ua.m.lis.ten:8443/prelogin">https://ua.m.lis.ten:8443/prelogin</A>
+
+I just get an empty page instead of the normal login page that I get 
+when using the plain <A HREF="http://ua.m.lis.ten:uamport/prelogin">http://ua.m.lis.ten:uamport/prelogin</A> (8443 is the 
+port xrelayd is forwarding to chilli's uamport). I think that's because 
+chilli only sees the http request as originating from the local machine 
+instead of from the client and hence doesn't know what to do. Or am I 
+doing something wrong here?
+
+Then I saw the very recent openssl support that David put in trunk this 
+month and thought perhaps that's the solution. However, latest svn 
+(r249) doesn't even compile:
+
+$ svn co <A HREF="http://dev.coova.org/svn/coova-chilli">http://dev.coova.org/svn/coova-chilli</A>
+$ ./bootstrap2 # ./bootstrap no longer works here :-(
+$ ./configure --with-openssl
+$ make
+cd . &amp;&amp; /bin/bash ./config.status config.h
+config.status: creating config.h
+config.status: config.h is unchanged
+make  all-recursive
+make[1]: Entering directory `/Coova/coova-chilli-1.0.15-pre-r249'
+Making all in bstring
+make[2]: Entering directory `/Coova/coova-chilli-1.0.15-pre-r249/bstring'
+make[2]: Nothing to be done for `all'.
+make[2]: Leaving directory `/Coova/coova-chilli-1.0.15-pre-r249/bstring'
+Making all in src
+make[2]: Entering directory `/Coova/coova-chilli-1.0.15-pre-r249/src'
+/bin/bash ../libtool --tag=CC   --mode=compile gcc -DHAVE_CONFIG_H -I. 
+-I..    -D_GNU_SOURCE -Wall -fno-builtin -fno-strict-aliasing -O2 
+-fomit-frame-pointer -funroll-loops -pipe 
+-DDEFCHILLICONF='&quot;/usr/local/etc/chilli.conf&quot;' 
+-DDEFPIDFILE='&quot;/usr/local/var/run/chilli.pid&quot;' 
+-DDEFSTATEDIR='&quot;/usr/local/var/run&quot;' 
+-DDEFCMDSOCK='&quot;/usr/local/var/run/chilli.sock&quot;' 
+-DSBINDIR='&quot;/usr/local/sbin&quot;' -I../bstring  -g -O2 -MT chilli.lo -MD -MP 
+-MF .deps/chilli.Tpo -c -o chilli.lo chilli.c
+libtool: compile:  gcc -DHAVE_CONFIG_H -I. -I.. -D_GNU_SOURCE -Wall 
+-fno-builtin -fno-strict-aliasing -O2 -fomit-frame-pointer 
+-funroll-loops -pipe -DDEFCHILLICONF=\&quot;/usr/local/etc/chilli.conf\&quot; 
+-DDEFPIDFILE=\&quot;/usr/local/var/run/chilli.pid\&quot; 
+-DDEFSTATEDIR=\&quot;/usr/local/var/run\&quot; 
+-DDEFCMDSOCK=\&quot;/usr/local/var/run/chilli.sock\&quot; 
+-DSBINDIR=\&quot;/usr/local/sbin\&quot; -I../bstring -g -O2 -MT chilli.lo -MD -MP 
+-MF .deps/chilli.Tpo -c chilli.c  -fPIC -DPIC -o .libs/chilli.o
+*chilli.c: In function 'cb_redir_getstate':
+chilli.c:1682: error: 'struct dhcp_conn_t' has no member named 'dnatport'
+chilli.c:1683: error: 'struct dhcp_conn_t' has no member named 'dnatstate'
+*chilli.c: In function 'config_radius_session':
+chilli.c:2429: warning: passing argument 3 of 
+'pass_throughs_from_string' from incompatible pointer type
+garden.h:53: note: expected 'size_t *' but argument is of type 'uint32_t *'
+chilli.c: In function 'cmdsock_accept':
+chilli.c:3756: warning: passing argument 3 of 'accept' from incompatible 
+pointer type
+/usr/include/sys/socket.h:214: note: expected 'socklen_t * __restrict__' 
+but argument is of type 'size_t *'
+chilli.c: In function 'redir_msg':
+chilli.c:3997: warning: passing argument 3 of 'accept' from incompatible 
+pointer type
+/usr/include/sys/socket.h:214: note: expected 'socklen_t * __restrict__' 
+but argument is of type 'size_t *'
+make[2]: *** [chilli.lo] Error 1
+make[2]: Leaving directory `/Coova/coova-chilli-1.0.15-pre-r249/src'
+make[1]: *** [all-recursive] Error 1
+make[1]: Leaving directory `/Coova/coova-chilli-1.0.15-pre-r249'
+make: *** [all] Error 2
+
+Now I'm really stuck. How do I achieve my goal?
+
+Gunther
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: &lt;<A HREF="http://lists.coova.org/pipermail/chilli/attachments/20091129/2be20062/attachment.htm">http://lists.coova.org/pipermail/chilli/attachments/20091129/2be20062/attachment.htm</A>&gt;
+</PRE>
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001041.html">[Chilli] HS_UAMALLOW
+</A></li>
+	<LI>Next message: <A HREF="001043.html">[Chilli] How to put uamport behind SSL?
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1042">[ date ]</a>
+              <a href="thread.html#1042">[ thread ]</a>
+              <a href="subject.html#1042">[ subject ]</a>
+              <a href="author.html#1042">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

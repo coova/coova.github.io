@@ -1,0 +1,172 @@
+From germano.paciocco at gmail.com  Wed Oct 10 17:10:07 2012
+From: germano.paciocco at gmail.com (Germano Paciocco)
+Date: Wed, 10 Oct 2012 19:10:07 +0200
+Subject: [Chilli] Group-based URL filtering
+Message-ID: <CAENMwEBnv5AF=jK2jkxZU2wQ4L+L6mEXhPQUJnHPussDtqthLg@mail.gmail.com>
+
+Hi all.
+I have a full working coovachilli/freeradius installation, with
+transparent proxy done by dansguardia+squid, that allows me to filter
+URL requested by client.
+I would like to create groups on radius server, and give them
+different surf pemission. For example i would like to create two
+groups, one with full permission, and the other with some restriction.
+I'm trying to collect some hints from the internet, but it seems there
+is not a lot of material...
+Anyone here has any suggest?
+Regards.
+
+-- 
+GP
+
+From maxxer at ufficyo.com  Thu Oct 11 14:21:03 2012
+From: maxxer at ufficyo.com (Lorenzo Milesi)
+Date: Thu, 11 Oct 2012 16:21:03 +0200 (CEST)
+Subject: [Chilli] Group-based URL filtering
+In-Reply-To: <CAENMwEBnv5AF=jK2jkxZU2wQ4L+L6mEXhPQUJnHPussDtqthLg@mail.gmail.com>
+Message-ID: <1099826108.265790.1349965262591.JavaMail.root@yetopen.it>
+
+> Anyone here has any suggest?
+
+AFAIK this isn't a chilli feature via squid.
+you can write an external handler and configure it in squid. in that handler you should check the IP if needs to be filtered or not. based on the return code of the helper squid will serve or not the request.
+-- 
+Lorenzo Milesi - lorenzo.milesi at yetopen.it
+
+GPG/PGP Key-Id: 0xE704E230 - http://keyserver.linux.it
+
+
+
+From maxxer at ufficyo.com  Thu Oct 11 14:35:58 2012
+From: maxxer at ufficyo.com (Lorenzo Milesi)
+Date: Thu, 11 Oct 2012 16:35:58 +0200 (CEST)
+Subject: [Chilli] Group-based URL filtering
+In-Reply-To: <1099826108.265790.1349965262591.JavaMail.root@yetopen.it>
+Message-ID: <701224780.265980.1349966158672.JavaMail.root@yetopen.it>
+
+> AFAIK this isn't a chilli feature via squid.
+
+that means you can handle it via squid ;)
+
+-- 
+Lorenzo Milesi - lorenzo.milesi at yetopen.it
+
+GPG/PGP Key-Id: 0xE704E230 - http://keyserver.linux.it
+
+
+
+From david at coova.com  Sun Oct 21 18:36:43 2012
+From: david at coova.com (David Bird)
+Date: Sun, 21 Oct 2012 11:36:43 -0700
+Subject: [Chilli] CoovaChilli 1.3.0 officially released
+Message-ID: <1350844603.6178.36.camel@david-laptop>
+
+Greetings,
+
+We have officially released CoovaChilli 1.3.0.
+
+http://coova-chilli.s3.amazonaws.com/coova-chilli-1.3.0.tar.gz
+
+http://coova-chilli.s3.amazonaws.com/coova-chilli_1.3.0_i386.deb
+
+http://lnkd.in/XDQf9P
+
+== ChangeLog (CoovaChilli-v1.3.0 svn revision 479) ==
+
+* Removed chilli query command ''listip'', use ''list up'' instead
+* Removed chilli query command ''listmac'', use ''list mac'' instead
+* Added option ''only8021q'' to only handle VLAN traffic on an interface
+* When not using enable-largelimits, the RADIUS queue will allocate
+packet storage dynamically
+* Added AVL support for indexing locations and maintaining statistics
+* Fixed memory usage issue and added options ''dhcphashsize'' and
+''radiusqsize''
+* Added runtime option ''redirurl'' to have a redirection URL put into
+the UAM query string parameters instead of a HTTP redirect
+* Chomp off Ethernet trailer which would result in DNS parsing to fail
+* Several compile-time bugs fixed
+
+As always, let us know if there are any problems!
+
+Cheers,
+David
+
+
+From giovanni.bezicheri at nethesis.it  Wed Oct 24 09:12:46 2012
+From: giovanni.bezicheri at nethesis.it (Giovanni Bezicheri)
+Date: Wed, 24 Oct 2012 11:12:46 +0200
+Subject: [Chilli] Coova-Chilli JSON login and status pages implementation
+Message-ID: <5087B10E.9050700@nethesis.it>
+
+Hi all.
+I have worked on a Coova Chilli login page implementation using JSON 
+controller that i consider simpler than the one included in the original 
+sources. This implementation would be also more compatible with some old 
+browser (like IE6 or old version of Safari) because uses the JQuery 
+library for the purpose of handling events.
+Download url: http://update.nethesis.it/www-coova-jbez.tar.gz
+
+You need to address uamformat and uamhomepage as following (all in one 
+login page):
+
+HS_UAMFORMAT=http://\$HS_UAMLISTEN:\$HS_UAMUIPORT/www/login.html
+HS_UAMHOMEPAGE=http://\$HS_UAMLISTEN:\$HS_UAMUIPORT/www/login.html
+
+Regards.
+
+From mohsen.saeedi at gmail.com  Wed Oct 24 09:21:11 2012
+From: mohsen.saeedi at gmail.com (Mohsen Saeedi)
+Date: Wed, 24 Oct 2012 12:51:11 +0330
+Subject: [Chilli] Coova-Chilli JSON login and status pages implementation
+In-Reply-To: <5087B10E.9050700@nethesis.it>
+References: <5087B10E.9050700@nethesis.it>
+Message-ID: <5087B307.5030006@gmail.com>
+
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20121024/7e9a1667/attachment.html>
+
+From giovanni.bezicheri at nethesis.it  Tue Oct 30 14:38:24 2012
+From: giovanni.bezicheri at nethesis.it (Giovanni Bezicheri)
+Date: Tue, 30 Oct 2012 15:38:24 +0100
+Subject: [Chilli]  Too much data in http request! Error
+Message-ID: <508FE660.5010804@nethesis.it>
+
+Hi All, i have the same problem with coova-chilli 1.2.9
+Does anyone know how to resolve this problem?
+> Hi All,
+>
+> We have coova chilli version 13 I believe, and we see constant error
+> messages in our logs that shows the following:
+>
+> Feb 15 12:18:55 pxe coova-chilli[30212]: redir.c: 1161: Too much data in
+> http request!
+> Feb 15 12:18:57 pxe coova-chilli[30213]: redir.c: 1161: Too much data in
+> http request!
+> Feb 15 12:18:57 pxe coova-chilli[30214]: redir.c: 1161: Too much data in
+> http request!
+> Feb 15 12:18:57 pxe coova-chilli[30215]: redir.c: 1161: Too much data in
+> http request!
+> Feb 15 12:19:00 pxe coova-chilli[30218]: redir.c: 1161: Too much data in
+> http request!
+> Feb 15 12:19:00 pxe coova-chilli[30219]: redir.c: 1161: Too much data in
+> http request!
+> Feb 15 12:19:00 pxe coova-chilli[30220]: redir.c: 1161: Too much data in
+> http request!
+> Feb 15 12:19:03 pxe coova-chilli[30224]: redir.c: 1161: Too much data in
+> http request!
+> Feb 15 12:19:03 pxe coova-chilli[30225]: redir.c: 1161: Too much data in
+> http request!
+> Feb 15 12:19:06 pxe coova-chilli[30228]: redir.c: 1161: Too much data in
+> http request!
+>
+> Does anyone know what this means and how to fix it? Users are still able to
+> log in but we get some people saying they can not and I am not sure if this
+> is the cause. Can anyone explain to me what this is?
+>
+> Thanks in advance, regards.
+>
+> -- 
+> Daniel Garcia
+> IT Manager, Core Infrastructure
+> Global Gossip
+

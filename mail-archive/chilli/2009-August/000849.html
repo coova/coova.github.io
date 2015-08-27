@@ -1,0 +1,129 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> Making Coova Chilli not count local (server, not LAN) traffic
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20Making%20Coova%20Chilli%20not%20count%20local%20%28server%2C%20not%20LAN%29%20traffic&In-Reply-To=%3C6bd64e020908080749i55699bf7vd51b5e92bc7d87a8%40mail.gmail.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000839.html">
+   <LINK REL="Next"  HREF="000840.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>Making Coova Chilli not count local (server, not LAN) traffic</H1>
+    <B>Timothy White</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20Making%20Coova%20Chilli%20not%20count%20local%20%28server%2C%20not%20LAN%29%20traffic&In-Reply-To=%3C6bd64e020908080749i55699bf7vd51b5e92bc7d87a8%40mail.gmail.com%3E"
+       TITLE="Making Coova Chilli not count local (server, not LAN) traffic">timwhite88 at gmail.com
+       </A><BR>
+    <I>Sat Aug  8 14:49:11 UTC 2009</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000839.html">Making Coova Chilli not count local (server, not LAN) traffic
+</A></li>
+        <LI>Next message: <A HREF="000840.html">traffic logging
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#849">[ date ]</a>
+              <a href="thread.html#849">[ thread ]</a>
+              <a href="subject.html#849">[ subject ]</a>
+              <a href="author.html#849">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Ok, some testing done.
+Apparently setting uamuiport doesn't play so nicely if something is
+already running on that port (like apache). It's fine if you are going
+to have an inetd style webserver launched via chilli, but not so good
+otherwise.
+But, I am at the right part of the code. Essentially, we could add a
+bit more code that lists a number of ports to the local server, that
+shouldn't be counted or &quot;leaky bucketed&quot;. For now, I've just added one
+port, and hard coded it in, port 80. But adding it as a list of ports,
+and not hard coded but configurable on the command line and config
+files, shouldn't be too much harder.
+
+I've attached my patch.
+
+Tim
+
+On Wed, Aug 5, 2009 at 2:51 PM, Timothy White&lt;<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">timwhite88 at gmail.com</A>&gt; wrote:
+&gt;<i> I apologise in advance if I break any list etiquettes for this list.
+</I>&gt;<i>
+</I>&gt;<i> I'm basically tired of waiting for a feature to be added, so I'm going
+</I>&gt;<i> to work on adding it myself, or at least trying to. (It's been a long
+</I>&gt;<i> time since I did any C programming, so I'm a best rusty).
+</I>&gt;<i> Having never worked on the Chilli code, I'm not 100% sure how it
+</I>&gt;<i> works. From my brief look at the code, chilli.c around line 1464 is
+</I>&gt;<i> where the actual &quot;accounting&quot; happens, in the cb_tun_ind function I
+</I>&gt;<i> think. I'm not 100% sure on this at all though.
+</I>&gt;<i>
+</I>&gt;<i> Can someone who knows the code let me know if that is actually where
+</I>&gt;<i> the accounting of data happens? From what I can see ether
+</I>&gt;<i> appconn-&gt;s_state.output_packets or appconn-&gt;s_state.input_packets is
+</I>&gt;<i> increased for each packet, and the associated octets count depending
+</I>&gt;<i> on whether it's in or out. So this suggests to me that I can just wrap
+</I>&gt;<i> that small bit of code with an if statement that checks ip address and
+</I>&gt;<i> ports, and not count traffic to and from the local server.
+</I>&gt;<i> It also appears to my untrained eye, that while it's not supposed to
+</I>&gt;<i> count traffic to and from the &quot;uam&quot; service on 3990, it still does
+</I>&gt;<i> count it, so here would be a chance to fix that too.
+</I>&gt;<i>
+</I>&gt;<i> The if statement would look like this.
+</I>&gt;<i>
+</I>&gt;<i> &#160;if ( ! (ipph-&gt;saddr &#160;== options()-&gt;uamlisten.s_addr &amp;&amp;
+</I>&gt;<i> &#160; &#160; &#160; &#160; &#160;(ipph-&gt;sport == htons(options()-&gt;uamport) ||
+</I>&gt;<i> &#160; &#160; &#160; &#160; &#160; ipph-&gt;sport == htons(options()-&gt;uamuiport)))) {
+</I>&gt;<i>
+</I>&gt;<i> You'd also set uamuiport in your config files to be what ever port
+</I>&gt;<i> your local webserver runs on. (I have also noticed that wwwui exists
+</I>&gt;<i> in the Changelog but can't be found anywhere else.)
+</I>&gt;<i>
+</I>&gt;<i> I haven't had a chance to test the code (being at Uni atm, and not
+</I>&gt;<i> near my testing box), so I'll test it when I get home and have a try.
+</I>&gt;<i> If it works, I'll submit the patch.
+</I>&gt;<i>
+</I>&gt;<i> If I'm totally off track, can someone please point me in the correct
+</I>&gt;<i> direction to where the accounting happens, so I can poke around the
+</I>&gt;<i> code and try and work out how to get it to not count local server
+</I>&gt;<i> traffic.
+</I>&gt;<i>
+</I>&gt;<i> Hope I can &quot;code&quot; this feature and fix what to me and a few others is a bug.
+</I>&gt;<i>
+</I>&gt;<i> I'm open to criticism as long as it's constructive to fixing problems
+</I>&gt;<i> and not cutting down. I am a programmer, but have a lot to learn so
+</I>&gt;<i> any chance to learn I'll take.
+</I>&gt;<i>
+</I>&gt;<i> Tim White
+</I>&gt;<i> <A HREF="http://weirdo.bur.st/">http://weirdo.bur.st/</A>
+</I>&gt;<i> <A HREF="http://purewhite.id.au/">http://purewhite.id.au/</A>
+</I>&gt;<i>
+</I>-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: chilli.c.diff
+Type: text/x-patch
+Size: 935 bytes
+Desc: not available
+URL: &lt;<A HREF="http://lists.coova.org/pipermail/chilli/attachments/20090808/d284a7cc/attachment.bin">http://lists.coova.org/pipermail/chilli/attachments/20090808/d284a7cc/attachment.bin</A>&gt;
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000839.html">Making Coova Chilli not count local (server, not LAN) traffic
+</A></li>
+	<LI>Next message: <A HREF="000840.html">traffic logging
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#849">[ date ]</a>
+              <a href="thread.html#849">[ thread ]</a>
+              <a href="subject.html#849">[ subject ]</a>
+              <a href="author.html#849">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,117 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] Router
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Router&In-Reply-To=%3C45a402d18f4f44678be812de8004e1bc%40AM3PR05MB323.eurprd05.prod.outlook.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="002752.html">
+   <LINK REL="Next"  HREF="002754.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] Router</H1>
+    <B>Steffen Dettmer</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Router&In-Reply-To=%3C45a402d18f4f44678be812de8004e1bc%40AM3PR05MB323.eurprd05.prod.outlook.com%3E"
+       TITLE="[Chilli] Router">steffen.dettmer at nomadrail.com
+       </A><BR>
+    <I>Wed May 28 14:16:24 UTC 2014</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="002752.html">[Chilli] Router
+</A></li>
+        <LI>Next message: <A HREF="002754.html">[Chilli] IPTABLES
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2753">[ date ]</a>
+              <a href="thread.html#2753">[ thread ]</a>
+              <a href="subject.html#2753">[ subject ]</a>
+              <a href="author.html#2753">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hi!
+
+&gt;<i> I understand that turning off NAT turns the router into a switch.
+</I>
+Not sure if this is right, normally you can route with or without
+NAT, on OSI layer 3,
+or alternatively switch (bridge) on OSI layer 2.
+
+&gt;<i> Connecting the router WAN port and turning off NAT works, but how do I
+</I>&gt;<i> continue to access the router for maintenance purposes (changing WPA
+</I>&gt;<i> password, for instance)?
+</I>
+Maybe via secure shell (SSH)?
+It might be needed to add your SSH port to HS_TCP_PORTS in
+/etc/chilli/config, e.g.:
+HS_TCP_PORTS=&quot;22 80&quot;
+
+&gt;<i> Could someone  please enlighten me on why eth1 on the CoovaChilli server does
+</I>&gt;<i> not appear to have an IP address?
+</I>
+Coova sets an IP on the appropriate tun device. Coova captures
+all traffic on the interface (bypassing kernel's routing and
+firewalling), so no IP needed here, similarly for sending.
+Sending to client network is done using the tun dev, and this has
+an IP.
+
+&gt;<i> What is the opening page for the walled_garden found on the CoovaChilli
+</I>&gt;<i> server?
+</I>
+By default, Coova is configured to use:
+  HS_UAMFORMAT=<A HREF="http://\$HS_UAMLISTEN:\$HS_UAMUIPORT/www/login.chi">http://\$HS_UAMLISTEN:\$HS_UAMUIPORT/www/login.chi</A>
+a script generated from miniportal/ login.chi.in and installed as /etc/chilli/www/login.chi.
+
+&gt;<i> Is self-registration for basic (minimal) access to the Internet
+</I>&gt;<i> possible yet?
+</I>
+For testing, you also could create /etc/chilli/localusers files
+with &lt;username&gt;:&lt;cleartextpw&gt;, e.g.
+  user:secret
+this works with the built-in mini portal.
+and in /etc/chilli/config, add:
+  HS_USELOCALUSERS=on
+after restart it should work.
+
+&gt;<i> Is there a URL for configuring CoovaChilli, for example
+</I>&gt;<i> <A HREF="http://192.168.0.6:1447?">http://192.168.0.6:1447?</A>
+</I>
+You would need a portal or website supporting this, but I don't
+think anything like this is part of Coova Chilli distribution.
+Typically you configure the backend (DB) the RADIUS server is using.
+When you like to support updating the contents of your local
+portal or such, things can get more and more complicated of course.
+
+Steffen
+
+
+</PRE>
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="002752.html">[Chilli] Router
+</A></li>
+	<LI>Next message: <A HREF="002754.html">[Chilli] IPTABLES
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2753">[ date ]</a>
+              <a href="thread.html#2753">[ thread ]</a>
+              <a href="subject.html#2753">[ subject ]</a>
+              <a href="author.html#2753">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

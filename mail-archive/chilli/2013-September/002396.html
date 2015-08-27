@@ -1,0 +1,183 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] change in wwwsh
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20change%20in%20wwwsh&In-Reply-To=%3CCACkgH71FHsG-kurwy2maRKEztdotnOzRPB2KiWwqeQjaSVzg6w%40mail.gmail.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="002395.html">
+   <LINK REL="Next"  HREF="002399.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] change in wwwsh</H1>
+    <B>Xabier Oneca -- xOneca</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20change%20in%20wwwsh&In-Reply-To=%3CCACkgH71FHsG-kurwy2maRKEztdotnOzRPB2KiWwqeQjaSVzg6w%40mail.gmail.com%3E"
+       TITLE="[Chilli] change in wwwsh">xoneca at gmail.com
+       </A><BR>
+    <I>Tue Sep 24 20:52:05 UTC 2013</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="002395.html">[Chilli] change in wwwsh
+</A></li>
+        <LI>Next message: <A HREF="002399.html">[Chilli] Chilli Authentication System
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2396">[ date ]</a>
+              <a href="thread.html#2396">[ thread ]</a>
+              <a href="subject.html#2396">[ subject ]</a>
+              <a href="author.html#2396">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hello Matt,
+
+As I understand it, it pads the data with spaces if for some reason full
+$CONTENT_LENGTH is not received.
+
+I wondered why was that done, thanks for the info!
+El 23/09/2013 20:15, &quot;Beebe, Matthew&quot; &lt;<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">matthew.beebe at hei-ss.com</A>&gt; escribi&#243;:
+
+&gt;<i> Hello all:****
+</I>&gt;<i>
+</I>&gt;<i> ** **
+</I>&gt;<i>
+</I>&gt;<i> r476 (sep 2012) of coova-chilli introduced a change in wwwsh:****
+</I>&gt;<i>
+</I>&gt;<i> ** **
+</I>&gt;<i>
+</I>&gt;<i> What previously had been this:****
+</I>&gt;<i>
+</I>&gt;<i> dd of=$POST_FILE count=$CONTENT_LENGTH bs=1 2&gt;/dev/null****
+</I>&gt;<i>
+</I>&gt;<i> ** **
+</I>&gt;<i>
+</I>&gt;<i> Became this:****
+</I>&gt;<i>
+</I>&gt;<i> dd of=$POST_FILE cbs=$CONTENT_LENGTH conv=block count=1 2&gt;/dev/null****
+</I>&gt;<i>
+</I>&gt;<i> ** **
+</I>&gt;<i>
+</I>&gt;<i> ** **
+</I>&gt;<i>
+</I>&gt;<i> ie:****
+</I>&gt;<i>
+</I>&gt;<i> ****
+</I>&gt;<i>
+</I>&gt;<i> ===================================================================****
+</I>&gt;<i>
+</I>&gt;<i> --- wwwsh(revision 475)****
+</I>&gt;<i>
+</I>&gt;<i> +++ wwwsh(revision 485)****
+</I>&gt;<i>
+</I>&gt;<i> @@ -24,7 +24,7 @@****
+</I>&gt;<i>
+</I>&gt;<i> if [ ${CONTENT_LENGTH:-0} -gt 0 ]; then****
+</I>&gt;<i>
+</I>&gt;<i>      POST_FILE=/tmp/post.$$****
+</I>&gt;<i>
+</I>&gt;<i>      export POST_FILE****
+</I>&gt;<i>
+</I>&gt;<i> -    dd of=$POST_FILE count=$CONTENT_LENGTH bs=1 2&gt;/dev/null****
+</I>&gt;<i>
+</I>&gt;<i> +    dd of=$POST_FILE cbs=$CONTENT_LENGTH conv=block count=1 2&gt;/dev/null**
+</I>&gt;<i> **
+</I>&gt;<i>
+</I>&gt;<i>      $haserl $file &lt; $POST_FILE****
+</I>&gt;<i>
+</I>&gt;<i>      /bin/rm -f $POST_FILE****
+</I>&gt;<i>
+</I>&gt;<i> else****
+</I>&gt;<i>
+</I>&gt;<i> ** **
+</I>&gt;<i>
+</I>&gt;<i> ** **
+</I>&gt;<i>
+</I>&gt;<i> This was apparently related to a change proposed back in Jan 2011 to
+</I>&gt;<i> assist with Content-Length responses sent from some browsers.  (see:
+</I>&gt;<i> <A HREF="http://coova.org/node/4640">http://coova.org/node/4640</A>) (though I'm not certain that was the reason,
+</I>&gt;<i> but it was the same change as proposed)****
+</I>&gt;<i>
+</I>&gt;<i> ** **
+</I>&gt;<i>
+</I>&gt;<i> ** **
+</I>&gt;<i>
+</I>&gt;<i> However, the &quot;cbs=&quot; and &quot;conv=block&quot; are parameters not supported by the
+</I>&gt;<i> dd program included in most embedded systems (ie: the standard busybox
+</I>&gt;<i> binary doesn't handle those parameters)****
+</I>&gt;<i>
+</I>&gt;<i> ** **
+</I>&gt;<i>
+</I>&gt;<i> While I _WAS_ smart enough to track this down as the source of my
+</I>&gt;<i> problems, and _WAS_ smart enough to search through the svn commits to find
+</I>&gt;<i> where/when the change was introduced, I'm apparently not smart enough to
+</I>&gt;<i> understand what it is doing...  :)****
+</I>&gt;<i>
+</I>&gt;<i> ** **
+</I>&gt;<i>
+</I>&gt;<i> If I change it to the prior way, my immediate problem goes away, but I
+</I>&gt;<i> must confess I don't fully understand what this change was fixing, so I
+</I>&gt;<i> can't be certain I'm not breaking something important.  ****
+</I>&gt;<i>
+</I>&gt;<i> ** **
+</I>&gt;<i>
+</I>&gt;<i> I'd also like to take a stab at re-factoring it in a way that is more
+</I>&gt;<i> broadly supported, but am a little lost on what it is trying to
+</I>&gt;<i> accomplish.  Any thoughts/comments are appreciated.  ****
+</I>&gt;<i>
+</I>&gt;<i> ** **
+</I>&gt;<i>
+</I>&gt;<i> Thanks.****
+</I>&gt;<i>
+</I>&gt;<i> ** **
+</I>&gt;<i>
+</I>&gt;<i> -Matt****
+</I>&gt;<i>
+</I>&gt;<i> ** **
+</I>&gt;<i>
+</I>&gt;<i> ** **
+</I>&gt;<i>
+</I>&gt;<i> ** **
+</I>&gt;<i>
+</I>&gt;<i> ** **
+</I>&gt;<i>
+</I>&gt;<i> _______________________________________________
+</I>&gt;<i> Chilli mailing list
+</I>&gt;<i> <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">Chilli at coova.org</A>
+</I>&gt;<i> <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">http://lists.coova.org/cgi-bin/mailman/listinfo/chilli</A>
+</I>&gt;<i>
+</I>&gt;<i>
+</I>-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: &lt;<A HREF="http://lists.coova.org/pipermail/chilli/attachments/20130924/ac685a17/attachment.html">http://lists.coova.org/pipermail/chilli/attachments/20130924/ac685a17/attachment.html</A>&gt;
+</PRE>
+
+
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="002395.html">[Chilli] change in wwwsh
+</A></li>
+	<LI>Next message: <A HREF="002399.html">[Chilli] Chilli Authentication System
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2396">[ date ]</a>
+              <a href="thread.html#2396">[ thread ]</a>
+              <a href="subject.html#2396">[ subject ]</a>
+              <a href="author.html#2396">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

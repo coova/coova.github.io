@@ -1,0 +1,162 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] chilli dhcp problem
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20chilli%20dhcp%20problem&In-Reply-To=%3CPine.LNX.4.62.1004202010350.11119%40mail.pnpi.spb.ru%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001310.html">
+   <LINK REL="Next"  HREF="001314.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] chilli dhcp problem</H1>
+    <B>Anatoly Oreshkin</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20chilli%20dhcp%20problem&In-Reply-To=%3CPine.LNX.4.62.1004202010350.11119%40mail.pnpi.spb.ru%3E"
+       TITLE="[Chilli] chilli dhcp problem">Anatoly.Oreshkin at pnpi.spb.ru
+       </A><BR>
+    <I>Tue Apr 20 16:13:54 UTC 2010</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001310.html">[Chilli] R: building chilli from source
+</A></li>
+        <LI>Next message: <A HREF="001314.html">[Chilli] MacAuth failing after wireless drop
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1305">[ date ]</a>
+              <a href="thread.html#1305">[ thread ]</a>
+              <a href="subject.html#1305">[ subject ]</a>
+              <a href="author.html#1305">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>
+Hello,
+
+I've configured coovachilli on Linux box as proxy for 802.1X  clients. 
+Also I've specified external DHCP server to assign static addresses to  802.1X  clients.
+
+The whole subscriber net 10.2.3.0/24 is divided into 2 parts.
+
+dynamic subnet 10.2.3.0/25 for dynamic address allocation 
+static subnet  10.2.3.128/25 for static address allocation.
+
+My chilli server configuration is as follows.
+
+/usr/local/etc/chilli/config:
+
+HS_WANIF=eth0
+HS_LANIF=eth1
+HS_NETWORK=10.2.3.0
+HS_NETMASK=255.255.255.0
+HS_UAMLISTEN=10.2.3.1
+HS_RADIUS=212.193.96.134
+HS_RADIUS2=212.193.96.134
+
+....
+
+/usr/local/etc/chilli/local.conf:
+
+----------------------
+proxylisten=10.2.3.1            # chilli eth1 (internal) interface address
+proxyport=1812
+proxyclient=10.2.3.0/25         # access points (AP)  addresses
+proxysecret=&lt;secret&gt;
+dynip 10.2.3.0/25               # dynamic subnet
+statip 10.2.3.128/25            # static  subnet
+dhcpgateway 212.193.96.134      # external DHCP server
+dhcprelayagent 195.19.214.216   # chilli  eth0 (external) interface address
+dhcpgatewayport 67
+--------------------
+
+
+Coovachilli proxies  successfully requests from 802.1X clients to radius server and
+radius challenges from radius server back to clients.
+
+The problem arises with static ip address assignment.
+
+Coovachilli relays client dhcp requests to external dhcp server  and a client gets 
+from external dhcp server static address, for example 10.2.3.139, as needed.
+
+I see on the client its ip configuration:
+ip address:   10.2.3.139
+netmask: 255.255.255.0
+gateway: 10.2.3.1
+dhcp server: 10.2.3.1
+
+
+But coovachilli assigns a client different ip address, 10.2.3.2 from dynamic ip subnet.
+The command /usr/local/sbin/chilli_query list gives
+
+00-16-EA-8A-DE-38 10.2.3.2 pass 4bcdc49000000001 1 csd-notebook\oreshkin 19/0 19/0 0/0 0/0 0 0 
+0/0 0/0 -
+
+Chilli debug output shows:
+
+...
+dhcp.c: 2511: 0 (Debug) dhcp/bootps request being processed
+dhcp.c: 2784: 0 (Debug) DHCP relay response of length 300 received
+dhcp.c: 3044: 0 (Debug) ARP: 00-16-EA-8A-DE-38 asking about 10.2.3.139
+dhcp.c: 3054: 0 (Debug) ARP: Ignoring self-discovery: 10.2.3.139
+chilli.c: 3213: 0 (Debug) DHCP request for IP address
+...
+
+dhcp.c: 3044: 0 (Debug) ARP: 00-16-EA-8A-DE-38 asking about 10.2.3.1
+dhcp.c: 2982: 0 (Debug) ARP: Replying to 10.2.3.2 / 00-16-EA-8A-DE-38
+dhcp.c: 3003: 0 (Debug) ARP: Received other ARP than request!
+dhcp.c: 2576: 0 (Debug) Received packet with spoofed source!
+dhcp.c: 2576: 0 (Debug) Received packet with spoofed source!
+dhcp.c: 3044: 0 (Debug) ARP: 00-16-EA-8A-DE-38 asking about 10.2.3.139
+dhcp.c: 3054: 0 (Debug) ARP: Ignoring self-discovery: 10.2.3.139
+chilli.c: 3213: 0 (Debug) DHCP request for IP address
+dhcp.c: 2707: 0 (Debug) Layer2 PROT: 0xdd86 dropped
+dhcp.c: 2707: 0 (Debug) Layer2 PROT: 0xdd86 dropped
+dhcp.c: 2576: 0 (Debug) Received packet with spoofed source!
+dhcp.c: 2576: 0 (Debug) Received packet with spoofed source!
+dhcp.c: 2576: 0 (Debug) Received packet with spoofed source!
+dhcp.c: 2511: 0 (Debug) dhcp/bootps request being processed
+dhcp.c: 2576: 0 (Debug) Received packet with spoofed source!
+dhcp.c: 2576: 0 (Debug) Received packet with spoofed source!
+....
+
+What's wrong ?  Wrong chilli configuration ?
+Is this scenario possible at all ?
+How to work around this problem ?
+
+Thanks.
+</PRE>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001310.html">[Chilli] R: building chilli from source
+</A></li>
+	<LI>Next message: <A HREF="001314.html">[Chilli] MacAuth failing after wireless drop
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1305">[ date ]</a>
+              <a href="thread.html#1305">[ thread ]</a>
+              <a href="subject.html#1305">[ subject ]</a>
+              <a href="author.html#1305">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

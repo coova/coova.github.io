@@ -1,0 +1,81 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] [PATCH] Fix: Memory leak of opt_run()
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20%5BPATCH%5D%20Fix%3A%20Memory%20leak%20of%20opt_run%28%29&In-Reply-To=%3C4B90A88E.9030106%40ictec.co.jp%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001170.html">
+   <LINK REL="Next"  HREF="001172.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] [PATCH] Fix: Memory leak of opt_run()</H1>
+    <B>Masashi Honma</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20%5BPATCH%5D%20Fix%3A%20Memory%20leak%20of%20opt_run%28%29&In-Reply-To=%3C4B90A88E.9030106%40ictec.co.jp%3E"
+       TITLE="[Chilli] [PATCH] Fix: Memory leak of opt_run()">honma at ictec.co.jp
+       </A><BR>
+    <I>Fri Mar  5 06:45:34 UTC 2010</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001170.html">[Chilli] [PATCH] Fix: Memory leak of opt_run()
+</A></li>
+        <LI>Next message: <A HREF="001172.html">[Chilli] [PATCH] Fix: Memory leak of opt_run()
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1171">[ date ]</a>
+              <a href="thread.html#1171">[ thread ]</a>
+              <a href="subject.html#1171">[ subject ]</a>
+              <a href="author.html#1171">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>(2010/03/05 15:38), Masashi Honma wrote:
+&gt;<i> static int opt_run(int argc, char **argv, int reload) {
+</I>&gt;<i> char **newargs;
+</I>&gt;<i> char file[128];
+</I>&gt;<i>
+</I>&gt;<i> newargs_bk = newargs; &lt;-- add
+</I>
+
+I omitted many lines. Right position is here.
+
+   if (!(newargs = calloc(1, sizeof(char *) * (argc + 4)))) {
+     return -1;
+   }
+
+   newargs_bk = newargs; &lt;-- add
+
+   for (i=1; i &lt; argc; i++) {
+     newargs[i] = argv[i];
+   }
+
+Regards,
+Masashi Honma.
+</PRE>
+
+
+
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001170.html">[Chilli] [PATCH] Fix: Memory leak of opt_run()
+</A></li>
+	<LI>Next message: <A HREF="001172.html">[Chilli] [PATCH] Fix: Memory leak of opt_run()
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1171">[ date ]</a>
+              <a href="thread.html#1171">[ thread ]</a>
+              <a href="subject.html#1171">[ subject ]</a>
+              <a href="author.html#1171">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

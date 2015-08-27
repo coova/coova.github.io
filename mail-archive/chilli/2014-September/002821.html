@@ -1,0 +1,195 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] 802.1X - EAP/TLS Authentication using coova as Radius	proxy [SOLVED]
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20802.1X%20-%20EAP/TLS%20Authentication%20using%20coova%20as%20Radius%0A%09proxy%20%5BSOLVED%5D&In-Reply-To=%3C1410273192924.14722%40et.esiea.fr%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="002818.html">
+   <LINK REL="Next"  HREF="002819.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] 802.1X - EAP/TLS Authentication using coova as Radius	proxy [SOLVED]</H1>
+    <B>HOUSSENBAY Adnane-Olivier</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20802.1X%20-%20EAP/TLS%20Authentication%20using%20coova%20as%20Radius%0A%09proxy%20%5BSOLVED%5D&In-Reply-To=%3C1410273192924.14722%40et.esiea.fr%3E"
+       TITLE="[Chilli] 802.1X - EAP/TLS Authentication using coova as Radius	proxy [SOLVED]">houssenbay at et.esiea.fr
+       </A><BR>
+    <I>Tue Sep  9 14:33:13 UTC 2014</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="002818.html">[Chilli] 802.1X - EAP/TLS Authentication using coova as Radius proxy
+</A></li>
+        <LI>Next message: <A HREF="002819.html">[Chilli] Use of facebook to authenticate in RADIUS
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2821">[ date ]</a>
+              <a href="thread.html#2821">[ thread ]</a>
+              <a href="subject.html#2821">[ subject ]</a>
+              <a href="author.html#2821">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hi everyone,
+
+I solved the EAP-TLS authentication issue.
+
+The length of packets sent by wpa_supplicant was too big (1408 bytes).
+
+Indeed, when the radius client encapsulates EAP message in a radius packet (Access-Request), total length of radius packet was greater than 1500 bytes.
+
+Thus coovaChilli dropped these packets.
+
+To fix that, I just configure my supplicant to make fragments of 1024 bytes.
+
+Here is my configuration of wpa_supplicant, maybe it can be useful to somebody :
+# EAP-TLS wired authentication
+
+    network={
+
+            eapol_flags=0
+
+            key_mgmt=WPA-EAP
+
+            eap=TLS
+
+            identity=&quot;yourID&quot;
+
+            ca_cert=&quot;path/to/ca_certificate
+            client_cert=&quot;path/to/client_certificate&quot;
+
+            private_key=&quot;path/to/client_private_key
+
+            private_key_passwd=&quot;yourPassword&quot;
+
+            fragment_size=1024
+
+    }
+
+
+Finally, I would like to thanks coovaChilli developers for their work. It's a great project and for me the best network access controller.
+
+Best regards,
+
+
+Olivier
+ALCASAR&lt;<A HREF="http://www.alcasar.net/en">http://www.alcasar.net/en</A>&gt; project member
+
+
+
+
+________________________________
+De : HOUSSENBAY Adnane-Olivier
+Envoy&#233; : jeudi 4 septembre 2014 19:31
+&#192; : <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli at coova.org</A>
+Objet : 802.1X - EAP/TLS Authentication using coova as Radius proxy
+
+
+Dear CoovaChilli users,
+
+
+I'm trying to do 802.1X (wired/ and wireless with wpa) authentication using EAP-TLS method which involve mutual authentication with certificates (both sides client/server).
+
+
+I already succeed to 802.1X EAP-PEAP authentication but I'm having trouble with EAP-TLS.
+
+
+I configured chilli as proxy radius with the parameters below :
+
+--proxylisten
+
+--proxyport
+
+--proxyclient
+
+--proxysecret
+
+
+Here is my authentication chain link:
+
+Supplicant wpa_supplicant &lt;-&gt; switch Alcatel &lt;-&gt; coovachilli &lt;-&gt; freeradius server
+
+
+So, the dialog between the supplicant and freeradius is doing well until
+
+freeradius ask for client certificate. At this moment the switch interrupt
+
+the authentication process. ( I got the same with wireless authentication using
+
+Alcatel omniaccess AP)
+
+
+I checked with wireshark the frames between freeradius &lt;-&gt;coova&lt;-&gt; switch :
+
+the radius packet from freeradius (Access-challenge) containing certificate request is forwarded to
+
+the switch properly.
+
+
+Frames between supplicant &lt;-&gt; switch
+
+When client certificate is requested the supplicant send the first eap fragment which contains
+
+the client certificate but it's &quot;dropped&quot; by the switch and it displays &quot;Radius server not reachable&quot;
+
+
+To resume the situation here is the radius packets exchange :
+
+switch &lt;-----------------------------------&gt; freeradius
+
+--------&gt; Access-Request: identity
+
+&lt;-------- Access-Challenge : Start TLS
+
+---------&gt; Access-Request: Client Hello
+
+&lt;-------- Access-Challenge : Server Hello, Certificate Request
+
+
+And then nothing happens :(
+
+
+Please help me if anyone have suggestion or explanation about this strange behaviour.
+
+
+Thanks for all the reply, all the best.
+
+
+Olivier
+
+
+
+
+
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: &lt;<A HREF="http://lists.coova.org/pipermail/chilli/attachments/20140909/d7086187/attachment.html">http://lists.coova.org/pipermail/chilli/attachments/20140909/d7086187/attachment.html</A>&gt;
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="002818.html">[Chilli] 802.1X - EAP/TLS Authentication using coova as Radius proxy
+</A></li>
+	<LI>Next message: <A HREF="002819.html">[Chilli] Use of facebook to authenticate in RADIUS
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2821">[ date ]</a>
+              <a href="thread.html#2821">[ thread ]</a>
+              <a href="subject.html#2821">[ subject ]</a>
+              <a href="author.html#2821">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

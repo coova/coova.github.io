@@ -1,0 +1,125 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> UAMALLOWED and HTTPS (to select.worldpay.com)
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20UAMALLOWED%20and%20HTTPS%20%28to%20select.worldpay.com%29&In-Reply-To=%3C49340.149.5.32.200.1241030615.squirrel%40www.rivertowermail.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000712.html">
+   <LINK REL="Next"  HREF="000717.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>UAMALLOWED and HTTPS (to select.worldpay.com)</H1>
+    <B>Derek C</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20UAMALLOWED%20and%20HTTPS%20%28to%20select.worldpay.com%29&In-Reply-To=%3C49340.149.5.32.200.1241030615.squirrel%40www.rivertowermail.com%3E"
+       TITLE="UAMALLOWED and HTTPS (to select.worldpay.com)">derekchilli at hssl.ie
+       </A><BR>
+    <I>Wed Apr 29 18:43:35 UTC 2009</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000712.html">UAMALLOWED and HTTPS (to select.worldpay.com)
+</A></li>
+        <LI>Next message: <A HREF="000717.html">UAMALLOWED and HTTPS (to select.worldpay.com)
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#714">[ date ]</a>
+              <a href="thread.html#714">[ thread ]</a>
+              <a href="subject.html#714">[ subject ]</a>
+              <a href="author.html#714">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>I should have said:  I'm only redirecting traffic that is destined for the
+Worldpay SSL server.
+
+I use this rule: -
+
+iptables -t nat -I PREROUTING -p tcp -d select.worldpay.com --dport 443 -j
+DNAT --to-destination MY-SERVER-IP:443
+
+That server is using socat to listen on 443 and proxy traffic from the
+Worldpay SSL server.  I use this socat command:
+
+socat TCP4-LISTEN:443,bind=MY-SERVER-IP,fork TCP4:select.worldpay.com:443
+
+But I'm pretty sure that if Worldpay change their IP this setup will be
+dead until restarted.
+
+Derek
+
+
+
+
+On Wed, April 29, 2009 7:22 pm, Derek C wrote:
+&gt;<i>
+</I>
+&gt;<i> On Wed, April 29, 2009 5:58 pm, Johan Meiring wrote:
+</I>&gt;<i>
+</I>&gt;&gt;<i> The only other thing I can think of is MTU issues.
+</I>&gt;&gt;<i> Try issuing the following on your hotspot, and see if it helps.
+</I>&gt;&gt;<i> iptables -I FORWARD -t mangle -p tcp -m tcp --tcp-flags SYN,RST SYN -j
+</I>&gt;&gt;<i> TCPMSS --clamp-mss-to-pmtu
+</I>&gt;&gt;<i> (the above command is one line)
+</I>&gt;&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> Hi Johan,
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> This didn't work either.
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> I have a work-around to my problems (which is great) - but it's horrible!
+</I>&gt;<i>  On the Coova Chilli AP I'm redirecting traffic with a DNAT iptables rule
+</I>&gt;<i>  to a server I have in a data centre.  In that server I'm proxying the
+</I>&gt;<i> traffic with socat - and its working so I have the payment gateway up &amp;
+</I>&gt;<i> running.  But its horrible because if Worldpay change their IP....
+</I>&gt;<i>
+</I>&gt;<i> Derek
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> --
+</I>&gt;<i> Derek C
+</I>&gt;<i> In Ireland
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> ---------------------------------------------------------------------
+</I>&gt;<i> To unsubscribe, e-mail: <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli-unsubscribe at coova.org</A>
+</I>&gt;<i> For additional commands, e-mail: <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli-help at coova.org</A>
+</I>&gt;<i> Wiki: <A HREF="http://coova.org/wiki/index.php/CoovaChilli">http://coova.org/wiki/index.php/CoovaChilli</A>
+</I>&gt;<i> Forum: <A HREF="http://coova.org/phpBB3/viewforum.php?f=4">http://coova.org/phpBB3/viewforum.php?f=4</A>
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>
+</I>
+
+-- 
+Derek C
+In Ireland
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000712.html">UAMALLOWED and HTTPS (to select.worldpay.com)
+</A></li>
+	<LI>Next message: <A HREF="000717.html">UAMALLOWED and HTTPS (to select.worldpay.com)
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#714">[ date ]</a>
+              <a href="thread.html#714">[ thread ]</a>
+              <a href="subject.html#714">[ subject ]</a>
+              <a href="author.html#714">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

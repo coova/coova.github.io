@@ -1,0 +1,119 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] Transparent proxying and forwarding loop detected
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Transparent%20proxying%20and%20forwarding%20loop%20detected&In-Reply-To=%3C62309c2deb3cbcf4d9d771c495a46665.squirrel%40linuxbox.co.uk%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="002789.html">
+   <LINK REL="Next"  HREF="002793.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] Transparent proxying and forwarding loop detected</H1>
+    <B>Peter Smith</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Transparent%20proxying%20and%20forwarding%20loop%20detected&In-Reply-To=%3C62309c2deb3cbcf4d9d771c495a46665.squirrel%40linuxbox.co.uk%3E"
+       TITLE="[Chilli] Transparent proxying and forwarding loop detected">pete at linuxbox.co.uk
+       </A><BR>
+    <I>Fri Jul 11 10:51:42 UTC 2014</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="002789.html">[Chilli] Transparent proxying and forwarding loop detected
+</A></li>
+        <LI>Next message: <A HREF="002793.html">[Chilli] Transparent proxying and forwarding loop detected
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2792">[ date ]</a>
+              <a href="thread.html#2792">[ thread ]</a>
+              <a href="subject.html#2792">[ subject ]</a>
+              <a href="author.html#2792">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Well it *was* working, anyway. I decided to add dansguardian into the
+equation, so now I need to redirect any port 80 traffic to 8080.
+Dansguardian (listening on 8080) then proxies out through squid on
+3128.
+
+I thought it would be as simple as changing this:
+
+iptables -A PREROUTING -t nat -s 10.0.0.0/8 -p tcp --dport 80 ! -d
+10.0.0.0/8 -j REDIRECT --to-port 3128
+
+, to redirect to 8080.
+
+When I try this, I see hits in the dansguardian log, and in the squid
+log, but then squid complains about 'forwarding loop detected' again.
+
+This is giving me a real headache now. Any ideas please?
+
+
+
+&gt;<i> Hi from babajaga (squid).
+</I>&gt;<i> Three issues:
+</I>&gt;<i> 1) chilli/config: Get rid of these ones, as you want to do use
+</I>&gt;<i> transparent squid (I commented them)
+</I>&gt;<i> #HS_POSTAUTH_PROXY=10.0.0.1
+</I>&gt;<i> #HS_POSTAUTH_PROXYPORT=3128
+</I>&gt;<i> 2)squid.conf: http_port 3128 intercept #changed between squid 2.7
+</I>and
+&gt;<i> 3.x: looks like still tolerated for compatibility
+</I>&gt;<i> 3) iptables. Now the question is, where/how NAT to be done.
+</I>&gt;<i> As I have routing, NAT, squid, chilli on same system (WAN interface
+</I>+
+&gt;<i> WLAN with chilli), I do the following
+</I>&gt;<i> /etc/chilli/ipup.sh:
+</I>&gt;<i> # force-add the final rule necessary to fix routing tables
+</I>&gt;<i> iptables -I POSTROUTING -t nat -o $HS_WANIF -j MASQUERADE
+</I>&gt;<i> CLIENT_NET=192.168.182.0/24
+</I>&gt;<i> #Redirect all non-local http traffic to squid
+</I>&gt;<i> iptables -A PREROUTING -t nat -s $CLIENT_NET -p tcp --dport 80 ! -d
+</I>$CLIENT_NET
+
+&gt;<i> -j REDIRECT --to-port 3128
+</I>&gt;<i> #Block direct external access to the internal receiving port. This
+</I>has
+&gt;<i> to be don
+</I>e
+&gt;<i> in the mangle part of iptables
+</I>&gt;<i> #before NAT happens so that intercepted traffic does not get
+</I>dropped.
+&gt;<i> iptables -A PREROUTING -t mangle -p tcp --dport 3128 -j DROP
+</I>&gt;<i> #Only allow client access to the squid intercept port from tun0, ie
+</I>AFTER its be
+
+&gt;<i> en through the chilli gatekeeper
+</I>&gt;<i> iptables -I INPUT -i tun0 -p tcp --dport 3128  -j ACCEPT
+</I>
+
+
+
+</PRE>
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="002789.html">[Chilli] Transparent proxying and forwarding loop detected
+</A></li>
+	<LI>Next message: <A HREF="002793.html">[Chilli] Transparent proxying and forwarding loop detected
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2792">[ date ]</a>
+              <a href="thread.html#2792">[ thread ]</a>
+              <a href="subject.html#2792">[ subject ]</a>
+              <a href="author.html#2792">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

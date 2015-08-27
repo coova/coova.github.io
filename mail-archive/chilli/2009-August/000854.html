@@ -1,0 +1,73 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> Passwords of length 16 not handled correctly
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20Passwords%20of%20length%2016%20not%20handled%20correctly&In-Reply-To=%3C4A800AEF.8080103%40wiggy.net%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000853.html">
+   <LINK REL="Next"  HREF="000858.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>Passwords of length 16 not handled correctly</H1>
+    <B>Wichert Akkerman</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20Passwords%20of%20length%2016%20not%20handled%20correctly&In-Reply-To=%3C4A800AEF.8080103%40wiggy.net%3E"
+       TITLE="Passwords of length 16 not handled correctly">wichert at wiggy.net
+       </A><BR>
+    <I>Mon Aug 10 11:56:31 UTC 2009</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000853.html">Idle timeout handling fix
+</A></li>
+        <LI>Next message: <A HREF="000858.html">Passwords of length 16 not handled correctly
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#854">[ date ]</a>
+              <a href="thread.html#854">[ thread ]</a>
+              <a href="subject.html#854">[ subject ]</a>
+              <a href="author.html#854">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>I found another corner case in the password handling: normally passwords 
+are NUL-padded to be a multiple of 16 in length before the as part of 
+the PAP-obfuscation. chilli then decodes the obfuscated password and 
+ends up with a proper NUL-terminated string. However if a password is 
+exactly 16 characters, or a multiple thereof, long no NUL-padding 
+happens. As a result the password string chilli gets is never 
+NUL-terminated. The fix is easy: make sure the incoming password is 
+NUL-terminated so we can get a valid length for it and limit the decoded 
+password to strlen(conn-&gt;password) characters. I've attached a patch 
+with this change.
+
+Wichert.
+
+
+-------------- next part --------------
+An embedded and charset-unspecified text was scrubbed...
+Name: pw16.diff
+URL: &lt;<A HREF="http://lists.coova.org/pipermail/chilli/attachments/20090810/60585acb/attachment.txt">http://lists.coova.org/pipermail/chilli/attachments/20090810/60585acb/attachment.txt</A>&gt;
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000853.html">Idle timeout handling fix
+</A></li>
+	<LI>Next message: <A HREF="000858.html">Passwords of length 16 not handled correctly
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#854">[ date ]</a>
+              <a href="thread.html#854">[ thread ]</a>
+              <a href="subject.html#854">[ subject ]</a>
+              <a href="author.html#854">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

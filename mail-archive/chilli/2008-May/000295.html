@@ -1,0 +1,289 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> Several chilli process in the same computer
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20Several%20chilli%20process%20in%20the%20same%20computer&In-Reply-To=%3CD9BEBFB7-22DB-4303-9568-C86431415FE0%40mac.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000289.html">
+   <LINK REL="Next"  HREF="000311.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>Several chilli process in the same computer</H1>
+    <B>wlan at mac.com</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20Several%20chilli%20process%20in%20the%20same%20computer&In-Reply-To=%3CD9BEBFB7-22DB-4303-9568-C86431415FE0%40mac.com%3E"
+       TITLE="Several chilli process in the same computer">wlan at mac.com
+       </A><BR>
+    <I>Thu May 15 17:31:40 UTC 2008</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000289.html">Several chilli process in the same computer
+</A></li>
+        <LI>Next message: <A HREF="000311.html">Several chilli process in the same computer
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#295">[ date ]</a>
+              <a href="thread.html#295">[ thread ]</a>
+              <a href="subject.html#295">[ subject ]</a>
+              <a href="author.html#295">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Chilli originally only had the uamport, and still does. uamuiport was  
+added to allow a bit more ability (like POST processing) for the  
+embedded http server. While uamport binds to the uamlisten, currently  
+uamuiport does not - it binds to '*' and thus must be different (or  
+not used) with multiple instances. Perhaps it should just bind to  
+uamlisten...
+
+David
+
+
+On May 15, 2008, at 4:08 PM, Krn&#225;k J&#225;nos wrote:
+
+&gt;<i> hi
+</I>&gt;<i>
+</I>&gt;<i> there is also another option called uamuiport i think this is what  
+</I>&gt;<i> is used by the other chilli, change this as well
+</I>&gt;<i>
+</I>&gt;<i> bye
+</I>&gt;<i>
+</I>&gt;<i> Oguzhan Kayhan escribi&#243;:
+</I>&gt;&gt;<i>
+</I>&gt;&gt;&gt;<i> I've created different config files but It doesn't work.  I use vlan
+</I>&gt;&gt;&gt;<i> interfaces, eth1.1, eth1.2 and eth1.3.  Do you use different  
+</I>&gt;&gt;&gt;<i> physical
+</I>&gt;&gt;&gt;<i> interfaces?  And I've got only one WAN interface, eth0.
+</I>&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;<i> Thanks.
+</I>&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;<i>
+</I>&gt;&gt;<i> Actually, i am using both vlan interfaces and physical interfaces  
+</I>&gt;&gt;<i> in my
+</I>&gt;&gt;<i> network.
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> here's my ps-ef result for chilli.
+</I>&gt;&gt;<i> be careful about selecting different pid files for chilli processes.
+</I>&gt;&gt;<i> That might be your problem.
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> root     26032     1 16 May13 ?        08:00:31 /usr/sbin/chilli
+</I>&gt;&gt;<i> --conf=/etc/chilli.d/chilli-dogu.conf --pidfile=/var/run/chilli- 
+</I>&gt;&gt;<i> dogu.pid
+</I>&gt;&gt;<i> root     26042     1  1 May13 ?        00:31:12 /usr/sbin/chilli
+</I>&gt;&gt;<i> --conf=/etc/chilli.d/chilli-dogu-wireless.conf
+</I>&gt;&gt;<i> --pidfile=/var/run/chilli-dogu-wireless.pid
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> We also made a modification in distrto package as we are keeping   
+</I>&gt;&gt;<i> config
+</I>&gt;&gt;<i> files under /etc/chilli.d/ folder
+</I>&gt;&gt;<i> and all cofig files added to this folder runs a different chilli  
+</I>&gt;&gt;<i> process.
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> Im also adding our init.d script for chilli in here for your test  
+</I>&gt;&gt;<i> purposes.
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> --------------------------------------------------------------------- 
+</I>&gt;&gt;<i> ----
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> PATH=/sbin:/bin:/usr/sbin:/usr/bin
+</I>&gt;&gt;<i> DAEMON=/usr/sbin/chilli
+</I>&gt;&gt;<i> NAME=chilli
+</I>&gt;&gt;<i> DESC=chilli
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> test -f $DAEMON || exit 0
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> set -e
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> case &quot;$1&quot; in
+</I>&gt;&gt;<i>   start)
+</I>&gt;&gt;<i>         echo -n &quot;Starting $DESC: &quot;
+</I>&gt;&gt;<i>         if [ -d /etc/chilli.d ]; then
+</I>&gt;&gt;<i>                 for cnf in /etc/chilli.d/*.conf
+</I>&gt;&gt;<i>                 do
+</I>&gt;&gt;<i>                         pfile=`basename $cnf .conf`
+</I>&gt;&gt;<i>                         start-stop-daemon --start --quiet \
+</I>&gt;&gt;<i>                                 --pidfile /var/run/$pfile.pid \
+</I>&gt;&gt;<i>                                 --exec $DAEMON -- --conf=$cnf
+</I>&gt;&gt;<i> --pidfile=/var/run/$pfile.pid
+</I>&gt;&gt;<i>                         echo -n $pfile &quot;, &quot;
+</I>&gt;&gt;<i>                 done
+</I>&gt;&gt;<i>         else
+</I>&gt;&gt;<i>                 start-stop-daemon --oknodo --stop --quiet --pidfile
+</I>&gt;&gt;<i> /var/run/$NAME.pid \
+</I>&gt;&gt;<i>                         --exec $DAEMON
+</I>&gt;&gt;<i>         fi
+</I>&gt;&gt;<i>         echo &quot;$NAME.&quot;
+</I>&gt;&gt;<i>         ;;
+</I>&gt;&gt;<i> stop)
+</I>&gt;&gt;<i>         echo -n &quot;Stopping $DESC: &quot;
+</I>&gt;&gt;<i>         if [ -d /etc/chilli.d ]; then
+</I>&gt;&gt;<i>                 for cnf in /etc/chilli.d/*.conf
+</I>&gt;&gt;<i>                 do
+</I>&gt;&gt;<i>                         pfile=`basename $cnf .conf`
+</I>&gt;&gt;<i>                         start-stop-daemon --oknodo --stop --quiet \
+</I>&gt;&gt;<i>                                 --pidfile /var/run/$pfile.pid \
+</I>&gt;&gt;<i>                                 --exec $DAEMON -- --conf=$cnf
+</I>&gt;&gt;<i>                         echo -n $pfile &quot;, &quot;
+</I>&gt;&gt;<i>                 done
+</I>&gt;&gt;<i>         else
+</I>&gt;&gt;<i>                 start-stop-daemon --oknodo --stop --quiet --pidfile
+</I>&gt;&gt;<i> /var/run/$NAME.pid \
+</I>&gt;&gt;<i>                 --exec $DAEMON
+</I>&gt;&gt;<i>         fi
+</I>&gt;&gt;<i>         echo &quot;$NAME.&quot;
+</I>&gt;&gt;<i>         ;;
+</I>&gt;&gt;<i>   #reload)
+</I>&gt;&gt;<i> #reload)
+</I>&gt;&gt;<i>         #
+</I>&gt;&gt;<i>         #       If the daemon can reload its config files on the fly
+</I>&gt;&gt;<i>         #       for example by sending it SIGHUP, do it here.
+</I>&gt;&gt;<i>         #
+</I>&gt;&gt;<i>         #       If the daemon responds to changes in its config file
+</I>&gt;&gt;<i>         #       directly anyway, make this a do-nothing entry.
+</I>&gt;&gt;<i>         #
+</I>&gt;&gt;<i>         # echo &quot;Reloading $DESC configuration files.&quot;
+</I>&gt;&gt;<i>         # start-stop-daemon --stop --signal 1 --quiet --pidfile \
+</I>&gt;&gt;<i>         #       /var/run/$NAME.pid --exec $DAEMON
+</I>&gt;&gt;<i>   #;;
+</I>&gt;&gt;<i>   restart|force-reload)
+</I>&gt;&gt;<i>         #
+</I>&gt;&gt;<i>         #       If the &quot;reload&quot; option is implemented, move the
+</I>&gt;&gt;<i> &quot;force-reload&quot;
+</I>&gt;&gt;<i>         #       option to the &quot;reload&quot; entry above. If not, &quot;force- 
+</I>&gt;&gt;<i> reload&quot; is
+</I>&gt;&gt;<i>         #       just the same as &quot;restart&quot;.
+</I>&gt;&gt;<i>         #
+</I>&gt;&gt;<i>         echo -n &quot;Restarting $DESC: &quot;
+</I>&gt;&gt;<i>         start-stop-daemon --stop --quiet --pidfile \
+</I>&gt;&gt;<i>                 /var/run/$NAME.pid --exec $DAEMON
+</I>&gt;&gt;<i>         sleep 1
+</I>&gt;&gt;<i>         start-stop-daemon --start --quiet --pidfile \
+</I>&gt;&gt;<i>            /var/run/$NAME.pid --exec $DAEMON
+</I>&gt;&gt;<i>         echo &quot;$NAME.&quot;
+</I>&gt;&gt;<i>         ;;
+</I>&gt;&gt;<i>   *)
+</I>&gt;&gt;<i>         N=/etc/init.d/$NAME
+</I>&gt;&gt;<i>         # echo &quot;Usage: $N {start|stop|restart|reload|force- 
+</I>&gt;&gt;<i> reload}&quot; &gt;&amp;2
+</I>&gt;&gt;<i>         echo &quot;Usage: $N {start|stop|restart|force-reload}&quot; &gt;&amp;2
+</I>&gt;&gt;<i>         exit 1
+</I>&gt;&gt;<i>         ;;
+</I>&gt;&gt;<i> esac
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> exit 0
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> --------------------------------------------------------------------- 
+</I>&gt;&gt;<i> ------------------
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i>
+</I>&gt;&gt;&gt;<i> Oguzhan Kayhan escribi&#243;:
+</I>&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;&gt;<i> Hello,
+</I>&gt;&gt;&gt;&gt;<i> If you create different config files for chilli processes and  
+</I>&gt;&gt;&gt;&gt;<i> set them
+</I>&gt;&gt;&gt;&gt;<i> to
+</I>&gt;&gt;&gt;&gt;<i> work on different interfaces, it should work without a  
+</I>&gt;&gt;&gt;&gt;<i> problem..which
+</I>&gt;&gt;&gt;&gt;<i> for
+</I>&gt;&gt;&gt;&gt;<i> ex we use over 3-4 different interfaces with different chilli  
+</I>&gt;&gt;&gt;&gt;<i> processes.
+</I>&gt;&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;&gt;&gt;<i> Hi list,
+</I>&gt;&gt;&gt;&gt;&gt;<i> is it possible to run several chilli process in the same  
+</I>&gt;&gt;&gt;&gt;&gt;<i> computer?.
+</I>&gt;&gt;&gt;&gt;&gt;<i> I'd
+</I>&gt;&gt;&gt;&gt;&gt;<i> like to do that so that I could set up different captive  
+</I>&gt;&gt;&gt;&gt;&gt;<i> portals for
+</I>&gt;&gt;&gt;&gt;&gt;<i> several interfaces in differents vlans.  But I get this error  
+</I>&gt;&gt;&gt;&gt;&gt;<i> debugging
+</I>&gt;&gt;&gt;&gt;&gt;<i> when I start the second process, although I use another uam  
+</I>&gt;&gt;&gt;&gt;&gt;<i> port, uam
+</I>&gt;&gt;&gt;&gt;&gt;<i> listen ip, pid file, sock file and ip range for this process.
+</I>&gt;&gt;&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;&gt;&gt;<i> redir.c: 932: 0 (Debug) UAM port already in use. Waiting for  
+</I>&gt;&gt;&gt;&gt;&gt;<i> retry.
+</I>&gt;&gt;&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;&gt;&gt;<i> Thanks,
+</I>&gt;&gt;&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;&gt;&gt;<i> Javier
+</I>&gt;&gt;&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;&gt;&gt;<i> ------------------------------------------------------------------ 
+</I>&gt;&gt;&gt;&gt;&gt;<i> ---
+</I>&gt;&gt;&gt;&gt;&gt;<i> To unsubscribe, e-mail: <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli-unsubscribe at coova.org</A>
+</I>&gt;&gt;&gt;&gt;&gt;<i> For additional commands, e-mail: <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli-help at coova.org</A>
+</I>&gt;&gt;&gt;&gt;&gt;<i> Wiki: <A HREF="http://coova.org/wiki/index.php/CoovaChilli">http://coova.org/wiki/index.php/CoovaChilli</A>
+</I>&gt;&gt;&gt;&gt;&gt;<i> Forum: <A HREF="http://coova.org/phpBB3/viewforum.php?f=4">http://coova.org/phpBB3/viewforum.php?f=4</A>
+</I>&gt;&gt;&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;&gt;<i> ------------------------------------------------------------------- 
+</I>&gt;&gt;&gt;&gt;<i> --
+</I>&gt;&gt;&gt;&gt;<i> To unsubscribe, e-mail: <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli-unsubscribe at coova.org</A>
+</I>&gt;&gt;&gt;&gt;<i> For additional commands, e-mail: <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli-help at coova.org</A>
+</I>&gt;&gt;&gt;&gt;<i> Wiki: <A HREF="http://coova.org/wiki/index.php/CoovaChilli">http://coova.org/wiki/index.php/CoovaChilli</A>
+</I>&gt;&gt;&gt;&gt;<i> Forum: <A HREF="http://coova.org/phpBB3/viewforum.php?f=4">http://coova.org/phpBB3/viewforum.php?f=4</A>
+</I>&gt;&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;<i> -------------------------------------------------------------------- 
+</I>&gt;&gt;&gt;<i> -
+</I>&gt;&gt;&gt;<i> To unsubscribe, e-mail: <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli-unsubscribe at coova.org</A>
+</I>&gt;&gt;&gt;<i> For additional commands, e-mail: <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli-help at coova.org</A>
+</I>&gt;&gt;&gt;<i> Wiki: <A HREF="http://coova.org/wiki/index.php/CoovaChilli">http://coova.org/wiki/index.php/CoovaChilli</A>
+</I>&gt;&gt;&gt;<i> Forum: <A HREF="http://coova.org/phpBB3/viewforum.php?f=4">http://coova.org/phpBB3/viewforum.php?f=4</A>
+</I>&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;<i>
+</I>&gt;&gt;<i> ---------------------------------------------------------------------
+</I>&gt;&gt;<i> To unsubscribe, e-mail: <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli-unsubscribe at coova.org</A>
+</I>&gt;&gt;<i> For additional commands, e-mail: <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli-help at coova.org</A>
+</I>&gt;&gt;<i> Wiki: <A HREF="http://coova.org/wiki/index.php/CoovaChilli">http://coova.org/wiki/index.php/CoovaChilli</A>
+</I>&gt;&gt;<i> Forum: <A HREF="http://coova.org/phpBB3/viewforum.php?f=4">http://coova.org/phpBB3/viewforum.php?f=4</A>
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> -- 
+</I>&gt;<i> This message has been scanned for viruses and
+</I>&gt;<i> dangerous content by MailScanner, and is
+</I>&gt;<i> believed to be clean.  
+</I>&gt;<i> ---------------------------------------------------------------------  
+</I>&gt;<i> To unsubscribe, e-mail: <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli-unsubscribe at coova.org</A> For additional  
+</I>&gt;<i> commands, e-mail: <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli-help at coova.org</A> Wiki: <A HREF="http://coova.org/wiki/">http://coova.org/wiki/</A> 
+</I>&gt;<i> index.php/CoovaChilli Forum: <A HREF="http://coova.org/phpBB3/viewforum.php?f=4">http://coova.org/phpBB3/viewforum.php?f=4</A>
+</I>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: &lt;<A HREF="http://lists.coova.org/pipermail/chilli/attachments/20080515/f896501d/attachment.htm">http://lists.coova.org/pipermail/chilli/attachments/20080515/f896501d/attachment.htm</A>&gt;
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000289.html">Several chilli process in the same computer
+</A></li>
+	<LI>Next message: <A HREF="000311.html">Several chilli process in the same computer
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#295">[ date ]</a>
+              <a href="thread.html#295">[ thread ]</a>
+              <a href="subject.html#295">[ subject ]</a>
+              <a href="author.html#295">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

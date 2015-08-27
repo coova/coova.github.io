@@ -1,0 +1,94 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] inconsistency in downlink and uplink bandwidths using coovachilli
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20inconsistency%20in%20downlink%20and%20uplink%20bandwidths%20using%0A%20coovachilli&In-Reply-To=%3C53747894.1030201%40labs.it%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="002723.html">
+   <LINK REL="Next"  HREF="002727.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] inconsistency in downlink and uplink bandwidths using coovachilli</H1>
+    <B>Michele Bergonzoni</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20inconsistency%20in%20downlink%20and%20uplink%20bandwidths%20using%0A%20coovachilli&In-Reply-To=%3C53747894.1030201%40labs.it%3E"
+       TITLE="[Chilli] inconsistency in downlink and uplink bandwidths using coovachilli">bergonz at labs.it
+       </A><BR>
+    <I>Thu May 15 08:19:32 UTC 2014</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="002723.html">[Chilli] inconsistency in downlink and uplink bandwidths using	coovachilli
+</A></li>
+        <LI>Next message: <A HREF="002727.html">[Chilli] inconsistency in downlink and uplink bandwidths using coovachilli
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2724">[ date ]</a>
+              <a href="thread.html#2724">[ thread ]</a>
+              <a href="subject.html#2724">[ subject ]</a>
+              <a href="author.html#2724">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>&gt;<i> we are only seeing downlink and uplink bandwidth of ~8Mbps (measured
+</I>&gt;<i> using www.speedtest.net),when we have configured coovachilli to
+</I>&gt;<i> 100Mbps
+</I>
+I had a simlar issue, it turned out to be quite weird but, I think, not 
+uncommon. Your issue could be related or not, but it is very quick to 
+check if you have the same problem I had.
+
+With tcpdump on the dhcp interface, check if you see ICMP unreachables, 
+with remote servers as source, of the &quot;Fragmentation needed and DF set&quot; 
+kind.
+
+If you see this messages, you will probably also see huge TCP segments 
+being received on the same interface: in this case your NIC hardware is 
+glueing TCP segments to offload your CPU, but chilli does not understand 
+this.
+
+If this is the problem, you can solve it by disabling &quot;coalesce&quot; or 
+whatever it is called, in your NIC with ethtool or similar.
+
+Regards,
+			Bergonz
+
+-- 
+Ing. Michele Bergonzoni - Laboratori Guglielmo Marconi S.p.a.
+Phone:+39-051-6781926 e-mail: <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">bergonz at labs.it</A>
+alt.advanced.networks.design.configure.operate
+</PRE>
+
+
+
+
+
+
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="002723.html">[Chilli] inconsistency in downlink and uplink bandwidths using	coovachilli
+</A></li>
+	<LI>Next message: <A HREF="002727.html">[Chilli] inconsistency in downlink and uplink bandwidths using coovachilli
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2724">[ date ]</a>
+              <a href="thread.html#2724">[ thread ]</a>
+              <a href="subject.html#2724">[ subject ]</a>
+              <a href="author.html#2724">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

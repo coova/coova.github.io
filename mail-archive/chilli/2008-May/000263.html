@@ -1,0 +1,125 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> Help! Chilli accounting for dropped packets
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20Help%21%20Chilli%20accounting%20for%20dropped%20packets&In-Reply-To=%3CF2CDB07D-88EE-4CBC-A4DC-4B77CDC42179%40mac.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000262.html">
+   <LINK REL="Next"  HREF="000265.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>Help! Chilli accounting for dropped packets</H1>
+    <B>wlan at mac.com</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20Help%21%20Chilli%20accounting%20for%20dropped%20packets&In-Reply-To=%3CF2CDB07D-88EE-4CBC-A4DC-4B77CDC42179%40mac.com%3E"
+       TITLE="Help! Chilli accounting for dropped packets">wlan at mac.com
+       </A><BR>
+    <I>Thu May  8 06:21:29 UTC 2008</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000262.html">Help! Chilli accounting for dropped packets
+</A></li>
+        <LI>Next message: <A HREF="000265.html">Static IP
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#263">[ date ]</a>
+              <a href="thread.html#263">[ thread ]</a>
+              <a href="subject.html#263">[ subject ]</a>
+              <a href="author.html#263">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hi Gunther,
+
+The issue is that chilli's _raw_ socket on the dhcpif sees packets  
+_before_ the kernel does. This is why you should be dropping all  
+input on the dhcpif interface in iptables - because otherwise you  
+have chilli _and_ the kernel processing (and potentially forwarding  
+the same) packets. So, you can not use iptables to filter traffic  
+coming into chilli. As you noted, you _can_ control how packets are  
+forwarded through the kernel -- this includes packets chilli is  
+forwarding through the tun interface.
+
+As for accounting, it really should be counting (per RFC) data  
+received from and sent to the subscriber from the NAS. Meaning, it is  
+doing the right thing by counting all packets received and sent to  
+the subscriber, even if later dropped by iptables.
+
+I suppose a feature you would like -- and others have mentioned it  
+too -- would be something like an &quot;acctignore&quot; option to list out (in  
+a uamallowed fashion) networks to not count in accounting. This way  
+you can exclude the same ports you are filtering...
+
+David
+
+On May 7, 2008, at 7:42 PM, Gunther Mayer wrote:
+
+&gt;<i> Hi again,
+</I>&gt;<i>
+</I>&gt;<i> We recently noticed that a very nasty trojan/virus is doing the  
+</I>&gt;<i> rounds that uploads a ton of data to the Internet. Since our  
+</I>&gt;<i> captive portal charges in data units this becomes a major problem  
+</I>&gt;<i> as customers loose their purchased Internet units like water  
+</I>&gt;<i> through a sieve. While legally not our problem customers still  
+</I>&gt;<i> contact us all the time wondering what happened, demanding refunds  
+</I>&gt;<i> and all that jazz.
+</I>&gt;<i>
+</I>&gt;<i> Tricky part is: we cannot sanely ask them to &quot;quickly&quot; download,  
+</I>&gt;<i> install and/or upgrade their anti-virus because either they already  
+</I>&gt;<i> have a zero balance or doing so would lose them even more units.  
+</I>&gt;<i> It's a catch-22 until we find a way to block those trojans.
+</I>&gt;<i>
+</I>&gt;<i> I started investigating instead what patterns such abnormal  
+</I>&gt;<i> Internet usage follows and managed to block specific instances with  
+</I>&gt;<i> custom iptables firewall rules (based on port and/or host specs).  
+</I>&gt;<i> One example:
+</I>&gt;<i>
+</I>&gt;<i> iptables -I FORWARD -p tcp --dport 5000 -j DROP
+</I>&gt;<i>
+</I>&gt;<i> The problem though is: even though the kernel correctly drops the  
+</I>&gt;<i> trojan's packets (verified with iptables -L -vn), chilli somehow  
+</I>&gt;<i> still counts them, so I've only solved the smaller part of the  
+</I>&gt;<i> problem, making sure that the bogus packets never reach the  
+</I>&gt;<i> Internet. The larger part, that of upload accounting going  
+</I>&gt;<i> ballistic is still unaddressed. I always thought the kernel would  
+</I>&gt;<i> drop them BEFORE chilli gets its hands on them for accounting  
+</I>&gt;<i> purposes, but it seems like it does so AFTER.
+</I>&gt;<i>
+</I>&gt;<i> What can I do, if anything, to make sure that either chilli  
+</I>&gt;<i> disregards certain packets or that I get the kernel to drop packets  
+</I>&gt;<i> BEFORE chilli gets hold of them?
+</I>&gt;<i>
+</I>&gt;<i> Gunther
+</I>&gt;<i>
+</I>&gt;<i> ---------------------------------------------------------------------
+</I>&gt;<i> To unsubscribe, e-mail: <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli-unsubscribe at coova.org</A>
+</I>&gt;<i> For additional commands, e-mail: <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli-help at coova.org</A>
+</I>&gt;<i> Wiki: <A HREF="http://coova.org/wiki/index.php/CoovaChilli">http://coova.org/wiki/index.php/CoovaChilli</A>
+</I>&gt;<i> Forum: <A HREF="http://coova.org/phpBB3/viewforum.php?f=4">http://coova.org/phpBB3/viewforum.php?f=4</A>
+</I>&gt;<i>
+</I>
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000262.html">Help! Chilli accounting for dropped packets
+</A></li>
+	<LI>Next message: <A HREF="000265.html">Static IP
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#263">[ date ]</a>
+              <a href="thread.html#263">[ thread ]</a>
+              <a href="subject.html#263">[ subject ]</a>
+              <a href="author.html#263">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

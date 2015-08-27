@@ -1,0 +1,151 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] Multiple gateway setup
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Multiple%20gateway%20setup&In-Reply-To=%3C50BDA0DC.7030902%40rexy.fr%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="002048.html">
+   <LINK REL="Next"  HREF="002051.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] Multiple gateway setup</H1>
+    <B>Richard REY</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Multiple%20gateway%20setup&In-Reply-To=%3C50BDA0DC.7030902%40rexy.fr%3E"
+       TITLE="[Chilli] Multiple gateway setup">richard at rexy.fr
+       </A><BR>
+    <I>Tue Dec  4 07:06:04 UTC 2012</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="002048.html">[Chilli] Multiple gateway setup
+</A></li>
+        <LI>Next message: <A HREF="002051.html">[Chilli] Multiple gateway setup
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2049">[ date ]</a>
+              <a href="thread.html#2049">[ thread ]</a>
+              <a href="subject.html#2049">[ subject ]</a>
+              <a href="author.html#2049">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hi Alberto,
+
+This is the begining of a script used in ALCASAR project that let you 
+see the available variables :
+
+----------------------
+
+#!/bin/sh
+
+# alcasar-conup.sh by Rexy
+# This script is distributed under the Gnu General Public License (GPL)
+
+# This script is launched after each successfull login
+# Debug : show all the coova parse variables. There are declared in 
+/src/chilli.c
+
+echo &quot;parse coova variables&quot; &gt; /tmp/debug-conup.txt
+
+for i in LAYER3 DEV NET MASK ADDR USER_NAME NAS_IP_ADDRESS SERVICE_TYPE 
+FRAMED_IP_ADDRESS FILTER_ID STATE CLASS CUI SESSION_TIMEOUT IDLE_TIMEOUT 
+CALLING_STATION_ID CALLED_STATION_ID NAS_ID NAS_PORT_TYPE 
+ACCT_SESSION_ID ACCT_INTERIM_INTERVAL WISPR_LOCATION_ID 
+WISPR_LOCATION_NAME WISPR_BANDWIDTH_MAX_UP WISPR_BANDWIDTH_MAX_DOWN 
+WISPR-SESSION_TERMINATE_TIME CHILLISPOT_MAX_INPUT_OCTETS 
+CHILLISPOT_MAX_OUTPUT_OCTETS CHILLISPOT_MAX_TOTAL_OCTETS INPUT_OCTETS 
+OUTPUT_OCTETS SESSION_TIME IDLE_TIME LOCATION OLD_LOCATION TERMINATE_CAUSE
+
+do
+	echo &quot;$i : ${!i}&quot; &gt;&gt; /tmp/debug-conup.txt
+done
+...
+
+Best regards
+REXY
+
+Le 04/12/2012 07:08, David Bird a &#233;crit :
+&gt;<i> Hi Alberto,
+</I>&gt;<i>
+</I>&gt;<i> I don't have an example of the script you need immediately available,
+</I>&gt;<i> but you should look into the conup/condown configuration (chilli --help)
+</I>&gt;<i> to implement the multi-wan routing. For a glimpse at the variables you
+</I>&gt;<i> get in the script from chilli, see runscript() in chilli.c, which set up
+</I>&gt;<i> the environment of the script.
+</I>&gt;<i>
+</I>&gt;<i> Cheers,
+</I>&gt;<i> David
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> On Mon, 2012-12-03 at 13:04 +0100, <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">alberto at web3king.com</A> wrote:
+</I>&gt;&gt;<i> On Thu, 2012-11-29 at 10:31 +0100, <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">alberto at web3king.com</A> wrote:
+</I>&gt;&gt;&gt;<i> Hi everyone I setup a hotspot with chilli+coova but I want to use
+</I>&gt;&gt;&gt;<i>   multiple gateway for internet access.
+</I>&gt;&gt;&gt;<i>   I've got two type of users: standard and premium, I want to set
+</I>&gt;&gt;&gt;<i>   different gateway to serve internet access for this two kind of
+</I>&gt;&gt;&gt;<i> users.
+</I>&gt;&gt;&gt;<i>   This is a classic use case: a standard and a premium user see the
+</I>&gt;&gt;&gt;<i>   access point wifi signal, they connect to the wifi, they see the
+</I>&gt;&gt;&gt;<i> login
+</I>&gt;&gt;&gt;<i>   page and they insert their login and password. At this point I want
+</I>&gt;&gt;&gt;<i> to
+</I>&gt;&gt;&gt;<i>   set two different gateways, for example: 192.168.182.20 for standard
+</I>&gt;&gt;&gt;<i> and
+</I>&gt;&gt;&gt;<i>   192.168.182.30 for premium. In other words I want to set different
+</I>&gt;&gt;&gt;<i> SLA
+</I>&gt;&gt;&gt;<i>   based on different gateway.
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i>   On attachment there is my configuration:
+</I>&gt;&gt;<i>    - on the lan side there's a DHCP 192.168.182.1/24 (eth1). I've got to
+</I>&gt;&gt;<i>   kind of user that connect to the wifi signal, they put login and
+</I>&gt;&gt;<i>   password and after that they're connceted with the coova+chilli server,
+</I>&gt;&gt;<i>   for example
+</I>&gt;&gt;<i>         normal user: IP_ADDRESS 192.168.182.50 GW 192.168.182.1 NETMASK
+</I>&gt;&gt;<i>   255.255.255.0
+</I>&gt;&gt;<i>         premium user: IP_ADDRESS 192.168.182.70 GW 192.168.182.1 NETMASK
+</I>&gt;&gt;<i>   255.255.255.0
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i>   - on the wan side there are two type of connection to go on internet: a
+</I>&gt;&gt;<i>   UMTS and SAT connection. In my case coova+chilli have to set for the
+</I>&gt;&gt;<i>   normal user the connection to UMTS and for premium user the connection
+</I>&gt;&gt;<i>   to SAT (dotted line on the schema). In other words this is a sort of
+</I>&gt;&gt;<i>   traceroute for two user:
+</I>&gt;&gt;<i>   normal user (192.168.182.50) -&gt; 192.168.182.1 (eth1 - lan) -&gt;
+</I>&gt;&gt;<i>   coova+chilli -&gt; 192.168.181.50 (eth0:0 - wan) -&gt; UMTS -&gt; INTERNET
+</I>&gt;&gt;<i>   premium user (192.168.182.70) -&gt; 192.168.182.1 (eth1 - lan) -&gt;
+</I>&gt;&gt;<i>   coova+chilli -&gt; 192.168.181.100 (eth0:1 - wan) -&gt; SAT -&gt; INTERNET
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i>   Best Regards,
+</I>&gt;&gt;<i>   Alberto - Web3king.com
+</I>&gt;<i>
+</I></PRE>
+
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="002048.html">[Chilli] Multiple gateway setup
+</A></li>
+	<LI>Next message: <A HREF="002051.html">[Chilli] Multiple gateway setup
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2049">[ date ]</a>
+              <a href="thread.html#2049">[ thread ]</a>
+              <a href="subject.html#2049">[ subject ]</a>
+              <a href="author.html#2049">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

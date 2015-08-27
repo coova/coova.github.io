@@ -1,0 +1,5052 @@
+From iamaplayer at gmail.com  Mon Mar  2 06:34:32 2009
+From: iamaplayer at gmail.com (IaMaPlAyEr)
+Date: Mon, 2 Mar 2009 14:34:32 +0800
+Subject: questions about the function "get_namepart" in options.c
+Message-ID: <2ae8403e0903012234y591f1269o2210b63ad255b6e7@mail.gmail.com>
+
+Hi all,
+
+
+I feel strange, that in the function get_namepart() in options.c
+line 156:
+
+  if ((slash != NULL) && (colon != NULL) &&
+      (slash < colon)) {
+    hostlen = slash - slashslash;
+  }
+  else if ((slash != NULL) && (colon == NULL)) {
+    hostlen = slash - slashslash;
+  }
+  else if (colon != NULL) {
+    hostlen = colon - slashslash;
+    if (1 != sscanf(colon+1, "%d", port)) {
+      log_err(0, "Not able to parse URL port: %s!", src);
+      return -1;
+    }
+  }
+  else {
+    hostlen = strlen(src);
+  }
+
+if satisfy the first condition, the port are not set just like
+sscanf(colon+1, "%d", port) at line 166.
+why not add
+
+if (1 != sscanf(colon+1, "%d", port)) {
+      log_err(0, "Not able to parse URL port: %s!", src);
+      return -1;
+    }
+
+at first if condition?
+
+thank you for reading.
+
+-- 
+--
+Sincerly,
+
+HaveF
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20090302/fe42180c/attachment.htm>
+
+From jmeiring at amobia.com  Mon Mar  2 10:13:30 2009
+From: jmeiring at amobia.com (Johan Meiring)
+Date: Mon, 02 Mar 2009 12:13:30 +0200
+Subject: Problem with restarting chilli 1.0.12 - redir.c: 982: 28 (No space
+ left on device) msgget() failed
+Message-ID: <49ABB14A.7010907@amobia.com>
+
+Hi,
+
+I have a problem with "restarting" coova-chilli.
+This is completely reproducable.
+
+Details as follows:
+
+Running coova-chilli 1.0.12 on openwrt kamikaze 8.09
+(somewhere between rc1 and final - r14038)
+
+I have a cron script that checks if chilli is running every minute, and
+starts it if not.
+
+When the radius server dies for some reason, chilli eventually dies.
+(expected?)
+
+After a while (unsure if it is the first restart after chilli dies)
+chilli does not want to start anymore (i.e. crashes on startup).
+
+A simple reboot of the router resolves the problem.  This happens on
+both Linksys and Nanostation devices.
+
+logread as follows......
+
+********************* LOGREAD START*********************************
+
+Jan  1 03:27:50 amobiahotspot-1028 local6.info coova-chilli[2997]:
+CoovaChilli(ChilliSpot) 1.0.12. Copyright 2002-2005 Mondru AB. Licensed
+under GPL. Copyright 2006-2008 David Bird <dbird at acm.org>. Licensed
+under GPL. See http://coova.org/ for details.
+Jan  1 03:27:50 amobiahotspot-1028 local6.notice coova-chilli[2997]:
+tun.c: 482: TX queue length set to 100
+Jan  1 03:28:01 amobiahotspot-1028 cron.err crond[811]: USER root pid
+3096 cmd /usr/local/amobia/check-chilli
+Jan  1 03:28:05 amobiahotspot-1028 local6.notice coova-chilli[2997]:
+chilli.c: 2694: New DHCP request from MAC=00-16-E3-4D-EA-46
+Jan  1 03:28:05 amobiahotspot-1028 local6.notice coova-chilli[2997]:
+chilli.c: 2661: Client MAC=00-16-E3-4D-EA-46 assigned IP 192.168.182.2
+Jan  1 03:29:01 amobiahotspot-1028 cron.err crond[811]: USER root pid
+3104 cmd /usr/local/amobia/check-chilli
+Jan  1 03:30:01 amobiahotspot-1028 cron.err crond[811]: USER root pid
+3118 cmd /usr/local/amobia/check-chilli
+Jan  1 03:31:01 amobiahotspot-1028 cron.err crond[811]: USER root pid
+3163 cmd /usr/local/amobia/check-chilli
+Jan  1 03:32:01 amobiahotspot-1028 cron.err crond[811]: USER root pid
+3168 cmd /usr/local/amobia/check-chilli
+Jan  1 03:33:01 amobiahotspot-1028 cron.err crond[811]: USER root pid
+3176 cmd /usr/local/amobia/check-chilli
+Jan  1 03:34:01 amobiahotspot-1028 cron.err crond[811]: USER root pid
+3181 cmd /usr/local/amobia/check-chilli
+Jan  1 03:35:01 amobiahotspot-1028 cron.err crond[811]: USER root pid
+3189 cmd /usr/local/amobia/check-chilli
+Jan  1 03:36:01 amobiahotspot-1028 cron.err crond[811]: USER root pid
+3196 cmd /usr/local/amobia/check-chilli
+
+********************************************************************
+At this point I firewall off the radius server (simulating radius
+death) and go home.  The next morning logread shows the following
+*******************************************************************
+
+root at amobiahotspot-1028:~# logread
+Jan  1 12:36:01 amobiahotspot-1028 cron.err crond[811]: USER root pid
+16872 cmd /usr/local/amobia/check-chilli
+Jan  1 12:36:01 amobiahotspot-1028 user.notice check-chilli: Chillispot
+is not running.  Starting it.
+Jan  1 12:36:02 amobiahotspot-1028 local6.info coova-chilli[16884]:
+CoovaChilli(ChilliSpot) 1.0.12. Copyright 2002-2005 Mondru AB. Licensed
+under GPL. Copyright 2006-2008 David Bird <dbird at acm.org>. Licensed
+under GPL. See http://coova.org/ for details.
+Jan  1 12:36:02 amobiahotspot-1028 local6.notice coova-chilli[16884]:
+tun.c: 482: TX queue length set to 100
+Jan  1 12:36:02 amobiahotspot-1028 local6.err coova-chilli[16884]:
+redir.c: 982: 28 (No space left on device) msgget() failed
+Jan  1 12:36:02 amobiahotspot-1028 local6.err coova-chilli[16884]:
+redir.c: 983: Most likely your computer does not have System V IPC installed
+Jan  1 12:36:02 amobiahotspot-1028 local6.err coova-chilli[16884]:
+chilli.c: 3504: Failed to create redir
+Jan  1 12:37:01 amobiahotspot-1028 cron.err crond[811]: USER root pid
+16958 cmd /usr/local/amobia/check-chilli
+Jan  1 12:37:01 amobiahotspot-1028 user.notice check-chilli: Chillispot
+is not running.  Starting it.
+Jan  1 12:37:02 amobiahotspot-1028 local6.info coova-chilli[16970]:
+CoovaChilli(ChilliSpot) 1.0.12. Copyright 2002-2005 Mondru AB. Licensed
+under GPL. Copyright 2006-2008 David Bird <dbird at acm.org>. Licensed
+under GPL. See http://coova.org/ for details.
+Jan  1 12:37:02 amobiahotspot-1028 local6.notice coova-chilli[16970]:
+tun.c: 482: TX queue length set to 100
+Jan  1 12:37:02 amobiahotspot-1028 local6.err coova-chilli[16970]:
+redir.c: 982: 28 (No space left on device) msgget() failed
+Jan  1 12:37:02 amobiahotspot-1028 local6.err coova-chilli[16970]:
+redir.c: 983: Most likely your computer does not have System V IPC installed
+Jan  1 12:37:02 amobiahotspot-1028 local6.err coova-chilli[16970]:
+chilli.c: 3504: Failed to create redir
+*********************  End logread ***********************************
+
+
+Any clues??
+
+-- 
+
+
+Johan Meiring
+Amobia Communications
+Tel: (0861) AMOBIA / (0861) 266242
+Fax: (0861) AMOFAX / (0861) 266329
+
+
+
+From wlan at mac.com  Mon Mar  2 10:26:09 2009
+From: wlan at mac.com (wlanmac)
+Date: Mon, 02 Mar 2009 11:26:09 +0100
+Subject: Problem with restarting chilli 1.0.12 - redir.c: 982: 28 (No	space
+ left on device) msgget() failed
+In-Reply-To: <49ABB14A.7010907@amobia.com>
+References: <49ABB14A.7010907@amobia.com>
+Message-ID: <1235989569.7661.19.camel@david-laptop>
+
+don't let your radius server die :)
+
+you using acctupdate option per chance?
+
+If so, upgrade to svn version.
+
+
+On Mon, 2009-03-02 at 12:13 +0200, Johan Meiring wrote:
+> Hi,
+> 
+> I have a problem with "restarting" coova-chilli.
+> This is completely reproducable.
+> 
+> Details as follows:
+> 
+> Running coova-chilli 1.0.12 on openwrt kamikaze 8.09
+> (somewhere between rc1 and final - r14038)
+> 
+> I have a cron script that checks if chilli is running every minute, and
+> starts it if not.
+> 
+> When the radius server dies for some reason, chilli eventually dies.
+> (expected?)
+> 
+> After a while (unsure if it is the first restart after chilli dies)
+> chilli does not want to start anymore (i.e. crashes on startup).
+> 
+> A simple reboot of the router resolves the problem.  This happens on
+> both Linksys and Nanostation devices.
+> 
+> logread as follows......
+> 
+> ********************* LOGREAD START*********************************
+> 
+> Jan  1 03:27:50 amobiahotspot-1028 local6.info coova-chilli[2997]:
+> CoovaChilli(ChilliSpot) 1.0.12. Copyright 2002-2005 Mondru AB. Licensed
+> under GPL. Copyright 2006-2008 David Bird <dbird at acm.org>. Licensed
+> under GPL. See http://coova.org/ for details.
+> Jan  1 03:27:50 amobiahotspot-1028 local6.notice coova-chilli[2997]:
+> tun.c: 482: TX queue length set to 100
+> Jan  1 03:28:01 amobiahotspot-1028 cron.err crond[811]: USER root pid
+> 3096 cmd /usr/local/amobia/check-chilli
+> Jan  1 03:28:05 amobiahotspot-1028 local6.notice coova-chilli[2997]:
+> chilli.c: 2694: New DHCP request from MAC=00-16-E3-4D-EA-46
+> Jan  1 03:28:05 amobiahotspot-1028 local6.notice coova-chilli[2997]:
+> chilli.c: 2661: Client MAC=00-16-E3-4D-EA-46 assigned IP 192.168.182.2
+> Jan  1 03:29:01 amobiahotspot-1028 cron.err crond[811]: USER root pid
+> 3104 cmd /usr/local/amobia/check-chilli
+> Jan  1 03:30:01 amobiahotspot-1028 cron.err crond[811]: USER root pid
+> 3118 cmd /usr/local/amobia/check-chilli
+> Jan  1 03:31:01 amobiahotspot-1028 cron.err crond[811]: USER root pid
+> 3163 cmd /usr/local/amobia/check-chilli
+> Jan  1 03:32:01 amobiahotspot-1028 cron.err crond[811]: USER root pid
+> 3168 cmd /usr/local/amobia/check-chilli
+> Jan  1 03:33:01 amobiahotspot-1028 cron.err crond[811]: USER root pid
+> 3176 cmd /usr/local/amobia/check-chilli
+> Jan  1 03:34:01 amobiahotspot-1028 cron.err crond[811]: USER root pid
+> 3181 cmd /usr/local/amobia/check-chilli
+> Jan  1 03:35:01 amobiahotspot-1028 cron.err crond[811]: USER root pid
+> 3189 cmd /usr/local/amobia/check-chilli
+> Jan  1 03:36:01 amobiahotspot-1028 cron.err crond[811]: USER root pid
+> 3196 cmd /usr/local/amobia/check-chilli
+> 
+> ********************************************************************
+> At this point I firewall off the radius server (simulating radius
+> death) and go home.  The next morning logread shows the following
+> *******************************************************************
+> 
+> root at amobiahotspot-1028:~# logread
+> Jan  1 12:36:01 amobiahotspot-1028 cron.err crond[811]: USER root pid
+> 16872 cmd /usr/local/amobia/check-chilli
+> Jan  1 12:36:01 amobiahotspot-1028 user.notice check-chilli: Chillispot
+> is not running.  Starting it.
+> Jan  1 12:36:02 amobiahotspot-1028 local6.info coova-chilli[16884]:
+> CoovaChilli(ChilliSpot) 1.0.12. Copyright 2002-2005 Mondru AB. Licensed
+> under GPL. Copyright 2006-2008 David Bird <dbird at acm.org>. Licensed
+> under GPL. See http://coova.org/ for details.
+> Jan  1 12:36:02 amobiahotspot-1028 local6.notice coova-chilli[16884]:
+> tun.c: 482: TX queue length set to 100
+> Jan  1 12:36:02 amobiahotspot-1028 local6.err coova-chilli[16884]:
+> redir.c: 982: 28 (No space left on device) msgget() failed
+> Jan  1 12:36:02 amobiahotspot-1028 local6.err coova-chilli[16884]:
+> redir.c: 983: Most likely your computer does not have System V IPC installed
+> Jan  1 12:36:02 amobiahotspot-1028 local6.err coova-chilli[16884]:
+> chilli.c: 3504: Failed to create redir
+> Jan  1 12:37:01 amobiahotspot-1028 cron.err crond[811]: USER root pid
+> 16958 cmd /usr/local/amobia/check-chilli
+> Jan  1 12:37:01 amobiahotspot-1028 user.notice check-chilli: Chillispot
+> is not running.  Starting it.
+> Jan  1 12:37:02 amobiahotspot-1028 local6.info coova-chilli[16970]:
+> CoovaChilli(ChilliSpot) 1.0.12. Copyright 2002-2005 Mondru AB. Licensed
+> under GPL. Copyright 2006-2008 David Bird <dbird at acm.org>. Licensed
+> under GPL. See http://coova.org/ for details.
+> Jan  1 12:37:02 amobiahotspot-1028 local6.notice coova-chilli[16970]:
+> tun.c: 482: TX queue length set to 100
+> Jan  1 12:37:02 amobiahotspot-1028 local6.err coova-chilli[16970]:
+> redir.c: 982: 28 (No space left on device) msgget() failed
+> Jan  1 12:37:02 amobiahotspot-1028 local6.err coova-chilli[16970]:
+> redir.c: 983: Most likely your computer does not have System V IPC installed
+> Jan  1 12:37:02 amobiahotspot-1028 local6.err coova-chilli[16970]:
+> chilli.c: 3504: Failed to create redir
+> *********************  End logread ***********************************
+> 
+> 
+> Any clues??
+> 
+
+
+
+From jmeiring at amobia.com  Mon Mar  2 10:37:10 2009
+From: jmeiring at amobia.com (Johan Meiring)
+Date: Mon, 02 Mar 2009 12:37:10 +0200
+Subject: Problem with restarting chilli 1.0.12 - redir.c: 982: 28 (No
+ space left on device) msgget() failed
+In-Reply-To: <1235989569.7661.19.camel@david-laptop>
+References: <49ABB14A.7010907@amobia.com> <1235989569.7661.19.camel@david-laptop>
+Message-ID: <49ABB6D6.2070505@amobia.com>
+
+wlanmac wrote:
+> don't let your radius server die :)
+> 
+
+Sadly you are correct!!!
+Sometimes the DSL prover dies though....
+
+> you using acctupdate option per chance?
+> 
+
+Yes.
+
+> If so, upgrade to svn version.
+> 
+>
+
+Thanks. Cool.
+
+Two questions:
+
+1) What changes were made around acctupdate? (see none in the changelog)
+2) Any pointers on how to compile a package for openwrt kamikaze 8.09?
+
+
+
+-- 
+
+
+Johan Meiring
+Amobia Communications
+Tel: (0861) AMOBIA / (0861) 266242
+Fax: (0861) AMOFAX / (0861) 266329
+
+
+
+From wlan at mac.com  Mon Mar  2 10:51:48 2009
+From: wlan at mac.com (wlanmac)
+Date: Mon, 02 Mar 2009 11:51:48 +0100
+Subject: Problem with restarting chilli 1.0.12 - redir.c: 982: 28 (No	space
+ left on device) msgget() failed
+In-Reply-To: <49ABB6D6.2070505@amobia.com>
+References: <49ABB14A.7010907@amobia.com>
+ <1235989569.7661.19.camel@david-laptop> <49ABB6D6.2070505@amobia.com>
+Message-ID: <1235991108.7661.25.camel@david-laptop>
+
+svn diff -r 186:188
+
+and you will see, among other things, this added to the changelog:
+
++* Crashing bug fix for when using ''acctupate'' and there is a RADIUS
+timeout
+
+
+
+On Mon, 2009-03-02 at 12:37 +0200, Johan Meiring wrote:
+> wlanmac wrote:
+> > don't let your radius server die :)
+> > 
+> 
+> Sadly you are correct!!!
+> Sometimes the DSL prover dies though....
+> 
+> > you using acctupdate option per chance?
+> > 
+> 
+> Yes.
+> 
+> > If so, upgrade to svn version.
+> > 
+> >
+> 
+> Thanks. Cool.
+> 
+> Two questions:
+> 
+> 1) What changes were made around acctupdate? (see none in the changelog)
+> 2) Any pointers on how to compile a package for openwrt kamikaze 8.09?
+> 
+> 
+> 
+
+
+
+From jmeiring at amobia.com  Mon Mar  2 10:59:48 2009
+From: jmeiring at amobia.com (Johan Meiring)
+Date: Mon, 02 Mar 2009 12:59:48 +0200
+Subject: Problem with restarting chilli 1.0.12 - redir.c: 982: 28 (No
+ space left on device) msgget() failed
+In-Reply-To: <1235991108.7661.25.camel@david-laptop>
+References: <49ABB14A.7010907@amobia.com> <1235989569.7661.19.camel@david-laptop> <49ABB6D6.2070505@amobia.com> <1235991108.7661.25.camel@david-laptop>
+Message-ID: <49ABBC24.40901@amobia.com>
+
+wlanmac wrote:
+> svn diff -r 186:188
+> 
+> and you will see, among other things, this added to the changelog:
+> 
+> +* Crashing bug fix for when using ''acctupate'' and there is a RADIUS
+> timeout
+> 
+
+Ahh...
+
+I was looking at
+http://coova.org/wiki/index.php/CoovaChilli/ChangeLog
+
+This will obviously make it not crash in the first place.  Would this 
+also not make it start?
+
+Also, any pointers on how to get a package compiled for openwrt 8.09?
+(Need both mips (linksys) and atheros (nanostation)).
+
+
+-- 
+
+
+Johan Meiring
+Amobia Communications
+Tel: (0861) AMOBIA / (0861) 266242
+Fax: (0861) AMOFAX / (0861) 266329
+
+
+
+From outbackdingo at gmail.com  Mon Mar  2 11:57:40 2009
+From: outbackdingo at gmail.com (Outback Dingo)
+Date: Mon, 2 Mar 2009 18:57:40 +0700
+Subject: Problem with restarting chilli 1.0.12 - redir.c: 982: 28 (No 
+	space left on device) msgget() failed
+In-Reply-To: <49ABBC24.40901@amobia.com>
+References: <49ABB14A.7010907@amobia.com>
+	 <1235989569.7661.19.camel@david-laptop> <49ABB6D6.2070505@amobia.com>
+	 <1235991108.7661.25.camel@david-laptop> <49ABBC24.40901@amobia.com>
+Message-ID: <5635aa0d0903020357t3b988d96r97a44203176932b1@mail.gmail.com>
+
+nice... Nanos ROCK, ive got a svn binary, but yes building from SVN info
+would be nice for Kamikaze users, Ive got 60+ Nanos deployed now
+
+Also note ive seen instances where chilli just stops to function completely
+on the 8.09 release, no errors or anything
+just kinda locks up, but seems ok on trunk r14613. I m  testing the svn
+chilli version tonight.
+
+On Mon, Mar 2, 2009 at 5:59 PM, Johan Meiring <jmeiring at amobia.com> wrote:
+
+> wlanmac wrote:
+>
+>> svn diff -r 186:188
+>>
+>> and you will see, among other things, this added to the changelog:
+>>
+>> +* Crashing bug fix for when using ''acctupate'' and there is a RADIUS
+>> timeout
+>>
+>>
+> Ahh...
+>
+> I was looking at
+> http://coova.org/wiki/index.php/CoovaChilli/ChangeLog
+>
+> This will obviously make it not crash in the first place.  Would this also
+> not make it start?
+>
+> Also, any pointers on how to get a package compiled for openwrt 8.09?
+> (Need both mips (linksys) and atheros (nanostation)).
+>
+>
+> --
+>
+>
+> Johan Meiring
+> Amobia Communications
+> Tel: (0861) AMOBIA / (0861) 266242
+> Fax: (0861) AMOFAX / (0861) 266329
+>
+>
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20090302/fdb8ff2e/attachment.htm>
+
+From jmeiring at amobia.com  Mon Mar  2 12:17:28 2009
+From: jmeiring at amobia.com (Johan Meiring)
+Date: Mon, 02 Mar 2009 14:17:28 +0200
+Subject: Problem with restarting chilli 1.0.12 - redir.c: 982: 28 (No
+ 	space left on device) msgget() failed
+In-Reply-To: <5635aa0d0903020357t3b988d96r97a44203176932b1@mail.gmail.com>
+References: <49ABB14A.7010907@amobia.com>	 <1235989569.7661.19.camel@david-laptop> <49ABB6D6.2070505@amobia.com>	 <1235991108.7661.25.camel@david-laptop> <49ABBC24.40901@amobia.com> <5635aa0d0903020357t3b988d96r97a44203176932b1@mail.gmail.com>
+Message-ID: <49ABCE58.5080206@amobia.com>
+
+Outback Dingo wrote:
+> nice... Nanos ROCK, ive got a svn binary, but yes building from SVN info 
+> would be nice for Kamikaze users, Ive got 60+ Nanos deployed now
+>
+
+You'll be happy to know that the firmware also runs unmodified on the 
+bullet.
+
+> Also note ive seen instances where chilli just stops to function 
+> completely on the 8.09 release, no errors or anything
+
+Does the chilli process die, or hang?
+
+> just kinda locks up, but seems ok on trunk r14613. I m  testing the svn 
+> chilli version tonight.
+> 
+
+
+Where did you get the binary?
+
+
+-- 
+
+
+Johan Meiring
+Amobia Communications
+Tel: (0861) AMOBIA / (0861) 266242
+Fax: (0861) AMOFAX / (0861) 266329
+
+
+
+From outbackdingo at gmail.com  Mon Mar  2 12:25:51 2009
+From: outbackdingo at gmail.com (Outback Dingo)
+Date: Mon, 2 Mar 2009 19:25:51 +0700
+Subject: Problem with restarting chilli 1.0.12 - redir.c: 982: 28 (No 
+	space left on device) msgget() failed
+In-Reply-To: <49ABCE58.5080206@amobia.com>
+References: <49ABB14A.7010907@amobia.com>
+	 <1235989569.7661.19.camel@david-laptop> <49ABB6D6.2070505@amobia.com>
+	 <1235991108.7661.25.camel@david-laptop> <49ABBC24.40901@amobia.com>
+	 <5635aa0d0903020357t3b988d96r97a44203176932b1@mail.gmail.com>
+	 <49ABCE58.5080206@amobia.com>
+Message-ID: <5635aa0d0903020425l448cb737g6b3b5c73391c31b9@mail.gmail.com>
+
+yesh i have bullet2/2HPs and Pico2HP loaded and deployed in a mesh network
+also.... as for chilli its hangs hard, ps ax still shows its there
+but chilli_query list hangs up and never returns any data
+
+On Mon, Mar 2, 2009 at 7:17 PM, Johan Meiring <jmeiring at amobia.com> wrote:
+
+> Outback Dingo wrote:
+>
+>> nice... Nanos ROCK, ive got a svn binary, but yes building from SVN info
+>> would be nice for Kamikaze users, Ive got 60+ Nanos deployed now
+>>
+>>
+> You'll be happy to know that the firmware also runs unmodified on the
+> bullet.
+>
+>  Also note ive seen instances where chilli just stops to function
+>> completely on the 8.09 release, no errors or anything
+>>
+>
+> Does the chilli process die, or hang?
+>
+>  just kinda locks up, but seems ok on trunk r14613. I m  testing the svn
+>> chilli version tonight.
+>>
+>>
+>
+> Where did you get the binary?
+>
+>
+>
+> --
+>
+>
+> Johan Meiring
+> Amobia Communications
+> Tel: (0861) AMOBIA / (0861) 266242
+> Fax: (0861) AMOFAX / (0861) 266329
+>
+>
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20090302/e6a04bc6/attachment.htm>
+
+From jmeiring at amobia.com  Mon Mar  2 12:45:53 2009
+From: jmeiring at amobia.com (Johan Meiring)
+Date: Mon, 02 Mar 2009 14:45:53 +0200
+Subject: Problem with restarting chilli 1.0.12 - redir.c: 982: 28 (No
+ 	space left on device) msgget() failed
+In-Reply-To: <5635aa0d0903020425l448cb737g6b3b5c73391c31b9@mail.gmail.com>
+References: <49ABB14A.7010907@amobia.com>	 <1235989569.7661.19.camel@david-laptop> <49ABB6D6.2070505@amobia.com>	 <1235991108.7661.25.camel@david-laptop> <49ABBC24.40901@amobia.com>	 <5635aa0d0903020357t3b988d96r97a44203176932b1@mail.gmail.com>	 <49ABCE58.5080206@amobia.com> <5635aa0d0903020425l448cb737g6b3b5c73391c31b9@mail.gmail.com>
+Message-ID: <49ABD501.4070605@amobia.com>
+
+Outback Dingo wrote:
+> yesh i have bullet2/2HPs and Pico2HP loaded and deployed in a mesh 
+> network also.... as for chilli its hangs hard, ps ax still shows its there
+> but chilli_query list hangs up and never returns any data
+> 
+
+OK....
+Where did you get the binary then?
+
+-- 
+
+
+Johan Meiring
+Amobia Communications
+Tel: (0861) AMOBIA / (0861) 266242
+Fax: (0861) AMOFAX / (0861) 266329
+
+
+
+From outbackdingo at gmail.com  Mon Mar  2 12:56:21 2009
+From: outbackdingo at gmail.com (Outback Dingo)
+Date: Mon, 2 Mar 2009 19:56:21 +0700
+Subject: Problem with restarting chilli 1.0.12 - redir.c: 982: 28 (No 
+	space left on device) msgget() failed
+In-Reply-To: <49ABD501.4070605@amobia.com>
+References: <49ABB14A.7010907@amobia.com>
+	 <1235989569.7661.19.camel@david-laptop> <49ABB6D6.2070505@amobia.com>
+	 <1235991108.7661.25.camel@david-laptop> <49ABBC24.40901@amobia.com>
+	 <5635aa0d0903020357t3b988d96r97a44203176932b1@mail.gmail.com>
+	 <49ABCE58.5080206@amobia.com>
+	 <5635aa0d0903020425l448cb737g6b3b5c73391c31b9@mail.gmail.com>
+	 <49ABD501.4070605@amobia.com>
+Message-ID: <5635aa0d0903020456q3a0d2a9av72ee414d62561d4c@mail.gmail.com>
+
+it was built by dwb
+
+On Mon, Mar 2, 2009 at 7:45 PM, Johan Meiring <jmeiring at amobia.com> wrote:
+
+> Outback Dingo wrote:
+>
+>> yesh i have bullet2/2HPs and Pico2HP loaded and deployed in a mesh network
+>> also.... as for chilli its hangs hard, ps ax still shows its there
+>> but chilli_query list hangs up and never returns any data
+>>
+>>
+> OK....
+> Where did you get the binary then?
+>
+>
+> --
+>
+>
+> Johan Meiring
+> Amobia Communications
+> Tel: (0861) AMOBIA / (0861) 266242
+> Fax: (0861) AMOFAX / (0861) 266329
+>
+>
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20090302/7dc4b8b2/attachment.htm>
+
+From outbackdingo at gmail.com  Mon Mar  2 13:00:33 2009
+From: outbackdingo at gmail.com (Outback Dingo)
+Date: Mon, 2 Mar 2009 20:00:33 +0700
+Subject: Problem with restarting chilli 1.0.12 - redir.c: 982: 28 (No 
+	space left on device) msgget() failed
+In-Reply-To: <49ABD501.4070605@amobia.com>
+References: <49ABB14A.7010907@amobia.com>
+	 <1235989569.7661.19.camel@david-laptop> <49ABB6D6.2070505@amobia.com>
+	 <1235991108.7661.25.camel@david-laptop> <49ABBC24.40901@amobia.com>
+	 <5635aa0d0903020357t3b988d96r97a44203176932b1@mail.gmail.com>
+	 <49ABCE58.5080206@amobia.com>
+	 <5635aa0d0903020425l448cb737g6b3b5c73391c31b9@mail.gmail.com>
+	 <49ABD501.4070605@amobia.com>
+Message-ID: <5635aa0d0903020500t5cafd4f9ic6e448ed2d222c13@mail.gmail.com>
+
+im talking about 1.0.12 hanginh on openwrt 8.09, i have a svn trunk binary
+im going to test
+
+On Mon, Mar 2, 2009 at 7:45 PM, Johan Meiring <jmeiring at amobia.com> wrote:
+
+> Outback Dingo wrote:
+>
+>> yesh i have bullet2/2HPs and Pico2HP loaded and deployed in a mesh network
+>> also.... as for chilli its hangs hard, ps ax still shows its there
+>> but chilli_query list hangs up and never returns any data
+>>
+>>
+> OK....
+> Where did you get the binary then?
+>
+>
+> --
+>
+>
+> Johan Meiring
+> Amobia Communications
+> Tel: (0861) AMOBIA / (0861) 266242
+> Fax: (0861) AMOFAX / (0861) 266329
+>
+>
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20090302/998c8a33/attachment.htm>
+
+From DGarcia at globalgossip.net  Wed Mar  4 06:15:59 2009
+From: DGarcia at globalgossip.net (Daniel Garcia)
+Date: Wed, 4 Mar 2009 17:15:59 +1100
+Subject: VPN Traffic issues
+Message-ID: <BB13BEB48D3B3B4CA1AA6A51DB9CFBCE1A17820B8C@ausyd04.globalgossip.net>
+
+Hi David/Delevopers,
+
+I am having a headache with Coova and I was wondering if someone could help me out, Ive been working on Coova for a few weeks now and time is running out for me and so I hope you can help me.
+
+I was tasked with getting multiple VPN traffic to work with Coova so people from the hotspot network for our wireless users. We have a linux box that acts as a gateway for wireless traffic.
+
+Following the instructions on the web and coova I have done the following...
+
+Edit /usr/local/etc/chilli/Up.sh
+
+#!/bin/sh
+# Coova Chilli - David Bird <david at coova.com>
+# Licensed under the GPL, see http://coova.org/
+# up.sh /dev/tun0 192.168.0.10 255.255.255.0
+
+. /usr/local/etc/chilli/functions
+
+[ -e "/usr/local/var/run/chilli.iptables" ] && sh /usr/local/var/run/chilli.iptables 2>/dev/null
+rm -f /usr/local/var/run/chilli.iptables 2>/dev/null
+
+IF=$(basename $DEV)
+
+ipt() {
+    opt=$1; shift
+    echo "iptables -D $*" >> /usr/local/var/run/chilli.iptables
+    iptables $opt $*
+}
+
+ipt_in() {
+    ipt -A INPUT -i $IF $*
+}
+
+[ -n "$DHCPIF" ] && {
+
+    [ -n "$UAMPORT" -a "$UAMPORT" != "0" ] && \
+      ipt_in -p tcp -m tcp --dport $UAMPORT --dst $ADDR -j ACCEPT
+
+    [ -n "$UAMUIPORT" -a "$UAMUIPORT" != "0" ] && \
+      ipt_in -p tcp -m tcp --dport $UAMUIPORT --dst $ADDR -j ACCEPT
+
+    [ -n "HS_TCP_PORTS" ] && {
+      for port in $HS_TCP_PORTS; do
+          ipt_in -p tcp -m tcp --dport $port --dst $ADDR -j ACCEPT
+      done
+    }
+
+    ipt_in -p udp -d 255.255.255.255 --destination-port 67:68 -j ACCEPT
+    ipt_in -p udp --dst $ADDR --dport 53 -j ACCEPT
+
+    ipt -A INPUT -i $IF --dst $ADDR -j DROP
+    ipt -A INPUT -i $IF -j DROP
+
+    ipt -I FORWARD -j DROP -i $DHCPIF
+    ipt -I FORWARD -j DROP -o $DHCPIF
+    ipt -t raw -I PREROUTING -j NOTRACK -i $DHCPIF #Beg. of appended lines
+    ipt -t raw -I OUTPUT -j NOTRACK -o $DHCPIF
+    ipt -I FORWARD -j ACCEPT -i tun0 -p gre
+    ipt -I FORWARD -j ACCEPT -i tun0 -p tcp --dport 1723
+
+    ipt -I PREROUTING -t raw -j NOTRACK -i $DHCPIF
+    ipt -I OUTPUT -t raw -j NOTRACK -o $DHCPIF #End of appended lines
+
+    ipt -I POSTROUTING -t nat -o eth0 -j MASQUERADE
+    ipt -I PREROUTING -t nat -i $IF -p tcp --dport 25 -j DNAT --to-destination $HS_SMTP
+
+    [ "$HS_LAN_ACCESS" != "on" -a "$HS_LAN_ACCESS" != "allow" ] && \
+      ipt -I FORWARD -i $IF -o \! $HS_WANIF -j DROP
+
+    [ "$HS_LOCAL_DNS" = "on" ] && {
+      ipt -I PREROUTING -t nat -i $IF -p udp --dport 53 -j DNAT --to-destination $HS_DNS1
+      ipt -I PREROUTING -t nat -i $IF -p tcp --dport 53 -j DNAT --to-destination $HS_DNS1
+      }
+}
+
+# site specific stuff optional
+[ -e /usr/local/etc/chilli/ipup.sh ] && . /usr/local/etc/chilli/ipup.sh
+
+As you can see the blue is the added code I copied from the forums. I also did the following for the install of the appropriate modules...
+
+Modprobe ip_conntrack_pptp
+Modprobe ip_nat_pptp
+Modprobe nf_nat_proto_gre
+Modprobe nf_conntrack_proto_gre
+
+Now, I also amended the following
+
+# vi /usr/local/etc/init.d/chilli
+
+Under the case$1 in
+                           Start) - section (this starts the chilli software and calls many procedures
+
+Changed the following code:
+
+Ifconfig $HS_LANIF 0.0.0.0
+
+To: ifconfig $HS_LANIF 10.200.100.129/24
+
+As I want an IP on the eth1 interface for traffic passthrough.
+
+My problem is two-fold, 1. Multiple VPN connections work great and I can access the resources on the other network, but i can NOT browse the internet. DNS is working because I can see a web search doing a name-to-ip address translation, so HTTP or nat'ing is getting screwed up somewhere.
+
+Also, we want to have snmp and ftp services working and go through the eth1 interface (which is why I have placed an IP address on eth1; for routing purposes), but if I remove the DROP chains:
+
+    ipt -I FORWARD -j DROP -i $DHCPIF
+    ipt -I FORWARD -j DROP -o $DHCPIF
+
+Then VPN stops working, I cant even get one connection going. Ive spent weeks on these two issues to no avail.
+
+Thank you.
+
+
+
+
+Daniel Garcia
+IT Assistant Manager
+Core Infrastructure & Systems Development
+Global Gossip Group
+[a]    14 Wentworth Avenue, Sydney, NSW 2010
+[t]    +612 9263 0458
+[f]    +612 9263 0404
+[m]    0400 604 897
+[e]    dgarcia at globalgossip.net
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20090304/9068f52e/attachment.htm>
+
+From wlan at mac.com  Wed Mar  4 06:33:29 2009
+From: wlan at mac.com (wlanmac)
+Date: Wed, 04 Mar 2009 07:33:29 +0100
+Subject: VPN Traffic issues
+In-Reply-To: 
+ <BB13BEB48D3B3B4CA1AA6A51DB9CFBCE1A17820B8C@ausyd04.globalgossip.net>
+References: 
+ <BB13BEB48D3B3B4CA1AA6A51DB9CFBCE1A17820B8C@ausyd04.globalgossip.net>
+Message-ID: <1236148409.7183.7.camel@david-laptop>
+
+Is eth1 your WAN interface or the chilli DHCP interface? Looks like your
+chilli DHCP ... not sure why you need an IP on that interface for "pass
+through traffic" ... 
+
+I noticed that you don't have an MTU clamp iptables rule, which might
+help (see the up.sh in svn). 
+
+So, you are saying the current setup allows VPNs to work, but you can't
+web surf when not using the VPN (or when using the VPN)? 
+
+You might want to do a wireshark dump (or tcpdump) of the subscriber's
+traffic. Or, run chilli in debug mode to help see what it is doing. The
+first question is: can the subscriber surf the walled garden or does
+*nothing* work? 
+
+David
+
+
+On Wed, 2009-03-04 at 17:15 +1100, Daniel Garcia wrote:
+> Hi David/Delevopers,
+> 
+>  
+> 
+> I am having a headache with Coova and I was wondering if someone could
+> help me out, Ive been working on Coova for a few weeks now and time is
+> running out for me and so I hope you can help me.
+> 
+>  
+> 
+> I was tasked with getting multiple VPN traffic to work with Coova so
+> people from the hotspot network for our wireless users. We have a
+> linux box that acts as a gateway for wireless traffic.
+> 
+>  
+> 
+> Following the instructions on the web and coova I have done the
+> following...
+> 
+>  
+> 
+> Edit /usr/local/etc/chilli/Up.sh
+> 
+>  
+> 
+> #!/bin/sh
+> 
+> # Coova Chilli - David Bird <david at coova.com>
+> 
+> # Licensed under the GPL, see http://coova.org/
+> 
+> # up.sh /dev/tun0 192.168.0.10 255.255.255.0
+> 
+>  
+> 
+> . /usr/local/etc/chilli/functions
+> 
+>  
+> 
+> [ -e "/usr/local/var/run/chilli.iptables" ] &&
+> sh /usr/local/var/run/chilli.iptables 2>/dev/null
+> 
+> rm -f /usr/local/var/run/chilli.iptables 2>/dev/null
+> 
+>  
+> 
+> IF=$(basename $DEV)
+> 
+>  
+> 
+> ipt() {
+> 
+>     opt=$1; shift
+> 
+>     echo "iptables -D $*" >> /usr/local/var/run/chilli.iptables
+> 
+>     iptables $opt $*
+> 
+> }
+> 
+>  
+> 
+> ipt_in() {
+> 
+>     ipt -A INPUT -i $IF $*
+> 
+> }
+> 
+>  
+> 
+> [ -n "$DHCPIF" ] && {
+> 
+>  
+> 
+>     [ -n "$UAMPORT" -a "$UAMPORT" != "0" ] && \
+> 
+>       ipt_in -p tcp -m tcp --dport $UAMPORT --dst $ADDR -j ACCEPT
+> 
+>  
+> 
+>     [ -n "$UAMUIPORT" -a "$UAMUIPORT" != "0" ] && \
+> 
+>       ipt_in -p tcp -m tcp --dport $UAMUIPORT --dst $ADDR -j ACCEPT
+> 
+>  
+> 
+>     [ -n "HS_TCP_PORTS" ] && {
+> 
+>       for port in $HS_TCP_PORTS; do
+> 
+>           ipt_in -p tcp -m tcp --dport $port --dst $ADDR -j ACCEPT
+> 
+>       done
+> 
+>     }
+> 
+>     
+> 
+>     ipt_in -p udp -d 255.255.255.255 --destination-port 67:68 -j
+> ACCEPT
+> 
+>     ipt_in -p udp --dst $ADDR --dport 53 -j ACCEPT
+> 
+>  
+> 
+>     ipt -A INPUT -i $IF --dst $ADDR -j DROP
+> 
+>     ipt -A INPUT -i $IF -j DROP
+> 
+>  
+> 
+>     ipt -I FORWARD -j DROP -i $DHCPIF
+> 
+>     ipt -I FORWARD -j DROP -o $DHCPIF
+> 
+>     ipt -t raw -I PREROUTING -j NOTRACK -i $DHCPIF #Beg. of appended
+> lines
+> 
+>     ipt -t raw -I OUTPUT -j NOTRACK -o $DHCPIF
+> 
+>     ipt -I FORWARD -j ACCEPT -i tun0 -p gre
+> 
+>     ipt -I FORWARD -j ACCEPT -i tun0 -p tcp --dport 1723
+> 
+>  
+> 
+>     ipt -I PREROUTING -t raw -j NOTRACK -i $DHCPIF
+> 
+>     ipt -I OUTPUT -t raw -j NOTRACK -o $DHCPIF #End of appended lines
+> 
+>  
+> 
+>     ipt -I POSTROUTING -t nat -o eth0 -j MASQUERADE
+> 
+>     ipt -I PREROUTING -t nat -i $IF -p tcp --dport 25 -j DNAT
+> --to-destination $HS_SMTP
+> 
+>  
+> 
+>     [ "$HS_LAN_ACCESS" != "on" -a "$HS_LAN_ACCESS" != "allow" ] && \
+> 
+>       ipt -I FORWARD -i $IF -o \! $HS_WANIF -j DROP
+> 
+>  
+> 
+>     [ "$HS_LOCAL_DNS" = "on" ] && {
+> 
+>       ipt -I PREROUTING -t nat -i $IF -p udp --dport 53 -j DNAT
+> --to-destination $HS_DNS1
+> 
+>       ipt -I PREROUTING -t nat -i $IF -p tcp --dport 53 -j DNAT
+> --to-destination $HS_DNS1
+> 
+>       }
+> 
+> }
+> 
+>  
+> 
+> # site specific stuff optional
+> 
+> [ -e /usr/local/etc/chilli/ipup.sh ]
+> && . /usr/local/etc/chilli/ipup.sh
+> 
+>  
+> 
+> As you can see the blue is the added code I copied from the forums. I
+> also did the following for the install of the appropriate modules...
+> 
+>  
+> 
+> Modprobe ip_conntrack_pptp
+> 
+> Modprobe ip_nat_pptp
+> 
+> Modprobe nf_nat_proto_gre
+> 
+> Modprobe nf_conntrack_proto_gre
+> 
+>  
+> 
+> Now, I also amended the following
+> 
+>  
+> 
+> # vi /usr/local/etc/init.d/chilli
+> 
+>  
+> 
+> Under the case$1 in
+> 
+>                            Start) ? section (this starts the chilli
+> software and calls many procedures
+> 
+>  
+> 
+> Changed the following code:
+> 
+>  
+> 
+> Ifconfig $HS_LANIF 0.0.0.0
+> 
+>  
+> 
+> To: ifconfig $HS_LANIF 10.200.100.129/24
+> 
+>  
+> 
+> As I want an IP on the eth1 interface for traffic passthrough.
+> 
+>  
+> 
+> My problem is two-fold, 1. Multiple VPN connections work great and I
+> can access the resources on the other network, but i can NOT browse
+> the internet. DNS is working because I can see a web search doing a
+> name-to-ip address translation, so HTTP or nat?ing is getting screwed
+> up somewhere.
+> 
+>  
+> 
+> Also, we want to have snmp and ftp services working and go through the
+> eth1 interface (which is why I have placed an IP address on eth1; for
+> routing purposes), but if I remove the DROP chains:
+> 
+>  
+> 
+>     ipt -I FORWARD -j DROP -i $DHCPIF
+> 
+>     ipt -I FORWARD -j DROP -o $DHCPIF
+> 
+>  
+> 
+> Then VPN stops working, I cant even get one connection going. Ive
+> spent weeks on these two issues to no avail. 
+> 
+> 
+> Thank you.
+> 
+>  
+> 
+>  
+> 
+>  
+> 
+>  
+> 
+> Daniel Garcia
+> 
+> IT Assistant Manager
+> 
+> Core Infrastructure & Systems Development
+> 
+> Global Gossip Group
+> 
+> [a]    14 Wentworth Avenue, Sydney, NSW 2010
+> 
+> [t]    +612 9263 0458
+> 
+> [f]    +612 9263 0404
+> 
+> [m]    0400 604 897
+> 
+> [e]    dgarcia at globalgossip.net
+> 
+>  
+> 
+> 
+
+
+
+From jimmy at dwalliance.com  Wed Mar  4 10:01:43 2009
+From: jimmy at dwalliance.com (Jimmy Brake)
+Date: Wed, 04 Mar 2009 02:01:43 -0800
+Subject: VPN Traffic issues
+In-Reply-To: <1236148409.7183.7.camel@david-laptop>
+References: <BB13BEB48D3B3B4CA1AA6A51DB9CFBCE1A17820B8C@ausyd04.globalgossip.net> <1236148409.7183.7.camel@david-laptop>
+Message-ID: <49AE5187.5020102@dwalliance.com>
+
+everything he said plus check the network settings of a few clients 
+computers -- just make sure they  have  the proper gateway subnet mask etc
+
+
+wlanmac wrote:
+> Is eth1 your WAN interface or the chilli DHCP interface? Looks like your
+> chilli DHCP ... not sure why you need an IP on that interface for "pass
+> through traffic" ... 
+>
+> I noticed that you don't have an MTU clamp iptables rule, which might
+> help (see the up.sh in svn). 
+>
+> So, you are saying the current setup allows VPNs to work, but you can't
+> web surf when not using the VPN (or when using the VPN)? 
+>
+> You might want to do a wireshark dump (or tcpdump) of the subscriber's
+> traffic. Or, run chilli in debug mode to help see what it is doing. The
+> first question is: can the subscriber surf the walled garden or does
+> *nothing* work? 
+>
+> David
+>
+>
+> On Wed, 2009-03-04 at 17:15 +1100, Daniel Garcia wrote:
+>   
+>> Hi David/Delevopers,
+>>
+>>  
+>>
+>> I am having a headache with Coova and I was wondering if someone could
+>> help me out, Ive been working on Coova for a few weeks now and time is
+>> running out for me and so I hope you can help me.
+>>
+>>  
+>>
+>> I was tasked with getting multiple VPN traffic to work with Coova so
+>> people from the hotspot network for our wireless users. We have a
+>> linux box that acts as a gateway for wireless traffic.
+>>
+>>  
+>>
+>> Following the instructions on the web and coova I have done the
+>> following...
+>>
+>>  
+>>
+>> Edit /usr/local/etc/chilli/Up.sh
+>>
+>>  
+>>
+>> #!/bin/sh
+>>
+>> # Coova Chilli - David Bird <david at coova.com>
+>>
+>> # Licensed under the GPL, see http://coova.org/
+>>
+>> # up.sh /dev/tun0 192.168.0.10 255.255.255.0
+>>
+>>  
+>>
+>> . /usr/local/etc/chilli/functions
+>>
+>>  
+>>
+>> [ -e "/usr/local/var/run/chilli.iptables" ] &&
+>> sh /usr/local/var/run/chilli.iptables 2>/dev/null
+>>
+>> rm -f /usr/local/var/run/chilli.iptables 2>/dev/null
+>>
+>>  
+>>
+>> IF=$(basename $DEV)
+>>
+>>  
+>>
+>> ipt() {
+>>
+>>     opt=$1; shift
+>>
+>>     echo "iptables -D $*" >> /usr/local/var/run/chilli.iptables
+>>
+>>     iptables $opt $*
+>>
+>> }
+>>
+>>  
+>>
+>> ipt_in() {
+>>
+>>     ipt -A INPUT -i $IF $*
+>>
+>> }
+>>
+>>  
+>>
+>> [ -n "$DHCPIF" ] && {
+>>
+>>  
+>>
+>>     [ -n "$UAMPORT" -a "$UAMPORT" != "0" ] && \
+>>
+>>       ipt_in -p tcp -m tcp --dport $UAMPORT --dst $ADDR -j ACCEPT
+>>
+>>  
+>>
+>>     [ -n "$UAMUIPORT" -a "$UAMUIPORT" != "0" ] && \
+>>
+>>       ipt_in -p tcp -m tcp --dport $UAMUIPORT --dst $ADDR -j ACCEPT
+>>
+>>  
+>>
+>>     [ -n "HS_TCP_PORTS" ] && {
+>>
+>>       for port in $HS_TCP_PORTS; do
+>>
+>>           ipt_in -p tcp -m tcp --dport $port --dst $ADDR -j ACCEPT
+>>
+>>       done
+>>
+>>     }
+>>
+>>     
+>>
+>>     ipt_in -p udp -d 255.255.255.255 --destination-port 67:68 -j
+>> ACCEPT
+>>
+>>     ipt_in -p udp --dst $ADDR --dport 53 -j ACCEPT
+>>
+>>  
+>>
+>>     ipt -A INPUT -i $IF --dst $ADDR -j DROP
+>>
+>>     ipt -A INPUT -i $IF -j DROP
+>>
+>>  
+>>
+>>     ipt -I FORWARD -j DROP -i $DHCPIF
+>>
+>>     ipt -I FORWARD -j DROP -o $DHCPIF
+>>
+>>     ipt -t raw -I PREROUTING -j NOTRACK -i $DHCPIF #Beg. of appended
+>> lines
+>>
+>>     ipt -t raw -I OUTPUT -j NOTRACK -o $DHCPIF
+>>
+>>     ipt -I FORWARD -j ACCEPT -i tun0 -p gre
+>>
+>>     ipt -I FORWARD -j ACCEPT -i tun0 -p tcp --dport 1723
+>>
+>>  
+>>
+>>     ipt -I PREROUTING -t raw -j NOTRACK -i $DHCPIF
+>>
+>>     ipt -I OUTPUT -t raw -j NOTRACK -o $DHCPIF #End of appended lines
+>>
+>>  
+>>
+>>     ipt -I POSTROUTING -t nat -o eth0 -j MASQUERADE
+>>
+>>     ipt -I PREROUTING -t nat -i $IF -p tcp --dport 25 -j DNAT
+>> --to-destination $HS_SMTP
+>>
+>>  
+>>
+>>     [ "$HS_LAN_ACCESS" != "on" -a "$HS_LAN_ACCESS" != "allow" ] && \
+>>
+>>       ipt -I FORWARD -i $IF -o \! $HS_WANIF -j DROP
+>>
+>>  
+>>
+>>     [ "$HS_LOCAL_DNS" = "on" ] && {
+>>
+>>       ipt -I PREROUTING -t nat -i $IF -p udp --dport 53 -j DNAT
+>> --to-destination $HS_DNS1
+>>
+>>       ipt -I PREROUTING -t nat -i $IF -p tcp --dport 53 -j DNAT
+>> --to-destination $HS_DNS1
+>>
+>>       }
+>>
+>> }
+>>
+>>  
+>>
+>> # site specific stuff optional
+>>
+>> [ -e /usr/local/etc/chilli/ipup.sh ]
+>> && . /usr/local/etc/chilli/ipup.sh
+>>
+>>  
+>>
+>> As you can see the blue is the added code I copied from the forums. I
+>> also did the following for the install of the appropriate modules...
+>>
+>>  
+>>
+>> Modprobe ip_conntrack_pptp
+>>
+>> Modprobe ip_nat_pptp
+>>
+>> Modprobe nf_nat_proto_gre
+>>
+>> Modprobe nf_conntrack_proto_gre
+>>
+>>  
+>>
+>> Now, I also amended the following
+>>
+>>  
+>>
+>> # vi /usr/local/etc/init.d/chilli
+>>
+>>  
+>>
+>> Under the case$1 in
+>>
+>>                            Start) ? section (this starts the chilli
+>> software and calls many procedures
+>>
+>>  
+>>
+>> Changed the following code:
+>>
+>>  
+>>
+>> Ifconfig $HS_LANIF 0.0.0.0
+>>
+>>  
+>>
+>> To: ifconfig $HS_LANIF 10.200.100.129/24
+>>
+>>  
+>>
+>> As I want an IP on the eth1 interface for traffic passthrough.
+>>
+>>  
+>>
+>> My problem is two-fold, 1. Multiple VPN connections work great and I
+>> can access the resources on the other network, but i can NOT browse
+>> the internet. DNS is working because I can see a web search doing a
+>> name-to-ip address translation, so HTTP or nat?ing is getting screwed
+>> up somewhere.
+>>
+>>  
+>>
+>> Also, we want to have snmp and ftp services working and go through the
+>> eth1 interface (which is why I have placed an IP address on eth1; for
+>> routing purposes), but if I remove the DROP chains:
+>>
+>>  
+>>
+>>     ipt -I FORWARD -j DROP -i $DHCPIF
+>>
+>>     ipt -I FORWARD -j DROP -o $DHCPIF
+>>
+>>  
+>>
+>> Then VPN stops working, I cant even get one connection going. Ive
+>> spent weeks on these two issues to no avail. 
+>>
+>>
+>> Thank you.
+>>
+>>  
+>>
+>>  
+>>
+>>  
+>>
+>>  
+>>
+>> Daniel Garcia
+>>
+>> IT Assistant Manager
+>>
+>> Core Infrastructure & Systems Development
+>>
+>> Global Gossip Group
+>>
+>> [a]    14 Wentworth Avenue, Sydney, NSW 2010
+>>
+>> [t]    +612 9263 0458
+>>
+>> [f]    +612 9263 0404
+>>
+>> [m]    0400 604 897
+>>
+>> [e]    dgarcia at globalgossip.net
+>>
+>>  
+>>
+>>
+>>     
+>
+>
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>
+>   
+
+
+
+From DGarcia at globalgossip.net  Thu Mar  5 09:19:11 2009
+From: DGarcia at globalgossip.net (Daniel Garcia)
+Date: Thu, 5 Mar 2009 20:19:11 +1100
+Subject: VPN Traffic issues
+In-Reply-To: <1236148409.7183.7.camel@david-laptop>
+References: <BB13BEB48D3B3B4CA1AA6A51DB9CFBCE1A17820B8C@ausyd04.globalgossip.net>,<1236148409.7183.7.camel@david-laptop>
+Message-ID: <BB13BEB48D3B3B4CA1AA6A51DB9CFBCE1A1785EB19@ausyd04.globalgossip.net>
+
+
+>Is eth1 your WAN interface or the chilli DHCP interface? Looks like your
+>chilli DHCP ... not sure why you need an IP on that interface for "pass
+>through traffic" ...
+
+eth1 is the chilli DHCP interface, the one that chilli replaces with 0.0.0.0 and creates a virtual tunnel
+
+In regards for pass-through traffic, what I mean is, I have a couple of APS and other devices behind the chilli hotspot network and I would like to be able to HTTP to those devices, also get traffic like SNMP working for monitoring purposes, which is why I placed the internet on eth1, so the APS with IP's can be browsed to.
+
+
+>I noticed that you don't have an MTU clamp iptables rule, which might
+>help (see the up.sh in svn).
+
+Whats an MTU clamp? Ill take a look.
+
+
+So, you are saying the current setup allows VPNs to work, but you can't
+web surf when not using the VPN (or when using the VPN)?
+
+>You might want to do a wireshark dump (or tcpdump) of the subscriber's
+>traffic. Or, run chilli in debug mode to help see what it is doing. The
+>first question is: can the subscriber surf the walled garden or does
+>*nothing* work?
+
+surf the walled garden? Sorry you lost me. Browsing the internet is fine when subscribers log in correctly. Once logged in and successfully browsing, if they VPN, then browsing stops working. I notice that DNS is working because I see the browser resolving the name URL...it appears to be something in the iptables is preventing it
+
+David
+
+
+On Wed, 2009-03-04 at 17:15 +1100, Daniel Garcia wrote:
+> Hi David/Delevopers,
+>
+>
+>
+> I am having a headache with Coova and I was wondering if someone could
+> help me out, Ive been working on Coova for a few weeks now and time is
+> running out for me and so I hope you can help me.
+>
+>
+>
+> I was tasked with getting multiple VPN traffic to work with Coova so
+> people from the hotspot network for our wireless users. We have a
+> linux box that acts as a gateway for wireless traffic.
+>
+>
+>
+> Following the instructions on the web and coova I have done the
+> following...
+>
+>
+>
+> Edit /usr/local/etc/chilli/Up.sh
+>
+>
+>
+> #!/bin/sh
+>
+> # Coova Chilli - David Bird <david at coova.com>
+>
+> # Licensed under the GPL, see http://coova.org/
+>
+> # up.sh /dev/tun0 192.168.0.10 255.255.255.0
+>
+>
+>
+> . /usr/local/etc/chilli/functions
+>
+>
+>
+> [ -e "/usr/local/var/run/chilli.iptables" ] &&
+> sh /usr/local/var/run/chilli.iptables 2>/dev/null
+>
+> rm -f /usr/local/var/run/chilli.iptables 2>/dev/null
+>
+>
+>
+> IF=$(basename $DEV)
+>
+>
+>
+> ipt() {
+>
+>     opt=$1; shift
+>
+>     echo "iptables -D $*" >> /usr/local/var/run/chilli.iptables
+>
+>     iptables $opt $*
+>
+> }
+>
+>
+>
+> ipt_in() {
+>
+>     ipt -A INPUT -i $IF $*
+>
+> }
+>
+>
+>
+> [ -n "$DHCPIF" ] && {
+>
+>
+>
+>     [ -n "$UAMPORT" -a "$UAMPORT" != "0" ] && \
+>
+>       ipt_in -p tcp -m tcp --dport $UAMPORT --dst $ADDR -j ACCEPT
+>
+>
+>
+>     [ -n "$UAMUIPORT" -a "$UAMUIPORT" != "0" ] && \
+>
+>       ipt_in -p tcp -m tcp --dport $UAMUIPORT --dst $ADDR -j ACCEPT
+>
+>
+>
+>     [ -n "HS_TCP_PORTS" ] && {
+>
+>       for port in $HS_TCP_PORTS; do
+>
+>           ipt_in -p tcp -m tcp --dport $port --dst $ADDR -j ACCEPT
+>
+>       done
+>
+>     }
+>
+>
+>
+>     ipt_in -p udp -d 255.255.255.255 --destination-port 67:68 -j
+> ACCEPT
+>
+>     ipt_in -p udp --dst $ADDR --dport 53 -j ACCEPT
+>
+>
+>
+>     ipt -A INPUT -i $IF --dst $ADDR -j DROP
+>
+>     ipt -A INPUT -i $IF -j DROP
+>
+>
+>
+>     ipt -I FORWARD -j DROP -i $DHCPIF
+>
+>     ipt -I FORWARD -j DROP -o $DHCPIF
+>
+>     ipt -t raw -I PREROUTING -j NOTRACK -i $DHCPIF #Beg. of appended
+> lines
+>
+>     ipt -t raw -I OUTPUT -j NOTRACK -o $DHCPIF
+>
+>     ipt -I FORWARD -j ACCEPT -i tun0 -p gre
+>
+>     ipt -I FORWARD -j ACCEPT -i tun0 -p tcp --dport 1723
+>
+>
+>
+>     ipt -I PREROUTING -t raw -j NOTRACK -i $DHCPIF
+>
+>     ipt -I OUTPUT -t raw -j NOTRACK -o $DHCPIF #End of appended lines
+>
+>
+>
+>     ipt -I POSTROUTING -t nat -o eth0 -j MASQUERADE
+>
+>     ipt -I PREROUTING -t nat -i $IF -p tcp --dport 25 -j DNAT
+> --to-destination $HS_SMTP
+>
+>
+>
+>     [ "$HS_LAN_ACCESS" != "on" -a "$HS_LAN_ACCESS" != "allow" ] && \
+>
+>       ipt -I FORWARD -i $IF -o \! $HS_WANIF -j DROP
+>
+>
+>
+>     [ "$HS_LOCAL_DNS" = "on" ] && {
+>
+>       ipt -I PREROUTING -t nat -i $IF -p udp --dport 53 -j DNAT
+> --to-destination $HS_DNS1
+>
+>       ipt -I PREROUTING -t nat -i $IF -p tcp --dport 53 -j DNAT
+> --to-destination $HS_DNS1
+>
+>       }
+>
+> }
+>
+>
+>
+> # site specific stuff optional
+>
+> [ -e /usr/local/etc/chilli/ipup.sh ]
+> && . /usr/local/etc/chilli/ipup.sh
+>
+>
+>
+> As you can see the blue is the added code I copied from the forums. I
+> also did the following for the install of the appropriate modules...
+>
+>
+>
+> Modprobe ip_conntrack_pptp
+>
+> Modprobe ip_nat_pptp
+>
+> Modprobe nf_nat_proto_gre
+>
+> Modprobe nf_conntrack_proto_gre
+>
+>
+>
+> Now, I also amended the following
+>
+>
+>
+> # vi /usr/local/etc/init.d/chilli
+>
+>
+>
+> Under the case$1 in
+>
+>                            Start) ? section (this starts the chilli
+> software and calls many procedures
+>
+>
+>
+> Changed the following code:
+>
+>
+>
+> Ifconfig $HS_LANIF 0.0.0.0
+>
+>
+>
+> To: ifconfig $HS_LANIF 10.200.100.129/24
+>
+>
+>
+> As I want an IP on the eth1 interface for traffic passthrough.
+>
+>
+>
+> My problem is two-fold, 1. Multiple VPN connections work great and I
+> can access the resources on the other network, but i can NOT browse
+> the internet. DNS is working because I can see a web search doing a
+> name-to-ip address translation, so HTTP or nat?ing is getting screwed
+> up somewhere.
+>
+>
+>
+> Also, we want to have snmp and ftp services working and go through the
+> eth1 interface (which is why I have placed an IP address on eth1; for
+> routing purposes), but if I remove the DROP chains:
+>
+>
+>
+>     ipt -I FORWARD -j DROP -i $DHCPIF
+>
+>     ipt -I FORWARD -j DROP -o $DHCPIF
+>
+>
+>
+> Then VPN stops working, I cant even get one connection going. Ive
+> spent weeks on these two issues to no avail.
+>
+>
+> Thank you.
+>
+>
+>
+>
+>
+>
+>
+>
+>
+> Daniel Garcia
+>
+> IT Assistant Manager
+>
+> Core Infrastructure & Systems Development
+>
+> Global Gossip Group
+>
+> [a]    14 Wentworth Avenue, Sydney, NSW 2010
+>
+> [t]    +612 9263 0458
+>
+> [f]    +612 9263 0404
+>
+> [m]    0400 604 897
+>
+> [e]    dgarcia at globalgossip.net
+>
+>
+>
+>
+
+
+---------------------------------------------------------------------
+To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+For additional commands, e-mail: chilli-help at coova.org
+Wiki: http://coova.org/wiki/index.php/CoovaChilli
+Forum: http://coova.org/phpBB3/viewforum.php?f=4
+
+
+
+From derekchilli at hssl.ie  Thu Mar  5 10:49:27 2009
+From: derekchilli at hssl.ie (Derek C)
+Date: Thu, 5 Mar 2009 10:49:27 -0000 (UTC)
+Subject: Radius auditing but disable splashpage - possible?
+Message-ID: <50454.149.5.32.216.1236250167.squirrel@www.rivertowermail.com>
+
+Hi all,
+
+I'm using Coova Chilli in a number of hotspots (free Internet but a splash
+page every 20 minutes telling them about the free Internet service).
+
+I use MAC authentication for this.
+
+I love the way data usage is written to the [free]radius "radacct" table.
+
+Is it possible to not have a splash page but still have coova chilli write
+the accounting data into the [free]radius table based on the MAC address
+for usage accounting purposes?
+
+thanks,
+
+Derek
+
+
+-- 
+Derek C
+In Ireland
+
+
+
+From m.simioni at gmail.com  Fri Mar  6 17:23:49 2009
+From: m.simioni at gmail.com (Marco Simioni)
+Date: Fri, 6 Mar 2009 18:23:49 +0100
+Subject: ubuntu 8 package
+Message-ID: <f71cb680903060923j1f93f14fo2ab218abd2a1f989@mail.gmail.com>
+
+Hi all,
+
+can someone point me how to build a .deb package of Chilli for Ubuntu
+8, and newer Ubuntu versions ?
+
+Thank you very much
+
+Marco
+
+
+From wlan at mac.com  Fri Mar  6 22:55:33 2009
+From: wlan at mac.com (wlanmac)
+Date: Fri, 06 Mar 2009 23:55:33 +0100
+Subject: ubuntu 8 package
+In-Reply-To: <f71cb680903060923j1f93f14fo2ab218abd2a1f989@mail.gmail.com>
+References: <f71cb680903060923j1f93f14fo2ab218abd2a1f989@mail.gmail.com>
+Message-ID: <1236380133.23029.3.camel@david-laptop>
+
+This should help:
+http://coova.org/wiki/index.php/CoovaChilli/DistroBuilding
+
+
+
+On Fri, 2009-03-06 at 18:23 +0100, Marco Simioni wrote:
+> Hi all,
+> 
+> can someone point me how to build a .deb package of Chilli for Ubuntu
+> 8, and newer Ubuntu versions ?
+> 
+> Thank you very much
+> 
+> Marco
+> 
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+> 
+
+
+
+From DGarcia at globalgossip.net  Mon Mar  9 00:10:40 2009
+From: DGarcia at globalgossip.net (Daniel Garcia)
+Date: Mon, 9 Mar 2009 11:10:40 +1100
+Subject: VPN Traffic issues
+In-Reply-To: <1236148409.7183.7.camel@david-laptop>
+References: <BB13BEB48D3B3B4CA1AA6A51DB9CFBCE1A17820B8C@ausyd04.globalgossip.net>,<1236148409.7183.7.camel@david-laptop>
+Message-ID: <BB13BEB48D3B3B4CA1AA6A51DB9CFBCE1A1785EB22@ausyd04.globalgossip.net>
+
+>Is eth1 your WAN interface or the chilli DHCP interface? Looks like your
+>chilli DHCP ... not sure why you need an IP on that interface for "pass
+>through traffic" ...
+eth1 is the chilli DHCP interface, the one that chilli replaces with 0.0.0.0 and creates a virtual tunnel
+In regards for pass-through traffic, what I mean is, I have a couple of APS and other devices behind the chilli hotspot network and I would like to be able to HTTP to those devices, also get traffic like SNMP working for monitoring purposes, which is why I placed the internet on eth1, so the APS with IP's can be browsed to.
+
+>I noticed that you don't have an MTU clamp iptables rule, which might
+>help (see the up.sh in svn).
+Whats an MTU clamp? Ill take a look.
+
+So, you are saying the current setup allows VPNs to work, but you can't
+web surf when not using the VPN (or when using the VPN)?
+>You might want to do a wireshark dump (or tcpdump) of the subscriber's
+>traffic. Or, run chilli in debug mode to help see what it is doing. The
+>first question is: can the subscriber surf the walled garden or does
+>*nothing* work?
+surf the walled garden? Sorry you lost me. Browsing the internet is fine when subscribers log in correctly. Once logged in and successfully browsing, if they VPN, then browsing stops working. I notice that DNS is working because I see the browser resolving the name URL...it appears to be something in the iptables is preventing it
+
+
+
+Daniel Garcia
+IT Assistant Manager
+Core Infrastructure & Systems Development
+Global Gossip Group
+[a]    14 Wentworth Avenue, Sydney, NSW 2010
+[t]     +612 9263 0458
+[f]     +612 9263 0404
+[m]   0400 604 897
+[e]    dgarcia at globalgossip.net
+________________________________________
+From: wlanmac [wlan at mac.com]
+Sent: Wednesday, 4 March 2009 5:33 PM
+To: chilli at coova.org
+Subject: Re: VPN Traffic issues
+
+Is eth1 your WAN interface or the chilli DHCP interface? Looks like your
+chilli DHCP ... not sure why you need an IP on that interface for "pass
+through traffic" ...
+
+I noticed that you don't have an MTU clamp iptables rule, which might
+help (see the up.sh in svn).
+
+So, you are saying the current setup allows VPNs to work, but you can't
+web surf when not using the VPN (or when using the VPN)?
+
+You might want to do a wireshark dump (or tcpdump) of the subscriber's
+traffic. Or, run chilli in debug mode to help see what it is doing. The
+first question is: can the subscriber surf the walled garden or does
+*nothing* work?
+
+David
+
+
+On Wed, 2009-03-04 at 17:15 +1100, Daniel Garcia wrote:
+> Hi David/Delevopers,
+>
+>
+>
+> I am having a headache with Coova and I was wondering if someone could
+> help me out, Ive been working on Coova for a few weeks now and time is
+> running out for me and so I hope you can help me.
+>
+>
+>
+> I was tasked with getting multiple VPN traffic to work with Coova so
+> people from the hotspot network for our wireless users. We have a
+> linux box that acts as a gateway for wireless traffic.
+>
+>
+>
+> Following the instructions on the web and coova I have done the
+> following...
+>
+>
+>
+> Edit /usr/local/etc/chilli/Up.sh
+>
+>
+>
+> #!/bin/sh
+>
+> # Coova Chilli - David Bird <david at coova.com>
+>
+> # Licensed under the GPL, see http://coova.org/
+>
+> # up.sh /dev/tun0 192.168.0.10 255.255.255.0
+>
+>
+>
+> . /usr/local/etc/chilli/functions
+>
+>
+>
+> [ -e "/usr/local/var/run/chilli.iptables" ] &&
+> sh /usr/local/var/run/chilli.iptables 2>/dev/null
+>
+> rm -f /usr/local/var/run/chilli.iptables 2>/dev/null
+>
+>
+>
+> IF=$(basename $DEV)
+>
+>
+>
+> ipt() {
+>
+>     opt=$1; shift
+>
+>     echo "iptables -D $*" >> /usr/local/var/run/chilli.iptables
+>
+>     iptables $opt $*
+>
+> }
+>
+>
+>
+> ipt_in() {
+>
+>     ipt -A INPUT -i $IF $*
+>
+> }
+>
+>
+>
+> [ -n "$DHCPIF" ] && {
+>
+>
+>
+>     [ -n "$UAMPORT" -a "$UAMPORT" != "0" ] && \
+>
+>       ipt_in -p tcp -m tcp --dport $UAMPORT --dst $ADDR -j ACCEPT
+>
+>
+>
+>     [ -n "$UAMUIPORT" -a "$UAMUIPORT" != "0" ] && \
+>
+>       ipt_in -p tcp -m tcp --dport $UAMUIPORT --dst $ADDR -j ACCEPT
+>
+>
+>
+>     [ -n "HS_TCP_PORTS" ] && {
+>
+>       for port in $HS_TCP_PORTS; do
+>
+>           ipt_in -p tcp -m tcp --dport $port --dst $ADDR -j ACCEPT
+>
+>       done
+>
+>     }
+>
+>
+>
+>     ipt_in -p udp -d 255.255.255.255 --destination-port 67:68 -j
+> ACCEPT
+>
+>     ipt_in -p udp --dst $ADDR --dport 53 -j ACCEPT
+>
+>
+>
+>     ipt -A INPUT -i $IF --dst $ADDR -j DROP
+>
+>     ipt -A INPUT -i $IF -j DROP
+>
+>
+>
+>     ipt -I FORWARD -j DROP -i $DHCPIF
+>
+>     ipt -I FORWARD -j DROP -o $DHCPIF
+>
+>     ipt -t raw -I PREROUTING -j NOTRACK -i $DHCPIF #Beg. of appended
+> lines
+>
+>     ipt -t raw -I OUTPUT -j NOTRACK -o $DHCPIF
+>
+>     ipt -I FORWARD -j ACCEPT -i tun0 -p gre
+>
+>     ipt -I FORWARD -j ACCEPT -i tun0 -p tcp --dport 1723
+>
+>
+>
+>     ipt -I PREROUTING -t raw -j NOTRACK -i $DHCPIF
+>
+>     ipt -I OUTPUT -t raw -j NOTRACK -o $DHCPIF #End of appended lines
+>
+>
+>
+>     ipt -I POSTROUTING -t nat -o eth0 -j MASQUERADE
+>
+>     ipt -I PREROUTING -t nat -i $IF -p tcp --dport 25 -j DNAT
+> --to-destination $HS_SMTP
+>
+>
+>
+>     [ "$HS_LAN_ACCESS" != "on" -a "$HS_LAN_ACCESS" != "allow" ] && \
+>
+>       ipt -I FORWARD -i $IF -o \! $HS_WANIF -j DROP
+>
+>
+>
+>     [ "$HS_LOCAL_DNS" = "on" ] && {
+>
+>       ipt -I PREROUTING -t nat -i $IF -p udp --dport 53 -j DNAT
+> --to-destination $HS_DNS1
+>
+>       ipt -I PREROUTING -t nat -i $IF -p tcp --dport 53 -j DNAT
+> --to-destination $HS_DNS1
+>
+>       }
+>
+> }
+>
+>
+>
+> # site specific stuff optional
+>
+> [ -e /usr/local/etc/chilli/ipup.sh ]
+> && . /usr/local/etc/chilli/ipup.sh
+>
+>
+>
+> As you can see the blue is the added code I copied from the forums. I
+> also did the following for the install of the appropriate modules...
+>
+>
+>
+> Modprobe ip_conntrack_pptp
+>
+> Modprobe ip_nat_pptp
+>
+> Modprobe nf_nat_proto_gre
+>
+> Modprobe nf_conntrack_proto_gre
+>
+>
+>
+> Now, I also amended the following
+>
+>
+>
+> # vi /usr/local/etc/init.d/chilli
+>
+>
+>
+> Under the case$1 in
+>
+>                            Start) ? section (this starts the chilli
+> software and calls many procedures
+>
+>
+>
+> Changed the following code:
+>
+>
+>
+> Ifconfig $HS_LANIF 0.0.0.0
+>
+>
+>
+> To: ifconfig $HS_LANIF 10.200.100.129/24
+>
+>
+>
+> As I want an IP on the eth1 interface for traffic passthrough.
+>
+>
+>
+> My problem is two-fold, 1. Multiple VPN connections work great and I
+> can access the resources on the other network, but i can NOT browse
+> the internet. DNS is working because I can see a web search doing a
+> name-to-ip address translation, so HTTP or nat?ing is getting screwed
+> up somewhere.
+>
+>
+>
+> Also, we want to have snmp and ftp services working and go through the
+> eth1 interface (which is why I have placed an IP address on eth1; for
+> routing purposes), but if I remove the DROP chains:
+>
+>
+>
+>     ipt -I FORWARD -j DROP -i $DHCPIF
+>
+>     ipt -I FORWARD -j DROP -o $DHCPIF
+>
+>
+>
+> Then VPN stops working, I cant even get one connection going. Ive
+> spent weeks on these two issues to no avail.
+>
+>
+> Thank you.
+>
+>
+>
+>
+>
+>
+>
+>
+>
+> Daniel Garcia
+>
+> IT Assistant Manager
+>
+> Core Infrastructure & Systems Development
+>
+> Global Gossip Group
+>
+> [a]    14 Wentworth Avenue, Sydney, NSW 2010
+>
+> [t]    +612 9263 0458
+>
+> [f]    +612 9263 0404
+>
+> [m]    0400 604 897
+>
+> [e]    dgarcia at globalgossip.net
+>
+>
+>
+>
+
+
+---------------------------------------------------------------------
+To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+For additional commands, e-mail: chilli-help at coova.org
+Wiki: http://coova.org/wiki/index.php/CoovaChilli
+Forum: http://coova.org/phpBB3/viewforum.php?f=4
+
+
+From info at ollisnet.de  Mon Mar  9 07:52:17 2009
+From: info at ollisnet.de (Oliver Hinckel)
+Date: Mon, 09 Mar 2009 08:52:17 +0100
+Subject: VPN Traffic issues
+In-Reply-To: <BB13BEB48D3B3B4CA1AA6A51DB9CFBCE1A1785EB22@ausyd04.globalgossip.net>
+References: <BB13BEB48D3B3B4CA1AA6A51DB9CFBCE1A17820B8C@ausyd04.globalgossip.net>,<1236148409.7183.7.camel@david-laptop> <BB13BEB48D3B3B4CA1AA6A51DB9CFBCE1A1785EB22@ausyd04.globalgossip.net>
+Message-ID: <49B4CAB1.3090505@ollisnet.de>
+
+Daniel Garcia wrote on 03/09/2009 01:10 AM:
+[...]
+>> You might want to do a wireshark dump (or tcpdump) of the subscriber's
+>> traffic. Or, run chilli in debug mode to help see what it is doing. The
+>> first question is: can the subscriber surf the walled garden or does
+>> *nothing* work?
+> surf the walled garden? Sorry you lost me. Browsing the internet is fine
+> when subscribers log in correctly. Once logged in and successfully
+> browsing, if they VPN, then browsing stops working. I notice that DNS
+> is working because I see the browser resolving the name URL...it appears
+ > to be something in the iptables is preventing it
+
+We had same problems with surfen when VPN was activated. The problem 
+was, that the VPN software (doesn't remember which VPN software and type 
+of VPN was used) tries to contact IP address 1.1.1.1 which is the 
+default value for the "uamlogoutip" settings:
+
+   http://coova.org/wiki/index.php/CoovaChilli/chilli.conf(5)
+
+So if the customer starts his VPN the software contacted the IP address 
+1.1.1.1 (or tries at least to contact) and chilli logged them out. The 
+customer wasn't able to surf the web anymore.
+
+To solve this problem, we changed the "uamlogoutip" value to 127.0.0.1 
+since we don't need this configuration with logging out by contacting a 
+specific IP address.
+
+HTH
+
+- Olli
+
+
+From wlan at mac.com  Mon Mar  9 08:02:12 2009
+From: wlan at mac.com (wlanmac)
+Date: Mon, 09 Mar 2009 09:02:12 +0100
+Subject: VPN Traffic issues
+In-Reply-To: <49B4CAB1.3090505@ollisnet.de>
+References: 
+ <BB13BEB48D3B3B4CA1AA6A51DB9CFBCE1A17820B8C@ausyd04.globalgossip.net>
+ <1236148409.7183.7.camel@david-laptop>
+ <BB13BEB48D3B3B4CA1AA6A51DB9CFBCE1A1785EB22@ausyd04.globalgossip.net>
+ <49B4CAB1.3090505@ollisnet.de>
+Message-ID: <1236585732.7714.4.camel@david-laptop>
+
+Thanks for the suggestion! 
+
+David
+
+
+On Mon, 2009-03-09 at 08:52 +0100, Oliver Hinckel wrote:
+> Daniel Garcia wrote on 03/09/2009 01:10 AM:
+> [...]
+> >> You might want to do a wireshark dump (or tcpdump) of the subscriber's
+> >> traffic. Or, run chilli in debug mode to help see what it is doing. The
+> >> first question is: can the subscriber surf the walled garden or does
+> >> *nothing* work?
+> > surf the walled garden? Sorry you lost me. Browsing the internet is fine
+> > when subscribers log in correctly. Once logged in and successfully
+> > browsing, if they VPN, then browsing stops working. I notice that DNS
+> > is working because I see the browser resolving the name URL...it appears
+>  > to be something in the iptables is preventing it
+> 
+> We had same problems with surfen when VPN was activated. The problem 
+> was, that the VPN software (doesn't remember which VPN software and type 
+> of VPN was used) tries to contact IP address 1.1.1.1 which is the 
+> default value for the "uamlogoutip" settings:
+> 
+>    http://coova.org/wiki/index.php/CoovaChilli/chilli.conf(5)
+> 
+> So if the customer starts his VPN the software contacted the IP address 
+> 1.1.1.1 (or tries at least to contact) and chilli logged them out. The 
+> customer wasn't able to surf the web anymore.
+> 
+> To solve this problem, we changed the "uamlogoutip" value to 127.0.0.1 
+> since we don't need this configuration with logging out by contacting a 
+> specific IP address.
+> 
+> HTH
+> 
+> - Olli
+> 
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+> 
+
+
+
+From DGarcia at globalgossip.net  Tue Mar 10 01:38:36 2009
+From: DGarcia at globalgossip.net (Daniel Garcia)
+Date: Tue, 10 Mar 2009 12:38:36 +1100
+Subject: VPN Traffic issues
+In-Reply-To: <1236585732.7714.4.camel@david-laptop>
+References: <BB13BEB48D3B3B4CA1AA6A51DB9CFBCE1A17820B8C@ausyd04.globalgossip.net>
+ <1236148409.7183.7.camel@david-laptop>
+ <BB13BEB48D3B3B4CA1AA6A51DB9CFBCE1A1785EB22@ausyd04.globalgossip.net>
+ <49B4CAB1.3090505@ollisnet.de> <1236585732.7714.4.camel@david-laptop>
+Message-ID: <BB13BEB48D3B3B4CA1AA6A51DB9CFBCE1A17820B98@ausyd04.globalgossip.net>
+
+I added HS_UAMLOGOUTIP=127.0.0.1 to my config file but when I restart coova it is not in the generated main.conf file.
+
+Can you please specify exactly where and how you configured this?
+
+Thanks
+
+Daniel Garcia
+IT Assistant Manager
+Core Infrastructure & Systems Development
+Global Gossip Group
+[a]????14 Wentworth Avenue, Sydney, NSW 2010
+[t]????+612 9263 0458
+[f]????+612 9263 0404
+[m]??? 0400 604 897
+[e]????dgarcia at globalgossip.net
+
+-----Original Message-----
+From: wlanmac [mailto:wlan at mac.com]
+Sent: Monday, 9 March 2009 7:02 PM
+To: chilli at coova.org
+Subject: Re: VPN Traffic issues
+
+Thanks for the suggestion!
+
+David
+
+
+On Mon, 2009-03-09 at 08:52 +0100, Oliver Hinckel wrote:
+> Daniel Garcia wrote on 03/09/2009 01:10 AM:
+> [...]
+> >> You might want to do a wireshark dump (or tcpdump) of the subscriber's
+> >> traffic. Or, run chilli in debug mode to help see what it is doing. The
+> >> first question is: can the subscriber surf the walled garden or does
+> >> *nothing* work?
+> > surf the walled garden? Sorry you lost me. Browsing the internet is fine
+> > when subscribers log in correctly. Once logged in and successfully
+> > browsing, if they VPN, then browsing stops working. I notice that DNS
+> > is working because I see the browser resolving the name URL...it appears
+>  > to be something in the iptables is preventing it
+>
+> We had same problems with surfen when VPN was activated. The problem
+> was, that the VPN software (doesn't remember which VPN software and type
+> of VPN was used) tries to contact IP address 1.1.1.1 which is the
+> default value for the "uamlogoutip" settings:
+>
+>    http://coova.org/wiki/index.php/CoovaChilli/chilli.conf(5)
+>
+> So if the customer starts his VPN the software contacted the IP address
+> 1.1.1.1 (or tries at least to contact) and chilli logged them out. The
+> customer wasn't able to surf the web anymore.
+>
+> To solve this problem, we changed the "uamlogoutip" value to 127.0.0.1
+> since we don't need this configuration with logging out by contacting a
+> specific IP address.
+>
+> HTH
+>
+> - Olli
+>
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>
+
+
+---------------------------------------------------------------------
+To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+For additional commands, e-mail: chilli-help at coova.org
+Wiki: http://coova.org/wiki/index.php/CoovaChilli
+Forum: http://coova.org/phpBB3/viewforum.php?f=4
+
+
+
+From wlan at mac.com  Tue Mar 10 05:35:50 2009
+From: wlan at mac.com (wlanmac)
+Date: Tue, 10 Mar 2009 06:35:50 +0100
+Subject: VPN Traffic issues
+In-Reply-To: 
+ <BB13BEB48D3B3B4CA1AA6A51DB9CFBCE1A17820B98@ausyd04.globalgossip.net>
+References: 
+ <BB13BEB48D3B3B4CA1AA6A51DB9CFBCE1A17820B8C@ausyd04.globalgossip.net>
+ <1236148409.7183.7.camel@david-laptop>
+ <BB13BEB48D3B3B4CA1AA6A51DB9CFBCE1A1785EB22@ausyd04.globalgossip.net>
+ <49B4CAB1.3090505@ollisnet.de> <1236585732.7714.4.camel@david-laptop>
+ <BB13BEB48D3B3B4CA1AA6A51DB9CFBCE1A17820B98@ausyd04.globalgossip.net>
+Message-ID: <1236663350.7701.0.camel@david-laptop>
+
+Try putting the line "uamlogoutip 127.0.0.1" in
+your /etc/chilli/local.conf
+
+David
+
+On Tue, 2009-03-10 at 12:38 +1100, Daniel Garcia wrote:
+> I added HS_UAMLOGOUTIP=127.0.0.1 to my config file but when I restart coova it is not in the generated main.conf file.
+> 
+> Can you please specify exactly where and how you configured this?
+> 
+> Thanks
+> 
+> Daniel Garcia
+> IT Assistant Manager
+> Core Infrastructure & Systems Development
+> Global Gossip Group
+> [a]    14 Wentworth Avenue, Sydney, NSW 2010
+> [t]    +612 9263 0458
+> [f]    +612 9263 0404
+> [m]    0400 604 897
+> [e]    dgarcia at globalgossip.net
+> 
+> -----Original Message-----
+> From: wlanmac [mailto:wlan at mac.com]
+> Sent: Monday, 9 March 2009 7:02 PM
+> To: chilli at coova.org
+> Subject: Re: VPN Traffic issues
+> 
+> Thanks for the suggestion!
+> 
+> David
+> 
+> 
+> On Mon, 2009-03-09 at 08:52 +0100, Oliver Hinckel wrote:
+> > Daniel Garcia wrote on 03/09/2009 01:10 AM:
+> > [...]
+> > >> You might want to do a wireshark dump (or tcpdump) of the subscriber's
+> > >> traffic. Or, run chilli in debug mode to help see what it is doing. The
+> > >> first question is: can the subscriber surf the walled garden or does
+> > >> *nothing* work?
+> > > surf the walled garden? Sorry you lost me. Browsing the internet is fine
+> > > when subscribers log in correctly. Once logged in and successfully
+> > > browsing, if they VPN, then browsing stops working. I notice that DNS
+> > > is working because I see the browser resolving the name URL...it appears
+> >  > to be something in the iptables is preventing it
+> >
+> > We had same problems with surfen when VPN was activated. The problem
+> > was, that the VPN software (doesn't remember which VPN software and type
+> > of VPN was used) tries to contact IP address 1.1.1.1 which is the
+> > default value for the "uamlogoutip" settings:
+> >
+> >    http://coova.org/wiki/index.php/CoovaChilli/chilli.conf(5)
+> >
+> > So if the customer starts his VPN the software contacted the IP address
+> > 1.1.1.1 (or tries at least to contact) and chilli logged them out. The
+> > customer wasn't able to surf the web anymore.
+> >
+> > To solve this problem, we changed the "uamlogoutip" value to 127.0.0.1
+> > since we don't need this configuration with logging out by contacting a
+> > specific IP address.
+> >
+> > HTH
+> >
+> > - Olli
+> >
+> > ---------------------------------------------------------------------
+> > To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> > For additional commands, e-mail: chilli-help at coova.org
+> > Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> > Forum: http://coova.org/phpBB3/viewforum.php?f=4
+> >
+> 
+> 
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+> 
+> 
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+> 
+
+
+
+From tm at fwt.fr  Tue Mar 10 05:49:11 2009
+From: tm at fwt.fr (Thierry MUSEUX - www.fwt.fr -)
+Date: Tue, 10 Mar 2009 06:49:11 +0100
+Subject: VPN Traffic issues
+In-Reply-To: <BB13BEB48D3B3B4CA1AA6A51DB9CFBCE1A17820B98@ausyd04.globalgossip.net>
+References: <BB13BEB48D3B3B4CA1AA6A51DB9CFBCE1A17820B8C@ausyd04.globalgossip.net> <1236148409.7183.7.camel@david-laptop> <BB13BEB48D3B3B4CA1AA6A51DB9CFBCE1A1785EB22@ausyd04.globalgossip.net> <49B4CAB1.3090505@ollisnet.de> <1236585732.7714.4.camel@david-laptop> <BB13BEB48D3B3B4CA1AA6A51DB9CFBCE1A17820B98@ausyd04.globalgossip.net>
+Message-ID: <3D4C168A9EA543C6B67994C281A81BFC@DELLTM>
+
+It seems there is bug in  /etc/chilli/functions
+
+This should be:
+files_equal() {
+    [ -x /usr/bin/cmp ] && {
+        cmp -s $1 $2 || return 1;
+        }
+        return 0;
+
+    [ -x /bin/md5sum ] && {
+        [ "$(md5sum $1 | cut -f1 -d' ')" = "$(md5sum $2 | cut -f1 -d' ')" ]
+&& return 0;
+        return 1;
+    }
+    return 1;
+}
+
+I have to submit a patch
+
+
+Thierry Museux
+
+
+-----Message d'origine-----
+De?: Daniel Garcia [mailto:DGarcia at globalgossip.net] 
+Envoy??: mardi 10 mars 2009 02:39
+??: chilli at coova.org
+Objet?: RE: VPN Traffic issues
+
+I added HS_UAMLOGOUTIP=127.0.0.1 to my config file but when I restart coova
+it is not in the generated main.conf file.
+
+Can you please specify exactly where and how you configured this?
+
+Thanks
+
+Daniel Garcia
+IT Assistant Manager
+Core Infrastructure & Systems Development
+Global Gossip Group
+[a]????14 Wentworth Avenue, Sydney, NSW 2010
+[t]????+612 9263 0458
+[f]????+612 9263 0404
+[m]??? 0400 604 897
+[e]????dgarcia at globalgossip.net
+
+-----Original Message-----
+From: wlanmac [mailto:wlan at mac.com]
+Sent: Monday, 9 March 2009 7:02 PM
+To: chilli at coova.org
+Subject: Re: VPN Traffic issues
+
+Thanks for the suggestion!
+
+David
+
+
+On Mon, 2009-03-09 at 08:52 +0100, Oliver Hinckel wrote:
+> Daniel Garcia wrote on 03/09/2009 01:10 AM:
+> [...]
+> >> You might want to do a wireshark dump (or tcpdump) of the subscriber's
+> >> traffic. Or, run chilli in debug mode to help see what it is doing. The
+> >> first question is: can the subscriber surf the walled garden or does
+> >> *nothing* work?
+> > surf the walled garden? Sorry you lost me. Browsing the internet is fine
+> > when subscribers log in correctly. Once logged in and successfully
+> > browsing, if they VPN, then browsing stops working. I notice that DNS
+> > is working because I see the browser resolving the name URL...it appears
+>  > to be something in the iptables is preventing it
+>
+> We had same problems with surfen when VPN was activated. The problem
+> was, that the VPN software (doesn't remember which VPN software and type
+> of VPN was used) tries to contact IP address 1.1.1.1 which is the
+> default value for the "uamlogoutip" settings:
+>
+>    http://coova.org/wiki/index.php/CoovaChilli/chilli.conf(5)
+>
+> So if the customer starts his VPN the software contacted the IP address
+> 1.1.1.1 (or tries at least to contact) and chilli logged them out. The
+> customer wasn't able to surf the web anymore.
+>
+> To solve this problem, we changed the "uamlogoutip" value to 127.0.0.1
+> since we don't need this configuration with logging out by contacting a
+> specific IP address.
+>
+> HTH
+>
+> - Olli
+>
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>
+
+
+---------------------------------------------------------------------
+To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+For additional commands, e-mail: chilli-help at coova.org
+Wiki: http://coova.org/wiki/index.php/CoovaChilli
+Forum: http://coova.org/phpBB3/viewforum.php?f=4
+
+
+---------------------------------------------------------------------
+To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+For additional commands, e-mail: chilli-help at coova.org
+Wiki: http://coova.org/wiki/index.php/CoovaChilli
+Forum: http://coova.org/phpBB3/viewforum.php?f=4
+
+
+
+
+From DGarcia at globalgossip.net  Tue Mar 10 05:52:25 2009
+From: DGarcia at globalgossip.net (Daniel Garcia)
+Date: Tue, 10 Mar 2009 16:52:25 +1100
+Subject: VPN Traffic issues
+In-Reply-To: <3D4C168A9EA543C6B67994C281A81BFC@DELLTM>
+References: <BB13BEB48D3B3B4CA1AA6A51DB9CFBCE1A17820B8C@ausyd04.globalgossip.net>
+ <1236148409.7183.7.camel@david-laptop>
+ <BB13BEB48D3B3B4CA1AA6A51DB9CFBCE1A1785EB22@ausyd04.globalgossip.net>
+ <49B4CAB1.3090505@ollisnet.de> <1236585732.7714.4.camel@david-laptop>
+ <BB13BEB48D3B3B4CA1AA6A51DB9CFBCE1A17820B98@ausyd04.globalgossip.net>
+ <3D4C168A9EA543C6B67994C281A81BFC@DELLTM>
+Message-ID: <BB13BEB48D3B3B4CA1AA6A51DB9CFBCE1A17820BA2@ausyd04.globalgossip.net>
+
+Are you saying that the code below is the correct code? Cause Ill just make a change to this if that is what you are suggesting
+
+-----Original Message-----
+From: Thierry MUSEUX - www.fwt.fr - [mailto:tm at fwt.fr]
+Sent: Tuesday, 10 March 2009 4:49 PM
+To: chilli at coova.org
+Subject: RE: VPN Traffic issues
+
+It seems there is bug in  /etc/chilli/functions
+
+This should be:
+files_equal() {
+    [ -x /usr/bin/cmp ] && {
+        cmp -s $1 $2 || return 1;
+        }
+        return 0;
+
+    [ -x /bin/md5sum ] && {
+        [ "$(md5sum $1 | cut -f1 -d' ')" = "$(md5sum $2 | cut -f1 -d' ')" ]
+&& return 0;
+        return 1;
+    }
+    return 1;
+}
+
+I have to submit a patch
+
+
+Thierry Museux
+
+
+-----Message d'origine-----
+De : Daniel Garcia [mailto:DGarcia at globalgossip.net]
+Envoy? : mardi 10 mars 2009 02:39
+? : chilli at coova.org
+Objet : RE: VPN Traffic issues
+
+I added HS_UAMLOGOUTIP=127.0.0.1 to my config file but when I restart coova
+it is not in the generated main.conf file.
+
+Can you please specify exactly where and how you configured this?
+
+Thanks
+
+Daniel Garcia
+IT Assistant Manager
+Core Infrastructure & Systems Development
+Global Gossip Group
+[a]????14 Wentworth Avenue, Sydney, NSW 2010
+[t]????+612 9263 0458
+[f]????+612 9263 0404
+[m]??? 0400 604 897
+[e]????dgarcia at globalgossip.net
+
+-----Original Message-----
+From: wlanmac [mailto:wlan at mac.com]
+Sent: Monday, 9 March 2009 7:02 PM
+To: chilli at coova.org
+Subject: Re: VPN Traffic issues
+
+Thanks for the suggestion!
+
+David
+
+
+On Mon, 2009-03-09 at 08:52 +0100, Oliver Hinckel wrote:
+> Daniel Garcia wrote on 03/09/2009 01:10 AM:
+> [...]
+> >> You might want to do a wireshark dump (or tcpdump) of the subscriber's
+> >> traffic. Or, run chilli in debug mode to help see what it is doing. The
+> >> first question is: can the subscriber surf the walled garden or does
+> >> *nothing* work?
+> > surf the walled garden? Sorry you lost me. Browsing the internet is fine
+> > when subscribers log in correctly. Once logged in and successfully
+> > browsing, if they VPN, then browsing stops working. I notice that DNS
+> > is working because I see the browser resolving the name URL...it appears
+>  > to be something in the iptables is preventing it
+>
+> We had same problems with surfen when VPN was activated. The problem
+> was, that the VPN software (doesn't remember which VPN software and type
+> of VPN was used) tries to contact IP address 1.1.1.1 which is the
+> default value for the "uamlogoutip" settings:
+>
+>    http://coova.org/wiki/index.php/CoovaChilli/chilli.conf(5)
+>
+> So if the customer starts his VPN the software contacted the IP address
+> 1.1.1.1 (or tries at least to contact) and chilli logged them out. The
+> customer wasn't able to surf the web anymore.
+>
+> To solve this problem, we changed the "uamlogoutip" value to 127.0.0.1
+> since we don't need this configuration with logging out by contacting a
+> specific IP address.
+>
+> HTH
+>
+> - Olli
+>
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>
+
+
+---------------------------------------------------------------------
+To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+For additional commands, e-mail: chilli-help at coova.org
+Wiki: http://coova.org/wiki/index.php/CoovaChilli
+Forum: http://coova.org/phpBB3/viewforum.php?f=4
+
+
+---------------------------------------------------------------------
+To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+For additional commands, e-mail: chilli-help at coova.org
+Wiki: http://coova.org/wiki/index.php/CoovaChilli
+Forum: http://coova.org/phpBB3/viewforum.php?f=4
+
+
+
+---------------------------------------------------------------------
+To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+For additional commands, e-mail: chilli-help at coova.org
+Wiki: http://coova.org/wiki/index.php/CoovaChilli
+Forum: http://coova.org/phpBB3/viewforum.php?f=4
+
+
+
+From tm at fwt.fr  Tue Mar 10 05:55:49 2009
+From: tm at fwt.fr (Thierry MUSEUX - www.fwt.fr -)
+Date: Tue, 10 Mar 2009 06:55:49 +0100
+Subject: VPN Traffic issues
+In-Reply-To: <BB13BEB48D3B3B4CA1AA6A51DB9CFBCE1A17820BA2@ausyd04.globalgossip.net>
+References: <BB13BEB48D3B3B4CA1AA6A51DB9CFBCE1A17820B8C@ausyd04.globalgossip.net> <1236148409.7183.7.camel@david-laptop> <BB13BEB48D3B3B4CA1AA6A51DB9CFBCE1A1785EB22@ausyd04.globalgossip.net> <49B4CAB1.3090505@ollisnet.de> <1236585732.7714.4.camel@david-laptop> <BB13BEB48D3B3B4CA1AA6A51DB9CFBCE1A17820B98@ausyd04.globalgossip.net> <3D4C168A9EA543C6B67994C281A81BFC@DELLTM> <BB13BEB48D3B3B4CA1AA6A51DB9CFBCE1A17820BA2@ausyd04.globalgossip.net>
+Message-ID: <73A93C2208B044A5A46117627F1684D8@DELLTM>
+
+The code below is the correct code
+
+
+Thierry Museux
+France Wireless Technologies
+www.fwt.fr
+msn: tm at fwt.fr
+Tel: + 33 (0) 1 41 08 70 78
+Gsm: + 33 (0) 6 15 22 09 62
+
+
+-----Message d'origine-----
+De?: Daniel Garcia [mailto:DGarcia at globalgossip.net] 
+Envoy??: mardi 10 mars 2009 06:52
+??: 'chilli at coova.org'
+Objet?: RE: VPN Traffic issues
+
+Are you saying that the code below is the correct code? Cause Ill just make
+a change to this if that is what you are suggesting
+
+-----Original Message-----
+From: Thierry MUSEUX - www.fwt.fr - [mailto:tm at fwt.fr]
+Sent: Tuesday, 10 March 2009 4:49 PM
+To: chilli at coova.org
+Subject: RE: VPN Traffic issues
+
+It seems there is bug in  /etc/chilli/functions
+
+This should be:
+files_equal() {
+    [ -x /usr/bin/cmp ] && {
+        cmp -s $1 $2 || return 1;
+        }
+        return 0;
+
+    [ -x /bin/md5sum ] && {
+        [ "$(md5sum $1 | cut -f1 -d' ')" = "$(md5sum $2 | cut -f1 -d' ')" ]
+&& return 0;
+        return 1;
+    }
+    return 1;
+}
+
+I have to submit a patch
+
+
+Thierry Museux
+
+
+-----Message d'origine-----
+De : Daniel Garcia [mailto:DGarcia at globalgossip.net]
+Envoy? : mardi 10 mars 2009 02:39
+? : chilli at coova.org
+Objet : RE: VPN Traffic issues
+
+I added HS_UAMLOGOUTIP=127.0.0.1 to my config file but when I restart coova
+it is not in the generated main.conf file.
+
+Can you please specify exactly where and how you configured this?
+
+Thanks
+
+Daniel Garcia
+IT Assistant Manager
+Core Infrastructure & Systems Development
+Global Gossip Group
+[a]????14 Wentworth Avenue, Sydney, NSW 2010
+[t]????+612 9263 0458
+[f]????+612 9263 0404
+[m]??? 0400 604 897
+[e]????dgarcia at globalgossip.net
+
+-----Original Message-----
+From: wlanmac [mailto:wlan at mac.com]
+Sent: Monday, 9 March 2009 7:02 PM
+To: chilli at coova.org
+Subject: Re: VPN Traffic issues
+
+Thanks for the suggestion!
+
+David
+
+
+On Mon, 2009-03-09 at 08:52 +0100, Oliver Hinckel wrote:
+> Daniel Garcia wrote on 03/09/2009 01:10 AM:
+> [...]
+> >> You might want to do a wireshark dump (or tcpdump) of the subscriber's
+> >> traffic. Or, run chilli in debug mode to help see what it is doing. The
+> >> first question is: can the subscriber surf the walled garden or does
+> >> *nothing* work?
+> > surf the walled garden? Sorry you lost me. Browsing the internet is fine
+> > when subscribers log in correctly. Once logged in and successfully
+> > browsing, if they VPN, then browsing stops working. I notice that DNS
+> > is working because I see the browser resolving the name URL...it appears
+>  > to be something in the iptables is preventing it
+>
+> We had same problems with surfen when VPN was activated. The problem
+> was, that the VPN software (doesn't remember which VPN software and type
+> of VPN was used) tries to contact IP address 1.1.1.1 which is the
+> default value for the "uamlogoutip" settings:
+>
+>    http://coova.org/wiki/index.php/CoovaChilli/chilli.conf(5)
+>
+> So if the customer starts his VPN the software contacted the IP address
+> 1.1.1.1 (or tries at least to contact) and chilli logged them out. The
+> customer wasn't able to surf the web anymore.
+>
+> To solve this problem, we changed the "uamlogoutip" value to 127.0.0.1
+> since we don't need this configuration with logging out by contacting a
+> specific IP address.
+>
+> HTH
+>
+> - Olli
+>
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>
+
+
+---------------------------------------------------------------------
+To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+For additional commands, e-mail: chilli-help at coova.org
+Wiki: http://coova.org/wiki/index.php/CoovaChilli
+Forum: http://coova.org/phpBB3/viewforum.php?f=4
+
+
+---------------------------------------------------------------------
+To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+For additional commands, e-mail: chilli-help at coova.org
+Wiki: http://coova.org/wiki/index.php/CoovaChilli
+Forum: http://coova.org/phpBB3/viewforum.php?f=4
+
+
+
+---------------------------------------------------------------------
+To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+For additional commands, e-mail: chilli-help at coova.org
+Wiki: http://coova.org/wiki/index.php/CoovaChilli
+Forum: http://coova.org/phpBB3/viewforum.php?f=4
+
+
+---------------------------------------------------------------------
+To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+For additional commands, e-mail: chilli-help at coova.org
+Wiki: http://coova.org/wiki/index.php/CoovaChilli
+Forum: http://coova.org/phpBB3/viewforum.php?f=4
+
+
+
+
+From DGarcia at globalgossip.net  Tue Mar 10 05:59:03 2009
+From: DGarcia at globalgossip.net (Daniel Garcia)
+Date: Tue, 10 Mar 2009 16:59:03 +1100
+Subject: VPN Traffic issues
+In-Reply-To: <73A93C2208B044A5A46117627F1684D8@DELLTM>
+References: <BB13BEB48D3B3B4CA1AA6A51DB9CFBCE1A17820B8C@ausyd04.globalgossip.net>
+ <1236148409.7183.7.camel@david-laptop>
+ <BB13BEB48D3B3B4CA1AA6A51DB9CFBCE1A1785EB22@ausyd04.globalgossip.net>
+ <49B4CAB1.3090505@ollisnet.de> <1236585732.7714.4.camel@david-laptop>
+ <BB13BEB48D3B3B4CA1AA6A51DB9CFBCE1A17820B98@ausyd04.globalgossip.net>
+ <3D4C168A9EA543C6B67994C281A81BFC@DELLTM>
+ <BB13BEB48D3B3B4CA1AA6A51DB9CFBCE1A17820BA2@ausyd04.globalgossip.net>
+ <73A93C2208B044A5A46117627F1684D8@DELLTM>
+Message-ID: <BB13BEB48D3B3B4CA1AA6A51DB9CFBCE1A17820BA3@ausyd04.globalgossip.net>
+
+Thanks! :)
+
+
+
+-----Original Message-----
+From: Thierry MUSEUX - www.fwt.fr - [mailto:tm at fwt.fr]
+Sent: Tuesday, 10 March 2009 4:56 PM
+To: chilli at coova.org
+Subject: RE: VPN Traffic issues
+
+The code below is the correct code
+
+
+Thierry Museux
+France Wireless Technologies
+www.fwt.fr
+msn: tm at fwt.fr
+Tel: + 33 (0) 1 41 08 70 78
+Gsm: + 33 (0) 6 15 22 09 62
+
+
+-----Message d'origine-----
+De : Daniel Garcia [mailto:DGarcia at globalgossip.net]
+Envoy? : mardi 10 mars 2009 06:52
+? : 'chilli at coova.org'
+Objet : RE: VPN Traffic issues
+
+Are you saying that the code below is the correct code? Cause Ill just make
+a change to this if that is what you are suggesting
+
+-----Original Message-----
+From: Thierry MUSEUX - www.fwt.fr - [mailto:tm at fwt.fr]
+Sent: Tuesday, 10 March 2009 4:49 PM
+To: chilli at coova.org
+Subject: RE: VPN Traffic issues
+
+It seems there is bug in  /etc/chilli/functions
+
+This should be:
+files_equal() {
+    [ -x /usr/bin/cmp ] && {
+        cmp -s $1 $2 || return 1;
+        }
+        return 0;
+
+    [ -x /bin/md5sum ] && {
+        [ "$(md5sum $1 | cut -f1 -d' ')" = "$(md5sum $2 | cut -f1 -d' ')" ]
+&& return 0;
+        return 1;
+    }
+    return 1;
+}
+
+I have to submit a patch
+
+
+Thierry Museux
+
+
+-----Message d'origine-----
+De : Daniel Garcia [mailto:DGarcia at globalgossip.net]
+Envoy? : mardi 10 mars 2009 02:39
+? : chilli at coova.org
+Objet : RE: VPN Traffic issues
+
+I added HS_UAMLOGOUTIP=127.0.0.1 to my config file but when I restart coova
+it is not in the generated main.conf file.
+
+Can you please specify exactly where and how you configured this?
+
+Thanks
+
+Daniel Garcia
+IT Assistant Manager
+Core Infrastructure & Systems Development
+Global Gossip Group
+[a]????14 Wentworth Avenue, Sydney, NSW 2010
+[t]????+612 9263 0458
+[f]????+612 9263 0404
+[m]??? 0400 604 897
+[e]????dgarcia at globalgossip.net
+
+-----Original Message-----
+From: wlanmac [mailto:wlan at mac.com]
+Sent: Monday, 9 March 2009 7:02 PM
+To: chilli at coova.org
+Subject: Re: VPN Traffic issues
+
+Thanks for the suggestion!
+
+David
+
+
+On Mon, 2009-03-09 at 08:52 +0100, Oliver Hinckel wrote:
+> Daniel Garcia wrote on 03/09/2009 01:10 AM:
+> [...]
+> >> You might want to do a wireshark dump (or tcpdump) of the subscriber's
+> >> traffic. Or, run chilli in debug mode to help see what it is doing. The
+> >> first question is: can the subscriber surf the walled garden or does
+> >> *nothing* work?
+> > surf the walled garden? Sorry you lost me. Browsing the internet is fine
+> > when subscribers log in correctly. Once logged in and successfully
+> > browsing, if they VPN, then browsing stops working. I notice that DNS
+> > is working because I see the browser resolving the name URL...it appears
+>  > to be something in the iptables is preventing it
+>
+> We had same problems with surfen when VPN was activated. The problem
+> was, that the VPN software (doesn't remember which VPN software and type
+> of VPN was used) tries to contact IP address 1.1.1.1 which is the
+> default value for the "uamlogoutip" settings:
+>
+>    http://coova.org/wiki/index.php/CoovaChilli/chilli.conf(5)
+>
+> So if the customer starts his VPN the software contacted the IP address
+> 1.1.1.1 (or tries at least to contact) and chilli logged them out. The
+> customer wasn't able to surf the web anymore.
+>
+> To solve this problem, we changed the "uamlogoutip" value to 127.0.0.1
+> since we don't need this configuration with logging out by contacting a
+> specific IP address.
+>
+> HTH
+>
+> - Olli
+>
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>
+
+
+---------------------------------------------------------------------
+To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+For additional commands, e-mail: chilli-help at coova.org
+Wiki: http://coova.org/wiki/index.php/CoovaChilli
+Forum: http://coova.org/phpBB3/viewforum.php?f=4
+
+
+---------------------------------------------------------------------
+To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+For additional commands, e-mail: chilli-help at coova.org
+Wiki: http://coova.org/wiki/index.php/CoovaChilli
+Forum: http://coova.org/phpBB3/viewforum.php?f=4
+
+
+
+---------------------------------------------------------------------
+To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+For additional commands, e-mail: chilli-help at coova.org
+Wiki: http://coova.org/wiki/index.php/CoovaChilli
+Forum: http://coova.org/phpBB3/viewforum.php?f=4
+
+
+---------------------------------------------------------------------
+To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+For additional commands, e-mail: chilli-help at coova.org
+Wiki: http://coova.org/wiki/index.php/CoovaChilli
+Forum: http://coova.org/phpBB3/viewforum.php?f=4
+
+
+
+---------------------------------------------------------------------
+To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+For additional commands, e-mail: chilli-help at coova.org
+Wiki: http://coova.org/wiki/index.php/CoovaChilli
+Forum: http://coova.org/phpBB3/viewforum.php?f=4
+
+
+
+From jmeiring at amobia.com  Fri Mar 13 08:45:26 2009
+From: jmeiring at amobia.com (Johan Meiring)
+Date: Fri, 13 Mar 2009 10:45:26 +0200
+Subject: Problem with 1.0.12
+Message-ID: <49BA1D26.9090107@amobia.com>
+
+Hi,
+
+I have a problem with coova 1.0.12 (running on openwrt 8.0.9  r13979 -
+somewhere bewteen rc1 and final).
+
+On some hotspots, coova-chilli would go into a state where it does not
+redirect anymore.
+
+logread contains the following line 100's of times a second:
+
+Mar 13 10:18:58 amobiahotspot-1070 local6.err coova-chilli[3301]:
+redir.c: 1824: 22 (Invalid argument) accept() failed!
+
+Simple "killall chilli; chilli" resolves it for another few hours.
+
+Any clues?
+
+-- 
+
+
+Johan Meiring
+Amobia Communications
+Tel: (0861) AMOBIA / (0861) 266242
+Fax: (0861) AMOFAX / (0861) 266329
+
+
+
+From liske at ibh.de  Fri Mar 13 09:18:38 2009
+From: liske at ibh.de (Thomas Liske)
+Date: Fri, 13 Mar 2009 10:18:38 +0100
+Subject: cc as DHCP relay agent
+Message-ID: <49BA24EE.4090100@ibh.de>
+
+Hi,
+
+I think there is an issue with DHCP relay in coova-chilli. Cc always 
+listens on port 68 for replies from the DHCP server when acting as a 
+DHCP relay (line 592):
+
+$ cat -n src/dhcp.c | grep -C 5 'htons(68)'
+    587
+    588      if (fd > 0) {
+    589        memset(&addr, 0, sizeof(addr));
+    590        addr.sin_family = AF_INET;
+    591        addr.sin_addr.s_addr = dhcp->uamlisten.s_addr;
+    592        addr.sin_port = htons(68);
+    593
+    594        if (setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &on, 
+sizeof(on)) < 0) {
+    595          log_err(errno, "Can't set reuse option");
+    596        }
+    597
+
+This does not work with the (recent) ISC DHCP Daemon v3. The dhcpd 
+always replies to port 67 ignoring the port number seen in the request 
+packet from the DHCP relay agent.
+
+There is a working draft stating about the port usage with relay agents:
+
+====[http://tools.ietf.org/id/draft-ietf-dhc-implementation-02.txt]====
+4.7.2 Relay Agent Port Usage
+   Relay agents should use port 67 as the source port number.  Relay
+   agents always listen on port 67, but port 68 has sometimes been used
+   as the source port number probably because it was copied from the
+   source port of the incoming packet.
+
+   Cable modem vendors would like to install filters blocking outgoing
+   packets with source port 67.
+
+   RECOMMENDATIONS:
+     O  Relay agents MUST use 67 as their source port number.
+     O  Relay agents MUST NOT forward packets with non-zero giaddr
+        unless the source port number on the packet is 67.
+====[http://tools.ietf.org/id/draft-ietf-dhc-implementation-02.txt]====
+
+IMHO cc should listen on port 67/udp when acting as DHCP relay agent.
+
+
+	Thomas
+
+
+
+From henk at skyrove.com  Fri Mar 13 13:20:59 2009
+From: henk at skyrove.com (Henk Kleynhans)
+Date: Fri, 13 Mar 2009 15:20:59 +0200
+Subject: Problem with 1.0.12
+In-Reply-To: <49BA1D26.9090107@amobia.com>
+References: <49BA1D26.9090107@amobia.com>
+Message-ID: <d42f029a0903130620j21df3e9cxb06d68c8f09ce6e5@mail.gmail.com>
+
+Johan,
+
+Can you confirm that chilli is actually running? We had a similar problem
+due to chilli crashing.
+
+If that's the case here, look at modifying the chilli startup script (make
+sure checkrunning argument is enabled) to look at the PID inside the
+chilli.pid file.
+
+The problem is that chilli would crash, but the checkrunning script would
+not realise that chilli has died, seeing as it was only looking for the
+presence of the chilli.pid file, rather than getting the PID from it and
+grepping 'ps aux' to see that it is indeed running.
+
+henk
+
+-- 
+Henk Kleynhans
+CTO & Founder
+Skyrove (Pty) Ltd
+Technology Top 100 - Most Promising Emerging Enterprise 2006
+Tel: +27 (21) 4488843
+Cell: +27 (84) 3073451
+Fax: +27 (86) 6204077
+henk at skyrove.com
+blog: www.geekrebel.com
+
+------
+
+"A person with ubuntu is open and available to others, affirming of others,
+does not feel threatened that others are able and good, for he or she has a
+proper self-assurance that comes from knowing that he or she belongs in a
+greater whole and is diminished when others are humiliated or diminished,
+when others are tortured or oppressed." - Desmond Tutu
+
+
+
+
+On Fri, Mar 13, 2009 at 10:45 AM, Johan Meiring <jmeiring at amobia.com> wrote:
+
+> Hi,
+>
+> I have a problem with coova 1.0.12 (running on openwrt 8.0.9  r13979 -
+> somewhere bewteen rc1 and final).
+>
+> On some hotspots, coova-chilli would go into a state where it does not
+> redirect anymore.
+>
+> logread contains the following line 100's of times a second:
+>
+> Mar 13 10:18:58 amobiahotspot-1070 local6.err coova-chilli[3301]:
+> redir.c: 1824: 22 (Invalid argument) accept() failed!
+>
+> Simple "killall chilli; chilli" resolves it for another few hours.
+>
+> Any clues?
+>
+> --
+>
+>
+> Johan Meiring
+> Amobia Communications
+> Tel: (0861) AMOBIA / (0861) 266242
+> Fax: (0861) AMOFAX / (0861) 266329
+>
+>
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20090313/51882d2a/attachment.htm>
+
+From mail.gery at gmail.com  Sat Mar 14 07:45:36 2009
+From: mail.gery at gmail.com (kissg)
+Date: Sat, 14 Mar 2009 08:45:36 +0100
+Subject: Random session drops with Coova-Chilli 1.0.12
+Message-ID: <f1cd8c6d0903140045t44521daas1feca20ebd86b98@mail.gmail.com>
+
+Hi,
+
+I'm experiencing strange issues, while using the latest version of
+Coova-Chilli. I can log in successfully, but right after that, my session
+gets dropped, so I have to log in again. On the RADIUS server, I see
+User-Request as the reason of disconnecting... This happens all the time,
+the requested site starts to load, but after some seconds, the session ends
+unexpectedly. Starting Chilli in debug mode tells me the following:
+
+dhcp.c: 1938: 0 (Debug) Dropping session due to request for auto-logout ip
+
+Why does this happen? What is that auto-logout ip, at all?
+
+Some details about my config: Ubuntu 8.04/CoovaChilli 1.0.12, installed by
+using the Debian package version 1.0.12-1. I'm on a virtual machine, which
+has two virtual interfaces, eth0 and eth1, each one connects to separate
+vlans on the host system (vlan11 and vlan12). Using the same configuration
+on a virtual machine which has a real, bridged interface (eth0) and one vlan
+(vlan23) configured as the LAN interface works with no issues at all. I
+don't know too much about the internals of CoovaChilli, but I'm pretty sure,
+that this bug is around VLANs. Are VLANs supported by Chilli, at all?
+
+I could manage to have a working captive portal system by installing the
+latest ChilliSpot version (1.1), but I would like to use some features which
+are only included in CoovaChilli.
+
+I greatly appreciate any help, because I'm completely out of ideas.
+
+Best regards:
+Gergely Kiss
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20090314/50b530ef/attachment.htm>
+
+From wlan at mac.com  Sat Mar 14 08:47:20 2009
+From: wlan at mac.com (wlanmac)
+Date: Sat, 14 Mar 2009 09:47:20 +0100
+Subject: Random session drops with Coova-Chilli 1.0.12
+In-Reply-To: <f1cd8c6d0903140045t44521daas1feca20ebd86b98@mail.gmail.com>
+References: <f1cd8c6d0903140045t44521daas1feca20ebd86b98@mail.gmail.com>
+Message-ID: <1237020440.7871.1.camel@david-laptop>
+
+It was recently pointed out that some VPN software will send packets to
+the default uamlogoutip (which is 1.1.1.1). You can change this setting
+by putting "uamlogoutip <ip address>" in your config. To disable the
+option, set the IP to 127.0.0.1. 
+
+
+On Sat, 2009-03-14 at 08:45 +0100, kissg wrote:
+> Hi,
+> 
+> I'm experiencing strange issues, while using the latest version of
+> Coova-Chilli. I can log in successfully, but right after that, my
+> session gets dropped, so I have to log in again. On the RADIUS server,
+> I see User-Request as the reason of disconnecting... This happens all
+> the time, the requested site starts to load, but after some seconds,
+> the session ends unexpectedly. Starting Chilli in debug mode tells me
+> the following:
+> 
+> dhcp.c: 1938: 0 (Debug) Dropping session due to request for
+> auto-logout ip
+> 
+> Why does this happen? What is that auto-logout ip, at all?
+> 
+> Some details about my config: Ubuntu 8.04/CoovaChilli 1.0.12,
+> installed by using the Debian package version 1.0.12-1. I'm on a
+> virtual machine, which has two virtual interfaces, eth0 and eth1, each
+> one connects to separate vlans on the host system (vlan11 and vlan12).
+> Using the same configuration on a virtual machine which has a real,
+> bridged interface (eth0) and one vlan (vlan23) configured as the LAN
+> interface works with no issues at all. I don't know too much about the
+> internals of CoovaChilli, but I'm pretty sure, that this bug is around
+> VLANs. Are VLANs supported by Chilli, at all?
+> 
+> I could manage to have a working captive portal system by installing
+> the latest ChilliSpot version (1.1), but I would like to use some
+> features which are only included in CoovaChilli.
+> 
+> I greatly appreciate any help, because I'm completely out of ideas.
+> 
+> Best regards:
+> Gergely Kiss
+
+
+
+From wlan at mac.com  Sat Mar 14 09:06:16 2009
+From: wlan at mac.com (wlanmac)
+Date: Sat, 14 Mar 2009 10:06:16 +0100
+Subject: cc as DHCP relay agent
+In-Reply-To: <49BA24EE.4090100@ibh.de>
+References: <49BA24EE.4090100@ibh.de>
+Message-ID: <1237021576.7871.9.camel@david-laptop>
+
+Committed to svn. If you could test it out, I would appreciate it.
+
+David
+
+
+On Fri, 2009-03-13 at 10:18 +0100, Thomas Liske wrote:
+> Hi,
+> 
+> I think there is an issue with DHCP relay in coova-chilli. Cc always 
+> listens on port 68 for replies from the DHCP server when acting as a 
+> DHCP relay (line 592):
+> 
+> $ cat -n src/dhcp.c | grep -C 5 'htons(68)'
+>     587
+>     588      if (fd > 0) {
+>     589        memset(&addr, 0, sizeof(addr));
+>     590        addr.sin_family = AF_INET;
+>     591        addr.sin_addr.s_addr = dhcp->uamlisten.s_addr;
+>     592        addr.sin_port = htons(68);
+>     593
+>     594        if (setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &on, 
+> sizeof(on)) < 0) {
+>     595          log_err(errno, "Can't set reuse option");
+>     596        }
+>     597
+> 
+> This does not work with the (recent) ISC DHCP Daemon v3. The dhcpd 
+> always replies to port 67 ignoring the port number seen in the request 
+> packet from the DHCP relay agent.
+> 
+> There is a working draft stating about the port usage with relay agents:
+> 
+> ====[http://tools.ietf.org/id/draft-ietf-dhc-implementation-02.txt]====
+> 4.7.2 Relay Agent Port Usage
+>    Relay agents should use port 67 as the source port number.  Relay
+>    agents always listen on port 67, but port 68 has sometimes been used
+>    as the source port number probably because it was copied from the
+>    source port of the incoming packet.
+> 
+>    Cable modem vendors would like to install filters blocking outgoing
+>    packets with source port 67.
+> 
+>    RECOMMENDATIONS:
+>      O  Relay agents MUST use 67 as their source port number.
+>      O  Relay agents MUST NOT forward packets with non-zero giaddr
+>         unless the source port number on the packet is 67.
+> ====[http://tools.ietf.org/id/draft-ietf-dhc-implementation-02.txt]====
+> 
+> IMHO cc should listen on port 67/udp when acting as DHCP relay agent.
+> 
+> 
+> 	Thomas
+> 
+> 
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+> 
+
+
+
+From wlan at mac.com  Sat Mar 14 09:19:23 2009
+From: wlan at mac.com (wlanmac)
+Date: Sat, 14 Mar 2009 10:19:23 +0100
+Subject: Radius auditing but disable splashpage - possible?
+In-Reply-To: <50454.149.5.32.216.1236250167.squirrel@www.rivertowermail.com>
+References: <50454.149.5.32.216.1236250167.squirrel@www.rivertowermail.com>
+Message-ID: <1237022363.7871.16.camel@david-laptop>
+
+If you are using MAC authentication, then simply send everyone back an
+Access-Accept and you will receive your accounting...
+
+
+On Thu, 2009-03-05 at 10:49 +0000, Derek C wrote:
+> Hi all,
+> 
+> I'm using Coova Chilli in a number of hotspots (free Internet but a splash
+> page every 20 minutes telling them about the free Internet service).
+> 
+> I use MAC authentication for this.
+> 
+> I love the way data usage is written to the [free]radius "radacct" table.
+> 
+> Is it possible to not have a splash page but still have coova chilli write
+> the accounting data into the [free]radius table based on the MAC address
+> for usage accounting purposes?
+> 
+> thanks,
+> 
+> Derek
+> 
+> 
+
+
+
+From liske at ibh.de  Sat Mar 14 19:34:52 2009
+From: liske at ibh.de (Thomas Liske)
+Date: Sat, 14 Mar 2009 20:34:52 +0100
+Subject: cc as DHCP relay agent
+In-Reply-To: <1237021576.7871.9.camel@david-laptop>
+References: <49BA24EE.4090100@ibh.de> <1237021576.7871.9.camel@david-laptop>
+Message-ID: <49BC06DC.7030606@ibh.de>
+
+Hi,
+
+wlanmac wrote:
+> Committed to svn. If you could test it out, I would appreciate it.
+
+it should work, I'll give it a try when I'm back in office and have some 
+spare time ;). In the lab it already works - I'd to use iptables for 
+DNAT from udp/67 to udp/68 as a workaround with cc 1.0.12.
+
+	Thomas
+
+
+From jmeiring at amobia.com  Mon Mar 16 05:30:58 2009
+From: jmeiring at amobia.com (Johan Meiring)
+Date: Mon, 16 Mar 2009 07:30:58 +0200
+Subject: Problem with 1.0.12
+In-Reply-To: <d42f029a0903130620j21df3e9cxb06d68c8f09ce6e5@mail.gmail.com>
+References: <49BA1D26.9090107@amobia.com> <d42f029a0903130620j21df3e9cxb06d68c8f09ce6e5@mail.gmail.com>
+Message-ID: <49BDE412.1000804@amobia.com>
+
+Henk Kleynhans wrote:
+> Johan,
+> 
+> Can you confirm that chilli is actually running? We had a similar 
+> problem due to chilli crashing.
+
+If is definately running.
+
+> 
+> If that's the case here, look at modifying the chilli startup script 
+> (make sure checkrunning argument is enabled) to look at the PID inside 
+> the chilli.pid file.
+> 
+> The problem is that chilli would crash, but the checkrunning script 
+> would not realise that chilli has died, seeing as it was only looking 
+> for the presence of the chilli.pid file, rather than getting the PID 
+> from it and grepping 'ps aux' to see that it is indeed running.
+> 
+
+Did the same...
+
+
+
+Any other ideas??
+
+
+-- 
+
+
+Johan Meiring
+Amobia Communications
+Tel: (0861) AMOBIA / (0861) 266242
+Fax: (0861) AMOFAX / (0861) 266329
+
+
+
+From jmeiring at amobia.com  Mon Mar 16 06:28:23 2009
+From: jmeiring at amobia.com (Johan Meiring)
+Date: Mon, 16 Mar 2009 08:28:23 +0200
+Subject: Problem with restarting chilli 1.0.12 - redir.c: 982: 28 (No
+ 	space left on device) msgget() failed
+In-Reply-To: <5635aa0d0903020500t5cafd4f9ic6e448ed2d222c13@mail.gmail.com>
+References: <49ABB14A.7010907@amobia.com>	 <1235989569.7661.19.camel@david-laptop> <49ABB6D6.2070505@amobia.com>	 <1235991108.7661.25.camel@david-laptop> <49ABBC24.40901@amobia.com>	 <5635aa0d0903020357t3b988d96r97a44203176932b1@mail.gmail.com>	 <49ABCE58.5080206@amobia.com>	 <5635aa0d0903020425l448cb737g6b3b5c73391c31b9@mail.gmail.com>	 <49ABD501.4070605@amobia.com> <5635aa0d0903020500t5cafd4f9ic6e448ed2d222c13@mail.gmail.com>
+Message-ID: <49BDF187.5040403@amobia.com>
+
+Outback Dingo wrote:
+> im talking about 1.0.12 hanginh on openwrt 8.09, i have a svn trunk 
+> binary im going to test
+> 
+
+I've managed to make a binary from svn.
+Posted here.
+
+http://drop.io/coovachillisvn
+
+I'l post instructions how to make it as a seperate mail to the list.
+
+-- 
+
+
+Johan Meiring
+Amobia Communications
+Tel: (0861) AMOBIA / (0861) 266242
+Fax: (0861) AMOFAX / (0861) 266329
+
+
+
+From jmeiring at amobia.com  Mon Mar 16 07:04:56 2009
+From: jmeiring at amobia.com (Johan Meiring)
+Date: Mon, 16 Mar 2009 09:04:56 +0200
+Subject: Making an svn binary for openwrt
+Message-ID: <49BDFA18.3030209@amobia.com>
+
+Hi all,
+
+Following are instructions for making an svn binary for openwrt.
+
+I am sure this is not the most efficient way to build it, but it worked
+for me.
+
+1) Get yourself a copy of coova-chilli svn
+svn checkout http://dev.coova.org/svn/coova-chilli/
+
+2) Build configure
+cd coova-chilli
+sh bootstrap
+
+3) Rename folder and make a tar.gz file of it
+cd ..
+mv coova-chilli coova-chilli-1.0.13-svn
+tar -zcvf coova-chilli-1.0.13-svn.tar.gz coova-chilli-1.0.13-svn
+
+4) Get the md5sum of the tar file
+md5sum coova-chilli-1.0.13-svn.tar.gz
+
+5) Upload the file to a web server, anywhere.
+I simply use the apache server on my local machine
+
+6) Download the kamikaze build environment
+svn checkout https://svn.openwrt.org/openwrt/tags/8.09
+
+7) Download the coova-chilli "package headers"
+cd 8.09/package
+svn co http://dev.coova.org/svn/coova-ap/packages/kamikaze/coova-chilli
+
+8) Modify Makefile
+cd coova-chilli
+vi Makefile (change the following lines)
+PKG_VERSION:=1.0.13-svn
+PKG_SOURCE_URL:=http://localhost/
+PKG_MD5SUM:=1605d4af9cb9d544e44d520de6016951
+
+9) Make sure the package is set to modular.
+cd ../..
+make menuconfig
+Under Network/Captive portals set coova to modular
+(Set Target System/Profile on main menu as well)
+
+10) Make Openwrt
+make
+
+11) You will find your coova ipk file under bin/packages/"architecture"
+
+
+
+These instructions were written from memory and might need to be
+modified slightly, but gives a good indication of what needs to be done.
+
+
+wlanmac,
+
+Could you maybe upload this to the wiki ???
+
+
+
+-- 
+
+
+Johan Meiring
+Amobia Communications
+Tel: (0861) AMOBIA / (0861) 266242
+Fax: (0861) AMOFAX / (0861) 266329
+
+
+
+From wlan at mac.com  Wed Mar 18 16:43:44 2009
+From: wlan at mac.com (wlanmac)
+Date: Wed, 18 Mar 2009 17:43:44 +0100
+Subject: Does freeradius-client library support CHAP protocol?
+In-Reply-To: <49C09ED6.8000008@deployingradius.com>
+References: <c6d394b40903171059j7407507fi5696fc3e75990ead@mail.gmail.com>
+ <49BFF01F.7090707@deployingradius.com> <1237357506.7928.18.camel@david-laptop>
+ <49C09ED6.8000008@deployingradius.com>
+Message-ID: <1237394624.7928.38.camel@david-laptop>
+
+It might be good timing then, for CoovaChilli to start expanding beyond
+PAP and CHAP. To that end, I added some MS-CHAPv2 features into the SVN
+version. Support for MS-CHAPv2 comes in two flavors:
+
+- In the chilli logon URL, it already looks for a 'password' (encoded
+p/w for PAP) or a 'response' (for CHAP), and now accepts
+'ntresponse' (for MS-CHAPv2). This will allow the portal to format a
+MS-CHAPv2 Response to have chilli send through. 
+
+- An option 'mschapv2' which will use MS-CHAPv2 instead of PAP for
+authentication where the logon URL is sent a 'password'. For the
+additional crypto, started to use OpenSSL (optional during configure) -
+which might allow for additional features too. 
+
+Question, comments, or bug reports please reply to chilli's list. 
+
+cheers, 
+
+
+On Wed, 2009-03-18 at 08:12 +0100, Alan DeKok wrote:
+> wlanmac wrote:
+> > I disagree that CHAP is without use. In fact, it could even be one of
+> > the most used protocols, at least for hotspot (captive portal)
+> > authentication, second to only PAP.
+> 
+>   It is one of the most used protocols after PAP, especially for hotspot
+> logins.  That doesn't make it a good idea.
+> 
+>   Most captive portals use CHAP because they were designed a long time
+> ago, and CHAP was more widely used then.
+> 
+> > I think you want to pick your
+> > protocol carefully, depending on the application and other requirements.
+> > PAP, for instance, is a bad choice if your shared secret isn't all that
+> > secret (like with FON, for instance).
+> 
+>   Yes.  But that doesn't mean CHAP is the best choice.
+> 
+>   I've seen switches that do CHAP for wired "captive portals".  This is
+> *crazy*, because most companies that can afford $5K for a switch use
+> Active Directory... which is incompatible with CHAP.
+> 
+> > In all, I think each protocol has
+> > it's place and use. In some situations, protocols might be useless or
+> > unavailable. But, in another networks and environments, the same
+> > protocol might be very suitable or the only option available. 
+> 
+>   There are very, very, few places where CHAP is suitable.  They mostly
+> are situations like "I want to use CHAP, because I want to use CHAP."
+> 
+>   Alan DeKok.
+> -
+> List info/subscribe/unsubscribe? See http://www.freeradius.org/list/devel.html
+
+
+
+From tm at fwt.fr  Thu Mar 19 11:01:19 2009
+From: tm at fwt.fr (Thierry MUSEUX - www.fwt.fr -)
+Date: Thu, 19 Mar 2009 12:01:19 +0100
+Subject: Does freeradius-client library support CHAP protocol?
+In-Reply-To: <1237394624.7928.38.camel@david-laptop>
+References: <c6d394b40903171059j7407507fi5696fc3e75990ead@mail.gmail.com> <49BFF01F.7090707@deployingradius.com> <1237357506.7928.18.camel@david-laptop> <49C09ED6.8000008@deployingradius.com> <1237394624.7928.38.camel@david-laptop>
+Message-ID: <D646C89E10CD42D2839E83E91E87E8E5@DELLTM>
+
+
+With svn 195 i have this error with make or with dpkg-buildpackage
+-rfakeroot:
+
+
+In file included from ippool.c:17:
+md5.h:29: error: conflicting types for 'MD5_CTX'
+/usr/include/openssl/md5.h:106: error: previous declaration of 'MD5_CTX' was
+here
+
+Thierry Museux
+
+
+-----Message d'origine-----
+De?: wlanmac [mailto:wlan at mac.com] 
+Envoy??: mercredi 18 mars 2009 17:44
+??: FreeRadius developers mailing list
+Cc?: chilli at coova.org
+Objet?: Re: Does freeradius-client library support CHAP protocol?
+
+It might be good timing then, for CoovaChilli to start expanding beyond
+PAP and CHAP. To that end, I added some MS-CHAPv2 features into the SVN
+version. Support for MS-CHAPv2 comes in two flavors:
+
+- In the chilli logon URL, it already looks for a 'password' (encoded
+p/w for PAP) or a 'response' (for CHAP), and now accepts
+'ntresponse' (for MS-CHAPv2). This will allow the portal to format a
+MS-CHAPv2 Response to have chilli send through. 
+
+- An option 'mschapv2' which will use MS-CHAPv2 instead of PAP for
+authentication where the logon URL is sent a 'password'. For the
+additional crypto, started to use OpenSSL (optional during configure) -
+which might allow for additional features too. 
+
+Question, comments, or bug reports please reply to chilli's list. 
+
+cheers, 
+
+
+On Wed, 2009-03-18 at 08:12 +0100, Alan DeKok wrote:
+> wlanmac wrote:
+> > I disagree that CHAP is without use. In fact, it could even be one of
+> > the most used protocols, at least for hotspot (captive portal)
+> > authentication, second to only PAP.
+> 
+>   It is one of the most used protocols after PAP, especially for hotspot
+> logins.  That doesn't make it a good idea.
+> 
+>   Most captive portals use CHAP because they were designed a long time
+> ago, and CHAP was more widely used then.
+> 
+> > I think you want to pick your
+> > protocol carefully, depending on the application and other requirements.
+> > PAP, for instance, is a bad choice if your shared secret isn't all that
+> > secret (like with FON, for instance).
+> 
+>   Yes.  But that doesn't mean CHAP is the best choice.
+> 
+>   I've seen switches that do CHAP for wired "captive portals".  This is
+> *crazy*, because most companies that can afford $5K for a switch use
+> Active Directory... which is incompatible with CHAP.
+> 
+> > In all, I think each protocol has
+> > it's place and use. In some situations, protocols might be useless or
+> > unavailable. But, in another networks and environments, the same
+> > protocol might be very suitable or the only option available. 
+> 
+>   There are very, very, few places where CHAP is suitable.  They mostly
+> are situations like "I want to use CHAP, because I want to use CHAP."
+> 
+>   Alan DeKok.
+> -
+> List info/subscribe/unsubscribe? See
+http://www.freeradius.org/list/devel.html
+
+
+---------------------------------------------------------------------
+To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+For additional commands, e-mail: chilli-help at coova.org
+Wiki: http://coova.org/wiki/index.php/CoovaChilli
+Forum: http://coova.org/phpBB3/viewforum.php?f=4
+
+
+
+
+From tm at fwt.fr  Thu Mar 19 11:05:07 2009
+From: tm at fwt.fr (Thierry MUSEUX - www.fwt.fr -)
+Date: Thu, 19 Mar 2009 12:05:07 +0100
+Subject: config.in
+Message-ID: <DDB77E6D7FC04BF2AD233CD2BBD75F23@DELLTM>
+
+I want to submit this patch in conf/config.in
+
+ 
+
+main.conf, hs.conf, local.conf are never updated from /etc/chilli/config
+
+ 
+
+ 
+
+ 
+
+Index: conf/functions.in
+
+===================================================================
+
+--- conf/functions.in   (r?vision 194)
+
++++ conf/functions.in   (copie de travail)
+
+@@ -191,14 +191,17 @@
+
+ 
+
+ files_equal() {
+
+     [ -x /usr/bin/cmp ] && {
+
+-       cmp -s $1 $2 || return 0;
+
+-       return 1;
+
+-    }
+
+-    [ -x /bin/md5sum ] && {
+
+-       [ "$(md5sum $1 | cut -f1 -d' ')" = "$(md5sum $2 | cut -f1 -d' ')" ]
+&& return 0;
+
+-       return 1;
+
+-    }
+
+-    return 1;
+
++       cmp -s $1 $2 || return 1;
+
++       }
+
++       return 0;
+
++
+
++# The following code seems to be never called
+
++#    [ -x /bin/md5sum ] && {
+
++#      [ "$(md5sum $1 | cut -f1 -d' ')" = "$(md5sum $2 | cut -f1 -d' ')" ]
+&& return 0;
+
++#      return 1;
+
++#    }
+
++#    return 1;
+
++
+
+ }
+
+ 
+
+ update_new_file() {
+
+ 
+
+Thierry Museux
+
+ 
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20090319/a02e14ce/attachment.htm>
+
+From DGarcia at globalgossip.net  Thu Mar 26 00:37:06 2009
+From: DGarcia at globalgossip.net (Daniel Garcia)
+Date: Thu, 26 Mar 2009 11:37:06 +1100
+Subject: DHCP release configuration
+Message-ID: <BB13BEB48D3B3B4CA1AA6A51DB9CFBCE1AADB573C3@ausyd04.globalgossip.net>
+
+With chilli I remember a dhcp timeout variable where chillispot would release an IP after a set time specified in one of its configuration files.
+
+Is there something similar in coova? If so, where?
+
+Someone on the forums wrote the following:
+
+>>> you mean coova-chilli release ip if this client has no connect a while? if so,, you can try "--lease" parameter ,default it`s 600 seconds.
+
+Is that a switch when running coova or in a configuration file somehwere?
+
+We have our config in /usr/local/etc/chilli/
+
+We start chilli services by running /usr/local/etc/init.d/chilli start
+
+So I guess what I am saying i dont know exactly where to places the --release command, also, how do i state the seconds? I want it to release after 120 seconds.
+
+Daniel Garcia
+IT Manager
+Core Infrastructure & Systems Development
+Global Gossip Group
+[a]    14 Wentworth Avenue, Sydney, NSW 2010
+[t]    +612 9263 0458
+[f]    +612 9263 0404
+[m]    0400 604 897
+[e]    dgarcia at globalgossip.net
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20090326/6cb522da/attachment.htm>
+
+From wlan at mac.com  Thu Mar 26 06:10:25 2009
+From: wlan at mac.com (wlanmac)
+Date: Thu, 26 Mar 2009 07:10:25 +0100
+Subject: DHCP release configuration
+In-Reply-To: 
+ <BB13BEB48D3B3B4CA1AA6A51DB9CFBCE1AADB573C3@ausyd04.globalgossip.net>
+References: 
+ <BB13BEB48D3B3B4CA1AA6A51DB9CFBCE1AADB573C3@ausyd04.globalgossip.net>
+Message-ID: <1238047825.8480.2.camel@david-laptop>
+
+See http://coova.org/wiki/index.php/CoovaChilli/chilli.conf(5)
+
+The options can go on the command line (with the --lease=120 format) or
+in the configuration file (on one line, put lease=20
+in /usr/local/etc/chilli/local.conf
+
+
+On Thu, 2009-03-26 at 11:37 +1100, Daniel Garcia wrote:
+> With chilli I remember a dhcp timeout variable where chillispot would
+> release an IP after a set time specified in one of its configuration
+> files.
+> 
+> Is there something similar in coova? If so, where?
+> 
+>  
+> 
+> Someone on the forums wrote the following:
+> 
+>  
+> 
+> >>> you mean coova-chilli release ip if this client has no connect a
+> while? if so,, you can try "--lease" parameter ,default it`s 600
+> seconds.
+> 
+>  
+> 
+> Is that a switch when running coova or in a configuration file
+> somehwere?
+> 
+> We have our config in /usr/local/etc/chilli/
+> 
+> We start chilli services by running /usr/local/etc/init.d/chilli start
+> 
+> So I guess what I am saying i dont know exactly where to places the
+> --release command, also, how do i state the seconds? I want it to
+> release after 120 seconds.
+> 
+>  
+> 
+> Daniel Garcia
+> 
+> IT Manager
+> 
+> Core Infrastructure & Systems Development
+> 
+> Global Gossip Group
+> 
+> [a]    14 Wentworth Avenue, Sydney, NSW 2010
+> 
+> [t]    +612 9263 0458
+> 
+> [f]    +612 9263 0404
+> 
+> [m]    0400 604 897
+> 
+> [e]    dgarcia at globalgossip.net
+> 
+>  
+> 
+> 
+
+
+
+From serverinfo at iast.it  Thu Mar 26 08:20:38 2009
+From: serverinfo at iast.it (Iacopo Spalletti)
+Date: Thu, 26 Mar 2009 09:20:38 +0100
+Subject: Coova DHCP and DD-Wrt Repeater Bridge configuration
+Message-ID: <200903260920.38544.serverinfo@iast.it>
+
+I'm trying to setup a repeater bridge on a coova-controlled WLAN according to 
+this doc: http://www.dd-wrt.com/wiki/index.php/Repeater_Bridge, but i found 
+out that coova use the ethernet frame source mac address to give IP addresses 
+instead of the Client Mac address field in the DHCP request. Is there any way 
+to bypass this, either on the coova side or Repeater side?
+
+-- 
+
+Regards
+Iacopo Spalletti
+
+Nephila sas
+i.spalletti at nephila.it
+PGP key block: http://www.nephila.it/pgp
+
+
+From bartjonkers at hotmail.com  Thu Mar 26 12:50:07 2009
+From: bartjonkers at hotmail.com (Bart Jonkers)
+Date: Thu, 26 Mar 2009 12:50:07 +0000
+Subject: Coova DHCP and DD-Wrt Repeater Bridge configuration
+In-Reply-To: <200903260920.38544.serverinfo@iast.it>
+References: <200903260920.38544.serverinfo@iast.it>
+Message-ID: <BLU140-W541F4E465F294BCFBAB6A7AE910@phx.gbl>
+
+
+I did a search on bridging some time ago.
+
+What worked for me was WDS. (I did it on WRT54GL and WAP 54)
+
+Bart
+
+> From: serverinfo at iast.it
+> To: chilli at coova.org
+> Subject: Coova DHCP and DD-Wrt Repeater Bridge configuration
+> Date: Thu, 26 Mar 2009 09:20:38 +0100
+> 
+> I'm trying to setup a repeater bridge on a coova-controlled WLAN according to 
+> this doc: http://www.dd-wrt.com/wiki/index.php/Repeater_Bridge, but i found 
+> out that coova use the ethernet frame source mac address to give IP addresses 
+> instead of the Client Mac address field in the DHCP request. Is there any way 
+> to bypass this, either on the coova side or Repeater side?
+> 
+> -- 
+> 
+> Regards
+> Iacopo Spalletti
+> 
+> Nephila sas
+> i.spalletti at nephila.it
+> PGP key block: http://www.nephila.it/pgp
+> 
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+> 
+
+_________________________________________________________________
+Installeer gratis de nieuwe Messenger
+http://download.live.com/messenger
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20090326/75bc0f0f/attachment.htm>
+
+From henk at skyrove.com  Thu Mar 26 15:12:26 2009
+From: henk at skyrove.com (Henk Kleynhans)
+Date: Thu, 26 Mar 2009 17:12:26 +0200
+Subject: Coova DHCP and DD-Wrt Repeater Bridge configuration
+In-Reply-To: <BLU140-W541F4E465F294BCFBAB6A7AE910@phx.gbl>
+References: <200903260920.38544.serverinfo@iast.it>
+	 <BLU140-W541F4E465F294BCFBAB6A7AE910@phx.gbl>
+Message-ID: <d42f029a0903260812l7c67f322vbae288440c2a1737@mail.gmail.com>
+
+Yep, WDS should do the trick.
+
+Unfortunately, I haven't been having too much luck with WDS on OpenWRT.
+(Tried almost a year ago, so may have improved). It worked, but was tricky
+and difficult to manage as I needed routers to be on different subnets.
+
+henk
+
+
+On Thu, Mar 26, 2009 at 2:50 PM, Bart Jonkers <bartjonkers at hotmail.com>wrote:
+
+>  I did a search on bridging some time ago.
+>
+> What worked for me was WDS. (I did it on WRT54GL and WAP 54)
+>
+> Bart
+>
+> > From: serverinfo at iast.it
+> > To: chilli at coova.org
+> > Subject: Coova DHCP and DD-Wrt Repeater Bridge configuration
+> > Date: Thu, 26 Mar 2009 09:20:38 +0100
+>
+> >
+> > I'm trying to setup a repeater bridge on a coova-controlled WLAN
+> according to
+> > this doc: http://www.dd-wrt.com/wiki/index.php/Repeater_Bridge, but i
+> found
+> > out that coova use the ethernet frame source mac address to give IP
+> addresses
+> > instead of the Client Mac address field in the DHCP request. Is there any
+> way
+> > to bypass this, either on the coova side or Repeater side?
+> >
+> > --
+> >
+> > Regards
+> > Iacopo Spalletti
+> >
+> > Nephila sas
+> > i.spalletti at nephila.it
+> > PGP key block: http://www.nephila.it/pgp
+> >
+> > ---------------------------------------------------------------------
+> > To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> > For additional commands, e-mail: chilli-help at coova.org
+> > Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> > Forum: http://coova.org/phpBB3/viewforum.php?f=4
+> >
+>
+> ------------------------------
+> Installeer gratis de nieuwe Messenger!<http://download.live.com/messenger>
+>
+
+
+
+-- 
+Henk Kleynhans
+CTO & Founder
+Skyrove (Pty) Ltd
+Technology Top 100 - Most Promising Emerging Enterprise 2006
+Tel: +27 (21) 4488843
+Cell: +27 (84) 3073451
+Fax: +27 (86) 6204077
+henk at skyrove.com
+blog: www.geekrebel.com
+
+------
+
+"A person with ubuntu is open and available to others, affirming of others,
+does not feel threatened that others are able and good, for he or she has a
+proper self-assurance that comes from knowing that he or she belongs in a
+greater whole and is diminished when others are humiliated or diminished,
+when others are tortured or oppressed." - Desmond Tutu
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20090326/94202a6a/attachment.htm>
+
+From wlan at mac.com  Thu Mar 26 15:55:54 2009
+From: wlan at mac.com (wlanmac)
+Date: Thu, 26 Mar 2009 16:55:54 +0100
+Subject: CoovaChilli for your Openmoko phone
+Message-ID: <1238082954.8030.9.camel@david-laptop>
+
+Hi all,
+
+I bought myself an Openmoko phone, and it's hard to put it down.
+Especially now that I have chilli running on it, complete with a litte
+GUI. 
+
+http://www.opkg.org/package_176.html
+
+It's a pretty handy device, this Openmoko. Pure Linux, pure open-source,
+GPRS, WiFi, GPS, and a choice of firmware. I'm running the Openmoko
+distribution which has a nice Enlightenment window manager running. I
+tried out the google Andriod, but it isn't ready yet (no soft keyboard
+that I could find). 
+
+Anyways, enjoy. 
+
+David
+
+Don't forget to get LinkedIn
+http://www.linkedin.com/groups?gid=158903
+
+
+
+From serverinfo at iast.it  Thu Mar 26 16:15:21 2009
+From: serverinfo at iast.it (Iacopo Spalletti)
+Date: Thu, 26 Mar 2009 17:15:21 +0100
+Subject: Coova DHCP and DD-Wrt Repeater Bridge configuration
+In-Reply-To: <BLU140-W541F4E465F294BCFBAB6A7AE910@phx.gbl>
+References: <200903260920.38544.serverinfo@iast.it> <BLU140-W541F4E465F294BCFBAB6A7AE910@phx.gbl>
+Message-ID: <200903261715.22957.serverinfo@iast.it>
+
+Alle 13:50 di gioved? 26 marzo 2009, Bart Jonkers ha scritto:
+> I did a search on bridging some time ago.
+>
+> What worked for me was WDS. (I did it on WRT54GL and WAP 54)
+Yes, i use WDS on other coova sites, but i have some constraint in one 
+location that makes impossible (well, difficult ) to use WDS, so i'm trying 
+other solutions
+
+-- 
+
+Regards
+Iacopo Spalletti
+
+Nephila sas
+i.spalletti at nephila.it
+PGP key block: http://www.nephila.it/pgp
+
+
+From wlan at mac.com  Thu Mar 26 16:23:44 2009
+From: wlan at mac.com (wlanmac)
+Date: Thu, 26 Mar 2009 17:23:44 +0100
+Subject: Coova DHCP and DD-Wrt Repeater Bridge configuration
+In-Reply-To: <200903260920.38544.serverinfo@iast.it>
+References: <200903260920.38544.serverinfo@iast.it>
+Message-ID: <1238084624.8030.13.camel@david-laptop>
+
+I haven't confirmed your statement that coova-chilli takes the ethernet
+source over the client-mac (though probably true). But, isn't the point
+of the bridge that the request's ethernet source is that of the
+subscriber? If so, then what is the problem exactly?
+
+
+On Thu, 2009-03-26 at 09:20 +0100, Iacopo Spalletti wrote:
+> I'm trying to setup a repeater bridge on a coova-controlled WLAN according to 
+> this doc: http://www.dd-wrt.com/wiki/index.php/Repeater_Bridge, but i found 
+> out that coova use the ethernet frame source mac address to give IP addresses 
+> instead of the Client Mac address field in the DHCP request. Is there any way 
+> to bypass this, either on the coova side or Repeater side?
+> 
+
+
+
+From bartjonkers at hotmail.com  Thu Mar 26 19:11:28 2009
+From: bartjonkers at hotmail.com (Bart Jonkers)
+Date: Thu, 26 Mar 2009 19:11:28 +0000
+Subject: Coova DHCP and DD-Wrt Repeater Bridge configuration
+In-Reply-To: <d42f029a0903260812l7c67f322vbae288440c2a1737@mail.gmail.com>
+References: <200903260920.38544.serverinfo@iast.it>
+	 <BLU140-W541F4E465F294BCFBAB6A7AE910@phx.gbl> 
+ <d42f029a0903260812l7c67f322vbae288440c2a1737@mail.gmail.com>
+Message-ID: <BLU140-W45520760B6F139186227EEAE910@phx.gbl>
+
+
+I used DD-wrt for WDS clients.
+I have a hotspot site with 5 AP in chain. Works fine!
+
+Bart
+
+Date: Thu, 26 Mar 2009 17:12:26 +0200
+Subject: Re: Coova DHCP and DD-Wrt Repeater Bridge configuration
+From: henk at skyrove.com
+To: chilli at coova.org
+
+Yep, WDS should do the trick. 
+
+Unfortunately, I haven't been having too much luck with WDS on OpenWRT. (Tried almost a year ago, so may have improved). It worked, but was tricky and difficult to manage as I needed routers to be on different subnets. 
+
+
+henk
+
+
+On Thu, Mar 26, 2009 at 2:50 PM, Bart Jonkers <bartjonkers at hotmail.com> wrote:
+
+
+
+
+
+
+I did a search on bridging some time ago.
+
+What worked for me was WDS. (I did it on WRT54GL and WAP 54)
+
+Bart
+
+> From: serverinfo at iast.it
+> To: chilli at coova.org
+
+> Subject: Coova DHCP and DD-Wrt Repeater Bridge configuration
+> Date: Thu, 26 Mar 2009 09:20:38 +0100
+> 
+> I'm trying to setup a repeater bridge on a coova-controlled WLAN according to 
+
+> this doc: http://www.dd-wrt.com/wiki/index.php/Repeater_Bridge, but i found 
+> out that coova use the ethernet frame source mac address to give IP addresses 
+
+> instead of the Client Mac address field in the DHCP request. Is there any way 
+> to bypass this, either on the coova side or Repeater side?
+> 
+> -- 
+> 
+> Regards
+> Iacopo Spalletti
+
+> 
+> Nephila sas
+> i.spalletti at nephila.it
+> PGP key block: http://www.nephila.it/pgp
+
+> 
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+
+> 
+
+Installeer gratis de nieuwe Messenger!
+
+
+-- 
+Henk Kleynhans
+CTO & Founder
+Skyrove (Pty) Ltd
+Technology Top 100 - Most Promising Emerging Enterprise 2006
+Tel: +27 (21) 4488843
+Cell: +27 (84) 3073451
+
+Fax: +27 (86) 6204077
+henk at skyrove.com
+ blog: www.geekrebel.com 
+
+------
+
+"A person with ubuntu is open and available to others, affirming of others, does not feel threatened that others are able and good, for he or she has a proper self-assurance that comes from knowing that he or she belongs in a greater whole and is diminished when others are humiliated or diminished, when others are tortured or oppressed." - Desmond Tutu
+
+_________________________________________________________________
+Uw e-mailcontact koos voor Hotmail en profiteert van een enorme opslagruimte! Maak ook een gratis Hotmail-account aan
+http://www.microsoft.com/belux/nl/windows/windowslive/products/hotmail.aspx
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20090326/a06470c9/attachment.htm>
+
+From serverinfo at iast.it  Thu Mar 26 22:18:52 2009
+From: serverinfo at iast.it (Iacopo Spalletti)
+Date: Thu, 26 Mar 2009 23:18:52 +0100
+Subject: Coova DHCP and DD-Wrt Repeater Bridge configuration
+In-Reply-To: <1238084624.8030.13.camel@david-laptop>
+References: <200903260920.38544.serverinfo@iast.it> <1238084624.8030.13.camel@david-laptop>
+Message-ID: <200903262318.53434.serverinfo@iast.it>
+
+Alle 17:23 di gioved? 26 marzo 2009, wlanmac ha scritto:
+> I haven't confirmed your statement that coova-chilli takes the ethernet
+> source over the client-mac (though probably true). But, isn't the point
+> of the bridge that the request's ethernet source is that of the
+> subscriber? If so, then what is the problem exactly?
+
+While WDS bridge is completely transparent (i.e. ethernet frames across bridge 
+maintains original source mac-address), as far as i have read on dd-wrt docs 
+(http://www.dd-wrt.com/wiki/index.php/Wireless_Bridge#Limitations and 
+http://www.dd-wrt.com/phpBB2/viewtopic.php?t=68) Client Bridge and Repeater 
+Bridge mode are not so transparent, so that every packet coming from the 
+Repeater/Client side has AP mac-address as source (as a result of 802.11 
+protocol specifications), and that's confusing coova which give the same IP 
+address to all  the clients associated to the repeater.
+Sniffing traffic with wireshark on the coova host shows dhcp request packet formed 
+as described earlier: i can provide it to you if you need it and i can help 
+with more tests
+
+-- 
+
+Regards
+Iacopo Spalletti
+
+Nephila sas
+i.spalletti at nephila.it
+PGP key block: http://www.nephila.it/pgp
+
+
+From DGarcia at globalgossip.net  Fri Mar 27 05:16:18 2009
+From: DGarcia at globalgossip.net (Daniel Garcia)
+Date: Fri, 27 Mar 2009 16:16:18 +1100
+Subject: DHCP release configuration
+In-Reply-To: <1238047825.8480.2.camel@david-laptop>
+References: <BB13BEB48D3B3B4CA1AA6A51DB9CFBCE1AADB573C3@ausyd04.globalgossip.net>
+ <1238047825.8480.2.camel@david-laptop>
+Message-ID: <BB13BEB48D3B3B4CA1AA6A51DB9CFBCE1AADB573DE@ausyd04.globalgossip.net>
+
+Hey Ive tried this, I put lease=20 in /usr/local/etc/chilli/local.conf, restarted chilli service and still the DHCP was only released after 10 mins.
+
+Is there anything else I am missing? I am using Coova 1.0.11
+
+Daniel Garcia
+IT Manager
+Core Infrastructure & Systems Development
+Global Gossip Group
+[a]????14 Wentworth Avenue, Sydney, NSW 2010
+[t]????+612 9263 0458
+[f]????+612 9263 0404
+[m]??? 0400 604 897
+[e]????dgarcia at globalgossip.net
+
+
+-----Original Message-----
+From: wlanmac [mailto:wlan at mac.com]
+Sent: Thursday, 26 March 2009 5:10 PM
+To: chilli at coova.org
+Subject: Re: DHCP release configuration
+
+See http://coova.org/wiki/index.php/CoovaChilli/chilli.conf(5)
+
+The options can go on the command line (with the --lease=120 format) or
+in the configuration file (on one line, put lease=20
+in /usr/local/etc/chilli/local.conf
+
+
+On Thu, 2009-03-26 at 11:37 +1100, Daniel Garcia wrote:
+> With chilli I remember a dhcp timeout variable where chillispot would
+> release an IP after a set time specified in one of its configuration
+> files.
+>
+> Is there something similar in coova? If so, where?
+>
+>
+>
+> Someone on the forums wrote the following:
+>
+>
+>
+> >>> you mean coova-chilli release ip if this client has no connect a
+> while? if so,, you can try "--lease" parameter ,default it`s 600
+> seconds.
+>
+>
+>
+> Is that a switch when running coova or in a configuration file
+> somehwere?
+>
+> We have our config in /usr/local/etc/chilli/
+>
+> We start chilli services by running /usr/local/etc/init.d/chilli start
+>
+> So I guess what I am saying i dont know exactly where to places the
+> --release command, also, how do i state the seconds? I want it to
+> release after 120 seconds.
+>
+>
+>
+> Daniel Garcia
+>
+> IT Manager
+>
+> Core Infrastructure & Systems Development
+>
+> Global Gossip Group
+>
+> [a]    14 Wentworth Avenue, Sydney, NSW 2010
+>
+> [t]    +612 9263 0458
+>
+> [f]    +612 9263 0404
+>
+> [m]    0400 604 897
+>
+> [e]    dgarcia at globalgossip.net
+>
+>
+>
+>
+
+
+---------------------------------------------------------------------
+To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+For additional commands, e-mail: chilli-help at coova.org
+Wiki: http://coova.org/wiki/index.php/CoovaChilli
+Forum: http://coova.org/phpBB3/viewforum.php?f=4
+
+
+
+From wlan at mac.com  Fri Mar 27 06:49:38 2009
+From: wlan at mac.com (wlanmac)
+Date: Fri, 27 Mar 2009 07:49:38 +0100
+Subject: DHCP release configuration
+In-Reply-To: 
+ <BB13BEB48D3B3B4CA1AA6A51DB9CFBCE1AADB573DE@ausyd04.globalgossip.net>
+References: 
+ <BB13BEB48D3B3B4CA1AA6A51DB9CFBCE1AADB573C3@ausyd04.globalgossip.net>
+ <1238047825.8480.2.camel@david-laptop>
+ <BB13BEB48D3B3B4CA1AA6A51DB9CFBCE1AADB573DE@ausyd04.globalgossip.net>
+Message-ID: <1238136578.8116.45.camel@david-laptop>
+
+Are you certain the subscriber machine didn't just renew the lease? Did
+you disconnect the subscriber machine, and then it took 10 minutes or
+what?
+
+
+On Fri, 2009-03-27 at 16:16 +1100, Daniel Garcia wrote:
+> Hey Ive tried this, I put lease=20 in /usr/local/etc/chilli/local.conf, restarted chilli service and still the DHCP was only released after 10 mins.
+> 
+> Is there anything else I am missing? I am using Coova 1.0.11
+> 
+> Daniel Garcia
+> IT Manager
+> Core Infrastructure & Systems Development
+> Global Gossip Group
+> [a]    14 Wentworth Avenue, Sydney, NSW 2010
+> [t]    +612 9263 0458
+> [f]    +612 9263 0404
+> [m]    0400 604 897
+> [e]    dgarcia at globalgossip.net
+> 
+> 
+> -----Original Message-----
+> From: wlanmac [mailto:wlan at mac.com]
+> Sent: Thursday, 26 March 2009 5:10 PM
+> To: chilli at coova.org
+> Subject: Re: DHCP release configuration
+> 
+> See http://coova.org/wiki/index.php/CoovaChilli/chilli.conf(5)
+> 
+> The options can go on the command line (with the --lease=120 format) or
+> in the configuration file (on one line, put lease=20
+> in /usr/local/etc/chilli/local.conf
+> 
+> 
+> On Thu, 2009-03-26 at 11:37 +1100, Daniel Garcia wrote:
+> > With chilli I remember a dhcp timeout variable where chillispot would
+> > release an IP after a set time specified in one of its configuration
+> > files.
+> >
+> > Is there something similar in coova? If so, where?
+> >
+> >
+> >
+> > Someone on the forums wrote the following:
+> >
+> >
+> >
+> > >>> you mean coova-chilli release ip if this client has no connect a
+> > while? if so,, you can try "--lease" parameter ,default it`s 600
+> > seconds.
+> >
+> >
+> >
+> > Is that a switch when running coova or in a configuration file
+> > somehwere?
+> >
+> > We have our config in /usr/local/etc/chilli/
+> >
+> > We start chilli services by running /usr/local/etc/init.d/chilli start
+> >
+> > So I guess what I am saying i dont know exactly where to places the
+> > --release command, also, how do i state the seconds? I want it to
+> > release after 120 seconds.
+> >
+> >
+> >
+> > Daniel Garcia
+> >
+> > IT Manager
+> >
+> > Core Infrastructure & Systems Development
+> >
+> > Global Gossip Group
+> >
+> > [a]    14 Wentworth Avenue, Sydney, NSW 2010
+> >
+> > [t]    +612 9263 0458
+> >
+> > [f]    +612 9263 0404
+> >
+> > [m]    0400 604 897
+> >
+> > [e]    dgarcia at globalgossip.net
+> >
+> >
+> >
+> >
+> 
+> 
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+> 
+> 
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+> 
+
+
+
+From wlan at mac.com  Fri Mar 27 06:53:17 2009
+From: wlan at mac.com (wlanmac)
+Date: Fri, 27 Mar 2009 07:53:17 +0100
+Subject: Coova DHCP and DD-Wrt Repeater Bridge configuration
+In-Reply-To: <200903262318.53434.serverinfo@iast.it>
+References: <200903260920.38544.serverinfo@iast.it>
+ <1238084624.8030.13.camel@david-laptop> <200903262318.53434.serverinfo@iast.it>
+Message-ID: <1238136797.8116.49.camel@david-laptop>
+
+Then, the issues isn't that chilli is handling DHCP wrongly. The real
+issue is that your subscribers are NAT'ed (in layer 2) such that chilli
+would not see the true MAC of the subscriber. This is fundamentally a
+problem with chilli - even if DHCP was operating as you expected. 
+
+I believe 'sweetspot' might be more what you are looking for. From what
+I understand, it is like chilli only for layer 3. 
+
+
+On Thu, 2009-03-26 at 23:18 +0100, Iacopo Spalletti wrote:
+> Alle 17:23 di gioved? 26 marzo 2009, wlanmac ha scritto:
+> > I haven't confirmed your statement that coova-chilli takes the ethernet
+> > source over the client-mac (though probably true). But, isn't the point
+> > of the bridge that the request's ethernet source is that of the
+> > subscriber? If so, then what is the problem exactly?
+> 
+> While WDS bridge is completely transparent (i.e. ethernet frames across bridge 
+> maintains original source mac-address), as far as i have read on dd-wrt docs 
+> (http://www.dd-wrt.com/wiki/index.php/Wireless_Bridge#Limitations and 
+> http://www.dd-wrt.com/phpBB2/viewtopic.php?t=68) Client Bridge and Repeater 
+> Bridge mode are not so transparent, so that every packet coming from the 
+> Repeater/Client side has AP mac-address as source (as a result of 802.11 
+> protocol specifications), and that's confusing coova which give the same IP 
+> address to all  the clients associated to the repeater.
+> Sniffing traffic with wireshark on the coova host shows dhcp request packet formed 
+> as described earlier: i can provide it to you if you need it and i can help 
+> with more tests
+> 
+
+
+
+From henk at skyrove.com  Fri Mar 27 07:00:12 2009
+From: henk at skyrove.com (Henk Kleynhans)
+Date: Fri, 27 Mar 2009 09:00:12 +0200
+Subject: Coova DHCP and DD-Wrt Repeater Bridge configuration
+In-Reply-To: <1238136797.8116.49.camel@david-laptop>
+References: <200903260920.38544.serverinfo@iast.it>
+	 <1238084624.8030.13.camel@david-laptop>
+	 <200903262318.53434.serverinfo@iast.it>
+	 <1238136797.8116.49.camel@david-laptop>
+Message-ID: <d42f029a0903270000p1494491bn942eb31f6b1bf951@mail.gmail.com>
+
+They'd be NAT'ted if using wireless Client-Bridge, but shouldn't be when
+using WDS.
+The big question is: Why is WDS not working as it should be in CoovaAP?
+(Can't SSH, Ping, etc, as you could with DD-WRT)
+
+Henk
+
+
+On Fri, Mar 27, 2009 at 8:53 AM, wlanmac <wlan at mac.com> wrote:
+
+> Then, the issues isn't that chilli is handling DHCP wrongly. The real
+> issue is that your subscribers are NAT'ed (in layer 2) such that chilli
+> would not see the true MAC of the subscriber. This is fundamentally a
+> problem with chilli - even if DHCP was operating as you expected.
+>
+> I believe 'sweetspot' might be more what you are looking for. From what
+> I understand, it is like chilli only for layer 3.
+>
+>
+> On Thu, 2009-03-26 at 23:18 +0100, Iacopo Spalletti wrote:
+> > Alle 17:23 di gioved? 26 marzo 2009, wlanmac ha scritto:
+> > > I haven't confirmed your statement that coova-chilli takes the ethernet
+> > > source over the client-mac (though probably true). But, isn't the point
+> > > of the bridge that the request's ethernet source is that of the
+> > > subscriber? If so, then what is the problem exactly?
+> >
+> > While WDS bridge is completely transparent (i.e. ethernet frames across
+> bridge
+> > maintains original source mac-address), as far as i have read on dd-wrt
+> docs
+> > (http://www.dd-wrt.com/wiki/index.php/Wireless_Bridge#Limitations and
+> > http://www.dd-wrt.com/phpBB2/viewtopic.php?t=68) Client Bridge and
+> Repeater
+> > Bridge mode are not so transparent, so that every packet coming from the
+> > Repeater/Client side has AP mac-address as source (as a result of 802.11
+> > protocol specifications), and that's confusing coova which give the same
+> IP
+> > address to all  the clients associated to the repeater.
+> > Sniffing traffic with wireshark on the coova host shows dhcp request
+> packet formed
+> > as described earlier: i can provide it to you if you need it and i can
+> help
+> > with more tests
+> >
+>
+>
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>
+>
+
+
+-- 
+Henk Kleynhans
+CTO & Founder
+Skyrove (Pty) Ltd
+Technology Top 100 - Most Promising Emerging Enterprise 2006
+Tel: +27 (21) 4488843
+Cell: +27 (84) 3073451
+Fax: +27 (86) 6204077
+henk at skyrove.com
+blog: www.geekrebel.com
+
+------
+
+"A person with ubuntu is open and available to others, affirming of others,
+does not feel threatened that others are able and good, for he or she has a
+proper self-assurance that comes from knowing that he or she belongs in a
+greater whole and is diminished when others are humiliated or diminished,
+when others are tortured or oppressed." - Desmond Tutu
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20090327/eef5db22/attachment.htm>
+
+From serverinfo at iast.it  Fri Mar 27 07:42:35 2009
+From: serverinfo at iast.it (Iacopo Spalletti)
+Date: Fri, 27 Mar 2009 08:42:35 +0100
+Subject: Coova DHCP and DD-Wrt Repeater Bridge configuration
+In-Reply-To: <1238136797.8116.49.camel@david-laptop>
+References: <200903260920.38544.serverinfo@iast.it> <200903262318.53434.serverinfo@iast.it> <1238136797.8116.49.camel@david-laptop>
+Message-ID: <200903270842.35457.serverinfo@iast.it>
+
+Alle 07:53 di venerd? 27 marzo 2009, wlanmac ha scritto:
+> Then, the issues isn't that chilli is handling DHCP wrongly. The real
+> issue is that your subscribers are NAT'ed (in layer 2) such that chilli
+> would not see the true MAC of the subscriber. This is fundamentally a
+> problem with chilli - even if DHCP was operating as you expected.
+>
+> I believe 'sweetspot' might be more what you are looking for. From what
+> I understand, it is like chilli only for layer 3.
+Thanks for your answer.
+
+-- 
+
+Regards
+Iacopo Spalletti
+
+Nephila sas
+i.spalletti at nephila.it
+PGP key block: http://www.nephila.it/pgp
+
+
+From wlan at mac.com  Sun Mar 29 19:12:50 2009
+From: wlan at mac.com (wlanmac)
+Date: Sun, 29 Mar 2009 21:12:50 +0200
+Subject: keep-alive troubles?
+Message-ID: <1238353970.7767.34.camel@david-laptop>
+
+Has anyone else ever seen keep-alive issues whereby:
+
+- A user is browsing a website, say msnbc.msn.com (what I used to test
+with) and IE on XP (or similar)
+
+- The user has been logged in, but their time has expired
+
+- The website completely locks up, nothing works
+
+- Other sites and walled garden are fine
+
+?
+
+
+
+
+
+From henk at skyrove.com  Sun Mar 29 21:49:14 2009
+From: henk at skyrove.com (Henk Kleynhans)
+Date: Sun, 29 Mar 2009 23:49:14 +0200
+Subject: keep-alive troubles?
+In-Reply-To: <1238353970.7767.34.camel@david-laptop>
+References: <1238353970.7767.34.camel@david-laptop>
+Message-ID: <d42f029a0903291449h5227810fsddbe86b72f5f21aa@mail.gmail.com>
+
+Hi,
+
+What do you mean by 'completely locks up'? Does IE lock up? Can you
+replicate it with Firefox?
+
+henk
+
+
+
+
+On Sun, Mar 29, 2009 at 9:12 PM, wlanmac <wlan at mac.com> wrote:
+
+> Has anyone else ever seen keep-alive issues whereby:
+>
+> - A user is browsing a website, say msnbc.msn.com (what I used to test
+> with) and IE on XP (or similar)
+>
+> - The user has been logged in, but their time has expired
+>
+> - The website completely locks up, nothing works
+>
+> - Other sites and walled garden are fine
+>
+> ?
+>
+>
+>
+>
+> ---------------------------------------------------------------------
+> To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+> For additional commands, e-mail: chilli-help at coova.org
+> Wiki: http://coova.org/wiki/index.php/CoovaChilli
+> Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>
+>
+
+
+-- 
+Henk Kleynhans
+CTO & Founder
+Skyrove (Pty) Ltd
+Technology Top 100 - Most Promising Emerging Enterprise 2006
+Tel: +27 (21) 4488843
+Cell: +27 (84) 3073451
+Fax: +27 (86) 6204077
+henk at skyrove.com
+blog: www.geekrebel.com
+
+------
+
+"A person with ubuntu is open and available to others, affirming of others,
+does not feel threatened that others are able and good, for he or she has a
+proper self-assurance that comes from knowing that he or she belongs in a
+greater whole and is diminished when others are humiliated or diminished,
+when others are tortured or oppressed." - Desmond Tutu
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <http://lists.coova.org/pipermail/chilli/attachments/20090329/da91aeb0/attachment.htm>
+
+From wlan at mac.com  Mon Mar 30 05:02:37 2009
+From: wlan at mac.com (wlanmac)
+Date: Mon, 30 Mar 2009 07:02:37 +0200
+Subject: keep-alive troubles?
+In-Reply-To: <d42f029a0903291449h5227810fsddbe86b72f5f21aa@mail.gmail.com>
+References: <1238353970.7767.34.camel@david-laptop>
+ <d42f029a0903291449h5227810fsddbe86b72f5f21aa@mail.gmail.com>
+Message-ID: <1238389357.7756.7.camel@david-laptop>
+
+I have heard it replicated on Firefox, but have been testing with IE
+since I think the situation is worse with it. 
+
+IE locks up, as in it will do nothing. No response from clicking any
+links (that go to the same website). What I'm seeing in wireshark is as
+follows:
+
+- When user is logged in and goes to a site, say msnbc.msn.com. The
+browser established HTTP Keep-Alive connections and downloads the page.
+
+- I click around the site up until my time expires.
+
+- When my time expires, the problem is worse if my browser was actively
+downloading content, when the keep-alive packets start getting dropped
+(not logged in anymore).
+
+- Since the browser is waiting for data still on it's keep-alive
+connections, it just sits there (for a really long time) waiting... not
+even trying to send my request for a new URL (over a new or existing
+keep-alive connection). 
+
+What I've found is that if instead of dropping the packets when logged
+out, if Chilli resets the connections (sending a RST to both client and
+server, basically nicely terminating the keep-alive), everything works a
+whole lot better. 
+
+I'm just surprised that nobody has mentioned this problem before...
+
+
+
+
+On Sun, 2009-03-29 at 23:49 +0200, Henk Kleynhans wrote:
+> Hi,
+> 
+> What do you mean by 'completely locks up'? Does IE lock up? Can you
+> replicate it with Firefox? 
+> 
+> henk
+> 
+> 
+> 
+> 
+> On Sun, Mar 29, 2009 at 9:12 PM, wlanmac <wlan at mac.com> wrote:
+>         Has anyone else ever seen keep-alive issues whereby:
+>         
+>         - A user is browsing a website, say msnbc.msn.com (what I used
+>         to test
+>         with) and IE on XP (or similar)
+>         
+>         - The user has been logged in, but their time has expired
+>         
+>         - The website completely locks up, nothing works
+>         
+>         - Other sites and walled garden are fine
+>         
+>         ?
+>         
+>         
+>         
+>         
+>         ---------------------------------------------------------------------
+>         To unsubscribe, e-mail: chilli-unsubscribe at coova.org
+>         For additional commands, e-mail: chilli-help at coova.org
+>         Wiki: http://coova.org/wiki/index.php/CoovaChilli
+>         Forum: http://coova.org/phpBB3/viewforum.php?f=4
+>         
+> 
+> 
+> 
+> -- 
+> Henk Kleynhans
+> CTO & Founder
+> Skyrove (Pty) Ltd
+> Technology Top 100 - Most Promising Emerging Enterprise 2006
+> Tel: +27 (21) 4488843
+> Cell: +27 (84) 3073451
+> Fax: +27 (86) 6204077
+> henk at skyrove.com
+> blog: www.geekrebel.com 
+> 
+> ------
+> 
+> "A person with ubuntu is open and available to others, affirming of
+> others, does not feel threatened that others are able and good, for he
+> or she has a proper self-assurance that comes from knowing that he or
+> she belongs in a greater whole and is diminished when others are
+> humiliated or diminished, when others are tortured or oppressed." -
+> Desmond Tutu
+
+
+
+From wlan at mac.com  Mon Mar 30 08:39:02 2009
+From: wlan at mac.com (wlanmac)
+Date: Mon, 30 Mar 2009 10:39:02 +0200
+Subject: TCP Window Shaping
+Message-ID: <1238402342.7756.34.camel@david-laptop>
+
+http://en.wikipedia.org/wiki/Network_congestion_avoidance#TCP_Window_Shaping	
+
+Hi all, 
+
+I wanted to start a thread on TCP Window Shaping. It is something I have
+had in the back of my mind for awhile. It would be great, for instance,
+if chilli would adjust the TCP window when limiting bandwidth as the
+first stage (then only discarding the overflow). It would help bandwidth
+throttling without the need for as many TCP retransmissions. 
+
+But, general shaping down the TCP window could help the congestion of a
+network (as noted even in the Wikipedia article). So, I'm going to put
+in a new option in chilli called 'tcpwin'. When set to zero, the
+default, nothing happens. When set to a value greater than zero, all TCP
+frames will have their Window rewritten. 
+
+
+
+
+
+
+
+From liske at ibh.de  Mon Mar 30 10:47:57 2009
+From: liske at ibh.de (Thomas Liske)
+Date: Mon, 30 Mar 2009 12:47:57 +0200
+Subject: TCP Window Shaping
+In-Reply-To: <1238402342.7756.34.camel@david-laptop>
+References: <1238402342.7756.34.camel@david-laptop>
+Message-ID: <49D0A35D.6080502@ibh.de>
+
+Hi,
+
+wlanmac schrieb:
+> I wanted to start a thread on TCP Window Shaping. It is something I have
+> had in the back of my mind for awhile. It would be great, for instance,
+> if chilli would adjust the TCP window when limiting bandwidth as the
+> first stage (then only discarding the overflow). It would help bandwidth
+> throttling without the need for as many TCP retransmissions. 
+> 
+> But, general shaping down the TCP window could help the congestion of a
+> network (as noted even in the Wikipedia article). So, I'm going to put
+> in a new option in chilli called 'tcpwin'. When set to zero, the
+> default, nothing happens. When set to a value greater than zero, all TCP
+> frames will have their Window rewritten. 
+
+this could already be done with iptables. How does traffic shaping work
+in chilli atm? Does it just hard drop any packets when the maximum
+allowed rate of a client has been reached? I would be more attired
+inimplementing something like RED for Tcp or ECN for congestion
+avoidance. Is there any paper descriping how to calculate the effect of
+window shaping on Tcp rates? Maybe there is already a good way to do
+traffic shaping with iptables but I didn't check it, yet.
+
+
+Regards,
+Thomas L.
+
+-- 
+support at ibh.de                              Tel. +49 351 477 77 30
+www.ibh.de                                  Fax  +49 351 477 77 39
+
+-----------------------------------------------------------------------
+Dipl.-Ing. Thomas Liske
+Netzwerk- und System-Design
+
+
+IBH IT-Service GmbH                         Amtsgericht Dresden
+Gostritzer Str. 61-63                       HRB 13626
+D-01217 Dresden                             GF: Prof. Dr. Thomas Horn
+Germany                                     VAT DE182302907
+-----------------------------------------------------------------------
+Ihr Partner f?r: LAN, WAN IP-Quality, Security, VoIP, SAN, Backup, USV
+-----------------------------------------------------------------------
+       professioneller IT-Service - kompetent und zuverl?ssig
+-----------------------------------------------------------------------
+
+
+From jmeiring at amobia.com  Tue Mar 24 17:55:27 2009
+From: jmeiring at amobia.com (Johan Meiring)
+Date: Tue, 24 Mar 2009 19:55:27 +0200
+Subject: 1.0.13 is official - feature requests.....
+In-Reply-To: <20090407151146.GA31615@dedalo.nexlab.thc>
+References: <1239112253.7743.6.camel@david-laptop> <20090407161501.622f650e@germaine.lapiole.org> <1239114051.7743.11.camel@david-laptop> <20090407151146.GA31615@dedalo.nexlab.thc>
+Message-ID: <49C91E8F.2000809@amobia.com>
+
+nextime wrote:
+> 
+> For the next version: What do you think about add an option to make a
+
+[....]
+
+While we're asking for options, I would love to see the following.
+
+The ability to send some VSA atributes with every 
+authentication/accounting request.
+
+e.g.
+vsapairacc=Private-Version,50
+
+I want my radius server to know whether something like "accupdate" is on.
+
+The moment all NASes, that a user tries to login to, support accupdate, 
+I can allow multiple logins.
+
+Currently I use ChilliSpot-Version, this doesn't stop someone using 
+their own Nas with coova-chilli with the option off.
+
+I basically need a way to determine if the accupdate parameter is 
+switched on.
+
+You can pass all sorts of other usefull info to the radius server as well.
+
+(Unless I'm missing something and somthing like this is already possible).
+
+-- 
+
+
+Johan Meiring
+Amobia Communications
+Tel: (0861) AMOBIA / (0861) 266242
+Fax: (0861) AMOFAX / (0861) 266329
+
+
+

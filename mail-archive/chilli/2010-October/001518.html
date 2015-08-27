@@ -1,0 +1,226 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] 100% cpu problem
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20100%25%20cpu%20problem&In-Reply-To=%3CAANLkTi%3DFC9DnqDDD%3DsnVoZW734ktPACVQUjGYHhsNNb3%40mail.gmail.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001517.html">
+   <LINK REL="Next"  HREF="001504.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] 100% cpu problem</H1>
+    <B>Marco Simioni</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20100%25%20cpu%20problem&In-Reply-To=%3CAANLkTi%3DFC9DnqDDD%3DsnVoZW734ktPACVQUjGYHhsNNb3%40mail.gmail.com%3E"
+       TITLE="[Chilli] 100% cpu problem">m.simioni at gmail.com
+       </A><BR>
+    <I>Tue Oct 19 17:10:50 UTC 2010</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001517.html">[Chilli] 100% cpu problem
+</A></li>
+        <LI>Next message: <A HREF="001504.html">[Chilli] Event-Timestamp
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1518">[ date ]</a>
+              <a href="thread.html#1518">[ thread ]</a>
+              <a href="subject.html#1518">[ subject ]</a>
+              <a href="author.html#1518">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>I have some news.
+
+It happened again, but this time i had my debug messages inserted into
+rad_getattr, and here what i see into debug log:
+
+Oct 17 23:27:33 izc coova-chilli[955]: chilli.c: 3142: Received RADIUS response
+Oct 17 23:27:33 izc coova-chilli[955]: chilli.c: 3164: Received
+Access-Reject from radius server
+Oct 17 23:27:33 izc coova-chilli[955]: radius.c: 805: radius_getnextattr
+Oct 17 23:27:33 izc coova-chilli[955]: radius.c: 808: offset=0, len=39
+Oct 17 23:27:33 izc coova-chilli[955]: radius.c: 808: offset=21, len=39
+Oct 17 23:27:33 izc coova-chilli[955]: radius.c: 805: radius_getnextattr
+Oct 17 23:27:33 izc coova-chilli[955]: radius.c: 808: offset=0, len=39
+Oct 17 23:27:33 izc coova-chilli[955]: radius.c: 808: offset=21, len=39
+Oct 17 23:27:33 izc coova-chilli[955]: radius.c: 805: radius_getnextattr
+Oct 17 23:27:33 izc coova-chilli[955]: radius.c: 808: offset=0, len=39
+Oct 17 23:27:33 izc coova-chilli[955]: radius.c: 808: offset=21, len=39
+Oct 17 23:27:33 izc coova-chilli[955]: radius.c: 805: radius_getnextattr
+Oct 17 23:27:33 izc coova-chilli[955]: radius.c: 808: offset=0, len=39
+Oct 17 23:27:33 izc coova-chilli[955]: radius.c: 808: offset=21, len=39
+
+So it seems that i received a radius malformed packet, and chilli goes
+into an infinite loop  calling &quot;radius_getnextattr&quot;.
+
+The debug messages are displayed this way (please note log_dbg() calls):
+
+int
+radius_getnextattr(struct radius_packet_t *pack, struct radius_attr_t **attr,
+	       uint8_t type, uint32_t vendor_id, uint8_t vendor_type,
+	       int instance, size_t *roffset) {
+  struct radius_attr_t *t;
+  size_t len = ntohs(pack-&gt;length) - RADIUS_HDRSIZE;
+  size_t offset = *roffset;
+  int count = 0;
+
+  /*
+  if (0) {
+    printf(&quot;radius_getattr payload(len=%d,off=%d) %.2x %.2x %.2x %.2x\n&quot;,
+	   len, offset, pack-&gt;payload[offset], pack-&gt;payload[offset+1],
+	   pack-&gt;payload[offset+2], pack-&gt;payload[offset+3]);
+  }
+  */
+
+  log_dbg(&quot;radius_getnextattr&quot;);
+
+  while (offset &lt; len) {
+    log_dbg(&quot;offset=%d, len=%d&quot;, offset, len);
+
+    t = (struct radius_attr_t *)(&amp;pack-&gt;payload[offset]);
+
+    /*
+    if (0) {
+      printf(&quot;radius_getattr %d %d %d %.2x %.2x \n&quot;, t-&gt;t, t-&gt;l,
+	     ntohl(t-&gt;v.vv.i), (int) t-&gt;v.vv.t, (int) t-&gt;v.vv.l);
+    }
+    */
+
+    offset +=  t-&gt;l;
+
+    if (t-&gt;t == 0)
+      return -1;
+
+    if (t-&gt;t != type)
+      continue;
+
+    if (t-&gt;t == RADIUS_ATTR_VENDOR_SPECIFIC &amp;&amp; vendor_id &amp;&amp;
+	(ntohl(t-&gt;v.vv.i) != vendor_id || t-&gt;v.vv.t != vendor_type))
+      continue;
+
+    if (count == instance) {
+
+      if (type == RADIUS_ATTR_VENDOR_SPECIFIC &amp;&amp; vendor_id)
+	*attr = (struct radius_attr_t *) &amp;t-&gt;v.vv.t;
+      else
+	*attr = t;
+
+      /*
+      if (0) printf(&quot;Found %.*s\n&quot;, (*attr)-&gt;l - 2, (char *)(*attr)-&gt;v.t);
+      */
+
+      *roffset = offset;
+      return 0;
+    }
+    else {
+      count++;
+    }
+  }
+
+  return -1; /* Not found */
+}
+
+
+So, it is not the &quot;while (offset &lt; len) {&quot; that is going into a loop,
+but somebody calling the radius_getnextattr() routine.
+
+For example, it is called several times into chilli.c inside while
+loops, like this:
+
+Line 2860:
+
+    while (!radius_getnextattr(pack, &amp;attr, RADIUS_ATTR_VENDOR_SPECIFIC,
+			       RADIUS_VENDOR_CHILLISPOT, RADIUS_ATTR_CHILLISPOT_CONFIG,
+			       0, &amp;offset)) {
+
+Line 2895:
+
+    while (!radius_getnextattr(pack, &amp;attr, RADIUS_ATTR_VENDOR_SPECIFIC,
+			       RADIUS_VENDOR_WISPR, RADIUS_ATTR_WISPR_REDIRECTION_URL,
+			       0, &amp;offset)) {
+
+Line 3026:
+
+	while (!radius_getnextattr(pack, &amp;attr,
+				   RADIUS_ATTR_VENDOR_SPECIFIC,
+				   RADIUS_VENDOR_CHILLISPOT,
+				   RADIUS_ATTR_CHILLISPOT_CONFIG,
+				   0, &amp;offset));
+
+
+I tried inserting further debug messages onto these lines to see what
+is the while loop that ends to an infinite loop.
+
+Suggestions ?
+
+Regards,
+
+Marco
+
+
+2010/10/15 Caciano Machado &lt;<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">caciano at gmail.com</A>&gt;:
+&gt;<i> Hi,
+</I>&gt;<i>
+</I>&gt;<i> Has anyone tried run coova chilli with gprof to figure out which function is
+</I>&gt;<i> eating cpu?
+</I>&gt;<i>
+</I>&gt;<i> Cheers
+</I>&gt;<i>
+</I>&gt;<i> On Thu, Oct 7, 2010 at 1:13 PM, Giovanni Toraldo &lt;<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">me at gionn.net</A>&gt; wrote:
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> Hi,
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> I am writing this to ley you know that I am facing the same issue.
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> Unfortunately, I cannot give more informations than Marco provided:
+</I>&gt;&gt;<i> chilli_redir seems to hangs quiet rapidly, but however the coova
+</I>&gt;&gt;<i> service will get only some lag due to high loads generated by the
+</I>&gt;&gt;<i> hanging processes.
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> My system is already on production, with an average of 10 users
+</I>&gt;&gt;<i> connected, with spikes of thousands.
+</I>&gt;&gt;<i> Before the lastest relase, I was never faced this issue.
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> Hope I can help some way to fix this issue.
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> Thanks.
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> --
+</I>&gt;&gt;<i> Giovanni Toraldo
+</I>&gt;&gt;<i> <A HREF="http://gionn.net/">http://gionn.net/</A>
+</I>&gt;&gt;<i> _______________________________________________
+</I>&gt;&gt;<i> Chilli mailing list
+</I>&gt;&gt;<i> <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">Chilli at coova.org</A>
+</I>&gt;&gt;<i> <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">http://lists.coova.org/cgi-bin/mailman/listinfo/chilli</A>
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> _______________________________________________
+</I>&gt;<i> Chilli mailing list
+</I>&gt;<i> <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">Chilli at coova.org</A>
+</I>&gt;<i> <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">http://lists.coova.org/cgi-bin/mailman/listinfo/chilli</A>
+</I>&gt;<i>
+</I>&gt;<i>
+</I></PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001517.html">[Chilli] 100% cpu problem
+</A></li>
+	<LI>Next message: <A HREF="001504.html">[Chilli] Event-Timestamp
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1518">[ date ]</a>
+              <a href="thread.html#1518">[ thread ]</a>
+              <a href="subject.html#1518">[ subject ]</a>
+              <a href="author.html#1518">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

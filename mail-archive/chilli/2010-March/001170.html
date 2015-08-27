@@ -1,0 +1,93 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] [PATCH] Fix: Memory leak of opt_run()
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20%5BPATCH%5D%20Fix%3A%20Memory%20leak%20of%20opt_run%28%29&In-Reply-To=%3C4B90A6D6.2080705%40ictec.co.jp%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001169.html">
+   <LINK REL="Next"  HREF="001171.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] [PATCH] Fix: Memory leak of opt_run()</H1>
+    <B>Masashi Honma</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20%5BPATCH%5D%20Fix%3A%20Memory%20leak%20of%20opt_run%28%29&In-Reply-To=%3C4B90A6D6.2080705%40ictec.co.jp%3E"
+       TITLE="[Chilli] [PATCH] Fix: Memory leak of opt_run()">honma at ictec.co.jp
+       </A><BR>
+    <I>Fri Mar  5 06:38:14 UTC 2010</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001169.html">[Chilli] [PATCH] Fix: Memory leak of opt_run()
+</A></li>
+        <LI>Next message: <A HREF="001171.html">[Chilli] [PATCH] Fix: Memory leak of opt_run()
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1170">[ date ]</a>
+              <a href="thread.html#1170">[ thread ]</a>
+              <a href="subject.html#1170">[ subject ]</a>
+              <a href="author.html#1170">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>(2010/03/05 15:04), David Bird wrote:
+&gt;<i> Does it really matter? While technically the memory I guess is leaked,
+</I>&gt;<i> it is allocated in a forked process that is about to be replaced with
+</I>&gt;<i> execl(). And, since the memory in question is holding the arguments, the
+</I>&gt;<i> memory needs to be valid until the execl process exits. I believe the
+</I>&gt;<i> heap and stack approaches are basically the same. Are you running a tool
+</I>&gt;<i> that indicated the memory was a leaked?
+</I>
+Of course I did test about it like this.
+
+static**newargs_bk;  &lt;-- add
+
+static int opt_run(int argc, char **argv, int reload) {
+   char **newargs;
+   char file[128];
+
+   newargs_bk = newargs;  &lt;-- add
+
+
+void options_destroy() {
+   if (_options._data)
+     free(_options._data);
+   free(newargs_bk);  &lt;-- add
+}
+
+I backuped newargs to newargs_bk and freed newargs_bk in options_destroy().
+The options_destroy() is called after &quot;chilli_opt&quot; process. (I checked this
+order by inserting printf() before the final line of main() of &quot;main-opt.c&quot;
+and options_destroy().) Linux kernel will output double free warning when
+newargs_bk was freed in options_destroy() if the newargs_bk was freed
+already. But no warning displayed. So I understood the memory is leaked.
+
+Regards,
+Masashi Honma.
+</PRE>
+
+
+
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001169.html">[Chilli] [PATCH] Fix: Memory leak of opt_run()
+</A></li>
+	<LI>Next message: <A HREF="001171.html">[Chilli] [PATCH] Fix: Memory leak of opt_run()
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1170">[ date ]</a>
+              <a href="thread.html#1170">[ thread ]</a>
+              <a href="subject.html#1170">[ subject ]</a>
+              <a href="author.html#1170">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

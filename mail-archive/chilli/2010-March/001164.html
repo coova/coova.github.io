@@ -1,0 +1,111 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli]  How to set up CoovaChilli ?
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20%20How%20to%20set%20up%20CoovaChilli%20%3F&In-Reply-To=%3C4B8F8E2F.90601%40ictec.co.jp%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001163.html">
+   <LINK REL="Next"  HREF="001166.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli]  How to set up CoovaChilli ?</H1>
+    <B>Masashi Honma</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20%20How%20to%20set%20up%20CoovaChilli%20%3F&In-Reply-To=%3C4B8F8E2F.90601%40ictec.co.jp%3E"
+       TITLE="[Chilli]  How to set up CoovaChilli ?">honma at ictec.co.jp
+       </A><BR>
+    <I>Thu Mar  4 10:40:47 UTC 2010</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001163.html">[Chilli] Currently logged-in check?
+</A></li>
+        <LI>Next message: <A HREF="001166.html">[Chilli] How to set up CoovaChilli ?
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1164">[ date ]</a>
+              <a href="thread.html#1164">[ thread ]</a>
+              <a href="subject.html#1164">[ subject ]</a>
+              <a href="author.html#1164">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hello.
+
+I'm configuring CoovaChilli with Debian testing and CoovaChilli 1.2.2.
+I'm connecting my PCs like Fig 1.
+
+     192.168.182.2   192.168.182.1       192.168.1.33   192.168.1.1
+PC1 ------------------------------- PC2 ---------------------------- PC3
+                             wlan1       eth0
+Fig 1.
+
+The PC2 is Captive portal, it includes CoovaChilli, FreeRADIUS 2.1.8
+and bind 9.6.1. The PC1 and the PC2 is connected with 802.11. The PC2
+and the PC3 is connected with the Ethernet. The PC1 is Captive portal
+client and it's IP address is provided by CoovaChilli DHCP server.
+
+Before RADIUS authentication, PC1 can only ping to 192.168.182.1.
+After RADIUS authentication, PC1 can ping to 192.168.1.33.
+(Of course 192.168.182.1 and 192.168.1.33 are interfaces of PC2.)
+But PC1 can't ping to 192.168.1.1.
+
+And the details are:
+
+1) The /proc/sys/net/ipv4/ip_forward is 1.
+
+2) The main.conf is this.
+------------------------------
+net 192.168.182.0/255.255.255.0
+uamlisten 192.168.182.1
+
+dns1 192.168.182.1
+
+radiusserver1 192.168.1.33
+radiusserver2 192.168.1.33
+radiussecret xxxxxx
+
+dhcpif wlan1
+uamserver <A HREF="http://192.168.1.33/cgi-bin/hotspotlogin.cgi">http://192.168.1.33/cgi-bin/hotspotlogin.cgi</A>
+------------------------------
+
+3) I build CoovaChilli without any option (only typed &quot;./configure&quot;).
+
+4) The iptables has no rules without CoovaChilli script defined.
+
+5) I have added &quot;routeif eth0&quot; statement to the main.conf. But
+there was no change.
+
+I have read some source codes, but I couldn't solve the problem. Is anybody
+know what is a matter ?
+
+Regards,
+Masashi Honma.
+</PRE>
+
+
+
+
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001163.html">[Chilli] Currently logged-in check?
+</A></li>
+	<LI>Next message: <A HREF="001166.html">[Chilli] How to set up CoovaChilli ?
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1164">[ date ]</a>
+              <a href="thread.html#1164">[ thread ]</a>
+              <a href="subject.html#1164">[ subject ]</a>
+              <a href="author.html#1164">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,114 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] Infinite redirect loop
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Infinite%20redirect%20loop&In-Reply-To=%3C4ED71629.4070402%40cirrusworks.net%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001778.html">
+   <LINK REL="Next"  HREF="001779.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] Infinite redirect loop</H1>
+    <B>Ryan Day</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Infinite%20redirect%20loop&In-Reply-To=%3C4ED71629.4070402%40cirrusworks.net%3E"
+       TITLE="[Chilli] Infinite redirect loop">ryan.day at cirrusworks.net
+       </A><BR>
+    <I>Thu Dec  1 05:52:41 UTC 2011</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001778.html">[Chilli] Infinite redirect loop
+</A></li>
+        <LI>Next message: <A HREF="001779.html">[Chilli] Coova with no authentication
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1780">[ date ]</a>
+              <a href="thread.html#1780">[ thread ]</a>
+              <a href="subject.html#1780">[ subject ]</a>
+              <a href="author.html#1780">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>During the initial authentication period RADIUS delivered a WISPr
+redirect. Everything works as expected. However once the session times
+out, the next time I try to access a webpage it looks like my uam page
+is being replaced with that WISPr redirect page because instead of being
+redirected to my UAM login page, I'm redirected to the WISPr login. But
+I'm no longer authenticated, so that redirection leads to a loop.
+
+
+I don't know if that description helps or not...
+
+
+On 12/01/2011 12:45 AM, David Bird wrote:
+&gt;<i> I'm confused.. did radius timeout or did it deliver the WISPr redirection URL? There are some changes in this regard pending in development... generally, a redirect loop means a redirect URL is not in the walled garden (which is bad).
+</I>&gt;<i>
+</I>&gt;<i> Ryan Day &lt;<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">ryan.day at cirrusworks.net</A>&gt; wrote:
+</I>&gt;<i>
+</I>&gt;&gt;<i> I've seen a problem with some of my Coova installations where I get an
+</I>&gt;&gt;<i> infinite redirect loop, typically after a RADIUS timeout and the user is
+</I>&gt;&gt;<i> still making web requests. This happens if there is a WISPr Redirect URL
+</I>&gt;&gt;<i> set and the user tries to log back in after the timeout. What seems to
+</I>&gt;&gt;<i> be happening is the initial redirect to the UAM page (which is offsite)
+</I>&gt;&gt;<i> is being replaced with the previously assigned WISPr Redirect URL. For
+</I>&gt;&gt;<i> example when printing out my redirect url in the logs, it looks like:
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> <A HREF="http://my.wispr.redirect.com/?loginurl=http%3a%2f%2my.uam.authentication.com%2fhotspotlogin.php">http://my.wispr.redirect.com/?loginurl=http%3a%2f%2my.uam.authentication.com%2fhotspotlogin.php</A>
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> Since my.wispr.redirect.com is not allowed yet in this session(radius
+</I>&gt;&gt;<i> timeout has occured and I'm logged out), I am redirected again, and
+</I>&gt;&gt;<i> again, and again. I should be redirected to
+</I>&gt;&gt;<i> <A HREF="http://my.uam.authentication.com,">http://my.uam.authentication.com,</A> but it looks like something is getting
+</I>&gt;&gt;<i> crossed.
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> I've had this problem across several versions (1.2.2, 1.2.5 and 1.2.8)
+</I>&gt;&gt;<i> and I've been working on it with 1.2.8. After some experimentation, I've
+</I>&gt;&gt;<i> made a change in redir.c on line ~4035(I've added extra debugging):
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> -    char * base_url = (conn.s_params.flags &amp; REQUIRE_REDIRECT &amp;&amp;
+</I>&gt;&gt;<i> -                       conn.s_params.url[0]) ? (char
+</I>&gt;&gt;<i> *)conn.s_params.url : redir-&gt;homepage;
+</I>&gt;&gt;<i> +    char * base_url = redir-&gt;homepage;
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> This doesn't cause any redirection issues, and I can't simulate the
+</I>&gt;&gt;<i> infinite redirection loop any more. However, I'm not very familiar with
+</I>&gt;&gt;<i> the code so I'm not sure if this has any undesirable side effects that I
+</I>&gt;&gt;<i> just haven't seen yet.
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> Has anyone else seen this problem? What am I losing by change the
+</I>&gt;&gt;<i> conditional when determining the base url?
+</I>&gt;&gt;<i> _______________________________________________
+</I>&gt;&gt;<i> Chilli mailing list
+</I>&gt;&gt;<i> <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">Chilli at coova.org</A>
+</I>&gt;&gt;<i> <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">http://lists.coova.org/cgi-bin/mailman/listinfo/chilli</A>
+</I>
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001778.html">[Chilli] Infinite redirect loop
+</A></li>
+	<LI>Next message: <A HREF="001779.html">[Chilli] Coova with no authentication
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1780">[ date ]</a>
+              <a href="thread.html#1780">[ thread ]</a>
+              <a href="subject.html#1780">[ subject ]</a>
+              <a href="author.html#1780">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

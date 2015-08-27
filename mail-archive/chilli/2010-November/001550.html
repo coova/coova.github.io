@@ -1,0 +1,121 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] uamdomain / uamallowed
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20uamdomain%20/%20uamallowed&In-Reply-To=%3C1289491172.3432.106.camel%40david-laptop%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001549.html">
+   <LINK REL="Next"  HREF="001539.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] uamdomain / uamallowed</H1>
+    <B>David Bird</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20uamdomain%20/%20uamallowed&In-Reply-To=%3C1289491172.3432.106.camel%40david-laptop%3E"
+       TITLE="[Chilli] uamdomain / uamallowed">david at coova.com
+       </A><BR>
+    <I>Thu Nov 11 15:59:32 UTC 2010</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001549.html">[Chilli] uamdomain / uamallowed
+</A></li>
+        <LI>Next message: <A HREF="001539.html">[Chilli] uamdomain / uamallowed
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1550">[ date ]</a>
+              <a href="thread.html#1550">[ thread ]</a>
+              <a href="subject.html#1550">[ subject ]</a>
+              <a href="author.html#1550">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>In subversion:
+
+* Added compile time option ''--enable-layer3'' and run-time option
+''--layer3'' to enable a Layer3 (IP-Only) style captive portal - no DHCP
+* Change to ''chilli_query logout'' to identify sessions based on
+options ''sessionid ...'' or ''ip ...'', not just MAC address
+* Added compile time option ''--enable-uamdomainfile'' and run-time
+option ''--uamdomainfile filename'' to load regex style uamdomains
+* Added compile time option ''--enable-redirdnsreq'' and run-time option
+''--redirdnsreq'' to have chilli send a DNS query for the hostname found
+in the redirect (useful when relying heavily on DNS based walled garden
+using ''uamdomain'' or ''uamdomainfile'')
+* Fixed ''uamdomain'' such that it will only match exactly the given
+name or prefixed with anything dot ('.') name
+* Added Pragma no cache and Expires headers to redirect HTTP responses
+* Fixed ''chilli_proxy'' bug for when DNS is down
+
+
+
+On Thu, 2010-11-11 at 13:37 +0100, David Bird wrote:
+&gt;<i> Well, since the option is &quot;uamdomain&quot;, I think we can assume the &quot;user&quot;
+</I>&gt;<i> is thinking &quot;uamdomain&quot; plus &quot;*.uamdomain&quot; ... so, we change the logic
+</I>&gt;<i> to fix the issue of '*uamdomain' (as it is always now) to being:
+</I>&gt;<i> 
+</I>&gt;<i> (assuming 'question' is the hostname being resolved)
+</I>&gt;<i> 
+</I>&gt;<i> if question equals uamdomain exactly OR
+</I>&gt;<i>    question is longer than uamdomain and ends with &quot;.uamdomain&quot;
+</I>&gt;<i> 
+</I>&gt;<i> So that &quot;google.com&quot; will match &quot;google.com&quot; or &quot;*.google.com&quot;. 
+</I>&gt;<i> 
+</I>&gt;<i> As for using regex for matching, I'm thinking of making it only for use
+</I>&gt;<i> with a new compile time option --enable-domainfile which will allow the
+</I>&gt;<i> loading of bulk regex based &quot;dynamic walled garden&quot; domain names. 
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> On Thu, 2010-11-11 at 14:19 +0200, Johan Meiring wrote:
+</I>&gt;<i> &gt; On 2010/11/11 02:08 PM, Wichert Akkerman wrote:
+</I>&gt;<i> &gt; &gt; On 11/11/10 13:06 , Johan Meiring wrote:
+</I>&gt;<i> &gt; &gt;&gt; On 2010/11/11 01:13 PM, Henk Kleynhans wrote:
+</I>&gt;<i> &gt; &gt;&gt;&gt; I'm happy for uamdomain=&quot;google.com&quot; to mean
+</I>&gt;<i> &gt; &gt;&gt;&gt; google.com and all subdomains, as it currently is.
+</I>&gt;<i> &gt; &gt;&gt;&gt;
+</I>&gt;<i> &gt; &gt;&gt;&gt; And for uamdomain=&quot;mail.google.com&quot; to only
+</I>&gt;<i> &gt; &gt;&gt;&gt; refer to mail.google.com
+</I>&gt;<i> &gt; &gt;&gt;
+</I>&gt;<i> &gt; &gt;&gt; How must chilli know that &quot;google.com&quot; is a domainname and
+</I>&gt;<i> &gt; &gt;&gt; &quot;mail.google.com&quot; is a hostnname?
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt; It can't - DNS has no concept of 'hostname' or 'domain'.
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; 
+</I>&gt;<i> &gt; Therefore having &quot;google.com&quot; include subdomains and &quot;mail.google.com&quot; not 
+</I>&gt;<i> &gt; include subdomains is impossible.
+</I>&gt;<i> &gt; 
+</I>&gt;<i> &gt; Suggesting .google.com for subdomains again....
+</I>&gt;<i> &gt; 
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> _______________________________________________
+</I>&gt;<i> Chilli mailing list
+</I>&gt;<i> <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">Chilli at coova.org</A>
+</I>&gt;<i> <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">http://lists.coova.org/cgi-bin/mailman/listinfo/chilli</A>
+</I>
+
+</PRE>
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001549.html">[Chilli] uamdomain / uamallowed
+</A></li>
+	<LI>Next message: <A HREF="001539.html">[Chilli] uamdomain / uamallowed
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1550">[ date ]</a>
+              <a href="thread.html#1550">[ thread ]</a>
+              <a href="subject.html#1550">[ subject ]</a>
+              <a href="author.html#1550">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,106 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] [chilli] How to modify status page content for blocking	user
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20%5Bchilli%5D%20How%20to%20modify%20status%20page%20content%20for%20blocking%0A%09user&In-Reply-To=%3CCAOyZXpTab01CzvuKwwSg9XZ8Uygvz_ZH%3D0wLc52DRtO0TtNXVA%40mail.gmail.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="002513.html">
+   <LINK REL="Next"  HREF="002512.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] [chilli] How to modify status page content for blocking	user</H1>
+    <B>Le Tran Dat</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20%5Bchilli%5D%20How%20to%20modify%20status%20page%20content%20for%20blocking%0A%09user&In-Reply-To=%3CCAOyZXpTab01CzvuKwwSg9XZ8Uygvz_ZH%3D0wLc52DRtO0TtNXVA%40mail.gmail.com%3E"
+       TITLE="[Chilli] [chilli] How to modify status page content for blocking	user">trandatnh at gmail.com
+       </A><BR>
+    <I>Fri Dec 13 09:19:28 UTC 2013</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="002513.html">[Chilli] Allow sub http request
+</A></li>
+        <LI>Next message: <A HREF="002512.html">[Chilli] WARNING: Unprintable characters in the password. Double-check the shared secret on the server and the NAS!
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2511">[ date ]</a>
+              <a href="thread.html#2511">[ thread ]</a>
+              <a href="subject.html#2511">[ subject ]</a>
+              <a href="author.html#2511">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hi All,
+
+I am trying to implement a feature that will block clients base on
+their MAC addresses. I allow those clients to log on into the captive
+portal and show a message &quot;You are blocked, please contact
+administrator&quot; in the status page. Then I will logoff the client in
+question.
+
+I've already done the part of allowing a client to logon and logoff it
+right after that if the client's MAC address is in blacklist using
+chilli_query logoff.
+
+Now, I want to show the message on status page. I am new to
+coovachilli so I have no knowledge about how to do it. I guess I can
+check the authorize part in coovachilli's source code.
+And do the following steps:
+
+resp.message = &quot;&quot;
+if authenticate_pass then
+    if mac_is_blocked then
+       resp.message = &quot;you are blocked, Please contact administrator&quot;
+
+Here the resp.message will be present in status page.
+ChilliLibrary.js
+chilliController.processReply = function ( resp ) {
+
+        if ( typeof (resp.message)  == 'string' ) {
+
+                /* The following trick will replace HTML entities with
+the corresponding
+                 * character. This will not work in Flash (no innerHTML)
+                 */
+
+                var fakediv = document.createElement('div');
+                fakediv.innerHTML = resp.message ;
+                chilliController.message = fakediv.innerHTML  ;
+        }
+
+
+I don't know if it can work or not. Or you people can suggest me any
+other approaches that can help to show the message to blocked clients.
+
+Thanks,
+Dat
+</PRE>
+
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="002513.html">[Chilli] Allow sub http request
+</A></li>
+	<LI>Next message: <A HREF="002512.html">[Chilli] WARNING: Unprintable characters in the password. Double-check the shared secret on the server and the NAS!
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2511">[ date ]</a>
+              <a href="thread.html#2511">[ thread ]</a>
+              <a href="subject.html#2511">[ subject ]</a>
+              <a href="author.html#2511">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

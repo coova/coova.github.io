@@ -1,0 +1,118 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> Addressing APIPA/IPv4LL issues with uamanyip
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20Addressing%20APIPA/IPv4LL%20issues%20with%20uamanyip&In-Reply-To=%3C4820785F.2030506%40gmail.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000256.html">
+   <LINK REL="Next"  HREF="000249.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>Addressing APIPA/IPv4LL issues with uamanyip</H1>
+    <B>Gunther Mayer</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20Addressing%20APIPA/IPv4LL%20issues%20with%20uamanyip&In-Reply-To=%3C4820785F.2030506%40gmail.com%3E"
+       TITLE="Addressing APIPA/IPv4LL issues with uamanyip">gunther.mayer at googlemail.com
+       </A><BR>
+    <I>Tue May  6 15:25:19 UTC 2008</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000256.html">Addressing APIPA/IPv4LL issues with uamanyip
+</A></li>
+        <LI>Next message: <A HREF="000249.html">disable nat
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#257">[ date ]</a>
+              <a href="thread.html#257">[ thread ]</a>
+              <a href="subject.html#257">[ subject ]</a>
+              <a href="author.html#257">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Murray Long wrote:
+&gt;<i> Ok, thanks, I'll stop worrying then..
+</I>&gt;<i>
+</I>&gt;<i> But it does seem strange to me that future DHCP requests will reissue 
+</I>&gt;<i> an old address used though anyip.  Is there any reason for this?
+</I>It's for efficiency purposes - chilli remembers past connections for the 
+same MAC since there's no point in deallocating and reallocating memory 
+all the time for a client who's likely to reconnect several times. Of 
+course this is only remembered until either the client explicitly 
+releases his ip or an idletimeout occurs.
+&gt;<i>
+</I>&gt;<i> -Murray
+</I>&gt;<i>
+</I>&gt;<i> On Tue, May 6, 2008 at 4:39 PM, Gunther Mayer 
+</I>&gt;<i> &lt;<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">gunther.mayer at googlemail.com</A> &lt;mailto:<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">gunther.mayer at googlemail.com</A>&gt;&gt; 
+</I>&gt;<i> wrote:
+</I>&gt;<i>
+</I>&gt;<i>     Murray Long wrote:
+</I>&gt;<i>
+</I>&gt;<i>         Hi Gunter,
+</I>&gt;<i>         Thanks for the patch.
+</I>&gt;<i>
+</I>&gt;<i>         Have done some testing myself and found that the same problem
+</I>&gt;<i>         applies if a user arrives at a hotspot with a static IP and no
+</I>&gt;<i>         gateway.
+</I>&gt;<i>         If, on finding he can connect, he tries to connect though DHCP
+</I>&gt;<i>         he will be given his origional IP without any gateway.
+</I>&gt;<i>         And so won't be able to connect until the router is rebooted.
+</I>&gt;<i>
+</I>&gt;<i>         With this in mind, would it not be better for your patch to
+</I>&gt;<i>         test for all IP's outside of the DHCP dynamic ip range rather
+</I>&gt;<i>         than just those in the IPv4LL subnet?
+</I>&gt;<i>
+</I>&gt;<i>     No, and this is the one and only case where uamanyip fails. You
+</I>&gt;<i>     see, if you ignore all IP's outside the dynamic dhcp range you
+</I>&gt;<i>     might as well not use uamanyip as it then wouldn't serve any
+</I>&gt;<i>     purpose whatsoever.
+</I>&gt;<i>
+</I>&gt;<i>     But I doubt this is any cause for concern and is a highly unlikely
+</I>&gt;<i>     case anyways. Somebody who arrives at a hotspot with a static ip
+</I>&gt;<i>     and no gateway likely has never used the Internet before and
+</I>&gt;<i>     doesn't use the Internet where he comes from because without a
+</I>&gt;<i>     default gateway it's impossible for ANY client ANYWHERE to connect
+</I>&gt;<i>     to the Internet. So chances are you're dealing with somebody who
+</I>&gt;<i>     doesn't know how to use the Internet and probably wouldn't want to
+</I>&gt;<i>     use it in the first place. You see, I doubt you'll ever encounter
+</I>&gt;<i>     such a case.
+</I>&gt;<i>
+</I>&gt;<i>     Gunther
+</I>&gt;<i>
+</I>&gt;<i>     ---------------------------------------------------------------------
+</I>&gt;<i>     To unsubscribe, e-mail: <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli-unsubscribe at coova.org</A>
+</I>&gt;<i>     &lt;mailto:<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli-unsubscribe at coova.org</A>&gt;
+</I>&gt;<i>     For additional commands, e-mail: <A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli-help at coova.org</A>
+</I>&gt;<i>     &lt;mailto:<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">chilli-help at coova.org</A>&gt;
+</I>&gt;<i>     Wiki: <A HREF="http://coova.org/wiki/index.php/CoovaChilli">http://coova.org/wiki/index.php/CoovaChilli</A>
+</I>&gt;<i>     Forum: <A HREF="http://coova.org/phpBB3/viewforum.php?f=4">http://coova.org/phpBB3/viewforum.php?f=4</A>
+</I>&gt;<i>
+</I>&gt;<i>
+</I>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: &lt;<A HREF="http://lists.coova.org/pipermail/chilli/attachments/20080506/7c6bcfba/attachment.htm">http://lists.coova.org/pipermail/chilli/attachments/20080506/7c6bcfba/attachment.htm</A>&gt;
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000256.html">Addressing APIPA/IPv4LL issues with uamanyip
+</A></li>
+	<LI>Next message: <A HREF="000249.html">disable nat
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#257">[ date ]</a>
+              <a href="thread.html#257">[ thread ]</a>
+              <a href="subject.html#257">[ subject ]</a>
+              <a href="author.html#257">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

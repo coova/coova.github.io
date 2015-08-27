@@ -1,0 +1,409 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] CoovaChilli Proxy + Access-Accept attributes
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20CoovaChilli%20Proxy%20%2B%20Access-Accept%20attributes&In-Reply-To=%3C52946B96.6090508%40gmail.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="002462.html">
+   <LINK REL="Next"  HREF="002467.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] CoovaChilli Proxy + Access-Accept attributes</H1>
+    <B>Fernando Pizarro</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20CoovaChilli%20Proxy%20%2B%20Access-Accept%20attributes&In-Reply-To=%3C52946B96.6090508%40gmail.com%3E"
+       TITLE="[Chilli] CoovaChilli Proxy + Access-Accept attributes">feanpg at gmail.com
+       </A><BR>
+    <I>Tue Nov 26 09:36:22 UTC 2013</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="002462.html">[Chilli] Unable to compile with MatrixSSL for SSL redir support
+</A></li>
+        <LI>Next message: <A HREF="002467.html">[Chilli] [Layer3] Like uamallowed, but for source address - like macallowed but for IPs - ip source whitelist - server whitelist
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2464">[ date ]</a>
+              <a href="thread.html#2464">[ thread ]</a>
+              <a href="subject.html#2464">[ subject ]</a>
+              <a href="author.html#2464">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hi all!
+
+I have configure CoovaChilli as a Radius proxy and I can't send VLANs 
+attributes from Coova to the AP, hostapd with dynamic vlan option. This 
+is my stage:
+
+Supplicant  &lt;-&gt; Hostapd &lt;-&gt; CoovaChilli &lt;-&gt; FreeRadius
+
+FreeRadius send correctly Access-Accept packet with all reply attributes 
+and Coova also send start accounting request to Radius
+
+++[sql] returns ok
+++[exec] returns noop
+Sending Access-Accept of id 10 to 127.0.0.1 port 56315
+         Tunnel-Type:0 := VLAN
+         Tunnel-Medium-Type:0 := IEEE-802
+         Tunnel-Private-Group-Id:0 := &quot;2&quot;
+         Acct-Interim-Interval := 600
+         ChilliSpot-VLAN-Id := 2
+         User-Name = &quot;alguno&quot;
+         MS-MPPE-Recv-Key = 
+0x71a39faf593569327a770c2ec42fb1ab375054244b4ee7491dcbb28deb372020
+         MS-MPPE-Send-Key = 
+0x4439da8413f8a3b66ec395b8e1f9ec2f4e1e3cc484cf65c3b94c59e631e36f2e
+         EAP-Message = 0x03cf0004
+         Message-Authenticator = 0x00000000000000000000000000000000
+Finished request 10.
+Going to the next request
+Waking up in 4.8 seconds.
+rad_recv: Accounting-Request packet from host 127.0.0.1 port 56315, 
+id=11, length=236
+         ChilliSpot-Version = &quot;1.3.0&quot;
+         ChilliSpot-Acct-View-Point = ChilliSpot-Client-View-Point
+         Event-Timestamp = &quot;Nov 26 2013 09:54:50 CET&quot;
+         User-Name = &quot;alguno&quot;
+         Acct-Status-Type = Start
+         Acct-Session-Id = &quot;529461da00000001&quot;
+         Framed-IP-Address = 10.2.0.10
+         NAS-Port-Type = Wireless-802.11
+         NAS-Port = 1
+         NAS-Port-Id = &quot;00000001&quot;
+         Calling-Station-Id = &quot;00-15-6D-85-38-90&quot;
+         Called-Station-Id = &quot;00-00-21-C9-A5-FE&quot;
+         NAS-IP-Address = 10.2.0.1
+         NAS-Identifier = &quot;nas-2&quot;
+         WISPr-Location-ID = 
+&quot;isocc=ES,cc=34,ac=927,network=Prueba,My_Network&quot;
+         WISPr-Location-Name = &quot;HotSpot_Lab&quot;
+# Executing section preacct from file /etc/freeradius/sites-enabled/default
++- entering group preacct {...}
+
+but Hostapd doesn't receive all attributes.
+
+RADIUS message: code=2 (Access-Accept) identifier=10 length=160
+    Attribute 79 (EAP-Message) length=6
+       Value: 03 cf 00 04
+    Attribute 26 (Vendor-Specific) length=58
+       Value: 00 00 01 37 10 34 38 62 67 38 5b b4 76 f2 75 c6 06 4e 3f 
+87 7c 76 d4 9d 3c 47 2c 30 4c d1 d3 f0 45 43 7f 64 84 75 26 46 c2 00 9d 
+83 3e e9 fa fd fb 1c 90 be d4 15 4b 36
+    Attribute 26 (Vendor-Specific) length=58
+       Value: 00 00 01 37 11 34 00 ca 63 89 66 94 45 8f 87 60 3a 75 8a 
+fc 98 27 08 42 9e 87 4a e7 05 0a 75 76 6a bb aa 09 11 e4 44 a1 09 8d d9 
+4d 73 74 51 8f 42 92 1f 1d 5b 21 9a f2
+    Attribute 80 (Message-Authenticator) length=18
+       Value: 24 2a 61 f5 9c 09 25 34 66 99 eb 13 02 7d 4b f1
+wClose: STA 00:15:6d:85:38:90 IEEE 802.1X: authentication server did not 
+include required VLAN ID in Access-Accept
+wClose: STA 00:15:6d:85:38:90 IEEE 802.1X: authentication failed - EAP 
+type: 25 (PEAP)
+
+If I change dynamic vlan options in hostapd, supplicant is authenticated 
+but It's doesn't receive IP address.
+
+wClose: RADIUS Accounting server 172.16.0.1:1645
+wClose: STA 00:15:6d:85:38:90 IEEE 802.11: authenticated
+wClose: STA 00:15:6d:85:38:90 IEEE 802.11: associated (aid 1)
+wOpen: CTRL-EVENT-EAP-STARTED 00:15:6d:85:38:90
+wOpen: CTRL-EVENT-EAP-PROPOSED-METHOD vendor=0 method=1
+wClose: STA 00:15:6d:85:38:90 WPA: pairwise key handshake completed (RSN)
+wOpen: AP-STA-CONNECTED 00:15:6d:85:38:90
+wClose: STA 00:15:6d:85:38:90 RADIUS: starting accounting session 
+386E3A67-00000000
+wClose: STA 00:15:6d:85:38:90 IEEE 802.1X: authenticated - EAP type: 25 
+(PEAP)
+
+This is debug output of CoovaChilli:
+
+main-opt.c: 605: 0 (Debug) DHCP Listen: 10.2.0.1
+main-opt.c: 606: 0 (Debug) UAM Listen: 10.2.0.1
+garden.c: 414: 0 (Debug) Uamallowed IP address #0:1024: proto=0 
+host=10.2.0.1 port=4200
+garden.c: 443: 0 (Debug) Uamallowed www.coova.org
+garden.c: 414: 0 (Debug) Uamallowed IP address #1:1024: proto=0 
+host=174.129.195.118 port=0
+garden.c: 443: 0 (Debug) Uamallowed 10.2.0.1
+garden.c: 414: 0 (Debug) Uamallowed IP address #2:1024: proto=0 
+host=10.2.0.1 port=0
+garden.c: 443: 0 (Debug) Uamallowed www.coova.org
+garden.c: 387: 0 (Debug) Uamallowed already exists #1:1024: proto=0 
+host=174.129.195.118 port=0
+options.c: 443: 0 (Debug) PID 1831 saving options to 
+/var/run/chilli.1830.cfg.bin
+options.c: 411: 0 (Debug) Loading modules
+options.c: 652: 0 (Debug) PID 1830 reloaded binary options file
+chilli.c: 7143: 0 (Debug) clock realtime sec 1385456076 nsec 546392592
+chilli.c: 7148: 0 (Debug) clock monotonic sec 519137 nsec 376142391
+tun.c: 605: 0 (Debug) TX queue length set to 100
+tun.c: 1108: 0 (Debug) Running /etc/chilli/up.sh
+ippool.c: 338: 0 (Debug) Hashlog 3 5 8
+net.c: 1239: 0 (Debug) Net SNDBUF 163840
+net.c: 1242: 0 (Debug) Net RCVBUF 163840
+net.c: 1295: 0 (Debug) device eth4.2 ifindex 6
+net.c: 1311: 0 (Debug) lo  address family: 17 (AF_PACKET)
+net.c: 1311: 0 (Debug) eth2  address family: 17 (AF_PACKET)
+net.c: 1311: 0 (Debug) eth4  address family: 17 (AF_PACKET)
+net.c: 1311: 0 (Debug) eth3  address family: 17 (AF_PACKET)
+net.c: 1311: 0 (Debug) eth4.1  address family: 17 (AF_PACKET)
+net.c: 1311: 0 (Debug) eth4.2  address family: 17 (AF_PACKET)
+net.c: 1311: 0 (Debug) eth4.3  address family: 17 (AF_PACKET)
+net.c: 1311: 0 (Debug) eth4.254  address family: 17 (AF_PACKET)
+net.c: 1311: 0 (Debug) lo  address family: 2 (AF_INET)
+net.c: 1311: 0 (Debug) eth2  address family: 2 (AF_INET)
+net.c: 1311: 0 (Debug) eth3  address family: 2 (AF_INET)
+net.c: 1311: 0 (Debug) eth4.1  address family: 2 (AF_INET)
+net.c: 1311: 0 (Debug) eth4.3  address family: 2 (AF_INET)
+net.c: 1311: 0 (Debug) eth4.254  address family: 2 (AF_INET)
+net.c: 1311: 0 (Debug) tun0  address family: 2 (AF_INET)
+net.c: 1311: 0 (Debug) lo  address family: 10 (AF_INET6)
+net.c: 1311: 0 (Debug) eth2  address family: 10 (AF_INET6)
+net.c: 1311: 0 (Debug) eth4  address family: 10 (AF_INET6)
+net.c: 1311: 0 (Debug) eth3  address family: 10 (AF_INET6)
+net.c: 1311: 0 (Debug) eth4.1  address family: 10 (AF_INET6)
+net.c: 1311: 0 (Debug) eth4.2  address family: 10 (AF_INET6)
+net.c: 1326: 0 (Debug) address: &lt;fe80::200:21ff:fec9:a5fe%eth4.2&gt;
+
+net.c: 1311: 0 (Debug) eth4.3  address family: 10 (AF_INET6)
+net.c: 1311: 0 (Debug) eth4.254  address family: 10 (AF_INET6)
+dhcp.c: 481: 0 (Debug) hash table size 64 (56)
+dhcp.c: 333: 0 (Debug) GARP: Replying to broadcast
+dhcp.c: 1173: 0 (Debug) dhcpif (eth4.2) IPv6 address 
+fe80::200:21ff:fec9:a5fe
+radius.c: 1315: 0 (Debug) RADIUS client 0.0.0.0:0
+options.c: 411: 0 (Debug) Loading modules
+main-script.c: 76: 0 (Debug) USER root(0/0), GROUP root(0/0) CHILLI[UID 
+125, GID 134]
+chilli.c: 7303: 0 (Debug) Waiting for client request...
+main-script.c: 94: 0 (Debug) Running /etc/chilli/up.sh (0/0)
+net.c: 388: 0 (Debug) net select count: 1
+net.c: 388: 0 (Debug) net select count: 2
+net.c: 388: 0 (Debug) net select count: 3
+net.c: 388: 0 (Debug) net select count: 4
+net.c: 388: 0 (Debug) net select count: 5
+net.c: 388: 0 (Debug) net select count: 6
+net.c: 388: 0 (Debug) net select count: 7
+net.c: 388: 0 (Debug) net select count: 8
+rtmon.c: 462: 0 (Debug) i=0 sz=1
+rtmon.c: 462: 0 (Debug) i=0 sz=2
+rtmon.c: 462: 0 (Debug) i=1 sz=2
+rtmon.c: 462: 0 (Debug) i=0 sz=3
+rtmon.c: 462: 0 (Debug) i=1 sz=3
+rtmon.c: 462: 0 (Debug) i=2 sz=3
+rtmon.c: 462: 0 (Debug) i=0 sz=4
+rtmon.c: 462: 0 (Debug) i=1 sz=4
+rtmon.c: 462: 0 (Debug) i=2 sz=4
+rtmon.c: 462: 0 (Debug) i=3 sz=4
+rtmon.c: 462: 0 (Debug) i=0 sz=5
+rtmon.c: 462: 0 (Debug) i=1 sz=5
+rtmon.c: 462: 0 (Debug) i=2 sz=5
+rtmon.c: 462: 0 (Debug) i=3 sz=5
+rtmon.c: 462: 0 (Debug) i=4 sz=5
+rtmon.c: 462: 0 (Debug) i=0 sz=6
+rtmon.c: 462: 0 (Debug) i=1 sz=6
+rtmon.c: 462: 0 (Debug) i=2 sz=6
+rtmon.c: 462: 0 (Debug) i=3 sz=6
+rtmon.c: 462: 0 (Debug) i=4 sz=6
+rtmon.c: 462: 0 (Debug) i=5 sz=6
+
+System Interfaces
+0) lo (1) ip=127.0.0.1 net=127.0.0.0 mask=255.0.0.0 
+mac=00-00-00-00-00-00 mtu=16436
+1) eth2 (2) ip=192.168.0.1 net=192.168.0.0 mask=255.255.255.192 
+bcase=192.168.0.63 mac=00-E0-4C-B0-25-d3 mtu=1500
+2) eth3 (4) ip=192.168.1.223 net=192.168.1.0 mask=255.255.255.0 
+bcase=192.168.1.255 mac=00-11-43-1B-0F-62 mtu=1500
+3) eth4.1 (5) ip=10.1.0.1 net=10.1.0.0 mask=255.255.0.0 
+bcase=10.1.255.255 mac=00-00-21-C9-A5-fe mtu=1500
+4) eth4.3 (7) ip=10.3.0.1 net=10.3.0.0 mask=255.255.0.0 
+bcase=10.3.255.255 mac=00-00-21-C9-A5-fe mtu=1500
+5) eth4.254 (8) ip=172.16.0.1 net=172.16.0.0 mask=255.255.248.0 
+bcase=172.16.7.255 mac=00-00-21-C9-A5-fe mtu=1500
+6) tun0 (70) ip=10.2.0.1 net=10.2.0.0 mask=255.255.0.0 peer=10.2.0.1 
+mac=00-00-00-00-00-00 mtu=1500
+
+System Routes
+0) dst=0.0.0.0 mask=0.0.0.0 gw=192.168.1.1 dev=eth3 (4)
+1) dst=10.1.0.0 mask=255.255.0.0 dev=eth4.1 (5)
+2) dst=10.2.0.0 mask=255.255.0.0 dev=tun0 (70)
+3) dst=10.3.0.0 mask=255.255.0.0 dev=eth4.3 (7)
+4) dst=172.16.0.0 mask=255.255.248.0 dev=eth4.254 (8)
+5) dst=192.168.0.0 mask=255.255.255.192 dev=eth2 (2)
+6) dst=192.168.1.0 mask=255.255.255.0 dev=eth3 (4)
+rtmon.c: 384: 0 (Debug) Default Route 192.168.1.1
+rtmon.c: 393: 0 (Debug) Route Interface eth3
+rtmon.c: 434: 0 (Debug) MAC 00:11:0a:59:da:00
+net.c: 388: 0 (Debug) net select count: 9
+net.c: 388: 0 (Debug) net select count: 10
+dhcp.c: 3593: 0 (Debug) Not for our MAC or broadcast: 3C-97-0E-39-05-10
+radius.c: 1898: 0 (Debug) Received RADIUS packet id=0
+radius.c: 426: 0 (Debug) RADIUS queue-out id=0 idx=0
+dhcp.c: 3593: 0 (Debug) Not for our MAC or broadcast: 3C-97-0E-39-05-10
+dhcp.c: 3593: 0 (Debug) Not for our MAC or broadcast: 3C-97-0E-39-05-10
+dhcp.c: 3593: 0 (Debug) Not for our MAC or broadcast: 00-11-43-1B-0F-62
+dhcp.c: 3593: 0 (Debug) Not for our MAC or broadcast: 00-11-43-1B-0F-62
+dhcp.c: 3593: 0 (Debug) Not for our MAC or broadcast: 00-11-43-1B-0F-62
+dhcp.c: 3593: 0 (Debug) Not for our MAC or broadcast: 3C-97-0E-39-05-10
+dhcp.c: 3593: 0 (Debug) Not for our MAC or broadcast: 3C-97-0E-39-05-10
+dhcp.c: 3593: 0 (Debug) Not for our MAC or broadcast: 3C-97-0E-39-05-10
+dhcp.c: 3593: 0 (Debug) Not for our MAC or broadcast: 3C-97-0E-39-05-10
+dhcp.c: 3593: 0 (Debug) Not for our MAC or broadcast: 00-11-43-1B-0F-62
+dhcp.c: 3593: 0 (Debug) Not for our MAC or broadcast: 3C-97-0E-39-05-10
+dhcp.c: 3593: 0 (Debug) Not for our MAC or broadcast: 00-11-43-1B-0F-62
+dhcp.c: 3593: 0 (Debug) Not for our MAC or broadcast: 3C-97-0E-39-05-10
+dhcp.c: 3593: 0 (Debug) Not for our MAC or broadcast: 3C-97-0E-39-05-10
+dhcp.c: 3593: 0 (Debug) Not for our MAC or broadcast: 3C-97-0E-39-05-10
+dhcp.c: 3593: 0 (Debug) Not for our MAC or broadcast: 00-11-43-1B-0F-62
+dhcp.c: 3593: 0 (Debug) Not for our MAC or broadcast: 00-11-43-1B-0F-62
+dhcp.c: 3593: 0 (Debug) Not for our MAC or broadcast: 3C-97-0E-39-05-10
+dhcp.c: 3593: 0 (Debug) Not for our MAC or broadcast: 3C-97-0E-39-05-10
+dhcp.c: 3593: 0 (Debug) Not for our MAC or broadcast: 00-11-43-1B-0F-62
+dhcp.c: 3593: 0 (Debug) Not for our MAC or broadcast: 3C-97-0E-39-05-10
+dhcp.c: 3593: 0 (Debug) Not for our MAC or broadcast: 3C-97-0E-39-05-10
+chilli.c: 379: 0 (Debug) caught 17 via selfpipe
+chilli.c: 310: 0 (Debug) child 1838 terminated
+dhcp.c: 5543: 0 (Debug) ARP: Received other ARP than request!
+radius.c: 2034: 0 (Debug) Received RADIUS proxy packet id=0
+dhcp.c: 5543: 0 (Debug) ARP: Received other ARP than request!
+radius.c: 2034: 0 (Debug) Received RADIUS proxy packet id=1
+chilli.c: 3364: 0 (Debug) RADIUS Access-Request received
+chilli.c: 3396: 0 (Debug) Calling Station ID is: 000000000bffb9773
+dhcp.c: 730: 0 (Debug) DHCP newconn: 00:15:6d:85:38:90
+chilli.c: 5117: 0 (Debug) New DHCP request from MAC=00-15-6D-85-38-90
+chilli.c: 5120: 0 (Debug) New DHCP connection established
+chilli.c: 5076: 0 (Debug) New Chilli Connection
+radius.c: 1898: 0 (Debug) Received RADIUS packet id=1
+radius.c: 426: 0 (Debug) RADIUS queue-out id=1 idx=1
+chilli.c: 4393: 0 (Debug) Received RADIUS response id=1
+chilli.c: 4549: 0 (Debug) Received RADIUS Access-Challenge
+chilli.c: 1628: 0 (Debug) Sending RADIUS AccessChallenge to client
+radius.c: 2034: 0 (Debug) Received RADIUS proxy packet id=2
+chilli.c: 3364: 0 (Debug) RADIUS Access-Request received
+chilli.c: 3396: 0 (Debug) Calling Station ID is: 000000000bffb9773
+chilli.c: 1366: 0 (Debug) RADIUS Request + State(16)
+radius.c: 1898: 0 (Debug) Received RADIUS packet id=2
+radius.c: 426: 0 (Debug) RADIUS queue-out id=2 idx=2
+chilli.c: 4393: 0 (Debug) Received RADIUS response id=2
+chilli.c: 4549: 0 (Debug) Received RADIUS Access-Challenge
+chilli.c: 1628: 0 (Debug) Sending RADIUS AccessChallenge to client
+radius.c: 2034: 0 (Debug) Received RADIUS proxy packet id=3
+chilli.c: 3364: 0 (Debug) RADIUS Access-Request received
+chilli.c: 3396: 0 (Debug) Calling Station ID is: 000000000bffb9773
+chilli.c: 1366: 0 (Debug) RADIUS Request + State(16)
+radius.c: 1898: 0 (Debug) Received RADIUS packet id=3
+radius.c: 426: 0 (Debug) RADIUS queue-out id=3 idx=3
+chilli.c: 4393: 0 (Debug) Received RADIUS response id=3
+chilli.c: 4549: 0 (Debug) Received RADIUS Access-Challenge
+chilli.c: 1628: 0 (Debug) Sending RADIUS AccessChallenge to client
+radius.c: 2034: 0 (Debug) Received RADIUS proxy packet id=4
+chilli.c: 3364: 0 (Debug) RADIUS Access-Request received
+chilli.c: 3396: 0 (Debug) Calling Station ID is: 000000000bffb9773
+chilli.c: 1366: 0 (Debug) RADIUS Request + State(16)
+radius.c: 1898: 0 (Debug) Received RADIUS packet id=4
+radius.c: 426: 0 (Debug) RADIUS queue-out id=4 idx=4
+chilli.c: 4393: 0 (Debug) Received RADIUS response id=4
+chilli.c: 4549: 0 (Debug) Received RADIUS Access-Challenge
+chilli.c: 1628: 0 (Debug) Sending RADIUS AccessChallenge to client
+radius.c: 2034: 0 (Debug) Received RADIUS proxy packet id=5
+chilli.c: 3364: 0 (Debug) RADIUS Access-Request received
+chilli.c: 3396: 0 (Debug) Calling Station ID is: 000000000bffb9773
+chilli.c: 1366: 0 (Debug) RADIUS Request + State(16)
+radius.c: 1898: 0 (Debug) Received RADIUS packet id=5
+radius.c: 426: 0 (Debug) RADIUS queue-out id=5 idx=5
+chilli.c: 4393: 0 (Debug) Received RADIUS response id=5
+chilli.c: 4549: 0 (Debug) Received RADIUS Access-Challenge
+chilli.c: 1628: 0 (Debug) Sending RADIUS AccessChallenge to client
+radius.c: 2034: 0 (Debug) Received RADIUS proxy packet id=6
+chilli.c: 3364: 0 (Debug) RADIUS Access-Request received
+chilli.c: 3396: 0 (Debug) Calling Station ID is: 000000000bffb9773
+chilli.c: 1366: 0 (Debug) RADIUS Request + State(16)
+radius.c: 1898: 0 (Debug) Received RADIUS packet id=6
+radius.c: 426: 0 (Debug) RADIUS queue-out id=6 idx=6
+chilli.c: 4393: 0 (Debug) Received RADIUS response id=6
+chilli.c: 4549: 0 (Debug) Received RADIUS Access-Challenge
+chilli.c: 1628: 0 (Debug) Sending RADIUS AccessChallenge to client
+radius.c: 2034: 0 (Debug) Received RADIUS proxy packet id=7
+chilli.c: 3364: 0 (Debug) RADIUS Access-Request received
+chilli.c: 3396: 0 (Debug) Calling Station ID is: 000000000bffb9773
+chilli.c: 1366: 0 (Debug) RADIUS Request + State(16)
+radius.c: 1898: 0 (Debug) Received RADIUS packet id=7
+radius.c: 426: 0 (Debug) RADIUS queue-out id=7 idx=7
+chilli.c: 4393: 0 (Debug) Received RADIUS response id=7
+chilli.c: 4549: 0 (Debug) Received RADIUS Access-Challenge
+chilli.c: 1628: 0 (Debug) Sending RADIUS AccessChallenge to client
+radius.c: 2034: 0 (Debug) Received RADIUS proxy packet id=8
+chilli.c: 3364: 0 (Debug) RADIUS Access-Request received
+chilli.c: 3396: 0 (Debug) Calling Station ID is: 000000000bffb9773
+chilli.c: 1366: 0 (Debug) RADIUS Request + State(16)
+radius.c: 1898: 0 (Debug) Received RADIUS packet id=8
+radius.c: 426: 0 (Debug) RADIUS queue-out id=8 idx=8
+chilli.c: 4393: 0 (Debug) Received RADIUS response id=8
+chilli.c: 4549: 0 (Debug) Received RADIUS Access-Challenge
+chilli.c: 1628: 0 (Debug) Sending RADIUS AccessChallenge to client
+radius.c: 2034: 0 (Debug) Received RADIUS proxy packet id=9
+chilli.c: 3364: 0 (Debug) RADIUS Access-Request received
+chilli.c: 3396: 0 (Debug) Calling Station ID is: 000000000bffb9773
+chilli.c: 1366: 0 (Debug) RADIUS Request + State(16)
+radius.c: 1898: 0 (Debug) Received RADIUS packet id=9
+radius.c: 426: 0 (Debug) RADIUS queue-out id=9 idx=9
+chilli.c: 4393: 0 (Debug) Received RADIUS response id=9
+chilli.c: 4549: 0 (Debug) Received RADIUS Access-Challenge
+chilli.c: 1628: 0 (Debug) Sending RADIUS AccessChallenge to client
+radius.c: 2034: 0 (Debug) Received RADIUS proxy packet id=10
+chilli.c: 3364: 0 (Debug) RADIUS Access-Request received
+chilli.c: 3396: 0 (Debug) Calling Station ID is: 000000000bffb9773
+chilli.c: 1366: 0 (Debug) RADIUS Request + State(16)
+radius.c: 1898: 0 (Debug) Received RADIUS packet id=10
+radius.c: 426: 0 (Debug) RADIUS queue-out id=10 idx=10
+chilli.c: 4393: 0 (Debug) Received RADIUS response id=10
+chilli.c: 4582: 0 (Debug) Received RADIUS Access-Accept
+chilli.c: 835: 0 (Debug) newip 0.0.0.0
+ippool.c: 456: 0 (Debug) Requesting new static ip: 0.0.0.0
+ippool.c: 456: 0 (Debug) Requesting new dynamic ip: 0.0.0.0
+radius.c: 1898: 0 (Debug) Received RADIUS packet id=11
+radius.c: 426: 0 (Debug) RADIUS queue-out id=11 idx=11
+radius.c: 2034: 0 (Debug) Received RADIUS proxy packet id=11
+
+Could someone help me to understand why Coova doesn't send all 
+attributes of Access-Accept request?
+
+Thanks for all.
+King regards. Fernando.
+</PRE>
+
+
+
+
+
+
+
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="002462.html">[Chilli] Unable to compile with MatrixSSL for SSL redir support
+</A></li>
+	<LI>Next message: <A HREF="002467.html">[Chilli] [Layer3] Like uamallowed, but for source address - like macallowed but for IPs - ip source whitelist - server whitelist
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2464">[ date ]</a>
+              <a href="thread.html#2464">[ thread ]</a>
+              <a href="subject.html#2464">[ subject ]</a>
+              <a href="author.html#2464">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

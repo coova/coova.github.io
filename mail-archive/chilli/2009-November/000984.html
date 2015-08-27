@@ -1,0 +1,153 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] Development
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Development&In-Reply-To=%3C1258111157.7348.79.camel%40david-laptop%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000983.html">
+   <LINK REL="Next"  HREF="000990.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] Development</H1>
+    <B>David Bird</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Development&In-Reply-To=%3C1258111157.7348.79.camel%40david-laptop%3E"
+       TITLE="[Chilli] Development">david at coova.com
+       </A><BR>
+    <I>Fri Nov 13 11:19:17 UTC 2009</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000983.html">[Chilli] Ippool exhaustion bug?
+</A></li>
+        <LI>Next message: <A HREF="000990.html">[Chilli] CoovaChilli on latest snapshot of X-WRT+OpenWRT
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#984">[ date ]</a>
+              <a href="thread.html#984">[ thread ]</a>
+              <a href="subject.html#984">[ subject ]</a>
+              <a href="author.html#984">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>&gt;<i>From the sounds of it, I need to take full credit; for the bug! :) 
+</I>
+I have no issue giving you write access, though I already made the
+change to my copy. I actually have some major changes to commit in my
+working copy... Send me a htpasswd entry for yourself (privately) and
+I'll configure you in subversion. 
+
+Some highlights of things in development (or at least areas of
+research);
+
+- Went (back) to a globally static _options struct to get rid of many
+functions calls
+
+- A helper server called 'chilli_proxy' (already in svn; compile with
+--enable-chilliproxy) that does a RADIUS&lt;-&gt;HTTP conversion
+(<A HREF="http://www.coova.org/CoovaChilli/Proxy">http://www.coova.org/CoovaChilli/Proxy</A>)
+
+- Breaking out a server called 'chilli_redir' (enabled with configure
+--enable-chilliredir) that will do the UAM server functions broken out
+from the main chilli program. This opens the door for additional
+processing of the hijacked URL - like for doing a URL based walled
+garden (to allow www.google.com, but not www.google.com/mail for
+instance). 
+
+- Reworked the chilli_main() heavily making it like a &quot;plug-in&quot; style
+registration of listeners/handlers.
+
+- Adding support for poll() and epoll() as alternatives to select()
+
+- Testing the &quot;packet mmap&quot; features of Linux 2.6.31 (mmap &quot;ring&quot;
+buffers for both RX and TX for &quot;zero-copy&quot; in/out to/from kernel/user
+space; though still the issue/bottleneck of the tun/tap)
+
+- A haserl &quot;miniportal&quot; taken from CoovaAP now part of coova-chilli
+standard distro (build with --enable-miniportal)
+
+- Some fixups in the &quot;routeidx/routeif&quot; features of chilli whereby
+chilli can directly (through a raw socket) tap into multiple WAN
+interfaces and can route user session data between them. Used with RX/TX
+rings, this can be used to bypass the tun/tap completely for
+authenticated traffic and doubles the throughput on my fonera ;)
+
+- Experimenting on a Linux kernel module that can do the above
+(bypassing chilli for authenticated traffic) directly in the kernel
+instead of user space. 
+
+Lots to come... ;) Developers and testers wanted! 
+
+David
+
+
+
+On Fri, 2009-11-13 at 12:40 +0200, Gunther Mayer wrote:
+&gt;<i> David Bird wrote:
+</I>&gt;<i> &gt; Hmm.. 
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; I think I see how this can happen. I likely added that ability to
+</I>&gt;<i> &gt; allocate a static IP out of tun_ind() so that truly static IPs would
+</I>&gt;<i> &gt; work (though, looking at it now, I don't think the code helps that
+</I>&gt;<i> &gt; situation since as you noted, it's not a fully configured dhcp lease at
+</I>&gt;<i> &gt; that point, just an entry in the ippool). I'm thinking it'll be wise to
+</I>&gt;<i> &gt; remove the call to ippool_newip() at this point in the code. Instead,
+</I>&gt;<i> &gt; perhaps it just goes ahead and accepts the packet if within the statip
+</I>&gt;<i> &gt; range -- then, presumably, the computer with the statip will reply to
+</I>&gt;<i> &gt; the packets, which will create the dhcpconn/appconn/etc properly (from
+</I>&gt;<i> &gt; the packet originating from the dhcpif).
+</I>&gt;<i> &gt;   
+</I>&gt;<i> 
+</I>&gt;<i> I concur, it should be removed. I tested my patched code with &quot;truly 
+</I>&gt;<i> static IP's&quot; and it still works fine without it (full connection 
+</I>&gt;<i> allocated, times out after default 600 seconds &quot;lease&quot; time etc.). I've 
+</I>&gt;<i> done hundreds of static IP mixed with dynamic IP setups in the past with 
+</I>&gt;<i> 1.0.11 (where that code wasn't in) and never had an issue. That piece of 
+</I>&gt;<i> code is not required and it looks as though it never was (I thought you 
+</I>&gt;<i> introduced it in a later version to make a particular new feature work).
+</I>&gt;<i> 
+</I>&gt;<i> Not sure if I still have commit access but I'm happy to commit this 
+</I>&gt;<i> change and take credit ;-)
+</I>&gt;<i> 
+</I>&gt;<i> Gunther
+</I>
+</PRE>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000983.html">[Chilli] Ippool exhaustion bug?
+</A></li>
+	<LI>Next message: <A HREF="000990.html">[Chilli] CoovaChilli on latest snapshot of X-WRT+OpenWRT
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#984">[ date ]</a>
+              <a href="thread.html#984">[ thread ]</a>
+              <a href="subject.html#984">[ subject ]</a>
+              <a href="author.html#984">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

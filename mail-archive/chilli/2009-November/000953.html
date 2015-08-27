@@ -1,0 +1,113 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] Ippool exhaustion bug?
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Ippool%20exhaustion%20bug%3F&In-Reply-To=%3C4AF7F18E.4000502%40gmail.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000949.html">
+   <LINK REL="Next"  HREF="000968.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] Ippool exhaustion bug?</H1>
+    <B>Gunther Mayer</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Ippool%20exhaustion%20bug%3F&In-Reply-To=%3C4AF7F18E.4000502%40gmail.com%3E"
+       TITLE="[Chilli] Ippool exhaustion bug?">gunther.mayer at googlemail.com
+       </A><BR>
+    <I>Mon Nov  9 10:40:14 UTC 2009</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000949.html">[Chilli] build from SVN and from tarbal
+</A></li>
+        <LI>Next message: <A HREF="000968.html">[Chilli] Ippool exhaustion bug?
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#953">[ date ]</a>
+              <a href="thread.html#953">[ thread ]</a>
+              <a href="subject.html#953">[ subject ]</a>
+              <a href="author.html#953">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hi guys,
+
+I've stumbled across the following VERY frustrating problem which is 
+giving me and hundreds of our customers endless grey hair. I have a 
+uamanyip setup with a /24 net, the first /25 subnet of which is for 
+statip and the rest for dynip (implicitly) but specified with dhcpstart 
+and dhcpend for flexibility. After quite a long time, when most ip's 
+have been recycled a fair number of times chilli refuses to hand out any 
+more ip addresses dynamically and chokes with the following appearing ad 
+infinitum in the logs:
+
+2009-11-09T01:00:14+02:00 coova-chilli[1378]: chilli.c: 3012: New DHCP 
+request from MAC=xx-xx-xx-xx-xx-xx
+2009-11-09T01:00:14+02:00 coova-chilli[1378]: ippool.c: 397: No more IP 
+addresses available
+2009-11-09T01:00:14+02:00 coova-chilli[1378]: chilli.c: 332: Failed to 
+allocate either static or dynamic IP address
+
+Of course reproducing my production settings would take forever (about 
+127 ip addresses between dhcpstart and dhcpend) so I decided to cut it 
+down to the following testing example in chilli.conf:
+
+uamlisten 10.0.0.1
+net 10.0.0.0/24
+dhcpstart 129
+dhcpend 133
+statip 10.0.0.0/25
+uamanyip
+
+That is, 10.0.0.2-10.0.0.127 or 125 ip's are reserved for static 
+ip/anyip clients and 10.0.0.129-10.0.0.132 or 4 ip's for dynamic/dhcp 
+clients. Now to reproduce the ippool bug, connect your linux laptop via 
+cable to the chilli box and do something like
+
+$ dhclient eth0 # should give you 10.0.0.129 first time, then .130 and so on
+$ killall dhclient
+$ ifconfig eth0 0.0.0.0 down
+$ ifconfig eth0 hw ether xx:xx:xx:xx:xx:xx+1
+
+and repeat. Of course the fifth time you do this chilli will 
+legitimately run out of ip addresses because it still has all the other 
+allocated. Until such time that they all time out so wait a bit longer 
+than 10 minutes and start from scratch. Unfortunately I'm no longer able 
+to reproduce this but I could last night, I'll figure out an easy way in 
+time but in the meantime, has anyone seen such problems before? Does 
+anyone have a suggestion?
+
+It looks strongly like some dynamic ip addresses not being properly 
+released in ippool.c but I haven't been able to figure it out.
+This bug has been present in 1.0.13(r199) and 1.0.14(r208), the two I've 
+tested with so far.
+
+Thanks,
+
+Gunther
+</PRE>
+
+
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000949.html">[Chilli] build from SVN and from tarbal
+</A></li>
+	<LI>Next message: <A HREF="000968.html">[Chilli] Ippool exhaustion bug?
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#953">[ date ]</a>
+              <a href="thread.html#953">[ thread ]</a>
+              <a href="subject.html#953">[ subject ]</a>
+              <a href="author.html#953">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

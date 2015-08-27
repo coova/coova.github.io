@@ -1,0 +1,605 @@
+From adam.hammond at wicoms.com  Tue Aug  7 12:48:31 2012
+From: adam.hammond at wicoms.com (Adam Hammond)
+Date: Tue, 7 Aug 2012 13:48:31 +0100
+Subject: [Chilli] Administrative-User session & config update
+Message-ID: <22E7DE3A-FFD1-45FC-A3FD-5518D7A621A7@wicoms.com>
+
+Hi list,
+
+Has anyone succeeded in getting the Administrative-User session functionality fully working?
+
+I have a test AP running an Adminstrative-User session fine (config is returned in Access-Accept and stored in a file). The config is written to non-default file (/tmp/foo) in line with my adminupdatefile setting. The session re-auths every hour and the config is re-written to my adminupdatefile at that time.
+
+If I change the settings returned in radius what DOESN'T happen is these changes being recognised, copied to the chilli config file (hs.conf) and chilli HUP'd. 
+
+This would be trivial to do manually via a script in cron, but it's my understanding that chilli should do this. Am I wrong or is this a bug do you think/know?
+
+I have also not had any luck controlling the interval in which chilli re-auths the administrative-user session. I have tried setting HS_ADMININTERVAL and also returning a Session-Timeout value in the Access-Accept to no avail. Has anyone had any success controlling the session time?
+
+I've included some debug output below for anyone that knows if this looks right or not. It appears that the config is saved in my adminupdatefile location and copied to /tmp/hs.conf rather than /etc/chilli/hs.conf (?)
+
+Possibly relevant: I'm not using a call to writeconfg in my start script. I want to fully control the dns servers over radius. If I use writeconfig the dns1 attribute is set to the devices primary dns server (or one that I hardcode) and this is not overruled if I return a different server ip by radius config. Rather than find a way to patch the functions file I took the easy route of using a static main.conf and fetching the rest of the configuration over radius.
+
+Many thanks in advance,
+Adam
+
+coova-chilli 1.2.9 on Openwrt
+
+
+radius.c: 224: 0 (Debug) qnext=6
+radius.c: 294: 0 (Debug) RADIUS queue-in id=6 idx=6
+radius.c: 1505: 0 (Debug) RADIUS id=6 sent to x.x.x.x:11812
+main-opt.c: 601: 0 (Debug) DHCP Listen: 172.17.2.1
+main-opt.c: 602: 0 (Debug) UAM Listen: 172.17.2.1
+radius.c: 1740: 0 (Debug) Received RADIUS packet id=6
+radius.c: 264: 0 (Debug) idx 6 pid 6 id 6
+radius.c: 406: 0 (Debug) RADIUS queue-out id=6 idx=6
+chilli.c: 4379: 0 (Debug) Received RADIUS response id=6
+chilli.c: 4568: 0 (Debug) Received RADIUS Access-Accept
+chilli.c: 4197: 0 (Debug) looking to replace: /tmp/coova-update
+chilli.c: 4213: 0 (Debug) using temp: /tmp/hs.conf
+...
+options.c: 442: 0 (Debug) PID 7050 saving options to /var/run/chilli.6503.cfg.bin
+chilli.c: 6800: 0 (Debug) Processing cmdsock request...
+chilli.c: 347: 0 (Debug) SIGUSR1: reloading configuration
+options.c: 189: 0 (Debug) PID 6503 rereading binary file /var/run/chilli.6503.cfg.bin
+options.c: 651: 0 (Debug) PID 6503 reloaded binary options file
+chilli.c: 378: 0 (Debug) caught 18 via selfpipe
+chilli.c: 309: 0 (Debug) child 7050 terminated
+options.c: 442: 0 (Debug) PID 7049 saving options to /var/run/chilli.6503.cfg.bin
+chilli.c: 6800: 0 (Debug) Processing cmdsock request...
+chilli.c: 347: 0 (Debug) SIGUSR1: reloading configuration
+options.c: 189: 0 (Debug) PID 6503 rereading binary file /var/run/chilli.6503.cfg.bin
+options.c: 651: 0 (Debug) PID 6503 reloaded binary options file
+chilli.c: 378: 0 (Debug) caught 18 via selfpipe
+chilli.c: 309: 0 (Debug) child 7049 terminated
+
+From david at coova.com  Wed Aug  8 14:29:21 2012
+From: david at coova.com (David Bird)
+Date: Wed, 08 Aug 2012 07:29:21 -0700
+Subject: [Chilli] Administrative-User session & config update
+In-Reply-To: <22E7DE3A-FFD1-45FC-A3FD-5518D7A621A7@wicoms.com>
+References: <22E7DE3A-FFD1-45FC-A3FD-5518D7A621A7@wicoms.com>
+Message-ID: <1344436161.6256.12.camel@david-laptop>
+
+Be sure the adminupdatefile is also included into your chilli
+configuration (using 'include <filename>'). 
+
+David
+
+
+On Tue, 2012-08-07 at 13:48 +0100, Adam Hammond wrote:
+> Hi list,
+> 
+> Has anyone succeeded in getting the Administrative-User session functionality fully working?
+> 
+> I have a test AP running an Adminstrative-User session fine (config is returned in Access-Accept and stored in a file). The config is written to non-default file (/tmp/foo) in line with my adminupdatefile setting. The session re-auths every hour and the config is re-written to my adminupdatefile at that time.
+> 
+> If I change the settings returned in radius what DOESN'T happen is these changes being recognised, copied to the chilli config file (hs.conf) and chilli HUP'd. 
+> 
+> This would be trivial to do manually via a script in cron, but it's my understanding that chilli should do this. Am I wrong or is this a bug do you think/know?
+> 
+> I have also not had any luck controlling the interval in which chilli re-auths the administrative-user session. I have tried setting HS_ADMININTERVAL and also returning a Session-Timeout value in the Access-Accept to no avail. Has anyone had any success controlling the session time?
+> 
+> I've included some debug output below for anyone that knows if this looks right or not. It appears that the config is saved in my adminupdatefile location and copied to /tmp/hs.conf rather than /etc/chilli/hs.conf (?)
+> 
+> Possibly relevant: I'm not using a call to writeconfg in my start script. I want to fully control the dns servers over radius. If I use writeconfig the dns1 attribute is set to the devices primary dns server (or one that I hardcode) and this is not overruled if I return a different server ip by radius config. Rather than find a way to patch the functions file I took the easy route of using a static main.conf and fetching the rest of the configuration over radius.
+> 
+> Many thanks in advance,
+> Adam
+> 
+> coova-chilli 1.2.9 on Openwrt
+> 
+> 
+> radius.c: 224: 0 (Debug) qnext=6
+> radius.c: 294: 0 (Debug) RADIUS queue-in id=6 idx=6
+> radius.c: 1505: 0 (Debug) RADIUS id=6 sent to x.x.x.x:11812
+> main-opt.c: 601: 0 (Debug) DHCP Listen: 172.17.2.1
+> main-opt.c: 602: 0 (Debug) UAM Listen: 172.17.2.1
+> radius.c: 1740: 0 (Debug) Received RADIUS packet id=6
+> radius.c: 264: 0 (Debug) idx 6 pid 6 id 6
+> radius.c: 406: 0 (Debug) RADIUS queue-out id=6 idx=6
+> chilli.c: 4379: 0 (Debug) Received RADIUS response id=6
+> chilli.c: 4568: 0 (Debug) Received RADIUS Access-Accept
+> chilli.c: 4197: 0 (Debug) looking to replace: /tmp/coova-update
+> chilli.c: 4213: 0 (Debug) using temp: /tmp/hs.conf
+> ...
+> options.c: 442: 0 (Debug) PID 7050 saving options to /var/run/chilli.6503.cfg.bin
+> chilli.c: 6800: 0 (Debug) Processing cmdsock request...
+> chilli.c: 347: 0 (Debug) SIGUSR1: reloading configuration
+> options.c: 189: 0 (Debug) PID 6503 rereading binary file /var/run/chilli.6503.cfg.bin
+> options.c: 651: 0 (Debug) PID 6503 reloaded binary options file
+> chilli.c: 378: 0 (Debug) caught 18 via selfpipe
+> chilli.c: 309: 0 (Debug) child 7050 terminated
+> options.c: 442: 0 (Debug) PID 7049 saving options to /var/run/chilli.6503.cfg.bin
+> chilli.c: 6800: 0 (Debug) Processing cmdsock request...
+> chilli.c: 347: 0 (Debug) SIGUSR1: reloading configuration
+> options.c: 189: 0 (Debug) PID 6503 rereading binary file /var/run/chilli.6503.cfg.bin
+> options.c: 651: 0 (Debug) PID 6503 reloaded binary options file
+> chilli.c: 378: 0 (Debug) caught 18 via selfpipe
+> chilli.c: 309: 0 (Debug) child 7049 terminated
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+
+
+From bojan at gajba.net  Wed Aug  8 17:44:43 2012
+From: bojan at gajba.net (Bojan Pogacar)
+Date: Wed, 08 Aug 2012 19:44:43 +0200
+Subject: [Chilli] Administrative-User session & config update
+In-Reply-To: <22E7DE3A-FFD1-45FC-A3FD-5518D7A621A7@wicoms.com>
+References: <22E7DE3A-FFD1-45FC-A3FD-5518D7A621A7@wicoms.com>
+Message-ID: <5022A58B.1090506@gajba.net>
+
+Hi!
+
+What is Administrative-User session for?
+
+BR, Bojan
+
+
+Dne 7.8.2012 14:48, pi?e Adam Hammond:
+> Hi list,
+>
+> Has anyone succeeded in getting the Administrative-User session functionality fully working?
+>
+> I have a test AP running an Adminstrative-User session fine (config is returned in Access-Accept and stored in a file). The config is written to non-default file (/tmp/foo) in line with my adminupdatefile setting. The session re-auths every hour and the config is re-written to my adminupdatefile at that time.
+>
+> If I change the settings returned in radius what DOESN'T happen is these changes being recognised, copied to the chilli config file (hs.conf) and chilli HUP'd.
+>
+> This would be trivial to do manually via a script in cron, but it's my understanding that chilli should do this. Am I wrong or is this a bug do you think/know?
+>
+> I have also not had any luck controlling the interval in which chilli re-auths the administrative-user session. I have tried setting HS_ADMININTERVAL and also returning a Session-Timeout value in the Access-Accept to no avail. Has anyone had any success controlling the session time?
+>
+> I've included some debug output below for anyone that knows if this looks right or not. It appears that the config is saved in my adminupdatefile location and copied to /tmp/hs.conf rather than /etc/chilli/hs.conf (?)
+>
+> Possibly relevant: I'm not using a call to writeconfg in my start script. I want to fully control the dns servers over radius. If I use writeconfig the dns1 attribute is set to the devices primary dns server (or one that I hardcode) and this is not overruled if I return a different server ip by radius config. Rather than find a way to patch the functions file I took the easy route of using a static main.conf and fetching the rest of the configuration over radius.
+>
+> Many thanks in advance,
+> Adam
+>
+> coova-chilli 1.2.9 on Openwrt
+>
+>
+> radius.c: 224: 0 (Debug) qnext=6
+> radius.c: 294: 0 (Debug) RADIUS queue-in id=6 idx=6
+> radius.c: 1505: 0 (Debug) RADIUS id=6 sent to x.x.x.x:11812
+> main-opt.c: 601: 0 (Debug) DHCP Listen: 172.17.2.1
+> main-opt.c: 602: 0 (Debug) UAM Listen: 172.17.2.1
+> radius.c: 1740: 0 (Debug) Received RADIUS packet id=6
+> radius.c: 264: 0 (Debug) idx 6 pid 6 id 6
+> radius.c: 406: 0 (Debug) RADIUS queue-out id=6 idx=6
+> chilli.c: 4379: 0 (Debug) Received RADIUS response id=6
+> chilli.c: 4568: 0 (Debug) Received RADIUS Access-Accept
+> chilli.c: 4197: 0 (Debug) looking to replace: /tmp/coova-update
+> chilli.c: 4213: 0 (Debug) using temp: /tmp/hs.conf
+> ...
+> options.c: 442: 0 (Debug) PID 7050 saving options to /var/run/chilli.6503.cfg.bin
+> chilli.c: 6800: 0 (Debug) Processing cmdsock request...
+> chilli.c: 347: 0 (Debug) SIGUSR1: reloading configuration
+> options.c: 189: 0 (Debug) PID 6503 rereading binary file /var/run/chilli.6503.cfg.bin
+> options.c: 651: 0 (Debug) PID 6503 reloaded binary options file
+> chilli.c: 378: 0 (Debug) caught 18 via selfpipe
+> chilli.c: 309: 0 (Debug) child 7050 terminated
+> options.c: 442: 0 (Debug) PID 7049 saving options to /var/run/chilli.6503.cfg.bin
+> chilli.c: 6800: 0 (Debug) Processing cmdsock request...
+> chilli.c: 347: 0 (Debug) SIGUSR1: reloading configuration
+> options.c: 189: 0 (Debug) PID 6503 rereading binary file /var/run/chilli.6503.cfg.bin
+> options.c: 651: 0 (Debug) PID 6503 reloaded binary options file
+> chilli.c: 378: 0 (Debug) caught 18 via selfpipe
+> chilli.c: 309: 0 (Debug) child 7049 terminated
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+>
+
+From adam.hammond at wicoms.com  Thu Aug  9 15:29:40 2012
+From: adam.hammond at wicoms.com (Adam Hammond)
+Date: Thu, 9 Aug 2012 16:29:40 +0100
+Subject: [Chilli] Administrative-User session & config update
+In-Reply-To: <1344436161.6256.12.camel@david-laptop>
+References: <22E7DE3A-FFD1-45FC-A3FD-5518D7A621A7@wicoms.com>
+	<1344436161.6256.12.camel@david-laptop>
+Message-ID: <0392F3F8-C6AF-4D92-A42B-F3833E2373B9@wicoms.com>
+
+Thanks David,
+
+My mistake was to use both the administrative-update session AND the radius config functionality at the same time (for reasons not worth going into). Confusion reigned. 
+
+What wasn't clear to me was that you could forgo any RADCONF-esque functionality, not need to call radiusconfig in init, and just use the Administrative-User functionality when starting up with half the configuration on the device and the rest supplied centrally. All cleared up now.
+
+@David - Can I control the amount of time between re authentication of the administrative user session or is it hard coded to an hour?
+
+@Bojan - the administrative-user functionality allows you to host a subset of your configuration centrally (accessible via radius), to change that configuration at will and have it updated on all relevant chilli instances in a timely and automatic fashion.
+
+Cheers,
+Adam
+
+On 8 Aug 2012, at 15:29, David Bird wrote:
+
+> Be sure the adminupdatefile is also included into your chilli
+> configuration (using 'include <filename>'). 
+> 
+> David
+> 
+> 
+> On Tue, 2012-08-07 at 13:48 +0100, Adam Hammond wrote:
+>> Hi list,
+>> 
+>> Has anyone succeeded in getting the Administrative-User session functionality fully working?
+>> 
+>> I have a test AP running an Adminstrative-User session fine (config is returned in Access-Accept and stored in a file). The config is written to non-default file (/tmp/foo) in line with my adminupdatefile setting. The session re-auths every hour and the config is re-written to my adminupdatefile at that time.
+>> 
+>> If I change the settings returned in radius what DOESN'T happen is these changes being recognised, copied to the chilli config file (hs.conf) and chilli HUP'd. 
+>> 
+>> This would be trivial to do manually via a script in cron, but it's my understanding that chilli should do this. Am I wrong or is this a bug do you think/know?
+>> 
+>> I have also not had any luck controlling the interval in which chilli re-auths the administrative-user session. I have tried setting HS_ADMININTERVAL and also returning a Session-Timeout value in the Access-Accept to no avail. Has anyone had any success controlling the session time?
+>> 
+>> I've included some debug output below for anyone that knows if this looks right or not. It appears that the config is saved in my adminupdatefile location and copied to /tmp/hs.conf rather than /etc/chilli/hs.conf (?)
+>> 
+>> Possibly relevant: I'm not using a call to writeconfg in my start script. I want to fully control the dns servers over radius. If I use writeconfig the dns1 attribute is set to the devices primary dns server (or one that I hardcode) and this is not overruled if I return a different server ip by radius config. Rather than find a way to patch the functions file I took the easy route of using a static main.conf and fetching the rest of the configuration over radius.
+>> 
+>> Many thanks in advance,
+>> Adam
+>> 
+>> coova-chilli 1.2.9 on Openwrt
+>> 
+>> 
+>> radius.c: 224: 0 (Debug) qnext=6
+>> radius.c: 294: 0 (Debug) RADIUS queue-in id=6 idx=6
+>> radius.c: 1505: 0 (Debug) RADIUS id=6 sent to x.x.x.x:11812
+>> main-opt.c: 601: 0 (Debug) DHCP Listen: 172.17.2.1
+>> main-opt.c: 602: 0 (Debug) UAM Listen: 172.17.2.1
+>> radius.c: 1740: 0 (Debug) Received RADIUS packet id=6
+>> radius.c: 264: 0 (Debug) idx 6 pid 6 id 6
+>> radius.c: 406: 0 (Debug) RADIUS queue-out id=6 idx=6
+>> chilli.c: 4379: 0 (Debug) Received RADIUS response id=6
+>> chilli.c: 4568: 0 (Debug) Received RADIUS Access-Accept
+>> chilli.c: 4197: 0 (Debug) looking to replace: /tmp/coova-update
+>> chilli.c: 4213: 0 (Debug) using temp: /tmp/hs.conf
+>> ...
+>> options.c: 442: 0 (Debug) PID 7050 saving options to /var/run/chilli.6503.cfg.bin
+>> chilli.c: 6800: 0 (Debug) Processing cmdsock request...
+>> chilli.c: 347: 0 (Debug) SIGUSR1: reloading configuration
+>> options.c: 189: 0 (Debug) PID 6503 rereading binary file /var/run/chilli.6503.cfg.bin
+>> options.c: 651: 0 (Debug) PID 6503 reloaded binary options file
+>> chilli.c: 378: 0 (Debug) caught 18 via selfpipe
+>> chilli.c: 309: 0 (Debug) child 7050 terminated
+>> options.c: 442: 0 (Debug) PID 7049 saving options to /var/run/chilli.6503.cfg.bin
+>> chilli.c: 6800: 0 (Debug) Processing cmdsock request...
+>> chilli.c: 347: 0 (Debug) SIGUSR1: reloading configuration
+>> options.c: 189: 0 (Debug) PID 6503 rereading binary file /var/run/chilli.6503.cfg.bin
+>> options.c: 651: 0 (Debug) PID 6503 reloaded binary options file
+>> chilli.c: 378: 0 (Debug) caught 18 via selfpipe
+>> chilli.c: 309: 0 (Debug) child 7049 terminated
+>> _______________________________________________
+>> Chilli mailing list
+>> Chilli at coova.org
+>> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+> 
+> 
+
+
+From david at coova.com  Thu Aug  9 16:58:44 2012
+From: david at coova.com (David Bird)
+Date: Thu, 09 Aug 2012 09:58:44 -0700
+Subject: [Chilli] Administrative-User session & config update
+In-Reply-To: <0392F3F8-C6AF-4D92-A42B-F3833E2373B9@wicoms.com>
+References: <22E7DE3A-FFD1-45FC-A3FD-5518D7A621A7@wicoms.com>
+	<1344436161.6256.12.camel@david-laptop>
+	<0392F3F8-C6AF-4D92-A42B-F3833E2373B9@wicoms.com>
+Message-ID: <1344531524.7597.1.camel@david-laptop>
+
+You can have it re-auth based on the --interval option value. 
+
+Cheers,
+David
+
+On Thu, 2012-08-09 at 16:29 +0100, Adam Hammond wrote:
+> Thanks David,
+> 
+> My mistake was to use both the administrative-update session AND the radius config functionality at the same time (for reasons not worth going into). Confusion reigned. 
+> 
+> What wasn't clear to me was that you could forgo any RADCONF-esque functionality, not need to call radiusconfig in init, and just use the Administrative-User functionality when starting up with half the configuration on the device and the rest supplied centrally. All cleared up now.
+> 
+> @David - Can I control the amount of time between re authentication of the administrative user session or is it hard coded to an hour?
+> 
+> @Bojan - the administrative-user functionality allows you to host a subset of your configuration centrally (accessible via radius), to change that configuration at will and have it updated on all relevant chilli instances in a timely and automatic fashion.
+> 
+> Cheers,
+> Adam
+> 
+> On 8 Aug 2012, at 15:29, David Bird wrote:
+> 
+> > Be sure the adminupdatefile is also included into your chilli
+> > configuration (using 'include <filename>'). 
+> > 
+> > David
+> > 
+> > 
+> > On Tue, 2012-08-07 at 13:48 +0100, Adam Hammond wrote:
+> >> Hi list,
+> >> 
+> >> Has anyone succeeded in getting the Administrative-User session functionality fully working?
+> >> 
+> >> I have a test AP running an Adminstrative-User session fine (config is returned in Access-Accept and stored in a file). The config is written to non-default file (/tmp/foo) in line with my adminupdatefile setting. The session re-auths every hour and the config is re-written to my adminupdatefile at that time.
+> >> 
+> >> If I change the settings returned in radius what DOESN'T happen is these changes being recognised, copied to the chilli config file (hs.conf) and chilli HUP'd. 
+> >> 
+> >> This would be trivial to do manually via a script in cron, but it's my understanding that chilli should do this. Am I wrong or is this a bug do you think/know?
+> >> 
+> >> I have also not had any luck controlling the interval in which chilli re-auths the administrative-user session. I have tried setting HS_ADMININTERVAL and also returning a Session-Timeout value in the Access-Accept to no avail. Has anyone had any success controlling the session time?
+> >> 
+> >> I've included some debug output below for anyone that knows if this looks right or not. It appears that the config is saved in my adminupdatefile location and copied to /tmp/hs.conf rather than /etc/chilli/hs.conf (?)
+> >> 
+> >> Possibly relevant: I'm not using a call to writeconfg in my start script. I want to fully control the dns servers over radius. If I use writeconfig the dns1 attribute is set to the devices primary dns server (or one that I hardcode) and this is not overruled if I return a different server ip by radius config. Rather than find a way to patch the functions file I took the easy route of using a static main.conf and fetching the rest of the configuration over radius.
+> >> 
+> >> Many thanks in advance,
+> >> Adam
+> >> 
+> >> coova-chilli 1.2.9 on Openwrt
+> >> 
+> >> 
+> >> radius.c: 224: 0 (Debug) qnext=6
+> >> radius.c: 294: 0 (Debug) RADIUS queue-in id=6 idx=6
+> >> radius.c: 1505: 0 (Debug) RADIUS id=6 sent to x.x.x.x:11812
+> >> main-opt.c: 601: 0 (Debug) DHCP Listen: 172.17.2.1
+> >> main-opt.c: 602: 0 (Debug) UAM Listen: 172.17.2.1
+> >> radius.c: 1740: 0 (Debug) Received RADIUS packet id=6
+> >> radius.c: 264: 0 (Debug) idx 6 pid 6 id 6
+> >> radius.c: 406: 0 (Debug) RADIUS queue-out id=6 idx=6
+> >> chilli.c: 4379: 0 (Debug) Received RADIUS response id=6
+> >> chilli.c: 4568: 0 (Debug) Received RADIUS Access-Accept
+> >> chilli.c: 4197: 0 (Debug) looking to replace: /tmp/coova-update
+> >> chilli.c: 4213: 0 (Debug) using temp: /tmp/hs.conf
+> >> ...
+> >> options.c: 442: 0 (Debug) PID 7050 saving options to /var/run/chilli.6503.cfg.bin
+> >> chilli.c: 6800: 0 (Debug) Processing cmdsock request...
+> >> chilli.c: 347: 0 (Debug) SIGUSR1: reloading configuration
+> >> options.c: 189: 0 (Debug) PID 6503 rereading binary file /var/run/chilli.6503.cfg.bin
+> >> options.c: 651: 0 (Debug) PID 6503 reloaded binary options file
+> >> chilli.c: 378: 0 (Debug) caught 18 via selfpipe
+> >> chilli.c: 309: 0 (Debug) child 7050 terminated
+> >> options.c: 442: 0 (Debug) PID 7049 saving options to /var/run/chilli.6503.cfg.bin
+> >> chilli.c: 6800: 0 (Debug) Processing cmdsock request...
+> >> chilli.c: 347: 0 (Debug) SIGUSR1: reloading configuration
+> >> options.c: 189: 0 (Debug) PID 6503 rereading binary file /var/run/chilli.6503.cfg.bin
+> >> options.c: 651: 0 (Debug) PID 6503 reloaded binary options file
+> >> chilli.c: 378: 0 (Debug) caught 18 via selfpipe
+> >> chilli.c: 309: 0 (Debug) child 7049 terminated
+> >> _______________________________________________
+> >> Chilli mailing list
+> >> Chilli at coova.org
+> >> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+> > 
+> > 
+> 
+
+
+
+From david at coova.com  Thu Aug 16 22:30:25 2012
+From: david at coova.com (David Bird)
+Date: Thu, 16 Aug 2012 15:30:25 -0700
+Subject: [Chilli] chilli_opt is not built (coova-chilli SVN r467)
+In-Reply-To: <50052C53.4050204@8-p.cc>
+References: <50052C53.4050204@8-p.cc>
+Message-ID: <1345156225.5866.24.camel@david-laptop>
+
+This should be resolved in svn. thx
+
+
+On Tue, 2012-07-17 at 11:11 +0200, Karl Gruber wrote:
+> Hi!
+> 
+> When I compile coova-chilli (SNV r467), the executable chilli_opt is not
+> built.
+> 
+> # sh bootstrap
+> # ../configure --disable-static        \
+>       --enable-uamdomainfile  \
+>       --enable-redirdnsreq    \
+>       --enable-multilan       \
+>       --enable-chilliredir    \
+>       --enable-sessionid      \
+>       --enable-l2tpppp        \
+>       --enable-miniportal     \
+>       --enable-libjson        \
+>       --enable-dnslog         \
+>       --enable-ssdp           \
+>       --enable-useragent      \
+>       --enable-acceptlanguage \
+>       --enable-sessionstate   \
+>       --enable-ipwhitelist    \
+>       --enable-ieee8023       \
+>       --enable-miniconfig     \
+>       --enable-debug2
+> # make
+> 
+> I use a Linux-system (Sabayon 9) with the gengetopt-2.22.1 installed.
+> 
+> Some more hints:
+>     gcc (Gentoo Hardened 4.6.2 p1.0, pie-0.4.5) 4.6.2
+>     libtool-2.4-r1
+> 
+> br,
+>    Karl
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+
+
+From venture37 at gmail.com  Mon Aug 27 22:37:41 2012
+From: venture37 at gmail.com (Sevan / Venture37)
+Date: Mon, 27 Aug 2012 23:37:41 +0100
+Subject: [Chilli] Build fails on FreeBSD
+Message-ID: <503BF6B5.2080402@gmail.com>
+
+Hi Dave,
+As requested, built r473 from svn, build fails with following error, 
+disabling IPv6 support or commenting out line 532 in pkt.h allows the 
+build to complete sucessfully.
+
+
+Sevan
+
+/bin/sh ../libtool --tag=CC   --mode=compile gcc -DHAVE_CONFIG_H -I. 
+-I..    -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-stric
+t-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring 
+-DDEFCHILLICONF='"/usr/local/etc/chilli.conf"' -DDEFPIDFIL
+E='"/var/run/chilli.pid"' -DDEFSTATEDIR='"/var/run"' 
+-DSBINDIR='"/usr/local/sbin"'    -g -O2 -MT chilli.lo -MD -MP -MF .deps/chi
+lli.Tpo -c -o chilli.lo chilli.c
+libtool: compile:  gcc -DHAVE_CONFIG_H -I. -I.. -D_GNU_SOURCE -Wall 
+-Werror -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-p
+ointer -funroll-loops -pipe -I../bstring 
+-DDEFCHILLICONF=\"/usr/local/etc/chilli.conf\" 
+-DDEFPIDFILE=\"/var/run/chilli.pid\" -DD
+EFSTATEDIR=\"/var/run\" -DSBINDIR=\"/usr/local/sbin\" -g -O2 -MT 
+chilli.lo -MD -MP -MF .deps/chilli.Tpo -c chilli.c  -fPIC -DPIC
+  -o .libs/chilli.o
+In file included from tun.h:24,
+		 from chilli.h:25,
+		 from chilli.c:20:
+pkt.h:532:1: error: "tcp6hdr" redefined
+In file included from system.h:155,
+		 from chilli.h:23,
+		 from chilli.c:20:
+/usr/include/netinet/tcp.h:44:1: error: this is the location of the 
+previous definition
+gmake[3]: *** [chilli.lo] Error 1
+
+From outbackdingo at gmail.com  Mon Aug 27 22:56:29 2012
+From: outbackdingo at gmail.com (Outback Dingo)
+Date: Mon, 27 Aug 2012 18:56:29 -0400
+Subject: [Chilli] Build fails on FreeBSD
+In-Reply-To: <503BF6B5.2080402@gmail.com>
+References: <503BF6B5.2080402@gmail.com>
+Message-ID: <CAKYr3zy8Mt0czcvjxJbwUZn_quT_JwD=YJ7Gp=6mVFyJw6vw5A@mail.gmail.com>
+
+On Mon, Aug 27, 2012 at 6:37 PM, Sevan / Venture37 <venture37 at gmail.com> wrote:
+> Hi Dave,
+> As requested, built r473 from svn, build fails with following error,
+> disabling IPv6 support or commenting out line 532 in pkt.h allows the build
+> to complete sucessfully.
+>
+>
+> Sevan
+>
+> /bin/sh ../libtool --tag=CC   --mode=compile gcc -DHAVE_CONFIG_H -I. -I..
+> -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-stric
+> t-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring
+> -DDEFCHILLICONF='"/usr/local/etc/chilli.conf"' -DDEFPIDFIL
+> E='"/var/run/chilli.pid"' -DDEFSTATEDIR='"/var/run"'
+> -DSBINDIR='"/usr/local/sbin"'    -g -O2 -MT chilli.lo -MD -MP -MF .deps/chi
+> lli.Tpo -c -o chilli.lo chilli.c
+> libtool: compile:  gcc -DHAVE_CONFIG_H -I. -I.. -D_GNU_SOURCE -Wall -Werror
+> -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-p
+> ointer -funroll-loops -pipe -I../bstring
+> -DDEFCHILLICONF=\"/usr/local/etc/chilli.conf\"
+> -DDEFPIDFILE=\"/var/run/chilli.pid\" -DD
+> EFSTATEDIR=\"/var/run\" -DSBINDIR=\"/usr/local/sbin\" -g -O2 -MT chilli.lo
+> -MD -MP -MF .deps/chilli.Tpo -c chilli.c  -fPIC -DPIC
+>  -o .libs/chilli.o
+> In file included from tun.h:24,
+>                  from chilli.h:25,
+>                  from chilli.c:20:
+> pkt.h:532:1: error: "tcp6hdr" redefined
+> In file included from system.h:155,
+>                  from chilli.h:23,
+>                  from chilli.c:20:
+> /usr/include/netinet/tcp.h:44:1: error: this is the location of the previous
+> definition
+> gmake[3]: *** [chilli.lo] Error 1
+
+sounds like a simple if defined would fix that instead of the
+commenting out viable code.
+
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+From david at coova.com  Mon Aug 27 23:30:45 2012
+From: david at coova.com (David Bird)
+Date: Mon, 27 Aug 2012 16:30:45 -0700
+Subject: [Chilli] Build fails on FreeBSD
+In-Reply-To: <CAKYr3zy8Mt0czcvjxJbwUZn_quT_JwD=YJ7Gp=6mVFyJw6vw5A@mail.gmail.com>
+References: <503BF6B5.2080402@gmail.com>
+	<CAKYr3zy8Mt0czcvjxJbwUZn_quT_JwD=YJ7Gp=6mVFyJw6vw5A@mail.gmail.com>
+Message-ID: <1346110245.6174.2.camel@david-laptop>
+
+It would be best to change all the define's in pkt.h to something with a
+prefix like pkt_ so that they don't conflict with standard headers... 
+
+
+On Mon, 2012-08-27 at 18:56 -0400, Outback Dingo wrote:
+> On Mon, Aug 27, 2012 at 6:37 PM, Sevan / Venture37 <venture37 at gmail.com> wrote:
+> > Hi Dave,
+> > As requested, built r473 from svn, build fails with following error,
+> > disabling IPv6 support or commenting out line 532 in pkt.h allows the build
+> > to complete sucessfully.
+> >
+> >
+> > Sevan
+> >
+> > /bin/sh ../libtool --tag=CC   --mode=compile gcc -DHAVE_CONFIG_H -I. -I..
+> > -D_GNU_SOURCE -Wall -Werror -fno-builtin -fno-stric
+> > t-aliasing -O2 -fomit-frame-pointer -funroll-loops -pipe -I../bstring
+> > -DDEFCHILLICONF='"/usr/local/etc/chilli.conf"' -DDEFPIDFIL
+> > E='"/var/run/chilli.pid"' -DDEFSTATEDIR='"/var/run"'
+> > -DSBINDIR='"/usr/local/sbin"'    -g -O2 -MT chilli.lo -MD -MP -MF .deps/chi
+> > lli.Tpo -c -o chilli.lo chilli.c
+> > libtool: compile:  gcc -DHAVE_CONFIG_H -I. -I.. -D_GNU_SOURCE -Wall -Werror
+> > -fno-builtin -fno-strict-aliasing -O2 -fomit-frame-p
+> > ointer -funroll-loops -pipe -I../bstring
+> > -DDEFCHILLICONF=\"/usr/local/etc/chilli.conf\"
+> > -DDEFPIDFILE=\"/var/run/chilli.pid\" -DD
+> > EFSTATEDIR=\"/var/run\" -DSBINDIR=\"/usr/local/sbin\" -g -O2 -MT chilli.lo
+> > -MD -MP -MF .deps/chilli.Tpo -c chilli.c  -fPIC -DPIC
+> >  -o .libs/chilli.o
+> > In file included from tun.h:24,
+> >                  from chilli.h:25,
+> >                  from chilli.c:20:
+> > pkt.h:532:1: error: "tcp6hdr" redefined
+> > In file included from system.h:155,
+> >                  from chilli.h:23,
+> >                  from chilli.c:20:
+> > /usr/include/netinet/tcp.h:44:1: error: this is the location of the previous
+> > definition
+> > gmake[3]: *** [chilli.lo] Error 1
+> 
+> sounds like a simple if defined would fix that instead of the
+> commenting out viable code.
+> 
+> > _______________________________________________
+> > Chilli mailing list
+> > Chilli at coova.org
+> > http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+> _______________________________________________
+> Chilli mailing list
+> Chilli at coova.org
+> http://lists.coova.org/cgi-bin/mailman/listinfo/chilli
+
+
+
+From venture37 at gmail.com  Tue Aug 28 00:20:57 2012
+From: venture37 at gmail.com (Sevan / Venture37)
+Date: Tue, 28 Aug 2012 01:20:57 +0100
+Subject: [Chilli] Build fails on OpenBSD
+Message-ID: <503C0EE9.8030404@gmail.com>
+
+Tested with latest amd64 snapshot, build fails with
+tun.c:788: warning: 'tun_decaps_cb' defined but not used
+Commenting out the code allows the build to continue but I've not been 
+able to complete the build as I don't think gengetopt is currently in 
+the OpenBSD ports tree at the moment.
+
+
+Sevan
+

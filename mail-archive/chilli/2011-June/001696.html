@@ -1,0 +1,148 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] Period &quot;Reauthorisation&quot;
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Period%20%22Reauthorisation%22&In-Reply-To=%3C4DF743FF.1050508%40gmail.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001693.html">
+   <LINK REL="Next"  HREF="001695.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] Period &quot;Reauthorisation&quot;</H1>
+    <B>Tim White</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20Period%20%22Reauthorisation%22&In-Reply-To=%3C4DF743FF.1050508%40gmail.com%3E"
+       TITLE="[Chilli] Period &quot;Reauthorisation&quot;">timwhite88 at gmail.com
+       </A><BR>
+    <I>Tue Jun 14 11:20:31 UTC 2011</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001693.html">[Chilli] Period &quot;Reauthorisation&quot;
+</A></li>
+        <LI>Next message: <A HREF="001695.html">[Chilli] released 1.2.7
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1696">[ date ]</a>
+              <a href="thread.html#1696">[ thread ]</a>
+              <a href="subject.html#1696">[ subject ]</a>
+              <a href="author.html#1696">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>For anyone following this thread, I have a semi working implementation 
+that is messy, but at least gives an understanding of how to do this if 
+you wish to go to the trouble.
+
+I have the following in the accounting section of my sites-available/default
+
+         update control {
+                Tmp-String-0 := &quot;%{sql: select 
+FLOOR(IFNULL(radgroupreply.value - U1.usedoctets,radgroupreply.value) + 
+U2.TotalThisSession)   from radgroupreply, radusergroup, ( select 
+SUM(((AcctInputOctets + AcctOutputOctets) / acctsessiontime)
+  * ((UNIX_TIMESTAMP(acctstarttime) + acctsessiontime) - 
+UNIX_TIMESTAMP(DATE_SUB(NOW(), INTERVAL 1 HOUR)))) AS usedoctets  from 
+radacct WHERE UserName = '%{User-Name}' AND 
+UNIX_TIMESTAMP(acctstarttime) + acctsessiontime &gt; UNIX_TIMESTAMP
+(DATE_SUB(NOW(), INTERVAL 1 HOUR)) ) U1, (SELECT SUM(AcctInputOctets + 
+AcctOutputOctets) as TotalThisSession FROM radacct WHERE AcctSessionId = 
+'%{Acct-Session-Id}' ) U2 where UserName =  '%{User-Name}' AND Attribute 
+= 'Max-Hourly-Octets' AND radgroupreply.GroupName = 
+radusergroup.GroupName }&quot;
+
+         }
+
+         if(control:Tmp-String-0 &gt; 0) {
+                 update coa {
+                         User-Name = &quot;%{User-Name}&quot;
+                         Acct-Session-Id = &quot;%{Acct-Session-Id}&quot;
+                         NAS-IP-Address = &quot;%{NAS-IP-Address}&quot;
+                         ChilliSpot-Max-Total-Octets = 
+&quot;%{control:Tmp-String-0}&quot;
+                 }
+         }
+
+What that convoluted sql query does is find all sessions associated with 
+this user, that have been active during the period we are interested in 
+(in this case, the last 1 hour). It then &quot;normalises&quot; the data usage 
+across that timespan, and takes the quantity for the amount of that 
+session that was in the active period. (For example, if a session was 10 
+minutes long, but only 5 minutes in the current period, it'll take 1/2 
+the data usage for that session). Yes, this isn't accurate but without 
+setting up accounting into a special table that uses 1 row per time 
+period of smaller periods instead of 1 row per session, this is the best 
+we can do.
+We then lookup the Max-Hourly-Octets values for that user (in this case 
+it's in the radgroupreply table as I'm only applying the limits to 
+groups), and calculate how much data they can continue to use in this 
+time period. Lastly, we need to add the current sessions usage to that 
+final figure as Coova Chilli has already counted it in it's session and 
+we have counted it also. (ether you'll wrap your brain around that last 
+bit or you won't).
+
+Then we store the result in a Tmp string so that we only send the CoA 
+packet if we actually have something to set. This way, if 
+ChilliSpot-Max-Total-Octets has been set elsewhere, we aren't 
+overwriting it. Also, sending a blank ChilliSpot-Max-Total-Octets will 
+set no limit for users, even if they previously got one in the initial 
+radreply packet.
+
+Oh, and Max-Hourly-Octets in the reply messages at login will cause 
+problems, unless you also have a sqlcounter setup to use that attribute 
+to give a proper ChilliSpot-Max-Total-Octets reply attribute as well. 
+(Simply because Max-Hourly-Octets isn't in the dictionary)
+
+I believe we also need to send any other limits the user may have, as it 
+seems CoovaChilli assumes the lack of the attributes in the CoA request 
+means that attribute no longer applies. More testing needed.
+
+My recommendation for anyone trying this. Don't. Set your users a &quot;x 
+hours per day&quot; limit, and if you are really worried about them using 
+lots of downloads/uploads, give them a bandwidth limit (throttle them).
+
+ From what I've seen so far, I think implementing basic 'x mb a day' and 
+'x mb a week' limits and not worrying about the reset period too much 
+will work without too much trouble as long as you don't need limits to 
+be strict (and you disable simultaneous login). (Also, I believe 
+sqlcounter still has the bug that near the end of a reset period it can 
+return a strange number for data queries as it was designed for time 
+queries).
+
+If you really care, maybe running a cron job that does fancy sql and 
+performs a CoA disconnect on users who have been using too much is a 
+better way than trying to have recurring data limits.
+
+Thanks for everyone that helped me get this far. Now I've just got to 
+work out if I (against my own advice) continue pushing forward or if in 
+the long run a better solution is to run away from this as fast as I can!
+
+Tim
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001693.html">[Chilli] Period &quot;Reauthorisation&quot;
+</A></li>
+	<LI>Next message: <A HREF="001695.html">[Chilli] released 1.2.7
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1696">[ date ]</a>
+              <a href="thread.html#1696">[ thread ]</a>
+              <a href="subject.html#1696">[ subject ]</a>
+              <a href="author.html#1696">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

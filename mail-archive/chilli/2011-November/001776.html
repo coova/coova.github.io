@@ -1,0 +1,113 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] bug in dhcp.c ???
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20bug%20in%20dhcp.c%20%3F%3F%3F&In-Reply-To=%3CCAL-yc89Y8pnKUACn1b4b1BpkJ%2B90aYtkxcV1DXjbHcaBV9eqwg%40mail.gmail.com%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <style type="text/css">
+       pre {
+           white-space: pre-wrap;       /* css-2.1, curent FF, Opera, Safari */
+           }
+   </style>
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001774.html">
+   <LINK REL="Next"  HREF="001777.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] bug in dhcp.c ???</H1>
+    <B>Stig</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20bug%20in%20dhcp.c%20%3F%3F%3F&In-Reply-To=%3CCAL-yc89Y8pnKUACn1b4b1BpkJ%2B90aYtkxcV1DXjbHcaBV9eqwg%40mail.gmail.com%3E"
+       TITLE="[Chilli] bug in dhcp.c ???">stig at ubnt.com
+       </A><BR>
+    <I>Wed Nov 30 01:18:04 UTC 2011</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001774.html">[Chilli] Coova with no authentication
+</A></li>
+        <LI>Next message: <A HREF="001777.html">[Chilli] Fwd: Re:  bug in dhcp.c ???
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1776">[ date ]</a>
+              <a href="thread.html#1776">[ thread ]</a>
+              <a href="subject.html#1776">[ subject ]</a>
+              <a href="author.html#1776">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>I'm cross-compiling coova-chilli (v1.2.7) for a mips platform.  This
+tool chain defaults to -O3 and during the compile it fails on:
+
+dhcp.c:3113: error: &#8216;conn&#8217; may be used uninitialized in this function
+
+If I change the optimization level to -O2, then it compiles but it
+does look like a real bug to me (although unlikely to hit that error
+condition).
+
+In dhcp.c::dhcp_receive_ip() we have:
+
+  struct dhcp_conn_t *conn;                 &lt;=== uninitialized pointer
+  struct in_addr ourip;
+  struct in_addr addr;
+
+  char do_checksum = 0;
+  char allowed = 0;
+  char has_ip = 0;
+  char is_dhcp = 0;
+
+  int authstate = 0;
+
+#ifdef ENABLE_LAYER3
+  struct app_conn_t *appconn = 0;
+#endif
+
+  if (len &lt; PKT_IP_HLEN + PKT_ETH_HLEN + 4)
+    return 0;
+
+  /*
+   *  Only supports IPv4 currently.
+   */
+  if (pack_iph-&gt;version_ihl != PKT_IP_VER_HLEN) {
+#if(_debug_)
+    log_dbg(&quot;dropping non-IPv4&quot;);
+#endif
+    return 0;
+  }
+
+  /*
+   * Sanity check on IP total length
+   */
+  if ((int)ntohs(pack_iph-&gt;tot_len) + sizeofeth(pack) &gt; len) {
+    uint8_t icmp_pack[PKT_BUFFER];
+    struct dhcp_t *this = conn-&gt;parent;
+&lt;== dereference unitialized pointer
+
+
+
+Any thoughts?
+
+stig
+</PRE>
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001774.html">[Chilli] Coova with no authentication
+</A></li>
+	<LI>Next message: <A HREF="001777.html">[Chilli] Fwd: Re:  bug in dhcp.c ???
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1776">[ date ]</a>
+              <a href="thread.html#1776">[ thread ]</a>
+              <a href="subject.html#1776">[ subject ]</a>
+              <a href="author.html#1776">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

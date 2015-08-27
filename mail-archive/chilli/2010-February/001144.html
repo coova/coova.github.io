@@ -1,0 +1,91 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli]  [PATCH] Fix: Null termination of the excev argument
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20%20%5BPATCH%5D%20Fix%3A%20Null%20termination%20of%20the%20excev%20argument&In-Reply-To=%3C4B873040.20006%40ictec.co.jp%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001150.html">
+   <LINK REL="Next"  HREF="001145.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli]  [PATCH] Fix: Null termination of the excev argument</H1>
+    <B>Masashi Honma</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20%20%5BPATCH%5D%20Fix%3A%20Null%20termination%20of%20the%20excev%20argument&In-Reply-To=%3C4B873040.20006%40ictec.co.jp%3E"
+       TITLE="[Chilli]  [PATCH] Fix: Null termination of the excev argument">honma at ictec.co.jp
+       </A><BR>
+    <I>Fri Feb 26 02:21:52 UTC 2010</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001150.html">[Chilli] Problems with Chilli + Dansguardian
+</A></li>
+        <LI>Next message: <A HREF="001145.html">[Chilli] [PATCH] Fix: Null termination of the excev argument
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1144">[ date ]</a>
+              <a href="thread.html#1144">[ thread ]</a>
+              <a href="subject.html#1144">[ subject ]</a>
+              <a href="author.html#1144">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hello.
+
+I am new to this list.
+
+This patch null terminate the excev argument when reload flag is true.
+And check the return value of calloc.
+
+
+Index: options.c
+===================================================================
+--- options.c	(revision 292)
++++ options.c	(working copy)
+@@ -134,6 +134,10 @@
+   }
+ 
+   newargs = calloc(1, sizeof(char *) * (argc + 4));
++  if (newargs == NULL) {
++    log_err(errno, &quot;calloc() failed!&quot;);
++    return -1;
++  }
+ 
+   for (i=1; i &lt; argc; i++) {
+     newargs[i] = argv[i];
+@@ -143,6 +147,7 @@
+   newargs[i++] = &quot;-b&quot;;
+   newargs[i++] = file;
+   newargs[i++] = reload ? &quot;-r&quot; : NULL;
++  newargs[i++] = NULL;
+ 
+   log_dbg(&quot;running chilli_opt on %s&quot;, file);
+ 
+
+Regards,
+Masashi Honma.
+</PRE>
+
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001150.html">[Chilli] Problems with Chilli + Dansguardian
+</A></li>
+	<LI>Next message: <A HREF="001145.html">[Chilli] [PATCH] Fix: Null termination of the excev argument
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1144">[ date ]</a>
+              <a href="thread.html#1144">[ thread ]</a>
+              <a href="subject.html#1144">[ subject ]</a>
+              <a href="author.html#1144">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>

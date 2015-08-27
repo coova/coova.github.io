@@ -1,0 +1,170 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Chilli] MAC blacklist and other security measures
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20MAC%20blacklist%20and%20other%20security%20measures&In-Reply-To=%3C4BBB5675.6090504%40hpp.org.br%3E">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001252.html">
+   <LINK REL="Next"  HREF="001265.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Chilli] MAC blacklist and other security measures</H1>
+    <B>Felipe Augusto van de Wiel</B> 
+    <A HREF="mailto:chilli%40coova.org?Subject=Re%3A%20%5BChilli%5D%20MAC%20blacklist%20and%20other%20security%20measures&In-Reply-To=%3C4BBB5675.6090504%40hpp.org.br%3E"
+       TITLE="[Chilli] MAC blacklist and other security measures">felipe.wiel at hpp.org.br
+       </A><BR>
+    <I>Tue Apr  6 15:42:45 UTC 2010</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001252.html">[Chilli] chilli as proxy for 802.1X
+</A></li>
+        <LI>Next message: <A HREF="001265.html">[Chilli] MAC blacklist and other security measures
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1238">[ date ]</a>
+              <a href="thread.html#1238">[ thread ]</a>
+              <a href="subject.html#1238">[ subject ]</a>
+              <a href="author.html#1238">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA512
+
+Hi,
+
+	Although it seems that I finally could make
+the below configuration to work, I would like to
+confirm if the solution is correct (or properly
+implemented). I would also like to report a possible
+bug related to this setup.
+
+	I'm also writing to document it on the list
+archive as reference for people trying to get the
+blacklist of MAC addresses working while still
+allowing users to authenticate thru the captive
+portal.
+
+
+On 21-03-2010 03:16, David Bird wrote:
+&gt;<i> Hm.. one way might be to enable MAC authentication
+</I>&gt;<i> such that:
+</I>
+	That means enable 'macauth', right?  Using
+only 'macauthdeny' didn't result in the expected
+behavior.
+
+
+&gt;<i> - You always return Access-Accept (plus attribute
+</I>&gt;<i>   Chillispot-Config = 'splash') for non-blocked
+</I>&gt;<i>   users.
+</I>
+&gt;<i> - You can return an Access-Reject for blocked users.
+</I>&gt;<i>   When used with --macauthdeny, it means these
+</I>&gt;<i>   devices will be ignored.
+</I>
+	The proper way to achieve that would be to
+use a DEFAULT user in RADIUS? Here is the relevant
+part of my FreeRADIUS' users file:
+
+&lt;...&gt;
+|<i> AA-BB-CC-DD-EE-FF  Auth-Type := Reject
+</I>|<i>                    Reply-Message = &quot;MAC address administratively blocked.&quot;
+</I>|<i>
+</I>|<i> 11-22-33-44-55-66  Auth-Type := Reject
+</I>|<i>                    Reply-Message = &quot;MAC address administratively blocked.&quot;
+</I>|<i>
+</I>|<i> DEFAULT            Auth-Type := Accept
+</I>|<i>                    Chillispot-config = 'splash',
+</I>|<i>                    Fall-Through = Yes
+</I>|<i>
+</I>|<i> &quot;user&quot;             Cleartext-Password := &quot;pass&quot;
+</I>|<i>                    Reply-Message = &quot;Hello, %{User-Name}&quot;
+</I>&lt;...&gt;
+
+
+	Of course, that only worked after I added an
+include line inside /etc/freeradius/dictionary:
+
+$INCLUDE        /etc/freeradius/dictionary.chillispot
+
+
+	Now, the MAC addresses listed on the users
+file gets a 'drop' state when chilli starts, the rest
+gets a 'splash' state and addresses in the ethers file
+stays as 'dnat'. Once the user authenticates thru the
+splash screen they change to 'pass' as expected.
+
+	There is one interesting side effect that
+smells like a bug. Once I started using the
+Chillispot-config = 'splash' the contents of my
+local.conf file is replaced with 'splash' and Coova
+complains that there is no option '--splash':
+
+Starting chilli: coova-chilli: unrecognized option `--splash'
+coova-chilli[7358]: options.c: 174: could not generate
+  configuration (/tmp/chilli-7358/config.bin), sleeping
+  one second
+coova-chilli: unrecognized option `--splash'
+
+
+	The dirty hack I used is 'chattr +i local.conf'.
+I tried to figure out something from the functions or
+shell scripts but I couldn't spot where it replaces
+the contents of local.conf. For now, it solved the
+problem, but it isn't supposed to do that, or am I
+missing something?
+
+	So, I hope this helps others. :)
+
+Kind regards,
+- -- 
+Felipe Augusto van de Wiel &lt;<A HREF="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">felipe.wiel at hpp.org.br</A>&gt;
+Tecnologia da Informa&#231;&#227;o (TI) - Complexo Pequeno Pr&#237;ncipe
+<A HREF="http://www.pequenoprincipe.org.br/">http://www.pequenoprincipe.org.br/</A>    T: +55 41 3310 1747
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.10 (GNU/Linux)
+Comment: Using GnuPG with Mozilla - <A HREF="http://enigmail.mozdev.org/">http://enigmail.mozdev.org/</A>
+
+iQIcBAEBCgAGBQJLu1ZyAAoJECCPPxLgxLxPyLMP+gM7u6DJWZzZ89F0WaFhmKAB
+BxnLklJv2jsKvgFCH/AVlEhK3j1q9BaGJkZJnizC90PkgwKzz065iu7x+9v1zvN4
+xyfrUoRIbyO+4iUuDbP+bmg3j9WGnsKrvouKZDvXb+sBd5LB/prWHlVdOUi22XwP
+y56RibxFkNqg08rQfZAHFiUKOAWQEXSVmAkc7ung9U2K1AxWyvuW9nDAcWGylD0h
+4+8lOzU8ghlDfGR+5KKStdyIU1Qmsq4boe5qNknAlB1elUlk/8ohLQAulPhaROI4
+UPCPUZ4kzuP1YrYbCcyRC35A6UvTGo62pFiayJH7rD0pun8ueEljIRLARNW5n3j9
+Z2uZ3uDu08vVks7Pt9F2Yi53K3zFlKq9xxp+j8wTiefOwrnShnfbe5+v/ZnIu41Q
+Qs45z8DnhrhOPIwBCUZCQTxUwHFQn0Y81nNlVEI+9oNGjlsZ6g3w5r52hh7cErxd
+tXpg+ZidB2IZBQonhC3QvQCtzO+Z418erSlfcnP1Dw2b7nCud5AycvbIQvfKnKC8
+VCnBnbHRvW+SdNq3SLRJW0ZMpOULRbLu+VpeYGfKo98EH/ceWpwbyMlmxtwvfrKk
+EI18niSHbhbG9UuLm7BhIVQcTYpBnTmH680LIGwIAVHgoV/QtddaEZOWDE+x1rZ0
+Qr/CPJBG4RVQapvqAKx4
+=8VQ7
+-----END PGP SIGNATURE-----
+</PRE>
+
+
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001252.html">[Chilli] chilli as proxy for 802.1X
+</A></li>
+	<LI>Next message: <A HREF="001265.html">[Chilli] MAC blacklist and other security measures
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1238">[ date ]</a>
+              <a href="thread.html#1238">[ thread ]</a>
+              <a href="subject.html#1238">[ subject ]</a>
+              <a href="author.html#1238">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://lists.coova.org/cgi-bin/mailman/listinfo/chilli">More information about the Chilli
+mailing list</a><br>
+</body></html>
