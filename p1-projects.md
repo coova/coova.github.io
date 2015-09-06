@@ -1,5 +1,6 @@
 ---
 layout: page
+menu: main
 title: "Projects:"
 permalink: /
 ---

@@ -1,5 +1,6 @@
 ---
 layout: page
+menu: main
 title: CoovaChilli
 permalink: /CoovaChilli/
 ---
