@@ -1,4 +1,5 @@
 ---
+status: old
 layout: post
 title: New Chilli & Firmware
 created: 1170874005

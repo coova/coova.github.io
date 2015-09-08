@@ -1,4 +1,5 @@
 ---
+status: old
 layout: post
 title: Embedded Web 2.0
 created: 1178197052

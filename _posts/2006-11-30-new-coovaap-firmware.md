@@ -1,4 +1,5 @@
 ---
+status: old
 layout: post
 title: New CoovaAP Firmware
 created: 1164875594

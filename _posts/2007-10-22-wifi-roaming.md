@@ -1,4 +1,5 @@
 ---
+status: old
 layout: post
 title: WiFi Roaming
 created: 1193050377

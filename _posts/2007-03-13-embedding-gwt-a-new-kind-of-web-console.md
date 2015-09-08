@@ -1,4 +1,5 @@
 ---
+status: old
 layout: post
 title: Embedding GWT - A new kind of web console
 created: 1173785321

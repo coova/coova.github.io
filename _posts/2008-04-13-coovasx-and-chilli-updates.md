@@ -1,4 +1,5 @@
 ---
+status: old
 layout: post
 title: CoovaSX & Chilli updates
 created: 1208153315

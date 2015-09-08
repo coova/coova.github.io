@@ -1,4 +1,5 @@
 ---
+status: old
 layout: post
 title: Hardware, software, standards
 created: 1208508216

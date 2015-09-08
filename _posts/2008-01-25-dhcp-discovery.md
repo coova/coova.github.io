@@ -1,4 +1,5 @@
 ---
+status: old
 layout: post
 title: DHCP Discovery
 created: 1201263278

@@ -1,4 +1,5 @@
 ---
+status: old
 layout: post
 title: WiFi Everywhere...
 created: 1180367752

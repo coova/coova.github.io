@@ -26,3 +26,5 @@ permalink: /
 
 : CoovaAX is a Wi-Fi hotspot utility for Android. Use it to login to captive portal hotspot networks using the WISPr XML method of authentication. Also use it to log the scanned signals along with GPS location information for display on a map. Optionally have the app auto-login to known networks. Supports WISPr 1.0 and 2.0 using EAP-TTLS/PAP or EAP-MD5.
 -->
+
+[Old coova.org blog](/posts.html)

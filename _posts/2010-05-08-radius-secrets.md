@@ -1,4 +1,5 @@
 ---
+status: old
 layout: post
 title: RADIUS Secrets
 created: 1273344297
@@ -18,16 +19,16 @@ The importance of the RADIUS shared secret and security:
 
 For more information on RADIUS security, here are a variety of links:
 
-* [http://www.untruth.org/~josh/security/radius/radius-auth.html An Analysis of the RADIUS Authentication Protocol]
+* [An Analysis of the RADIUS Authentication Protocol](http://www.untruth.org/~josh/security/radius/radius-auth.html)
 
-* [http://technet.microsoft.com/en-us/library/cc740124%28WS.10%29.aspx Shared secrets: Internet Authentication Service (IAS)]
+* [Shared secrets: Internet Authentication Service (IAS)](http://technet.microsoft.com/en-us/library/cc740124%28WS.10%29.aspx)
 
-* [http://howto.techworld.com/mobile-wireless/3450/securing-a-radius-server/ Securing a RADIUS server]
+* [Securing a RADIUS server](http://howto.techworld.com/mobile-wireless/3450/securing-a-radius-server/)
 
-* [http://docs.hp.com/en/T1428-90026/ch01s01.html RADIUS Overview by HP]
+* [RADIUS Overview by HP](http://docs.hp.com/en/T1428-90026/ch01s01.html)
 
-* [http://tools.ietf.org/html/draft-ietf-radext-radsec-06 RadSec IETF Draft]
+* [RadSec IETF Draft](http://tools.ietf.org/html/draft-ietf-radext-radsec-06)
 
-* [http://www.coova.org/JRadius/RadSec JRadius / RadSec]
+* [JRadius / RadSec](http://www.coova.org/JRadius/RadSec)
 
-* [http://www.coova.org/CoovaChilli/RadSec CoovaChilli / RadSec]
+* [CoovaChilli / RadSec](http://www.coova.org/CoovaChilli/RadSec)

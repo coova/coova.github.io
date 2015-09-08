@@ -1,4 +1,5 @@
 ---
+status: old
 layout: post
 title: Drupal hotspot
 created: 1211171787

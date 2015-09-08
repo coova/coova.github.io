@@ -1,4 +1,5 @@
 ---
+status: old
 layout: post
 title: OpenID WiFi
 created: 1181300046

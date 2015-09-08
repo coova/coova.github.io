@@ -1,4 +1,5 @@
 ---
+status: old
 layout: post
 title: DHCP and JRadius
 created: 1224663082
@@ -56,7 +57,7 @@ DHCP-Client-IP-Address = 0.0.0.0
 DHCP-Your-IP-Address = 0.0.0.0
 DHCP-Server-IP-Address = 0.0.0.0
 DHCP-Gateway-IP-Address = 127.0.0.1
-DHCP-Client-Hardware-Address = [Binary Data (length=6)]
+DHCP-Client-Hardware-Address = [Data (length=6)](Binary)
 DHCP-Message-Type = DHCP-Discover
 DHCP-Parameter-Request-List = DHCP-Subnet-Mask
 DHCP-Parameter-Request-List = DHCP-Router-Address
@@ -69,7 +70,7 @@ DHCP-Parameter-Request-List = DHCP-Service-Scope
 DHCP-Parameter-Request-List = DHCP-LDAP
 DHCP-Parameter-Request-List = Unknown-252
 DHCP-DHCP-Maximum-Msg-Size = 1500
-DHCP-Client-Identifier = [Binary Data (length=7)]
+DHCP-Client-Identifier = [Data (length=7)](Binary)
 DHCP-IP-Address-Lease-Time = 7776000
 DHCP-Hostname = laptop
 

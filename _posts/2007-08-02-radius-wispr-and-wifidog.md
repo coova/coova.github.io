@@ -1,4 +1,5 @@
 ---
+status: old
 layout: post
 title: RADIUS, WISPr and WiFiDog
 created: 1186050824
