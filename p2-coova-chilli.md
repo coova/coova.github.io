@@ -1,7 +1,8 @@
 ---
 layout: page
 menu: main
-title: CoovaChilli
+title: CoovaChilli, an open source captive portal access controller
+menu_title: CoovaChilli
 permalink: /CoovaChilli/
 ---
 

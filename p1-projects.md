@@ -1,7 +1,8 @@
 ---
 layout: page
 menu: main
-title: "Projects:"
+title: Open-source captive portal and RADIUS solutions
+menu_title: "Projects:"
 permalink: /
 ---
 

@@ -1,7 +1,8 @@
 ---
 layout: page
 menu: main
-title: JRadius
+title: JRadius, an open source RADIUS client and server stack in Java
+menu_title: JRadius
 permalink: /JRadius/
 ---
 
