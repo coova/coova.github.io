@@ -28,3 +28,5 @@ permalink: /
 -->
 
 [Old coova.org blog](/posts.html)
+
+[Old coova.org mailing list archives](mail-archive)
