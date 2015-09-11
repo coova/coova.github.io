@@ -13,3 +13,9 @@ the rlm_jradius module in FreeRADIUS. The core JRadius library is licensed under
 the GNU Lesser General Public License (LGPL) with certain standalone programs,
 such as JRadiusSimulator, are released under the GNU General Public License
 (GPL).
+
+[Using JRadius with FreeRADIUS](/JRadius/FreeRADIUS)
+
+[JRadius Simulator](/JRadius/Simulator)
+
+[JRadius and RadSec](/JRadius/RadSec)
