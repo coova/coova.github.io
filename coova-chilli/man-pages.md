@@ -4,7 +4,7 @@ title: CoovaChilli - man pages
 permalink: /CoovaChilli/man-pages.html
 ---
 
-[chilli.8](/CoovaChilli/chilli(8).html)
+[chilli(8)](/CoovaChilli/chilli(8).html)
 
 [chilli.conf(5)](/CoovaChilli/chilli.conf(5).html)
 

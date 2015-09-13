@@ -21,3 +21,9 @@ on how Coova's Chilli differs from the standard ChilliSpot, be sure to see the
 ChangeLog.
 
 [Man pages](/CoovaChilli/man-pages.html)
+
+[Building for Distributions](/CoovaChilli/DistroBuilding)
+
+[RadSec support](/CoovaChilli/RadSec)
+
+[JSON support](/CoovaChilli/JSON)

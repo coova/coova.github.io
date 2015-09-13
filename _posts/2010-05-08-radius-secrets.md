@@ -29,6 +29,6 @@ For more information on RADIUS security, here are a variety of links:
 
 * [RadSec IETF Draft](http://tools.ietf.org/html/draft-ietf-radext-radsec-06)
 
-* [JRadius / RadSec](http://www.coova.org/JRadius/RadSec)
+* [JRadius / RadSec](/JRadius/RadSec)
 
-* [CoovaChilli / RadSec](http://www.coova.org/CoovaChilli/RadSec)
+* [CoovaChilli / RadSec](/CoovaChilli/RadSec)

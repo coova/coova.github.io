@@ -7,13 +7,14 @@ categories:
 - !binary |-
   dW5jYXRlZ29yaXplZA==
 ---
+
 <a href="/CoovaChilli">CoovaChilli</a>, the open-source access controller, is getting better all the time. Thanks go out to the growing <a href="/forum/">forum</a>, <a href="/MailingLists">mailing list</a>, and <a href="/wiki/IRC">IRC</a> communities for valuable patches and ideas! There is no wonder, then, why CoovaChilli continues to be used in more networks; municipal, mesh, and individual. I hear that <a target="_blank" href="http://www.moovera.com/">Moovera</a> is using it, and I have been helping out <a target="_blank" href="http://open-mesh.com/">Open-mesh.com</a> in integrating it. If you have more success stories, please do share. We like hearing about that sort of stuff.
 
 <strong>Open-mesh.com</strong>
 
 With Open-mesh, you are able to select one of several pre-defined service providers using the dashboard. They will also follow up with a more generalized configuration option for using your own RADIUS and captive portal settings. You can now select CoovaAAA, our free hotspot AAA service, to manage your open-mesh hotspots <a href="/CoovaAAA/OpenMesh">by following these instructions</a>. This will use Coova's basic login form captive portal. Once the more generic configuration option is available, then you will be able to utilize any Portal / RADIUS combination - including <a href="/node/135">Drupal</a> and Facebook.
 
-[img_assist|nid=180|title=|desc=|link=none|align=center|width=500|height=219]
+![Image](/img/2008-08-08-mesh-gui-chilli-ap/open-mesh2.png)
 
 For assistance, feel free to join the <a href="/forum/">forum</a> or a <a href="/MailingLists">mailing list</a>, after <a href="/CoovaAAA/OpenMesh">rereading the directions</a>.
 
@@ -23,11 +24,11 @@ For assistance, feel free to join the <a href="/forum/">forum</a> or a <a href="
 
 The web application uses Ajax calls against the EWT web services to build the user interface screens, get and save configurations, and can do wizard like interactive dialogs. A wide range of user interfaces are able to be defined in XML and shell scripts that reside on each device - accessible by  a single web application.
 
-[img_assist|nid=179|title=|desc=|link=none|align=right|width=200|height=130]<span style="font-weight: bold">CoovaFX w/ EWT</span>
+![Image](/img/2008-08-08-mesh-gui-chilli-ap/coovafxewt.png)
 
 A recent snapshot of the CoovaEWT web application is includes in the just released <a href="/wiki/CoovaFX">CoovaFX version 1.3</a>. Right click on the (enabled) Coova icon selecting <span style="font-style: italic">Launch CoovaEWT</span> under the <span style="font-style: italic">Config</span> menu. This will bring up the embedded web application, ready for you to enter the IP Address of the CoovaEWT enabled device.
 
-[img_assist|nid=181|title=|desc=|link=none|align=center|width=450|height=306]
+![Image](/img/2008-08-08-mesh-gui-chilli-ap/openmeshewt.png)
 
 Of course, you will need to have a CoovaEWT enabled device before this application is usable, see below.
 
@@ -37,7 +38,7 @@ Also in the version 1.3 release is the ability to change the User-Agent used in 
 
 While doing a bit of work on open-mesh routers, I found it nice to have at least a minimal user interface. If for nothing else, to check status information and start and stop chilli.
 
-[img_assist|nid=182|title=|desc=|link=none|align=center|width=499|height=337]
+![Image](/img/2008-08-08-mesh-gui-chilli-ap/openmeshewt-hotspot.png)
 
 <a href="/wiki/CoovaEWT/OpenMesh">Download and install capd-open-mesh</a>.
 
@@ -45,9 +46,7 @@ While doing a bit of work on open-mesh routers, I found it nice to have at least
 
 Very much a work in progress, but enough to play with and get started using. Backup your UCI settings before using. After making changes, be sure to verify your UCI settings.
 
-[img_assist|nid=183|title=|desc=|link=none|align=center|width=500|height=320]
-
-<a href="/wiki/CoovaEWT/OpenWrt">Download and install capd-openwrt</a>.
+![Image](/img/2008-08-08-mesh-gui-chilli-ap/openwrt.png)
 
 <strong>Road to CoovaAP 2.0</strong>
 
