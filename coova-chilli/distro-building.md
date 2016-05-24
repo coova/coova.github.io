@@ -10,18 +10,18 @@ Building [CoovaChilli](/CoovaChilli) Binaries
 RPM (Redhat/Fedora)
 -------------------
 
-    wget https://coova.github.io/coova-chilli/coova-chilli-1.1.X.tar.gz
-    cp coova-chilli-1.1.X.tar.gz /usr/src/redhat/SOURCES/
-    tar xzf coova-chilli-1.1.X.tar.gz
-    cd coova-chilli-1.1.X/
+    wget https://github.com/coova/coova-chilli/archive/1.3.1.4.tar.gz
+    cp 1.3.1.4.tar.gz /usr/src/redhat/SOURCES/
+    tar xzf 1.3.1.4.tar.gz
+    cd coova-chilli-1.3.1.4/
     rpmbuild -ba coova-chilli.spec
 
 DEB (Debian/Ubuntu)
 -------------------
 
-    wget https://coova.github.io/coova-chilli/coova-chilli-1.1.X.tar.gz
-    tar xzf coova-chilli-1.1.X.tar.gz
-    cd coova-chilli-1.1.X/
+    wget https://github.com/coova/coova-chilli/archive/1.3.1.4.tar.gz
+    tar xzf 1.3.1.4.tar.gz
+    cd coova-chilli-1.3.1.4/
     debuild -b
     
 Gentoo Linux
