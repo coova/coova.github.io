@@ -1,6 +1,6 @@
 ---
 layout: page
-title: CoovaChilli distrobution building
+title: CoovaChilli distribution building
 permalink: /CoovaChilli/DistroBuilding/
 ---
 
