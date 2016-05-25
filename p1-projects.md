@@ -41,6 +41,9 @@ a map. Optionally have the app auto-login to known networks. Supports WISPr 1.0
 and 2.0 using EAP-TTLS/PAP or EAP-MD5.
 -->
 
+[Announcement mailing list](https://www.brightonchilli.org.uk/mailman/listinfo/coovachilli-announce)
+[General discussion / support mailing list](https://www.brightonchilli.org.uk/mailman/listinfo/coovachilli)
+
 [Old coova.org blog](/posts.html)
 
 [Old coova.org mailing list archives](mail-archive)
