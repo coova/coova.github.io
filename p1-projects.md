@@ -42,6 +42,7 @@ and 2.0 using EAP-TTLS/PAP or EAP-MD5.
 -->
 
 [Announcement mailing list](https://www.brightonchilli.org.uk/mailman/listinfo/coovachilli-announce)
+
 [General discussion / support mailing list](https://www.brightonchilli.org.uk/mailman/listinfo/coovachilli)
 
 [Old coova.org blog](/posts.html)
