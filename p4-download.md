@@ -1,8 +1,6 @@
 ---
 layout: page
-menu: main
 title: Legacy Releases
-menu_title: Download
 permalink: /Download/
 ---
 
