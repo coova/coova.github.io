@@ -1,13 +1,14 @@
 ---
 layout: page
-menu: main
-title: Download
-menu_title: Download
+title: Legacy Releases
 permalink: /Download/
 ---
 
 [CoovaChilli](/CoovaChilli/)
 ============================
+
+Current releases are now available directly from the [release section of the github repo](https://github.com/coova/coova-chilli/releases/latest).
+The releases listed here are retained for historical purposes.
 
 * [coova-chilli-1.3.0.tar.gz](/coova-chilli/coova-chilli-1.3.0.tar.gz)
 * [coova-chilli-1.2.9.tar.gz](/coova-chilli/coova-chilli-1.2.9.tar.gz)
